@@ -2,32 +2,6 @@
   "android": {
     "0": [
       {
-        "title": "Estructura de un proyecto Android Studio",
-        "fragment": "tema-1-estructura-de-un-proyecto-android-studio"
-      },
-      {
-        "title": "Recursos externalizados",
-        "fragment": "tema-2-recursos-externalizados"
-      },
-      {
-        "title": "AndroidManifest.xml y módulos Gradle",
-        "fragment": "tema-3-androidmanifest-xml-y-modulos-gradle"
-      },
-      {
-        "title": "Kotlin esencial para Android — lo que usarás en cada pantalla",
-        "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
-      },
-      {
-        "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
-        "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
-      },
-      {
-        "title": "Coroutines — asincronía sin bloquear la UI",
-        "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
-      }
-    ],
-    "1": [
-      {
         "title": "Ciclo de vida de una Activity",
         "fragment": "tema-1-ciclo-de-vida-de-una-activity"
       },
@@ -40,21 +14,25 @@
         "fragment": "tema-3-savedstatehandle"
       }
     ],
-    "10": [
+    "1": [
       {
-        "title": "Detectar y corregir recomposición innecesaria",
-        "fragment": "tema-1-detectar-y-corregir-recomposicion-innecesaria"
+        "title": "Composables y recomposición",
+        "fragment": "tema-1-composables-y-recomposicion"
       },
       {
-        "title": "Baseline Profiles y ciclo de efectos",
-        "fragment": "tema-2-baseline-profiles-y-ciclo-de-efectos"
+        "title": "State hoisting",
+        "fragment": "tema-2-state-hoisting"
       },
       {
-        "title": "Accesibilidad e interop con Views",
-        "fragment": "tema-3-accesibilidad-e-interop-con-views"
+        "title": "remember, rememberSaveable y layout básico",
+        "fragment": "tema-3-remember-remembersaveable-y-layout-basico"
+      },
+      {
+        "title": "Material 3 en Compose: tema, color dinámico y componentes",
+        "fragment": "tema-4-material-3-en-compose-tema-color-dinamico-y-componentes"
       }
     ],
-    "11": [
+    "10": [
       {
         "title": "Firma de la app",
         "fragment": "tema-1-firma-de-la-app"
@@ -68,7 +46,7 @@
         "fragment": "tema-3-versionado-tracks-y-politicas"
       }
     ],
-    "12": [
+    "11": [
       {
         "title": "Arquitectura MVVM completa con UDF",
         "fragment": "tema-1-arquitectura-mvvm-completa-con-udf"
@@ -86,7 +64,7 @@
         "fragment": "tema-4-capa-de-dominio-y-casos-de-uso-reglas-de-negocio-fuera-del-viewmodel"
       }
     ],
-    "13": [
+    "12": [
       {
         "title": "El sistema operativo conecta tu app con entradas externas",
         "fragment": "tema-1-el-sistema-operativo-conecta-tu-app-con-entradas-externas"
@@ -120,7 +98,7 @@
         "fragment": "tema-5-del-dispositivo-al-diagnostico-soc-memoria-limites-termicos-y-arranque-verificado"
       }
     ],
-    "14": [
+    "13": [
       {
         "title": "ComposeTestRule ejecuta tu UI sin emulador visible",
         "fragment": "tema-1-composetestrule-ejecuta-tu-ui-sin-emulador-visible"
@@ -146,7 +124,7 @@
         "fragment": "tema-6-animatedcontent-y-animationspec-especifican-transiciones-completas"
       }
     ],
-    "15": [
+    "14": [
       {
         "title": "Intents implícitos y Activity Result API",
         "fragment": "tema-1-intents-implicitos-y-activity-result-api"
@@ -188,7 +166,7 @@
         "fragment": "proyecto-15-la-app-del-repartidor-se-integra-con-el-sistema"
       }
     ],
-    "16": [
+    "15": [
       {
         "title": "Permisos en tiempo de ejecución y alternativas sin permiso",
         "fragment": "tema-1-permisos-en-tiempo-de-ejecucion-y-alternativas-sin-permiso"
@@ -218,7 +196,7 @@
         "fragment": "tema-7-play-integrity-api-comprobar-en-el-servidor-que-la-peticion-viene-de-tu-app-real"
       }
     ],
-    "17": [
+    "16": [
       {
         "title": "Constraints, Modifier y componentes con slots",
         "fragment": "tema-1-constraints-modifier-y-componentes-con-slots"
@@ -240,7 +218,7 @@
         "fragment": "tema-5-gestos-canvas-y-componentes-personalizados-accesibles"
       }
     ],
-    "18": [
+    "17": [
       {
         "title": "Gradle, version catalogs y resolución de dependencias",
         "fragment": "tema-1-gradle-version-catalogs-y-resolucion-de-dependencias"
@@ -264,24 +242,6 @@
     ],
     "2": [
       {
-        "title": "Composables y recomposición",
-        "fragment": "tema-1-composables-y-recomposicion"
-      },
-      {
-        "title": "State hoisting",
-        "fragment": "tema-2-state-hoisting"
-      },
-      {
-        "title": "remember, rememberSaveable y layout básico",
-        "fragment": "tema-3-remember-remembersaveable-y-layout-basico"
-      },
-      {
-        "title": "Material 3 en Compose: tema, color dinámico y componentes",
-        "fragment": "tema-4-material-3-en-compose-tema-color-dinamico-y-componentes"
-      }
-    ],
-    "3": [
-      {
         "title": "NavHost y NavController",
         "fragment": "tema-1-navhost-y-navcontroller"
       },
@@ -298,7 +258,7 @@
         "fragment": "tema-4-predictive-back-gesto-del-sistema-con-preview-animado"
       }
     ],
-    "4": [
+    "3": [
       {
         "title": "StateFlow en el ViewModel",
         "fragment": "tema-1-stateflow-en-el-viewmodel"
@@ -316,7 +276,7 @@
         "fragment": "tema-4-restaurar-un-borrador-tras-recreacion-remember-no-equivale-a-remembersaveable"
       }
     ],
-    "5": [
+    "4": [
       {
         "title": "Retrofit con coroutines",
         "fragment": "tema-1-retrofit-con-coroutines"
@@ -330,7 +290,7 @@
         "fragment": "tema-3-interceptores-de-okhttp"
       }
     ],
-    "6": [
+    "5": [
       {
         "title": "Entities, DAOs y Database",
         "fragment": "tema-1-entities-daos-y-database"
@@ -344,7 +304,7 @@
         "fragment": "tema-3-estrategia-offline-first"
       }
     ],
-    "7": [
+    "6": [
       {
         "title": "Configuración básica de Hilt",
         "fragment": "tema-1-configuracion-basica-de-hilt"
@@ -358,7 +318,7 @@
         "fragment": "tema-3-scopes-y-testing-con-hilt"
       }
     ],
-    "8": [
+    "7": [
       {
         "title": "CoroutineWorker y garantía de ejecución",
         "fragment": "tema-1-coroutineworker-y-garantia-de-ejecucion"
@@ -372,7 +332,7 @@
         "fragment": "tema-3-notificaciones-desde-background-work"
       }
     ],
-    "9": [
+    "8": [
       {
         "title": "Testing de ViewModels con fakes y runTest",
         "fragment": "tema-1-testing-de-viewmodels-con-fakes-y-runtest"
@@ -384,6 +344,20 @@
       {
         "title": "Testing end-to-end con Activity real, y fakes vs mocks",
         "fragment": "tema-3-testing-end-to-end-con-activity-real-y-fakes-vs-mocks"
+      }
+    ],
+    "9": [
+      {
+        "title": "Detectar y corregir recomposición innecesaria",
+        "fragment": "tema-1-detectar-y-corregir-recomposicion-innecesaria"
+      },
+      {
+        "title": "Baseline Profiles y ciclo de efectos",
+        "fragment": "tema-2-baseline-profiles-y-ciclo-de-efectos"
+      },
+      {
+        "title": "Accesibilidad e interop con Views",
+        "fragment": "tema-3-accesibilidad-e-interop-con-views"
       }
     ]
   },
@@ -747,6 +721,228 @@
       }
     ]
   },
+  "arquitectura": {
+    "0": [
+      {
+        "title": "Requisitos, stakeholders y criterios verificables",
+        "fragment": "tema-1-requisitos-stakeholders-y-criterios-verificables"
+      },
+      {
+        "title": "Arquitectura guiada por atributos de calidad",
+        "fragment": "tema-2-arquitectura-guiada-por-atributos-de-calidad"
+      },
+      {
+        "title": "Diseño modular, principios, patrones y refactoring",
+        "fragment": "tema-3-diseno-modular-principios-patrones-y-refactoring"
+      },
+      {
+        "title": "Decisiones, documentación, deuda y evolución",
+        "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
+      },
+      {
+        "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
+      },
+      {
+        "title": "Desarrollo guiado por especificación con agentes de IA",
+        "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
+      },
+      {
+        "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
+        "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
+      },
+      {
+        "title": "Proyecto 7: inventario modular con especificación, ADR y plan de mantenimiento",
+        "fragment": "proyecto-7-inventario-modular-con-especificacion-adr-y-plan-de-mantenimiento"
+      }
+    ],
+    "1": [
+      {
+        "title": "La red convierte el resultado en una incertidumbre",
+        "fragment": "tema-1-la-red-convierte-el-resultado-en-una-incertidumbre"
+      },
+      {
+        "title": "Replicación, consistencia y decisiones explícitas",
+        "fragment": "tema-2-replicacion-consistencia-y-decisiones-explicitas"
+      },
+      {
+        "title": "Mensajes que se procesan con efectos exactamente una vez",
+        "fragment": "tema-3-mensajes-que-se-procesan-con-efectos-exactamente-una-vez"
+      },
+      {
+        "title": "Resiliencia y observabilidad orientadas a objetivos",
+        "fragment": "tema-4-resiliencia-y-observabilidad-orientadas-a-objetivos"
+      },
+      {
+        "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
+        "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
+      },
+      {
+        "title": "Proyecto 10: inventario distribuido mínimo y observable",
+        "fragment": "proyecto-10-inventario-distribuido-minimo-y-observable"
+      },
+      {
+        "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+        "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
+      },
+      {
+        "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "fragment": "tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella"
+      }
+    ],
+    "2": [
+      {
+        "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+        "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
+      },
+      {
+        "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+        "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
+      },
+      {
+        "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+        "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
+      },
+      {
+        "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+        "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
+      }
+    ],
+    "3": [
+      {
+        "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+        "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
+      },
+      {
+        "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+        "fragment": "tema-2-lenguaje-ubicuo-y-contextos-delimitados-el-mismo-envio-no-significa-lo-mismo"
+      },
+      {
+        "title": "Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+        "fragment": "tema-3-agregados-invariantes-y-eventos-de-dominio-donde-vive-la-regla-que-no-se-puede-romper"
+      },
+      {
+        "title": "ADR y fitness functions: decisiones que el código puede defender",
+        "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
+      }
+    ],
+    "4": [
+      {
+        "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
+        "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
+      },
+      {
+        "title": "Datos por servicio: propiedad, composición y réplicas",
+        "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
+      },
+      {
+        "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
+        "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
+      },
+      {
+        "title": "Observabilidad distribuida: trazas, correlación y SLO",
+        "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
+      }
+    ]
+  },
+  "cicd": {
+    "0": [
+      {
+        "title": "Jobs, steps y matrices de build",
+        "fragment": "tema-1-jobs-steps-y-matrices-de-build"
+      },
+      {
+        "title": "Caché de dependencias en CI",
+        "fragment": "tema-2-cache-de-dependencias-en-ci"
+      },
+      {
+        "title": "Artifacts y reportes de cobertura",
+        "fragment": "tema-3-artifacts-y-reportes-de-cobertura"
+      },
+      {
+        "title": "Pipelines como código (GitHub Actions/GitLab CI)",
+        "fragment": "tema-4-pipelines-como-codigo-github-actions-gitlab-ci"
+      },
+      {
+        "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción",
+        "fragment": "tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
+      }
+    ],
+    "1": [
+      {
+        "title": "Blue-green deployment",
+        "fragment": "tema-1-blue-green-deployment"
+      },
+      {
+        "title": "Canary releases",
+        "fragment": "tema-2-canary-releases"
+      },
+      {
+        "title": "Rolling updates",
+        "fragment": "tema-3-rolling-updates"
+      },
+      {
+        "title": "Feature flags vs branches por entorno",
+        "fragment": "tema-4-feature-flags-vs-branches-por-entorno"
+      },
+      {
+        "title": "Rollback automático por métricas",
+        "fragment": "tema-5-rollback-automatico-por-metricas"
+      },
+      {
+        "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+        "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
+      },
+      {
+        "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+        "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
+      },
+      {
+        "title": "Mapa de decisión: las siete estrategias de despliegue",
+        "fragment": "tema-8-mapa-de-decision-las-siete-estrategias-de-despliegue"
+      }
+    ],
+    "2": [
+      {
+        "title": "El pipeline completo — de commit a producción verificada",
+        "fragment": "tema-1-el-pipeline-completo-de-commit-a-produccion-verificada"
+      },
+      {
+        "title": "Uniendo cada módulo del track en un solo flujo",
+        "fragment": "tema-2-uniendo-cada-modulo-del-track-en-un-solo-flujo"
+      },
+      {
+        "title": "Cierre del track — checklist final y reflexión",
+        "fragment": "tema-3-cierre-del-track-checklist-final-y-reflexion"
+      }
+    ],
+    "3": [
+      {
+        "title": "Postman y Newman — tu primera colección contra una API real",
+        "fragment": "tema-1-postman-y-newman-tu-primera-coleccion-contra-una-api-real"
+      },
+      {
+        "title": "Scripts y assertions — pruebas automatizadas sobre datos reales",
+        "fragment": "tema-2-scripts-y-assertions-pruebas-automatizadas-sobre-datos-reales"
+      },
+      {
+        "title": "Newman en profundidad — reportes y el contrato del código de salida",
+        "fragment": "tema-3-newman-en-profundidad-reportes-y-el-contrato-del-codigo-de-salida"
+      },
+      {
+        "title": "Jenkins — instalación, jobs y el linter real de pipelines declarativos",
+        "fragment": "tema-4-jenkins-instalacion-jobs-y-el-linter-real-de-pipelines-declarativos"
+      },
+      {
+        "title": "Integración completa — Newman dentro de un pipeline Jenkins",
+        "fragment": "tema-5-integracion-completa-newman-dentro-de-un-pipeline-jenkins"
+      },
+      {
+        "title": "Bruno y Postman, evaluar con el mismo contrato",
+        "fragment": "tema-6-bruno-y-postman-evaluar-con-el-mismo-contrato"
+      }
+    ]
+  },
   "cloud": {
     "0": [
       {
@@ -783,192 +979,6 @@
       }
     ],
     "1": [
-      {
-        "title": "Virtualización vs contenedores",
-        "fragment": "tema-1-virtualizacion-vs-contenedores"
-      },
-      {
-        "title": "Imágenes y capas",
-        "fragment": "tema-2-imagenes-y-capas"
-      },
-      {
-        "title": "Registros de contenedores (Docker Hub)",
-        "fragment": "tema-3-registros-de-contenedores-docker-hub"
-      },
-      {
-        "title": "Comandos esenciales de Docker",
-        "fragment": "tema-4-comandos-esenciales-de-docker"
-      },
-      {
-        "title": "Docker Compose — servicios, redes y volúmenes",
-        "fragment": "tema-5-docker-compose-servicios-redes-y-volumenes"
-      },
-      {
-        "title": "Laboratorio 1.1 — Comandos esenciales con una imagen de prueba",
-        "fragment": "laboratorio-1-1-comandos-esenciales-con-una-imagen-de-prueba"
-      },
-      {
-        "title": "Laboratorio 1.2 — Instalar floci-cli y levantar Floci",
-        "fragment": "laboratorio-1-2-instalar-floci-cli-y-levantar-floci"
-      },
-      {
-        "title": "Laboratorio 1.3 — Probar la AWS CLI contra Floci",
-        "fragment": "laboratorio-1-3-probar-la-aws-cli-contra-floci"
-      },
-      {
-        "title": "Laboratorio 1.4 — Usar StackPort y Floci UI",
-        "fragment": "laboratorio-1-4-usar-stackport-y-floci-ui"
-      }
-    ],
-    "10": [
-      {
-        "title": "Secrets Manager y por qué no usar variables de entorno hardcodeadas",
-        "fragment": "tema-1-secrets-manager-y-por-que-no-usar-variables-de-entorno-hardcodeadas"
-      },
-      {
-        "title": "KMS y envelope encryption",
-        "fragment": "tema-2-kms-y-envelope-encryption"
-      },
-      {
-        "title": "SSM Parameter Store vs Secrets Manager",
-        "fragment": "tema-3-ssm-parameter-store-vs-secrets-manager"
-      }
-    ],
-    "11": [
-      {
-        "title": "El patrón fan-out con SNS",
-        "fragment": "tema-1-el-patron-fan-out-con-sns"
-      },
-      {
-        "title": "EventBridge: bus de eventos con filtrado declarativo",
-        "fragment": "tema-2-eventbridge-bus-de-eventos-con-filtrado-declarativo"
-      },
-      {
-        "title": "SNS + SQS juntos, y Azure Event Hubs",
-        "fragment": "tema-3-sns-sqs-juntos-y-azure-event-hubs"
-      }
-    ],
-    "12": [
-      {
-        "title": "Log groups, log streams y correlation ID",
-        "fragment": "tema-1-log-groups-log-streams-y-correlation-id"
-      },
-      {
-        "title": "Metric filters y alarmas",
-        "fragment": "tema-2-metric-filters-y-alarmas"
-      },
-      {
-        "title": "Diagnóstico sistemático y X-Ray",
-        "fragment": "tema-3-diagnostico-sistematico-y-x-ray"
-      }
-    ],
-    "13": [
-      {
-        "title": "RDS Instance y cuándo elegir SQL sobre NoSQL",
-        "fragment": "tema-1-rds-instance-y-cuando-elegir-sql-sobre-nosql"
-      },
-      {
-        "title": "Snapshots y restore",
-        "fragment": "tema-2-snapshots-y-restore"
-      },
-      {
-        "title": "Migrations",
-        "fragment": "tema-3-migrations"
-      }
-    ],
-    "14": [
-      {
-        "title": "ECR y por qué no basta con Docker Hub",
-        "fragment": "tema-1-ecr-y-por-que-no-basta-con-docker-hub"
-      },
-      {
-        "title": "Task Definition y ECS Cluster",
-        "fragment": "tema-2-task-definition-y-ecs-cluster"
-      },
-      {
-        "title": "Contenedores vs Lambda, y EKS",
-        "fragment": "tema-3-contenedores-vs-lambda-y-eks"
-      },
-      {
-        "title": "Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR",
-        "fragment": "tema-4-cadena-de-suministro-en-la-nube-escaneo-firma-y-verificacion-de-imagenes-en-ecr"
-      }
-    ],
-    "15": [
-      {
-        "title": "Stack, Template y por qué no crear recursos manualmente con la CLI",
-        "fragment": "tema-1-stack-template-y-por-que-no-crear-recursos-manualmente-con-la-cli"
-      },
-      {
-        "title": "Change sets",
-        "fragment": "tema-2-change-sets"
-      },
-      {
-        "title": "Drift detection, Terraform/CDK, y compatibilidad multi-herramienta",
-        "fragment": "tema-3-drift-detection-terraform-cdk-y-compatibilidad-multi-herramienta"
-      }
-    ],
-    "16": [
-      {
-        "title": "State machine y Task states",
-        "fragment": "tema-1-state-machine-y-task-states"
-      },
-      {
-        "title": "Choice state, Retry y Catch",
-        "fragment": "tema-2-choice-state-retry-y-catch"
-      },
-      {
-        "title": "Express vs Standard, y cuándo EventBridge Pipes es suficiente",
-        "fragment": "tema-3-express-vs-standard-y-cuando-eventbridge-pipes-es-suficiente"
-      },
-      {
-        "title": "Procesamiento por lotes: trabajos independientes, reintentos e idempotencia",
-        "fragment": "tema-4-procesamiento-por-lotes-trabajos-independientes-reintentos-e-idempotencia"
-      }
-    ],
-    "17": [
-      {
-        "title": "Streams vs colas",
-        "fragment": "tema-1-streams-vs-colas"
-      },
-      {
-        "title": "MSK (Kafka gestionado) y consumer groups",
-        "fragment": "tema-2-msk-kafka-gestionado-y-consumer-groups"
-      },
-      {
-        "title": "Kinesis Data Streams vs Firehose, y GCP Managed Kafka",
-        "fragment": "tema-3-kinesis-data-streams-vs-firehose-y-gcp-managed-kafka"
-      }
-    ],
-    "18": [
-      {
-        "title": "Por qué no construir tu propio sistema de autenticación",
-        "fragment": "tema-1-por-que-no-construir-tu-propio-sistema-de-autenticacion"
-      },
-      {
-        "title": "Access Token, ID Token y Refresh Token",
-        "fragment": "tema-2-access-token-id-token-y-refresh-token"
-      },
-      {
-        "title": "OAuth 2.0 y PKCE",
-        "fragment": "tema-3-oauth-2-0-y-pkce"
-      }
-    ],
-    "19": [
-      {
-        "title": "Data lake y Glue Catalog",
-        "fragment": "tema-1-data-lake-y-glue-catalog"
-      },
-      {
-        "title": "Glue Crawler y Athena",
-        "fragment": "tema-2-glue-crawler-y-athena"
-      },
-      {
-        "title": "Parquet vs CSV, y partition pruning",
-        "fragment": "tema-3-parquet-vs-csv-y-partition-pruning"
-      }
-    ],
-    "2": [
       {
         "title": "Objetos, buckets y su nomenclatura",
         "fragment": "tema-1-objetos-buckets-y-su-nomenclatura"
@@ -1014,7 +1024,141 @@
         "fragment": "parte-2-versionado"
       }
     ],
-    "20": [
+    "10": [
+      {
+        "title": "El patrón fan-out con SNS",
+        "fragment": "tema-1-el-patron-fan-out-con-sns"
+      },
+      {
+        "title": "EventBridge: bus de eventos con filtrado declarativo",
+        "fragment": "tema-2-eventbridge-bus-de-eventos-con-filtrado-declarativo"
+      },
+      {
+        "title": "SNS + SQS juntos, y Azure Event Hubs",
+        "fragment": "tema-3-sns-sqs-juntos-y-azure-event-hubs"
+      }
+    ],
+    "11": [
+      {
+        "title": "Log groups, log streams y correlation ID",
+        "fragment": "tema-1-log-groups-log-streams-y-correlation-id"
+      },
+      {
+        "title": "Metric filters y alarmas",
+        "fragment": "tema-2-metric-filters-y-alarmas"
+      },
+      {
+        "title": "Diagnóstico sistemático y X-Ray",
+        "fragment": "tema-3-diagnostico-sistematico-y-x-ray"
+      }
+    ],
+    "12": [
+      {
+        "title": "RDS Instance y cuándo elegir SQL sobre NoSQL",
+        "fragment": "tema-1-rds-instance-y-cuando-elegir-sql-sobre-nosql"
+      },
+      {
+        "title": "Snapshots y restore",
+        "fragment": "tema-2-snapshots-y-restore"
+      },
+      {
+        "title": "Migrations",
+        "fragment": "tema-3-migrations"
+      }
+    ],
+    "13": [
+      {
+        "title": "ECR y por qué no basta con Docker Hub",
+        "fragment": "tema-1-ecr-y-por-que-no-basta-con-docker-hub"
+      },
+      {
+        "title": "Task Definition y ECS Cluster",
+        "fragment": "tema-2-task-definition-y-ecs-cluster"
+      },
+      {
+        "title": "Contenedores vs Lambda, y EKS",
+        "fragment": "tema-3-contenedores-vs-lambda-y-eks"
+      },
+      {
+        "title": "Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR",
+        "fragment": "tema-4-cadena-de-suministro-en-la-nube-escaneo-firma-y-verificacion-de-imagenes-en-ecr"
+      }
+    ],
+    "14": [
+      {
+        "title": "Stack, Template y por qué no crear recursos manualmente con la CLI",
+        "fragment": "tema-1-stack-template-y-por-que-no-crear-recursos-manualmente-con-la-cli"
+      },
+      {
+        "title": "Change sets",
+        "fragment": "tema-2-change-sets"
+      },
+      {
+        "title": "Drift detection, Terraform/CDK, y compatibilidad multi-herramienta",
+        "fragment": "tema-3-drift-detection-terraform-cdk-y-compatibilidad-multi-herramienta"
+      }
+    ],
+    "15": [
+      {
+        "title": "State machine y Task states",
+        "fragment": "tema-1-state-machine-y-task-states"
+      },
+      {
+        "title": "Choice state, Retry y Catch",
+        "fragment": "tema-2-choice-state-retry-y-catch"
+      },
+      {
+        "title": "Express vs Standard, y cuándo EventBridge Pipes es suficiente",
+        "fragment": "tema-3-express-vs-standard-y-cuando-eventbridge-pipes-es-suficiente"
+      },
+      {
+        "title": "Procesamiento por lotes: trabajos independientes, reintentos e idempotencia",
+        "fragment": "tema-4-procesamiento-por-lotes-trabajos-independientes-reintentos-e-idempotencia"
+      }
+    ],
+    "16": [
+      {
+        "title": "Streams vs colas",
+        "fragment": "tema-1-streams-vs-colas"
+      },
+      {
+        "title": "MSK (Kafka gestionado) y consumer groups",
+        "fragment": "tema-2-msk-kafka-gestionado-y-consumer-groups"
+      },
+      {
+        "title": "Kinesis Data Streams vs Firehose, y GCP Managed Kafka",
+        "fragment": "tema-3-kinesis-data-streams-vs-firehose-y-gcp-managed-kafka"
+      }
+    ],
+    "17": [
+      {
+        "title": "Por qué no construir tu propio sistema de autenticación",
+        "fragment": "tema-1-por-que-no-construir-tu-propio-sistema-de-autenticacion"
+      },
+      {
+        "title": "Access Token, ID Token y Refresh Token",
+        "fragment": "tema-2-access-token-id-token-y-refresh-token"
+      },
+      {
+        "title": "OAuth 2.0 y PKCE",
+        "fragment": "tema-3-oauth-2-0-y-pkce"
+      }
+    ],
+    "18": [
+      {
+        "title": "Data lake y Glue Catalog",
+        "fragment": "tema-1-data-lake-y-glue-catalog"
+      },
+      {
+        "title": "Glue Crawler y Athena",
+        "fragment": "tema-2-glue-crawler-y-athena"
+      },
+      {
+        "title": "Parquet vs CSV, y partition pruning",
+        "fragment": "tema-3-parquet-vs-csv-y-partition-pruning"
+      }
+    ],
+    "19": [
       {
         "title": "Bedrock Runtime y respuestas stub deterministas",
         "fragment": "tema-1-bedrock-runtime-y-respuestas-stub-deterministas"
@@ -1032,7 +1176,33 @@
         "fragment": "tema-4-gobierno-de-ia-y-ml-fichas-de-modelo-umbrales-por-grupo-y-una-puerta-antes-de-publicar"
       }
     ],
-    "21": [
+    "2": [
+      {
+        "title": "Colas, productores y consumidores",
+        "fragment": "tema-1-colas-productores-y-consumidores"
+      },
+      {
+        "title": "Ciclo de vida de un mensaje",
+        "fragment": "tema-2-ciclo-de-vida-de-un-mensaje"
+      },
+      {
+        "title": "Dead Letter Queues (DLQ)",
+        "fragment": "tema-3-dead-letter-queues-dlq"
+      },
+      {
+        "title": "Colas FIFO vs Standard",
+        "fragment": "tema-4-colas-fifo-vs-standard"
+      },
+      {
+        "title": "Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ",
+        "fragment": "laboratorio-3-1-ciclo-completo-con-cola-standard-y-dlq"
+      },
+      {
+        "title": "Laboratorio 3.2 — Cola FIFO con MessageGroupId",
+        "fragment": "laboratorio-3-2-cola-fifo-con-messagegroupid"
+      }
+    ],
+    "20": [
       {
         "title": "El modelo de ejecución de EC2 — instancias que son contenedores Docker reales",
         "fragment": "tema-1-el-modelo-de-ejecucion-de-ec2-instancias-que-son-contenedores-docker-reales"
@@ -1066,7 +1236,7 @@
         "fragment": "laboratorio-21-2-auto-scaling-group-con-reconciliador-en-vivo"
       }
     ],
-    "22": [
+    "21": [
       {
         "title": "ELB v2 — balanceadores, grupos objetivo y reglas",
         "fragment": "tema-1-elb-v2-balanceadores-grupos-objetivo-y-reglas"
@@ -1100,7 +1270,7 @@
         "fragment": "laboratorio-22-2-certificado-distribucion-cdn-y-zona-dns"
       }
     ],
-    "23": [
+    "22": [
       {
         "title": "Qué resuelve un caché en memoria — y cuándo no ayuda",
         "fragment": "tema-1-que-resuelve-un-cache-en-memoria-y-cuando-no-ayuda"
@@ -1126,7 +1296,7 @@
         "fragment": "laboratorio-23-2-usuario-con-autenticacion-iam"
       }
     ],
-    "24": [
+    "23": [
       {
         "title": "CodeBuild — compilaciones reales dentro de contenedores Docker",
         "fragment": "tema-1-codebuild-compilaciones-reales-dentro-de-contenedores-docker"
@@ -1156,7 +1326,7 @@
         "fragment": "laboratorio-24-2-despliegue-canary-de-lambda-con-codedeploy"
       }
     ],
-    "25": [
+    "24": [
       {
         "title": "AWS Config — rastrear reglas sobre tus recursos",
         "fragment": "tema-1-aws-config-rastrear-reglas-sobre-tus-recursos"
@@ -1190,7 +1360,7 @@
         "fragment": "tema-6-simulacro-de-restauracion-comprobar-contenido-no-solo-la-existencia-del-backup"
       }
     ],
-    "26": [
+    "25": [
       {
         "title": "Amazon Data Firehose — entrega gestionada sin consumidores propios",
         "fragment": "tema-1-amazon-data-firehose-entrega-gestionada-sin-consumidores-propios"
@@ -1216,7 +1386,7 @@
         "fragment": "laboratorio-26-2-pipe-de-sqs-a-lambda-sin-codigo-intermedio"
       }
     ],
-    "27": [
+    "26": [
       {
         "title": "AppSync — APIs GraphQL gestionadas",
         "fragment": "tema-1-appsync-apis-graphql-gestionadas"
@@ -1242,7 +1412,7 @@
         "fragment": "laboratorio-27-2-simulador-de-entrega-rebote-y-queja-con-ses"
       }
     ],
-    "28": [
+    "27": [
       {
         "title": "Bases de datos de grafos — cuando las relaciones son el dato",
         "fragment": "tema-1-bases-de-datos-de-grafos-cuando-las-relaciones-son-el-dato"
@@ -1272,7 +1442,7 @@
         "fragment": "laboratorio-28-2-busqueda-de-texto-completo-con-opensearch"
       }
     ],
-    "29": [
+    "28": [
       {
         "title": "Cost Explorer — costos sintetizados a partir de tu estado real",
         "fragment": "tema-1-cost-explorer-costos-sintetizados-a-partir-de-tu-estado-real"
@@ -1302,33 +1472,7 @@
         "fragment": "laboratorio-29-2-descubrimiento-centralizado-por-etiqueta"
       }
     ],
-    "3": [
-      {
-        "title": "Colas, productores y consumidores",
-        "fragment": "tema-1-colas-productores-y-consumidores"
-      },
-      {
-        "title": "Ciclo de vida de un mensaje",
-        "fragment": "tema-2-ciclo-de-vida-de-un-mensaje"
-      },
-      {
-        "title": "Dead Letter Queues (DLQ)",
-        "fragment": "tema-3-dead-letter-queues-dlq"
-      },
-      {
-        "title": "Colas FIFO vs Standard",
-        "fragment": "tema-4-colas-fifo-vs-standard"
-      },
-      {
-        "title": "Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ",
-        "fragment": "laboratorio-3-1-ciclo-completo-con-cola-standard-y-dlq"
-      },
-      {
-        "title": "Laboratorio 3.2 — Cola FIFO con MessageGroupId",
-        "fragment": "laboratorio-3-2-cola-fifo-con-messagegroupid"
-      }
-    ],
-    "30": [
+    "29": [
       {
         "title": "Qué resuelve Transfer Family",
         "fragment": "tema-1-que-resuelve-transfer-family"
@@ -1350,7 +1494,41 @@
         "fragment": "laboratorio-30-1-servidor-usuario-y-clave-ssh"
       }
     ],
-    "31": [
+    "3": [
+      {
+        "title": "Qué es NoSQL y cuándo usarlo",
+        "fragment": "tema-1-que-es-nosql-y-cuando-usarlo"
+      },
+      {
+        "title": "Tablas, items y atributos",
+        "fragment": "tema-2-tablas-items-y-atributos"
+      },
+      {
+        "title": "Tipos de datos — S, N, B, BOOL, NULL, L, M",
+        "fragment": "tema-3-tipos-de-datos-s-n-b-bool-null-l-m"
+      },
+      {
+        "title": "Clave primaria simple (HASH) vs compuesta (HASH + RANGE)",
+        "fragment": "tema-4-clave-primaria-simple-hash-vs-compuesta-hash-range"
+      },
+      {
+        "title": "Índices secundarios globales (GSI) y locales (LSI)",
+        "fragment": "tema-5-indices-secundarios-globales-gsi-y-locales-lsi"
+      },
+      {
+        "title": "Query vs Scan",
+        "fragment": "tema-6-query-vs-scan"
+      },
+      {
+        "title": "Laboratorio 4.1 — CRUD completo",
+        "fragment": "laboratorio-4-1-crud-completo"
+      },
+      {
+        "title": "Laboratorio 4.2 — Query vs Scan",
+        "fragment": "laboratorio-4-2-query-vs-scan"
+      }
+    ],
+    "30": [
       {
         "title": "Arquitectura multi-nube y portabilidad de conocimiento",
         "fragment": "tema-1-arquitectura-multi-nube-y-portabilidad-de-conocimiento"
@@ -1376,7 +1554,7 @@
         "fragment": "tema-6-nube-hibrida-conectar-el-centro-de-datos-con-la-nube-de-forma-segura-y-medible"
       }
     ],
-    "32": [
+    "31": [
       {
         "title": "Una red segura empieza por flujos, no por subredes",
         "fragment": "tema-1-una-red-segura-empieza-por-flujos-no-por-subredes"
@@ -1410,7 +1588,7 @@
         "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
-    "33": [
+    "32": [
       {
         "title": "Terraform avanzado y CI/CD cloud",
         "fragment": "tema-1-terraform-avanzado-y-ci-cd-cloud"
@@ -1440,7 +1618,7 @@
         "fragment": "tema-7-deteccion-de-amenazas-leer-registros-de-auditoria-y-alertar-sobre-comportamiento-sospechoso"
       }
     ],
-    "34": [
+    "33": [
       {
         "title": "Instalación en macOS, Linux y Windows",
         "fragment": "tema-1-instalacion-en-macos-linux-y-windows"
@@ -1486,41 +1664,55 @@
         "fragment": "tema-11-limites-y-transferencia-a-produccion"
       }
     ],
-    "4": [
+    "34": [
       {
-        "title": "Qué es NoSQL y cuándo usarlo",
-        "fragment": "tema-1-que-es-nosql-y-cuando-usarlo"
+        "title": "De cloud local a un proveedor cloud real",
+        "fragment": "tema-1-de-cloud-local-a-un-proveedor-cloud-real"
       },
       {
-        "title": "Tablas, items y atributos",
-        "fragment": "tema-2-tablas-items-y-atributos"
+        "title": "Gestión de secretos cloud-native",
+        "fragment": "tema-2-gestion-de-secretos-cloud-native"
       },
       {
-        "title": "Tipos de datos — S, N, B, BOOL, NULL, L, M",
-        "fragment": "tema-3-tipos-de-datos-s-n-b-bool-null-l-m"
+        "title": "IaC multi-nube",
+        "fragment": "tema-3-iac-multi-nube"
       },
       {
-        "title": "Clave primaria simple (HASH) vs compuesta (HASH + RANGE)",
-        "fragment": "tema-4-clave-primaria-simple-hash-vs-compuesta-hash-range"
+        "title": "Checklist de salida a producción",
+        "fragment": "tema-4-checklist-de-salida-a-produccion"
       },
       {
-        "title": "Índices secundarios globales (GSI) y locales (LSI)",
-        "fragment": "tema-5-indices-secundarios-globales-gsi-y-locales-lsi"
+        "title": "GitOps con ArgoCD y FluxCD",
+        "fragment": "tema-5-gitops-con-argocd-y-fluxcd"
       },
       {
-        "title": "Query vs Scan",
-        "fragment": "tema-6-query-vs-scan"
+        "title": "Platform Engineering — Internal Developer Platforms (IDPs)",
+        "fragment": "tema-6-platform-engineering-internal-developer-platforms-idps"
       },
       {
-        "title": "Laboratorio 4.1 — CRUD completo",
-        "fragment": "laboratorio-4-1-crud-completo"
-      },
-      {
-        "title": "Laboratorio 4.2 — Query vs Scan",
-        "fragment": "laboratorio-4-2-query-vs-scan"
+        "title": "FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas",
+        "fragment": "tema-7-finops-costos-visibles-por-servicio-etiquetas-obligatorias-y-presupuestos-con-alertas"
       }
     ],
-    "5": [
+    "35": [
+      {
+        "title": "Floci desde cero: instalar, aislar y verificar",
+        "fragment": "tema-1-floci-desde-cero-instalar-aislar-y-verificar"
+      },
+      {
+        "title": "S3 y diagnóstico de red: objetos, metadatos y errores",
+        "fragment": "tema-2-s3-y-diagnostico-de-red-objetos-metadatos-y-errores"
+      },
+      {
+        "title": "Contenedores y CI: una imagen que se prueba contra Floci",
+        "fragment": "tema-3-contenedores-y-ci-una-imagen-que-se-prueba-contra-floci"
+      },
+      {
+        "title": "Terraform, SQS y operación: infraestructura reproducible y ejercicios",
+        "fragment": "tema-4-terraform-sqs-y-operacion-infraestructura-reproducible-y-ejercicios"
+      }
+    ],
+    "4": [
       {
         "title": "Qué es serverless — ventajas y desventajas",
         "fragment": "tema-1-que-es-serverless-ventajas-y-desventajas"
@@ -1574,7 +1766,7 @@
         "fragment": "por-que-importa"
       }
     ],
-    "6": [
+    "5": [
       {
         "title": "Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
         "fragment": "tema-1-que-es-api-gateway-y-tipos-de-api-rest-http-websocket"
@@ -1600,7 +1792,7 @@
         "fragment": "laboratorio-6-1-construir-y-desplegar-el-endpoint"
       }
     ],
-    "7": [
+    "6": [
       {
         "title": "Principio de mínimo privilegio",
         "fragment": "tema-1-principio-de-minimo-privilegio"
@@ -1622,7 +1814,7 @@
         "fragment": "tema-5-buenas-practicas-roles-sobre-usuarios-politicas-restrictivas-rotacion-de-credenciales"
       }
     ],
-    "8": [
+    "7": [
       {
         "title": "floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions",
         "fragment": "tema-1-floci-az-blob-storage-queue-storage-table-storage-cosmos-db-functions"
@@ -1644,7 +1836,7 @@
         "fragment": "laboratorio-8-2-gcp-cloud-storage-y-pub-sub"
       }
     ],
-    "9": [
+    "8": [
       {
         "title": "Arquitectura de la aplicación — frontend, backend y base de datos",
         "fragment": "tema-1-arquitectura-de-la-aplicacion-frontend-backend-y-base-de-datos"
@@ -1704,6 +1896,20 @@
       {
         "title": "IAM",
         "fragment": "iam"
+      }
+    ],
+    "9": [
+      {
+        "title": "Secrets Manager y por qué no usar variables de entorno hardcodeadas",
+        "fragment": "tema-1-secrets-manager-y-por-que-no-usar-variables-de-entorno-hardcodeadas"
+      },
+      {
+        "title": "KMS y envelope encryption",
+        "fragment": "tema-2-kms-y-envelope-encryption"
+      },
+      {
+        "title": "SSM Parameter Store vs Secrets Manager",
+        "fragment": "tema-3-ssm-parameter-store-vs-secrets-manager"
       }
     ]
   },
@@ -2197,324 +2403,8 @@
       }
     ]
   },
-  "devops": {
+  "docker": {
     "0": [
-      {
-        "title": "Windows",
-        "fragment": "windows"
-      },
-      {
-        "title": "macOS",
-        "fragment": "macos"
-      },
-      {
-        "title": "Linux (Ubuntu/Debian)",
-        "fragment": "linux-ubuntu-debian"
-      },
-      {
-        "title": "Sistema de archivos y permisos (chmod/chown)",
-        "fragment": "tema-1-sistema-de-archivos-y-permisos-chmod-chown"
-      },
-      {
-        "title": "Procesos, señales y jobs en segundo plano",
-        "fragment": "tema-2-procesos-senales-y-jobs-en-segundo-plano"
-      },
-      {
-        "title": "Pipes, redirección y filtros (grep, awk, sed)",
-        "fragment": "tema-3-pipes-redireccion-y-filtros-grep-awk-sed"
-      },
-      {
-        "title": "Variables de entorno y scripts bash robustos (set -euo pipefail)",
-        "fragment": "tema-4-variables-de-entorno-y-scripts-bash-robustos-set-euo-pipefail"
-      },
-      {
-        "title": "Cron y tareas programadas",
-        "fragment": "tema-5-cron-y-tareas-programadas"
-      },
-      {
-        "title": "Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor",
-        "fragment": "tema-6-hardening-basico-ssh-sin-contrasena-firewalls-selinux-apparmor"
-      },
-      {
-        "title": "Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga",
-        "fragment": "tema-7-redes-modelo-osi-tcp-ip-dns-y-balanceadores-de-carga"
-      },
-      {
-        "title": "Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor",
-        "fragment": "tema-8-cultura-devops-y-el-ciclo-plan-code-build-test-release-deploy-operate-monitor"
-      },
-      {
-        "title": "NGINX y proxies desde cero",
-        "fragment": "tema-9-nginx-y-proxies-desde-cero"
-      },
-      {
-        "title": "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
-        "fragment": "tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
-      },
-      {
-        "title": "systemd: servicios, timers y logs con journalctl",
-        "fragment": "tema-11-systemd-servicios-timers-y-logs-con-journalctl"
-      }
-    ],
-    "1": [
-      {
-        "title": "Trunk-based development vs GitFlow",
-        "fragment": "tema-1-trunk-based-development-vs-gitflow"
-      },
-      {
-        "title": "Rebase interactivo vs merge",
-        "fragment": "tema-2-rebase-interactivo-vs-merge"
-      },
-      {
-        "title": "Bisect para encontrar regresiones",
-        "fragment": "tema-3-bisect-para-encontrar-regresiones"
-      },
-      {
-        "title": "Hooks de Git y commits firmados",
-        "fragment": "tema-4-hooks-de-git-y-commits-firmados"
-      },
-      {
-        "title": "Monorepos vs polyrepos",
-        "fragment": "tema-5-monorepos-vs-polyrepos"
-      },
-      {
-        "title": "git cherry-pick, git stash, git reset vs git revert",
-        "fragment": "tema-6-git-cherry-pick-git-stash-git-reset-vs-git-revert"
-      },
-      {
-        "title": "git reflog, git worktree y git submodule",
-        "fragment": "tema-7-git-reflog-git-worktree-y-git-submodule"
-      },
-      {
-        "title": "Referencia rápida de Git: los tres árboles y los comandos por intención",
-        "fragment": "tema-8-referencia-rapida-de-git-los-tres-arboles-y-los-comandos-por-intencion"
-      }
-    ],
-    "10": [
-      {
-        "title": "Logging estructurado (JSON)",
-        "fragment": "tema-1-logging-estructurado-json"
-      },
-      {
-        "title": "Pipeline ELK/EFK",
-        "fragment": "tema-2-pipeline-elk-efk"
-      },
-      {
-        "title": "Loki + Grafana como alternativa ligera",
-        "fragment": "tema-3-loki-grafana-como-alternativa-ligera"
-      },
-      {
-        "title": "Correlation ID a través de servicios",
-        "fragment": "tema-4-correlation-id-a-traves-de-servicios"
-      }
-    ],
-    "11": [
-      {
-        "title": "Escaneo de imágenes y dependencias (Trivy, Snyk)",
-        "fragment": "tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
-      },
-      {
-        "title": "Integración en el pipeline",
-        "fragment": "tema-2-integracion-en-el-pipeline"
-      },
-      {
-        "title": "Gestión de secretos (Vault, SOPS)",
-        "fragment": "tema-3-gestion-de-secretos-vault-sops"
-      },
-      {
-        "title": "Menor privilegio en CI/CD",
-        "fragment": "tema-4-menor-privilegio-en-ci-cd"
-      },
-      {
-        "title": "SBOM y supply chain security",
-        "fragment": "tema-5-sbom-y-supply-chain-security"
-      },
-      {
-        "title": "SAST, DAST y SCA — diferencias y herramientas",
-        "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
-      },
-      {
-        "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
-        "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
-      }
-    ],
-    "12": [
-      {
-        "title": "De cloud local a un proveedor cloud real",
-        "fragment": "tema-1-de-cloud-local-a-un-proveedor-cloud-real"
-      },
-      {
-        "title": "Gestión de secretos cloud-native",
-        "fragment": "tema-2-gestion-de-secretos-cloud-native"
-      },
-      {
-        "title": "IaC multi-nube",
-        "fragment": "tema-3-iac-multi-nube"
-      },
-      {
-        "title": "Checklist de salida a producción",
-        "fragment": "tema-4-checklist-de-salida-a-produccion"
-      },
-      {
-        "title": "GitOps con ArgoCD y FluxCD",
-        "fragment": "tema-5-gitops-con-argocd-y-fluxcd"
-      },
-      {
-        "title": "Platform Engineering — Internal Developer Platforms (IDPs)",
-        "fragment": "tema-6-platform-engineering-internal-developer-platforms-idps"
-      },
-      {
-        "title": "FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas",
-        "fragment": "tema-7-finops-costos-visibles-por-servicio-etiquetas-obligatorias-y-presupuestos-con-alertas"
-      }
-    ],
-    "13": [
-      {
-        "title": "El pipeline completo — de commit a producción verificada",
-        "fragment": "tema-1-el-pipeline-completo-de-commit-a-produccion-verificada"
-      },
-      {
-        "title": "Uniendo cada módulo del track en un solo flujo",
-        "fragment": "tema-2-uniendo-cada-modulo-del-track-en-un-solo-flujo"
-      },
-      {
-        "title": "Cierre del track — checklist final y reflexión",
-        "fragment": "tema-3-cierre-del-track-checklist-final-y-reflexion"
-      }
-    ],
-    "14": [
-      {
-        "title": "Confiabilidad es una expectativa cuantificada",
-        "fragment": "tema-1-confiabilidad-es-una-expectativa-cuantificada"
-      },
-      {
-        "title": "Una alerta debe conducir a una acción",
-        "fragment": "tema-2-una-alerta-debe-conducir-a-una-accion"
-      },
-      {
-        "title": "Construir una imagen no demuestra de dónde proviene",
-        "fragment": "tema-3-construir-una-imagen-no-demuestra-de-donde-proviene"
-      },
-      {
-        "title": "Una plataforma interna es un producto con límites",
-        "fragment": "tema-4-una-plataforma-interna-es-un-producto-con-limites"
-      },
-      {
-        "title": "Kubernetes 1.36, OpenTelemetry 1.59 y herramientas con ciclo propio",
-        "fragment": "kubernetes-1-36-opentelemetry-1-59-y-herramientas-con-ciclo-propio"
-      },
-      {
-        "title": "Método de estudio y proyecto de ampliación",
-        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
-      }
-    ],
-    "15": [
-      {
-        "title": "Docker y Compose avanzados",
-        "fragment": "tema-1-docker-y-compose-avanzados"
-      },
-      {
-        "title": "Kubernetes extensible y Helm avanzado",
-        "fragment": "tema-2-kubernetes-extensible-y-helm-avanzado"
-      },
-      {
-        "title": "Service Mesh con Istio o Linkerd",
-        "fragment": "tema-3-service-mesh-con-istio-o-linkerd"
-      },
-      {
-        "title": "GitOps con Argo CD y Flux",
-        "fragment": "tema-4-gitops-con-argo-cd-y-flux"
-      },
-      {
-        "title": "Ansible, inventarios, roles y Vault",
-        "fragment": "tema-5-ansible-inventarios-roles-y-vault"
-      },
-      {
-        "title": "DevSecOps y métricas DORA",
-        "fragment": "tema-6-devsecops-y-metricas-dora"
-      }
-    ],
-    "16": [
-      {
-        "title": "Postman y Newman — tu primera colección contra una API real",
-        "fragment": "tema-1-postman-y-newman-tu-primera-coleccion-contra-una-api-real"
-      },
-      {
-        "title": "Scripts y assertions — pruebas automatizadas sobre datos reales",
-        "fragment": "tema-2-scripts-y-assertions-pruebas-automatizadas-sobre-datos-reales"
-      },
-      {
-        "title": "Newman en profundidad — reportes y el contrato del código de salida",
-        "fragment": "tema-3-newman-en-profundidad-reportes-y-el-contrato-del-codigo-de-salida"
-      },
-      {
-        "title": "Jenkins — instalación, jobs y el linter real de pipelines declarativos",
-        "fragment": "tema-4-jenkins-instalacion-jobs-y-el-linter-real-de-pipelines-declarativos"
-      },
-      {
-        "title": "Integración completa — Newman dentro de un pipeline Jenkins",
-        "fragment": "tema-5-integracion-completa-newman-dentro-de-un-pipeline-jenkins"
-      },
-      {
-        "title": "Bruno y Postman, evaluar con el mismo contrato",
-        "fragment": "tema-6-bruno-y-postman-evaluar-con-el-mismo-contrato"
-      }
-    ],
-    "17": [
-      {
-        "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
-        "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
-      },
-      {
-        "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
-        "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
-      },
-      {
-        "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
-        "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
-      },
-      {
-        "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
-        "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
-      }
-    ],
-    "18": [
-      {
-        "title": "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
-        "fragment": "tema-1-aprovisionar-y-endurecer-usuario-ssh-firewall-y-parches"
-      },
-      {
-        "title": "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
-        "fragment": "tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
-      },
-      {
-        "title": "Despliegue y rollback: systemd, nginx y artefactos versionados",
-        "fragment": "tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados"
-      },
-      {
-        "title": "Respaldos que se restauran: restic, RPO/RTO y simulacro",
-        "fragment": "tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
-      }
-    ],
-    "19": [
-      {
-        "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
-        "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
-      },
-      {
-        "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
-        "fragment": "tema-2-lenguaje-ubicuo-y-contextos-delimitados-el-mismo-envio-no-significa-lo-mismo"
-      },
-      {
-        "title": "Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
-        "fragment": "tema-3-agregados-invariantes-y-eventos-de-dominio-donde-vive-la-regla-que-no-se-puede-romper"
-      },
-      {
-        "title": "ADR y fitness functions: decisiones que el código puede defender",
-        "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
-      }
-    ],
-    "2": [
       {
         "title": "Dockerfile multi-stage",
         "fragment": "tema-1-dockerfile-multi-stage"
@@ -2560,61 +2450,7 @@
         "fragment": "tema-11-seguridad-de-la-cadena-de-contenedores-docker-scout-trivy-y-falco"
       }
     ],
-    "20": [
-      {
-        "title": "Eventos de dominio e integración: hechos, no comandos",
-        "fragment": "tema-1-eventos-de-dominio-e-integracion-hechos-no-comandos"
-      },
-      {
-        "title": "Outbox transaccional: guardar el hecho y el mensaje juntos",
-        "fragment": "tema-2-outbox-transaccional-guardar-el-hecho-y-el-mensaje-juntos"
-      },
-      {
-        "title": "Idempotencia y orden: consumidores que sobreviven a reintentos",
-        "fragment": "tema-3-idempotencia-y-orden-consumidores-que-sobreviven-a-reintentos"
-      },
-      {
-        "title": "Sagas y compensaciones: procesos largos sin transacción distribuida",
-        "fragment": "tema-4-sagas-y-compensaciones-procesos-largos-sin-transaccion-distribuida"
-      }
-    ],
-    "21": [
-      {
-        "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
-        "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
-      },
-      {
-        "title": "Datos por servicio: propiedad, composición y réplicas",
-        "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
-      },
-      {
-        "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
-        "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
-      },
-      {
-        "title": "Observabilidad distribuida: trazas, correlación y SLO",
-        "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
-      }
-    ],
-    "22": [
-      {
-        "title": "Floci desde cero: instalar, aislar y verificar",
-        "fragment": "tema-1-floci-desde-cero-instalar-aislar-y-verificar"
-      },
-      {
-        "title": "S3 y diagnóstico de red: objetos, metadatos y errores",
-        "fragment": "tema-2-s3-y-diagnostico-de-red-objetos-metadatos-y-errores"
-      },
-      {
-        "title": "Contenedores y CI: una imagen que se prueba contra Floci",
-        "fragment": "tema-3-contenedores-y-ci-una-imagen-que-se-prueba-contra-floci"
-      },
-      {
-        "title": "Terraform, SQS y operación: infraestructura reproducible y ejercicios",
-        "fragment": "tema-4-terraform-sqs-y-operacion-infraestructura-reproducible-y-ejercicios"
-      }
-    ],
-    "3": [
+    "1": [
       {
         "title": "Servicios, dependencias y healthchecks",
         "fragment": "tema-1-servicios-dependencias-y-healthchecks"
@@ -2632,208 +2468,42 @@
         "fragment": "tema-4-perfiles-para-distintos-entornos"
       }
     ],
-    "4": [
+    "2": [
       {
-        "title": "Jobs, steps y matrices de build",
-        "fragment": "tema-1-jobs-steps-y-matrices-de-build"
+        "title": "Virtualización vs contenedores",
+        "fragment": "tema-1-virtualizacion-vs-contenedores"
       },
       {
-        "title": "Caché de dependencias en CI",
-        "fragment": "tema-2-cache-de-dependencias-en-ci"
+        "title": "Imágenes y capas",
+        "fragment": "tema-2-imagenes-y-capas"
       },
       {
-        "title": "Artifacts y reportes de cobertura",
-        "fragment": "tema-3-artifacts-y-reportes-de-cobertura"
+        "title": "Registros de contenedores (Docker Hub)",
+        "fragment": "tema-3-registros-de-contenedores-docker-hub"
       },
       {
-        "title": "Pipelines como código (GitHub Actions/GitLab CI)",
-        "fragment": "tema-4-pipelines-como-codigo-github-actions-gitlab-ci"
+        "title": "Comandos esenciales de Docker",
+        "fragment": "tema-4-comandos-esenciales-de-docker"
       },
       {
-        "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción",
-        "fragment": "tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
-      }
-    ],
-    "5": [
-      {
-        "title": "Blue-green deployment",
-        "fragment": "tema-1-blue-green-deployment"
+        "title": "Docker Compose — servicios, redes y volúmenes",
+        "fragment": "tema-5-docker-compose-servicios-redes-y-volumenes"
       },
       {
-        "title": "Canary releases",
-        "fragment": "tema-2-canary-releases"
+        "title": "Laboratorio 1.1 — Comandos esenciales con una imagen de prueba",
+        "fragment": "laboratorio-1-1-comandos-esenciales-con-una-imagen-de-prueba"
       },
       {
-        "title": "Rolling updates",
-        "fragment": "tema-3-rolling-updates"
+        "title": "Laboratorio 1.2 — Instalar floci-cli y levantar Floci",
+        "fragment": "laboratorio-1-2-instalar-floci-cli-y-levantar-floci"
       },
       {
-        "title": "Feature flags vs branches por entorno",
-        "fragment": "tema-4-feature-flags-vs-branches-por-entorno"
+        "title": "Laboratorio 1.3 — Probar la AWS CLI contra Floci",
+        "fragment": "laboratorio-1-3-probar-la-aws-cli-contra-floci"
       },
       {
-        "title": "Rollback automático por métricas",
-        "fragment": "tema-5-rollback-automatico-por-metricas"
-      },
-      {
-        "title": "Rollback ensayado y compatibilidad del artefacto anterior",
-        "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
-      },
-      {
-        "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
-        "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
-      },
-      {
-        "title": "Mapa de decisión: las siete estrategias de despliegue",
-        "fragment": "tema-8-mapa-de-decision-las-siete-estrategias-de-despliegue"
-      }
-    ],
-    "6": [
-      {
-        "title": "Pod, ReplicaSet, Deployment",
-        "fragment": "tema-1-pod-replicaset-deployment"
-      },
-      {
-        "title": "Service (ClusterIP, NodePort, LoadBalancer)",
-        "fragment": "tema-2-service-clusterip-nodeport-loadbalancer"
-      },
-      {
-        "title": "ConfigMaps y Secrets",
-        "fragment": "tema-3-configmaps-y-secrets"
-      },
-      {
-        "title": "kubectl esencial",
-        "fragment": "tema-4-kubectl-esencial"
-      },
-      {
-        "title": "Namespaces",
-        "fragment": "tema-5-namespaces"
-      },
-      {
-        "title": "StatefulSets, DaemonSets, Jobs y CronJobs",
-        "fragment": "tema-6-statefulsets-daemonsets-jobs-y-cronjobs"
-      },
-      {
-        "title": "Persistent Volumes, PVCs y StorageClasses",
-        "fragment": "tema-7-persistent-volumes-pvcs-y-storageclasses"
-      },
-      {
-        "title": "Clúster local con Minikube: perfiles, addons e Ingress",
-        "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
-      },
-      {
-        "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación",
-        "fragment": "tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
-      },
-      {
-        "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations",
-        "fragment": "tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
-      }
-    ],
-    "7": [
-      {
-        "title": "Helm charts y values",
-        "fragment": "tema-1-helm-charts-y-values"
-      },
-      {
-        "title": "Ingress Controllers y reglas de enrutamiento",
-        "fragment": "tema-2-ingress-controllers-y-reglas-de-enrutamiento"
-      },
-      {
-        "title": "HorizontalPodAutoscaler",
-        "fragment": "tema-3-horizontalpodautoscaler"
-      },
-      {
-        "title": "Probes de liveness y readiness",
-        "fragment": "tema-4-probes-de-liveness-y-readiness"
-      },
-      {
-        "title": "RBAC en Kubernetes",
-        "fragment": "tema-5-rbac-en-kubernetes"
-      },
-      {
-        "title": "Service Mesh — Istio, Linkerd, Envoy y mTLS",
-        "fragment": "tema-6-service-mesh-istio-linkerd-envoy-y-mtls"
-      },
-      {
-        "title": "Estrategias de despliegue — Recreate vs RollingUpdate",
-        "fragment": "tema-7-estrategias-de-despliegue-recreate-vs-rollingupdate"
-      },
-      {
-        "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission",
-        "fragment": "tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
-      }
-    ],
-    "8": [
-      {
-        "title": "Providers, resources y data sources",
-        "fragment": "tema-1-providers-resources-y-data-sources"
-      },
-      {
-        "title": "State remoto y locking",
-        "fragment": "tema-2-state-remoto-y-locking"
-      },
-      {
-        "title": "Módulos reutilizables",
-        "fragment": "tema-3-modulos-reutilizables"
-      },
-      {
-        "title": "terraform plan vs apply",
-        "fragment": "tema-4-terraform-plan-vs-apply"
-      },
-      {
-        "title": "Workspaces para múltiples entornos",
-        "fragment": "tema-5-workspaces-para-multiples-entornos"
-      },
-      {
-        "title": "Ansible — playbooks, roles, inventory y módulos",
-        "fragment": "tema-6-ansible-playbooks-roles-inventory-y-modulos"
-      },
-      {
-        "title": "Pulumi como alternativa a HCL",
-        "fragment": "tema-7-pulumi-como-alternativa-a-hcl"
-      },
-      {
-        "title": "OpenTofu, plan y estado sin recursos cloud",
-        "fragment": "tema-8-opentofu-plan-y-estado-sin-recursos-cloud"
-      },
-      {
-        "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas",
-        "fragment": "tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
-      }
-    ],
-    "9": [
-      {
-        "title": "Modelo de métricas de Prometheus — counter, gauge, histogram",
-        "fragment": "tema-1-modelo-de-metricas-de-prometheus-counter-gauge-histogram"
-      },
-      {
-        "title": "PromQL esencial",
-        "fragment": "tema-2-promql-esencial"
-      },
-      {
-        "title": "Dashboards en Grafana",
-        "fragment": "tema-3-dashboards-en-grafana"
-      },
-      {
-        "title": "Alertmanager y reglas de alerta",
-        "fragment": "tema-4-alertmanager-y-reglas-de-alerta"
-      },
-      {
-        "title": "SLI, SLO, SLA",
-        "fragment": "tema-5-sli-slo-sla"
-      },
-      {
-        "title": "OpenTelemetry como estándar de instrumentación",
-        "fragment": "tema-6-opentelemetry-como-estandar-de-instrumentacion"
-      },
-      {
-        "title": "Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate",
-        "fragment": "tema-7-metricas-dora-lead-time-deployment-frequency-mttr-change-failure-rate"
-      },
-      {
-        "title": "Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos",
-        "fragment": "tema-8-chaos-engineering-experimentos-controlados-para-comprobar-que-el-sistema-resiste-fallos"
+        "title": "Laboratorio 1.4 — Usar StackPort y Floci UI",
+        "fragment": "laboratorio-1-4-usar-stackport-y-floci-ui"
       }
     ]
   },
@@ -2968,6 +2638,18 @@
       {
         "title": "Método de estudio y proyecto de ampliación",
         "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+      },
+      {
+        "title": "reportes de fallos con Crashlytics y Sentry",
+        "fragment": "tema-5-reportes-de-fallos-con-crashlytics-y-sentry"
+      },
+      {
+        "title": "analítica con privacidad y consentimiento",
+        "fragment": "tema-6-analitica-con-privacidad-y-consentimiento"
+      },
+      {
+        "title": "monitoreo de rendimiento en una versión publicada",
+        "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
       }
     ],
     "14": [
@@ -3088,102 +2770,6 @@
     ],
     "18": [
       {
-        "title": "la frontera entre Dart y el código nativo",
-        "fragment": "tema-1-la-frontera-entre-dart-y-el-codigo-nativo"
-      },
-      {
-        "title": "secretos fuera del binario",
-        "fragment": "tema-2-secretos-fuera-del-binario"
-      },
-      {
-        "title": "fluidez y presupuesto de frames",
-        "fragment": "tema-3-fluidez-y-presupuesto-de-frames"
-      },
-      {
-        "title": "protocolo, telemetría y contención",
-        "fragment": "tema-4-protocolo-telemetria-y-contencion"
-      },
-      {
-        "title": "reportes de fallos con Crashlytics y Sentry",
-        "fragment": "tema-5-reportes-de-fallos-con-crashlytics-y-sentry"
-      },
-      {
-        "title": "analítica con privacidad y consentimiento",
-        "fragment": "tema-6-analitica-con-privacidad-y-consentimiento"
-      },
-      {
-        "title": "monitoreo de rendimiento en una versión publicada",
-        "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
-      }
-    ],
-    "19": [
-      {
-        "title": "estado de la jornada con Riverpod",
-        "fragment": "tema-1-estado-de-la-jornada-con-riverpod"
-      },
-      {
-        "title": "mapa y permiso de ubicación",
-        "fragment": "tema-2-mapa-y-permiso-de-ubicacion"
-      },
-      {
-        "title": "animar el marcador sin saltos",
-        "fragment": "tema-3-animar-el-marcador-sin-saltos"
-      },
-      {
-        "title": "posiciones en tiempo real con Socket.IO",
-        "fragment": "tema-4-posiciones-en-tiempo-real-con-socket-io"
-      },
-      {
-        "title": "confirmaciones offline y sincronización",
-        "fragment": "tema-5-confirmaciones-offline-y-sincronizacion"
-      },
-      {
-        "title": "carga de evidencia con Dio y notificaciones",
-        "fragment": "tema-6-carga-de-evidencia-con-dio-y-notificaciones"
-      }
-    ],
-    "2": [
-      {
-        "title": "MediaQuery vs LayoutBuilder",
-        "fragment": "tema-1-mediaquery-vs-layoutbuilder"
-      },
-      {
-        "title": "Cómo Flutter calcula tamaños",
-        "fragment": "tema-2-como-flutter-calcula-tamanos"
-      },
-      {
-        "title": "Breakpoints propios y SafeArea",
-        "fragment": "tema-3-breakpoints-propios-y-safearea"
-      }
-    ],
-    "20": [
-      {
-        "title": "pruebas unitarias y de widget con Flutter Test",
-        "fragment": "tema-1-pruebas-unitarias-y-de-widget-con-flutter-test"
-      },
-      {
-        "title": "internacionalización y formatos locales",
-        "fragment": "tema-2-internacionalizacion-y-formatos-locales"
-      },
-      {
-        "title": "golden e integración de un flujo real",
-        "fragment": "tema-3-golden-e-integracion-de-un-flujo-real"
-      },
-      {
-        "title": "perfilado y presupuesto de rendimiento",
-        "fragment": "tema-4-perfilado-y-presupuesto-de-rendimiento"
-      },
-      {
-        "title": "Clean Architecture y sustitución de dependencias",
-        "fragment": "tema-5-clean-architecture-y-sustitucion-de-dependencias"
-      },
-      {
-        "title": "builds por plataforma, firma y entrega",
-        "fragment": "tema-6-builds-por-plataforma-firma-y-entrega"
-      }
-    ],
-    "21": [
-      {
         "title": "catálogo y flujo con `in_app_purchase`",
         "fragment": "tema-1-catalogo-y-flujo-con-in-app-purchase"
       },
@@ -3208,7 +2794,7 @@
         "fragment": "tema-6-validacion-de-transacciones-en-servidor"
       }
     ],
-    "22": [
+    "19": [
       {
         "title": "configurar AdMob y cargar el primer banner de prueba",
         "fragment": "tema-1-configurar-admob-y-cargar-el-primer-banner-de-prueba"
@@ -3232,6 +2818,20 @@
       {
         "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",
         "fragment": "tema-6-comparar-admob-applovin-max-y-unity-levelplay"
+      }
+    ],
+    "2": [
+      {
+        "title": "MediaQuery vs LayoutBuilder",
+        "fragment": "tema-1-mediaquery-vs-layoutbuilder"
+      },
+      {
+        "title": "Cómo Flutter calcula tamaños",
+        "fragment": "tema-2-como-flutter-calcula-tamanos"
+      },
+      {
+        "title": "Breakpoints propios y SafeArea",
+        "fragment": "tema-3-breakpoints-propios-y-safearea"
       }
     ],
     "3": [
@@ -3440,134 +3040,6 @@
     ],
     "10": [
       {
-        "title": "La red convierte el resultado en una incertidumbre",
-        "fragment": "tema-1-la-red-convierte-el-resultado-en-una-incertidumbre"
-      },
-      {
-        "title": "Replicación, consistencia y decisiones explícitas",
-        "fragment": "tema-2-replicacion-consistencia-y-decisiones-explicitas"
-      },
-      {
-        "title": "Mensajes que se procesan con efectos exactamente una vez",
-        "fragment": "tema-3-mensajes-que-se-procesan-con-efectos-exactamente-una-vez"
-      },
-      {
-        "title": "Resiliencia y observabilidad orientadas a objetivos",
-        "fragment": "tema-4-resiliencia-y-observabilidad-orientadas-a-objetivos"
-      },
-      {
-        "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
-        "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
-      },
-      {
-        "title": "Proyecto 10: inventario distribuido mínimo y observable",
-        "fragment": "proyecto-10-inventario-distribuido-minimo-y-observable"
-      },
-      {
-        "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
-        "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
-      },
-      {
-        "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
-        "fragment": "tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella"
-      }
-    ],
-    "11": [
-      {
-        "title": "Sistemas, arquitectura y sistemas operativos",
-        "fragment": "tema-1-sistemas-arquitectura-y-sistemas-operativos"
-      },
-      {
-        "title": "Algoritmos, autómatas, lenguajes y compiladores",
-        "fragment": "tema-2-algoritmos-automatas-lenguajes-y-compiladores"
-      },
-      {
-        "title": "Bases de datos, almacenes analíticos y minería de datos",
-        "fragment": "tema-3-bases-de-datos-almacenes-analiticos-y-mineria-de-datos"
-      },
-      {
-        "title": "Inteligencia artificial, aprendizaje automático y visión",
-        "fragment": "tema-4-inteligencia-artificial-aprendizaje-automatico-y-vision"
-      },
-      {
-        "title": "Gráficos y cómputo científico",
-        "fragment": "tema-5-graficos-y-computo-cientifico"
-      },
-      {
-        "title": "Redes, seguridad, web e ingeniería profesional",
-        "fragment": "tema-6-redes-seguridad-web-e-ingenieria-profesional"
-      },
-      {
-        "title": "Proyecto 11: portafolio de orientación",
-        "fragment": "proyecto-11-portafolio-de-orientacion"
-      }
-    ],
-    "12": [
-      {
-        "title": "Ordenamientos: insertion, merge y quick sort",
-        "fragment": "tema-1-ordenamientos-insertion-merge-y-quick-sort"
-      },
-      {
-        "title": "Algoritmos codiciosos y árbol de expansión mínima",
-        "fragment": "tema-2-algoritmos-codiciosos-y-arbol-de-expansion-minima"
-      },
-      {
-        "title": "Caminos más cortos con Dijkstra",
-        "fragment": "tema-3-caminos-mas-cortos-con-dijkstra"
-      },
-      {
-        "title": "Búsqueda en cadenas: de la fuerza bruta a KMP",
-        "fragment": "tema-4-busqueda-en-cadenas-de-la-fuerza-bruta-a-kmp"
-      },
-      {
-        "title": "Problemas intratables: P, NP y heurísticas",
-        "fragment": "tema-5-problemas-intratables-p-np-y-heuristicas"
-      },
-      {
-        "title": "Proyecto 12: planificador de entregas de RutaFlow",
-        "fragment": "proyecto-12-planificador-de-entregas-de-rutaflow"
-      }
-    ],
-    "13": [
-      {
-        "title": "Decorator: agregar comportamiento sin heredar",
-        "fragment": "tema-1-decorator-agregar-comportamiento-sin-heredar"
-      },
-      {
-        "title": "State: un objeto que cambia de comportamiento según su estado",
-        "fragment": "tema-2-state-un-objeto-que-cambia-de-comportamiento-segun-su-estado"
-      },
-      {
-        "title": "Template Method: un algoritmo fijo con pasos variables",
-        "fragment": "tema-3-template-method-un-algoritmo-fijo-con-pasos-variables"
-      },
-      {
-        "title": "Chain of Responsibility: una cadena de validadores",
-        "fragment": "tema-4-chain-of-responsibility-una-cadena-de-validadores"
-      },
-      {
-        "title": "Mediator: coordinar objetos sin que se conozcan",
-        "fragment": "tema-5-mediator-coordinar-objetos-sin-que-se-conozcan"
-      },
-      {
-        "title": "Memento: guardar y restaurar estado para deshacer",
-        "fragment": "tema-6-memento-guardar-y-restaurar-estado-para-deshacer"
-      },
-      {
-        "title": "Visitor: operaciones nuevas sin tocar las clases",
-        "fragment": "tema-7-visitor-operaciones-nuevas-sin-tocar-las-clases"
-      },
-      {
-        "title": "Flyweight: compartir estado para ahorrar memoria",
-        "fragment": "tema-8-flyweight-compartir-estado-para-ahorrar-memoria"
-      },
-      {
-        "title": "Proyecto 13: núcleo de envíos con patrones",
-        "fragment": "proyecto-13-nucleo-de-envios-con-patrones"
-      }
-    ],
-    "14": [
-      {
         "title": "Nombres que revelan intención y funciones pequeñas",
         "fragment": "tema-1-nombres-que-revelan-intencion-y-funciones-pequenas"
       },
@@ -3654,40 +3126,6 @@
     ],
     "4": [
       {
-        "title": "Del mundo real al modelo relacional",
-        "fragment": "tema-1-del-mundo-real-al-modelo-relacional"
-      },
-      {
-        "title": "SQL para definir, escribir, consultar y relacionar",
-        "fragment": "tema-2-sql-para-definir-escribir-consultar-y-relacionar"
-      },
-      {
-        "title": "Índices, restricciones y planes de consulta",
-        "fragment": "tema-3-indices-restricciones-y-planes-de-consulta"
-      },
-      {
-        "title": "Transacciones, concurrencia y elección SQL/NoSQL",
-        "fragment": "tema-4-transacciones-concurrencia-y-eleccion-sql-nosql"
-      },
-      {
-        "title": "SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
-        "fragment": "tema-5-sql-avanzado-subconsultas-vistas-triggers-y-funciones-de-ventana"
-      },
-      {
-        "title": "Procedimientos almacenados, funciones y cursores con PL/pgSQL",
-        "fragment": "tema-6-procedimientos-almacenados-funciones-y-cursores-con-pl-pgsql"
-      },
-      {
-        "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
-        "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
-      },
-      {
-        "title": "Proyecto 4: migrar el inventario JSON a SQLite",
-        "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
-      }
-    ],
-    "5": [
-      {
         "title": "Depurar con evidencia, no con cambios aleatorios",
         "fragment": "tema-1-depurar-con-evidencia-no-con-cambios-aleatorios"
       },
@@ -3708,67 +3146,7 @@
         "fragment": "proyecto-5-convertir-el-inventario-en-un-repositorio-confiable"
       }
     ],
-    "6": [
-      {
-        "title": "Activos, amenazas, riesgos y límites de confianza",
-        "fragment": "tema-1-activos-amenazas-riesgos-y-limites-de-confianza"
-      },
-      {
-        "title": "Identidad, contraseñas, sesiones y autorización",
-        "fragment": "tema-2-identidad-contrasenas-sesiones-y-autorizacion"
-      },
-      {
-        "title": "Criptografía aplicada, TLS, claves y secretos",
-        "fragment": "tema-3-criptografia-aplicada-tls-claves-y-secretos"
-      },
-      {
-        "title": "Validación, vulnerabilidades web, privacidad y respuesta",
-        "fragment": "tema-4-validacion-vulnerabilidades-web-privacidad-y-respuesta"
-      },
-      {
-        "title": "Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
-        "fragment": "tema-5-ingenieria-social-phishing-y-respuesta-analizar-el-correo-no-solo-mirarlo"
-      },
-      {
-        "title": "Proyecto 6: inventario endurecido",
-        "fragment": "proyecto-6-inventario-endurecido"
-      }
-    ],
-    "7": [
-      {
-        "title": "Requisitos, stakeholders y criterios verificables",
-        "fragment": "tema-1-requisitos-stakeholders-y-criterios-verificables"
-      },
-      {
-        "title": "Arquitectura guiada por atributos de calidad",
-        "fragment": "tema-2-arquitectura-guiada-por-atributos-de-calidad"
-      },
-      {
-        "title": "Diseño modular, principios, patrones y refactoring",
-        "fragment": "tema-3-diseno-modular-principios-patrones-y-refactoring"
-      },
-      {
-        "title": "Decisiones, documentación, deuda y evolución",
-        "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
-      },
-      {
-        "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
-        "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
-      },
-      {
-        "title": "Desarrollo guiado por especificación con agentes de IA",
-        "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
-      },
-      {
-        "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
-        "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
-      },
-      {
-        "title": "Proyecto 7: inventario modular con especificación, ADR y plan de mantenimiento",
-        "fragment": "proyecto-7-inventario-modular-con-especificacion-adr-y-plan-de-mantenimiento"
-      }
-    ],
-    "8": [
+    "5": [
       {
         "title": "El sistema operativo como administrador y frontera",
         "fragment": "tema-1-el-sistema-operativo-como-administrador-y-frontera"
@@ -3794,7 +3172,7 @@
         "fragment": "proyecto-8-inventario-operable-en-un-contenedor"
       }
     ],
-    "9": [
+    "6": [
       {
         "title": "Lógica para especificar antes de programar",
         "fragment": "tema-1-logica-para-especificar-antes-de-programar"
@@ -3814,6 +3192,176 @@
       {
         "title": "Proyecto 9: cuaderno de propiedades, grafos y evidencia",
         "fragment": "proyecto-9-cuaderno-de-propiedades-grafos-y-evidencia"
+      }
+    ],
+    "7": [
+      {
+        "title": "Sistemas, arquitectura y sistemas operativos",
+        "fragment": "tema-1-sistemas-arquitectura-y-sistemas-operativos"
+      },
+      {
+        "title": "Algoritmos, autómatas, lenguajes y compiladores",
+        "fragment": "tema-2-algoritmos-automatas-lenguajes-y-compiladores"
+      },
+      {
+        "title": "Bases de datos, almacenes analíticos y minería de datos",
+        "fragment": "tema-3-bases-de-datos-almacenes-analiticos-y-mineria-de-datos"
+      },
+      {
+        "title": "Inteligencia artificial, aprendizaje automático y visión",
+        "fragment": "tema-4-inteligencia-artificial-aprendizaje-automatico-y-vision"
+      },
+      {
+        "title": "Gráficos y cómputo científico",
+        "fragment": "tema-5-graficos-y-computo-cientifico"
+      },
+      {
+        "title": "Redes, seguridad, web e ingeniería profesional",
+        "fragment": "tema-6-redes-seguridad-web-e-ingenieria-profesional"
+      },
+      {
+        "title": "Proyecto 11: portafolio de orientación",
+        "fragment": "proyecto-11-portafolio-de-orientacion"
+      }
+    ],
+    "8": [
+      {
+        "title": "Ordenamientos: insertion, merge y quick sort",
+        "fragment": "tema-1-ordenamientos-insertion-merge-y-quick-sort"
+      },
+      {
+        "title": "Algoritmos codiciosos y árbol de expansión mínima",
+        "fragment": "tema-2-algoritmos-codiciosos-y-arbol-de-expansion-minima"
+      },
+      {
+        "title": "Caminos más cortos con Dijkstra",
+        "fragment": "tema-3-caminos-mas-cortos-con-dijkstra"
+      },
+      {
+        "title": "Búsqueda en cadenas: de la fuerza bruta a KMP",
+        "fragment": "tema-4-busqueda-en-cadenas-de-la-fuerza-bruta-a-kmp"
+      },
+      {
+        "title": "Problemas intratables: P, NP y heurísticas",
+        "fragment": "tema-5-problemas-intratables-p-np-y-heuristicas"
+      },
+      {
+        "title": "Proyecto 12: planificador de entregas de RutaFlow",
+        "fragment": "proyecto-12-planificador-de-entregas-de-rutaflow"
+      }
+    ],
+    "9": [
+      {
+        "title": "Decorator: agregar comportamiento sin heredar",
+        "fragment": "tema-1-decorator-agregar-comportamiento-sin-heredar"
+      },
+      {
+        "title": "State: un objeto que cambia de comportamiento según su estado",
+        "fragment": "tema-2-state-un-objeto-que-cambia-de-comportamiento-segun-su-estado"
+      },
+      {
+        "title": "Template Method: un algoritmo fijo con pasos variables",
+        "fragment": "tema-3-template-method-un-algoritmo-fijo-con-pasos-variables"
+      },
+      {
+        "title": "Chain of Responsibility: una cadena de validadores",
+        "fragment": "tema-4-chain-of-responsibility-una-cadena-de-validadores"
+      },
+      {
+        "title": "Mediator: coordinar objetos sin que se conozcan",
+        "fragment": "tema-5-mediator-coordinar-objetos-sin-que-se-conozcan"
+      },
+      {
+        "title": "Memento: guardar y restaurar estado para deshacer",
+        "fragment": "tema-6-memento-guardar-y-restaurar-estado-para-deshacer"
+      },
+      {
+        "title": "Visitor: operaciones nuevas sin tocar las clases",
+        "fragment": "tema-7-visitor-operaciones-nuevas-sin-tocar-las-clases"
+      },
+      {
+        "title": "Flyweight: compartir estado para ahorrar memoria",
+        "fragment": "tema-8-flyweight-compartir-estado-para-ahorrar-memoria"
+      },
+      {
+        "title": "Proyecto 13: núcleo de envíos con patrones",
+        "fragment": "proyecto-13-nucleo-de-envios-con-patrones"
+      }
+    ]
+  },
+  "git": {
+    "0": [
+      {
+        "title": "Trunk-based development vs GitFlow",
+        "fragment": "tema-1-trunk-based-development-vs-gitflow"
+      },
+      {
+        "title": "Rebase interactivo vs merge",
+        "fragment": "tema-2-rebase-interactivo-vs-merge"
+      },
+      {
+        "title": "Bisect para encontrar regresiones",
+        "fragment": "tema-3-bisect-para-encontrar-regresiones"
+      },
+      {
+        "title": "Hooks de Git y commits firmados",
+        "fragment": "tema-4-hooks-de-git-y-commits-firmados"
+      },
+      {
+        "title": "Monorepos vs polyrepos",
+        "fragment": "tema-5-monorepos-vs-polyrepos"
+      },
+      {
+        "title": "git cherry-pick, git stash, git reset vs git revert",
+        "fragment": "tema-6-git-cherry-pick-git-stash-git-reset-vs-git-revert"
+      },
+      {
+        "title": "git reflog, git worktree y git submodule",
+        "fragment": "tema-7-git-reflog-git-worktree-y-git-submodule"
+      },
+      {
+        "title": "Referencia rápida de Git: los tres árboles y los comandos por intención",
+        "fragment": "tema-8-referencia-rapida-de-git-los-tres-arboles-y-los-comandos-por-intencion"
+      }
+    ]
+  },
+  "iac": {
+    "0": [
+      {
+        "title": "Providers, resources y data sources",
+        "fragment": "tema-1-providers-resources-y-data-sources"
+      },
+      {
+        "title": "State remoto y locking",
+        "fragment": "tema-2-state-remoto-y-locking"
+      },
+      {
+        "title": "Módulos reutilizables",
+        "fragment": "tema-3-modulos-reutilizables"
+      },
+      {
+        "title": "terraform plan vs apply",
+        "fragment": "tema-4-terraform-plan-vs-apply"
+      },
+      {
+        "title": "Workspaces para múltiples entornos",
+        "fragment": "tema-5-workspaces-para-multiples-entornos"
+      },
+      {
+        "title": "Ansible — playbooks, roles, inventory y módulos",
+        "fragment": "tema-6-ansible-playbooks-roles-inventory-y-modulos"
+      },
+      {
+        "title": "Pulumi como alternativa a HCL",
+        "fragment": "tema-7-pulumi-como-alternativa-a-hcl"
+      },
+      {
+        "title": "OpenTofu, plan y estado sin recursos cloud",
+        "fragment": "tema-8-opentofu-plan-y-estado-sin-recursos-cloud"
+      },
+      {
+        "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas",
+        "fragment": "tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
       }
     ]
   },
@@ -4564,10 +4112,6 @@
       {
         "title": "Streams paralelos y referencias a métodos",
         "fragment": "tema-4-streams-paralelos-y-referencias-a-metodos"
-      },
-      {
-        "title": "Las cuatro interfaces funcionales que hay detrás de Streams",
-        "fragment": "tema-5-las-cuatro-interfaces-funcionales-que-hay-detras-de-streams"
       }
     ],
     "5": [
@@ -4742,36 +4286,6 @@
     ],
     "11": [
       {
-        "title": "Tipos básicos, interfaces y type aliases",
-        "fragment": "tema-1-tipos-basicos-interfaces-y-type-aliases"
-      },
-      {
-        "title": "Narrowing y union types",
-        "fragment": "tema-2-narrowing-y-union-types"
-      },
-      {
-        "title": "tsconfig esencial y modo strict",
-        "fragment": "tema-3-tsconfig-esencial-y-modo-strict"
-      },
-      {
-        "title": "Generics",
-        "fragment": "tema-4-generics"
-      },
-      {
-        "title": "Decoradores estándar de TypeScript 5",
-        "fragment": "tema-5-decoradores-estandar-de-typescript-5"
-      },
-      {
-        "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
-        "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
-      },
-      {
-        "title": "Comprueba lo construido",
-        "fragment": "comprueba-lo-construido"
-      }
-    ],
-    "12": [
-      {
         "title": "Routing manual con History API",
         "fragment": "tema-1-routing-manual-con-history-api"
       },
@@ -4792,7 +4306,7 @@
         "fragment": "comprueba-lo-construido"
       }
     ],
-    "13": [
+    "12": [
       {
         "title": "Datos no confiables y seguridad en el navegador",
         "fragment": "tema-1-datos-no-confiables-y-seguridad-en-el-navegador"
@@ -4826,7 +4340,7 @@
         "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
-    "14": [
+    "13": [
       {
         "title": "TypeScript avanzado",
         "fragment": "tema-1-typescript-avanzado"
@@ -5109,8 +4623,34 @@
       }
     ]
   },
-  "kotlin-multiplatform": {
+  "kotlin": {
     "0": [
+      {
+        "title": "Estructura de un proyecto Android Studio",
+        "fragment": "tema-1-estructura-de-un-proyecto-android-studio"
+      },
+      {
+        "title": "Recursos externalizados",
+        "fragment": "tema-2-recursos-externalizados"
+      },
+      {
+        "title": "AndroidManifest.xml y módulos Gradle",
+        "fragment": "tema-3-androidmanifest-xml-y-modulos-gradle"
+      },
+      {
+        "title": "Kotlin esencial para Android — lo que usarás en cada pantalla",
+        "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
+      },
+      {
+        "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
+        "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
+      },
+      {
+        "title": "Coroutines — asincronía sin bloquear la UI",
+        "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
+      }
+    ],
+    "1": [
       {
         "title": "Paso 0 · Crea el proyecto `academia-kmp`",
         "fragment": "paso-0-crea-el-proyecto-academia-kmp"
@@ -5132,7 +4672,7 @@
         "fragment": "tema-4-destructuring-declarations-y-rangos"
       }
     ],
-    "1": [
+    "2": [
       {
         "title": "Funciones de orden superior",
         "fragment": "tema-1-funciones-de-orden-superior"
@@ -5154,65 +4694,75 @@
         "fragment": "tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"
       }
     ],
+    "3": [
+      {
+        "title": "suspend functions y concurrencia estructurada",
+        "fragment": "tema-1-suspend-functions-y-concurrencia-estructurada"
+      },
+      {
+        "title": "Flow, StateFlow y SharedFlow",
+        "fragment": "tema-2-flow-stateflow-y-sharedflow"
+      },
+      {
+        "title": "Manejo de errores y exclusión mutua",
+        "fragment": "tema-3-manejo-de-errores-y-exclusion-mutua"
+      },
+      {
+        "title": "Dispatchers y withContext: en qué hilo corre tu código",
+        "fragment": "tema-4-dispatchers-y-withcontext-en-que-hilo-corre-tu-codigo"
+      }
+    ]
+  },
+  "kotlin-multiplatform": {
+    "0": [
+      {
+        "title": "Source sets",
+        "fragment": "tema-1-source-sets"
+      },
+      {
+        "title": "expect/actual",
+        "fragment": "tema-2-expect-actual"
+      },
+      {
+        "title": "Gradle multiplataforma y targets disponibles",
+        "fragment": "tema-3-gradle-multiplataforma-y-targets-disponibles"
+      },
+      {
+        "title": "Jerarquía de source sets intermedios",
+        "fragment": "tema-4-jerarquia-de-source-sets-intermedios"
+      },
+      {
+        "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle",
+        "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+      },
+      {
+        "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común",
+        "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
+      }
+    ],
+    "1": [
+      {
+        "title": "Modelos de dominio y casos de uso",
+        "fragment": "tema-1-modelos-de-dominio-y-casos-de-uso"
+      },
+      {
+        "title": "Repositorios con interfaz común",
+        "fragment": "tema-2-repositorios-con-interfaz-comun"
+      },
+      {
+        "title": "Inyección de dependencias multiplataforma con Koin",
+        "fragment": "tema-3-inyeccion-de-dependencias-multiplataforma-con-koin"
+      },
+      {
+        "title": "Modelado de errores de dominio con un tipo Result explícito",
+        "fragment": "tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito"
+      },
+      {
+        "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+        "fragment": "tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"
+      }
+    ],
     "10": [
-      {
-        "title": "Pipeline Gradle multiplataforma en CI",
-        "fragment": "tema-1-pipeline-gradle-multiplataforma-en-ci"
-      },
-      {
-        "title": "Fastlane",
-        "fragment": "tema-2-fastlane"
-      },
-      {
-        "title": "Versionado compartido",
-        "fragment": "tema-3-versionado-compartido"
-      }
-    ],
-    "11": [
-      {
-        "title": "Arquitectura del proyecto integrador",
-        "fragment": "tema-1-arquitectura-del-proyecto-integrador"
-      },
-      {
-        "title": "Sincronización de datos remotos con caché local",
-        "fragment": "tema-2-sincronizacion-de-datos-remotos-con-cache-local"
-      },
-      {
-        "title": "Cierre del track — la promesa realista de KMP",
-        "fragment": "tema-3-cierre-del-track-la-promesa-realista-de-kmp"
-      }
-    ],
-    "12": [
-      {
-        "title": "La mejor frontera compartida es deliberadamente pequeña",
-        "fragment": "tema-1-la-mejor-frontera-compartida-es-deliberadamente-pequena"
-      },
-      {
-        "title": "Garbage collection no cierra sockets ni rompe ciclos externos",
-        "fragment": "tema-2-garbage-collection-no-cierra-sockets-ni-rompe-ciclos-externos"
-      },
-      {
-        "title": "Un artefacto compatible necesita más que el mismo número de versión",
-        "fragment": "tema-3-un-artefacto-compatible-necesita-mas-que-el-mismo-numero-de-version"
-      },
-      {
-        "title": "Un fallo compartido necesita símbolos y contexto de ambas plataformas",
-        "fragment": "tema-4-un-fallo-compartido-necesita-simbolos-y-contexto-de-ambas-plataformas"
-      },
-      {
-        "title": "Kotlin 2.4 y estado real de cada target",
-        "fragment": "kotlin-2-4-y-estado-real-de-cada-target"
-      },
-      {
-        "title": "Proyecto: SDK compartido estable y operable",
-        "fragment": "proyecto-sdk-compartido-estable-y-operable"
-      },
-      {
-        "title": "Método de estudio y proyecto de ampliación",
-        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
-      }
-    ],
-    "13": [
       {
         "title": "Kotlin/Native",
         "fragment": "tema-1-kotlin-native"
@@ -5240,72 +4790,6 @@
     ],
     "2": [
       {
-        "title": "suspend functions y concurrencia estructurada",
-        "fragment": "tema-1-suspend-functions-y-concurrencia-estructurada"
-      },
-      {
-        "title": "Flow, StateFlow y SharedFlow",
-        "fragment": "tema-2-flow-stateflow-y-sharedflow"
-      },
-      {
-        "title": "Manejo de errores y exclusión mutua",
-        "fragment": "tema-3-manejo-de-errores-y-exclusion-mutua"
-      },
-      {
-        "title": "Dispatchers y withContext: en qué hilo corre tu código",
-        "fragment": "tema-4-dispatchers-y-withcontext-en-que-hilo-corre-tu-codigo"
-      }
-    ],
-    "3": [
-      {
-        "title": "Source sets",
-        "fragment": "tema-1-source-sets"
-      },
-      {
-        "title": "expect/actual",
-        "fragment": "tema-2-expect-actual"
-      },
-      {
-        "title": "Gradle multiplataforma y targets disponibles",
-        "fragment": "tema-3-gradle-multiplataforma-y-targets-disponibles"
-      },
-      {
-        "title": "Jerarquía de source sets intermedios",
-        "fragment": "tema-4-jerarquia-de-source-sets-intermedios"
-      },
-      {
-        "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle",
-        "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
-      },
-      {
-        "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común",
-        "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
-      }
-    ],
-    "4": [
-      {
-        "title": "Modelos de dominio y casos de uso",
-        "fragment": "tema-1-modelos-de-dominio-y-casos-de-uso"
-      },
-      {
-        "title": "Repositorios con interfaz común",
-        "fragment": "tema-2-repositorios-con-interfaz-comun"
-      },
-      {
-        "title": "Inyección de dependencias multiplataforma con Koin",
-        "fragment": "tema-3-inyeccion-de-dependencias-multiplataforma-con-koin"
-      },
-      {
-        "title": "Modelado de errores de dominio con un tipo Result explícito",
-        "fragment": "tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito"
-      },
-      {
-        "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
-        "fragment": "tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"
-      }
-    ],
-    "5": [
-      {
         "title": "Ktor Client multiplataforma",
         "fragment": "tema-1-ktor-client-multiplataforma"
       },
@@ -5326,7 +4810,7 @@
         "fragment": "tema-5-kotlinx-serialization-json-compartido-entre-plataformas"
       }
     ],
-    "6": [
+    "3": [
       {
         "title": "Esquemas SQLDelight y queries tipadas",
         "fragment": "tema-1-esquemas-sqldelight-y-queries-tipadas"
@@ -5348,7 +4832,7 @@
         "fragment": "tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"
       }
     ],
-    "7": [
+    "4": [
       {
         "title": "Compose Multiplatform vs Jetpack Compose",
         "fragment": "tema-1-compose-multiplatform-vs-jetpack-compose"
@@ -5382,7 +4866,7 @@
         "fragment": "tema-8-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
       }
     ],
-    "8": [
+    "5": [
       {
         "title": "El framework generado para iOS",
         "fragment": "tema-1-el-framework-generado-para-ios"
@@ -5400,7 +4884,7 @@
         "fragment": "tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"
       }
     ],
-    "9": [
+    "6": [
       {
         "title": "kotlin.test en commonTest",
         "fragment": "tema-1-kotlin-test-en-commontest"
@@ -5416,6 +4900,1176 @@
       {
         "title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target",
         "fragment": "tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"
+      }
+    ],
+    "7": [
+      {
+        "title": "Pipeline Gradle multiplataforma en CI",
+        "fragment": "tema-1-pipeline-gradle-multiplataforma-en-ci"
+      },
+      {
+        "title": "Fastlane",
+        "fragment": "tema-2-fastlane"
+      },
+      {
+        "title": "Versionado compartido",
+        "fragment": "tema-3-versionado-compartido"
+      }
+    ],
+    "8": [
+      {
+        "title": "Arquitectura del proyecto integrador",
+        "fragment": "tema-1-arquitectura-del-proyecto-integrador"
+      },
+      {
+        "title": "Sincronización de datos remotos con caché local",
+        "fragment": "tema-2-sincronizacion-de-datos-remotos-con-cache-local"
+      },
+      {
+        "title": "Cierre del track — la promesa realista de KMP",
+        "fragment": "tema-3-cierre-del-track-la-promesa-realista-de-kmp"
+      }
+    ],
+    "9": [
+      {
+        "title": "La mejor frontera compartida es deliberadamente pequeña",
+        "fragment": "tema-1-la-mejor-frontera-compartida-es-deliberadamente-pequena"
+      },
+      {
+        "title": "Garbage collection no cierra sockets ni rompe ciclos externos",
+        "fragment": "tema-2-garbage-collection-no-cierra-sockets-ni-rompe-ciclos-externos"
+      },
+      {
+        "title": "Un artefacto compatible necesita más que el mismo número de versión",
+        "fragment": "tema-3-un-artefacto-compatible-necesita-mas-que-el-mismo-numero-de-version"
+      },
+      {
+        "title": "Un fallo compartido necesita símbolos y contexto de ambas plataformas",
+        "fragment": "tema-4-un-fallo-compartido-necesita-simbolos-y-contexto-de-ambas-plataformas"
+      },
+      {
+        "title": "Kotlin 2.4 y estado real de cada target",
+        "fragment": "kotlin-2-4-y-estado-real-de-cada-target"
+      },
+      {
+        "title": "Proyecto: SDK compartido estable y operable",
+        "fragment": "proyecto-sdk-compartido-estable-y-operable"
+      },
+      {
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+      }
+    ]
+  },
+  "kubernetes": {
+    "0": [
+      {
+        "title": "Pod, ReplicaSet, Deployment",
+        "fragment": "tema-1-pod-replicaset-deployment"
+      },
+      {
+        "title": "Service (ClusterIP, NodePort, LoadBalancer)",
+        "fragment": "tema-2-service-clusterip-nodeport-loadbalancer"
+      },
+      {
+        "title": "ConfigMaps y Secrets",
+        "fragment": "tema-3-configmaps-y-secrets"
+      },
+      {
+        "title": "kubectl esencial",
+        "fragment": "tema-4-kubectl-esencial"
+      },
+      {
+        "title": "Namespaces",
+        "fragment": "tema-5-namespaces"
+      },
+      {
+        "title": "StatefulSets, DaemonSets, Jobs y CronJobs",
+        "fragment": "tema-6-statefulsets-daemonsets-jobs-y-cronjobs"
+      },
+      {
+        "title": "Persistent Volumes, PVCs y StorageClasses",
+        "fragment": "tema-7-persistent-volumes-pvcs-y-storageclasses"
+      },
+      {
+        "title": "Clúster local con Minikube: perfiles, addons e Ingress",
+        "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
+      },
+      {
+        "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación",
+        "fragment": "tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
+      },
+      {
+        "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations",
+        "fragment": "tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
+      }
+    ],
+    "1": [
+      {
+        "title": "Helm charts y values",
+        "fragment": "tema-1-helm-charts-y-values"
+      },
+      {
+        "title": "Ingress Controllers y reglas de enrutamiento",
+        "fragment": "tema-2-ingress-controllers-y-reglas-de-enrutamiento"
+      },
+      {
+        "title": "HorizontalPodAutoscaler",
+        "fragment": "tema-3-horizontalpodautoscaler"
+      },
+      {
+        "title": "Probes de liveness y readiness",
+        "fragment": "tema-4-probes-de-liveness-y-readiness"
+      },
+      {
+        "title": "RBAC en Kubernetes",
+        "fragment": "tema-5-rbac-en-kubernetes"
+      },
+      {
+        "title": "Service Mesh — Istio, Linkerd, Envoy y mTLS",
+        "fragment": "tema-6-service-mesh-istio-linkerd-envoy-y-mtls"
+      },
+      {
+        "title": "Estrategias de despliegue — Recreate vs RollingUpdate",
+        "fragment": "tema-7-estrategias-de-despliegue-recreate-vs-rollingupdate"
+      },
+      {
+        "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission",
+        "fragment": "tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
+      }
+    ],
+    "2": [
+      {
+        "title": "Docker y Compose avanzados",
+        "fragment": "tema-1-docker-y-compose-avanzados"
+      },
+      {
+        "title": "Kubernetes extensible y Helm avanzado",
+        "fragment": "tema-2-kubernetes-extensible-y-helm-avanzado"
+      },
+      {
+        "title": "Service Mesh con Istio o Linkerd",
+        "fragment": "tema-3-service-mesh-con-istio-o-linkerd"
+      },
+      {
+        "title": "GitOps con Argo CD y Flux",
+        "fragment": "tema-4-gitops-con-argo-cd-y-flux"
+      },
+      {
+        "title": "Ansible, inventarios, roles y Vault",
+        "fragment": "tema-5-ansible-inventarios-roles-y-vault"
+      },
+      {
+        "title": "DevSecOps y métricas DORA",
+        "fragment": "tema-6-devsecops-y-metricas-dora"
+      }
+    ]
+  },
+  "linux": {
+    "0": [
+      {
+        "title": "Windows",
+        "fragment": "windows"
+      },
+      {
+        "title": "macOS",
+        "fragment": "macos"
+      },
+      {
+        "title": "Linux (Ubuntu/Debian)",
+        "fragment": "linux-ubuntu-debian"
+      },
+      {
+        "title": "Sistema de archivos y permisos (chmod/chown)",
+        "fragment": "tema-1-sistema-de-archivos-y-permisos-chmod-chown"
+      },
+      {
+        "title": "Procesos, señales y jobs en segundo plano",
+        "fragment": "tema-2-procesos-senales-y-jobs-en-segundo-plano"
+      },
+      {
+        "title": "Pipes, redirección y filtros (grep, awk, sed)",
+        "fragment": "tema-3-pipes-redireccion-y-filtros-grep-awk-sed"
+      },
+      {
+        "title": "Variables de entorno y scripts bash robustos (set -euo pipefail)",
+        "fragment": "tema-4-variables-de-entorno-y-scripts-bash-robustos-set-euo-pipefail"
+      },
+      {
+        "title": "Cron y tareas programadas",
+        "fragment": "tema-5-cron-y-tareas-programadas"
+      },
+      {
+        "title": "Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor",
+        "fragment": "tema-6-hardening-basico-ssh-sin-contrasena-firewalls-selinux-apparmor"
+      },
+      {
+        "title": "Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga",
+        "fragment": "tema-7-redes-modelo-osi-tcp-ip-dns-y-balanceadores-de-carga"
+      },
+      {
+        "title": "Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor",
+        "fragment": "tema-8-cultura-devops-y-el-ciclo-plan-code-build-test-release-deploy-operate-monitor"
+      },
+      {
+        "title": "NGINX y proxies desde cero",
+        "fragment": "tema-9-nginx-y-proxies-desde-cero"
+      },
+      {
+        "title": "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+        "fragment": "tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
+      },
+      {
+        "title": "systemd: servicios, timers y logs con journalctl",
+        "fragment": "tema-11-systemd-servicios-timers-y-logs-con-journalctl"
+      }
+    ],
+    "1": [
+      {
+        "title": "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+        "fragment": "tema-1-aprovisionar-y-endurecer-usuario-ssh-firewall-y-parches"
+      },
+      {
+        "title": "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+        "fragment": "tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
+      },
+      {
+        "title": "Despliegue y rollback: systemd, nginx y artefactos versionados",
+        "fragment": "tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados"
+      },
+      {
+        "title": "Respaldos que se restauran: restic, RPO/RTO y simulacro",
+        "fragment": "tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
+      }
+    ]
+  },
+  "mensajeria": {
+    "0": [
+      {
+        "title": "Eventos de dominio e integración: hechos, no comandos",
+        "fragment": "tema-1-eventos-de-dominio-e-integracion-hechos-no-comandos"
+      },
+      {
+        "title": "Outbox transaccional: guardar el hecho y el mensaje juntos",
+        "fragment": "tema-2-outbox-transaccional-guardar-el-hecho-y-el-mensaje-juntos"
+      },
+      {
+        "title": "Idempotencia y orden: consumidores que sobreviven a reintentos",
+        "fragment": "tema-3-idempotencia-y-orden-consumidores-que-sobreviven-a-reintentos"
+      },
+      {
+        "title": "Sagas y compensaciones: procesos largos sin transacción distribuida",
+        "fragment": "tema-4-sagas-y-compensaciones-procesos-largos-sin-transaccion-distribuida"
+      }
+    ],
+    "1": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml (Kafka + Schema Registry)",
+        "fragment": "docker-compose-yml-kafka-schema-registry"
+      },
+      {
+        "title": "Kafka, particiones y consumer groups",
+        "fragment": "tema-1-kafka-particiones-y-consumer-groups"
+      },
+      {
+        "title": "RabbitMQ, acks y DLQ",
+        "fragment": "tema-2-rabbitmq-acks-y-dlq"
+      },
+      {
+        "title": "Schema Registry y evolución",
+        "fragment": "tema-3-schema-registry-y-evolucion"
+      },
+      {
+        "title": "Idempotencia en consumidores",
+        "fragment": "tema-4-idempotencia-en-consumidores"
+      }
+    ]
+  },
+  "microservicios": {
+    "0": [
+      {
+        "title": "Spring MVC y DispatcherServlet",
+        "fragment": "tema-1-spring-mvc-y-dispatcherservlet"
+      },
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "DTOs, Jackson y validación",
+        "fragment": "tema-2-dtos-jackson-y-validacion"
+      },
+      {
+        "title": "Manejo global de excepciones",
+        "fragment": "tema-3-manejo-global-de-excepciones"
+      },
+      {
+        "title": "Spring Data JPA, Hibernate y transacciones",
+        "fragment": "tema-4-spring-data-jpa-hibernate-y-transacciones"
+      },
+      {
+        "title": "Criteria/Specifications",
+        "fragment": "tema-5-criteria-specifications"
+      },
+      {
+        "title": "Flyway/Liquibase",
+        "fragment": "tema-6-flyway-liquibase"
+      },
+      {
+        "title": "PostgreSQL y MySQL",
+        "fragment": "tema-7-postgresql-y-mysql"
+      }
+    ],
+    "1": [
+      {
+        "title": "Express: routing, middleware, error handling",
+        "fragment": "tema-1-express-routing-middleware-error-handling"
+      },
+      {
+        "title": "NestJS: módulos, controllers, providers, interceptors, guards",
+        "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
+      },
+      {
+        "title": "Validación con Zod o class-validator",
+        "fragment": "tema-3-validacion-con-zod-o-class-validator"
+      },
+      {
+        "title": "DTOs",
+        "fragment": "tema-4-dtos"
+      },
+      {
+        "title": "OpenAPI/Swagger",
+        "fragment": "tema-5-openapi-swagger"
+      }
+    ],
+    "10": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml (Nacos)",
+        "fragment": "docker-compose-yml-nacos"
+      },
+      {
+        "title": "Service discovery con Eureka/Consul/Nacos",
+        "fragment": "tema-1-service-discovery-con-eureka-consul-nacos"
+      },
+      {
+        "title": "Spring Cloud Gateway",
+        "fragment": "tema-2-spring-cloud-gateway"
+      }
+    ],
+    "11": [
+      {
+        "title": "Service discovery y configuración centralizada",
+        "fragment": "tema-1-service-discovery-y-configuracion-centralizada"
+      },
+      {
+        "title": "API Gateway y composición",
+        "fragment": "tema-2-api-gateway-y-composicion"
+      },
+      {
+        "title": "Resiliencia distribuida",
+        "fragment": "tema-3-resiliencia-distribuida"
+      },
+      {
+        "title": "Observabilidad distribuida",
+        "fragment": "tema-4-observabilidad-distribuida"
+      }
+    ],
+    "12": [
+      {
+        "title": "Estructura de carpetas escalable",
+        "fragment": "tema-1-estructura-de-carpetas-escalable"
+      },
+      {
+        "title": "dotenv",
+        "fragment": "tema-2-dotenv"
+      },
+      {
+        "title": "Service Discovery con Consul",
+        "fragment": "tema-3-service-discovery-con-consul"
+      },
+      {
+        "title": "Configuración centralizada",
+        "fragment": "tema-4-configuracion-centralizada"
+      }
+    ],
+    "13": [
+      {
+        "title": "Gateway pattern",
+        "fragment": "tema-1-gateway-pattern"
+      },
+      {
+        "title": "BFF (Backend for Frontend)",
+        "fragment": "tema-2-bff-backend-for-frontend"
+      },
+      {
+        "title": "Auth en edge, rate limiting y request shaping",
+        "fragment": "tema-3-auth-en-edge-rate-limiting-y-request-shaping"
+      },
+      {
+        "title": "Agregación, version routing y resiliencia en edge",
+        "fragment": "tema-4-agregacion-version-routing-y-resiliencia-en-edge"
+      }
+    ],
+    "14": [
+      {
+        "title": "Circuit breaker — dos microservicios conectados y protegidos",
+        "fragment": "tema-1-circuit-breaker-dos-microservicios-conectados-y-protegidos"
+      },
+      {
+        "title": "Timeouts en cascada",
+        "fragment": "tema-2-timeouts-en-cascada"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "tema-3-fallback-strategies"
+      },
+      {
+        "title": "Chaos engineering",
+        "fragment": "tema-4-chaos-engineering"
+      }
+    ],
+    "15": [
+      {
+        "title": "Circuit Breaker con opossum o cockatiel",
+        "fragment": "tema-1-circuit-breaker-con-opossum-o-cockatiel"
+      },
+      {
+        "title": "Retry con jitter",
+        "fragment": "tema-2-retry-con-jitter"
+      },
+      {
+        "title": "Rate Limiting con Redis",
+        "fragment": "tema-3-rate-limiting-con-redis"
+      },
+      {
+        "title": "Timeouts",
+        "fragment": "tema-4-timeouts"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "tema-5-fallback-strategies"
+      }
+    ],
+    "16": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "docker-compose.yml (Keycloak)",
+        "fragment": "docker-compose-yml-keycloak"
+      },
+      {
+        "title": "Spring Security filter chain",
+        "fragment": "tema-1-spring-security-filter-chain"
+      },
+      {
+        "title": "JWT y OAuth2/OIDC",
+        "fragment": "tema-2-jwt-y-oauth2-oidc"
+      },
+      {
+        "title": "RBAC, scopes y mTLS/Zero-Trust",
+        "fragment": "tema-3-rbac-scopes-y-mtls-zero-trust"
+      },
+      {
+        "title": "Vault, gestión de secretos, SBOM y CVE scanning",
+        "fragment": "tema-4-vault-gestion-de-secretos-sbom-y-cve-scanning"
+      }
+    ],
+    "17": [
+      {
+        "title": "JWT con jsonwebtoken",
+        "fragment": "tema-1-jwt-con-jsonwebtoken"
+      },
+      {
+        "title": "Passport.js",
+        "fragment": "tema-2-passport-js"
+      },
+      {
+        "title": "Helmet, CORS",
+        "fragment": "tema-3-helmet-cors"
+      },
+      {
+        "title": "Prevención de inyecciones NoSQL",
+        "fragment": "tema-4-prevencion-de-inyecciones-nosql"
+      },
+      {
+        "title": "OWASP Top 10",
+        "fragment": "tema-5-owasp-top-10"
+      },
+      {
+        "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
+        "fragment": "tema-6-secretos-aws-secrets-manager-vault-azure-key-vault"
+      }
+    ],
+    "18": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "Micrometer y Prometheus",
+        "fragment": "tema-1-micrometer-y-prometheus"
+      },
+      {
+        "title": "OpenTelemetry por defecto: métricas, trazas y logs correlacionados",
+        "fragment": "tema-2-opentelemetry-por-defecto-metricas-trazas-y-logs-correlacionados"
+      },
+      {
+        "title": "Logs estructurados y propagación de contexto",
+        "fragment": "tema-3-logs-estructurados-y-propagacion-de-contexto"
+      }
+    ],
+    "19": [
+      {
+        "title": "OpenTelemetry para Node",
+        "fragment": "tema-1-opentelemetry-para-node"
+      },
+      {
+        "title": "Propagación de traceparent en AMQP/Kafka",
+        "fragment": "tema-2-propagacion-de-traceparent-en-amqp-kafka"
+      },
+      {
+        "title": "Pino/Winston",
+        "fragment": "tema-3-pino-winston"
+      },
+      {
+        "title": "ELK o Grafana Loki",
+        "fragment": "tema-4-elk-o-grafana-loki"
+      },
+      {
+        "title": "Prometheus client",
+        "fragment": "tema-5-prometheus-client"
+      }
+    ],
+    "2": [
+      {
+        "title": "MongoDB + Mongoose",
+        "fragment": "tema-1-mongodb-mongoose"
+      },
+      {
+        "title": "PostgreSQL + Prisma/Sequelize",
+        "fragment": "tema-2-postgresql-prisma-sequelize"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-3-database-per-service"
+      },
+      {
+        "title": "Connection pooling y transacciones",
+        "fragment": "tema-4-connection-pooling-y-transacciones"
+      }
+    ],
+    "20": [
+      {
+        "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
+        "fragment": "tema-1-rabbitmq-publisher-confirms-consumer-acknowledgments"
+      },
+      {
+        "title": "Deduplicación con Redis",
+        "fragment": "tema-2-deduplicacion-con-redis"
+      },
+      {
+        "title": "Sagas con NestJS CQRS",
+        "fragment": "tema-3-sagas-con-nestjs-cqrs"
+      },
+      {
+        "title": "Compensaciones idempotentes",
+        "fragment": "tema-4-compensaciones-idempotentes"
+      },
+      {
+        "title": "Event Sourcing con EventStoreDB o MongoDB",
+        "fragment": "tema-5-event-sourcing-con-eventstoredb-o-mongodb"
+      },
+      {
+        "title": "Proyecciones materializadas",
+        "fragment": "tema-6-proyecciones-materializadas"
+      },
+      {
+        "title": "CQRS",
+        "fragment": "tema-7-cqrs"
+      }
+    ],
+    "21": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "Outbox y CDC con Debezium",
+        "fragment": "tema-1-outbox-y-cdc-con-debezium"
+      },
+      {
+        "title": "Sagas orquestadas y coreografiadas",
+        "fragment": "tema-2-sagas-orquestadas-y-coreografiadas"
+      },
+      {
+        "title": "Idempotencia real y exactly-once práctico",
+        "fragment": "tema-3-idempotencia-real-y-exactly-once-practico"
+      },
+      {
+        "title": "Por qué evitar 2PC",
+        "fragment": "tema-4-por-que-evitar-2pc"
+      }
+    ],
+    "22": [
+      {
+        "title": "Consistencia eventual y sagas",
+        "fragment": "tema-1-consistencia-eventual-y-sagas"
+      },
+      {
+        "title": "Contratos de API y compatibilidad",
+        "fragment": "tema-2-contratos-de-api-y-compatibilidad"
+      },
+      {
+        "title": "Operación distribuida: idempotencia, retries, DLQ",
+        "fragment": "tema-3-operacion-distribuida-idempotencia-retries-dlq"
+      }
+    ],
+    "23": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "Dockerfile",
+        "fragment": "dockerfile"
+      },
+      {
+        "title": ".dockerignore",
+        "fragment": "dockerignore"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "Dockerfile multi-stage y runtime Java",
+        "fragment": "tema-1-dockerfile-multi-stage-y-runtime-java"
+      },
+      {
+        "title": "Kubernetes Deployments, Services, ConfigMaps, Secrets, probes",
+        "fragment": "tema-2-kubernetes-deployments-services-configmaps-secrets-probes"
+      },
+      {
+        "title": "HPA, Helm y despliegues progresivos",
+        "fragment": "tema-3-hpa-helm-y-despliegues-progresivos"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "tema-4-gitops-con-argocd"
+      },
+      {
+        "title": "GraalVM Native Image, CRaC y JVM tuning para contenedores",
+        "fragment": "tema-5-graalvm-native-image-crac-y-jvm-tuning-para-contenedores"
+      }
+    ],
+    "24": [
+      {
+        "title": "Dockerfile multi-stage",
+        "fragment": "tema-1-dockerfile-multi-stage"
+      },
+      {
+        "title": "Kubernetes",
+        "fragment": "tema-2-kubernetes"
+      },
+      {
+        "title": "HPA",
+        "fragment": "tema-3-hpa"
+      },
+      {
+        "title": "GitHub Actions",
+        "fragment": "tema-4-github-actions"
+      },
+      {
+        "title": "Blue-Green y Canary",
+        "fragment": "tema-5-blue-green-y-canary"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "tema-6-gitops-con-argocd"
+      }
+    ],
+    "25": [
+      {
+        "title": "Caching layers y invalidación",
+        "fragment": "tema-1-caching-layers-y-invalidacion"
+      },
+      {
+        "title": "Profiling y event loop delay",
+        "fragment": "tema-2-profiling-y-event-loop-delay"
+      },
+      {
+        "title": "Memory leaks y heap",
+        "fragment": "tema-3-memory-leaks-y-heap"
+      },
+      {
+        "title": "Escalado horizontal, clustering y load leveling",
+        "fragment": "tema-4-escalado-horizontal-clustering-y-load-leveling"
+      }
+    ],
+    "26": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "ADRs y C4",
+        "fragment": "tema-1-adrs-y-c4"
+      },
+      {
+        "title": "Fitness functions y ATAM ligero",
+        "fragment": "tema-2-fitness-functions-y-atam-ligero"
+      },
+      {
+        "title": "FinOps: costo, right-sizing y observability tax",
+        "fragment": "tema-3-finops-costo-right-sizing-y-observability-tax"
+      },
+      {
+        "title": "Ley de Conway y Team Topologies",
+        "fragment": "tema-4-ley-de-conway-y-team-topologies"
+      }
+    ],
+    "27": [
+      {
+        "title": "SLO, alertas y runbooks",
+        "fragment": "tema-1-slo-alertas-y-runbooks"
+      },
+      {
+        "title": "Postmortems y mejora continua",
+        "fragment": "tema-2-postmortems-y-mejora-continua"
+      },
+      {
+        "title": "FinOps, supply chain y hardening operativo",
+        "fragment": "tema-3-finops-supply-chain-y-hardening-operativo"
+      },
+      {
+        "title": "Evolución de contratos y deprecación",
+        "fragment": "tema-4-evolucion-de-contratos-y-deprecacion"
+      }
+    ],
+    "28": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "Monolito distribuido y sobre-descomposición",
+        "fragment": "tema-1-monolito-distribuido-y-sobre-descomposicion"
+      },
+      {
+        "title": "Sagas innecesarias y acoplamiento temporal",
+        "fragment": "tema-2-sagas-innecesarias-y-acoplamiento-temporal"
+      },
+      {
+        "title": "Strangler Fig y coexistencia de datos",
+        "fragment": "tema-3-strangler-fig-y-coexistencia-de-datos"
+      },
+      {
+        "title": "Métricas DORA y deuda técnica",
+        "fragment": "tema-4-metricas-dora-y-deuda-tecnica"
+      }
+    ],
+    "29": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts (raíz)",
+        "fragment": "build-gradle-kts-raiz"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "Diseño del sistema y límites",
+        "fragment": "tema-1-diseno-del-sistema-y-limites"
+      },
+      {
+        "title": "Contratos, idempotencia y saga/outbox",
+        "fragment": "tema-2-contratos-idempotencia-y-saga-outbox"
+      },
+      {
+        "title": "Observabilidad, seguridad y despliegue",
+        "fragment": "tema-3-observabilidad-seguridad-y-despliegue"
+      },
+      {
+        "title": "Carga, restricción sobrevenida y defensa ARB",
+        "fragment": "tema-4-carga-restriccion-sobrevenida-y-defensa-arb"
+      }
+    ],
+    "3": [
+      {
+        "title": "JUnit 5, Mockito y MockMvc",
+        "fragment": "tema-1-junit-5-mockito-y-mockmvc"
+      },
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "docker-compose.yml",
+        "fragment": "docker-compose-yml"
+      },
+      {
+        "title": "Testcontainers",
+        "fragment": "tema-2-testcontainers"
+      },
+      {
+        "title": "Contract Testing con Pact",
+        "fragment": "tema-3-contract-testing-con-pact"
+      },
+      {
+        "title": "ArchUnit",
+        "fragment": "tema-4-archunit"
+      },
+      {
+        "title": "SonarQube",
+        "fragment": "tema-5-sonarqube"
+      },
+      {
+        "title": "Floci para emular dependencias cloud en tests/CI",
+        "fragment": "tema-6-floci-para-emular-dependencias-cloud-en-tests-ci"
+      }
+    ],
+    "30": [
+      {
+        "title": "Alcance y arquitectura del sistema",
+        "fragment": "tema-1-alcance-y-arquitectura-del-sistema"
+      },
+      {
+        "title": "Contratos, idempotencia y mensajería",
+        "fragment": "tema-2-contratos-idempotencia-y-mensajeria"
+      },
+      {
+        "title": "Observabilidad, resiliencia y seguridad",
+        "fragment": "tema-3-observabilidad-resiliencia-y-seguridad"
+      },
+      {
+        "title": "Prueba de carga, restricción sobrevenida y defensa ARB",
+        "fragment": "tema-4-prueba-de-carga-restriccion-sobrevenida-y-defensa-arb"
+      }
+    ],
+    "4": [
+      {
+        "title": "Jest",
+        "fragment": "tema-1-jest"
+      },
+      {
+        "title": "Supertest",
+        "fragment": "tema-2-supertest"
+      },
+      {
+        "title": "Contract Testing con Pact",
+        "fragment": "tema-3-contract-testing-con-pact"
+      },
+      {
+        "title": "Testcontainers para Node",
+        "fragment": "tema-4-testcontainers-para-node"
+      }
+    ],
+    "5": [
+      {
+        "title": "@Cacheable, @CacheEvict y TTL",
+        "fragment": "tema-1-cacheable-cacheevict-y-ttl"
+      },
+      {
+        "title": "Read-through, write-through, write-behind",
+        "fragment": "tema-2-read-through-write-through-write-behind"
+      },
+      {
+        "title": "Distributed locking y fencing tokens",
+        "fragment": "tema-3-distributed-locking-y-fencing-tokens"
+      },
+      {
+        "title": "Cache stampede y mitigaciones",
+        "fragment": "tema-4-cache-stampede-y-mitigaciones"
+      }
+    ],
+    "6": [
+      {
+        "title": "Prerrequisitos",
+        "fragment": "prerrequisitos"
+      },
+      {
+        "title": "Estructura del proyecto",
+        "fragment": "estructura-del-proyecto"
+      },
+      {
+        "title": "build.gradle.kts",
+        "fragment": "build-gradle-kts"
+      },
+      {
+        "title": "settings.gradle.kts",
+        "fragment": "settings-gradle-kts"
+      },
+      {
+        "title": "application.yml",
+        "fragment": "application-yml"
+      },
+      {
+        "title": "Monolito modular vs microservicios",
+        "fragment": "tema-1-monolito-modular-vs-microservicios"
+      },
+      {
+        "title": "DDD: bounded contexts, aggregates y domain events",
+        "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
+      },
+      {
+        "title": "Spring Modulith",
+        "fragment": "tema-3-spring-modulith"
+      },
+      {
+        "title": "Strangler Fig",
+        "fragment": "tema-4-strangler-fig"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-5-database-per-service"
+      }
+    ],
+    "7": [
+      {
+        "title": "DDD y bounded contexts en Node",
+        "fragment": "tema-1-ddd-y-bounded-contexts-en-node"
+      },
+      {
+        "title": "Outbox y consistencia eventual",
+        "fragment": "tema-2-outbox-y-consistencia-eventual"
+      },
+      {
+        "title": "Sagas y compensaciones",
+        "fragment": "tema-3-sagas-y-compensaciones"
+      },
+      {
+        "title": "Anti-patrones y monolito distribuido",
+        "fragment": "tema-4-anti-patrones-y-monolito-distribuido"
+      },
+      {
+        "title": "Strangler Fig y métricas DORA",
+        "fragment": "tema-5-strangler-fig-y-metricas-dora"
+      },
+      {
+        "title": "ADRs y fitness functions",
+        "fragment": "tema-6-adrs-y-fitness-functions"
+      }
+    ],
+    "8": [
+      {
+        "title": "REST con Spring MVC y WebClient",
+        "fragment": "tema-1-rest-con-spring-mvc-y-webclient"
+      },
+      {
+        "title": "gRPC con Spring",
+        "fragment": "tema-2-grpc-con-spring"
+      },
+      {
+        "title": "Mensajería con Spring Cloud Stream",
+        "fragment": "tema-3-mensajeria-con-spring-cloud-stream"
+      },
+      {
+        "title": "Sync vs async, timeouts e idempotencia",
+        "fragment": "tema-4-sync-vs-async-timeouts-e-idempotencia"
+      },
+      {
+        "title": "HTTP Service Clients declarativos y RSocket",
+        "fragment": "tema-5-http-service-clients-declarativos-y-rsocket"
+      }
+    ],
+    "9": [
+      {
+        "title": "REST con Axios/Fetch",
+        "fragment": "tema-1-rest-con-axios-fetch"
+      },
+      {
+        "title": "gRPC con @grpc/grpc-js",
+        "fragment": "tema-2-grpc-con-grpc-grpc-js"
+      },
+      {
+        "title": "GraphQL con Apollo Server",
+        "fragment": "tema-3-graphql-con-apollo-server"
+      },
+      {
+        "title": "KafkaJS, amqplib",
+        "fragment": "tema-4-kafkajs-amqplib"
+      },
+      {
+        "title": "NATS",
+        "fragment": "tema-5-nats"
+      },
+      {
+        "title": "Sync vs async",
+        "fragment": "tema-6-sync-vs-async"
       }
     ]
   },
@@ -5568,32 +6222,6 @@
       {
         "title": "Proyecto 12: API operativa de entregas",
         "fragment": "proyecto-12-api-operativa-de-entregas"
-      }
-    ],
-    "13": [
-      {
-        "title": "Tipos estáticos dentro, datos desconocidos en la frontera",
-        "fragment": "tema-1-tipos-estaticos-dentro-datos-desconocidos-en-la-frontera"
-      },
-      {
-        "title": "Un contrato HTTP es comportamiento, no solo documentación",
-        "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
-      },
-      {
-        "title": "OpenAPI como contrato ejecutable",
-        "fragment": "tema-3-openapi-como-contrato-ejecutable"
-      },
-      {
-        "title": "Reintentar sin duplicar el efecto",
-        "fragment": "tema-4-reintentar-sin-duplicar-el-efecto"
-      },
-      {
-        "title": "Webhooks verificables y recuperación por reconciliación",
-        "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
-      },
-      {
-        "title": "Proyecto: API contractual con efectos recuperables",
-        "fragment": "proyecto-api-contractual-con-efectos-recuperables"
       }
     ],
     "2": [
@@ -5865,361 +6493,83 @@
       }
     ]
   },
-  "node-microservices": {
+  "observabilidad": {
     "0": [
       {
-        "title": "ES6+: async/await, Promises, destructuring, modules",
-        "fragment": "tema-1-es6-async-await-promises-destructuring-modules"
+        "title": "Modelo de métricas de Prometheus — counter, gauge, histogram",
+        "fragment": "tema-1-modelo-de-metricas-de-prometheus-counter-gauge-histogram"
       },
       {
-        "title": "TypeScript: tipos, interfaces, generics, strict mode",
-        "fragment": "tema-2-typescript-tipos-interfaces-generics-strict-mode"
+        "title": "PromQL esencial",
+        "fragment": "tema-2-promql-esencial"
       },
       {
-        "title": "Event Loop: fases, microtasks, macrotasks",
-        "fragment": "tema-3-event-loop-fases-microtasks-macrotasks"
+        "title": "Dashboards en Grafana",
+        "fragment": "tema-3-dashboards-en-grafana"
       },
       {
-        "title": "perf_hooks y clinic.js",
-        "fragment": "tema-4-perf-hooks-y-clinic-js"
+        "title": "Alertmanager y reglas de alerta",
+        "fragment": "tema-4-alertmanager-y-reglas-de-alerta"
       },
       {
-        "title": "Worker Threads vs Child Processes",
-        "fragment": "tema-5-worker-threads-vs-child-processes"
+        "title": "SLI, SLO, SLA",
+        "fragment": "tema-5-sli-slo-sla"
       },
       {
-        "title": "Backpressure en Streams",
-        "fragment": "tema-6-backpressure-en-streams"
+        "title": "OpenTelemetry como estándar de instrumentación",
+        "fragment": "tema-6-opentelemetry-como-estandar-de-instrumentacion"
       },
       {
-        "title": "Graceful shutdown",
-        "fragment": "tema-7-graceful-shutdown"
+        "title": "Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate",
+        "fragment": "tema-7-metricas-dora-lead-time-deployment-frequency-mttr-change-failure-rate"
+      },
+      {
+        "title": "Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos",
+        "fragment": "tema-8-chaos-engineering-experimentos-controlados-para-comprobar-que-el-sistema-resiste-fallos"
       }
     ],
     "1": [
       {
-        "title": "Express: routing, middleware, error handling",
-        "fragment": "tema-1-express-routing-middleware-error-handling"
+        "title": "Logging estructurado (JSON)",
+        "fragment": "tema-1-logging-estructurado-json"
       },
       {
-        "title": "NestJS: módulos, controllers, providers, interceptors, guards",
-        "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
+        "title": "Pipeline ELK/EFK",
+        "fragment": "tema-2-pipeline-elk-efk"
       },
       {
-        "title": "Validación con Zod o class-validator",
-        "fragment": "tema-3-validacion-con-zod-o-class-validator"
+        "title": "Loki + Grafana como alternativa ligera",
+        "fragment": "tema-3-loki-grafana-como-alternativa-ligera"
       },
       {
-        "title": "DTOs",
-        "fragment": "tema-4-dtos"
-      },
-      {
-        "title": "OpenAPI/Swagger",
-        "fragment": "tema-5-openapi-swagger"
-      }
-    ],
-    "10": [
-      {
-        "title": "Dockerfile multi-stage",
-        "fragment": "tema-1-dockerfile-multi-stage"
-      },
-      {
-        "title": "Kubernetes",
-        "fragment": "tema-2-kubernetes"
-      },
-      {
-        "title": "HPA",
-        "fragment": "tema-3-hpa"
-      },
-      {
-        "title": "GitHub Actions",
-        "fragment": "tema-4-github-actions"
-      },
-      {
-        "title": "Blue-Green y Canary",
-        "fragment": "tema-5-blue-green-y-canary"
-      },
-      {
-        "title": "GitOps con ArgoCD",
-        "fragment": "tema-6-gitops-con-argocd"
-      }
-    ],
-    "11": [
-      {
-        "title": "DDD y bounded contexts en Node",
-        "fragment": "tema-1-ddd-y-bounded-contexts-en-node"
-      },
-      {
-        "title": "Outbox y consistencia eventual",
-        "fragment": "tema-2-outbox-y-consistencia-eventual"
-      },
-      {
-        "title": "Sagas y compensaciones",
-        "fragment": "tema-3-sagas-y-compensaciones"
-      },
-      {
-        "title": "Anti-patrones y monolito distribuido",
-        "fragment": "tema-4-anti-patrones-y-monolito-distribuido"
-      },
-      {
-        "title": "Strangler Fig y métricas DORA",
-        "fragment": "tema-5-strangler-fig-y-metricas-dora"
-      },
-      {
-        "title": "ADRs y fitness functions",
-        "fragment": "tema-6-adrs-y-fitness-functions"
-      }
-    ],
-    "12": [
-      {
-        "title": "Alcance y arquitectura del sistema",
-        "fragment": "tema-1-alcance-y-arquitectura-del-sistema"
-      },
-      {
-        "title": "Contratos, idempotencia y mensajería",
-        "fragment": "tema-2-contratos-idempotencia-y-mensajeria"
-      },
-      {
-        "title": "Observabilidad, resiliencia y seguridad",
-        "fragment": "tema-3-observabilidad-resiliencia-y-seguridad"
-      },
-      {
-        "title": "Prueba de carga, restricción sobrevenida y defensa ARB",
-        "fragment": "tema-4-prueba-de-carga-restriccion-sobrevenida-y-defensa-arb"
-      }
-    ],
-    "13": [
-      {
-        "title": "Gateway pattern",
-        "fragment": "tema-1-gateway-pattern"
-      },
-      {
-        "title": "BFF (Backend for Frontend)",
-        "fragment": "tema-2-bff-backend-for-frontend"
-      },
-      {
-        "title": "Auth en edge, rate limiting y request shaping",
-        "fragment": "tema-3-auth-en-edge-rate-limiting-y-request-shaping"
-      },
-      {
-        "title": "Agregación, version routing y resiliencia en edge",
-        "fragment": "tema-4-agregacion-version-routing-y-resiliencia-en-edge"
-      }
-    ],
-    "14": [
-      {
-        "title": "Caching layers y invalidación",
-        "fragment": "tema-1-caching-layers-y-invalidacion"
-      },
-      {
-        "title": "Profiling y event loop delay",
-        "fragment": "tema-2-profiling-y-event-loop-delay"
-      },
-      {
-        "title": "Memory leaks y heap",
-        "fragment": "tema-3-memory-leaks-y-heap"
-      },
-      {
-        "title": "Escalado horizontal, clustering y load leveling",
-        "fragment": "tema-4-escalado-horizontal-clustering-y-load-leveling"
-      }
-    ],
-    "15": [
-      {
-        "title": "SLO, alertas y runbooks",
-        "fragment": "tema-1-slo-alertas-y-runbooks"
-      },
-      {
-        "title": "Postmortems y mejora continua",
-        "fragment": "tema-2-postmortems-y-mejora-continua"
-      },
-      {
-        "title": "FinOps, supply chain y hardening operativo",
-        "fragment": "tema-3-finops-supply-chain-y-hardening-operativo"
-      },
-      {
-        "title": "Evolución de contratos y deprecación",
-        "fragment": "tema-4-evolucion-de-contratos-y-deprecacion"
+        "title": "Correlation ID a través de servicios",
+        "fragment": "tema-4-correlation-id-a-traves-de-servicios"
       }
     ],
     "2": [
       {
-        "title": "MongoDB + Mongoose",
-        "fragment": "tema-1-mongodb-mongoose"
+        "title": "Confiabilidad es una expectativa cuantificada",
+        "fragment": "tema-1-confiabilidad-es-una-expectativa-cuantificada"
       },
       {
-        "title": "PostgreSQL + Prisma/Sequelize",
-        "fragment": "tema-2-postgresql-prisma-sequelize"
+        "title": "Una alerta debe conducir a una acción",
+        "fragment": "tema-2-una-alerta-debe-conducir-a-una-accion"
       },
       {
-        "title": "Database-per-service",
-        "fragment": "tema-3-database-per-service"
+        "title": "Construir una imagen no demuestra de dónde proviene",
+        "fragment": "tema-3-construir-una-imagen-no-demuestra-de-donde-proviene"
       },
       {
-        "title": "Connection pooling y transacciones",
-        "fragment": "tema-4-connection-pooling-y-transacciones"
-      }
-    ],
-    "3": [
-      {
-        "title": "Jest",
-        "fragment": "tema-1-jest"
+        "title": "Una plataforma interna es un producto con límites",
+        "fragment": "tema-4-una-plataforma-interna-es-un-producto-con-limites"
       },
       {
-        "title": "Supertest",
-        "fragment": "tema-2-supertest"
+        "title": "Kubernetes 1.36, OpenTelemetry 1.59 y herramientas con ciclo propio",
+        "fragment": "kubernetes-1-36-opentelemetry-1-59-y-herramientas-con-ciclo-propio"
       },
       {
-        "title": "Contract Testing con Pact",
-        "fragment": "tema-3-contract-testing-con-pact"
-      },
-      {
-        "title": "Testcontainers para Node",
-        "fragment": "tema-4-testcontainers-para-node"
-      }
-    ],
-    "4": [
-      {
-        "title": "Estructura de carpetas escalable",
-        "fragment": "tema-1-estructura-de-carpetas-escalable"
-      },
-      {
-        "title": "dotenv",
-        "fragment": "tema-2-dotenv"
-      },
-      {
-        "title": "Service Discovery con Consul",
-        "fragment": "tema-3-service-discovery-con-consul"
-      },
-      {
-        "title": "Configuración centralizada",
-        "fragment": "tema-4-configuracion-centralizada"
-      }
-    ],
-    "5": [
-      {
-        "title": "REST con Axios/Fetch",
-        "fragment": "tema-1-rest-con-axios-fetch"
-      },
-      {
-        "title": "gRPC con @grpc/grpc-js",
-        "fragment": "tema-2-grpc-con-grpc-grpc-js"
-      },
-      {
-        "title": "GraphQL con Apollo Server",
-        "fragment": "tema-3-graphql-con-apollo-server"
-      },
-      {
-        "title": "KafkaJS, amqplib",
-        "fragment": "tema-4-kafkajs-amqplib"
-      },
-      {
-        "title": "NATS",
-        "fragment": "tema-5-nats"
-      },
-      {
-        "title": "Sync vs async",
-        "fragment": "tema-6-sync-vs-async"
-      }
-    ],
-    "6": [
-      {
-        "title": "Circuit Breaker con opossum o cockatiel",
-        "fragment": "tema-1-circuit-breaker-con-opossum-o-cockatiel"
-      },
-      {
-        "title": "Retry con jitter",
-        "fragment": "tema-2-retry-con-jitter"
-      },
-      {
-        "title": "Rate Limiting con Redis",
-        "fragment": "tema-3-rate-limiting-con-redis"
-      },
-      {
-        "title": "Timeouts",
-        "fragment": "tema-4-timeouts"
-      },
-      {
-        "title": "Fallback strategies",
-        "fragment": "tema-5-fallback-strategies"
-      }
-    ],
-    "7": [
-      {
-        "title": "JWT con jsonwebtoken",
-        "fragment": "tema-1-jwt-con-jsonwebtoken"
-      },
-      {
-        "title": "Passport.js",
-        "fragment": "tema-2-passport-js"
-      },
-      {
-        "title": "Helmet, CORS",
-        "fragment": "tema-3-helmet-cors"
-      },
-      {
-        "title": "Prevención de inyecciones NoSQL",
-        "fragment": "tema-4-prevencion-de-inyecciones-nosql"
-      },
-      {
-        "title": "OWASP Top 10",
-        "fragment": "tema-5-owasp-top-10"
-      },
-      {
-        "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
-        "fragment": "tema-6-secretos-aws-secrets-manager-vault-azure-key-vault"
-      }
-    ],
-    "8": [
-      {
-        "title": "OpenTelemetry para Node",
-        "fragment": "tema-1-opentelemetry-para-node"
-      },
-      {
-        "title": "Propagación de traceparent en AMQP/Kafka",
-        "fragment": "tema-2-propagacion-de-traceparent-en-amqp-kafka"
-      },
-      {
-        "title": "Pino/Winston",
-        "fragment": "tema-3-pino-winston"
-      },
-      {
-        "title": "ELK o Grafana Loki",
-        "fragment": "tema-4-elk-o-grafana-loki"
-      },
-      {
-        "title": "Prometheus client",
-        "fragment": "tema-5-prometheus-client"
-      }
-    ],
-    "9": [
-      {
-        "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
-        "fragment": "tema-1-rabbitmq-publisher-confirms-consumer-acknowledgments"
-      },
-      {
-        "title": "Deduplicación con Redis",
-        "fragment": "tema-2-deduplicacion-con-redis"
-      },
-      {
-        "title": "Sagas con NestJS CQRS",
-        "fragment": "tema-3-sagas-con-nestjs-cqrs"
-      },
-      {
-        "title": "Compensaciones idempotentes",
-        "fragment": "tema-4-compensaciones-idempotentes"
-      },
-      {
-        "title": "Event Sourcing con EventStoreDB o MongoDB",
-        "fragment": "tema-5-event-sourcing-con-eventstoredb-o-mongodb"
-      },
-      {
-        "title": "Proyecciones materializadas",
-        "fragment": "tema-6-proyecciones-materializadas"
-      },
-      {
-        "title": "CQRS",
-        "fragment": "tema-7-cqrs"
+        "title": "Método de estudio y proyecto de ampliación",
+        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ]
   },
@@ -6531,141 +6881,61 @@
       }
     ]
   },
-  "rutaflow": {
+  "seguridad": {
     "0": [
       {
-        "title": "Si la instalación falla, no continúes a ciegas",
-        "fragment": "si-la-instalacion-falla-no-continues-a-ciegas"
+        "title": "Activos, amenazas, riesgos y límites de confianza",
+        "fragment": "tema-1-activos-amenazas-riesgos-y-limites-de-confianza"
       },
       {
-        "title": "El proceso logístico como sistema",
-        "fragment": "tema-1-el-proceso-logistico-como-sistema"
+        "title": "Identidad, contraseñas, sesiones y autorización",
+        "fragment": "tema-2-identidad-contrasenas-sesiones-y-autorizacion"
       },
       {
-        "title": "Entorno reproducible en Windows, macOS y Linux",
-        "fragment": "tema-2-entorno-reproducible-en-windows-macos-y-linux"
+        "title": "Criptografía aplicada, TLS, claves y secretos",
+        "fragment": "tema-3-criptografia-aplicada-tls-claves-y-secretos"
       },
       {
-        "title": "Arquitectura, privacidad y amenazas",
-        "fragment": "tema-3-arquitectura-privacidad-y-amenazas"
+        "title": "Validación, vulnerabilidades web, privacidad y respuesta",
+        "fragment": "tema-4-validacion-vulnerabilidades-web-privacidad-y-respuesta"
+      },
+      {
+        "title": "Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
+        "fragment": "tema-5-ingenieria-social-phishing-y-respuesta-analizar-el-correo-no-solo-mirarlo"
+      },
+      {
+        "title": "Proyecto 6: inventario endurecido",
+        "fragment": "proyecto-6-inventario-endurecido"
       }
     ],
     "1": [
       {
-        "title": "Modelo relacional e historial",
-        "fragment": "tema-1-modelo-relacional-e-historial"
+        "title": "Escaneo de imágenes y dependencias (Trivy, Snyk)",
+        "fragment": "tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
       },
       {
-        "title": "Geografía con precisión útil",
-        "fragment": "tema-2-geografia-con-precision-util"
+        "title": "Integración en el pipeline",
+        "fragment": "tema-2-integracion-en-el-pipeline"
       },
       {
-        "title": "Ledger de doble partida",
-        "fragment": "tema-3-ledger-de-doble-partida"
-      }
-    ],
-    "2": [
-      {
-        "title": "Contratos HTTP y autorización",
-        "fragment": "tema-1-contratos-http-y-autorizacion"
+        "title": "Gestión de secretos (Vault, SOPS)",
+        "fragment": "tema-3-gestion-de-secretos-vault-sops"
       },
       {
-        "title": "Casos de uso y transacciones",
-        "fragment": "tema-2-casos-de-uso-y-transacciones"
+        "title": "Menor privilegio en CI/CD",
+        "fragment": "tema-4-menor-privilegio-en-ci-cd"
       },
       {
-        "title": "Outbox, colas y observabilidad",
-        "fragment": "tema-3-outbox-colas-y-observabilidad"
+        "title": "SBOM y supply chain security",
+        "fragment": "tema-5-sbom-y-supply-chain-security"
       },
       {
-        "title": "Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores",
-        "fragment": "tema-4-evolucion-de-contratos-aceptar-una-version-nueva-sin-romper-clientes-anteriores"
-      }
-    ],
-    "3": [
-      {
-        "title": "Estados explícitos y arquitectura de interfaz",
-        "fragment": "tema-1-estados-explicitos-y-arquitectura-de-interfaz"
+        "title": "SAST, DAST y SCA — diferencias y herramientas",
+        "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
       },
       {
-        "title": "Mapas operativos",
-        "fragment": "tema-2-mapas-operativos"
-      },
-      {
-        "title": "Accesibilidad, seguridad y rendimiento",
-        "fragment": "tema-3-accesibilidad-seguridad-y-rendimiento"
-      }
-    ],
-    "4": [
-      {
-        "title": "Arquitectura Flutter por capacidades",
-        "fragment": "tema-1-arquitectura-flutter-por-capacidades"
-      },
-      {
-        "title": "GPS, permisos y batería",
-        "fragment": "tema-2-gps-permisos-y-bateria"
-      },
-      {
-        "title": "Offline-first y prueba de entrega",
-        "fragment": "tema-3-offline-first-y-prueba-de-entrega"
-      }
-    ],
-    "5": [
-      {
-        "title": "Grafos y problema de rutas",
-        "fragment": "tema-1-grafos-y-problema-de-rutas"
-      },
-      {
-        "title": "Geocoding y map matching",
-        "fragment": "tema-2-geocoding-y-map-matching"
-      },
-      {
-        "title": "Streaming y ETA con incertidumbre",
-        "fragment": "tema-3-streaming-y-eta-con-incertidumbre"
-      },
-      {
-        "title": "Socket.IO extremo a extremo: un gateway compatible con el cliente móvil",
-        "fragment": "tema-4-socket-io-extremo-a-extremo-un-gateway-compatible-con-el-cliente-movil"
-      },
-      {
-        "title": "OSRM: del contrato de coordenadas a una respuesta de ruta verificable",
-        "fragment": "tema-5-osrm-del-contrato-de-coordenadas-a-una-respuesta-de-ruta-verificable"
-      }
-    ],
-    "6": [
-      {
-        "title": "Cotización y facturación reproducible",
-        "fragment": "tema-1-cotizacion-y-facturacion-reproducible"
-      },
-      {
-        "title": "Recaudo, liquidación y conciliación",
-        "fragment": "tema-2-recaudo-liquidacion-y-conciliacion"
-      },
-      {
-        "title": "Fraude responsable",
-        "fragment": "tema-3-fraude-responsable"
-      },
-      {
-        "title": "Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación",
-        "fragment": "tema-4-tokenizacion-de-pagos-un-identificador-opaco-no-sustituye-autorizacion-ni-confirmacion"
-      }
-    ],
-    "7": [
-      {
-        "title": "Infraestructura y entrega segura",
-        "fragment": "tema-1-infraestructura-y-entrega-segura"
-      },
-      {
-        "title": "SLO y respuesta a incidentes",
-        "fragment": "tema-2-slo-y-respuesta-a-incidentes"
-      },
-      {
-        "title": "Pruebas end-to-end del sistema completo (app ↔ backend)",
-        "fragment": "tema-3-pruebas-end-to-end-del-sistema-completo-app-backend"
-      },
-      {
-        "title": "Continuidad, costes y proyecto final",
-        "fragment": "tema-4-continuidad-costes-y-proyecto-final"
+        "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
+        "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
       }
     ]
   },
@@ -6812,38 +7082,6 @@
     ],
     "16": [
       {
-        "title": "Service discovery y configuración centralizada",
-        "fragment": "tema-1-service-discovery-y-configuracion-centralizada"
-      },
-      {
-        "title": "API Gateway y composición",
-        "fragment": "tema-2-api-gateway-y-composicion"
-      },
-      {
-        "title": "Resiliencia distribuida",
-        "fragment": "tema-3-resiliencia-distribuida"
-      },
-      {
-        "title": "Observabilidad distribuida",
-        "fragment": "tema-4-observabilidad-distribuida"
-      }
-    ],
-    "17": [
-      {
-        "title": "Consistencia eventual y sagas",
-        "fragment": "tema-1-consistencia-eventual-y-sagas"
-      },
-      {
-        "title": "Contratos de API y compatibilidad",
-        "fragment": "tema-2-contratos-de-api-y-compatibilidad"
-      },
-      {
-        "title": "Operación distribuida: idempotencia, retries, DLQ",
-        "fragment": "tema-3-operacion-distribuida-idempotencia-retries-dlq"
-      }
-    ],
-    "18": [
-      {
         "title": "OIDC/OAuth2 con Spring Security",
         "fragment": "tema-1-oidc-oauth2-con-spring-security"
       },
@@ -6864,7 +7102,7 @@
         "fragment": "tema-5-tokenizacion-de-datos-de-tarjeta"
       }
     ],
-    "19": [
+    "17": [
       {
         "title": "Fat JAR vs capas de Docker",
         "fragment": "tema-1-fat-jar-vs-capas-de-docker"
@@ -6884,6 +7122,24 @@
       {
         "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
         "fragment": "tema-5-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
+      }
+    ],
+    "18": [
+      {
+        "title": "Diseño del dominio y contratos",
+        "fragment": "tema-1-diseno-del-dominio-y-contratos"
+      },
+      {
+        "title": "Persistencia, transacciones y migraciones",
+        "fragment": "tema-2-persistencia-transacciones-y-migraciones"
+      },
+      {
+        "title": "Seguridad, observabilidad y resiliencia",
+        "fragment": "tema-3-seguridad-observabilidad-y-resiliencia"
+      },
+      {
+        "title": "Smoke end-to-end y entrega",
+        "fragment": "tema-4-smoke-end-to-end-y-entrega"
       }
     ],
     "2": [
@@ -6918,24 +7174,6 @@
       {
         "title": "Versionado de API nativo de Spring Framework 7",
         "fragment": "tema-8-versionado-de-api-nativo-de-spring-framework-7"
-      }
-    ],
-    "20": [
-      {
-        "title": "Diseño del dominio y contratos",
-        "fragment": "tema-1-diseno-del-dominio-y-contratos"
-      },
-      {
-        "title": "Persistencia, transacciones y migraciones",
-        "fragment": "tema-2-persistencia-transacciones-y-migraciones"
-      },
-      {
-        "title": "Seguridad, observabilidad y resiliencia",
-        "fragment": "tema-3-seguridad-observabilidad-y-resiliencia"
-      },
-      {
-        "title": "Smoke end-to-end y entrega",
-        "fragment": "tema-4-smoke-end-to-end-y-entrega"
       }
     ],
     "3": [
@@ -7113,613 +7351,97 @@
       }
     ]
   },
-  "spring-microservices": {
+  "sql": {
     "0": [
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
+        "title": "Del mundo real al modelo relacional",
+        "fragment": "tema-1-del-mundo-real-al-modelo-relacional"
       },
       {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
+        "title": "SQL para definir, escribir, consultar y relacionar",
+        "fragment": "tema-2-sql-para-definir-escribir-consultar-y-relacionar"
       },
       {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
+        "title": "Índices, restricciones y planes de consulta",
+        "fragment": "tema-3-indices-restricciones-y-planes-de-consulta"
       },
       {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
+        "title": "Transacciones, concurrencia y elección SQL/NoSQL",
+        "fragment": "tema-4-transacciones-concurrencia-y-eleccion-sql-nosql"
       },
       {
-        "title": "Ejecutar",
-        "fragment": "ejecutar"
+        "title": "SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
+        "fragment": "tema-5-sql-avanzado-subconsultas-vistas-triggers-y-funciones-de-ventana"
       },
       {
-        "title": "Java 21+: streams, lambdas, Optional, records, pattern matching",
-        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
+        "title": "Procedimientos almacenados, funciones y cursores con PL/pgSQL",
+        "fragment": "tema-6-procedimientos-almacenados-funciones-y-cursores-con-pl-pgsql"
       },
       {
-        "title": "Virtual Threads (Project Loom)",
-        "fragment": "tema-2-virtual-threads-project-loom"
+        "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
+        "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
       },
       {
-        "title": "Spring IoC, DI, bean lifecycle y ApplicationContext",
-        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-y-applicationcontext"
+        "title": "Proyecto 4: migrar el inventario JSON a SQLite",
+        "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
+      }
+    ]
+  },
+  "typescript": {
+    "0": [
+      {
+        "title": "Tipos básicos, interfaces y type aliases",
+        "fragment": "tema-1-tipos-basicos-interfaces-y-type-aliases"
       },
       {
-        "title": "Auto-configuración condicional, @Conditional y starters",
-        "fragment": "tema-4-auto-configuracion-condicional-conditional-y-starters"
+        "title": "Narrowing y union types",
+        "fragment": "tema-2-narrowing-y-union-types"
       },
       {
-        "title": "Multi-module Spring Boot projects",
-        "fragment": "tema-5-multi-module-spring-boot-projects"
+        "title": "tsconfig esencial y modo strict",
+        "fragment": "tema-3-tsconfig-esencial-y-modo-strict"
       },
       {
-        "title": "Perfiles y configuración externalizada",
-        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
+        "title": "Generics",
+        "fragment": "tema-4-generics"
       },
       {
-        "title": "CRaC (Coordinated Restore at Checkpoint)",
-        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
+        "title": "Decoradores estándar de TypeScript 5",
+        "fragment": "tema-5-decoradores-estandar-de-typescript-5"
       },
       {
-        "title": "GraalVM Native Image",
-        "fragment": "tema-8-graalvm-native-image"
+        "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+        "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
+      },
+      {
+        "title": "Comprueba lo construido",
+        "fragment": "comprueba-lo-construido"
       }
     ],
     "1": [
       {
-        "title": "Spring MVC y DispatcherServlet",
-        "fragment": "tema-1-spring-mvc-y-dispatcherservlet"
+        "title": "Tipos estáticos dentro, datos desconocidos en la frontera",
+        "fragment": "tema-1-tipos-estaticos-dentro-datos-desconocidos-en-la-frontera"
       },
       {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
+        "title": "Un contrato HTTP es comportamiento, no solo documentación",
+        "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
       },
       {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
+        "title": "OpenAPI como contrato ejecutable",
+        "fragment": "tema-3-openapi-como-contrato-ejecutable"
       },
       {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
+        "title": "Reintentar sin duplicar el efecto",
+        "fragment": "tema-4-reintentar-sin-duplicar-el-efecto"
       },
       {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
+        "title": "Webhooks verificables y recuperación por reconciliación",
+        "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
       },
       {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "DTOs, Jackson y validación",
-        "fragment": "tema-2-dtos-jackson-y-validacion"
-      },
-      {
-        "title": "Manejo global de excepciones",
-        "fragment": "tema-3-manejo-global-de-excepciones"
-      },
-      {
-        "title": "Spring Data JPA, Hibernate y transacciones",
-        "fragment": "tema-4-spring-data-jpa-hibernate-y-transacciones"
-      },
-      {
-        "title": "Criteria/Specifications",
-        "fragment": "tema-5-criteria-specifications"
-      },
-      {
-        "title": "Flyway/Liquibase",
-        "fragment": "tema-6-flyway-liquibase"
-      },
-      {
-        "title": "PostgreSQL y MySQL",
-        "fragment": "tema-7-postgresql-y-mysql"
-      }
-    ],
-    "10": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts (raíz)",
-        "fragment": "build-gradle-kts-raiz"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "docker-compose.yml (Kafka + Schema Registry)",
-        "fragment": "docker-compose-yml-kafka-schema-registry"
-      },
-      {
-        "title": "Kafka, particiones y consumer groups",
-        "fragment": "tema-1-kafka-particiones-y-consumer-groups"
-      },
-      {
-        "title": "RabbitMQ, acks y DLQ",
-        "fragment": "tema-2-rabbitmq-acks-y-dlq"
-      },
-      {
-        "title": "Schema Registry y evolución",
-        "fragment": "tema-3-schema-registry-y-evolucion"
-      },
-      {
-        "title": "Idempotencia en consumidores",
-        "fragment": "tema-4-idempotencia-en-consumidores"
-      }
-    ],
-    "11": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts (raíz)",
-        "fragment": "build-gradle-kts-raiz"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "Outbox y CDC con Debezium",
-        "fragment": "tema-1-outbox-y-cdc-con-debezium"
-      },
-      {
-        "title": "Sagas orquestadas y coreografiadas",
-        "fragment": "tema-2-sagas-orquestadas-y-coreografiadas"
-      },
-      {
-        "title": "Idempotencia real y exactly-once práctico",
-        "fragment": "tema-3-idempotencia-real-y-exactly-once-practico"
-      },
-      {
-        "title": "Por qué evitar 2PC",
-        "fragment": "tema-4-por-que-evitar-2pc"
-      }
-    ],
-    "12": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts (raíz)",
-        "fragment": "build-gradle-kts-raiz"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "Dockerfile",
-        "fragment": "dockerfile"
-      },
-      {
-        "title": ".dockerignore",
-        "fragment": "dockerignore"
-      },
-      {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "Dockerfile multi-stage y runtime Java",
-        "fragment": "tema-1-dockerfile-multi-stage-y-runtime-java"
-      },
-      {
-        "title": "Kubernetes Deployments, Services, ConfigMaps, Secrets, probes",
-        "fragment": "tema-2-kubernetes-deployments-services-configmaps-secrets-probes"
-      },
-      {
-        "title": "HPA, Helm y despliegues progresivos",
-        "fragment": "tema-3-hpa-helm-y-despliegues-progresivos"
-      },
-      {
-        "title": "GitOps con ArgoCD",
-        "fragment": "tema-4-gitops-con-argocd"
-      },
-      {
-        "title": "GraalVM Native Image, CRaC y JVM tuning para contenedores",
-        "fragment": "tema-5-graalvm-native-image-crac-y-jvm-tuning-para-contenedores"
-      }
-    ],
-    "13": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "ADRs y C4",
-        "fragment": "tema-1-adrs-y-c4"
-      },
-      {
-        "title": "Fitness functions y ATAM ligero",
-        "fragment": "tema-2-fitness-functions-y-atam-ligero"
-      },
-      {
-        "title": "FinOps: costo, right-sizing y observability tax",
-        "fragment": "tema-3-finops-costo-right-sizing-y-observability-tax"
-      },
-      {
-        "title": "Ley de Conway y Team Topologies",
-        "fragment": "tema-4-ley-de-conway-y-team-topologies"
-      }
-    ],
-    "14": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "Monolito distribuido y sobre-descomposición",
-        "fragment": "tema-1-monolito-distribuido-y-sobre-descomposicion"
-      },
-      {
-        "title": "Sagas innecesarias y acoplamiento temporal",
-        "fragment": "tema-2-sagas-innecesarias-y-acoplamiento-temporal"
-      },
-      {
-        "title": "Strangler Fig y coexistencia de datos",
-        "fragment": "tema-3-strangler-fig-y-coexistencia-de-datos"
-      },
-      {
-        "title": "Métricas DORA y deuda técnica",
-        "fragment": "tema-4-metricas-dora-y-deuda-tecnica"
-      }
-    ],
-    "15": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts (raíz)",
-        "fragment": "build-gradle-kts-raiz"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "Diseño del sistema y límites",
-        "fragment": "tema-1-diseno-del-sistema-y-limites"
-      },
-      {
-        "title": "Contratos, idempotencia y saga/outbox",
-        "fragment": "tema-2-contratos-idempotencia-y-saga-outbox"
-      },
-      {
-        "title": "Observabilidad, seguridad y despliegue",
-        "fragment": "tema-3-observabilidad-seguridad-y-despliegue"
-      },
-      {
-        "title": "Carga, restricción sobrevenida y defensa ARB",
-        "fragment": "tema-4-carga-restriccion-sobrevenida-y-defensa-arb"
-      }
-    ],
-    "2": [
-      {
-        "title": "JUnit 5, Mockito y MockMvc",
-        "fragment": "tema-1-junit-5-mockito-y-mockmvc"
-      },
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "Testcontainers",
-        "fragment": "tema-2-testcontainers"
-      },
-      {
-        "title": "Contract Testing con Pact",
-        "fragment": "tema-3-contract-testing-con-pact"
-      },
-      {
-        "title": "ArchUnit",
-        "fragment": "tema-4-archunit"
-      },
-      {
-        "title": "SonarQube",
-        "fragment": "tema-5-sonarqube"
-      },
-      {
-        "title": "Floci para emular dependencias cloud en tests/CI",
-        "fragment": "tema-6-floci-para-emular-dependencias-cloud-en-tests-ci"
-      }
-    ],
-    "3": [
-      {
-        "title": "@Cacheable, @CacheEvict y TTL",
-        "fragment": "tema-1-cacheable-cacheevict-y-ttl"
-      },
-      {
-        "title": "Read-through, write-through, write-behind",
-        "fragment": "tema-2-read-through-write-through-write-behind"
-      },
-      {
-        "title": "Distributed locking y fencing tokens",
-        "fragment": "tema-3-distributed-locking-y-fencing-tokens"
-      },
-      {
-        "title": "Cache stampede y mitigaciones",
-        "fragment": "tema-4-cache-stampede-y-mitigaciones"
-      }
-    ],
-    "4": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "Monolito modular vs microservicios",
-        "fragment": "tema-1-monolito-modular-vs-microservicios"
-      },
-      {
-        "title": "DDD: bounded contexts, aggregates y domain events",
-        "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
-      },
-      {
-        "title": "Spring Modulith",
-        "fragment": "tema-3-spring-modulith"
-      },
-      {
-        "title": "Strangler Fig",
-        "fragment": "tema-4-strangler-fig"
-      },
-      {
-        "title": "Database-per-service",
-        "fragment": "tema-5-database-per-service"
-      },
-      {
-        "title": "Mapa del diseño de sistemas: latencia, throughput, CAP y elección de líder",
-        "fragment": "tema-6-mapa-del-diseno-de-sistemas-latencia-throughput-cap-y-eleccion-de-lider"
-      }
-    ],
-    "5": [
-      {
-        "title": "REST con Spring MVC y WebClient",
-        "fragment": "tema-1-rest-con-spring-mvc-y-webclient"
-      },
-      {
-        "title": "gRPC con Spring",
-        "fragment": "tema-2-grpc-con-spring"
-      },
-      {
-        "title": "Mensajería con Spring Cloud Stream",
-        "fragment": "tema-3-mensajeria-con-spring-cloud-stream"
-      },
-      {
-        "title": "Sync vs async, timeouts e idempotencia",
-        "fragment": "tema-4-sync-vs-async-timeouts-e-idempotencia"
-      },
-      {
-        "title": "HTTP Service Clients declarativos y RSocket",
-        "fragment": "tema-5-http-service-clients-declarativos-y-rsocket"
-      }
-    ],
-    "6": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts (raíz)",
-        "fragment": "build-gradle-kts-raiz"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "docker-compose.yml (Nacos)",
-        "fragment": "docker-compose-yml-nacos"
-      },
-      {
-        "title": "Service discovery con Eureka/Consul/Nacos",
-        "fragment": "tema-1-service-discovery-con-eureka-consul-nacos"
-      },
-      {
-        "title": "Spring Cloud Gateway",
-        "fragment": "tema-2-spring-cloud-gateway"
-      }
-    ],
-    "7": [
-      {
-        "title": "Circuit breaker — dos microservicios conectados y protegidos",
-        "fragment": "tema-1-circuit-breaker-dos-microservicios-conectados-y-protegidos"
-      },
-      {
-        "title": "Timeouts en cascada",
-        "fragment": "tema-2-timeouts-en-cascada"
-      },
-      {
-        "title": "Fallback strategies",
-        "fragment": "tema-3-fallback-strategies"
-      },
-      {
-        "title": "Chaos engineering",
-        "fragment": "tema-4-chaos-engineering"
-      }
-    ],
-    "8": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "docker-compose.yml (Keycloak)",
-        "fragment": "docker-compose-yml-keycloak"
-      },
-      {
-        "title": "Spring Security filter chain",
-        "fragment": "tema-1-spring-security-filter-chain"
-      },
-      {
-        "title": "JWT y OAuth2/OIDC",
-        "fragment": "tema-2-jwt-y-oauth2-oidc"
-      },
-      {
-        "title": "RBAC, scopes y mTLS/Zero-Trust",
-        "fragment": "tema-3-rbac-scopes-y-mtls-zero-trust"
-      },
-      {
-        "title": "Vault, gestión de secretos, SBOM y CVE scanning",
-        "fragment": "tema-4-vault-gestion-de-secretos-sbom-y-cve-scanning"
-      }
-    ],
-    "9": [
-      {
-        "title": "Prerrequisitos",
-        "fragment": "prerrequisitos"
-      },
-      {
-        "title": "Estructura del proyecto",
-        "fragment": "estructura-del-proyecto"
-      },
-      {
-        "title": "build.gradle.kts",
-        "fragment": "build-gradle-kts"
-      },
-      {
-        "title": "settings.gradle.kts",
-        "fragment": "settings-gradle-kts"
-      },
-      {
-        "title": "application.yml",
-        "fragment": "application-yml"
-      },
-      {
-        "title": "docker-compose.yml",
-        "fragment": "docker-compose-yml"
-      },
-      {
-        "title": "Micrometer y Prometheus",
-        "fragment": "tema-1-micrometer-y-prometheus"
-      },
-      {
-        "title": "OpenTelemetry por defecto: métricas, trazas y logs correlacionados",
-        "fragment": "tema-2-opentelemetry-por-defecto-metricas-trazas-y-logs-correlacionados"
-      },
-      {
-        "title": "Logs estructurados y propagación de contexto",
-        "fragment": "tema-3-logs-estructurados-y-propagacion-de-contexto"
+        "title": "Proyecto: API contractual con efectos recuperables",
+        "fragment": "proyecto-api-contractual-con-efectos-recuperables"
       }
     ]
   }

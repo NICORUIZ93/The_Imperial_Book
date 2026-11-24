@@ -1,1770 +1,2465 @@
-# Módulo 9: Matemáticas discretas, lógica y probabilidad para software
+# Módulo 9: Catálogo de patrones de diseño
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64 y Hypothesis 6.170.17,
-instalado en un entorno virtual. Todas las salidas se obtuvieron ejecutando el código mostrado ese día, en la carpeta
-de práctica `/home/estudiante/labs/discretas` (tu `~/labs/discretas`). Los resultados exactos (conteos, fracciones,
-tablas de verdad y simulaciones con semilla) deben coincidir con los tuyos. Los **milisegundos** del Tema 4 cambian en
-cada máquina y en cada ejecución: lo que se mantiene es la proporción entre ellos. Los comandos para Windows no se
-ejecutaron.
+**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64, solo con la biblioteca estándar (`abc`, `dataclasses`, `functools`, `time`, `sys` y `tracemalloc`). La línea de referencia del curso es Python 3.14 (`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/patrones` (tu `~/labs/patrones`). Los tiempos en milisegundos y los megabytes medidos pueden variar un poco en tu equipo; los textos y los conteos no.
 
-Las matemáticas de este módulo no son una colección de fórmulas para memorizar. Son un lenguaje para decir exactamente
-qué debe ocurrir, detectar contradicciones, justificar algoritmos y distinguir una mejora real de una coincidencia.
-Cada idea llega en tres formas: en español, en símbolos y en un programa de Python que la calcula o la comprueba.
+## Apertura del módulo
 
-#### Objetivos del módulo
 Al terminar este módulo podrás:
-- escribir reglas de negocio como proposiciones y especificaciones, y encontrar contraejemplos de forma automática;
-- operar con conjuntos, clasificar relaciones y demostrar por inducción una propiedad de un algoritmo;
-- contar casos con reglas de conteo, permutaciones y combinaciones sin tener que listarlos;
-- modelar dependencias como un grafo dirigido, detectar ciclos y obtener un orden topológico;
-- calcular probabilidades exactas, condicionales y esperanzas, y comprobarlas con una simulación reproducible;
-- medir con percentiles y comunicar una conclusión sin falsear su precisión.
+- reconocer en código de RutaFlow el problema que resuelve cada uno de ocho patrones de diseño;
+- transformar una versión «antes» con `if`, copias o referencias cruzadas en una versión con el patrón, sin cambiar el resultado correcto;
+- dibujar el diagrama de clases o de secuencia de cada patrón y explicar quién llama a quién;
+- demostrar con una ejecución real el fallo que el patrón evita;
+- justificar cuándo **no** usar un patrón y qué alternativa más simple elegir.
 
-#### Esquema del módulo
-1. Lógica para especificar antes de programar.
-2. Conjuntos, relaciones, funciones e inducción.
-3. Conteo, grafos y estructuras conectadas.
-4. Probabilidad y evidencia para decisiones técnicas.
-5. Proyecto 9: cuaderno de propiedades, grafos y evidencia.
+**Esquema del módulo:** Decorator (Tema 1), State (Tema 2), Template Method (Tema 3), Chain of Responsibility (Tema 4), Mediator (Tema 5), Memento (Tema 6), Visitor (Tema 7) y Flyweight (Tema 8). Cierra con el Proyecto 13, que los une en un núcleo de envíos.
 
-**Qué necesitas saber antes:** caso de prueba, `assert` y excepción (Módulo 1, Tema 1); condiciones y bucles
-(Módulo 1, Tema 3); funciones (Módulo 1, Tema 4); clases (Módulo 1, Tema 6); listas, diccionarios y conjuntos de
-Python (Módulo 2, Tema 1); precondición, postcondición e invariante de ciclo (Módulo 2, Tema 3); complejidad,
-recursión y caso base (Módulo 2, Tema 4); grafos, lista de adyacencia y DFS (Módulo 2, Tema 7); entorno virtual
-(Módulo 5, Tema 2).
+**Qué necesitas saber antes:** clase, objeto, atributo, método, `__init__` y `self` (Módulo 1, Tema 6); herencia, `super()`, sobrescritura, composición, clase abstracta, método abstracto y polimorfismo (Módulo 1, Tema 7); excepción y `assert` (Módulo 1, Tema 1); función, parámetro y `__name__` (Módulo 1, Tema 4); lista, diccionario, tupla, conjunto y mutable (Módulo 2, Tema 1); pila (Módulo 2, Tema 2). Esas fichas no se repiten aquí: cada tema las enlaza.
 
-#### Cómo leer las fórmulas de este módulo
-Las fórmulas son abreviaturas de frases. Cada símbolo se explica la primera vez que aparece. Esta tabla los reúne para
-que vuelvas a ella cuando lo necesites.
+## Antes de empezar: cómo usar este catálogo
 
-| Símbolo | Se lee | En Python | Tema |
-|---|---|---|---|
-| ¬p | «no p» | `not p` | 1 |
-| p ∧ q | «p y q» | `p and q` | 1 |
-| p ∨ q | «p o q» (o las dos) | `p or q` | 1 |
-| p → q | «si p, entonces q» | `(not p) or q` | 1 |
-| p ↔ q | «p si y solo si q» | `p == q` (con booleanos) | 1 |
-| ∀x | «para todo x» | `all(...)` | 1 |
-| ∃x | «existe al menos un x» | `any(...)` | 1 |
-| x ∈ A | «x pertenece a A» | `x in A` | 2 |
-| A ⊆ B | «A es subconjunto de B» | `A <= B` | 2 |
-| A ∪ B, A ∩ B, A − B | unión, intersección, diferencia | `A \| B`, `A & B`, `A - B` | 2 |
-| A × B | producto cartesiano | `itertools.product(A, B)` | 2 |
-| \|A\| | cardinal: cuántos elementos tiene A | `len(A)` | 2 |
-| Σ | suma de varios términos | `sum(...)` | 2 |
-| n! | factorial de n | `math.factorial(n)` | 3 |
-| C(n, k) | combinaciones de n en k | `math.comb(n, k)` | 3 |
-| P(A) | probabilidad del evento A | `Fraction(casos_A, casos_total)` | 4 |
-| P(A \| B) | probabilidad de A dado B | `p_ambos / p_b` | 4 |
-| E[X] | esperanza (valor esperado) de X | `sum(x * p for x, p in ...)` | 4 |
+Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo practica Repository y Adapter y remite aquí. Cada tema sigue el mismo recorrido: un **antes** con el problema real en código de RutaFlow, ejecutado; un **después** con el patrón, ejecutado con la misma entrada; un diagrama; y un apartado **Cuándo no usarlo**.
 
+No empieces eligiendo patrón. Identifica primero el problema, las fuerzas que tiran en direcciones distintas y la alternativa más simple. Un patrón innecesario agrega archivos, saltos y conceptos que alguien tendrá que leer.
+
+La alternativa simple que más vas a ver se llama **Strategy**: pasar un objeto o una función intercambiable. Ya la usaste con los avisos del Módulo 1, Tema 7, cuando `Envio` recibía un `AvisoConsola` o un `AvisoMemoria`.
+
+Prepara la carpeta una sola vez; todos los programas del módulo viven ahí y algunos importan a otros:
+
+```bash
+mkdir -p ~/labs/patrones && cd ~/labs/patrones
+```
 
 ## Aprende construyendo
 
-
-### Tema 1: Lógica para especificar antes de programar · Avanzado · 70 min
+### Tema 1: Decorator: agregar comportamiento sin heredar · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- traducir una regla escrita en español a proposiciones unidas por conectivos, en símbolos y en Python;
-- construir la tabla de verdad de una fórmula y decidir si dos fórmulas son equivalentes;
-- escribir la precondición, la postcondición y el invariante de una operación como implicaciones verificables;
-- encontrar un contraejemplo revisando todos los casos de un dominio pequeño y con Hypothesis.
+- explicar qué es un patrón de diseño y qué problema resuelve el patrón Decorator;
+- envolver un objeto con decoradores apilables y predecir cómo cambia el resultado al cambiar el orden;
+- distinguir el patrón Decorator del decorador de función `@` de Python;
+- conservar el nombre y la documentación de una función decorada con `functools.wraps`.
 
-**Conceptos clave:** proposición, conectivo lógico, tabla de verdad, implicación, equivalencia lógica, cuantificador, contraejemplo, invariante, prueba basada en propiedades
+**Conceptos clave:** patrón de diseño, Decorator, decorador de función, argumentos variables, `functools.wraps`
+
+Ya los conoces y no se repiten: *clase*, *objeto*, *método* y `__init__` (Módulo 1, Tema 6); *herencia*,
+*sobrescritura*, `super()` y *composición* (Módulo 1, Tema 7); *función* y `__name__` (Módulo 1, Tema 4).
 
 #### El problema
-La bodega de RutaFlow tiene una regla escrita en un correo: «no se puede retirar más de lo que hay». Dos personas la
-programan. Una revisa que haya stock; la otra, que el stock alcance para el pedido. Las dos dicen «funciona» porque
-probaron un par de casos. ¿Cómo escribes la regla para que una máquina decida quién tiene razón, y cómo encuentras el
-caso exacto que la rompe?
-
-Este tema usa lo que ya conoces: **precondición** y **postcondición** tienen su ficha en el Módulo 2, Tema 3;
-**assert** y **caso de prueba**, en el Módulo 1, Tema 1. Aquí no se redefinen.
+RutaFlow avisa a sus clientes cuándo sale cada paquete. Unos clientes quieren el aviso firmado, otros en mayúsculas,
+otros recortado para SMS, y algunos todo a la vez. Si cada combinación es una subclase, cada extra nuevo duplica el
+número de clases. ¿Cómo agregas comportamiento a un objeto, en cualquier combinación, sin crear una clase por mezcla?
 
 #### Glosario del tema
 
-**proposición**
-- **Definición técnica:** enunciado que, en un contexto dado, es verdadero o falso, sin ambigüedad. Su valor de verdad se representa con `True` o `False`.
-- **En palabras sencillas:** una frase a la que puedes contestar «es cierto» o «no es cierto».
-- **Dónde se rompe la comparación:** «el stock está bajo» suena a proposición, pero no lo es hasta que defines «bajo»; `stock < 10` sí lo es.
-- **Ejemplo:** \(p\): «la cantidad pedida no supera el stock». En Python, `cantidad <= stock` produce `True` o `False`.
-- **Error típico:** tratar una pregunta o una orden («¿hay stock?», «retira 3») como proposición: no tienen valor de verdad.
+**patrón de diseño**
+- **Definición técnica:** solución con nombre a un problema de diseño que se repite, descrita por su estructura de clases, sus colaboraciones y sus consecuencias.
+- **En palabras sencillas:** una receta probada para organizar clases cuando aparece un problema conocido; el nombre permite hablar de ella en una frase.
+- **Dónde se rompe la comparación:** una receta se sigue al pie de la letra; un patrón se adapta al lenguaje y al problema, y a veces la mejor decisión es no usarlo.
+- **Ejemplo:** «usa un Decorator para la firma» le dice a otra persona qué clases esperar sin dibujarlas.
+- **Error típico:** buscar dónde meter un patrón antes de tener el problema que resuelve.
 
-**conectivo lógico**
-- **Definición técnica:** operador que forma una proposición compuesta a partir de otras: negación \(\neg p\), conjunción \(p \land q\) y disyunción \(p \lor q\). En Python son `not`, `and` y `or`.
-- **En palabras sencillas:** las palabras «no», «y» y «o» del español, pero con un significado fijo que no depende del tono.
-- **Dónde se rompe la comparación:** el «o» lógico es inclusivo: \(p \lor q\) es verdadera también cuando las dos lo son. En español, «café o té» suele excluir una opción.
-- **Ejemplo:** `stock > 0 and cantidad <= stock` une dos proposiciones con «y».
-- **Error típico:** escribir `estado == "creado" or "asignado"`. Python lo lee como `(estado == "creado") or "asignado"` y devuelve `'asignado'`, que cuenta como verdadero siempre.
+**Decorator**
+- **Definición técnica:** patrón estructural en el que un objeto envoltorio implementa la misma interfaz que el objeto que envuelve, le delega la llamada y agrega trabajo antes o después.
+- **En palabras sencillas:** como meter un regalo en varias bolsas: cada bolsa agrega algo, pero por fuera sigue siendo «algo que se entrega».
+- **Dónde se rompe la comparación:** las bolsas no cambian el regalo; un decorador sí puede cambiar los datos que pasan, como el mensaje en mayúsculas.
+- **Ejemplo:** `ConFirma(EnMayusculas(Notificador()))` responde a `enviar` igual que un `Notificador`.
+- **Error típico:** olvidar delegar: si `ConFirma.enviar` no llama a `self.envuelto.enviar`, el aviso original se pierde.
 
-**tabla de verdad**
-- **Definición técnica:** tabla que lista todas las combinaciones de valores de las proposiciones simples y el valor de la fórmula en cada una. Con \(n\) proposiciones tiene \(2^n\) filas.
-- **En palabras sencillas:** probar la fórmula con todas las entradas posibles, sin saltarte ninguna.
-- **Dónde se rompe la comparación:** solo es práctica con pocas proposiciones: con 30 tendría más de mil millones de filas.
-- **Ejemplo:** con \(p\) y \(q\) hay \(2^2 = 4\) filas: verdadero-verdadero, verdadero-falso, falso-verdadero y falso-falso.
-- **Error típico:** escribir las filas a mano y olvidar una; `itertools.product([True, False], repeat=2)` las genera todas.
+**decorador de función**
+- **Definición técnica:** función que recibe una función y devuelve otra que la reemplaza; la sintaxis `@nombre` sobre un `def` equivale a `f = nombre(f)`.
+- **En palabras sencillas:** un envoltorio para funciones: la llamas igual que antes y por dentro hace algo extra, como medir el tiempo.
+- **Dónde se rompe la comparación:** se parece al patrón Decorator en la idea, pero se aplica una sola vez al definir la función, no a cada objeto mientras el programa corre.
+- **Ejemplo:** `@cronometrado` sobre `def calcular_tarifa` hace que cada llamada imprima cuánto tardó.
+- **Error típico:** olvidar `return envoltura` al final del decorador: la función queda en `None` y llamarla produce `TypeError: 'NoneType' object is not callable`.
 
-**implicación**
-- **Definición técnica:** conectivo \(p \to q\), «si \(p\), entonces \(q\)». Es falsa solo cuando \(p\) es verdadera y \(q\) es falsa; equivale a \(\neg p \lor q\). \(p\) se llama antecedente y \(q\), consecuente.
-- **En palabras sencillas:** una promesa: «si llueve, llevo paraguas». Solo la rompes si llueve y no lo llevas.
-- **Dónde se rompe la comparación:** en español, «si» sugiere causa. En lógica no: cuando \(p\) es falsa, \(p \to q\) es verdadera, pase lo que pase con \(q\).
-- **Ejemplo:** «si el retiro se acepta, el stock nuevo es mayor o igual que 0» se escribe `(not aceptado) or stock_nuevo >= 0`.
-- **Error típico:** confundirla con su recíproca \(q \to p\). La tabla de verdad del Problema resuelto 1.1 muestra que no dicen lo mismo.
+**argumentos variables**
+- **Definición técnica:** un parámetro escrito `*args` recibe en una tupla todos los argumentos posicionales que lleguen; al llamar, `funcion(*args)` los vuelve a repartir.
+- **En palabras sencillas:** una bolsa que recibe cuantos datos le pasen, para entregarlos intactos a la función envuelta.
+- **Dónde se rompe la comparación:** la bolsa guarda el orden: `args` es una tupla y `args[0]` es el primer argumento.
+- **Ejemplo:** en `calcular_tarifa(3)`, la envoltura recibe `args == (3,)`.
+- **Error típico:** escribir `funcion(args)` sin asterisco: la función recibe una tupla como un solo argumento.
 
-**equivalencia lógica**
-- **Definición técnica:** dos fórmulas son lógicamente equivalentes (\(\equiv\)) si tienen el mismo valor de verdad en todas las filas de su tabla.
-- **En palabras sencillas:** dos maneras distintas de decir exactamente lo mismo.
-- **Dónde se rompe la comparación:** coincidir en algunas filas no basta; una sola fila distinta las hace diferentes.
-- **Ejemplo:** la ley de De Morgan \(\neg(p \land q) \equiv \neg p \lor \neg q\) y la contrapositiva \(p \to q \equiv \neg q \to \neg p\).
-- **Error típico:** negar `a and b` como `not a and not b`. Lo correcto, por De Morgan, es `not a or not b`.
-
-**cuantificador**
-- **Definición técnica:** símbolo que indica para cuántos elementos de un dominio vale una propiedad: el universal \(\forall x\) («para todo \(x\)») y el existencial \(\exists x\) («existe al menos un \(x\)»). En Python se evalúan con `all` y `any`.
-- **En palabras sencillas:** «todos cumplen» frente a «al menos uno cumple».
-- **Dónde se rompe la comparación:** `all` y `any` recorren una colección finita; un \(\forall\) sobre todos los enteros no se puede revisar caso por caso.
-- **Ejemplo:** \(\forall s \in \{0, 1, \dots, 5\}: s \ge 0\) se escribe `all(s >= 0 for s in range(6))` y da `True`.
-- **Error típico:** olvidar que `all([])` devuelve `True`. Si la lista llegó vacía por un error, la comprobación «pasa» sin revisar nada.
-
-**contraejemplo**
-- **Definición técnica:** elemento del dominio para el que la propiedad es falsa. Uno solo basta para refutar un \(\forall\).
-- **En palabras sencillas:** el caso concreto que demuestra que «siempre» era falso.
-- **Dónde se rompe la comparación:** no encontrar contraejemplos no demuestra la propiedad; quizá buscaste donde no estaban.
-- **Ejemplo:** `stock=1, cantidad=2` refuta «todo retiro deja stock ≥ 0» en la versión con defecto de `retirar`.
-- **Error típico:** descartarlo como «caso raro». Con miles de pedidos al día, los casos raros ocurren todos los días.
-
-**invariante**
-- **Definición técnica:** propiedad del estado de un sistema que se cumple antes y después de cada operación válida. Generaliza el invariante de ciclo del Módulo 2, Tema 3, de un bucle a todo el sistema.
-- **En palabras sencillas:** una regla que nunca se rompe, haga lo que haga el programa.
-- **Dónde se rompe la comparación:** dentro de una operación puede romperse un instante; lo que se exige es que vuelva a cumplirse al terminar.
-- **Ejemplo:** «para todo producto, stock ≥ 0»: \(\forall x \in \text{Productos}: \text{stock}(x) \ge 0\).
-- **Error típico:** comprobarlo solo al crear el objeto y no después de cada operación que lo modifica.
-
-**prueba basada en propiedades**
-- **Definición técnica:** prueba que afirma una propiedad para todas las entradas de un tipo y deja que una herramienta genere cientos de entradas buscando un contraejemplo. Si lo encuentra, lo reduce al más simple (*shrinking*). En Python la herramienta habitual es Hypothesis.
-- **En palabras sencillas:** en vez de inventar tú cinco casos, describes la regla y una máquina intenta romperla.
-- **Dónde se rompe la comparación:** genera muchos casos, no todos. Que pase es evidencia fuerte, no una demostración.
-- **Ejemplo:** `@given(stock=st.integers(min_value=0), cantidad=st.integers(min_value=1))` genera parejas de enteros con esos límites.
-- **Error típico:** escribir una propiedad que repite el código probado (`assert retirar(s, c) == retirar(s, c)`): nunca falla y no prueba nada.
+**`functools.wraps`**
+- **Definición técnica:** decorador de la biblioteca estándar que copia a la envoltura los metadatos de la función original: `__name__`, `__doc__` y otros.
+- **En palabras sencillas:** le pone a la envoltura la etiqueta de la función que envuelve, para que no se pierda quién es.
+- **Dónde se rompe la comparación:** copia la etiqueta, no el comportamiento: la envoltura sigue ejecutando su propio código.
+- **Ejemplo:** con `@wraps(funcion)`, `calcular_tarifa.__name__` sigue siendo `'calcular_tarifa'`.
+- **Error típico:** omitirlo: los registros, los errores y las herramientas de prueba muestran `envoltura` en lugar del nombre real.
 
 #### ► CÓMO FUNCIONA
-Especificar es escribir la regla de forma que no admita dos lecturas. Lo haces en tres pasos.
-
-**Paso 1: separa las proposiciones.** «No se puede retirar más de lo que hay» contiene dos ideas que se pueden
-comprobar: \(a\): «el retiro se acepta» y \(c\): «la cantidad no supera el stock», es decir, \(\text{cantidad} \le \text{stock}\).
-
-**Paso 2: únelas con conectivos.** La regla dice que se acepta exactamente cuando alcanza. Eso es un «si y solo si»:
-
-\[ a \leftrightarrow c \]
-
-Se lee «\(a\) si y solo si \(c\)». El símbolo \(\leftrightarrow\) significa \((a \to c) \land (c \to a)\): cada una implica
-a la otra. Con booleanos, en Python es `a == c`. La implicación \(p \to q\) es la pieza central. Su tabla:
-
-| p | q | p → q | Por qué |
-|---|---|---|---|
-| V | V | V | Llovió y llevaste paraguas: cumpliste |
-| V | F | F | Llovió y no lo llevaste: rompiste la promesa |
-| F | V | V | No llovió: la promesa no se puso a prueba |
-| F | F | V | No llovió: tampoco se puso a prueba |
-
-Las dos últimas filas sorprenden. Una promesa sobre la lluvia no se rompe en un día seco.
-
-**Paso 3: cuantifica.** Una especificación habla de **todas** las entradas válidas. Con \(s\) para el stock, \(k\) para
-la cantidad y \(s'\) («ese prima») para el stock después del retiro:
-
-\[ \forall s \ge 0,\ \forall k \ge 1:\quad a \to s' \ge 0 \]
-
-Se lee: «para todo stock \(s\) mayor o igual que 0 y toda cantidad \(k\) mayor o igual que 1, si el retiro se acepta,
-el stock nuevo no es negativo». La coma separa los cuantificadores; los dos puntos significan «se cumple que».
-
-La forma general de una especificación es: **precondición → postcondición**, y el **invariante** se conserva antes y
-después. En texto plano, para `retirar` y para el cambio de estado de un envío:
-
-```text
-Pre: cantidad > 0 y producto existe
-Transición: stock_nuevo = stock_anterior - cantidad
-Post: retiro aceptado implica stock_nuevo >= 0
-Invariante global: para todo producto, stock >= 0
-```
-
-Para refutar un \(\forall\) basta un contraejemplo. Por eso la negación de «para todo» es «existe uno que no»:
-
-\[ \neg\,\forall x: P(x) \;\equiv\; \exists x: \neg P(x) \]
-
-Tienes dos formas de buscar ese \(x\). Si el dominio es pequeño, lo recorres entero con `all` y `any`. Si es enorme,
-como todos los enteros, dejas que Hypothesis genere ejemplos y reduzca el fallo al caso mínimo.
+Cada decorador **tiene** un objeto con el mismo método `enviar` y lo guarda en `self.envuelto`: es composición. Al
+llamar `enviar`, el decorador de afuera hace su parte y le pasa la llamada al de adentro. El cliente no sabe cuántas
+capas hay: solo ve algo que responde a `enviar`.
 
 ```mermaid
-flowchart LR
-    PRE["entrada cumple precondición"] --> OP["operación"] --> POST["postcondición"]
-    INV["invariante"] -. "antes y después" .-> PRE
-    INV -. "debe conservarse" .-> POST
-    POST -->|"falla en un caso"| CE["contraejemplo"]
+classDiagram
+    class Notificador {
+      +enviar(guia, mensaje)
+    }
+    class ConFirma {
+      -envuelto
+      +enviar(guia, mensaje)
+    }
+    class EnMayusculas {
+      -envuelto
+      +enviar(guia, mensaje)
+    }
+    class ParaSMS {
+      -envuelto
+      -limite
+      +enviar(guia, mensaje)
+    }
+    ConFirma o-- Notificador : envuelve
+    EnMayusculas o-- Notificador : envuelve
+    ParaSMS o-- Notificador : envuelve
 ```
+
+El diagrama dibuja el envoltorio hacia `Notificador`, pero cualquier objeto con `enviar` sirve: un `ConFirma` puede
+envolver un `EnMayusculas`. Por eso las capas se apilan en cualquier orden.
 
 #### Problema resuelto 1.1
-Construye con Python la tabla de verdad de los conectivos y de la implicación. Luego decide tres preguntas: ¿\(p \to q\)
-equivale a su recíproca \(q \to p\)? ¿Y a su contrapositiva \(\neg q \to \neg p\)? ¿Se cumple De Morgan?
+Antes del patrón. Implementa los avisos con herencia: una subclase para cada combinación de firma y mayúsculas.
 
 **Razonamiento:**
-1. Python no tiene operador de implicación; lo defines como función con su equivalencia \(\neg p \lor q\).
-2. `itertools.product([True, False], repeat=2)` genera las \(2^2 = 4\) filas sin olvidar ninguna.
-3. Dos fórmulas son equivalentes si coinciden en **todas** las filas: eso es un `all(...)` sobre las cuatro.
+1. La firma y las mayúsculas son extras; cada combinación necesita su clase.
+2. `NotificadorMayusculasConFirma` hereda de `NotificadorMayusculas` y copia la firma.
+3. Cuenta cuántas clases harían falta si cada extra se puede combinar con todos.
 
 ```python
-# tabla_verdad.py — tablas de verdad de los conectivos y de la implicación
-from itertools import product
+# notificador_herencia.py — cada combinación de extras pide una subclase
+class Notificador:
+    def enviar(self, guia, mensaje):
+        return f"[{guia}] {mensaje}"
 
+class NotificadorConFirma(Notificador):
+    def enviar(self, guia, mensaje):
+        return super().enviar(guia, mensaje) + " -- RutaFlow"
 
-def implica(p, q):
-    return (not p) or q
+class NotificadorMayusculas(Notificador):
+    def enviar(self, guia, mensaje):
+        return super().enviar(guia, mensaje.upper())
 
+class NotificadorMayusculasConFirma(NotificadorMayusculas):
+    def enviar(self, guia, mensaje):
+        return super().enviar(guia, mensaje) + " -- RutaFlow"   # firma copiada otra vez
 
-casos = list(product([True, False], repeat=2))
-print("p     q     | no p   p y q  p o q  p→q")
-for p, q in casos:
-    fila = [not p, p and q, p or q, implica(p, q)]
-    print(f"{p!s:5} {q!s:5} | " + "  ".join(f"{v!s:5}" for v in fila))
+clases = [Notificador, NotificadorConFirma, NotificadorMayusculas, NotificadorMayusculasConFirma]
+for clase in clases:
+    print(f"{clase.__name__:<30} {clase().enviar('G-101', 'Tu paquete salió')}")
 
-print("p→q equivale a q→p:", all(implica(p, q) == implica(q, p) for p, q in casos))
-print("p→q equivale a no q → no p:", all(implica(p, q) == implica(not q, not p) for p, q in casos))
-print("no (p y q) equivale a (no p) o (no q):", all((not (p and q)) == ((not p) or (not q)) for p, q in casos))
+for extras in (2, 3, 4):
+    print(f"Con {extras} extras combinables necesitas {2 ** extras} clases")
 ```
 
 ```text
-$ python3 tabla_verdad.py
-p     q     | no p   p y q  p o q  p→q
-True  True  | False  True   True   True
-True  False | False  False  True   False
-False True  | True   False  True   True
-False False | True   False  False  True
-p→q equivale a q→p: False
-p→q equivale a no q → no p: True
-no (p y q) equivale a (no p) o (no q): True
+$ python3 notificador_herencia.py
+Notificador                    [G-101] Tu paquete salió
+NotificadorConFirma            [G-101] Tu paquete salió -- RutaFlow
+NotificadorMayusculas          [G-101] TU PAQUETE SALIÓ
+NotificadorMayusculasConFirma  [G-101] TU PAQUETE SALIÓ -- RutaFlow
+Con 2 extras combinables necesitas 4 clases
+Con 3 extras combinables necesitas 8 clases
+Con 4 extras combinables necesitas 16 clases
 ```
 
 **Explicación por partes.**
-- Líneas 5–6: `implica` traduce \(p \to q \equiv \neg p \lor q\). Solo devuelve `False` cuando `p` es `True` y `q` es `False`.
-- Línea 9: `product` combina `[True, False]` consigo misma; `list` guarda las cuatro filas para reutilizarlas.
-- Líneas 12–13: cada fila calcula cuatro columnas. En `{p!s:5}`, `!s` convierte el valor en texto y `:5` lo rellena hasta 5 caracteres.
-- En la salida, la columna `p→q` solo tiene `False` en la fila `True False`: la promesa rota.
-- Línea 15: la recíproca da `False`; en la fila `False True`, \(p \to q\) es verdadera y \(q \to p\) es falsa.
-- Líneas 16–17: la contrapositiva y De Morgan coinciden en las cuatro filas: son equivalencias.
-
-> **Error común.** Escribir la implicación con una flecha, como en matemáticas: `print(p -> q)`. Python se detiene con
-> `SyntaxError: invalid syntax` y marca `->` con `^^`. Python no tiene operador de implicación; escribe `(not p) or q`.
-
-> **Buena práctica.** Cuando una condición tenga más de dos conectivos, comprueba tu simplificación con una tabla de
-> verdad generada por código antes de cambiar el `if`. Diez líneas de Python evitan un error que nadie ve en revisión.
+- Líneas 6–8 y 14–16: la firma ` -- RutaFlow` aparece escrita dos veces. Si cambia, hay que acordarse de las dos.
+- Línea 14: para combinar dos extras hace falta una clase nueva que herede de una y copie la otra.
+- Líneas 22–23: cada extra puede estar o no, así que con *n* extras hay 2ⁿ combinaciones. Con cuatro, 16 clases.
 
 #### Problema resuelto 1.2
-Esta es la versión de `retirar` que «funciona» según quien la escribió. Comprueba la especificación \(a \leftrightarrow c\)
-y \(a \to s' \ge 0\): primero en todos los casos de un dominio pequeño y después con Hypothesis.
-
-```python
-# inventario.py — retiro de cajas (versión con defecto)
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Resultado:
-    aceptado: bool
-    stock: int
-
-
-def retirar(stock: int, cantidad: int) -> Resultado:
-    if stock > 0:
-        return Resultado(True, stock - cantidad)
-    return Resultado(False, stock)
-```
+Después del patrón. Escribe cada extra como un envoltorio independiente y apílalos en el orden que pida cada cliente.
 
 **Razonamiento:**
-1. La especificación tiene dos partes; cada una es una proposición que la función `cumple` evalúa.
-2. Dominio pequeño: stock de 0 a 5 y cantidad de 1 a 5. Son \(6 \cdot 5 = 30\) casos; se revisan todos con `all` y `any`.
-3. Dominio enorme: todos los enteros válidos. Ahí Hypothesis genera ejemplos y reduce el fallo al más simple.
-4. Si aparece un contraejemplo, se corrige la función y se ejecutan las dos comprobaciones otra vez.
+1. Cada extra es una clase con `envuelto` y un método `enviar` con la misma firma que `Notificador.enviar`.
+2. `enviar` delega en `self.envuelto` y agrega su parte antes o después.
+3. Un extra nuevo, como el recorte para SMS, es una clase nueva; ninguna clase anterior cambia.
 
 ```python
-# para_todo.py — comprueba la especificación en TODOS los casos de un dominio pequeño
-from inventario import retirar
+# decorator.py — envoltorios con la misma interfaz que se apilan
+class Notificador:                         # componente base
+    def enviar(self, guia, mensaje):
+        return f"[{guia}] {mensaje}"
 
+class ConFirma:                            # decorador: misma interfaz, envuelve otro notificador
+    def __init__(self, envuelto):
+        self.envuelto = envuelto
+    def enviar(self, guia, mensaje):
+        return self.envuelto.enviar(guia, mensaje) + " -- RutaFlow"
 
-def cumple(stock, cantidad):
-    r = retirar(stock, cantidad)
-    post_1 = (not r.aceptado) or r.stock >= 0          # aceptado → stock nuevo ≥ 0
-    post_2 = r.aceptado == (cantidad <= stock)          # aceptado ↔ cantidad ≤ stock
-    return post_1 and post_2
+class EnMayusculas:
+    def __init__(self, envuelto):
+        self.envuelto = envuelto
+    def enviar(self, guia, mensaje):
+        return self.envuelto.enviar(guia, mensaje.upper())
 
+class ParaSMS:                             # extra nuevo: no toca ninguna clase anterior
+    def __init__(self, envuelto, limite=32):
+        self.envuelto, self.limite = envuelto, limite
+    def enviar(self, guia, mensaje):
+        return self.envuelto.enviar(guia, mensaje)[: self.limite]
 
-dominio = [(s, c) for s in range(0, 6) for c in range(1, 6)]
-contraejemplos = [(s, c) for s, c in dominio if not cumple(s, c)]
-print("casos revisados:", len(dominio))
-print("¿se cumple para todo caso?", all(cumple(s, c) for s, c in dominio))
-print("¿existe un contraejemplo?", any(not cumple(s, c) for s, c in dominio))
-print("primeros contraejemplos:", contraejemplos[:3])
+simple = Notificador()
+completo = ConFirma(EnMayusculas(Notificador()))
+print(simple.enviar("G-101", "Tu paquete salió"))
+print(completo.enviar("G-101", "Tu paquete salió"))
+
+largo = "Tu paquete salió de la bodega de Fontibón"
+print(ParaSMS(ConFirma(Notificador())).enviar("G-101", largo))   # recorta y pierde la firma
+print(ConFirma(ParaSMS(Notificador())).enviar("G-101", largo))   # recorta y luego firma
 ```
 
 ```text
-$ python3 para_todo.py
-casos revisados: 30
-¿se cumple para todo caso? False
-¿existe un contraejemplo? True
-primeros contraejemplos: [(1, 2), (1, 3), (1, 4)]
-```
-
-Ahora la prueba basada en propiedades. Ejecútala dentro del entorno virtual donde instalaste Hypothesis:
-
-```python
-# prueba_propiedades.py — Hypothesis busca un contraejemplo por ti
-from hypothesis import given, strategies as st
-
-from inventario import retirar
-
-
-@given(stock=st.integers(min_value=0), cantidad=st.integers(min_value=1))
-def test_retirar_preserva_stock_no_negativo(stock, cantidad):
-    resultado = retirar(stock, cantidad)
-    assert resultado.stock >= 0
-    assert resultado.aceptado == (cantidad <= stock)
-
-
-if __name__ == "__main__":
-    test_retirar_preserva_stock_no_negativo()
-    print("propiedad cumplida en todos los ejemplos generados")
-```
-
-```text
-$ python prueba_propiedades.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 15, in <module>
-    test_retirar_preserva_stock_no_negativo()
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 8, in test_retirar_preserva_stock_no_negativo
-    def test_retirar_preserva_stock_no_negativo(stock, cantidad):
-                   ^^^
-  File "/home/estudiante/labs/discretas/.venv/lib/python3.13/site-packages/hypothesis/core.py", line 2334, in wrapped_test
-    raise the_error_hypothesis_found
-  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 10, in test_retirar_preserva_stock_no_negativo
-    assert resultado.stock >= 0
-           ^^^^^^^^^^^^^^^^^^^^
-AssertionError
-Failing test case: test_retirar_preserva_stock_no_negativo(
-    stock=1,
-    cantidad=2,
-)
-```
-
-Hypothesis encontró `stock=1, cantidad=2`: hay stock, así que la versión con defecto acepta, y deja el stock en \(-1\).
-La corrección cambia la condición de la línea 12 por la proposición \(c\) de la especificación:
-
-```python
-# inventario.py — retiro de cajas (corregido)
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Resultado:
-    aceptado: bool
-    stock: int
-
-
-def retirar(stock: int, cantidad: int) -> Resultado:
-    if cantidad <= stock:  # acepta solo si el stock alcanza
-        return Resultado(True, stock - cantidad)
-    return Resultado(False, stock)
-```
-
-```text
-$ python3 para_todo.py
-casos revisados: 30
-¿se cumple para todo caso? True
-¿existe un contraejemplo? False
-primeros contraejemplos: []
-```
-
-```text
-$ python prueba_propiedades.py
-propiedad cumplida en todos los ejemplos generados
+$ python3 decorator.py
+[G-101] Tu paquete salió
+[G-101] TU PAQUETE SALIÓ -- RutaFlow
+[G-101] Tu paquete salió de la b
+[G-101] Tu paquete salió de la b -- RutaFlow
 ```
 
 **Explicación por partes.**
-- `inventario.py`, líneas 5–8: `@dataclass(frozen=True)` escribe por ti el `__init__` de la clase (Módulo 1, Tema 6) y prohíbe cambiar sus atributos después.
-- `inventario.py`, línea 12: la versión con defecto pregunta \(s > 0\) («hay stock»); la especificación pide \(k \le s\) («alcanza»).
-- `para_todo.py`, línea 7: \(a \to s' \ge 0\) escrita como \(\neg a \lor s' \ge 0\).
-- `para_todo.py`, línea 8: \(a \leftrightarrow c\) escrita como `==` entre dos booleanos.
-- `para_todo.py`, líneas 15–16: `all` es \(\forall\) y `any` es \(\exists\). Una es la negación de la otra: si no todos cumplen, existe uno que no.
-- `prueba_propiedades.py`, línea 7: `st.integers(min_value=0)` describe el dominio; la precondición queda dentro de la estrategia.
-- `prueba_propiedades.py`, línea 15: al llamar la función decorada, Hypothesis ejecuta unas 100 entradas distintas.
-- En la salida con defecto, `Failing test case` muestra el contraejemplo ya reducido. Hypothesis lo guarda en la carpeta `.hypothesis` y lo prueba primero en la siguiente ejecución.
+- Líneas 6–10: `ConFirma` guarda el objeto envuelto (línea 8) y agrega la firma **después** de su respuesta.
+- Líneas 15–16: `EnMayusculas` cambia el mensaje **antes** de delegar.
+- Líneas 18–22: `ParaSMS` es el extra nuevo. Recorta con `[: self.limite]` lo que devuelve la capa de adentro.
+- Líneas 30–31: las mismas tres clases en distinto orden dan resultados distintos. En la línea 30 la firma se recorta;
+  en la 31 la firma se agrega después del recorte y el texto pasa de 32 caracteres.
 
-> **Error común.** Ejecutar la prueba con el Python del sistema y no con el del entorno virtual. El programa termina con
-> `ModuleNotFoundError: No module named 'hypothesis'` en la línea 2. Activa el entorno con `source .venv/bin/activate`
-> y ejecuta `python prueba_propiedades.py`.
+Con *n* extras ahora tienes *n* clases, no 2ⁿ. La combinación se decide al crear el objeto, no al escribir clases.
 
-> **Prevenir errores.** Imprime siempre cuántos casos revisaste, como la línea 14 de `para_todo.py`. Si ves
-> `casos revisados: 0`, sabes que `all` dio `True` sobre una lista vacía y la comprobación no vale nada.
+#### Problema resuelto 1.3
+Python trae su propia versión de la idea para funciones: el decorador `@`. Apila dos decoradores sobre
+`calcular_tarifa`: uno mide el tiempo con `functools.wraps` y otro registra la llamada sin `wraps`.
+
+**Razonamiento:**
+1. Un decorador de función recibe `funcion`, define `envoltura(*args)` y devuelve `envoltura`.
+2. Los decoradores se aplican de abajo arriba: primero `@cronometrado`, luego `@registrado`.
+3. Para ver el efecto de `wraps`, imprime `__name__` y `__doc__` de la función final.
+
+```python
+# cronometro.py — decoradores de función apilados, con y sin functools.wraps
+import time
+from functools import wraps
+
+def cronometrado(funcion):                 # decorador de función de Python (@)
+    @wraps(funcion)                        # copia nombre y documentación de la original
+    def envoltura(*args):
+        inicio = time.perf_counter()
+        resultado = funcion(*args)
+        print(f"  {funcion.__name__} tardó {(time.perf_counter() - inicio) * 1000:.0f} ms")
+        return resultado
+    return envoltura
+
+def registrado(funcion):                   # mismo esquema, pero SIN wraps
+    def envoltura(*args):
+        print(f"  llamada a {funcion.__name__}{args}")
+        return funcion(*args)
+    return envoltura
+
+@registrado
+@cronometrado
+def calcular_tarifa(kilos):
+    """Tarifa base de 4000 más 1200 por kilo."""
+    time.sleep(0.05)
+    return 4000 + kilos * 1200
+
+print("Tarifa:", calcular_tarifa(3))
+print("Nombre visible:", calcular_tarifa.__name__)
+print("Documentación:", calcular_tarifa.__doc__)
+```
+
+```text
+$ python3 cronometro.py
+  llamada a calcular_tarifa(3,)
+  calcular_tarifa tardó 50 ms
+Tarifa: 7600
+Nombre visible: envoltura
+Documentación: None
+```
+
+**Explicación por partes.**
+- Líneas 5–12: `cronometrado` define una función dentro de otra. La envoltura recuerda `funcion` aunque
+  `cronometrado` ya terminó.
+- Línea 6: `@wraps(funcion)` copia el nombre y la documentación de `calcular_tarifa` a la envoltura.
+- Líneas 20–22: equivalen a `calcular_tarifa = registrado(cronometrado(calcular_tarifa))`.
+- Salida, línea 1: `registrado` imprime `calcular_tarifa` porque la función que recibió ya traía el nombre copiado.
+- Salida, líneas 4–5: la función final es la envoltura de `registrado`, que no usó `wraps`: se llama `envoltura` y
+  perdió su documentación. El tiempo (`50 ms`) puede variar unos milisegundos en tu equipo.
+
+> **Error común.** Olvidar `return envoltura` al final del decorador de función. El `def` decorado queda asociado a
+> `None`, y la primera llamada termina con `TypeError: 'NoneType' object is not callable`. Si ves ese error justo
+> en la línea que llama una función decorada, revisa el `return` del decorador.
+
+```python
+# sin_return.py — un decorador que olvida devolver la envoltura
+def registrado(funcion):
+    def envoltura(*args):
+        print("llamada a", funcion.__name__)
+        return funcion(*args)
+
+@registrado
+def calcular_tarifa(kilos):
+    return 4000 + kilos * 1200
+
+print(calcular_tarifa(3))
+```
+
+```text
+$ python3 sin_return.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/sin_return.py", line 11, in <module>
+    print(calcular_tarifa(3))
+          ~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not callable
+```
+
+> **Buena práctica.** Pon `@wraps(funcion)` en cada decorador de función que escribas. Los registros, los mensajes
+> de error y las herramientas como `pytest` usan `__name__` para decirte qué falló.
+
+> **Ingeniería de software.** El orden de los envoltorios es una decisión de negocio. Escribe en un solo lugar cómo
+> se arma cada notificador (por ejemplo, una función `notificador_para(cliente)`), para que nadie apile capas al revés.
+
+#### Cuándo no usarlo
+- Si solo existe una combinación, un método con un parámetro (`enviar(..., firmado=True)`) es más corto y más claro.
+- Si los extras no se combinan sino que se reemplazan uno por otro, pasa un objeto intercambiable: es Strategy.
+- Si necesitas preguntar «¿este aviso tiene firma?», las capas lo esconden; ahí conviene un objeto con atributos explícitos.
+- Más de tres o cuatro capas hacen difícil depurar: cada llamada atraviesa todos los `enviar`.
 
 #### Checkpoint 1.1
-La regla es «si un envío está entregado, entonces tiene firma». Un envío está pendiente y no tiene firma. ¿Ese envío
-rompe la regla?
+¿Qué imprime `EnMayusculas(ConFirma(Notificador())).enviar("G-9", "ok")`? ¿La firma sale en mayúsculas?
 
-Respuesta: no. El antecedente «está entregado» es falso, y una implicación con antecedente falso es verdadera. La regla
-solo se rompe con un envío entregado sin firma.
-
-#### Checkpoint 1.2
-Escribe la negación de «todo retiro aceptado deja stock mayor o igual que 0».
-
-Respuesta: «existe un retiro aceptado que deja stock menor que 0». La negación de \(\forall\) es \(\exists\) con la
-propiedad negada, y \(\neg(a \to s' \ge 0) \equiv a \land s' < 0\). El caso `stock=1, cantidad=2` es un ejemplo.
+Respuesta: `[G-9] OK -- RutaFlow`. `EnMayusculas` convierte el mensaje **antes** de delegar, y la firma se agrega
+dentro, en `ConFirma`, después de recibir el mensaje ya convertido. La firma no pasa por `upper()`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta y el entorno virtual
-Crea `~/labs/discretas/logica` y, dentro de `~/labs/discretas`, el entorno virtual como en el Módulo 5, Tema 2:
-`python3 -m venv .venv`, `source .venv/bin/activate` y `python -m pip install hypothesis`. Comprueba la instalación con
-`python -c "import hypothesis; print(hypothesis.__version__)"`: debe mostrar `6.170.17` o una versión posterior. En
-Windows la activación es `.venv\Scripts\activate`.
+#### Paso 1 · Mide el problema
+En `~/labs/patrones`, escribe `notificador_herencia.py` y ejecútalo con `python3 notificador_herencia.py`. Comprueba
+las cuatro clases y la línea `Con 4 extras combinables necesitas 16 clases`.
 
-#### Paso 2 · Genera tablas de verdad
-Entra en `logica`, escribe `tabla_verdad.py` y ejecútalo. La salida debe coincidir con la del Problema resuelto 1.1.
-Agrega una columna para \(p \leftrightarrow q\) (`p == q`) y comprueba que solo es `True` en las filas `True True` y
-`False False`.
+#### Paso 2 · Envuelve en lugar de heredar
+Escribe `decorator.py` y ejecútalo. Comprueba que las dos últimas líneas difieren solo por el orden de `ParaSMS` y
+`ConFirma`. Cambia `limite=32` por `limite=20` y predice la salida antes de ejecutar.
 
-#### Paso 3 · Encuentra el contraejemplo y corrige
-Escribe `inventario.py` con el defecto, `para_todo.py` y `prueba_propiedades.py`. Ejecuta los dos programas y confirma
-el contraejemplo `stock=1, cantidad=2`. Corrige la línea 12 y ejecútalos otra vez hasta ver los dos mensajes de éxito.
+#### Paso 3 · Decora funciones y conserva los metadatos
+Escribe `cronometro.py` y ejecútalo: verás `Nombre visible: envoltura`. Agrega `@wraps(funcion)` encima de la
+`envoltura` de `registrado` y ejecuta otra vez.
 
-#### Paso 4 · Especifica `transition()`
-Los envíos de RutaFlow cambian de estado con `transition`. Su especificación en texto plano es esta:
+#### Resumen
+- Un **patrón de diseño** es una solución con nombre a un problema que se repite, con sus consecuencias.
+- **Decorator** envuelve un objeto con otro de la misma interfaz que delega y agrega trabajo.
+- Los envoltorios se apilan: *n* extras son *n* clases, y el **orden** de las capas cambia el resultado.
+- Un **decorador de función** (`@`) reemplaza una función por una envoltura al definirla.
+- Los **argumentos variables** `*args` permiten que la envoltura pase cualquier argumento a la función original.
+- **`functools.wraps`** conserva `__name__` y `__doc__`; sin él, la función decorada se llama `envoltura`.
+
+#### Ejercicio verificable 1
+Básico. Escribe un decorador `ConPrefijo` que anteponga `RutaFlow: ` al mensaje antes de delegar. ¿Qué imprime
+`ConPrefijo(Notificador()).enviar("G-7", "Llegó")`?
+
+Respuesta esperada: `[G-7] RutaFlow: Llegó`. La clase guarda `envuelto` y su `enviar` devuelve
+`self.envuelto.enviar(guia, "RutaFlow: " + mensaje)`.
+
+#### Ejercicio verificable 2
+Intermedio. Agrega `@wraps(funcion)` a `registrado` en `cronometro.py`. ¿Qué cambia en la salida?
+
+Respuesta esperada: las dos últimas líneas pasan a ser `Nombre visible: calcular_tarifa` y
+`Documentación: Tarifa base de 4000 más 1200 por kilo.`. La tarifa sigue siendo `7600`.
+
+#### Ejercicio verificable 3
+Reto. Un SMS admite 32 caracteres y debe conservar la firma completa. Arma el notificador solo con `ConFirma`,
+`ParaSMS` y `Notificador`, sin escribir clases nuevas, y comprueba la longitud con `len`.
+
+Respuesta esperada: `ConFirma(ParaSMS(Notificador(), limite=32 - len(" -- RutaFlow")))`. Con el mensaje largo de
+`decorator.py` imprime `[G-101] Tu paquete s -- RutaFlow`, y `len` de ese texto da `32`.
+
+#### En el trabajo
+El patrón Decorator aparece en los *middlewares* de los frameworks web: cada capa envuelve la petición para medir
+tiempos, revisar permisos o comprimir la respuesta. Los decoradores `@` de Python están en todas partes: rutas de
+Flask y FastAPI, `@pytest.fixture`, `@lru_cache`. En una revisión de código, un decorador sin `wraps` suele
+señalarse porque rompe los registros y la documentación automática.
+
+</details>
+
+### Tema 2: State: un objeto que cambia de comportamiento según su estado · Avanzado · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- dibujar la máquina de estados de un envío con sus transiciones permitidas;
+- reemplazar una cadena de `if estado == ...` por un objeto por estado;
+- rechazar transiciones inválidas con una excepción y comprobar las 12 combinaciones de estado y acción;
+- leer el `AttributeError` de una acción mal escrita.
+
+**Conceptos clave:** máquina de estados, transición, State, `getattr`
+
+Ya los conoces y no se repiten: *clase*, *objeto*, *atributo de clase* y *método* (Módulo 1, Tema 6); *herencia*,
+*sobrescritura* y *polimorfismo* (Módulo 1, Tema 7); *excepción* (Módulo 1, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
+
+#### El problema
+Un envío de RutaFlow pasa por estados: registrado, en ruta, entregado o cancelado. No todas las acciones valen en
+todos los estados: un envío entregado no se cancela. Hoy esas reglas viven en un `if/elif` largo, y una condición
+olvidada deja pasar una acción prohibida sin ningún error. ¿Cómo haces que cada estado decida qué acciones admite?
+
+#### Glosario del tema
+
+**máquina de estados**
+- **Definición técnica:** modelo con un conjunto finito de estados, un estado inicial y reglas que dicen a qué estado se pasa con cada acción.
+- **En palabras sencillas:** el mapa de los caminos posibles de un envío: desde dónde se puede ir a dónde, y nada más.
+- **Dónde se rompe la comparación:** en un mapa real puedes salir del camino; en una máquina de estados bien hecha, lo que no está dibujado no se puede hacer.
+- **Ejemplo:** registrado → en ruta → entregado; registrado → cancelado.
+- **Error típico:** dibujar solo el camino feliz y olvidar decidir qué pasa con las acciones inválidas.
+
+**transición**
+- **Definición técnica:** cambio de un estado a otro provocado por una acción; cada transición tiene un estado de origen, una acción y un estado de destino.
+- **En palabras sencillas:** una flecha del mapa: «si estás aquí y haces esto, llegas allá».
+- **Dónde se rompe la comparación:** una flecha no dice qué pasa si intentas una acción sin flecha; el programa sí debe decirlo, normalmente con un error.
+- **Ejemplo:** en ruta + entregar = entregado.
+- **Error típico:** permitir una transición por omisión, como cancelar sin preguntar el estado actual.
+
+**State**
+- **Definición técnica:** patrón de comportamiento en el que un objeto delega sus acciones en un objeto estado; cada clase de estado implementa solo las acciones que admite y la transición se hace cambiando ese objeto.
+- **En palabras sencillas:** el envío no se pregunta «¿en qué estado estoy?»; le pasa la acción a su estado y el estado sabe qué hacer.
+- **Dónde se rompe la comparación:** parece que el envío cambia de clase; en realidad sigue siendo el mismo objeto `Envio` y solo cambia lo que guarda en `self.estado`.
+- **Ejemplo:** `Registrado().despachar(envio)` cambia `envio.estado` a un objeto `EnRuta`.
+- **Error típico:** crear las clases de estado pero dejar el `if` en `Envio`: el patrón queda a medias y las reglas, duplicadas.
+
+**`getattr`**
+- **Definición técnica:** función integrada que devuelve el atributo de un objeto a partir de su nombre como texto: `getattr(objeto, "nombre")` equivale a `objeto.nombre`.
+- **En palabras sencillas:** buscar un método por su nombre escrito, cuando el nombre llega en una variable.
+- **Dónde se rompe la comparación:** el nombre se comprueba al ejecutar, no al escribir; un error de tipeo aparece solo cuando esa línea corre.
+- **Ejemplo:** `getattr(self.estado, "despachar")` devuelve el método `despachar` del estado actual.
+- **Error típico:** pasar un nombre que no existe: `AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?`.
+
+#### ► CÓMO FUNCIONA
+Primero el mapa. Las flechas son las únicas transiciones permitidas:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Registrado
+    Registrado --> EnRuta: despachar
+    Registrado --> Cancelado: cancelar
+    EnRuta --> Entregado: entregar
+```
+
+Después las clases. La clase base `Estado` rechaza las tres acciones con `ValueError`. Cada subclase sobrescribe
+solo las acciones que tienen flecha. `Envio` guarda un objeto estado y le delega cada acción:
+
+```mermaid
+classDiagram
+    class Envio {
+      +guia
+      +estado
+      +ejecutar(accion)
+    }
+    class Estado {
+      +nombre
+      +despachar(envio)
+      +entregar(envio)
+      +cancelar(envio)
+    }
+    Envio o-- Estado : delega en
+    Estado <|-- Registrado
+    Estado <|-- EnRuta
+    Estado <|-- Entregado
+    Estado <|-- Cancelado
+```
+
+Una flecha nueva en el mapa es un método nuevo en una sola clase de estado. Un estado nuevo es una clase nueva.
+
+#### Problema resuelto 2.1
+Antes del patrón. Implementa las transiciones con `if/elif` y prueba la secuencia despachar, entregar, cancelar.
+
+**Razonamiento:**
+1. Cada rama del `if` combina una acción con el estado de origen que la permite.
+2. Si ninguna rama coincide, se lanza `ValueError`.
+3. Cancelar después de entregar debería caer en el `else`.
+
+```python
+# estado_con_if.py — las reglas de transición repartidas en if/elif
+class Envio:
+    def __init__(self, guia):
+        self.guia, self.estado = guia, "registrado"
+
+    def ejecutar(self, accion):
+        if accion == "despachar" and self.estado == "registrado":
+            self.estado = "en ruta"
+        elif accion == "entregar" and self.estado == "en ruta":
+            self.estado = "entregado"
+        elif accion == "cancelar":             # olvidó preguntar por el estado
+            self.estado = "cancelado"
+        else:
+            raise ValueError(f"No se puede {accion} en estado {self.estado}")
+        print(f"{self.guia}: {accion:<9} -> {self.estado}")
+
+envio = Envio("G-202")
+envio.ejecutar("despachar")
+envio.ejecutar("entregar")
+envio.ejecutar("cancelar")                     # un envío entregado no debería cancelarse
+```
 
 ```text
-Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
-Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
-Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
-Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
+$ python3 estado_con_if.py
+G-202: despachar -> en ruta
+G-202: entregar  -> entregado
+G-202: cancelar  -> cancelado
 ```
 
-Escribe `domain.py`, que usarás también en los Temas 2 y 3:
+**Explicación por partes.**
+- Líneas 7–10: despachar y entregar preguntan acción **y** estado de origen.
+- Línea 11: cancelar solo pregunta la acción. Falta `and self.estado == "registrado"`.
+- Salida, línea 3: un envío entregado quedó cancelado. No hubo error: el defecto es silencioso.
+
+El fallo no es de sintaxis, es de diseño: las reglas de los cuatro estados están mezcladas en un solo método, y
+cada estado nuevo agrega condiciones a todas las ramas.
+
+#### Problema resuelto 2.2
+Después del patrón. Escribe un objeto por estado y deja que cada uno decida.
+
+**Razonamiento:**
+1. La clase base rechaza todo: así, lo que una subclase no permite queda prohibido por defecto.
+2. Cada estado sobrescribe solo sus flechas y, para transitar, reemplaza `envio.estado`.
+3. `Envio.ejecutar` no tiene `if`: busca la acción en su estado con `getattr` y la llama.
 
 ```python
-# domain.py — estados de un envío de RutaFlow y transiciones permitidas
-from enum import Enum
+# state.py — cada estado es un objeto que sabe qué acciones admite
+class Estado:
+    nombre = "?"
+    def despachar(self, envio): raise ValueError(f"No se puede despachar en estado {self.nombre}")
+    def entregar(self, envio):  raise ValueError(f"No se puede entregar en estado {self.nombre}")
+    def cancelar(self, envio):  raise ValueError(f"No se puede cancelar en estado {self.nombre}")
 
+class Registrado(Estado):
+    nombre = "registrado"
+    def despachar(self, envio): envio.estado = EnRuta()
+    def cancelar(self, envio):  envio.estado = Cancelado()
 
-class ShipmentStatus(str, Enum):
-    CREATED = "created"
-    ASSIGNED = "assigned"
-    OUT_FOR_DELIVERY = "out_for_delivery"
-    DELIVERED = "delivered"
+class EnRuta(Estado):
+    nombre = "en ruta"
+    def entregar(self, envio):  envio.estado = Entregado()
 
+class Entregado(Estado):
+    nombre = "entregado"
 
-ALLOWED_TRANSITIONS = {
-    ShipmentStatus.CREATED: {ShipmentStatus.ASSIGNED},
-    ShipmentStatus.ASSIGNED: {ShipmentStatus.OUT_FOR_DELIVERY},
-    ShipmentStatus.OUT_FOR_DELIVERY: {ShipmentStatus.DELIVERED},
-    ShipmentStatus.DELIVERED: set(),
-}
+class Cancelado(Estado):
+    nombre = "cancelado"
 
+class Envio:
+    def __init__(self, guia):
+        self.guia, self.estado = guia, Registrado()
+    def ejecutar(self, accion):
+        getattr(self.estado, accion)(self)    # delega en el objeto estado actual
+        print(f"{self.guia}: {accion:<9} -> {self.estado.nombre}")
 
-def transition(current: ShipmentStatus, requested: ShipmentStatus) -> ShipmentStatus:
-    if requested not in ALLOWED_TRANSITIONS[current]:
-        raise ValueError(f"invalid shipment transition: {current.value} -> {requested.value}")
-    return requested
-```
-
-Con solo 4 estados hay \(4 \cdot 4 = 16\) pares (actual, pedido). Son pocos: puedes comprobar la postcondición en
-**todos**, como un \(\forall\) exacto y no una muestra. Escribe `transiciones.py`:
-
-```python
-# transiciones.py — verifica la postcondición de transition() en los 16 pares posibles
-from itertools import product
-
-from domain import ALLOWED_TRANSITIONS, ShipmentStatus, transition
-
-aceptadas, rechazadas = [], []
-for actual, pedido in product(ShipmentStatus, repeat=2):
+if __name__ == "__main__":
+    envio = Envio("G-202")
+    envio.ejecutar("despachar")
+    envio.ejecutar("entregar")
     try:
-        transition(actual, pedido)
-        aceptadas.append((actual.value, pedido.value))
-    except ValueError:
-        rechazadas.append((actual.value, pedido.value))
+        envio.ejecutar("cancelar")
+    except ValueError as error:
+        print("Rechazado:", error)
+```
 
-# Post: aceptada → pedido ∈ ALLOWED_TRANSITIONS[actual]
-post = all(ShipmentStatus(b) in ALLOWED_TRANSITIONS[ShipmentStatus(a)] for a, b in aceptadas)
-print("pares revisados:", len(aceptadas) + len(rechazadas))
-print("aceptadas:", aceptadas)
-print("rechazadas:", len(rechazadas))
-print("postcondición para todo par:", post)
-try:
-    transition(ShipmentStatus.CREATED, ShipmentStatus.DELIVERED)
-except ValueError as error:
-    print("ejemplo de rechazo:", error)
+```text
+$ python3 state.py
+G-202: despachar -> en ruta
+G-202: entregar  -> entregado
+Rechazado: No se puede cancelar en estado entregado
+```
+
+**Explicación por partes.**
+- Líneas 2–6: `Estado` es la regla por defecto: cualquier acción lanza `ValueError` con el nombre del estado.
+- Líneas 8–11: `Registrado` admite despachar y cancelar. Cada método cambia el estado del envío que recibe.
+- Líneas 17–21: `Entregado` y `Cancelado` no sobrescriben nada: son estados finales.
+- Línea 27: `getattr(self.estado, accion)` obtiene el método; `(self)` lo llama pasándole el envío.
+- Líneas 34–37: cancelar un envío entregado ahora se rechaza con un mensaje claro.
+
+#### Problema resuelto 2.3
+Comprueba que **todas** las transiciones inválidas se rechazan: prueba las tres acciones desde los cuatro estados.
+
+**Razonamiento:**
+1. Son 4 estados por 3 acciones: 12 combinaciones.
+2. Para cada una, crea un envío, ponle el estado y ejecuta la acción dentro de `try`.
+3. Compara la tabla impresa con el diagrama: solo las flechas dibujadas deben aceptarse.
+
+```python
+# transiciones.py — prueba todas las acciones desde cada estado
+from state import Cancelado, EnRuta, Entregado, Envio, Registrado
+
+for estado in (Registrado(), EnRuta(), Entregado(), Cancelado()):
+    for accion in ("despachar", "entregar", "cancelar"):
+        envio = Envio("G-204")
+        envio.estado = estado
+        try:
+            getattr(envio.estado, accion)(envio)
+            resultado = envio.estado.nombre
+        except ValueError:
+            resultado = "rechazada"
+        print(f"{estado.nombre:<10} + {accion:<9} = {resultado}")
 ```
 
 ```text
 $ python3 transiciones.py
-pares revisados: 16
-aceptadas: [('created', 'assigned'), ('assigned', 'out_for_delivery'), ('out_for_delivery', 'delivered')]
-rechazadas: 13
-postcondición para todo par: True
-ejemplo de rechazo: invalid shipment transition: created -> delivered
+registrado + despachar = en ruta
+registrado + entregar  = rechazada
+registrado + cancelar  = cancelado
+en ruta    + despachar = rechazada
+en ruta    + entregar  = entregado
+en ruta    + cancelar  = rechazada
+entregado  + despachar = rechazada
+entregado  + entregar  = rechazada
+entregado  + cancelar  = rechazada
+cancelado  + despachar = rechazada
+cancelado  + entregar  = rechazada
+cancelado  + cancelar  = rechazada
 ```
 
-La línea 7 recorre los 16 pares; la 15 evalúa la implicación «aceptada → permitida» sobre los aceptados. El
-invariante de la última línea de la especificación se demuestra en el Tema 3, recorriendo los caminos del grafo.
+Tres combinaciones aceptadas, las mismas tres flechas del diagrama. Las nueve restantes se rechazan.
 
-#### Resumen
-- Una **proposición** es verdadera o falsa; los **conectivos lógicos** `not`, `and`, `or` forman proposiciones compuestas.
-- Una **tabla de verdad** revisa las \(2^n\) combinaciones; dos fórmulas son **lógicamente equivalentes** si coinciden en todas.
-- La **implicación** \(p \to q\) solo es falsa con \(p\) verdadera y \(q\) falsa; no equivale a su recíproca.
-- Los **cuantificadores** \(\forall\) y \(\exists\) se evalúan con `all` y `any` en dominios finitos.
-- Un **contraejemplo** refuta un \(\forall\); no encontrarlo no demuestra nada.
-- Un **invariante** se conserva antes y después de cada operación; la especificación es precondición → postcondición.
-- La **prueba basada en propiedades** (Hypothesis) busca contraejemplos en dominios enormes y los reduce al caso mínimo.
-
-#### Ejercicio verificable 1
-Básico. Agrega a `tabla_verdad.py` una columna con \(\neg p \lor q\) y compárala con la columna `p→q`. Antes de
-ejecutar, predice los cuatro valores.
-
-Respuesta esperada: `True`, `False`, `True`, `True`, en el orden de las filas del programa. Es idéntica a `p→q` porque
-\(p \to q \equiv \neg p \lor q\).
-
-#### Ejercicio verificable 2
-Intermedio. La regla es «un envío urgente se despacha antes de las 10 o se cancela». Escríbela con \(u\) (urgente),
-\(d\) (despachado antes de las 10) y \(c\) (cancelado). Escribe su negación y compruébala con una tabla de 8 filas.
-
-Respuesta esperada: la regla es \(u \to (d \lor c)\). Su negación es \(u \land \neg d \land \neg c\): un envío urgente
-que ni se despachó a tiempo ni se canceló. Con `product([True, False], repeat=3)`, la expresión
-`all((not implica(u, d or c)) == (u and not d and not c) for u, d, c in filas)` devuelve `True`.
-
-#### Ejercicio verificable 3
-Reto. Agrega a `prueba_propiedades.py` una segunda prueba con dos propiedades: «si se acepta, stock nuevo más cantidad
-es el stock anterior» y «si se rechaza, el stock no cambia». Ejecútala con la versión con defecto. ¿Encuentra el fallo?
-
-Respuesta esperada: las aserciones son `assert (not r.aceptado) or r.stock + cantidad == stock` y
-`assert r.aceptado or r.stock == stock`. Con la versión con defecto, la prueba **pasa**: las dos propiedades se
-cumplen aunque el stock quede negativo. La lección: cada propiedad vigila una parte de la regla; ninguna sola basta.
-
-#### En el trabajo
-En un equipo, la especificación aparece como criterios de aceptación de un ticket. Escritos como implicaciones («si
-el pago se rechaza, el pedido queda pendiente»), se convierten en pruebas sin discusión. Las pruebas basadas en
-propiedades son comunes en sistemas de pagos, inventarios y lectores de formatos. Los invariantes también viven en la
-base de datos, como la restricción `CHECK (stock >= 0)` del Módulo 4.
-
-</details>
-
-### Tema 2: Conjuntos, relaciones, funciones e inducción · Avanzado · 75 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- operar con conjuntos (pertenencia, subconjunto, unión, intersección, diferencia y producto cartesiano) en símbolos y en Python;
-- decidir si una relación es reflexiva, simétrica, antisimétrica o transitiva, y si es un orden parcial o una equivalencia;
-- reconocer cuándo una relación es una función matemática;
-- demostrar por inducción una propiedad de un algoritmo recursivo y escribir sus supuestos.
-
-**Conceptos clave:** subconjunto, operaciones de conjuntos, producto cartesiano, relación, propiedades de una relación, orden parcial, relación de equivalencia, función matemática, inducción matemática
-
-#### El problema
-En RutaFlow aparecen tres discusiones a la vez. Permisos decide «a ojo» si un rol puede hacer una tarea. Un ticket
-dice que `ALLOWED_TRANSITIONS` «es un orden» y otro, que «es como una equivalencia». Y la función recursiva `suma`
-pasó cinco pruebas: ¿funciona para **toda** lista? Necesitas un lenguaje para decidir las tres cosas con certeza.
-
-El **conjunto** de Python tiene su ficha en el Módulo 2, Tema 1; **recursión** y **caso base**, en el Módulo 2,
-Tema 4. Aquí se usa la notación matemática de los conjuntos, que se explica en «Cómo funciona».
-
-#### Glosario del tema
-
-**subconjunto**
-- **Definición técnica:** \(A \subseteq B\) si todo elemento de \(A\) también pertenece a \(B\): \(\forall x: x \in A \to x \in B\). En Python, `A <= B`.
-- **En palabras sencillas:** \(A\) cabe completo dentro de \(B\); no le sobra nada por fuera.
-- **Dónde se rompe la comparación:** todo conjunto es subconjunto de sí mismo, y el conjunto vacío \(\varnothing\) es subconjunto de cualquiera.
-- **Ejemplo:** `{"leer", "editar"} <= {"leer", "editar", "exportar"}` da `True`.
-- **Error típico:** usar `<` (subconjunto propio, que exige \(A \ne B\)) y negar permiso a quien tiene exactamente los requeridos.
-
-**operaciones de conjuntos (∪, ∩, −)**
-- **Definición técnica:** la unión \(A \cup B\) reúne los elementos que están en \(A\) o en \(B\); la intersección \(A \cap B\), los que están en ambos; la diferencia \(A - B\), los de \(A\) que no están en \(B\). En Python: `|`, `&` y `-`.
-- **En palabras sencillas:** juntar todo, quedarte con lo común y ver lo que sobra.
-- **Dónde se rompe la comparación:** la diferencia no es simétrica: \(A - B\) y \(B - A\) casi nunca coinciden.
-- **Ejemplo:** `{"leer", "editar"} - {"leer"}` da `{'editar'}`: el permiso que le falta al auditor.
-- **Error típico:** crear un conjunto vacío con `{}`. Eso es un diccionario, y `vacio.add("leer")` falla con `AttributeError: 'dict' object has no attribute 'add'`. Usa `set()`.
-
-**producto cartesiano**
-- **Definición técnica:** \(A \times B = \{(a, b) : a \in A,\ b \in B\}\), el conjunto de todos los pares ordenados con primer elemento en \(A\) y segundo en \(B\). Tiene \(\lvert A \rvert \cdot \lvert B \rvert\) elementos.
-- **En palabras sencillas:** todas las combinaciones de «una cosa de cada lista», como las casillas de una tabla de filas por columnas.
-- **Dónde se rompe la comparación:** en un par el orden importa: \((a, b)\) y \((b, a)\) son pares distintos.
-- **Ejemplo:** 2 roles × 3 acciones dan \(2 \cdot 3 = 6\) pares; `itertools.product(roles, acciones)` los genera.
-- **Error típico:** confundirlo con la unión: \(\{1, 2\} \cup \{3\}\) tiene 3 elementos, pero \(\{1, 2\} \times \{3\}\) tiene 2 pares.
-
-**relación**
-- **Definición técnica:** una relación binaria \(R\) sobre un conjunto \(S\) es un subconjunto de \(S \times S\). Se escribe \(a \mathrel{R} b\) cuando \((a, b) \in R\).
-- **En palabras sencillas:** una lista de parejas «conectadas» según alguna regla.
-- **Dónde se rompe la comparación:** la relación no dice por qué dos elementos se conectan; solo registra que lo están.
-- **Ejemplo:** las transiciones de RutaFlow forman \(R\) con 3 pares de los 16 posibles, como `("created", "assigned")`.
-- **Error típico:** olvidar la dirección: \((\text{created}, \text{assigned}) \in R\) no implica \((\text{assigned}, \text{created}) \in R\).
-
-**propiedades de una relación**
-- **Definición técnica:** \(R\) es **reflexiva** si \(\forall a: a \mathrel{R} a\); **simétrica** si \(a \mathrel{R} b \to b \mathrel{R} a\); **antisimétrica** si \((a \mathrel{R} b \land b \mathrel{R} a) \to a = b\); **transitiva** si \((a \mathrel{R} b \land b \mathrel{R} c) \to a \mathrel{R} c\).
-- **En palabras sencillas:** cuatro preguntas: ¿cada uno se conecta consigo mismo? ¿la conexión va en los dos sentidos? ¿nunca hay ida y vuelta entre distintos? ¿se puede encadenar?
-- **Dónde se rompe la comparación:** antisimétrica no es «lo contrario» de simétrica. Una relación vacía es las dos cosas a la vez.
-- **Ejemplo:** \(R\) es antisimétrica pero no transitiva: hay created → assigned → out_for_delivery, pero no created → out_for_delivery.
-- **Error típico:** revisar la transitividad con un solo encadenamiento; hay que revisar todos los pares \((a, b)\), \((b, c)\).
-
-**orden parcial**
-- **Definición técnica:** relación reflexiva, antisimétrica y transitiva. Se suele escribir \(a \preceq b\): «\(a\) va antes que \(b\) o es igual».
-- **En palabras sencillas:** una forma consistente de decir «esto va antes que aquello», sin vueltas atrás.
-- **Dónde se rompe la comparación:** «parcial» significa que puede haber pares que no se comparan. \(\{\text{leer}\}\) y \(\{\text{editar}\}\) no son subconjunto uno del otro.
-- **Ejemplo:** «puede llegar a», el cierre de las transiciones de RutaFlow, es un orden parcial.
-- **Error típico:** llamar orden a la relación de un solo paso \(R\): sin su cierre no es reflexiva ni transitiva.
-
-**relación de equivalencia**
-- **Definición técnica:** relación reflexiva, simétrica y transitiva. Divide el conjunto en **clases de equivalencia**: grupos cuyos elementos se relacionan todos entre sí.
-- **En palabras sencillas:** «es del mismo grupo que».
-- **Dónde se rompe la comparación:** en una equivalencia todo va en los dos sentidos; un flujo de estados que avanza nunca lo cumple.
-- **Ejemplo:** «tiene el mismo estado que» entre envíos; o «da el mismo resto al dividir entre 7» entre números.
-- **Error típico:** tratar como equivalencia una relación no transitiva, como «está a menos de 1 km de»: A cerca de B y B cerca de C no implica A cerca de C.
-
-**función matemática**
-- **Definición técnica:** relación \(f \subseteq A \times B\) en la que cada \(a \in A\) se relaciona con **exactamente un** \(b \in B\). Se escribe \(f: A \to B\) y \(f(a) = b\).
-- **En palabras sencillas:** una máquina que, para cada entrada válida, da una y solo una salida.
-- **Dónde se rompe la comparación:** una función de Python puede dar resultados distintos con la misma entrada, por ejemplo si lee la hora; una función matemática, nunca.
-- **Ejemplo:** \(R\) no es función de \(S\) en \(S\): `delivered` no tiene sucesor. Sin `delivered` en el dominio, sí lo sería.
-- **Error típico:** creer que dos entradas no pueden dar la misma salida. Eso sí se permite; lo prohibido es una entrada con dos salidas.
-
-**inducción matemática**
-- **Definición técnica:** método para demostrar \(\forall n \ge 0: P(n)\). Se prueba el **caso base** \(P(0)\) y el **paso inductivo**: para todo \(n\), si \(P(n)\) es verdadera, entonces \(P(n+1)\) también. La suposición \(P(n)\) se llama **hipótesis inductiva**.
-- **En palabras sencillas:** una fila de fichas de dominó: si cae la primera y cada una tumba a la siguiente, caen todas.
-- **Dónde se rompe la comparación:** la fila de dominó es finita; la inducción cubre infinitos valores de \(n\) sin probarlos uno a uno.
-- **Ejemplo:** \(1 + 2 + \dots + n = \frac{n(n+1)}{2}\) para todo \(n \ge 0\).
-- **Error típico:** probar solo el paso inductivo y olvidar el caso base. Sin la primera ficha, nada cae.
-
-#### ► CÓMO FUNCIONA
-**Notación de conjuntos.** Un conjunto se escribe entre llaves: \(A = \{\text{leer}, \text{editar}\}\). \(x \in A\) se
-lee «\(x\) pertenece a \(A\)» y \(x \notin A\), «no pertenece». \(\lvert A \rvert\) es el **cardinal**: cuántos
-elementos tiene, como `len(A)`. \(\varnothing\) es el conjunto vacío. Los elementos no se repiten ni tienen orden.
-
-**De conjuntos a relaciones.** Con los estados \(S\) de un envío, \(S \times S\) tiene \(4 \cdot 4 = 16\) pares. Una
-relación elige algunos: \(R\) elige 3. Para saber si \(R\) es un orden o una equivalencia, revisas sus cuatro
-propiedades con `all`, igual que un \(\forall\) del Tema 1.
-
-**Del paso a la alcanzabilidad.** \(R\) habla de un solo paso. «Puede llegar a, en cero o más pasos» se obtiene con
-el **cierre reflexivo y transitivo** \(R^*\): agregas cada par \((a, a)\) y, mientras haya cadenas
-\((a, b), (b, c)\) sin su atajo \((a, c)\), lo agregas. Cuando no aparece ningún par nuevo, terminaste.
-
-**Inducción, paso a paso.** El símbolo \(\sum_{i=1}^{n} i\) se lee «suma de \(i\), desde \(i = 1\) hasta \(n\)»:
-\(1 + 2 + \dots + n\). La \(i\) es la variable que cambia; el 1 de abajo y la \(n\) de arriba son los límites. Se
-quiere demostrar:
-
-\[ P(n):\quad \sum_{i=1}^{n} i = \frac{n(n+1)}{2} \]
-
-- **Caso base** \(n = 0\): la suma no tiene términos y vale 0; la fórmula da \(\frac{0 \cdot 1}{2} = 0\). Coinciden.
-- **Hipótesis inductiva:** supones \(P(n)\) verdadera para un \(n\) cualquiera.
-- **Paso inductivo:** la suma hasta \(n+1\) es la suma hasta \(n\) más el término \(n+1\). Usas la hipótesis y sacas factor común \((n+1)\):
-
-\[ \sum_{i=1}^{n+1} i = \frac{n(n+1)}{2} + (n+1) = \frac{n(n+1) + 2(n+1)}{2} = \frac{(n+1)(n+2)}{2} \]
-
-El resultado es la fórmula con \(n+1\) en lugar de \(n\): eso es \(P(n+1)\). Caso base más paso dan \(P(n)\) para todo
-\(n\). La misma técnica demuestra que un algoritmo recursivo es correcto: el caso base del código es el caso base de la
-demostración, y la llamada recursiva es la hipótesis inductiva.
-
-```mermaid
-flowchart TD
-    R["R = leer, editar"] --> CHECK{"R ⊆ A"}
-    A["A = leer, editar, exportar"] --> CHECK
-    CHECK -->|"sí"| AUTH["autorizado"]
-    CHECK -->|"no: falta un permiso"| DENY["no autorizado"]
-    BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
-```
-
-#### Problema resuelto 2.1
-Una tarea requiere los permisos `leer` y `editar`. Decide con conjuntos si la coordinadora y el auditor pueden hacerla,
-qué le falta al auditor y cuántas combinaciones rol-acción existen.
-
-**Razonamiento:**
-1. «Puede hacer la tarea» es \(\text{requeridos} \subseteq \text{asignados}\): todo permiso requerido está asignado.
-2. «Qué le falta» es la diferencia \(\text{requeridos} - \text{asignados}\).
-3. Las combinaciones rol-acción son el producto cartesiano; su tamaño es \(\lvert \text{roles} \rvert \cdot \lvert \text{acciones} \rvert\).
+> **Error común.** Escribir mal el nombre de la acción. Como `getattr` busca por texto, el error aparece al ejecutar:
+> `AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?`. No es una
+> transición inválida (eso sería `ValueError`), es una acción que no existe.
 
 ```python
-# permisos.py — conjuntos para decidir si una persona puede hacer una tarea
-from itertools import product
+# estado_typo.py — una acción mal escrita
+from state import Envio
 
-requeridos = {"leer", "editar"}
-coordinadora = {"leer", "editar", "exportar"}
-auditor = {"leer"}
-
-print("'exportar' ∈ coordinadora:", "exportar" in coordinadora)
-print("requeridos ⊆ coordinadora:", requeridos <= coordinadora)
-print("requeridos ⊆ auditor:", requeridos <= auditor)
-print("faltan al auditor (requeridos − auditor):", sorted(requeridos - auditor))
-print("coordinadora ∪ auditor:", sorted(coordinadora | auditor))
-print("coordinadora ∩ auditor:", sorted(coordinadora & auditor))
-
-roles = ["auditor", "coordinadora"]
-acciones = ["editar", "exportar", "leer"]
-pares = list(product(roles, acciones))
-print("roles × acciones tiene", len(pares), "pares; el primero es", pares[0])
+envio = Envio("G-203")
+envio.ejecutar("despacar")
 ```
 
 ```text
-$ python3 permisos.py
-'exportar' ∈ coordinadora: True
-requeridos ⊆ coordinadora: True
-requeridos ⊆ auditor: False
-faltan al auditor (requeridos − auditor): ['editar']
-coordinadora ∪ auditor: ['editar', 'exportar', 'leer']
-coordinadora ∩ auditor: ['leer']
-roles × acciones tiene 6 pares; el primero es ('auditor', 'editar')
+$ python3 estado_typo.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/estado_typo.py", line 5, in <module>
+    envio.ejecutar("despacar")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/estudiante/labs/patrones/state.py", line 27, in ejecutar
+    getattr(self.estado, accion)(self)    # delega en el objeto estado actual
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?
 ```
 
-**Explicación por partes.**
-- Líneas 4–6: tres conjuntos de Python escritos con llaves; el orden en que escribes los elementos no importa.
-- Línea 8: `in` es \(\in\). Línea 9: `<=` es \(\subseteq\); la coordinadora tiene los dos permisos requeridos.
-- Líneas 10–11: el auditor no cumple \(\subseteq\), y la diferencia dice exactamente por qué: le falta `editar`.
-- Líneas 11–13: `sorted` convierte el conjunto en lista ordenada, para que la salida sea siempre igual.
-- Líneas 15–18: `product` genera los \(2 \cdot 3 = 6\) pares; el primero es `('auditor', 'editar')`.
+> **Prevenir errores.** Guarda la tabla de `transiciones.py` como prueba: cada estado nuevo debe pasarla. Así una
+> flecha olvidada o sobrante aparece en la prueba, no en producción.
 
-> **Error común.** Crear el conjunto de permisos vacío con `permisos = {}` y luego `permisos.add("leer")`. El programa
-> se detiene con `AttributeError: 'dict' object has no attribute 'add'`: `{}` es un diccionario. Escribe `set()`.
+> **Buena práctica.** Haz que la clase base rechace todo y que cada estado permita lo suyo. Al revés (permitir todo
+> y prohibir caso por caso) repite el defecto del `if/elif`.
 
-#### Problema resuelto 2.2
-Decide si la relación de transiciones \(R\) es un orden parcial o una equivalencia. Haz lo mismo con «puede llegar a»
-(\(R^*\)) y responde si \(R\) es una función de \(S\) en \(S\). Usa `domain.py` del Tema 1, Paso 4.
-
-```mermaid
-flowchart LR
-    C["created"] -->|R| A["assigned"] -->|R| O["out_for_delivery"] -->|R| D["delivered"]
-    C -. "R*: atajo agregado" .-> O
-```
-
-**Razonamiento:**
-1. \(S\) son los 4 estados y \(R\), los pares de `ALLOWED_TRANSITIONS`.
-2. Cada propiedad es un \(\forall\) sobre pares; se escribe con `all`.
-3. El cierre agrega pares hasta que no aparezca ninguno nuevo; luego se revisan sus propiedades.
-4. Para ser función, cada estado debe tener exactamente un sucesor.
-
-```python
-# relacion.py — propiedades de la relación de transiciones de RutaFlow
-from domain import ALLOWED_TRANSITIONS, ShipmentStatus
-
-S = [estado.value for estado in ShipmentStatus]
-R = {(a.value, b.value) for a, destinos in ALLOWED_TRANSITIONS.items() for b in destinos}
-
-
-def propiedades(rel):
-    return {
-        "reflexiva": all((a, a) in rel for a in S),
-        "simétrica": all((b, a) in rel for (a, b) in rel),
-        "antisimétrica": all((b, a) not in rel for (a, b) in rel if a != b),
-        "transitiva": all((a, d) in rel for (a, b) in rel for (c, d) in rel if b == c),
-    }
-
-
-def cierre_reflexivo_transitivo(rel):
-    cierre = set(rel) | {(a, a) for a in S}
-    while True:
-        nuevos = {(a, d) for (a, b) in cierre for (c, d) in cierre if b == c} - cierre
-        if not nuevos:
-            return cierre
-        cierre |= nuevos
-
-
-print("R tiene", len(R), "pares de", len(S) * len(S), "posibles en S × S")
-print("R:", propiedades(R))
-alcanza = cierre_reflexivo_transitivo(R)
-print("«puede llegar a» tiene", len(alcanza), "pares")
-p = propiedades(alcanza)
-print("«puede llegar a»:", p)
-print("¿orden parcial?", p["reflexiva"] and p["antisimétrica"] and p["transitiva"])
-print("¿equivalencia?", p["reflexiva"] and p["simétrica"] and p["transitiva"])
-print("¿R es función de S en S?", all(sum(1 for (x, _) in R if x == a) == 1 for a in S))
-```
-
-```text
-$ python3 relacion.py
-R tiene 3 pares de 16 posibles en S × S
-R: {'reflexiva': False, 'simétrica': False, 'antisimétrica': True, 'transitiva': False}
-«puede llegar a» tiene 10 pares
-«puede llegar a»: {'reflexiva': True, 'simétrica': False, 'antisimétrica': True, 'transitiva': True}
-¿orden parcial? True
-¿equivalencia? False
-¿R es función de S en S? False
-```
-
-**Explicación por partes.**
-- Línea 5: comprensión de conjunto que convierte el diccionario en pares \((a, b)\), con el texto de cada estado.
-- Líneas 10–13: cada propiedad del glosario, escrita con `all`. La implicación de la antisimetría vive en el `if a != b`.
-- Línea 18: `|` une \(R\) con los pares reflexivos \((a, a)\).
-- Líneas 19–23: `nuevos` son los atajos \((a, d)\) que faltan. Cuando el conjunto queda vacío, el cierre está completo.
-- Salida: \(R\) solo es antisimétrica; \(R^*\) tiene 10 pares (4 reflexivos, 3 de un paso, 2 de dos pasos y 1 de tres) y es un orden parcial.
-- Línea 34: cuenta los sucesores de cada estado; `delivered` tiene 0, así que \(R\) no es función.
-
-> **Error común.** Revisar la transitividad solo con `R` y concluir «no es un orden». El ticket hablaba de «poder
-> llegar», que es \(R^*\). Antes de afirmar una propiedad, escribe sobre qué relación exacta la afirmas.
-
-> **Buena práctica.** Cuando un ticket diga «esto es un orden» o «esto es equivalente», pídele la relación exacta y
-> compruébala con las cuatro propiedades. Una discusión de media hora se vuelve una ejecución de un segundo.
-
-#### Problema resuelto 2.3
-Demuestra por inducción que la función recursiva `suma` devuelve la suma de los elementos de cualquier lista de
-enteros. Escribe los supuestos y compara la demostración con comprobar casos.
-
-**Razonamiento:**
-1. \(P(k)\): «para toda lista de longitud \(k\), `suma` devuelve la suma de sus elementos».
-2. Caso base \(k = 0\): la lista vacía; las líneas 3–4 devuelven 0, que es la suma de ningún número.
-3. Paso inductivo: una lista de longitud \(k + 1\) tiene un primer elemento y un resto `valores[1:]` de longitud \(k\).
-   Por la hipótesis inductiva, `suma(valores[1:])` es correcta; la línea 5 le suma el primero. Resultado correcto.
-4. Supuestos: los elementos son enteros, y la lista es corta, porque cada llamada ocupa un lugar en la pila de Python.
-5. Comprobar 501 casos da evidencia; la inducción cubre todos.
-
-```python
-# induccion.py — comprueba casos de dos propiedades que se demuestran por inducción
-def suma(valores: list[int]) -> int:
-    if not valores:                 # caso base
-        return 0
-    return valores[0] + suma(valores[1:])
-
-
-def gauss(n: int) -> int:
-    return n * (n + 1) // 2
-
-
-for n in range(0, 6):
-    lista = list(range(1, n + 1))
-    print(f"n={n}  suma={suma(lista):2}  gauss={gauss(n):2}  sum={sum(lista):2}")
-
-casos = range(0, 501)
-print("¿coinciden para n de 0 a 500?", all(suma(list(range(1, n + 1))) == gauss(n) for n in casos))
-```
-
-```text
-$ python3 induccion.py
-n=0  suma= 0  gauss= 0  sum= 0
-n=1  suma= 1  gauss= 1  sum= 1
-n=2  suma= 3  gauss= 3  sum= 3
-n=3  suma= 6  gauss= 6  sum= 6
-n=4  suma=10  gauss=10  sum=10
-n=5  suma=15  gauss=15  sum=15
-¿coinciden para n de 0 a 500? True
-```
-
-**Explicación por partes.**
-- Líneas 3–4: el caso base del código es el caso base de la demostración.
-- Línea 5: `valores[1:]` es la lista sin su primer elemento; la llamada recursiva es la hipótesis inductiva en acción.
-- Líneas 8–9: `gauss` aplica \(\frac{n(n+1)}{2}\); `//` es la división entera y aquí es exacta, porque \(n(n+1)\) siempre es par.
-- Líneas 12–14: para \(n\) de 0 a 5, la recursión, la fórmula y `sum` de Python coinciden.
-- Líneas 16–17: 501 casos coinciden. Es evidencia, no demostración: la demostración es la del razonamiento.
-
-> **Error común.** Olvidar el supuesto de tamaño. `suma(list(range(5000)))` termina con
-> `RecursionError: maximum recursion depth exceeded`. La demostración es correcta para enteros matemáticos; el programa
-> real tiene un límite de unas 1000 llamadas anidadas. Por eso los supuestos se escriben junto a la demostración.
-
-> **Ingeniería de software.** `valores[1:]` copia la lista en cada llamada, así que `suma` hace \(O(n^2)\) copias en
-> total (Módulo 2, Tema 4). La demostración prueba que el resultado es correcto, no que sea eficiente; son preguntas distintas.
+#### Cuándo no usarlo
+- Con dos o tres estados y una regla simple, un diccionario de transiciones permitidas es más corto: `{"registrado": {"despachar", "cancelar"}, ...}`.
+- Si los estados solo cambian una etiqueta y no el comportamiento, basta un atributo de texto y una validación.
+- Si las reglas las define el negocio y cambian cada semana, guárdalas como datos (tabla o archivo), no como clases.
 
 #### Checkpoint 2.1
-Entre los envíos de un día, la relación «tiene el mismo estado que». ¿Es un orden parcial o una equivalencia?
+En `state.py`, ¿qué clase cambias para permitir cancelar un envío que está en ruta? ¿Cuántas clases tocas?
 
-Respuesta: una equivalencia. Es reflexiva (cada envío tiene su mismo estado), simétrica y transitiva. No es
-antisimétrica: dos envíos distintos pendientes se relacionan en los dos sentidos. Sus clases son los cuatro estados.
-
-#### Checkpoint 2.2
-¿Cuál es la diferencia entre probar muchos casos y demostrar una propiedad?
-
-Respuesta: probar casos revisa una cantidad finita, como los 501 de `induccion.py`; un caso no revisado puede fallar.
-Una demostración, como la inducción, justifica la propiedad para **todo** \(n\) a partir del caso base y el paso.
+Respuesta: solo `EnRuta`. Le agregas `def cancelar(self, envio): envio.estado = Cancelado()`. La clase base, los
+otros estados y `Envio` no cambian.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/discretas/conjuntos`, entra y copia ahí `domain.py` del Tema 1. Escribe `permisos.py` y comprueba que la
-salida coincide con la del Problema resuelto 2.1.
+#### Paso 1 · Reproduce el defecto
+Escribe `estado_con_if.py` y ejecútalo. Comprueba que la última línea dice `cancelar  -> cancelado` aunque el envío
+ya estaba entregado.
 
-#### Paso 2 · Clasifica la relación
-Escribe `relacion.py` y ejecútalo. Dibuja en papel los 4 estados y las 3 flechas de \(R\). Luego agrega, en otro
-color, los 7 pares que el cierre suma, y cuenta: deben ser 10 en total.
+#### Paso 2 · Un objeto por estado
+Escribe `state.py` y ejecútalo. La última línea debe ser `Rechazado: No se puede cancelar en estado entregado`.
 
-#### Paso 3 · Demuestra y comprueba
-Escribe `induccion.py` y ejecútalo. En un archivo `demostracion.txt`, escribe con tus palabras el caso base, la
-hipótesis inductiva y el paso inductivo de `suma`, y una línea con los supuestos.
-
-#### Paso 4 · Rompe un supuesto
-En el intérprete, ejecuta `from induccion import suma` y luego `suma(list(range(5000)))`. Confirma que la última línea
-es `RecursionError: maximum recursion depth exceeded` y anótala en `demostracion.txt` como supuesto comprobado.
+#### Paso 3 · Comprueba la tabla completa
+Escribe `transiciones.py` y ejecútalo. Cuenta las líneas que no dicen `rechazada`: deben ser tres.
 
 #### Resumen
-- Un **subconjunto** \(A \subseteq B\) cabe dentro de \(B\); en Python, `A <= B`.
-- Las **operaciones de conjuntos** \(\cup\), \(\cap\), \(-\) se escriben `|`, `&`, `-`; el vacío es `set()`, no `{}`.
-- El **producto cartesiano** \(A \times B\) tiene \(\lvert A \rvert \cdot \lvert B \rvert\) pares ordenados.
-- Una **relación** es un subconjunto de \(S \times S\); sus **propiedades** se revisan con `all`.
-- Un **orden parcial** es reflexivo, antisimétrico y transitivo; una **relación de equivalencia**, reflexiva, simétrica y transitiva.
-- Una **función matemática** asigna a cada entrada exactamente una salida.
-- La **inducción matemática** demuestra \(P(n)\) para todo \(n\) con un caso base y un paso inductivo; los supuestos del programa se escriben aparte.
+- Una **máquina de estados** fija qué **transiciones** existen; lo que no está dibujado no se permite.
+- El patrón **State** delega cada acción en un objeto estado; cambiar de estado es reemplazar ese objeto.
+- La clase base rechaza todo con `ValueError` y cada estado sobrescribe solo sus flechas.
+- **`getattr`** busca un método por su nombre como texto; un nombre mal escrito da `AttributeError`.
+- Una tabla de todas las combinaciones prueba que ninguna transición inválida se cuela.
 
 #### Ejercicio verificable 1
-Básico. Con \(A = \{\text{leer}, \text{editar}, \text{exportar}\}\) y \(B = \{\text{leer}, \text{borrar}\}\), calcula a
-mano \(A \cup B\), \(A \cap B\), \(A - B\), \(B - A\) y \(\lvert A \times B \rvert\). Comprueba con Python.
+Básico. Agrega el estado `Devuelto` y la acción `devolver`, permitida solo desde `EnRuta`. ¿Qué imprime despachar y
+luego devolver el envío `G-205`?
 
-Respuesta esperada: \(A \cup B = \{\text{borrar}, \text{editar}, \text{exportar}, \text{leer}\}\);
-\(A \cap B = \{\text{leer}\}\); \(A - B = \{\text{editar}, \text{exportar}\}\); \(B - A = \{\text{borrar}\}\);
-\(\lvert A \times B \rvert = 3 \cdot 2 = 6\).
+Respuesta esperada: en `Estado`, un `devolver` que lanza `ValueError`; una clase `Devuelto` con
+`nombre = "devuelto"`; y en `EnRuta`, `def devolver(self, envio): envio.estado = Devuelto()`. Imprime
+`G-205: despachar -> en ruta` y `G-205: devolver  -> devuelto`.
 
 #### Ejercicio verificable 2
-Intermedio. Sobre \(S = \{0, 1, \dots, 13\}\), define \(a \mathrel{E} b\) si `a % 7 == b % 7`. Adapta `propiedades`
-de `relacion.py` para revisarla. ¿Es equivalencia? ¿Cuántos pares tiene y cuántas clases?
+Intermedio. Después del Ejercicio 1, agrega `Devuelto()` y `"devolver"` a las tuplas de `transiciones.py`. ¿Cuántas
+combinaciones hay y cuántas se aceptan?
 
-Respuesta esperada: es reflexiva, simétrica y transitiva: una equivalencia. Tiene 28 pares (cada resto agrupa 2
-números y da \(2 \cdot 2 = 4\) pares; \(7 \cdot 4 = 28\)) y 7 clases, una por resto: \(\{0, 7\}, \{1, 8\}, \dots, \{6, 13\}\).
+Respuesta esperada: 5 estados por 4 acciones, 20 combinaciones. Se aceptan 4: las tres de antes y
+`en ruta + devolver = devuelto`.
 
 #### Ejercicio verificable 3
-Reto. Demuestra por inducción que \(\sum_{i=1}^{n} (2i - 1) = n^2\): la suma de los primeros \(n\) impares es \(n^2\).
-Comprueba después los casos de 0 a 100 con `all`.
+Reto. Haz que `Envio` guarde la lista de estados por los que pasó, sin tocar ninguna clase de estado.
 
-Respuesta esperada: caso base \(n = 0\): \(0 = 0^2\). Paso: suponiendo \(\sum_{i=1}^{n} (2i - 1) = n^2\), se suma el
-término \(2(n+1) - 1 = 2n + 1\) y queda \(n^2 + 2n + 1 = (n+1)^2\). La expresión
-`all(sum(2 * i - 1 for i in range(1, n + 1)) == n * n for n in range(101))` devuelve `True`.
+Respuesta esperada: en `__init__`, `self.historial = [self.estado.nombre]`; en `ejecutar`, después de llamar a la
+acción, `self.historial.append(self.estado.nombre)`. Tras despachar y entregar, `historial` vale
+`['registrado', 'en ruta', 'entregado']`. Una acción rechazada no agrega nada, porque la excepción sale antes.
 
 #### En el trabajo
-Los sistemas de permisos (RBAC) son conjuntos: un rol es un conjunto de permisos y autorizar es comprobar \(\subseteq\).
-Los flujos de estado de pedidos, pagos o tickets son relaciones, y el cierre dice qué estados se pueden alcanzar. Las
-demostraciones por inducción aparecen al revisar algoritmos recursivos y migraciones por lotes: «si el lote \(n\) deja
-la tabla consistente, el lote \(n + 1\) también».
+Pedidos, pagos, tickets de soporte y envíos tienen máquinas de estados. En un backend, la regla «no se cancela lo
+entregado» se valida en el servidor, no solo en la pantalla, porque cualquiera puede enviar la petición a mano.
+Muchas empresas dibujan el diagrama de estados en la documentación del API y prueban cada flecha.
 
 </details>
 
-### Tema 3: Conteo, grafos y estructuras conectadas · Avanzado · 70 min
+### Tema 3: Template Method: un algoritmo fijo con pasos variables · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- contar casos con la regla del producto y la regla de la suma, sin listarlos;
-- distinguir permutaciones de combinaciones y calcularlas con fórmulas y con `math`;
-- tratar `ALLOWED_TRANSITIONS` como un grafo dirigido, detectar ciclos y enumerar caminos;
-- obtener un orden topológico con `graphlib` y leer el `CycleError` cuando existe un ciclo.
+- identificar en dos funciones parecidas los pasos que se repiten y los que cambian;
+- escribir un método plantilla que fija el orden de los pasos en una clase base abstracta;
+- distinguir un paso obligatorio (método abstracto) de un gancho con valor por defecto;
+- leer el `TypeError` de una subclase que olvida el paso obligatorio.
 
-**Conceptos clave:** regla del producto, regla de la suma, factorial, permutación, combinación, grafo dirigido, ciclo, grafo acíclico dirigido, orden topológico
+**Conceptos clave:** Template Method, gancho
+
+Ya los conoces y no se repiten: *herencia*, *sobrescritura*, *clase abstracta*, *método abstracto* y *polimorfismo*
+(Módulo 1, Tema 7); *tupla* y *lista* (Módulo 2, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
-RutaFlow quiere tres respuestas. ¿Cuántos números de guía distintos admite el formato `RF-dddd`? ¿Por qué no se
-prueban todas las rutas posibles para 20 paradas y se elige la mejor? Y el equipo de arquitectura sospecha que un
-cambio creó una dependencia circular entre capas del código. Contar a mano y revisar flechas a ojo no escala.
-
-**Grafo**, **vértice**, **arista**, **lista de adyacencia** y **DFS** tienen su ficha en el Módulo 2, Tema 7;
-**relación** y **producto cartesiano**, en el Tema 2 de este módulo. Aquí no se redefinen.
+Cada noche RutaFlow genera reportes de entregas: uno completo en CSV para contabilidad y otro solo con las fallidas
+para el equipo de reclamos. Los dos siguen los mismos pasos: encabezado, filtrar, dar formato y pie con el total.
+Hoy son dos funciones copiadas, y la copia del pie quedó mal. ¿Cómo fijas el orden de los pasos una sola vez y dejas
+variar solo lo que cambia?
 
 #### Glosario del tema
 
-**regla del producto**
-- **Definición técnica:** si una tarea se hace en \(k\) pasos sucesivos con \(n_1, n_2, \dots, n_k\) opciones cada uno, y las opciones de un paso no dependen de lo elegido antes, hay \(n_1 \cdot n_2 \cdots n_k\) maneras de hacerla.
-- **En palabras sencillas:** un menú con 3 entradas y 4 platos fuertes da \(3 \cdot 4 = 12\) almuerzos distintos.
-- **Dónde se rompe la comparación:** si lo que eliges en un paso cambia las opciones del siguiente (no repetir), multiplicas números distintos: eso lleva a las permutaciones.
-- **Ejemplo:** una guía `RF-dddd` tiene 4 dígitos con 10 opciones cada uno: \(10 \cdot 10 \cdot 10 \cdot 10 = 10^4 = 10\,000\).
-- **Error típico:** sumar en vez de multiplicar: \(10 + 10 + 10 + 10 = 40\) cuenta dígitos sueltos, no guías.
+**Template Method y método plantilla**
+- **Definición técnica:** patrón de comportamiento en el que una clase base define un método, el método plantilla, que ejecuta un algoritmo en un orden fijo llamando a otros métodos que las subclases implementan o sobrescriben.
+- **En palabras sencillas:** un formulario con casillas en orden fijo; cada reporte llena las casillas a su manera, pero nadie cambia el orden.
+- **Dónde se rompe la comparación:** en un formulario las casillas son independientes; aquí un paso recibe el resultado del anterior, como el formato que recibe los datos ya filtrados.
+- **Ejemplo:** `ReporteDiario.generar` llama a `incluir`, `formatear`, `encabezado` y `pie`, siempre en ese orden.
+- **Error típico:** sobrescribir el método plantilla en una subclase: se rompe el orden que el patrón debía proteger.
 
-**regla de la suma**
-- **Definición técnica:** si algo se elige de un grupo \(A\) **o** de un grupo \(B\), y los grupos no comparten elementos, hay \(\lvert A \rvert + \lvert B \rvert\) maneras.
-- **En palabras sencillas:** tomas un camino u otro; las opciones de cada camino se suman.
-- **Dónde se rompe la comparación:** si los grupos se solapan, lo común se cuenta dos veces: \(\lvert A \cup B \rvert = \lvert A \rvert + \lvert B \rvert - \lvert A \cap B \rvert\).
-- **Ejemplo:** guías `RF-dddd` o `EX-ddd`: \(10^4 + 10^3 = 11\,000\).
-- **Error típico:** sumar grupos que comparten elementos, como «envíos urgentes» y «envíos de Bogotá».
-
-**factorial**
-- **Definición técnica:** \(n! = n \cdot (n-1) \cdots 2 \cdot 1\) para \(n \ge 1\), y \(0! = 1\). Se lee «\(n\) factorial».
-- **En palabras sencillas:** el número de maneras de poner \(n\) cosas distintas en fila.
-- **Dónde se rompe la comparación:** crece más rápido que cualquier potencia fija: \(20!\) ya tiene 19 cifras.
-- **Ejemplo:** \(4! = 4 \cdot 3 \cdot 2 \cdot 1 = 24\); en Python, `math.factorial(4)`.
-- **Error típico:** pedir el factorial de un negativo: `math.factorial(-1)` produce `ValueError: factorial() not defined for negative values`.
-
-**permutación**
-- **Definición técnica:** secuencia ordenada de \(k\) elementos distintos tomados de \(n\). Su número es \(P(n, k) = \frac{n!}{(n-k)!}\); con \(k = n\), \(n!\). En Python: `itertools.permutations` y `math.perm`.
-- **En palabras sencillas:** cuántas filas distintas puedes armar cuando el orden importa.
-- **Dónde se rompe la comparación:** cuenta como distintas «Ana conduce, Beto ayuda» y «Beto conduce, Ana ayuda»; si los papeles no importan, sobra.
-- **Ejemplo:** conductor y ayudante entre 6 mensajeros: \(P(6, 2) = 6 \cdot 5 = 30\).
-- **Error típico:** usar permutaciones cuando el orden no importa: cada grupo se cuenta \(k!\) veces.
-
-**combinación**
-- **Definición técnica:** subconjunto de \(k\) elementos tomados de \(n\), sin orden. Su número es \(C(n, k) = \binom{n}{k} = \frac{n!}{k!\,(n-k)!}\), que se lee «\(n\) en \(k\)». En Python: `itertools.combinations` y `math.comb`.
-- **En palabras sencillas:** cuántos grupos distintos puedes formar cuando el orden no importa.
-- **Dónde se rompe la comparación:** \(C(n, k) = P(n, k) / k!\): divides entre las \(k!\) maneras de ordenar el mismo grupo.
-- **Ejemplo:** parejas de turno entre 6 mensajeros: \(C(6, 2) = \frac{30}{2} = 15\).
-- **Error típico:** esperar un error con \(k > n\): `math.comb(3, 5)` devuelve `0` sin avisar, porque no hay grupos de 5 entre 3.
-
-**grafo dirigido**
-- **Definición técnica:** grafo cuyas aristas tienen dirección: la arista \((u, v)\) va de \(u\) a \(v\), y no al revés. Es lo mismo que una relación sobre los vértices (Tema 2).
-- **En palabras sencillas:** un mapa de calles de una sola vía.
-- **Dónde se rompe la comparación:** en un mapa siempre puedes dar la vuelta a la manzana; en un grafo dirigido, a veces no hay camino de regreso.
-- **Ejemplo:** `ALLOWED_TRANSITIONS` tiene 4 vértices y 3 aristas: created → assigned → out_for_delivery → delivered.
-- **Error típico:** recorrerlo como si no fuera dirigido y «encontrar» caminos que no existen, como delivered → out_for_delivery.
-
-**ciclo**
-- **Definición técnica:** camino \(v_0 \to v_1 \to \dots \to v_k\) con \(k \ge 1\) y \(v_k = v_0\): termina donde empezó.
-- **En palabras sencillas:** una vuelta que regresa al punto de partida.
-- **Dónde se rompe la comparación:** en un grafo de dependencias, la «vuelta» significa que nada puede construirse primero.
-- **Ejemplo:** aplicación → infraestructura → dominio → aplicación.
-- **Error típico:** detectarlo con un solo conjunto `visitados`. En un rombo (A → B, A → C, B → D, C → D), D se ve dos veces y se reporta un ciclo falso.
-
-**grafo acíclico dirigido (DAG)**
-- **Definición técnica:** grafo dirigido sin ciclos. En inglés, *directed acyclic graph*, de ahí la sigla DAG.
-- **En palabras sencillas:** un flujo que siempre avanza y nunca vuelve atrás.
-- **Dónde se rompe la comparación:** «sin ciclos» no significa «una sola línea»: un DAG puede ramificarse y volver a juntarse, como el rombo.
-- **Ejemplo:** las transiciones de RutaFlow y las capas dominio → aplicación → infraestructura son DAG.
-- **Error típico:** asumir que un grafo es DAG porque «así se diseñó»; un cambio de una línea puede crear un ciclo.
-
-**orden topológico**
-- **Definición técnica:** lista de todos los vértices de un DAG en la que, para cada arista \(u \to v\), \(u\) aparece antes que \(v\). Existe si y solo si el grafo no tiene ciclos. En Python: `graphlib.TopologicalSorter`.
-- **En palabras sencillas:** un orden de trabajo que respeta todas las dependencias: nada se construye antes de lo que necesita.
-- **Dónde se rompe la comparación:** puede haber varios órdenes válidos; la herramienta devuelve uno.
-- **Ejemplo:** `['dominio', 'aplicación', 'infraestructura', 'pruebas']`.
-- **Error típico:** pedir el orden de un grafo con ciclo: `graphlib` lanza `CycleError` y muestra el ciclo.
+**gancho**
+- **Definición técnica:** método de la clase base con una implementación por defecto, a menudo vacía o trivial, que el método plantilla llama y que una subclase puede sobrescribir si lo necesita (en inglés, *hook*).
+- **En palabras sencillas:** una casilla que ya viene llena con un valor normal; la cambias solo si tu reporte lo necesita.
+- **Dónde se rompe la comparación:** a diferencia de un paso abstracto, nadie te obliga a sobrescribirlo; si te equivocas en el nombre, Python no avisa y se usa el valor por defecto.
+- **Ejemplo:** `incluir` devuelve `True` para todo; `ReporteFallidas` lo sobrescribe para quedarse solo con las fallidas.
+- **Error típico:** escribir `def incluye(self, entrega)` en la subclase: no sobrescribe el gancho y el reporte incluye todo.
 
 #### ► CÓMO FUNCIONA
-**Contar sin listar.** Primero preguntas: ¿la tarea se hace por pasos (multiplica) o por caminos alternativos (suma)?
-Después: ¿importa el orden? ¿se puede repetir? Estas dos preguntas eligen la fórmula.
-
-| ¿Importa el orden? | ¿Se repite? | Fórmula | Ejemplo |
-|---|---|---|---|
-| Sí | Sí | \(n^k\) | guías de 4 dígitos: \(10^4\) |
-| Sí | No | \(P(n, k) = \frac{n!}{(n-k)!}\) | conductor y ayudante: \(P(6, 2) = 30\) |
-| No | No | \(C(n, k) = \frac{n!}{k!\,(n-k)!}\) | parejas de turno: \(C(6, 2) = 15\) |
-
-Para ordenar \(n\) paradas hay \(n!\) rutas. Con 20 paradas son más de \(2 \times 10^{18}\): aunque revisaras mil
-millones por segundo, tardarías más de 70 años. Por eso RutaFlow usa una heurística como el vecino más cercano.
-
-**Detectar ciclos con DFS.** `tiene_ciclo` recorre el grafo en profundidad y marca cada vértice en uno de tres estados:
-
-1. **No visitado:** todavía no lo tocas.
-2. **Activo:** estás dentro de él; su recorrido no ha terminado. Está en el conjunto `activos`.
-3. **Terminado:** ya revisaste todo lo que alcanza. Está en `visitados`.
-
-Si desde un vértice activo llegas a otro vértice **activo**, encontraste una arista que regresa al camino actual: un
-ciclo. Llegar a un vértice **terminado** no es ciclo: solo es otro camino hacia algo ya revisado, como D en el rombo.
-
-**Orden topológico.** Si no hay ciclos, siempre existe un vértice sin dependencias pendientes. Lo sacas, lo pones en la
-lista y repites. Si en algún momento todos los que quedan esperan a otro, hay un ciclo.
+La clase base es abstracta y tiene el método plantilla `generar`. Ese método nunca cambia: llama a los pasos en
+orden. `formatear` es abstracto, así que toda subclase debe implementarlo. `encabezado`, `incluir` y `pie` son
+ganchos con un valor por defecto.
 
 ```mermaid
-flowchart LR
-    DOMAIN["dominio"] --> APP["aplicación"] --> INFRA["infraestructura"]
-    DOMAIN --> TESTS["pruebas"]
-    APP --> TESTS
-    A["A"] --> B["B"] --> C["C"] --> A
+classDiagram
+    class ReporteDiario {
+      <<abstract>>
+      +generar(entregas)
+      +encabezado()
+      +incluir(entrega)
+      +formatear(datos)*
+      +pie(total)
+    }
+    class ReporteCSV {
+      +formatear(datos)
+    }
+    class ReporteFallidas {
+      +encabezado()
+      +incluir(entrega)
+      +formatear(datos)
+    }
+    ReporteDiario <|-- ReporteCSV
+    ReporteDiario <|-- ReporteFallidas
 ```
+
+El asterisco marca el método abstracto. Fíjate en el sentido de las llamadas: la clase base llama a métodos de la
+subclase. Es al revés de `super()`, donde la subclase llama a la base.
 
 #### Problema resuelto 3.1
-Cuenta los números de guía posibles, las rutas de 4 paradas, las parejas y los equipos ordenados de mensajeros.
-Compara la fórmula con la lista completa que genera `itertools`, y mira cómo crece \(n!\).
+Antes del patrón. Escribe los dos reportes como funciones independientes y ejecútalas con cuatro entregas.
 
 **Razonamiento:**
-1. Guía: 4 pasos con 10 opciones, el orden importa y se repite: \(10^4\). Agregar el formato `EX-ddd` es regla de la suma.
-2. Rutas: ordenar 4 paradas distintas es \(4!\).
-3. Parejas sin papel: \(C(6, 2)\). Conductor y ayudante: \(P(6, 2)\).
-4. Listar con `itertools` solo sirve para comprobar números pequeños; para 20 paradas solo se puede calcular.
+1. Cada función arma el texto en cuatro pasos: encabezado, filas, filtro (solo una) y pie.
+2. La segunda función nace copiando la primera.
+3. Compara el total de cada reporte con el número de filas que muestra.
 
 ```python
-# conteo.py — contar sin listar y comprobar listando
-from itertools import combinations, permutations, product
-from math import comb, factorial, perm
+# reportes_copiados.py — dos reportes que repiten los mismos pasos a mano
+def reporte_csv(entregas):
+    texto = "Reporte RutaFlow\n"
+    texto += "guia,estado\n"
+    for guia, estado in entregas:
+        texto += f"{guia},{estado}\n"
+    return texto + f"Total: {len(entregas)}\n"
 
-digitos = range(10)
-guias = list(product(digitos, repeat=4))
-print("guías RF-dddd:", len(guias), "=", 10**4)
-print("guías RF- o EX-ddd:", 10**4 + 10**3)
+def reporte_fallidas(entregas):
+    texto = "Entregas fallidas\n"
+    for guia, estado in entregas:
+        if estado == "fallida":
+            texto += f"- {guia}\n"
+    return texto + f"Total: {len(entregas)}\n"   # pie copiado: cuenta todas, no las fallidas
 
-paradas = ["A", "B", "C", "D"]
-ordenes = list(permutations(paradas))
-print("órdenes de 4 paradas:", len(ordenes), "= 4! =", factorial(4))
-print("los tres primeros:", ["".join(o) for o in ordenes[:3]])
-
-mensajeros = ["Ana", "Beto", "Caro", "Dani", "Eva", "Fede"]
-parejas = list(combinations(mensajeros, 2))
-print("parejas de 6 mensajeros:", len(parejas), "= C(6,2) =", comb(6, 2))
-print("conductor y ayudante:", len(list(permutations(mensajeros, 2))), "= P(6,2) =", perm(6, 2))
-
-for n in (5, 10, 15, 20):
-    print(f"{n} paradas → {factorial(n):,} órdenes posibles")
+entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
+print(reporte_csv(entregas))
+print(reporte_fallidas(entregas))
 ```
 
 ```text
-$ python3 conteo.py
-guías RF-dddd: 10000 = 10000
-guías RF- o EX-ddd: 11000
-órdenes de 4 paradas: 24 = 4! = 24
-los tres primeros: ['ABCD', 'ABDC', 'ACBD']
-parejas de 6 mensajeros: 15 = C(6,2) = 15
-conductor y ayudante: 30 = P(6,2) = 30
-5 paradas → 120 órdenes posibles
-10 paradas → 3,628,800 órdenes posibles
-15 paradas → 1,307,674,368,000 órdenes posibles
-20 paradas → 2,432,902,008,176,640,000 órdenes posibles
+$ python3 reportes_copiados.py
+Reporte RutaFlow
+guia,estado
+G-1,entregada
+G-2,fallida
+G-3,entregada
+G-4,fallida
+Total: 4
+
+Entregas fallidas
+- G-2
+- G-4
+Total: 4
 ```
 
 **Explicación por partes.**
-- Línea 6: `product(digitos, repeat=4)` genera las 10 000 guías como tuplas; `len` comprueba la regla del producto.
-- Línea 8: regla de la suma: los dos formatos no comparten guías, así que se suman.
-- Líneas 11–13: `permutations` genera las 24 filas; `ABCD` y `ABDC` difieren solo en el orden de las dos últimas.
-- Líneas 16–18: las 30 permutaciones de 2 son exactamente el doble de las 15 combinaciones: \(C(6, 2) = P(6, 2) / 2!\).
-- Líneas 20–21: `{factorial(n):,}` separa los miles con comas. De 10 a 20 paradas, las rutas pasan de 3 millones a 2 trillones.
-
-> **Error común.** Pasar a `factorial` un número calculado que resultó negativo, por ejemplo `factorial(paradas - 5)`
-> con 3 paradas. El programa se detiene con `ValueError: factorial() not defined for negative values`. Valida la
-> precondición \(n \ge 0\) antes de calcular.
+- Líneas 3–7 y 10–14: los dos cuerpos repiten la misma secuencia; solo cambian el encabezado, el filtro y el formato de fila.
+- Línea 14: el pie se copió con `len(entregas)`. Debía contar las filas filtradas.
+- Salida: el reporte de fallidas muestra dos guías y dice `Total: 4`. Nadie lo nota hasta que reclamos pregunta.
 
 #### Problema resuelto 3.2
-Comprueba que `ALLOWED_TRANSITIONS` es un DAG y demuestra el invariante del Tema 1: «ningún envío llega a delivered sin
-pasar por assigned y out_for_delivery». Después detecta el ciclo que crea un cambio en las capas del código y obtén el
-orden de construcción.
+Después del patrón. Mueve el orden de los pasos a una clase base y deja que cada reporte cambie solo lo suyo.
 
 **Razonamiento:**
-1. Convierte el diccionario de estados en una lista de adyacencia con texto: \(\{\text{estado}: \{\text{destinos}\}\}\).
-2. `tiene_ciclo` (DFS con `activos` y `visitados`) responde si es DAG.
-3. En un DAG finito, los caminos entre dos vértices son finitos: puedes listarlos todos. Si todos pasan por assigned y out_for_delivery, el invariante está demostrado.
-4. Para las capas, la flecha \(u \to v\) significa «\(v\) depende de \(u\)»: \(u\) se construye antes.
+1. El orden (filtrar, formatear, encabezado, pie) va en un solo método: `generar`.
+2. El pie recibe `len(datos)`, los datos ya filtrados; así ningún reporte puede contar mal.
+3. El formato cambia siempre: es abstracto. Encabezado, filtro y pie casi nunca: son ganchos.
 
 ```python
-# grafo.py — ciclos y caminos en grafos dirigidos
-from domain import ALLOWED_TRANSITIONS
+# template_method.py — el orden de los pasos vive en un solo lugar
+from abc import ABC, abstractmethod
 
+class ReporteDiario(ABC):
+    def generar(self, entregas):             # método plantilla: fija el orden de los pasos
+        datos = [e for e in entregas if self.incluir(e)]
+        cuerpo = self.formatear(datos)
+        return self.encabezado() + cuerpo + self.pie(len(datos))
 
-def tiene_ciclo(grafo: dict[str, set[str]]) -> bool:
-    visitados, activos = set(), set()
+    def encabezado(self):                    # paso con implementación por defecto (gancho)
+        return "Reporte RutaFlow\n"
+    def incluir(self, entrega):
+        return True
+    @abstractmethod
+    def formatear(self, datos): ...         # paso obligatorio para cada subclase
+    def pie(self, total):
+        return f"Total: {total}\n"
 
-    def visitar(nodo: str) -> bool:
-        if nodo in activos:
-            return True
-        if nodo in visitados:
-            return False
-        activos.add(nodo)
-        for vecino in grafo.get(nodo, set()):
-            if visitar(vecino):
-                return True
-        activos.remove(nodo)
-        visitados.add(nodo)
-        return False
+class ReporteCSV(ReporteDiario):
+    def formatear(self, datos):
+        return "guia,estado\n" + "".join(f"{g},{e}\n" for g, e in datos)
 
-    return any(visitar(n) for n in grafo)
+class ReporteFallidas(ReporteDiario):
+    def encabezado(self):
+        return "Entregas fallidas\n"
+    def incluir(self, entrega):
+        return entrega[1] == "fallida"
+    def formatear(self, datos):
+        return "".join(f"- {g}\n" for g, _ in datos)
 
-
-def caminos(grafo, origen, destino):
-    if origen == destino:
-        return [[destino]]
-    return [[origen] + resto for vecino in sorted(grafo.get(origen, set()))
-            for resto in caminos(grafo, vecino, destino)]
-
-
-estados = {a.value: {b.value for b in destinos} for a, destinos in ALLOWED_TRANSITIONS.items()}
-print("estados:", len(estados), "aristas:", sum(len(v) for v in estados.values()))
-print("¿ciclo en transiciones?", tiene_ciclo(estados))
-print("caminos created → delivered:", caminos(estados, "created", "delivered"))
-
-capas = {
-    "dominio": {"aplicación", "pruebas"},
-    "aplicación": {"infraestructura", "pruebas"},
-    "infraestructura": set(),
-    "pruebas": set(),
-}
-print("¿ciclo en capas?", tiene_ciclo(capas))
-capas["infraestructura"].add("dominio")
-print("tras infraestructura → dominio:", tiene_ciclo(capas))
+if __name__ == "__main__":
+    entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
+    print(ReporteCSV().generar(entregas))
+    print(ReporteFallidas().generar(entregas))
 ```
 
 ```text
-$ python3 grafo.py
-estados: 4 aristas: 3
-¿ciclo en transiciones? False
-caminos created → delivered: [['created', 'assigned', 'out_for_delivery', 'delivered']]
-¿ciclo en capas? False
-tras infraestructura → dominio: True
-```
+$ python3 template_method.py
+Reporte RutaFlow
+guia,estado
+G-1,entregada
+G-2,fallida
+G-3,entregada
+G-4,fallida
+Total: 4
 
-Hay un único camino de created a delivered y pasa por los dos estados intermedios, en orden: el invariante se cumple
-para todo envío. Ahora el orden de construcción con la biblioteca estándar, antes y después del cambio que crea el ciclo:
-
-```python
-# orden.py — orden topológico con la biblioteca estándar
-from graphlib import TopologicalSorter
-
-# cada clave depende de los elementos de su conjunto
-depende_de = {
-    "aplicación": {"dominio"},
-    "infraestructura": {"aplicación"},
-    "pruebas": {"dominio", "aplicación"},
-}
-print("orden de construcción:", list(TopologicalSorter(depende_de).static_order()))
-
-depende_de["dominio"] = {"infraestructura"}
-print(list(TopologicalSorter(depende_de).static_order()))
-```
-
-```text
-$ python3 orden.py
-orden de construcción: ['dominio', 'aplicación', 'infraestructura', 'pruebas']
-Traceback (most recent call last):
-  File "/home/estudiante/labs/discretas/grafos/orden.py", line 13, in <module>
-    print(list(TopologicalSorter(depende_de).static_order()))
-          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/graphlib.py", line 244, in static_order
-    self.prepare()
-    ~~~~~~~~~~~~^^
-  File "/usr/local/lib/python3.13/graphlib.py", line 106, in prepare
-    raise CycleError(f"nodes are in a cycle", cycle)
-graphlib.CycleError: ('nodes are in a cycle', ['aplicación', 'infraestructura', 'dominio', 'aplicación'])
+Entregas fallidas
+- G-2
+- G-4
+Total: 2
 ```
 
 **Explicación por partes.**
-- `grafo.py`, líneas 9–10: llegar a un vértice **activo** es volver al camino actual: ciclo.
-- `grafo.py`, líneas 11–12: llegar a uno **terminado** no es ciclo; se descarta sin repetir trabajo.
-- `grafo.py`, líneas 17–18: al terminar un vértice, sale de `activos` y entra en `visitados`.
-- `grafo.py`, líneas 24–28: `caminos` es recursiva. Su caso base es llegar al destino; termina porque el grafo no tiene ciclos.
-- `grafo.py`, línea 43: una sola arista nueva, infraestructura → dominio, convierte el DAG en un grafo con ciclo.
-- `orden.py`, líneas 5–9: `TopologicalSorter` recibe «quién depende de quién», en sentido contrario a las flechas del diagrama.
-- `orden.py`, línea 13: con el ciclo no existe orden topológico; la excepción nombra el ciclo completo.
+- Líneas 5–8: el método plantilla. Filtra con el gancho `incluir`, formatea y une encabezado, cuerpo y pie.
+- Línea 8: el pie recibe `len(datos)`. El defecto del Problema resuelto 3.1 ya no se puede repetir.
+- Líneas 10–17: tres ganchos con valor por defecto y un paso abstracto (líneas 14–15).
+- Líneas 19–21: `ReporteCSV` solo implementa el paso obligatorio.
+- Líneas 23–29: `ReporteFallidas` cambia dos ganchos y el formato, y hereda el pie correcto.
+- Salida: el reporte de fallidas termina en `Total: 2`.
 
-> **Error común.** Pedir un orden topológico sin revisar ciclos. El programa termina con
-> `graphlib.CycleError: ('nodes are in a cycle', ['aplicación', 'infraestructura', 'dominio', 'aplicación'])`. Lee la
-> lista de izquierda a derecha: cada elemento depende del anterior, y el último repite el primero.
+> **Error común.** Crear una subclase sin el paso abstracto. Python no deja crear el objeto:
+> `TypeError: Can't instantiate abstract class ReporteJSON without an implementation for abstract method 'formatear'`.
+> El mensaje nombra la clase incompleta y el método que falta.
 
-> **Prevenir errores.** Agrega `tiene_ciclo` (o `TopologicalSorter(...).prepare()`) como prueba automática del grafo de
-> dependencias. Así el ciclo aparece en la integración continua, no meses después en una compilación que nadie entiende.
+```python
+# reporte_incompleto.py — una subclase que olvida el paso obligatorio
+from template_method import ReporteDiario
+
+class ReporteJSON(ReporteDiario):
+    def encabezado(self):
+        return "[\n"
+
+print(ReporteJSON().generar([("G-1", "entregada")]))
+```
+
+```text
+$ python3 reporte_incompleto.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/reporte_incompleto.py", line 8, in <module>
+    print(ReporteJSON().generar([("G-1", "entregada")]))
+          ~~~~~~~~~~~^^
+TypeError: Can't instantiate abstract class ReporteJSON without an implementation for abstract method 'formatear'
+```
+
+> **Prevenir errores.** Un gancho mal escrito no da error: simplemente no se usa. Prueba cada subclase con datos
+> donde el gancho importe, por ejemplo una entrega `entregada` que el reporte de fallidas debe excluir.
+
+> **Buena práctica.** Deja pocos pasos abstractos y pocos ganchos. Si la clase base tiene ocho ganchos, cada
+> subclase nueva obliga a leerlos todos para saber cuáles tocar.
+
+#### Cuándo no usarlo
+- Si solo cambia un paso, pasa ese paso como función o como objeto (Strategy): `generar(entregas, formatear=a_csv)`. No necesitas herencia.
+- Si los pasos cambian de orden según el caso, no hay algoritmo fijo que proteger.
+- Si hay un solo reporte, una función basta. Extrae la clase cuando aparezca el segundo y veas qué se repite.
 
 #### Checkpoint 3.1
-Si RutaFlow agrega un quinto estado, `cancelled`, ¿cuántos pares (actual, pedido) debe revisar `transiciones.py`?
+Quieres un reporte con todas las entregas, en CSV, pero con el encabezado `Contabilidad`. ¿Qué escribes?
 
-Respuesta: \(5 \cdot 5 = 25\). Es el producto cartesiano \(S \times S\) con \(\lvert S \rvert = 5\), por la regla del producto.
-
-#### Checkpoint 3.2
-¿Cómo ayuda un grafo a detectar un ciclo de dependencias?
-
-Respuesta: cada módulo es un vértice y cada dependencia, una arista dirigida. Un ciclo de dependencias es un ciclo del
-grafo, y un DFS lo encuentra cuando llega a un vértice que sigue activo en el camino actual.
+Respuesta: una subclase de `ReporteCSV` que solo sobrescribe el gancho `encabezado` y devuelve `"Contabilidad\n"`.
+Hereda el formato de `ReporteCSV` y el filtro y el pie de `ReporteDiario`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/discretas/grafos`, entra y copia ahí `domain.py` del Tema 1.
+#### Paso 1 · Encuentra la copia
+Escribe `reportes_copiados.py` y ejecútalo. Marca en el código qué líneas se repiten y cuáles cambian entre las dos
+funciones.
 
-#### Paso 2 · Cuenta y comprueba
-Escribe `conteo.py` y ejecútalo. Antes de cada línea de la salida, escribe en papel tu predicción con la fórmula de
-la tabla de «Cómo funciona».
+#### Paso 2 · Fija el orden en la clase base
+Escribe `template_method.py` y ejecútalo. El reporte de fallidas debe cerrar con `Total: 2`.
 
-#### Paso 3 · Detecta el ciclo
-Escribe `grafo.py` y ejecútalo. Luego agrega `estados["delivered"].add("created")` antes de la línea 33 y vuelve a
-ejecutarlo: `¿ciclo en transiciones?` debe pasar a `True`. Quita esa línea al terminar.
-
-#### Paso 4 · Ordena la construcción
-Escribe `orden.py` y ejecútalo. Confirma que la primera línea muestra el orden y que la excepción final nombra el ciclo
-`aplicación → infraestructura → dominio → aplicación`.
+#### Paso 3 · Rompe el contrato a propósito
+Escribe `reporte_incompleto.py` y ejecútalo para ver el `TypeError`. Después agrega a `ReporteJSON` un `formatear`
+que devuelva `""` y ejecuta otra vez: el objeto ya se crea.
 
 #### Resumen
-- La **regla del producto** multiplica las opciones de pasos sucesivos; la **regla de la suma** suma caminos sin solapamiento.
-- El **factorial** \(n!\) cuenta las filas de \(n\) elementos; crece tan rápido que probar todas las rutas es imposible.
-- La **permutación** \(P(n, k)\) cuenta con orden; la **combinación** \(C(n, k)\), sin orden: \(C(n, k) = P(n, k) / k!\).
-- Un **grafo dirigido** es una relación con dirección; un **ciclo** vuelve a su punto de partida.
-- Un **grafo acíclico dirigido** no tiene ciclos; en él los caminos son finitos y se pueden enumerar.
-- El DFS detecta un ciclo al llegar a un vértice activo; llegar a uno terminado no es ciclo.
-- Un **orden topológico** existe solo en un DAG; `graphlib` lanza `CycleError` si hay ciclo.
+- El patrón **Template Method** fija el orden de un algoritmo en un **método plantilla** de la clase base.
+- Los pasos obligatorios son **métodos abstractos**; Python impide crear una subclase que no los implemente.
+- Un **gancho** trae un valor por defecto y se sobrescribe solo cuando hace falta.
+- La clase base llama a los métodos de la subclase: el control va de arriba abajo.
+- Si solo varía un paso, pasar una función (Strategy) es más simple que heredar.
 
 #### Ejercicio verificable 1
-Básico. Los casilleros de una bodega se nombran con 2 letras (26 opciones cada una) y 3 dígitos. ¿Cuántos nombres
-distintos hay? Comprueba con Python.
+Básico. Escribe `ReporteEntregadas` con el encabezado `Entregas exitosas`, que incluya solo las entregas con estado
+`entregada` y las liste con `- `. ¿Qué imprime con las cuatro entregas del ejemplo?
 
-Respuesta esperada: \(26^2 \cdot 10^3 = 676\,000\), por la regla del producto. En Python, `26**2 * 10**3` da `676000`.
+Respuesta esperada: `Entregas exitosas`, `- G-1`, `- G-3` y `Total: 2`. La subclase sobrescribe `encabezado`,
+`incluir` y `formatear`; el pie se hereda.
 
 #### Ejercicio verificable 2
-Intermedio. De 8 paradas pendientes, un mensajero lleva 3 en la primera ronda. ¿Cuántos grupos de 3 hay? ¿Y cuántas
-maneras de elegir 3 y además ordenarlas?
+Intermedio. Completa `ReporteJSON` para que con las dos primeras entregas imprima un arreglo JSON entre `[` y `]`, un
+objeto por línea. ¿Qué gancho tienes que sobrescribir además de `encabezado` y `formatear`?
 
-Respuesta esperada: grupos: \(C(8, 3) = 56\). Grupos ordenados: \(P(8, 3) = 8 \cdot 7 \cdot 6 = 336\). Se cumple
-\(336 = 56 \cdot 3!\). `math.comb(8, 3)` y `math.perm(8, 3)` lo confirman.
+Respuesta esperada: `pie`, para que devuelva `"]\n"` en vez de `Total: ...`. Con
+`formatear` que une con `",\n"` líneas como `  {"guia": "G-1", "estado": "entregada"}`, la salida es `[`, las dos
+líneas separadas por coma y `]`.
 
 #### Ejercicio verificable 3
-Reto. Escribe `ciclo_ingenuo(grafo)`, un DFS con un solo conjunto `visitados` que devuelve `True` al llegar a un vértice
-ya visitado. Ejecútalo con el rombo `{"A": {"B", "C"}, "B": {"D"}, "C": {"D"}, "D": set()}` y compáralo con `tiene_ciclo`.
+Reto. Un compañero propone sobrescribir `generar` en `ReporteFallidas` «para optimizarlo». ¿Qué riesgo concreto
+introduce? Justifica con el defecto del Problema resuelto 3.1.
 
-Respuesta esperada: `ciclo_ingenuo` devuelve `True` y `tiene_ciclo` devuelve `False`. El rombo no tiene ciclos: D se
-alcanza por dos caminos, pero ninguno vuelve atrás. Sin el estado «activo», la función confunde «ya lo vi» con «estoy dentro».
+Respuesta esperada: la subclase vuelve a tener su propia copia del algoritmo. Si esa copia calcula el pie con la
+lista completa, reaparece `Total: 4`. El método plantilla existe para que el orden y el conteo vivan en un solo
+lugar; las subclases solo deben tocar pasos y ganchos.
 
 #### En el trabajo
-Los gestores de paquetes (`pip`, `npm`, Maven), los sistemas de compilación y los orquestadores de tareas como Airflow
-modelan dependencias como DAG y ejecutan en orden topológico. Cuando reportan una «dependencia circular», es un
-`CycleError` como el de este tema. El conteo aparece al dimensionar: cuántos casos de prueba requiere una
-combinación de opciones, o cuántos identificadores admite un formato antes de agotarse.
+Los frameworks están llenos de métodos plantilla: `unittest.TestCase` llama a `setUp`, al método de prueba y a
+`tearDown` en ese orden, y tú solo llenas los pasos. Lo mismo pasa con las vistas de Django o los ciclos de vida de
+Android. En un equipo, el método plantilla protege reglas que no se negocian, como registrar siempre la auditoría al
+final de un proceso.
 
 </details>
 
-### Tema 4: Probabilidad y evidencia para decisiones técnicas · Avanzado · 80 min
+### Tema 4: Chain of Responsibility: una cadena de validadores · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- calcular probabilidades exactas contando casos de un espacio muestral, y comprobarlas con una simulación con semilla;
-- aplicar la independencia, la probabilidad condicional y la esperanza a datos de entregas;
-- medir la distribución de tiempos de `nearest_neighbor_route` con mediana y percentil 95 en varios tamaños;
-- distinguir correlación de causalidad y reconocer el sesgo de selección antes de concluir.
+- separar reglas anidadas en manejadores independientes enlazados en una cadena;
+- cortar la cadena en el primer error y explicar por qué el orden de los eslabones importa;
+- reutilizar una parte de la cadena para otro caso sin copiar reglas;
+- demostrar con un `assert` una falla silenciosa en una cadena mal armada.
 
-**Conceptos clave:** espacio muestral, evento, probabilidad, independencia, probabilidad condicional, esperanza, percentil, semilla, sesgo de selección, correlación
+**Conceptos clave:** Chain of Responsibility, manejador, sucesor
+
+Ya los conoces y no se repiten: *herencia*, *sobrescritura* y *polimorfismo* (Módulo 1, Tema 7); *diccionario* y
+*conjunto* (Módulo 2, Tema 1); `assert` (Módulo 1, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
-En RutaFlow cada envío se entrega en el primer intento 9 de cada 10 veces. ¿Qué tan probable es que una ruta de 3
-envíos salga perfecta? Además, alguien propone «contratar más mensajeros porque los días con más pedidos hay más
-retrasos», y otro afirma que la ruta «tarda 0.2 ms» tras medirla una vez. Necesitas números que separen evidencia de
-intuición.
-
-**Complejidad** \(O(n^2)\) y **`perf_counter`** tienen su ficha en el Módulo 2, Temas 4 y 2. **Conjunto**,
-**subconjunto** e **intersección** vienen del Tema 2 de este módulo; **producto cartesiano** y **regla del producto**,
-de los Temas 2 y 3.
+Antes de aceptar un pedido, RutaFlow revisa tres reglas: que tenga dirección, que pese entre 0 y 30 kg y que la
+ciudad tenga cobertura. Hoy son tres `if` anidados en una función. Ahora llegan los puntos de recogida, que no piden
+dirección pero sí las otras reglas. ¿Cómo combinas reglas distintas para casos distintos sin copiar la función?
 
 #### Glosario del tema
 
-**espacio muestral**
-- **Definición técnica:** conjunto \(\Omega\) («omega») de todos los resultados posibles de un experimento aleatorio, es decir, de un proceso cuyo resultado no se conoce de antemano.
-- **En palabras sencillas:** la lista completa de lo que puede pasar.
-- **Dónde se rompe la comparación:** en la vida real casi nunca puedes listarlo entero; por eso se simula o se mide.
-- **Ejemplo:** lanzar dos dados: \(\Omega = \{1, \dots, 6\} \times \{1, \dots, 6\}\), con \(\lvert \Omega \rvert = 36\) pares.
-- **Error típico:** contar (1, 6) y (6, 1) como un solo resultado; entonces los resultados ya no son igual de probables.
+**Chain of Responsibility**
+- **Definición técnica:** patrón de comportamiento que pasa una petición por una secuencia de objetos manejadores; cada uno decide si la atiende, la corta o la entrega al siguiente.
+- **En palabras sencillas:** una fila de revisores en una oficina: cada uno mira una cosa y, si está bien, pasa el papel al siguiente.
+- **Dónde se rompe la comparación:** en una oficina el último revisor sabe que es el último; aquí un eslabón no sabe cuántos vienen después, solo si tiene siguiente o no.
+- **Ejemplo:** `Direccion(Peso(Cobertura()))` revisa dirección, luego peso, luego cobertura.
+- **Error típico:** armar la cadena por partes y dejar un eslabón sin enlazar: la regla existe en el código, pero nunca se ejecuta.
 
-**evento**
-- **Definición técnica:** subconjunto \(A \subseteq \Omega\) de resultados. Se dice que \(A\) ocurre si el resultado obtenido pertenece a \(A\).
-- **En palabras sencillas:** una pregunta de sí o no sobre el resultado, como «¿los dados suman 7?».
-- **Dónde se rompe la comparación:** un evento no es un resultado: «suma 7» agrupa 6 resultados distintos.
-- **Ejemplo:** \(A = \{(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)\}\), con \(\lvert A \rvert = 6\).
-- **Error típico:** escribir un evento que no es subconjunto de \(\Omega\), como «suma 13» con dos dados: es el vacío y su probabilidad es 0.
+**manejador**
+- **Definición técnica:** cada objeto de la cadena; expone un método común (aquí `manejar`) y contiene una sola regla (aquí `revisar`).
+- **En palabras sencillas:** un revisor que sabe revisar una sola cosa.
+- **Dónde se rompe la comparación:** un revisor humano puede notar otros problemas; un manejador solo ve lo que su `revisar` mira.
+- **Ejemplo:** `Peso` rechaza un pedido de 45 kg con `45 kg fuera de rango`.
+- **Error típico:** meter dos reglas en el mismo manejador: ya no se pueden usar por separado.
 
-**probabilidad**
-- **Definición técnica:** función \(P\) que asigna a cada evento un número entre 0 y 1, con \(P(\Omega) = 1\) y \(P(A \cup B) = P(A) + P(B)\) si \(A \cap B = \varnothing\). Si todos los resultados son igual de probables, \(P(A) = \frac{\lvert A \rvert}{\lvert \Omega \rvert}\).
-- **En palabras sencillas:** la fracción de las veces que algo ocurriría si repitieras el experimento muchísimas veces.
-- **Dónde se rompe la comparación:** «casos favorables entre casos posibles» solo vale si los resultados son igual de probables. Ganar la lotería tiene dos resultados y no vale 1/2.
-- **Ejemplo:** \(P(\text{suma } 7) = \frac{6}{36} = \frac{1}{6}\). Y el complemento: \(P(\text{no } A) = 1 - P(A)\).
-- **Error típico:** calcular con decimales y comparar: `0.1 + 0.2 == 0.3` da `False`. `Fraction` da resultados exactos.
-
-**independencia**
-- **Definición técnica:** los eventos \(A\) y \(B\) son independientes si \(P(A \cap B) = P(A) \cdot P(B)\).
-- **En palabras sencillas:** saber que ocurrió uno no cambia la probabilidad del otro.
-- **Dónde se rompe la comparación:** independiente no es «sin relación visible», ni lo mismo que disjunto. Dos eventos disjuntos con probabilidad positiva nunca son independientes.
-- **Ejemplo:** 3 envíos independientes con \(P = \frac{9}{10}\) cada uno: \(\left(\frac{9}{10}\right)^3 = \frac{729}{1000}\).
-- **Error típico:** multiplicar probabilidades de eventos dependientes, como lluvia y retraso.
-
-**probabilidad condicional**
-- **Definición técnica:** \(P(A \mid B) = \frac{P(A \cap B)}{P(B)}\), con \(P(B) > 0\). Se lee «probabilidad de \(A\) dado \(B\)».
-- **En palabras sencillas:** la probabilidad recalculada sabiendo que \(B\) ocurrió: miras solo los casos donde pasó \(B\).
-- **Dónde se rompe la comparación:** el orden importa: \(P(A \mid B)\) y \(P(B \mid A)\) casi nunca son iguales.
-- **Ejemplo:** \(P(\text{retraso} \mid \text{lluvia}) = \frac{60}{200} = \frac{3}{10}\).
-- **Error típico:** invertirla. \(P(\text{lluvia} \mid \text{retraso}) = \frac{60}{140} = \frac{3}{7}\) responde otra pregunta.
-
-**esperanza**
-- **Definición técnica:** para una variable aleatoria \(X\) (un número que depende del resultado), \(E[X] = \sum_x x \cdot P(X = x)\): el promedio de sus valores, cada uno pesado por su probabilidad.
-- **En palabras sencillas:** el promedio que verías a la larga si repitieras el experimento muchas veces.
-- **Dónde se rompe la comparación:** puede no ser un valor posible: se esperan 0.3 fallos por ruta, aunque nunca falla «0.3 envíos».
-- **Ejemplo:** con 3 envíos y \(P(\text{fallo}) = \frac{1}{10}\), \(E[\text{fallos}] = 3 \cdot \frac{1}{10} = \frac{3}{10}\).
-- **Error típico:** resumir datos de cola larga solo con la media; unos pocos valores enormes la arrastran hacia arriba.
-
-**percentil**
-- **Definición técnica:** el percentil \(q\) es un valor que deja por debajo aproximadamente el \(q\,\%\) de los datos. El percentil 50 (p50) es la mediana. `statistics.quantiles(datos, n=100)` devuelve los 99 cortes del p1 al p99.
-- **En palabras sencillas:** «el 95 % de las peticiones tardó menos que esto».
-- **Dónde se rompe la comparación:** con pocos datos es una estimación muy inestable; el p95 de 20 mediciones depende de una o dos.
-- **Ejemplo:** `quantiles(latencias, n=100)[94]` es el p95: el índice 94 porque la lista empieza en el p1 con índice 0.
-- **Error típico:** usar el índice 95, que es el p96.
-
-**semilla**
-- **Definición técnica:** valor inicial de un generador de números pseudoaleatorios; con la misma semilla produce la misma secuencia. En Python, `random.seed(2026)`.
-- **En palabras sencillas:** el número de una receta: misma semilla, mismos «dados».
-- **Dónde se rompe la comparación:** los números no son aleatorios de verdad; no sirven para contraseñas ni tokens (para eso, `secrets`, Módulo 6).
-- **Ejemplo:** `latencias.py` muestra el mismo `p95` en cada ejecución porque fija la semilla en la línea 5.
-- **Error típico:** no fijarla y luego no poder repetir el resultado raro que viste una vez.
-
-**sesgo de selección**
-- **Definición técnica:** error sistemático que aparece cuando la **muestra** (los datos que mides) no representa a la **población** (todos los casos que te interesan) por la forma en que se eligió.
-- **En palabras sencillas:** preguntar por la calidad del servicio solo a los clientes que volvieron a comprar.
-- **Dónde se rompe la comparación:** no desaparece midiendo más: mil mediciones sesgadas siguen sesgadas.
-- **Ejemplo:** medir la ruta solo con 50 paradas y concluir que «tarda 0.2 ms» para cualquier ruta.
-- **Error típico:** medir solo de noche, con el servidor libre, y prometer esos tiempos en hora pico.
-
-**correlación**
-- **Definición técnica:** el coeficiente de Pearson \(r\), entre \(-1\) y \(1\), mide qué tan bien una recta describe la relación entre dos variables. En Python, `statistics.correlation(x, y)`.
-- **En palabras sencillas:** si una variable sube, ¿la otra tiende a subir (\(r\) cerca de 1), a bajar (cerca de −1) o ninguna (cerca de 0)?
-- **Dónde se rompe la comparación:** correlación no implica causalidad: las dos pueden depender de una tercera variable.
-- **Ejemplo:** pedidos y retraso tienen \(r = 0.94\), pero dentro de un mismo nivel de tráfico \(r = 0.09\).
-- **Error típico:** calcularla con una lista constante: `StatisticsError: at least one of the inputs is constant`.
+**sucesor**
+- **Definición técnica:** el manejador siguiente al que se entrega la petición; cada manejador guarda una referencia a él, o `None` si es el último.
+- **En palabras sencillas:** a quién le pasa el papel cada revisor.
+- **Dónde se rompe la comparación:** si un revisor no tiene a quién pasarlo, en esta cadena eso significa «aprobado», no «perdido».
+- **Ejemplo:** en `Direccion(Peso())`, el sucesor de `Direccion` es el objeto `Peso` y el de `Peso` es `None`.
+- **Error típico:** asumir que la cadena tiene un eslabón porque creaste el objeto: si no está como sucesor de nadie, no participa.
 
 #### ► CÓMO FUNCIONA
-Hay tres caminos hacia un número, del más exacto al más realista:
-
-1. **Contar:** si puedes listar \(\Omega\) y los resultados son igual de probables, \(P(A) = \lvert A \rvert / \lvert \Omega \rvert\).
-2. **Simular:** si contar es difícil, repites el experimento con un generador con semilla y mides la frecuencia.
-3. **Medir:** con datos reales, la probabilidad se estima con frecuencias de una muestra, que puede estar sesgada.
-
-**Reglas que usarás.** Para eventos independientes, «y» multiplica: \(P(A \cap B) = P(A) \cdot P(B)\). Para «al menos
-uno», usa el complemento: \(P(\text{al menos un fallo}) = 1 - P(\text{ningún fallo})\). La barra vertical \(\mid\) se lee
-«dado»: \(P(R \mid L)\) es la probabilidad de \(R\) mirando solo los casos con \(L\).
-
-Para 3 envíos independientes, cada uno con \(P(\text{entrega}) = \frac{9}{10}\):
-
-\[ P(\text{los 3 entregados}) = \frac{9}{10} \cdot \frac{9}{10} \cdot \frac{9}{10} = \frac{729}{1000} = 0.729 \]
-
-**Medir tiempos.** Una distribución de tiempos casi nunca es simétrica: la mayoría son rápidos y unos pocos, muy
-lentos (cola larga). La media se va hacia la cola; la mediana (p50) describe el caso típico y el p95, el peor caso
-frecuente. Una conclusión honesta dice tamaño de muestra, condiciones y dispersión, no solo un número.
+Cada validador recibe su sucesor al crearse. `manejar` llama a `revisar`; si hay error, responde y la cadena se
+corta. Si no, pasa el pedido al sucesor. El último, sin sucesor, responde `aceptado`.
 
 ```mermaid
-flowchart LR
-    POP["población"] --> DESIGN["diseño de muestreo"] --> SAMPLE["muestra"] --> STAT["estadístico"]
-    STAT --> CONCLUSION["conclusión con incertidumbre"]
-    BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
+sequenceDiagram
+    participant C as Cliente
+    participant D as Direccion
+    participant P as Peso
+    participant K as Cobertura
+    C->>D: manejar(pedido)
+    D->>D: revisar(pedido) sin error
+    D->>P: manejar(pedido)
+    P->>P: revisar(pedido) sin error
+    P->>K: manejar(pedido)
+    K->>K: revisar(pedido) sin cobertura
+    K-->>P: rechazado por Cobertura
+    P-->>D: rechazado por Cobertura
+    D-->>C: rechazado por Cobertura
 ```
+
+El diagrama muestra el pedido de Leticia: pasa dos eslabones y lo corta el tercero. La respuesta vuelve por el
+mismo camino.
 
 #### Problema resuelto 4.1
-Calcula la probabilidad exacta de que dos dados sumen 7. Luego, para una ruta de 3 envíos independientes con
-probabilidad \(\frac{9}{10}\) de entrega cada uno, calcula: que salga perfecta, que tenga al menos un fallo y cuántos
-fallos se esperan. Compara con una simulación de 100 000 rutas.
+Antes del patrón. Escribe la validación con `if` anidados y copia la función para los puntos de recogida.
 
 **Razonamiento:**
-1. \(\Omega\) de dos dados es el producto cartesiano de \(\{1, \dots, 6\}\) consigo mismo; el evento se filtra con una condición.
-2. Cada ruta es una tupla de 3 booleanos: \(2^3 = 8\) resultados. No son igual de probables, así que se multiplica la probabilidad de cada envío.
-3. \(E[\text{fallos}] = \sum (\text{fallos de la ruta}) \cdot P(\text{ruta})\) sobre las 8 rutas.
-4. `Fraction` mantiene las fracciones exactas; la simulación con semilla da una frecuencia cercana y repetible.
+1. Cada `if` revisa una regla y, si falla, devuelve el rechazo.
+2. Los puntos de recogida no piden dirección: se copia la función y se quita esa regla.
+3. Prueba los dos con un pedido de 45 kg.
 
 ```python
-# probabilidad.py — probabilidad exacta contando casos y comprobación por simulación
-import random
-from fractions import Fraction
-from itertools import product
+# validar_todo.py — todas las reglas anidadas en una sola función
+CIUDADES = {"Bogotá", "Medellín", "Cali"}
 
-# 1. Dos dados: espacio muestral y un evento
-omega = list(product(range(1, 7), repeat=2))
-suma_siete = [r for r in omega if r[0] + r[1] == 7]
-print("|Ω| =", len(omega), " |A| =", len(suma_siete), " P(A) =", Fraction(len(suma_siete), len(omega)))
+def validar(pedido):
+    if pedido.get("direccion"):
+        if 0 < pedido["kilos"] <= 30:
+            if pedido["ciudad"] in CIUDADES:
+                return "aceptado"
+            return f"rechazado: sin cobertura en {pedido['ciudad']}"
+        return f"rechazado: {pedido['kilos']} kg fuera de rango"
+    return "rechazado: falta la dirección"
 
-# 2. Ruta de 3 envíos; cada uno se entrega con probabilidad 9/10, de forma independiente
-p_ok = Fraction(9, 10)
-prob = {True: p_ok, False: 1 - p_ok}
-rutas = list(product([True, False], repeat=3))
-p_todos = sum(prob[a] * prob[b] * prob[c] for a, b, c in rutas if a and b and c)
-esperanza = sum((prob[a] * prob[b] * prob[c]) * [a, b, c].count(False) for a, b, c in rutas)
-print("resultados posibles:", len(rutas))
-print("P(los 3 entregados) =", p_todos, "=", float(p_todos))
-print("P(al menos un fallo) =", 1 - p_todos)
-print("E[fallos por ruta] =", esperanza)
+def validar_punto_recogida(pedido):          # copia sin la regla de dirección...
+    if pedido["ciudad"] in CIUDADES:          # ...y sin la de peso, por descuido
+        return "aceptado"
+    return f"rechazado: sin cobertura en {pedido['ciudad']}"
 
-# 3. Simulación con semilla: la frecuencia se acerca a la probabilidad
-random.seed(2026)
-n = 100_000
-exitos = sum(all(random.random() < 0.9 for _ in range(3)) for _ in range(n))
-print("frecuencia simulada:", exitos / n)
+print(validar({"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"}))
+print(validar_punto_recogida({"kilos": 45, "ciudad": "Bogotá"}))
 ```
 
 ```text
-$ python3 probabilidad.py
-|Ω| = 36  |A| = 6  P(A) = 1/6
-resultados posibles: 8
-P(los 3 entregados) = 729/1000 = 0.729
-P(al menos un fallo) = 271/1000
-E[fallos por ruta] = 3/10
-frecuencia simulada: 0.7313
+$ python3 validar_todo.py
+rechazado: 45 kg fuera de rango
+aceptado
 ```
 
 **Explicación por partes.**
-- Línea 7: `product(range(1, 7), repeat=2)` construye los 36 pares de \(\Omega\).
-- Línea 9: `Fraction(6, 36)` se simplifica sola a `1/6`.
-- Línea 13: `prob[True]` es \(\frac{9}{10}\) y `prob[False]`, su complemento \(\frac{1}{10}\).
-- Línea 15: solo la ruta (True, True, True) cumple `a and b and c`; su probabilidad es el producto, por independencia.
-- Línea 16: cada ruta aporta su número de fallos (`count(False)`) por su probabilidad; la suma es \(E[X] = \frac{3}{10}\).
-- Líneas 23–25: con la semilla 2026, 73 130 de 100 000 rutas simuladas salieron perfectas: 0.7313, cerca de 0.729.
-
-> **Error común.** Calcular con decimales y comparar con `==`. `0.1 + 0.2 == 0.3` da `False` por el error de redondeo
-> del punto flotante (Módulo 1, Tema 5). Con `Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10)` obtienes `True`.
-
-> **Buena práctica.** Cuando puedas, calcula el valor exacto **y** simula. Si la simulación se aleja mucho del cálculo,
-> uno de los dos tiene un error. Es la misma idea de la prueba basada en propiedades: dos caminos que deben coincidir.
+- Líneas 5–11: tres niveles de `if`. Una regla nueva agrega otro nivel y obliga a reordenar los `return`.
+- Líneas 13–16: la copia quitó la dirección y, por descuido, también el peso.
+- Salida, línea 2: el punto de recogida acepta 45 kg. La regla de peso existe, pero solo en la otra función.
 
 #### Problema resuelto 4.2
-El registro del trimestre tiene 1000 entregas clasificadas por clima y resultado. Calcula \(P(R \mid L)\) (retraso dado
-lluvia) y decide si lluvia y retraso son independientes. Después revisa la propuesta: «más pedidos causan más retrasos».
+Después del patrón. Escribe cada regla como un manejador y arma cadenas distintas con las mismas piezas.
 
 **Razonamiento:**
-1. Cada probabilidad es una frecuencia: casos del evento entre 1000.
-2. \(P(R \mid L) = P(R \cap L) / P(L)\): mira solo las 200 entregas con lluvia.
-3. Independencia: comparar \(P(R \cap L)\) con \(P(R) \cdot P(L)\).
-4. Para la propuesta, calcula la correlación entre pedidos y retraso, y luego dentro de un nivel fijo de tráfico.
+1. Una clase base `Validador` hace el trabajo común: revisar y, si no hay error, pasar al sucesor.
+2. Cada subclase sobrescribe solo `revisar` y devuelve un texto de error o `None`.
+3. Para los puntos de recogida, arma otra cadena sin `Direccion`. Las reglas no se copian.
 
 ```python
-# condicional.py — probabilidad condicional e independencia con un registro histórico
-from fractions import Fraction
+# chain.py — cada regla es un eslabón que revisa y pasa al siguiente
+class Validador:
+    def __init__(self, siguiente=None):
+        self.siguiente = siguiente
+    def manejar(self, pedido):
+        error = self.revisar(pedido)
+        if error:
+            return f"rechazado por {type(self).__name__}: {error}"
+        return self.siguiente.manejar(pedido) if self.siguiente else "aceptado"
+    def revisar(self, pedido):
+        return None
 
-# 1000 entregas del último trimestre, contadas por clima y resultado
-conteo = {
-    ("lluvia", "retraso"): 60, ("lluvia", "a tiempo"): 140,
-    ("seco", "retraso"): 80, ("seco", "a tiempo"): 720,
-}
-total = sum(conteo.values())
+class Direccion(Validador):
+    def revisar(self, pedido):
+        return None if pedido.get("direccion") else "falta la dirección"
 
+class Peso(Validador):
+    def revisar(self, pedido):
+        return None if 0 < pedido["kilos"] <= 30 else f"{pedido['kilos']} kg fuera de rango"
 
-def p(condicion):
-    return Fraction(sum(v for k, v in conteo.items() if condicion(k)), total)
+class Cobertura(Validador):
+    CIUDADES = {"Bogotá", "Medellín", "Cali"}
+    def revisar(self, pedido):
+        return None if pedido["ciudad"] in self.CIUDADES else f"sin cobertura en {pedido['ciudad']}"
 
-
-p_lluvia = p(lambda k: k[0] == "lluvia")
-p_retraso = p(lambda k: k[1] == "retraso")
-p_ambos = p(lambda k: k == ("lluvia", "retraso"))
-print("P(L) =", p_lluvia, " P(R) =", p_retraso, " P(R ∩ L) =", p_ambos)
-print("P(R | L) =", p_ambos / p_lluvia)
-print("P(R | no L) =", p(lambda k: k == ("seco", "retraso")) / (1 - p_lluvia))
-print("P(R) · P(L) =", p_retraso * p_lluvia)
-print("¿independientes?", p_ambos == p_retraso * p_lluvia)
+if __name__ == "__main__":
+    cadena = Direccion(Peso(Cobertura()))       # el orden de la cadena es una decisión de diseño
+    pedidos = [
+        {"direccion": "Cra 7 # 10-20", "kilos": 4, "ciudad": "Cali"},
+        {"direccion": "", "kilos": 4, "ciudad": "Cali"},
+        {"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"},
+        {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"},
+    ]
+    for pedido in pedidos:
+        print(cadena.manejar(pedido))
+    recogida = Peso(Cobertura())                 # punto de recogida: sin regla de dirección
+    print("Recogida:", recogida.manejar({"kilos": 45, "ciudad": "Bogotá"}))
 ```
 
 ```text
-$ python3 condicional.py
-P(L) = 1/5  P(R) = 7/50  P(R ∩ L) = 3/50
-P(R | L) = 3/10
-P(R | no L) = 1/10
-P(R) · P(L) = 7/250
-¿independientes? False
-```
-
-Con lluvia, el retraso es 3 veces más probable (\(\frac{3}{10}\) frente a \(\frac{1}{10}\)). \(P(R \cap L) = \frac{3}{50}\)
-no es \(P(R) \cdot P(L) = \frac{7}{250}\): no son independientes. Ahora la propuesta de los pedidos, con datos simulados
-en los que el tráfico causa las dos cosas:
-
-```python
-# correlacion.py — dos variables correlacionadas por una causa común
-import random
-from statistics import correlation
-
-random.seed(7)
-trafico, pedidos, retraso = [], [], []
-for _ in range(500):
-    t = random.uniform(0, 10)                        # congestión de la ciudad, de 0 a 10
-    trafico.append(t)
-    pedidos.append(20 + 3 * t + random.gauss(0, 2))  # la hora pico trae más pedidos
-    retraso.append(5 + 4 * t + random.gauss(0, 3))   # y también más minutos de retraso
-
-print("correlación pedidos–retraso:", round(correlation(pedidos, retraso), 2))
-franja = [i for i, t in enumerate(trafico) if 4 <= t < 5]
-print("en la franja de tráfico 4–5:", len(franja), "observaciones,",
-      "correlación", round(correlation([pedidos[i] for i in franja], [retraso[i] for i in franja]), 2))
-```
-
-```text
-$ python3 correlacion.py
-correlación pedidos–retraso: 0.94
-en la franja de tráfico 4–5: 44 observaciones, correlación 0.09
+$ python3 chain.py
+aceptado
+rechazado por Direccion: falta la dirección
+rechazado por Peso: 45 kg fuera de rango
+rechazado por Cobertura: sin cobertura en Leticia
+Recogida: rechazado por Peso: 45 kg fuera de rango
 ```
 
 **Explicación por partes.**
-- `condicional.py`, líneas 12–13: `p` recibe una condición y suma los conteos de las claves que la cumplen.
-- `condicional.py`, líneas 16–18: `lambda k: ...` crea una función sin nombre de una línea (Módulo 2, Tema 8); `k` es la clave (clima, resultado).
-- `condicional.py`, línea 20: dividir dos `Fraction` aplica la fórmula de la probabilidad condicional sin redondeo.
-- `correlacion.py`, líneas 8–11: el tráfico `t` sube los pedidos y el retraso; los pedidos **no** aparecen en la fórmula del retraso.
-- `correlacion.py`, línea 13: aun así, la correlación es 0.94.
-- `correlacion.py`, líneas 14–16: al fijar el tráfico entre 4 y 5, la correlación cae a 0.09: la relación venía del tráfico.
-
-> **Error común.** Calcular la correlación de una variable que no cambia, por ejemplo los pedidos de días con cupo fijo.
-> `statistics.correlation` se detiene con `StatisticsError: at least one of the inputs is constant`: sin variación no
-> hay nada que relacionar.
+- Líneas 3–4: el sucesor llega al crear el objeto; por defecto es `None`.
+- Líneas 5–9: `manejar` corta en el primer error. `type(self).__name__` da el nombre de la clase que rechazó.
+- Línea 9: si hay sucesor, le pasa el pedido; si no, este es el último eslabón y acepta.
+- Líneas 13–24: tres reglas en tres clases. Ninguna sabe que las otras existen.
+- Línea 27: se lee de afuera hacia adentro: dirección, peso, cobertura.
+- Líneas 36–37: la cadena de recogida reutiliza `Peso` y `Cobertura`, y el pedido de 45 kg se rechaza.
 
 #### Problema resuelto 4.3
-El equipo afirma que la ruta «tarda 0.2 ms». Primero compara media, mediana y p95 de una muestra de latencias con cola
-larga. Después mide la distribución real de `nearest_neighbor_route` con 50, 100, 200 y 400 paradas.
+La falla silenciosa. Arma una cadena en la que `Cobertura` se crea pero no se enlaza, y escribe una comprobación
+que lo detecte.
 
 **Razonamiento:**
-1. Con una muestra de cola larga, la media y la mediana se separan; el p95 muestra la cola.
-2. Una sola medición no tiene dispersión. Se repite 30 veces cada tamaño y se reportan p50, p95 y máximo.
-3. Medir varios tamaños evita el sesgo de selección de probar solo el caso pequeño.
-4. La heurística es \(O(n^2)\) (Módulo 2, Tema 4): al duplicar \(n\), el tiempo debería multiplicarse por cerca de 4.
+1. Un pedido a Leticia debería rechazarse por cobertura.
+2. Si `Cobertura` no es sucesor de nadie, la cadena termina en `Peso` y acepta.
+3. Recorre la cadena siguiendo `siguiente` y compara la lista de nombres con la esperada.
 
 ```python
-# latencias.py — media, mediana y percentil 95 de una muestra con cola larga
-import random
-from statistics import mean, median, quantiles
+# cadena_rota.py — los eslabones existen, pero uno quedó suelto
+from chain import Cobertura, Direccion, Peso
 
-random.seed(2026)  # misma muestra en cada ejecución
-# latencias simuladas en ms, con cola larga a la derecha
-latencias = [random.lognormvariate(4.6, 0.4) for _ in range(100)]
-p50 = median(latencias)
-p95 = quantiles(latencias, n=100)[94]
-print({"n": len(latencias), "media": round(mean(latencias), 1), "p50": round(p50, 1), "p95": round(p95, 1)})
-print("mínimo:", round(min(latencias), 1), " máximo:", round(max(latencias), 1))
-print("por encima de p95:", sum(x > p95 for x in latencias), "de", len(latencias))
+def eslabones(cadena):                      # recorre la cadena y devuelve los nombres
+    nombres = []
+    while cadena:
+        nombres.append(type(cadena).__name__)
+        cadena = cadena.siguiente
+    return nombres
+
+cobertura = Cobertura()
+rota = Direccion(Peso())                    # se creó Cobertura, pero nadie la enlazó
+pedido = {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"}
+print(rota.manejar(pedido))
+print("Eslabones:", eslabones(rota))
+assert eslabones(rota) == ["Direccion", "Peso", "Cobertura"], "la cadena no tiene los tres validadores"
 ```
 
 ```text
-$ python3 latencias.py
-{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}
-mínimo: 38.8  máximo: 270.8
-por encima de p95: 5 de 100
+$ python3 cadena_rota.py
+aceptado
+Eslabones: ['Direccion', 'Peso']
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/cadena_rota.py", line 16, in <module>
+    assert eslabones(rota) == ["Direccion", "Peso", "Cobertura"], "la cadena no tiene los tres validadores"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: la cadena no tiene los tres validadores
 ```
-
-La media (109.4) supera a la mediana (98.0) porque la cola larga la arrastra. Exactamente 5 de 100 valores superan el
-p95. Ahora la heurística de rutas, en su propio `domain.py` dentro de `probabilidad`:
-
-```python
-# domain.py — heurística de ruta de RutaFlow
-from dataclasses import dataclass
-from math import hypot
-
-
-@dataclass(frozen=True)
-class Stop:
-    shipment_id: str
-    latitude: float
-    longitude: float
-
-
-def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> list[Stop]:
-    """Heurística educativa O(n²); no afirma encontrar la ruta óptima."""
-    remaining = stops.copy()
-    ordered = []
-    position = origin
-    while remaining:
-        selected = min(remaining, key=lambda stop: hypot(
-            stop.latitude - position[0], stop.longitude - position[1]))
-        ordered.append(selected)
-        remaining.remove(selected)
-        position = (selected.latitude, selected.longitude)
-    return ordered
-```
-
-```python
-# medir.py — distribución de tiempos de nearest_neighbor_route por tamaño de entrada
-import time
-from statistics import median, quantiles
-
-from domain import Stop, nearest_neighbor_route
-
-for tamano in (50, 100, 200, 400):
-    paradas = [Stop(f"RF-{i}", i % 7, i % 5) for i in range(tamano)]
-    tiempos_ms = []
-    for _ in range(30):
-        inicio = time.perf_counter()
-        nearest_neighbor_route((0, 0), paradas)
-        tiempos_ms.append((time.perf_counter() - inicio) * 1000)
-    p50 = median(tiempos_ms)
-    p95 = quantiles(tiempos_ms, n=100)[94]
-    print(f"n={tamano:3}  p50={p50:7.2f} ms  p95={p95:7.2f} ms  máx={max(tiempos_ms):7.2f} ms")
-```
-
-```text
-$ python3 medir.py
-n= 50  p50=   0.20 ms  p95=   0.24 ms  máx=   0.25 ms
-n=100  p50=   0.77 ms  p95=   0.92 ms  máx=   0.95 ms
-n=200  p50=   3.14 ms  p95=   3.73 ms  máx=   3.83 ms
-n=400  p50=  12.40 ms  p95=  18.51 ms  máx=  20.43 ms
-```
-
-Tus milisegundos serán otros. Lo estable es la proporción: al duplicar las paradas, el p50 se multiplica por cerca de 4
-(0.20 → 0.77 → 3.14 → 12.40), como predice \(O(n^2)\).
 
 **Explicación por partes.**
-- `latencias.py`, línea 5: la semilla hace que la muestra sea idéntica en cada ejecución.
-- `latencias.py`, línea 7: `lognormvariate` produce valores positivos con cola larga a la derecha, como las latencias reales.
-- `latencias.py`, línea 9: índice 94 de los 99 cortes: el p95.
-- `domain.py`, líneas 18–23: en cada vuelta, `min` revisa todas las paradas restantes; \(n\) vueltas de hasta \(n\) revisiones dan \(O(n^2)\).
-- `medir.py`, líneas 10–13: 30 repeticiones por tamaño, con `perf_counter` (Módulo 2, Tema 2), convertidas a milisegundos.
-- `medir.py`, líneas 14–16: p50, p95 y máximo resumen la distribución; el máximo muestra el peor caso observado.
+- Línea 11: el objeto `Cobertura` existe, pero ninguna línea lo pasa como sucesor.
+- Salida, línea 1: el pedido a Leticia sale `aceptado`. No hay excepción: es una falla silenciosa.
+- Líneas 4–9: `eslabones` sigue `siguiente` hasta llegar a `None` y anota cada clase.
+- Línea 16: el `assert` convierte la falla silenciosa en un error visible con su mensaje.
 
-> **Error común.** Calcular un percentil con una sola medición. `quantiles([12.5], n=100)[94]` devuelve `12.5` sin
-> ningún aviso: un «p95» que no significa nada. Con la lista vacía, en cambio, falla con
-> `StatisticsError: must have at least one data point`. Reporta siempre el tamaño de la muestra junto al percentil.
+> **Error común.** Dejar un eslabón suelto. El programa no falla: acepta pedidos que debía rechazar. El único
+> mensaje que verás es el de tu propia comprobación:
+> `AssertionError: la cadena no tiene los tres validadores`. Sin esa prueba, el defecto llega a producción.
 
-> **Rendimiento.** Reporta el p95 junto al p50. Un usuario que hace 20 peticiones por sesión tiene una probabilidad de
-> \(1 - 0.95^{20} \approx 0.64\) de sufrir al menos una petición más lenta que el p95.
+> **Prevenir errores.** Arma cada cadena en una sola función con nombre (`cadena_domicilio()`,
+> `cadena_recogida()`) y prueba su lista de eslabones. Así el orden y los eslabones quedan escritos en un solo lugar.
+
+> **Ingeniería de software.** El orden es una decisión: pon primero las reglas baratas y las que más rechazan. Si una
+> regla consulta un servicio externo (por ejemplo, la cobertura), que vaya al final para no llamarla de más.
+
+#### Cuándo no usarlo
+- Si las reglas son pocas y siempre las mismas, una lista de funciones recorrida con `for` hace lo mismo con menos clases.
+- Si necesitas **todos** los errores a la vez (por ejemplo, para un formulario), no cortes en el primero: recorre todas las reglas y junta los mensajes.
+- Si una regla depende del resultado de otra de forma compleja, una cadena lineal no lo expresa bien.
 
 #### Checkpoint 4.1
-Si cada envío se entrega con probabilidad 0.9, de forma independiente, ¿cuál es la probabilidad de al menos un fallo
-en una ruta de 10 envíos?
+Con la cadena `Direccion(Peso(Cobertura()))`, ¿qué responde un pedido sin dirección, de 45 kg, a Leticia?
 
-Respuesta: \(1 - 0.9^{10} \approx 0.651\). Es más probable tener al menos un fallo que no tenerlo. Se usa el complemento
-porque «ningún fallo» es un solo caso fácil de calcular.
-
-#### Checkpoint 4.2
-¿Por qué correlación no implica causalidad?
-
-Respuesta: porque dos variables pueden moverse juntas porque ambas dependen de una tercera. En `correlacion.py`, pedidos
-y retraso tienen \(r = 0.94\), pero el tráfico causa los dos; con el tráfico fijo, la correlación cae a 0.09.
+Respuesta: `rechazado por Direccion: falta la dirección`. La cadena corta en el primer error, así que `Peso` y
+`Cobertura` nunca lo revisan.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/discretas/probabilidad` y entra. Todos los programas de este tema usan solo la biblioteca estándar.
+#### Paso 1 · Copia y rompe
+Escribe `validar_todo.py` y ejecútalo. Comprueba que el punto de recogida acepta 45 kg.
 
-#### Paso 2 · Cuenta y simula
-Escribe `probabilidad.py` y ejecútalo; las fracciones deben coincidir exactamente. Cambia la semilla a 1 y ejecuta otra
-vez: la frecuencia simulada cambia un poco, pero sigue cerca de 0.729.
+#### Paso 2 · Una regla por eslabón
+Escribe `chain.py` y ejecútalo. Comprueba las cuatro respuestas y la línea `Recogida: rechazado por Peso: 45 kg fuera de rango`.
 
-#### Paso 3 · Condiciona y busca la causa común
-Escribe `condicional.py` y `correlacion.py` y ejecútalos. Agrega a `condicional.py` el cálculo de
-\(P(L \mid R)\) y confirma que da `3/7`, distinto de \(P(R \mid L)\).
-
-#### Paso 4 · Mide con percentiles
-Escribe `latencias.py`, `domain.py` y `medir.py`, y ejecuta `medir.py` dos veces. Anota cuánto cambian tus p95 entre
-ejecuciones: esa variación es parte de la evidencia y va en el informe.
+#### Paso 3 · Detecta la cadena rota
+Escribe `cadena_rota.py` en la misma carpeta, porque importa de `chain.py`. Ejecútalo y verás el `AssertionError`.
+Cambia la línea 12 por `rota = Direccion(Peso(cobertura))` y ejecuta otra vez: debe imprimir el rechazo por
+cobertura y terminar sin error.
 
 #### Resumen
-- El **espacio muestral** \(\Omega\) reúne todos los resultados; un **evento** es un subconjunto de \(\Omega\).
-- Con resultados igual de probables, la **probabilidad** es \(\lvert A \rvert / \lvert \Omega \rvert\); `Fraction` la calcula exacta.
-- Con **independencia**, «y» multiplica; para «al menos uno», usa el complemento.
-- La **probabilidad condicional** \(P(A \mid B)\) mira solo los casos de \(B\) y no es igual a \(P(B \mid A)\).
-- La **esperanza** es el promedio pesado por probabilidad; puede no ser un valor posible.
-- Un **percentil** describe la cola mejor que la media; la **semilla** hace reproducible una simulación.
-- El **sesgo de selección** no se corrige con más datos, y la **correlación** no prueba causalidad.
+- **Chain of Responsibility** pasa una petición por una cadena de **manejadores**; cada uno revisa una regla.
+- Cada manejador guarda su **sucesor**; el último, sin sucesor, acepta.
+- La cadena corta en el primer error, así que el orden decide qué mensaje ve el usuario.
+- Las mismas piezas arman cadenas distintas sin copiar reglas.
+- Un eslabón sin enlazar es una falla silenciosa: pruébala con la lista de eslabones y un `assert`.
 
 #### Ejercicio verificable 1
-Básico. Con dos dados, calcula \(P(\text{suma} \ge 10)\) contando casos. Comprueba con `probabilidad.py`.
+Básico. Agrega un validador `ValorDeclarado` que rechace pedidos con `valor` mayor a 5 000 000 y ponlo al final de la
+cadena. ¿Qué responde un pedido válido en lo demás con `valor` 8 000 000?
 
-Respuesta esperada: los casos son (4, 6), (5, 5), (6, 4), (5, 6), (6, 5) y (6, 6): 6 de 36. \(P = \frac{6}{36} = \frac{1}{6}\),
-y `Fraction(6, 36)` muestra `1/6`.
+Respuesta esperada: `rechazado por ValorDeclarado: valor 8,000,000 supera el tope`, con
+`revisar` que devuelve `f"valor {pedido['valor']:,} supera el tope"` si se pasa del tope y `None` si no. La cadena
+queda `Direccion(Peso(Cobertura(ValorDeclarado())))`.
 
 #### Ejercicio verificable 2
-Intermedio. Con la tabla de `condicional.py`, calcula \(P(L \mid R)\): la probabilidad de que haya llovido sabiendo
-que la entrega se retrasó. Explica por qué no es \(\frac{3}{10}\).
+Intermedio. Para un pedido sin dirección, de 2 kg, a Leticia, compara la respuesta de `Direccion(Peso(Cobertura()))`
+con la de `Cobertura(Direccion(Peso()))`.
 
-Respuesta esperada: \(P(L \mid R) = \frac{60}{140} = \frac{3}{7} \approx 0.43\). Mira las 140 entregas retrasadas, no las
-200 con lluvia. \(P(R \mid L) = \frac{3}{10}\) responde otra pregunta: cuántas de las entregas con lluvia se retrasaron.
+Respuesta esperada: la primera responde `rechazado por Direccion: falta la dirección`; la segunda,
+`rechazado por Cobertura: sin cobertura en Leticia`. Las dos rechazan, pero el mensaje depende del orden.
 
 #### Ejercicio verificable 3
-Reto. Cambia `medir.py` para repetir 100 veces cada tamaño y para imprimir, al final, el cociente
-`p50(400) / p50(200)`. Ejecútalo dos veces y escribe una conclusión de dos líneas con tamaño de muestra y dispersión.
+Reto. Escribe `armar(*clases)`, que construya la cadena a partir de una lista de clases en orden, para que nadie
+tenga que anidar a mano. Compruébala con `eslabones`.
 
-Respuesta esperada: el cociente queda cerca de 4, por lo general entre 3.5 y 4.5, por la complejidad \(O(n^2)\). Una
-conclusión válida dice, por ejemplo: «con 100 repeticiones por tamaño en esta máquina, el p50 con 400 paradas fue
-unas 4 veces el de 200; el p95 varió entre ejecuciones». No promete tiempos fijos para otra máquina.
+Respuesta esperada: empezar con `cadena = None` y recorrer `reversed(clases)` haciendo `cadena = clase(cadena)`.
+`eslabones(armar(Direccion, Peso, Cobertura))` da `['Direccion', 'Peso', 'Cobertura']`, y el pedido a Leticia
+responde `rechazado por Cobertura: sin cobertura en Leticia`.
 
 #### En el trabajo
-Los equipos de operaciones definen objetivos con percentiles («p95 menor que 300 ms»), no con promedios. Las pruebas
-A/B de producto son probabilidad condicional y control de sesgos: si solo miras a quienes completaron la compra,
-concluyes cualquier cosa. Antes de aprobar «contratar más mensajeros», una analista pregunta qué otra variable podría
-explicar la correlación.
+Los *middlewares* de un servidor web forman una cadena: autenticación, límite de peticiones, validación y
+finalmente el código del endpoint; cualquiera puede cortar con un 401 o un 429. Los sistemas de aprobación de gastos
+y los filtros de correo siguen la misma idea. En producción, la lista de eslabones se registra al arrancar para
+poder confirmar que ninguno quedó fuera.
 
 </details>
 
-### Proyecto 9: cuaderno de propiedades, grafos y evidencia
+### Tema 5: Mediator: coordinar objetos sin que se conozcan · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-El proyecto une los cuatro temas en un cuaderno reproducible del inventario de RutaFlow: especificaciones lógicas,
-pruebas generativas, análisis de grafos y un experimento probabilístico. No hay técnicas nuevas: cada entrega remite al
-tema donde se explicó. Puede ser una carpeta con programas de Python y un archivo de texto que los explique.
+#### Objetivos
+Al terminar este tema podrás:
+- medir el acoplamiento de un grupo de objetos contando las referencias entre ellos;
+- centralizar la coordinación en un mediador para que los colegas no se conozcan entre sí;
+- agregar un colega nuevo con una sola línea de registro;
+- reconocer cuándo el mediador crece tanto que se vuelve un problema.
+
+**Conceptos clave:** acoplamiento, Mediator, colega
+
+Ya los conoces y no se repiten: *clase*, *objeto* y *atributo* (Módulo 1, Tema 6); *composición* (Módulo 1, Tema 7);
+*lista* y *diccionario* (Módulo 2, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
+
+#### El problema
+Cuando la moto de un mensajero de RutaFlow se avería, su paquete pasa al primer compañero libre. Hoy cada mensajero
+guarda la lista de todos los demás y decide a quién pasarlo. Al entrar un mensajero nuevo hay que actualizar la lista
+de todos, y basta olvidar una para que un paquete quede sin dueño. ¿Cómo coordinas a varios objetos sin que cada
+uno conozca a todos?
+
+#### Glosario del tema
+
+**acoplamiento**
+- **Definición técnica:** grado en que un módulo o clase depende de los detalles de otros; con acoplamiento alto, un cambio en uno obliga a cambiar los demás.
+- **En palabras sencillas:** cuántos hilos te atan a otras piezas; con muchos hilos, mover una pieza mueve todas.
+- **Dónde se rompe la comparación:** algunos hilos son necesarios; el objetivo no es cero acoplamiento sino depender de pocas piezas y estables.
+- **Ejemplo:** con 4 mensajeros que se conocen entre todos hay 4 × 3 = 12 referencias; con una central, 4.
+- **Error típico:** medir el acoplamiento por número de archivos y no por número de dependencias entre objetos.
+
+**Mediator**
+- **Definición técnica:** patrón de comportamiento que encapsula en un objeto mediador cómo interactúa un grupo de objetos; los objetos se comunican solo con el mediador, que decide a quién avisar.
+- **En palabras sencillas:** la central de despacho: los mensajeros llaman a la central, y la central reparte; ningún mensajero necesita el teléfono de otro.
+- **Dónde se rompe la comparación:** una central humana tiene juicio; el mediador solo aplica las reglas que escribiste, y si acumula demasiadas se vuelve difícil de cambiar.
+- **Ejemplo:** `Central.notificar(emisor, "averia", guia)` busca un mensajero libre y le asigna la guía.
+- **Error típico:** dejar que el mediador crezca hasta tener la lógica de todo el sistema: el acoplamiento no desaparece, se concentra.
+
+**colega**
+- **Definición técnica:** cada objeto coordinado por un mediador; guarda una referencia al mediador y le notifica sus eventos, sin referencias a otros colegas.
+- **En palabras sencillas:** cada mensajero: sabe hablar con la central y nada más.
+- **Dónde se rompe la comparación:** un colega sin central no puede hacer nada coordinado; uno que no se registró falla al primer aviso.
+- **Ejemplo:** `Mensajero.reportar_averia` llama a `self.central.notificar(...)`.
+- **Error típico:** usar un colega antes de registrarlo: `self.central` vale `None` y aparece `AttributeError: 'NoneType' object has no attribute 'notificar'`.
+
+#### ► CÓMO FUNCIONA
+Cada mensajero se registra una vez en la central, que lo guarda en un diccionario y le deja una referencia a sí
+misma. Cuando un mensajero reporta una avería, solo avisa a la central. La central busca un libre y le asigna la guía.
+
+```mermaid
+sequenceDiagram
+    participant A as Ana
+    participant C as Central
+    participant B as Beto
+    participant K as Caro
+    participant D as Dani
+    A->>C: notificar(Ana, averia, G-301)
+    C->>C: buscar libres
+    C->>B: asignar(G-301)
+    K->>C: notificar(Caro, averia, G-302)
+    C->>C: buscar libres, Beto ya no lo está
+    C->>D: asignar(G-302)
+```
+
+Ana no conoce a Beto ni a Dani, y Caro tampoco. Si mañana entra Eva, solo la central se entera.
+
+#### Problema resuelto 5.1
+Antes del patrón. Cada mensajero guarda la lista de sus compañeros y busca él mismo a uno libre.
+
+**Razonamiento:**
+1. Cada mensajero tiene `companeros`; al averiarse, recorre la lista y asigna al primero libre.
+2. Entra Dani: hay que agregarlo a la lista de los otros tres.
+3. Cuenta las referencias: con 4 mensajeros deberían ser 4 × 3 = 12.
+
+```python
+# mensajeros_acoplados.py — cada mensajero guarda la lista de todos los demás
+class Mensajero:
+    def __init__(self, nombre, libre=True):
+        self.nombre, self.libre, self.companeros = nombre, libre, []
+    def reportar_averia(self, guia):
+        self.libre = False
+        print(f"{self.nombre} reporta avería con {guia}")
+        for otro in self.companeros:            # cada uno decide a quién pasar el envío
+            if otro.libre:
+                otro.asignar(guia)
+                return
+        print(f"  {self.nombre}: nadie libre para {guia}")
+    def asignar(self, guia):
+        self.libre = False
+        print(f"  {self.nombre} recibe {guia}")
+
+ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
+dani = Mensajero("Dani")                        # entra un mensajero nuevo
+ana.companeros = [beto, caro, dani]
+beto.companeros = [ana, caro, dani]
+caro.companeros = [ana, beto]                   # aquí se olvidó agregar a Dani
+dani.companeros = [ana, beto, caro]
+
+ana.reportar_averia("G-301")
+caro.reportar_averia("G-302")
+print("Referencias entre mensajeros:", sum(len(m.companeros) for m in (ana, beto, caro, dani)))
+```
+
+```text
+$ python3 mensajeros_acoplados.py
+Ana reporta avería con G-301
+  Beto recibe G-301
+Caro reporta avería con G-302
+  Caro: nadie libre para G-302
+Referencias entre mensajeros: 11
+```
+
+**Explicación por partes.**
+- Líneas 8–11: la regla de reparto está dentro de cada mensajero. Cambiarla es cambiar la clase de todos.
+- Línea 21: la lista de Caro no tiene a Dani.
+- Salida, línea 4: Caro dice que nadie está libre, y Dani sí lo estaba.
+- Salida, línea 5: 11 referencias en vez de 12. Cada mensajero nuevo agrega 2 × *n* referencias que alguien debe mantener.
+
+#### Problema resuelto 5.2
+Después del patrón. Una central registra a los mensajeros y reparte las averías; los mensajeros solo la conocen a ella.
+
+**Razonamiento:**
+1. La central guarda a los mensajeros en un diccionario y lleva un registro de eventos.
+2. Al registrarse, cada mensajero recibe la referencia a la central.
+3. La regla «primer libre que no sea el emisor» vive en un solo lugar: `Central.notificar`.
+
+```python
+# mediator.py — una central coordina; los mensajeros solo la conocen a ella
+class Central:                                # mediador: único punto que conoce a todos
+    def __init__(self):
+        self.mensajeros, self.registro = {}, []
+    def registrar(self, mensajero):
+        self.mensajeros[mensajero.nombre] = mensajero
+        mensajero.central = self
+    def notificar(self, emisor, evento, dato):
+        self.registro.append((emisor.nombre, evento, dato))
+        if evento == "averia":
+            libres = [m for m in self.mensajeros.values() if m is not emisor and m.libre]
+            if libres:
+                libres[0].asignar(dato)
+            else:
+                print(f"  Central: nadie libre para {dato}, queda en espera")
+
+class Mensajero:
+    def __init__(self, nombre, libre=True):
+        self.nombre, self.libre, self.central = nombre, libre, None
+    def reportar_averia(self, guia):
+        self.libre = False
+        print(f"{self.nombre} reporta avería con {guia}")
+        self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
+    def asignar(self, guia):
+        self.libre = False
+        print(f"  {self.nombre} recibe {guia}")
+
+if __name__ == "__main__":
+    central = Central()
+    ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
+    dani = Mensajero("Dani")
+    for m in (ana, beto, caro, dani):           # un mensajero nuevo = una sola línea de registro
+        central.registrar(m)
+    ana.reportar_averia("G-301")
+    caro.reportar_averia("G-302")
+    beto.reportar_averia("G-303")
+    print("Eventos registrados:", len(central.registro))
+```
+
+```text
+$ python3 mediator.py
+Ana reporta avería con G-301
+  Beto recibe G-301
+Caro reporta avería con G-302
+  Dani recibe G-302
+Beto reporta avería con G-303
+  Central: nadie libre para G-303, queda en espera
+Eventos registrados: 3
+```
+
+**Explicación por partes.**
+- Líneas 5–7: registrar guarda al mensajero y le entrega la central. Es la única conexión que necesita.
+- Líneas 8–15: la regla de reparto. `m is not emisor` evita asignarle el paquete a quien se averió.
+- Línea 23: el mensajero avisa a la central y no sabe quién recibirá la guía.
+- Líneas 32–33: los cuatro mensajeros entran con el mismo `for`. Un mensajero nuevo es una línea más.
+- Salida: Dani recibe la guía de Caro. Cuando ya no hay libres, la central lo dice y el evento queda registrado.
+
+> **Error común.** Usar un mensajero que no se registró. Su atributo `central` sigue en `None` y la primera avería
+> termina con `AttributeError: 'NoneType' object has no attribute 'notificar'`. La línea señalada es la llamada a la
+> central, pero la causa está antes: falta `central.registrar(eva)`.
+
+```python
+# sin_registrar.py — un mensajero que nunca se registró en la central
+from mediator import Central, Mensajero
+
+central = Central()
+eva = Mensajero("Eva")
+eva.reportar_averia("G-304")
+```
+
+```text
+$ python3 sin_registrar.py
+Eva reporta avería con G-304
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/sin_registrar.py", line 6, in <module>
+    eva.reportar_averia("G-304")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/estudiante/labs/patrones/mediator.py", line 23, in reportar_averia
+    self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
+    ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'notificar'
+```
+
+> **Buena práctica.** Deja que el mediador registre lo que coordina (aquí, `self.registro`). Cuando un paquete se
+> pierde, ese registro dice quién avisó, qué evento y cuándo.
+
+> **Ingeniería de software.** Vigila el tamaño del mediador. Si `notificar` acumula diez tipos de evento con reglas
+> distintas, divídelo: una central de averías, otra de turnos. El patrón concentra el acoplamiento; no lo elimina.
+
+#### Cuándo no usarlo
+- Con dos objetos que se hablan en un solo sentido, una referencia directa es más clara que un intermediario.
+- Si los objetos solo necesitan enterarse de un evento y no hay reglas de coordinación, basta una lista de suscriptores que reciben el aviso (el patrón Observer).
+- Si el mediador terminaría con toda la lógica del programa, separa responsabilidades antes de centralizarlas.
+
+#### Checkpoint 5.1
+Con el mediador, ¿cuántas líneas cambias para agregar a Eva y cuántas habrías cambiado en la versión acoplada?
+
+Respuesta: con el mediador, dos líneas: crear a Eva y registrarla. En la versión acoplada, la lista de Eva y las
+cuatro listas de los demás: cinco listas que mantener, y cualquier olvido repite el defecto de Caro.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Cuenta los hilos
+Escribe `mensajeros_acoplados.py` y ejecútalo. Comprueba que Caro dice `nadie libre` y que hay 11 referencias.
+Agrega `dani` a la lista de Caro y confirma que ahora Dani recibe `G-302` y hay 12 referencias.
+
+#### Paso 2 · Una central para todos
+Escribe `mediator.py` y ejecútalo. Comprueba que `Eventos registrados: 3`.
+
+#### Paso 3 · Olvida registrar a propósito
+Escribe `sin_registrar.py` y ejecútalo para ver el `AttributeError`. Agrega `central.registrar(eva)` antes de la
+avería y ejecuta otra vez: la central responde `nadie libre para G-304, queda en espera`.
+
+#### Resumen
+- El **acoplamiento** mide cuánto depende un objeto de otros; con *n* objetos que se conocen entre todos hay *n* × (*n* − 1) referencias.
+- El patrón **Mediator** pone la coordinación en un objeto central; cada **colega** solo lo conoce a él.
+- Agregar un colega es una línea de registro; la regla de coordinación vive en un solo lugar.
+- Un colega sin registrar falla con `AttributeError` sobre `None`.
+- El mediador concentra el acoplamiento: si crece demasiado, divídelo.
+
+#### Ejercicio verificable 1
+Básico. Agrega a Eva, libre, y regístrala junto con los otros cuatro. ¿Quién recibe `G-303` cuando Beto se avería?
+
+Respuesta esperada: `  Eva recibe G-303`. Ana, Caro y Dani ya no están libres y Beto es el emisor, así que la
+central elige a Eva.
+
+#### Ejercicio verificable 2
+Intermedio. RutaFlow tendrá 10 mensajeros. ¿Cuántas referencias entre mensajeros hay en la versión acoplada y
+cuántas referencias a la central en la versión con mediador?
+
+Respuesta esperada: 10 × 9 = 90 en la versión acoplada; 10 en la versión con mediador, una por mensajero (más las 10
+que la central guarda en su diccionario).
+
+#### Ejercicio verificable 3
+Reto. Haz que la central guarde las guías que quedan en espera y que, cuando un mensajero avise
+`"libre"`, le asigne la primera pendiente.
+
+Respuesta esperada: la central tiene `self.pendientes = []`. En la rama sin libres hace `self.pendientes.append(dato)`.
+Agrega la rama `elif evento == "libre" and self.pendientes:` con `emisor.asignar(self.pendientes.pop(0))`. El
+mensajero necesita un método `quedar_libre` que ponga `self.libre = True` y llame a
+`self.central.notificar(self, "libre", None)`. Con el ejemplo de `mediator.py`, si Ana llama a `quedar_libre()`
+al final, imprime `  Ana recibe G-303`.
+
+#### En el trabajo
+Las pantallas con muchos controles usan un mediador: al cambiar la ciudad, el formulario actualiza la lista de
+barrios y la tarifa sin que los controles se conozcan. En logística, los sistemas de despacho son mediadores entre
+mensajeros, vehículos y pedidos. En arquitecturas grandes, un *broker* de mensajes cumple un papel parecido entre
+servicios.
+
+</details>
+
+### Tema 6: Memento: guardar y restaurar estado para deshacer · Avanzado · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- explicar con una ejecución por qué un alias o una copia superficial no sirven como historial;
+- implementar deshacer y rehacer con instantáneas inmutables y dos pilas;
+- separar al originador, que crea y lee las instantáneas, del cuidador, que solo las guarda;
+- leer el `FrozenInstanceError` de un intento de modificar un valor congelado.
+
+**Conceptos clave:** Memento, originador, cuidador, copia superficial, dataclass congelada
+
+Ya los conoces y no se repiten: *clase*, *objeto* y `__str__` (Módulo 1, Tema 6); *lista*, *diccionario*, *tupla* y
+*mutable* (Módulo 2, Tema 1); *pila* (Módulo 2, Tema 2); *patrón de diseño* (Tema 1 de este módulo).
+
+#### El problema
+El planificador de RutaFlow arma la ruta del día agregando paradas. Cuando se equivoca, quiere deshacer, y a veces
+rehacer lo que deshizo. Guardar «la ruta de antes» parece fácil, pero si guardas la misma lista o una copia a medias,
+el cambio de ahora también modifica la versión guardada. ¿Cómo guardas una foto del estado que nadie pueda alterar?
+
+#### Glosario del tema
+
+**Memento**
+- **Definición técnica:** patrón de comportamiento que captura el estado interno de un objeto en un objeto aparte, la instantánea o memento, para restaurarlo después sin exponer cómo está construido por dentro.
+- **En palabras sencillas:** una foto de la ruta en un momento; para deshacer, vuelves a poner la ruta como sale en la foto.
+- **Dónde se rompe la comparación:** una foto de papel no cambia sola; un memento sí puede cambiar si guarda objetos mutables compartidos con el original.
+- **Ejemplo:** `ruta.guardar()` devuelve `Memento(paradas=(...))` con las paradas de ese instante.
+- **Error típico:** guardar la lista original en vez de una copia: la «foto» se mueve con cada cambio.
+
+**originador**
+- **Definición técnica:** el objeto cuyo estado se guarda; es el único que crea sus mementos y el único que sabe leerlos para restaurarse.
+- **En palabras sencillas:** la ruta: se toma la foto a sí misma y sabe volver a ser como en la foto.
+- **Dónde se rompe la comparación:** en Python nada impide que otro objeto lea el memento; la separación es una convención que el diseño respeta.
+- **Ejemplo:** `Ruta.guardar` y `Ruta.restaurar`.
+- **Error típico:** dejar que el historial arme las instantáneas leyendo los atributos internos de la ruta.
+
+**cuidador**
+- **Definición técnica:** el objeto que pide mementos al originador, los guarda y decide cuándo devolver uno, sin mirar ni modificar su contenido.
+- **En palabras sencillas:** el álbum de fotos: guarda las fotos en orden y las entrega cuando se las piden.
+- **Dónde se rompe la comparación:** el álbum no entiende las fotos; si una foto se daña por dentro, el cuidador no lo nota.
+- **Ejemplo:** `Historial` guarda mementos en `pila` y en `rehechos`.
+- **Error típico:** olvidar vaciar la pila de rehacer al hacer un cambio nuevo: rehacer aplicaría un estado de otra historia.
+
+**copia superficial**
+- **Definición técnica:** copia que crea un contenedor nuevo pero conserva las mismas referencias a los elementos; `lista.copy()` y `list(lista)` son copias superficiales.
+- **En palabras sencillas:** fotocopiar el índice de una carpeta, no las hojas: la carpeta nueva señala las mismas hojas.
+- **Dónde se rompe la comparación:** si los elementos son inmutables, como texto o tuplas, la copia superficial basta, porque nadie puede cambiar las hojas.
+- **Ejemplo:** tras `superficial = ruta.copy()`, `superficial[0] is ruta[0]` da `True`.
+- **Error típico:** copiar una lista de diccionarios con `.copy()` y luego editar un diccionario: el cambio aparece en las dos.
+
+**dataclass congelada (`frozen=True`)**
+- **Definición técnica:** clase generada con el decorador `@dataclass` del módulo `dataclasses`, que crea `__init__` a partir de los campos declarados; con `frozen=True`, asignar a un campo después de crearla lanza `FrozenInstanceError`.
+- **En palabras sencillas:** una ficha que se llena una vez al crearla y después queda plastificada.
+- **Dónde se rompe la comparación:** el plástico protege los campos, no lo que hay dentro de ellos: si un campo guarda una lista, esa lista sí se puede cambiar.
+- **Ejemplo:** `@dataclass(frozen=True) class Parada:` con campos `nombre: str` y `hora: str`.
+- **Error típico:** asignar un campo: `dataclasses.FrozenInstanceError: cannot assign to field 'hora'`.
+
+#### ► CÓMO FUNCIONA
+Antes de cada cambio, el historial le pide a la ruta una instantánea y la apila. Para deshacer, desapila la última y
+se la devuelve a la ruta. Para poder rehacer, antes de restaurar guarda la foto actual en otra pila.
+
+```mermaid
+sequenceDiagram
+    participant H as Historial (cuidador)
+    participant R as Ruta (originador)
+    H->>R: guardar()
+    R-->>H: Memento
+    H->>H: apilar en pila
+    H->>R: agregar(parada)
+    Note over H,R: el usuario pide deshacer
+    H->>R: guardar()
+    R-->>H: Memento actual, va a rehechos
+    H->>R: restaurar(memento desapilado)
+```
+
+La instantánea funciona porque es inmutable de punta a punta: un `Memento` congelado con una tupla de `Parada`
+congeladas. Ningún cambio posterior la alcanza.
+
+#### Problema resuelto 6.1
+Antes del patrón. Guarda «la ruta de antes» de dos formas ingenuas y compáralas después de dos cambios.
+
+**Razonamiento:**
+1. Intento 1: otro nombre para la misma lista (alias).
+2. Intento 2: una copia superficial con `.copy()`.
+3. Haz dos cambios: agrega una parada y edita la hora de la primera. Una foto correcta no debería mostrar ninguno.
+
+```python
+# deshacer_roto.py — dos «fotos» de la ruta que no son fotos
+ruta = [{"parada": "Depósito", "hora": "08:00"}]
+
+alias = ruta                     # intento 1: guardar el mismo objeto con otro nombre
+superficial = ruta.copy()        # intento 2: copiar solo la lista exterior
+
+ruta.append({"parada": "Suba", "hora": "09:30"})   # cambio 1: agregar una parada
+ruta[0]["hora"] = "07:45"                          # cambio 2: editar una parada que ya existía
+
+print("Actual:     ", ruta)
+print("Alias:      ", alias)
+print("Superficial:", superficial)
+print("¿Misma lista?", alias is ruta, "| ¿Mismo diccionario?", superficial[0] is ruta[0])
+```
+
+```text
+$ python3 deshacer_roto.py
+Actual:      [{'parada': 'Depósito', 'hora': '07:45'}, {'parada': 'Suba', 'hora': '09:30'}]
+Alias:       [{'parada': 'Depósito', 'hora': '07:45'}, {'parada': 'Suba', 'hora': '09:30'}]
+Superficial: [{'parada': 'Depósito', 'hora': '07:45'}]
+¿Misma lista? True | ¿Mismo diccionario? True
+```
+
+**Explicación por partes.**
+- Línea 4: `alias` no es una copia: es el mismo objeto. La salida lo confirma con `¿Misma lista? True`.
+- Línea 5: `.copy()` crea una lista nueva que señala los mismos diccionarios.
+- Línea 7: agregar una parada no afecta a `superficial`, porque su lista exterior es otra.
+- Línea 8: editar la hora sí la afecta: `superficial` muestra `07:45`. Deshacer con ella dejaría una hora que nunca se guardó.
+
+#### Problema resuelto 6.2
+Después del patrón. Guarda mementos inmutables y agrega rehacer con una segunda pila.
+
+**Razonamiento:**
+1. Cada parada es una dataclass congelada; el memento guarda una tupla de paradas, también inmutable.
+2. Solo la ruta crea y lee mementos; el historial los guarda en dos pilas.
+3. Deshacer guarda la foto actual en `rehechos`; rehacer hace lo inverso. Un cambio nuevo vacía `rehechos`.
+
+```python
+# memento.py — instantáneas inmutables para deshacer y rehacer
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Parada:                                # valor inmutable: nadie la edita por dentro
+    nombre: str
+    hora: str
+
+@dataclass(frozen=True)
+class Memento:                               # instantánea inmutable y opaca para el historial
+    paradas: tuple
+
+class Ruta:                                  # originador: crea y lee sus propios mementos
+    def __init__(self):
+        self._paradas = []
+    def agregar(self, parada):
+        self._paradas.append(parada)
+    def guardar(self):
+        return Memento(tuple(self._paradas))
+    def restaurar(self, memento):
+        self._paradas = list(memento.paradas)
+    def __str__(self):
+        return " -> ".join(f"{p.nombre} {p.hora}" for p in self._paradas) or "(vacía)"
+
+class Historial:                             # cuidador: guarda mementos sin mirar su interior
+    def __init__(self, ruta):
+        self.ruta, self.pila, self.rehechos = ruta, [], []
+    def cambiar(self, parada):
+        self.pila.append(self.ruta.guardar())
+        self.rehechos.clear()                # un cambio nuevo invalida lo que podías rehacer
+        self.ruta.agregar(parada)
+    def deshacer(self):
+        if self.pila:
+            self.rehechos.append(self.ruta.guardar())
+            self.ruta.restaurar(self.pila.pop())
+    def rehacer(self):
+        if self.rehechos:
+            self.pila.append(self.ruta.guardar())
+            self.ruta.restaurar(self.rehechos.pop())
+
+if __name__ == "__main__":
+    ruta = Ruta()
+    historial = Historial(ruta)
+    for nombre, hora in [("Depósito", "08:00"), ("Chapinero", "08:40"), ("Suba", "09:30")]:
+        historial.cambiar(Parada(nombre, hora))
+    print("Actual:  ", ruta)
+    historial.deshacer()
+    print("Deshacer:", ruta)
+    historial.deshacer()
+    print("Deshacer:", ruta)
+    historial.rehacer()
+    print("Rehacer: ", ruta)
+```
+
+```text
+$ python3 memento.py
+Actual:   Depósito 08:00 -> Chapinero 08:40 -> Suba 09:30
+Deshacer: Depósito 08:00 -> Chapinero 08:40
+Deshacer: Depósito 08:00
+Rehacer:  Depósito 08:00 -> Chapinero 08:40
+```
+
+**Explicación por partes.**
+- Líneas 4–11: `Parada` y `Memento` son congeladas. La tupla de la línea 19 no admite agregar ni quitar elementos.
+- Líneas 18–21: la ruta crea su memento y sabe restaurarse. `list(...)` crea una lista nueva para seguir editando.
+- Líneas 28–31: antes de cada cambio se apila la foto. La línea 30 descarta lo que se podía rehacer.
+- Líneas 32–39: deshacer y rehacer son simétricos: guardan la foto actual en una pila y restauran la otra.
+- Salida: dos deshacer quitan Suba y Chapinero; rehacer devuelve Chapinero con su hora original.
+
+> **Error común.** Intentar corregir una parada guardada editándola. Como `Parada` es congelada, Python lo impide:
+> `dataclasses.FrozenInstanceError: cannot assign to field 'hora'`. Para cambiar la hora, crea una `Parada` nueva y
+> regístrala con `historial.cambiar`, así el cambio también se puede deshacer.
+
+```python
+# editar_parada.py — intentar cambiar por dentro una parada guardada
+from memento import Parada
+
+parada = Parada("Depósito", "08:00")
+parada.hora = "07:45"
+```
+
+```text
+$ python3 editar_parada.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/editar_parada.py", line 5, in <module>
+    parada.hora = "07:45"
+    ^^^^^^^^^^^
+  File "<string>", line 16, in __setattr__
+dataclasses.FrozenInstanceError: cannot assign to field 'hora'
+```
+
+> **Prevenir errores.** Antes de confiar en un historial, prueba lo que hizo fallar a `deshacer_roto.py`: guarda,
+> modifica un elemento **existente** y compara. Agregar elementos no basta para detectar una copia superficial.
+
+> **Rendimiento.** Cada memento guarda la ruta completa. Con rutas de miles de paradas y cientos de cambios, limita
+> el historial (por ejemplo, a los últimos 50) o guarda solo el cambio y su inverso.
+
+#### Cuándo no usarlo
+- Si el estado es un solo valor inmutable, como un número o un texto, guarda los valores anteriores en una lista: no necesitas clases.
+- Si el estado es enorme y los cambios pequeños, guardar fotos completas desperdicia memoria; guarda las operaciones y su inverso.
+- Si el estado vive en una base de datos, usa sus transacciones o una tabla de versiones en lugar de fotos en memoria.
+
+#### Checkpoint 6.1
+Después de deshacer dos veces en `memento.py`, el planificador agrega `Usaquén 09:10`. ¿Qué hace `rehacer()` y por qué?
+
+Respuesta: nada. `cambiar` vacía `rehechos` (línea 30), así que no queda nada que rehacer. La ruta queda
+`Depósito 08:00 -> Usaquén 09:10`.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Demuestra la foto falsa
+Escribe `deshacer_roto.py` y ejecútalo. Comprueba que `Superficial` muestra la hora `07:45` aunque se copió antes del cambio.
+
+#### Paso 2 · Instantáneas inmutables
+Escribe `memento.py` y ejecútalo. Las cuatro líneas deben terminar en Suba, Chapinero, Depósito y otra vez Chapinero.
+
+#### Paso 3 · Prueba el candado
+Escribe `editar_parada.py` y ejecútalo para ver el `FrozenInstanceError`. Quita `frozen=True` de `Parada`, ejecuta
+otra vez y observa que el cambio pasa sin error; después vuelve a ponerlo.
+
+#### Resumen
+- Un **alias** no es una copia, y una **copia superficial** comparte los elementos con el original.
+- El patrón **Memento** guarda instantáneas del estado para restaurarlo sin exponer su estructura interna.
+- El **originador** crea y lee sus mementos; el **cuidador** solo los guarda en orden.
+- Deshacer y rehacer usan dos **pilas**; un cambio nuevo vacía la de rehacer.
+- Una **dataclass congelada** con campos inmutables hace que la instantánea no se pueda alterar.
+
+#### Ejercicio verificable 1
+Básico. En `deshacer_roto.py`, agrega `import copy` y una tercera foto `profunda = copy.deepcopy(ruta)` junto a las
+otras dos. `copy.deepcopy` copia también los elementos internos. ¿Qué imprime esa foto?
+
+Respuesta esperada: `[{'parada': 'Depósito', 'hora': '08:00'}]`. Es la ruta tal como estaba: ni la parada nueva ni la
+hora editada la alcanzan.
+
+#### Ejercicio verificable 2
+Intermedio. Reproduce el Checkpoint 6.1 en código: tres cambios, dos deshacer, un cambio nuevo con
+`Parada("Usaquén", "09:10")` y un rehacer. Imprime la ruta.
+
+Respuesta esperada: `Depósito 08:00 -> Usaquén 09:10`. El rehacer no tiene efecto porque el cambio nuevo vació `rehechos`.
+
+#### Ejercicio verificable 3
+Reto. Escribe `HistorialLimitado`, subclase de `Historial`, que conserve como máximo 3 mementos para deshacer. Haz 5
+cambios (`P1` a `P5`) y luego 5 deshacer. ¿Cómo queda la ruta?
+
+Respuesta esperada: sobrescribe `cambiar`, llama a `super().cambiar(parada)` y, si `len(self.pila) > 3`, descarta el
+más viejo con `self.pila.pop(0)`. Tras 5 deshacer la ruta queda `P1 08:00 -> P2 08:00` (si todas usan la hora
+`08:00`): solo se pudieron deshacer los últimos 3 cambios.
+
+#### En el trabajo
+Los editores de texto, las herramientas de diseño y los formularios largos usan instantáneas para deshacer. En
+aplicaciones web, el estado de la pantalla suele guardarse como objetos inmutables por la misma razón: comparar o
+restaurar una versión anterior es seguro si nadie la pudo modificar. En bases de datos, la misma idea aparece como
+versiones de un registro o como puntos de restauración.
+
+</details>
+
+### Tema 7: Visitor: operaciones nuevas sin tocar las clases · Avanzado · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- reconocer el costo de repetir `isinstance` en cada operación sobre una familia de clases;
+- separar operaciones (tarifa, etiqueta) en visitantes usando doble despacho;
+- agregar una operación nueva escribiendo una sola clase;
+- calcular qué cuesta agregar un tipo nuevo y leer el `AttributeError` que produce un visitante incompleto.
+
+**Conceptos clave:** Visitor, doble despacho
+
+Ya los conoces y no se repiten: *clase*, *objeto* y *método* (Módulo 1, Tema 6); `isinstance` y *polimorfismo*
+(Módulo 1, Tema 7); *función* (Módulo 1, Tema 4); *patrón de diseño* (Tema 1 de este módulo).
+
+#### El problema
+RutaFlow maneja tres tipos de paquete: sobre, caja y pallet. Sobre ellos corren varias operaciones: calcular la
+tarifa, imprimir la etiqueta de bodega y, pronto, calcular el peso total. Hoy cada operación es una función con una
+cadena de `isinstance`, y si a una le falta un caso, devuelve `None` sin avisar. ¿Cómo agregas operaciones sin
+repetir la pregunta por el tipo y sin olvidar casos?
+
+#### Glosario del tema
+
+**Visitor**
+- **Definición técnica:** patrón de comportamiento que separa una operación de la jerarquía de clases sobre la que actúa; la operación es un objeto visitante con un método por clase, y cada clase tiene un método `aceptar` que llama al método que le corresponde.
+- **En palabras sencillas:** un inspector que recorre la bodega con una lista: «si es sobre, haz esto; si es caja, esto otro». Un inspector nuevo trae una lista nueva sin cambiar los paquetes.
+- **Dónde se rompe la comparación:** el inspector no mira el paquete para saber qué es; el paquete le dice «soy una caja» al llamar a `visitar_caja`.
+- **Ejemplo:** `paquete.aceptar(CalculoTarifa())` devuelve la tarifa de cualquier tipo de paquete.
+- **Error típico:** usar Visitor cuando los tipos cambian a menudo: cada tipo nuevo obliga a editar todos los visitantes.
+
+**doble despacho**
+- **Definición técnica:** mecanismo en el que el método que se ejecuta depende del tipo de dos objetos: primero el del elemento (que elige su `aceptar`) y luego el del visitante (que elige su `visitar_...`).
+- **En palabras sencillas:** dos llamadas en vez de un `if`: el paquete dice qué es, y el visitante dice qué hacer con eso.
+- **Dónde se rompe la comparación:** «doble» no significa que la operación se haga dos veces; son dos pasos para elegir una sola implementación.
+- **Ejemplo:** `Caja.aceptar(v)` llama a `v.visitar_caja(self)`; si `v` es `CalculoTarifa`, se ejecuta la tarifa de caja.
+- **Error típico:** escribir en `aceptar` el método de otro tipo (`visitar_sobre` dentro de `Caja`): el visitante trata la caja como sobre.
+
+#### ► CÓMO FUNCIONA
+Cada clase de paquete tiene un solo método nuevo, `aceptar`, que llama al método de su tipo en el visitante. Cada
+visitante tiene un método por tipo de paquete. Para calcular una tarifa no se pregunta el tipo: se le pide al
+paquete que acepte al visitante.
+
+```mermaid
+classDiagram
+    class Sobre {
+      +gramos
+      +aceptar(visitante)
+    }
+    class Caja {
+      +kilos
+      +fragil
+      +aceptar(visitante)
+    }
+    class Pallet {
+      +cajas
+      +aceptar(visitante)
+    }
+    class CalculoTarifa {
+      +visitar_sobre(s)
+      +visitar_caja(c)
+      +visitar_pallet(p)
+    }
+    class EtiquetaBodega {
+      +visitar_sobre(s)
+      +visitar_caja(c)
+      +visitar_pallet(p)
+    }
+    Sobre ..> CalculoTarifa : llama visitar_sobre
+    Caja ..> CalculoTarifa : llama visitar_caja
+    Pallet ..> CalculoTarifa : llama visitar_pallet
+    Pallet o-- Caja : contiene
+```
+
+Las flechas punteadas valen igual para `EtiquetaBodega`: cada paquete llama al método de su tipo en cualquier
+visitante. Un visitante nuevo es una clase con tres métodos. Un tipo de paquete nuevo es un método más en **cada**
+visitante.
+
+#### Problema resuelto 7.1
+Antes del patrón. Escribe la tarifa y la etiqueta como funciones que preguntan el tipo con `isinstance`.
+
+**Razonamiento:**
+1. Cada función revisa los tres tipos en orden y devuelve el resultado del que coincida.
+2. El pallet suma la tarifa de sus cajas llamando a la misma función.
+3. Imprime etiqueta y tarifa de una carga con los tres tipos.
+
+```python
+# operaciones_con_if.py — cada operación pregunta el tipo con isinstance
+class Sobre:
+    def __init__(self, gramos): self.gramos = gramos
+
+class Caja:
+    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
+
+class Pallet:
+    def __init__(self, cajas): self.cajas = cajas
+
+def tarifa(paquete):
+    if isinstance(paquete, Sobre):
+        return 3000
+    if isinstance(paquete, Caja):
+        return 5000 + paquete.kilos * 1500 + (4000 if paquete.fragil else 0)
+    if isinstance(paquete, Pallet):
+        return 50000 + sum(tarifa(c) for c in paquete.cajas)
+
+def etiqueta(paquete):
+    if isinstance(paquete, Sobre):
+        return f"SOBRE {paquete.gramos} g"
+    if isinstance(paquete, Caja):
+        return f"CAJA {paquete.kilos} kg" + (" FRÁGIL" if paquete.fragil else "")
+    # falta el caso Pallet: la función termina y devuelve None sin avisar
+
+carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
+for paquete in carga:
+    print(etiqueta(paquete), "| tarifa", tarifa(paquete))
+```
+
+```text
+$ python3 operaciones_con_if.py
+SOBRE 120 g | tarifa 3000
+CAJA 4 kg FRÁGIL | tarifa 15000
+None | tarifa 97000
+```
+
+**Explicación por partes.**
+- Líneas 11–17 y 19–23: la misma escalera de `isinstance` en cada operación. La tercera operación la repetirá.
+- Línea 15: `(4000 if paquete.fragil else 0)` es una condición en una sola expresión: vale 4000 si es frágil y 0 si no.
+- Línea 24: falta el caso `Pallet`. Una función que termina sin `return` devuelve `None`.
+- Salida, línea 3: la etiqueta del pallet sale `None` y nadie recibe un error.
+
+#### Problema resuelto 7.2
+Después del patrón. Cada operación es un visitante y cada paquete sabe aceptarlo.
+
+**Razonamiento:**
+1. Cada paquete recibe un método `aceptar(visitante)` que llama a `visitar_<su tipo>`.
+2. Cada operación es una clase con los tres métodos `visitar_...`.
+3. Si a un visitante le falta un método, la llamada falla con un error en vez de devolver `None`.
+
+```python
+# visitor.py — cada operación es un visitante; cada paquete sabe aceptarlo
+class Sobre:
+    def __init__(self, gramos): self.gramos = gramos
+    def aceptar(self, visitante): return visitante.visitar_sobre(self)
+
+class Caja:
+    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
+    def aceptar(self, visitante): return visitante.visitar_caja(self)
+
+class Pallet:
+    def __init__(self, cajas): self.cajas = cajas
+    def aceptar(self, visitante): return visitante.visitar_pallet(self)
+
+class CalculoTarifa:                         # una operación nueva = un visitante nuevo
+    def visitar_sobre(self, s):  return 3000
+    def visitar_caja(self, c):   return 5000 + c.kilos * 1500 + (4000 if c.fragil else 0)
+    def visitar_pallet(self, p): return 50000 + sum(c.aceptar(self) for c in p.cajas)
+
+class EtiquetaBodega:
+    def visitar_sobre(self, s):  return f"SOBRE {s.gramos} g"
+    def visitar_caja(self, c):   return f"CAJA {c.kilos} kg" + (" FRÁGIL" if c.fragil else "")
+    def visitar_pallet(self, p): return f"PALLET con {len(p.cajas)} cajas"
+
+if __name__ == "__main__":
+    carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
+    for paquete in carga:
+        print(f"{paquete.aceptar(EtiquetaBodega()):<22} tarifa ${paquete.aceptar(CalculoTarifa()):,}")
+```
+
+```text
+$ python3 visitor.py
+SOBRE 120 g            tarifa $3,000
+CAJA 4 kg FRÁGIL       tarifa $15,000
+PALLET con 2 cajas     tarifa $97,000
+```
+
+**Explicación por partes.**
+- Líneas 4, 8 y 12: el primer despacho. Cada clase elige el método que corresponde a su tipo.
+- Líneas 14–17: la tarifa completa en una clase. El pallet suma sus cajas pidiéndoles que acepten al mismo visitante.
+- Líneas 19–22: la etiqueta completa en otra clase. Las clases de paquete no cambiaron para agregarla.
+- Línea 27: `:<22` rellena el texto a 22 caracteres alineado a la izquierda; `:,` agrega separadores de miles.
+
+> **Error común.** Agregar un tipo de paquete sin agregar su método en los visitantes. La llamada falla al
+> ejecutar: `AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'. Did you mean: 'visitar_caja'?`.
+> La sugerencia de Python no es la solución: falta escribir `visitar_bolsa` en cada visitante.
+
+```python
+# tipo_nuevo.py — llega un tipo de paquete que los visitantes no conocen
+from visitor import EtiquetaBodega
+
+class Bolsa:
+    def __init__(self, kilos): self.kilos = kilos
+    def aceptar(self, visitante): return visitante.visitar_bolsa(self)
+
+print(Bolsa(2).aceptar(EtiquetaBodega()))
+```
+
+```text
+$ python3 tipo_nuevo.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/tipo_nuevo.py", line 8, in <module>
+    print(Bolsa(2).aceptar(EtiquetaBodega()))
+          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/estudiante/labs/patrones/tipo_nuevo.py", line 6, in aceptar
+    def aceptar(self, visitante): return visitante.visitar_bolsa(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'. Did you mean: 'visitar_caja'?
+```
+
+> **Buena práctica.** Declara una clase abstracta `Visitante` con los tres `visitar_...` como métodos abstractos y
+> hereda de ella en cada visitante. Así, un visitante incompleto falla al crearse con `TypeError`, antes de procesar
+> ningún paquete.
+
+> **Ingeniería de software.** Visitor intercambia un costo por otro. Operación nueva: una clase, cero cambios en los
+> paquetes. Tipo nuevo: un método en cada visitante. Elígelo cuando los tipos estén quietos y las operaciones crezcan.
+
+#### Cuándo no usarlo
+- Si los tipos cambian más que las operaciones, pon cada operación como método de cada clase (polimorfismo, Módulo 1, Tema 7): un tipo nuevo es una clase completa.
+- Con dos tipos y una operación, un `if isinstance` corto es más legible que dos métodos `aceptar` y una clase visitante.
+- Si las operaciones necesitan los atributos privados de cada clase, el visitante obliga a exponerlos.
+
+#### Checkpoint 7.1
+¿Cuántos métodos escribes para agregar la operación `PesoTotal` y cuántos para agregar el tipo `Bolsa`?
+
+Respuesta: `PesoTotal` son tres métodos en una clase nueva (`visitar_sobre`, `visitar_caja`, `visitar_pallet`).
+`Bolsa` es su `aceptar` más un `visitar_bolsa` en cada visitante existente: con dos visitantes, tres métodos
+repartidos en tres clases, y uno más por cada visitante futuro.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Encuentra el caso olvidado
+Escribe `operaciones_con_if.py` y ejecútalo. Comprueba que la tercera línea empieza con `None`.
+
+#### Paso 2 · Visitantes
+Escribe `visitor.py` y ejecútalo. La tarifa del pallet debe ser `$97,000`: 50 000 más 20 000 y 27 000 de sus cajas.
+
+#### Paso 3 · Agrega un tipo y mira qué se rompe
+Escribe `tipo_nuevo.py` y ejecútalo para ver el `AttributeError`. Agrega `visitar_bolsa` a `EtiquetaBodega` en
+`visitor.py` (por ejemplo, `return f"BOLSA {b.kilos} kg"`) y ejecuta otra vez: imprime `BOLSA 2 kg`.
+
+#### Resumen
+- Repetir `isinstance` en cada operación multiplica los lugares donde se puede olvidar un caso.
+- El patrón **Visitor** pone cada operación en una clase visitante con un método por tipo.
+- El **doble despacho** elige la implementación en dos llamadas: `aceptar` en el paquete y `visitar_...` en el visitante.
+- Operación nueva: una clase. Tipo nuevo: un método en cada visitante.
+- Un visitante incompleto falla con `AttributeError` en vez de devolver `None`.
+
+#### Ejercicio verificable 1
+Básico. Escribe el visitante `PesoTotal` que devuelva kilos: el sobre convierte gramos a kilos, la caja da sus
+kilos y el pallet suma sus cajas. ¿Qué lista da `[p.aceptar(PesoTotal()) for p in carga]`?
+
+Respuesta esperada: `[0.12, 4, 22]`. `visitar_sobre` devuelve `s.gramos / 1000` y `visitar_pallet` suma
+`c.aceptar(self)` de cada caja.
+
+#### Ejercicio verificable 2
+Intermedio. Agrega a `operaciones_con_if.py` el caso que falta en `etiqueta`. ¿Qué tienes que revisar además para
+estar seguro de que no falta otro?
+
+Respuesta esperada: agregar `if isinstance(paquete, Pallet): return f"PALLET con {len(paquete.cajas)} cajas"`; la
+salida coincide con la de `visitor.py` salvo el formato. Además, revisar **todas** las funciones con `isinstance`
+sobre paquetes, porque el lenguaje no avisa cuál quedó incompleta.
+
+#### Ejercicio verificable 3
+Reto. RutaFlow tiene 3 tipos de paquete y 4 operaciones. Compara cuántas clases tocas para agregar un tipo y una
+operación en el diseño con Visitor y en el diseño con un método por operación en cada clase.
+
+Respuesta esperada: con Visitor, un tipo nuevo toca 4 visitantes más la clase nueva; una operación nueva es 1 clase
+nueva. Con métodos en cada clase, un tipo nuevo es 1 clase nueva con sus 4 métodos; una operación nueva toca las 3
+clases. Visitor gana si las operaciones crecen más que los tipos.
+
+#### En el trabajo
+Los compiladores y las herramientas de análisis de código usan visitantes: el árbol de un programa tiene tipos de
+nodo estables y aparecen operaciones nuevas (revisar estilo, calcular complejidad, traducir). El módulo `ast` de
+Python trae `ast.NodeVisitor` con esa forma. En aplicaciones de negocio es menos común: allí los tipos cambian a
+menudo y el polimorfismo simple suele ganar.
+
+</details>
+
+### Tema 8: Flyweight: compartir estado para ahorrar memoria · Avanzado · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- separar el estado intrínseco (compartido) del extrínseco (propio de cada objeto);
+- compartir objetos con una fábrica que devuelve siempre el mismo objeto para la misma clave;
+- medir con `tracemalloc` la memoria antes y después de aplicar el patrón;
+- explicar por qué un objeto compartido debe ser inmutable y demostrarlo con una ejecución.
+
+**Conceptos clave:** Flyweight, estado intrínseco, estado extrínseco, fábrica, método de clase, `__slots__`, `tracemalloc`
+
+Ya los conoces y no se repiten: *clase*, *objeto*, *atributo* y *atributo de clase* (Módulo 1, Tema 6); *diccionario*,
+*tupla* y *conjunto* (Módulo 2, Tema 1); *tabla hash* (Módulo 2, Tema 6); *argumentos variables* (Tema 1 de este
+módulo); *dataclass congelada* (Tema 6 de este módulo).
+
+#### El problema
+El mapa de seguimiento de RutaFlow pinta un marcador por cada entrega del día: diez mil en Bogotá. Cada marcador tiene
+su posición y un ícono según el estado: verde para entregado, rojo para fallido, azul para en ruta. Si cada marcador
+guarda su propia copia del ícono, el mapa ocupa casi 150 MB para mostrar tres dibujos distintos. ¿Cómo compartes lo
+que se repite sin mezclar lo que es de cada uno?
+
+#### Glosario del tema
+
+**Flyweight**
+- **Definición técnica:** patrón estructural que reduce la memoria compartiendo, entre muchos objetos, la parte de su estado que es igual, y dejando en cada objeto solo la parte que lo distingue.
+- **En palabras sencillas:** en vez de imprimir diez mil veces el mismo sello, tienes tres sellos y cada marcador anota cuál usa.
+- **Dónde se rompe la comparación:** si alguien raspa un sello, cambian todos los marcadores que lo usan; por eso lo compartido no se debe modificar.
+- **Ejemplo:** 10 000 marcadores apuntan a solo 3 objetos `TipoMarcador`.
+- **Error típico:** aplicarlo sin medir: con pocos objetos o datos pequeños, el ahorro no compensa la complejidad.
+
+**estado intrínseco y estado extrínseco**
+- **Definición técnica:** el intrínseco es la parte del estado que no depende del contexto y puede compartirse; el extrínseco depende de cada caso y se guarda aparte, en cada objeto o en quien lo usa.
+- **En palabras sencillas:** intrínseco es «cómo se ve un marcador verde»; extrínseco es «dónde está este marcador».
+- **Dónde se rompe la comparación:** la frontera la decides tú según los datos: si cada marcador tuviera su propio color, el color pasaría a ser extrínseco.
+- **Ejemplo:** color e ícono son intrínsecos (`TipoMarcador`); latitud y longitud son extrínsecas (`Marcador`).
+- **Error típico:** meter un dato propio de cada entrega, como la guía, en el objeto compartido.
+
+**fábrica**
+- **Definición técnica:** objeto o método cuya responsabilidad es crear objetos y decidir cómo; en el patrón Flyweight, la fábrica devuelve un objeto ya existente si hay uno con la misma clave.
+- **En palabras sencillas:** la ventanilla donde pides un sello: si ya existe te dan ese, y si no, lo fabrican y lo guardan.
+- **Dónde se rompe la comparación:** la ventanilla no avisa si te dio uno nuevo o uno viejo; para comprobarlo comparas identidades con `is` o `id`.
+- **Ejemplo:** `FabricaMarcadores.obtener("verde", "entregado")` devuelve siempre el mismo objeto.
+- **Error típico:** crear `TipoMarcador(...)` directamente en otra parte del código: ese objeto no se comparte.
+
+**método de clase (`@classmethod`)**
+- **Definición técnica:** método marcado con el decorador `@classmethod`; recibe la clase como primer parámetro, por convención `cls`, y se llama sobre la clase sin crear un objeto.
+- **En palabras sencillas:** una acción de la ventanilla, no de un sello concreto.
+- **Dónde se rompe la comparación:** también se puede llamar desde un objeto, pero sigue recibiendo la clase, no el objeto.
+- **Ejemplo:** `FabricaMarcadores.obtener(...)` usa `cls._cache`, el diccionario de la clase.
+- **Error típico:** olvidar el decorador: Python pasa `"verde"` como `cls` y la llamada falla por falta de un argumento.
+
+**`__slots__`**
+- **Definición técnica:** atributo de clase con la tupla de nombres de atributos permitidos; los objetos guardan solo esos campos, sin el diccionario interno `__dict__`, y ocupan menos memoria.
+- **En palabras sencillas:** un formulario con casillas fijas: ocupa menos papel, pero no puedes agregar casillas.
+- **Dónde se rompe la comparación:** el ahorro es por objeto; con pocos objetos no se nota.
+- **Ejemplo:** `__slots__ = ("lat", "lon", "tipo")` en `Marcador`.
+- **Error típico:** asignar un atributo no declarado: `AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes`.
+
+**`tracemalloc`**
+- **Definición técnica:** módulo de la biblioteca estándar que registra la memoria que reserva Python; `start()` empieza a medir y `get_traced_memory()` devuelve la memoria actual y el pico en bytes.
+- **En palabras sencillas:** una báscula para la memoria del programa: la enciendes, ejecutas y lees cuánto pesa.
+- **Dónde se rompe la comparación:** solo pesa lo que Python reservó después de `start()`; no mide el intérprete ni lo que ya existía.
+- **Ejemplo:** `actual, pico = tracemalloc.get_traced_memory()`.
+- **Error típico:** llamar a `get_traced_memory()` sin `start()`: devuelve `(0, 0)` y parece que el programa no usa memoria.
+
+#### ► CÓMO FUNCIONA
+Cada `Marcador` guarda solo su posición y una referencia a un `TipoMarcador`. La fábrica guarda los tipos en un
+diccionario por clave `(color, icono)`. La primera vez crea el tipo; las demás devuelve el mismo objeto.
+
+```mermaid
+classDiagram
+    class Marcador {
+      +lat
+      +lon
+      +tipo
+    }
+    class TipoMarcador {
+      +color
+      +icono
+    }
+    class FabricaMarcadores {
+      -_cache
+      +obtener(color, icono)$
+    }
+    Marcador --> TipoMarcador : comparte
+    FabricaMarcadores --> TipoMarcador : crea una vez y reutiliza
+```
+
+El signo `$` marca un método de clase. La flecha de `Marcador` a `TipoMarcador` es una referencia: diez mil flechas
+llegan a solo tres objetos.
+
+#### Problema resuelto 8.1
+Antes del patrón. Crea diez mil marcadores, cada uno con su propio ícono, y mide la memoria.
+
+**Razonamiento:**
+1. El ícono se simula con un texto repetido 2000 veces, unos 18 000 caracteres.
+2. `icono * 2000` crea un texto nuevo en cada marcador.
+3. Enciende `tracemalloc` antes de crear los marcadores y lee la memoria al final.
+
+```python
+# marcadores_copiados.py — cada marcador del mapa carga su propio ícono
+import tracemalloc
+
+class Marcador:
+    def __init__(self, lat, lon, color, icono):
+        self.lat, self.lon = lat, lon
+        self.color, self.icono = color, icono * 2000   # simula un ícono pesado: copia propia
+
+tracemalloc.start()
+estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
+marcadores = [Marcador(4.6 + i * 1e-4, -74.08, *estados[i % 3]) for i in range(10000)]
+actual, pico = tracemalloc.get_traced_memory()
+print("Marcadores:", len(marcadores))
+print("Íconos distintos en memoria:", len({id(m.icono) for m in marcadores}))
+print(f"Memoria medida: {actual / 1024 / 1024:.1f} MB")
+```
+
+```text
+$ python3 marcadores_copiados.py
+Marcadores: 10000
+Íconos distintos en memoria: 10000
+Memoria medida: 147.9 MB
+```
+
+**Explicación por partes.**
+- Línea 7: cada marcador fabrica su propio texto largo. Tres estados, pero diez mil copias.
+- Línea 11: `1e-4` es 0.0001 escrito en notación científica. `*estados[i % 3]` reparte la tupla `(color, icono)` en dos argumentos.
+- Línea 14: `id` da la identidad de un objeto; el conjunto cuenta cuántos íconos distintos hay en memoria: 10 000.
+- Salida: casi 148 MB para tres dibujos.
+
+#### Problema resuelto 8.2
+Después del patrón. Comparte el ícono a través de una fábrica y mide otra vez.
+
+**Razonamiento:**
+1. Lo que se repite (color e ícono) va a `TipoMarcador`; lo propio (latitud, longitud) se queda en `Marcador`.
+2. La fábrica guarda los tipos en un diccionario: buscar una clave cuesta lo mismo con 3 o con 300 tipos.
+3. Mide con `tracemalloc` y compara con 8.1; calcula también cuánto pesarían las copias si no se compartieran.
+
+```python
+# flyweight.py — los marcadores comparten el ícono a través de una fábrica
+import sys
+import tracemalloc
+
+class TipoMarcador:                          # estado intrínseco: compartido e inmutable
+    def __init__(self, color, icono):
+        self.color, self.icono = color, icono * 2000   # simula un ícono pesado en memoria
+
+class FabricaMarcadores:
+    _cache = {}
+    @classmethod
+    def obtener(cls, color, icono):
+        clave = (color, icono)
+        if clave not in cls._cache:
+            cls._cache[clave] = TipoMarcador(color, icono)
+        return cls._cache[clave]
+
+class Marcador:                              # estado extrínseco: propio de cada entrega
+    __slots__ = ("lat", "lon", "tipo")
+    def __init__(self, lat, lon, tipo):
+        self.lat, self.lon, self.tipo = lat, lon, tipo
+
+if __name__ == "__main__":
+    tracemalloc.start()
+    estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
+    marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener(*estados[i % 3]))
+                  for i in range(10000)]
+    actual, pico = tracemalloc.get_traced_memory()
+    tipos = {id(m.tipo) for m in marcadores}
+    peso_tipos = sum(sys.getsizeof(t.icono) for t in FabricaMarcadores._cache.values())
+    print("Marcadores:", len(marcadores))
+    print("Objetos de tipo distintos:", len(tipos))
+    print(f"Memoria de íconos compartidos: {peso_tipos / 1024:.0f} KB")
+    sin_compartir = sum(sys.getsizeof(m.tipo.icono) for m in marcadores)   # si cada uno tuviera su copia
+    print(f"Sin compartir serían: {sin_compartir / 1024 / 1024:.0f} MB")
+    print(f"Memoria medida: {actual / 1024 / 1024:.1f} MB")
+```
+
+```text
+$ python3 flyweight.py
+Marcadores: 10000
+Objetos de tipo distintos: 3
+Memoria de íconos compartidos: 45 KB
+Sin compartir serían: 147 MB
+Memoria medida: 0.9 MB
+```
+
+**Explicación por partes.**
+- Líneas 5–7: el estado intrínseco. El texto largo se crea una vez por tipo.
+- Líneas 9–16: la fábrica. Si la clave no está, crea el tipo (línea 15); en cualquier caso devuelve el guardado.
+- Líneas 18–21: el estado extrínseco, con `__slots__` para que cada marcador ocupe lo mínimo.
+- Línea 29: el conjunto de identidades confirma que solo hay 3 objetos de tipo.
+- Línea 34: suma el tamaño del ícono una vez por marcador, como si cada uno tuviera su copia: 147 MB.
+- Salida, última línea: la medición real baja de 147.9 MB a 0.9 MB. Tu número puede variar unas décimas.
+
+> **Error común.** Agregar a un marcador un dato que `__slots__` no declara. Python lo rechaza:
+> `AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes`. Si el dato
+> es necesario, agrégalo a la tupla de `__slots__`; si es de un solo marcador, guárdalo fuera.
+
+```python
+# marcador_slots.py — intentar agregar un atributo que __slots__ no declara
+from flyweight import FabricaMarcadores, Marcador
+
+m = Marcador(4.61, -74.08, FabricaMarcadores.obtener("verde", "entregado"))
+m.nota = "portería"
+```
+
+```text
+$ python3 marcador_slots.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/patrones/marcador_slots.py", line 5, in <module>
+    m.nota = "portería"
+    ^^^^^^
+AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes
+```
+
+> **Error común.** Modificar el objeto compartido «solo para un marcador». Aquí no hay mensaje de error: cambian
+> todos los que comparten el tipo. La salida `['negro', 'negro', 'negro']` es el síntoma.
+
+```python
+# flyweight_mutado.py — cambiar el estado compartido desde un solo marcador
+from flyweight import FabricaMarcadores, Marcador
+
+marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener("verde", "entregado"))
+              for i in range(3)]
+marcadores[0].tipo.color = "negro"           # «solo quería cambiar el primero»
+print([m.tipo.color for m in marcadores])
+```
+
+```text
+$ python3 flyweight_mutado.py
+['negro', 'negro', 'negro']
+```
+
+> **Prevenir errores.** Haz inmutable el estado intrínseco: convierte `TipoMarcador` en dataclass congelada (Tema 6
+> de este módulo). Así, el cambio de `flyweight_mutado.py` termina en `FrozenInstanceError` en vez de pintar de negro
+> todo el mapa.
+
+> **Rendimiento.** Mide antes de aplicar el patrón. Aquí el ahorro es enorme porque el dato compartido pesa 18 KB.
+> Si fuera un texto de 5 letras, la fábrica y la indirección costarían más de lo que ahorran.
+
+#### Cuándo no usarlo
+- Con cientos de objetos, o con datos compartidos pequeños, la diferencia de memoria no se nota.
+- Si cada objeto necesita modificar su parte «compartida», no hay nada que compartir: es estado extrínseco.
+- Si los datos vienen de una base de datos, a menudo basta guardar una clave (`"verde"`) y buscar el ícono en un diccionario: es la misma idea sin clases nuevas.
+
+#### Checkpoint 8.1
+Si agregas a `estados` un cuarto par `("gris", "devuelto")` y usas `estados[i % 4]`, ¿cuántos objetos de tipo
+distintos habrá? ¿Cambia la memoria de forma notable?
+
+Respuesta: 4 objetos de tipo. La memoria medida casi no cambia, porque solo se agrega un ícono compartido de unos
+16 KB; los marcadores siguen guardando solo una referencia.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Mide el problema
+Escribe `marcadores_copiados.py` y ejecútalo. Anota la memoria medida: debe rondar los 148 MB.
+
+#### Paso 2 · Comparte y vuelve a medir
+Escribe `flyweight.py` y ejecútalo. Comprueba `Objetos de tipo distintos: 3` y compara la última línea con el Paso 1.
+
+#### Paso 3 · Comprueba los dos candados
+Escribe `marcador_slots.py` y `flyweight_mutado.py` y ejecútalos. El primero termina en `AttributeError`; el segundo
+imprime tres veces `negro` sin ningún error.
+
+#### Resumen
+- El patrón **Flyweight** comparte entre muchos objetos la parte del estado que es igual.
+- El **estado intrínseco** se comparte; el **estado extrínseco** queda en cada objeto.
+- Una **fábrica** con un diccionario devuelve siempre el mismo objeto para la misma clave.
+- Un **método de clase** trabaja con la clase (`cls`) y no necesita un objeto.
+- **`__slots__`** reduce la memoria de cada objeto y prohíbe atributos no declarados.
+- **`tracemalloc`** mide la memoria real: aquí bajó de 147.9 MB a 0.9 MB.
+- Lo compartido debe ser inmutable: un cambio en un objeto compartido cambia a todos.
+
+#### Ejercicio verificable 1
+Básico. En `flyweight.py`, cambia `range(10000)` por `range(30000)`. ¿Cuántos objetos de tipo distintos hay y
+cuánto marca la memoria medida?
+
+Respuesta esperada: siguen siendo 3 objetos de tipo y la memoria medida sube a unos 2.6 MB. `Sin compartir serían`
+pasa a 440 MB: el ahorro crece con el número de marcadores.
+
+#### Ejercicio verificable 2
+Intermedio. Agrega el cuarto estado del Checkpoint 8.1 y ejecuta. ¿Qué tres líneas cambian en la salida?
+
+Respuesta esperada: `Objetos de tipo distintos: 4`, `Memoria de íconos compartidos: 61 KB` y
+`Sin compartir serían: 148 MB`. La memoria medida sigue en `0.9 MB`.
+
+#### Ejercicio verificable 3
+Reto. Convierte `TipoMarcador` en una dataclass congelada con campos `color: str` e `icono: str`. ¿Dónde pones ahora
+la multiplicación `* 2000` y qué imprime `flyweight_mutado.py`?
+
+Respuesta esperada: la multiplicación pasa a la fábrica: `TipoMarcador(color, icono * 2000)`, porque la dataclass
+crea su propio `__init__`. `flyweight.py` da la misma salida que antes y `flyweight_mutado.py` termina en
+`dataclasses.FrozenInstanceError: cannot assign to field 'color'`.
+
+#### En el trabajo
+Los mapas, los videojuegos y los editores de texto comparten íconos, texturas y estilos de letra entre miles de
+elementos. Python lo hace por dentro: los enteros pequeños y muchos textos cortos se reutilizan en lugar de crearse
+de nuevo. En un servicio, el mismo criterio aparece al cachear objetos de configuración que se leen miles de veces
+por segundo; ahí la regla «lo compartido no se modifica» evita fallos difíciles de rastrear.
+
+</details>
+
+### Proyecto 13: núcleo de envíos con patrones
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+El proyecto une los patrones del módulo en un solo paquete de Python para RutaFlow. No hay técnicas nuevas: cada
+pieza remite al tema donde se explicó. La regla del proyecto es la del módulo: cada patrón entra solo si un requisito
+lo pide, y el README dice cuál requisito y qué alternativa más simple se descartó.
 
 </details>
 
@@ -1772,14 +2467,16 @@ tema donde se explicó. Puede ser una carpeta con programas de Python y un archi
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Entregables
-1. **Especificación.** Pre, post e invariante de dos operaciones del inventario, en texto plano y en símbolos, con una tabla de verdad de al menos una regla compuesta (Tema 1).
-2. **Contraejemplo automático.** Una prueba con Hypothesis que encontró un defecto real o sembrado, su contraejemplo mínimo y la corrección (Tema 1).
-3. **Demostración.** Una prueba por inducción de una propiedad de una función recursiva del inventario, con sus supuestos escritos y uno de ellos comprobado (Tema 2).
-4. **Grafo.** Las dependencias del inventario como grafo dirigido, con `tiene_ciclo`, un orden topológico y un ejemplo de `CycleError` provocado y explicado (Tema 3).
-5. **Experimento.** Una medición con semilla o repeticiones, en varios tamaños, que reporte n, p50 y p95, y una conclusión que nombre sus límites y posibles sesgos (Tema 4).
+1. **Estados.** `Envio` con objetos estado y una prueba que recorre todas las combinaciones de estado y acción (Tema 2).
+2. **Validación.** Cadenas `cadena_domicilio()` y `cadena_recogida()` armadas en funciones, con una prueba de sus eslabones (Tema 4).
+3. **Notificaciones.** Avisos decorados con firma y recorte para SMS, y un decorador de función con `functools.wraps` que registre cada envío de aviso (Tema 1).
+4. **Deshacer.** Planificador de ruta con deshacer y rehacer sobre mementos inmutables, y una prueba que edite una parada existente (Tema 6).
+5. **Reportes y tarifas.** Reportes diarios con método plantilla y tarifas calculadas por un visitante (Temas 3 y 7).
+6. **README.** Para cada patrón: el requisito que lo justifica, la alternativa más simple y por qué no bastó. Incluye al menos un patrón del catálogo que decidiste **no** usar y por qué.
 
 #### Criterio de terminado
-Otra persona clona la carpeta, crea un entorno virtual nuevo, instala `hypothesis` y ejecuta cada programa. Obtiene las
-mismas salidas exactas, salvo los tiempos, y puede seguir cada conclusión desde el dato que la respalda.
+`python3 -m pytest -q` pasa en una carpeta limpia con un entorno virtual nuevo, y cada prueba del README se puede
+señalar en el código. Mediator y Flyweight son opcionales: inclúyelos solo si tu README muestra el requisito que los
+pide (por ejemplo, una medición de memoria con `tracemalloc`).
 
 </details>

@@ -1,42 +1,28 @@
-# Módulo 7: Inyección de dependencias con Hilt
+# Módulo 7: Trabajo en segundo plano
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Hilt necesita su plugin de Gradle, KSP para generar código y que el manifiesto use tu clase `Application`. Con el catálogo del Módulo 0 (Tema 3):
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`:
 >
 > ```kotlin
-> // build.gradle.kts de la raíz, dentro de plugins { }
-> alias(libs.plugins.ksp) apply false   // si no lo añadiste en el Módulo 6
-> alias(libs.plugins.hilt) apply false
->
-> // app/build.gradle.kts
-> plugins {
->     // ...los que ya tienes...
->     alias(libs.plugins.ksp)
->     alias(libs.plugins.hilt)
-> }
-> dependencies {
->     // ...las que ya tienes...
->     implementation(libs.hilt.android)
->     ksp(libs.hilt.compiler)
->     androidTestImplementation(libs.hilt.android.testing)
->     kspAndroidTest(libs.hilt.compiler)
-> }
+> implementation(libs.androidx.work.runtime.ktx)
+> androidTestImplementation(libs.androidx.work.testing)
+> androidTestImplementation(libs.kotlinx.coroutines.test)
 > ```
 >
-> En `app/src/main/AndroidManifest.xml`, añade `android:name=".MiApp"` a la etiqueta `<application>`; sin él, Android crea un `Application` genérico y Hilt nunca se inicializa. Pulsa **Sync Now**.
+> Pulsa **Sync Now**. Sin `work-runtime-ktx`, `import androidx.work.CoroutineWorker` no compila.
 >
-> **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
+> **Los scripts `python3` de este módulo son modelos, no pruebas de WorkManager.** Escribir un JSON en `/tmp` ilustra la idea de «persistir la solicitud», pero no demuestra que WorkManager lo haga. La evidencia real es la **Verificación real en Android** del Tema 1: una prueba instrumentada del `Worker` y la consulta del planificador del sistema con `adb`.
 
 
-### Tema 1: Configuración básica de Hilt · Avanzado · 40 min
+### Tema 1: CoroutineWorker y garantía de ejecución · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar por qué la inyección de dependencias evita que cada clase conozca cómo construir sus propias dependencias.
+Al finalizar podrás escribir un CoroutineWorker y explicar por qué WorkManager garantiza su ejecución eventual incluso si el proceso de la app termina.
 
 </details>
 
@@ -45,147 +31,46 @@ Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar 
 
 #### Código y verificación
 ```
-┌── SIN inyección de dependencias ─────────────┐
-│ class TareasViewModel {                          │
-│   val repo = TareaRepositoryImpl(Retrofit(...))    │  ← conoce CÓMO construir todo
-│ }                                                     │
-└───────────────────────────────────────────┘
-┌── CON Hilt (@Inject) ────────────────────────┐
-│ class TareasViewModel @Inject constructor(         │
-│   private val repo: TareaRepository)                 │  ← solo declara QUÉ necesita
-│ )                                                      │
-└───────────────────────────────────────────┘
-```
-
-```bash
-# Este script python3 modela el mismo grafo de dependencias para verificar el principio
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/MiApp.kt`:
-
-```kotlin
-package com.academia.android
-
-import android.app.Application
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-
-@HiltAndroidApp
-class MiApp : Application()
-
-@HiltViewModel
-class TareasViewModelInyectado @Inject constructor(
-    private val repo: TareaRepository
-) : ViewModel()
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class TareaRepository:
-    def obtener(self):
-        return ['Comprar leche', 'Pagar alquiler']
-
-class TareasViewModel:
-    def __init__(self, repo):  # recibe la dependencia YA CONSTRUIDA, no la construye
-        self.repo = repo
-
-class ContenedorDeDependencias:
-    def __init__(self):
-        self._instancias = {}
-    def resolver(self, tipo, fabrica):
-        if tipo not in self._instancias:
-            self._instancias[tipo] = fabrica()
-        return self._instancias[tipo]
-
-contenedor = ContenedorDeDependencias()
-repo = contenedor.resolver('TareaRepository', lambda: TareaRepository())
-view_model = TareasViewModel(repo)  # nunca construye TareaRepository() directamente
-print('ViewModel obtuvo sus tareas vía la dependencia inyectada:', view_model.repo.obtener())
-"
-```
-
-</details>
-
-### Tema 2: @Provides y @Binds · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás decidir entre @Provides y @Binds según si una dependencia es una clase externa o una interfaz propia con implementación inyectable.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── @Provides (clase EXTERNA, sin @Inject propio) ──┐
-│ @Provides fun provideRetrofit(): Retrofit =            │
-│   Retrofit.Builder().baseUrl(URL).build()                │
+┌── viewModelScope.launch { sincronizar() } ────┐
+│ se CANCELA si el ViewModel se destruye              │
+│ (usuario cierra la app antes de completarse)           │
 └─────────────────────────────────────────┘
-┌── @Binds (interfaz PROPIA, implementación con @Inject) ─┐
-│ @Binds abstract fun bindTareaRepository(                     │
-│   impl: TareaRepositoryImpl): TareaRepository                    │
-└─────────────────────────────────────────────┘
+┌── WorkManager.enqueue(CoroutineWorker) ───────┐
+│ PERSISTE independientemente del proceso                │
+│ (garantiza ejecución eventual, incluso reiniciando)       │
+└─────────────────────────────────────────┘
 ```
 
 ```bash
-# Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
+# Este script python3 modela la persistencia de la solicitud de trabajo en un archivo real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/SincronizarWorker.kt`:
 
 ```kotlin
 package com.academia.android
 
 import android.content.Context
-import androidx.room.Room
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
-import retrofit2.Retrofit
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import kotlin.coroutines.cancellation.CancellationException
 
-@Module
-@InstallIn(SingletonComponent::class)
-object NetworkModule {
-    @Provides
-    @Singleton
-    fun provideApiService(): ApiService = crearApiService()   // ClienteApi.kt, Módulo 5
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object DatabaseModule {
-    @Provides
-    @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "tareas.db").build()
-
-    @Provides
-    fun provideTareaDao(db: AppDatabase): TareaDao = db.tareaDao()
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    @Binds
-    abstract fun bindTareaRepository(impl: TareaRepositoryImpl): TareaRepository
+class SincronizarWorker(
+    context: Context,
+    params: WorkerParameters
+) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        return try {
+            // repositorio.sincronizar() -- Módulo 5/6
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e   // WorkManager canceló el trabajo: no lo conviertas en un reintento
+        } catch (e: Exception) {
+            Result.retry()
+        }
+    }
 }
 ```
 
@@ -195,46 +80,98 @@ abstract class RepositoryModule {
 
 ```bash
 python3 -c "
-class Retrofit:
-    def __init__(self, base_url):
-        self.base_url = base_url
+import json
 
-class TareaRepository:  # interfaz/contrato
-    def obtener(self):
-        raise NotImplementedError
+ARCHIVO_COLA_PERSISTENTE = '/tmp/work_manager_cola.json'
 
-class TareaRepositoryImpl(TareaRepository):  # implementación concreta
-    def obtener(self):
-        return ['Comprar leche']
+def encolar_trabajo_persistente(nombre_trabajo):
+    with open(ARCHIVO_COLA_PERSISTENTE, 'w') as f:
+        json.dump({'trabajo_pendiente': nombre_trabajo}, f)
 
-class Modulo:
-    # equivalente a @Provides: describe explícitamente CÓMO construir una clase externa
-    def provide_retrofit(self):
-        return Retrofit(base_url='https://api.miapp.com/')
+def proceso_termina_abruptamente(cola_en_memoria):
+    cola_en_memoria.clear()  # simula que el proceso muere: la memoria se pierde por completo
 
-    # equivalente a @Binds: solo MAPEA la interfaz a la implementación, sin lógica de construcción
-    def bind_tarea_repository(self, impl: TareaRepositoryImpl) -> TareaRepository:
-        return impl
+def nuevo_proceso_verifica_trabajo_pendiente():
+    with open(ARCHIVO_COLA_PERSISTENTE) as f:
+        return json.load(f).get('trabajo_pendiente')
 
-modulo = Modulo()
-retrofit = modulo.provide_retrofit()
-print('Retrofit construido explícitamente con @Provides, base_url:', retrofit.base_url)
+cola_en_memoria = ['SincronizarWorker']  # equivalente a un coroutine en viewModelScope
+encolar_trabajo_persistente('SincronizarWorker')  # equivalente a WorkManager.enqueue(...)
 
-repo_concreto = TareaRepositoryImpl()
-repo: TareaRepository = modulo.bind_tarea_repository(repo_concreto)
-print('TareaRepository resuelto vía @Binds:', repo.obtener())
+proceso_termina_abruptamente(cola_en_memoria)
+print('cola en memoria tras terminar el proceso:', cola_en_memoria)
+print('trabajo recuperado por un NUEVO proceso desde almacenamiento persistente:', nuevo_proceso_verifica_trabajo_pendiente())
 "
+```
+
+```kotlin
+package com.academia.android
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.work.ListenableWorker
+import androidx.work.testing.TestListenableWorkerBuilder
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class SincronizarWorkerTest {
+    @Test
+    fun sincronizarDevuelveSuccess() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val worker = TestListenableWorkerBuilder<SincronizarWorker>(context).build()
+        assertEquals(ListenableWorker.Result.success(), worker.doWork())
+    }
+}
+```
+
+```kotlin
+val solicitud = OneTimeWorkRequestBuilder<SincronizarWorker>()
+    .setConstraints(Constraints.Builder().setRequiresCharging(true).build())
+    .build()
+WorkManager.getInstance(this).enqueueUniqueWork("sincronizar", ExistingWorkPolicy.KEEP, solicitud)
+```
+
+```bash
+adb shell dumpsys battery unplug          # el emulador deja de "cargar"
+adb shell am kill com.academia.android
+adb shell dumpsys jobscheduler | grep "com.academia.android"
+adb shell dumpsys battery reset           # restaura el estado real de la batería
 ```
 
 </details>
 
-### Tema 3: Scopes y testing con Hilt · Avanzado · 40 min
+### Tema 2: Constraints y trabajo periódico · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás elegir el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazar un módulo real por uno de test.
+Al finalizar podrás configurar constraints de red y batería para un trabajo periódico, y explicar por qué WorkManager prioriza la salud del dispositivo sobre la puntualidad exacta.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** ejecución condicionada al cumplimiento de requisitos del sistema, no inmediata.
+
+Las constraints declaran condiciones del sistema que deben cumplirse antes de ejecutar el trabajo encolado: `setRequiredNetworkType(NetworkType.CONNECTED)` retrasa la ejecución hasta que haya conexión, y `setRequiresBatteryNotLow(true)` la retrasa mientras la batería esté crítica. Quince minutos es el intervalo mínimo que Android permite para `PeriodicWorkRequestBuilder`; el sistema no garantiza una ejecución exacta cada quince minutos, solo "aproximadamente" esa periodicidad, agrupando trabajos de distintas apps para minimizar cuántas veces el dispositivo debe "despertar".
+
+**Analogía:** las constraints son como las condiciones que un servicio de entrega a domicilio impone antes de salir a repartir (solo si hay suficiente combustible, solo en horario diurno), retrasando la entrega hasta que se cumplan, en vez de arriesgarse a quedar varado a mitad de camino.
+
+**Diagrama:**
+
+```
+┌── Constraints ─────────────────────────────┐
+│  setRequiredNetworkType(CONNECTED)              │
+│  setRequiresBatteryNotLow(true)                    │
+└──────────┬─────────────────────────────┘
+           │ AMBAS deben cumplirse
+           ▼
+┌── PeriodicWorkRequestBuilder(15, MINUTES) ──┐
+│  mínimo permitido; "aproximadamente" cada 15m    │
+└───────────────────────────────────────┘
+```
 
 </details>
 
@@ -243,119 +180,174 @@ Al finalizar podrás elegir el scope correcto para una dependencia según su tie
 
 #### Código y verificación
 ```
-┌── @Singleton ──────────────────────┐
-│  UNA instancia, vive mientras la app vive │
-└───────────────────────────────┘
-┌── @ViewModelScoped ────────────────┐
-│  UNA instancia por ViewModel,           │
-│  destruida cuando ese ViewModel muere      │
-└───────────────────────────────┘
-┌── @UninstallModules(NetworkModule::class) ─┐
-│  reemplaza el módulo real por uno de test       │
+┌── Constraints ─────────────────────────────┐
+│  setRequiredNetworkType(CONNECTED)              │
+│  setRequiresBatteryNotLow(true)                    │
+└──────────┬─────────────────────────────┘
+           │ AMBAS deben cumplirse
+           ▼
+┌── PeriodicWorkRequestBuilder(15, MINUTES) ──┐
+│  mínimo permitido; "aproximadamente" cada 15m    │
 └───────────────────────────────────────┘
 ```
 
 ```bash
+# Este script python3 valida el intervalo mínimo permitido y modela las constraints
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/androidTest/kotlin/com/academia/android
+mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/androidTest/kotlin/com/academia/android/HiltTestRunner.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt`:
 
 ```kotlin
 package com.academia.android
 
-import android.app.Application
-import android.content.Context
-import androidx.test.runner.AndroidJUnitRunner
-import dagger.hilt.android.testing.HiltTestApplication
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import java.util.concurrent.TimeUnit
 
-class HiltTestRunner : AndroidJUnitRunner() {
-    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application =
-        super.newApplication(cl, HiltTestApplication::class.java.name, context)
-}
-```
+fun crearSolicitudPeriodica(): androidx.work.PeriodicWorkRequest {
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true)
+        .build()
 
-Crea el archivo `app/src/androidTest/kotlin/com/academia/android/TareasFlowTest.kt`:
-
-```kotlin
-package com.academia.android
-
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-
-@HiltAndroidTest
-@UninstallModules(NetworkModule::class) // desinstala el módulo de producción solo en esta prueba
-class TareasFlowTest {
-    @get:Rule val hiltRule = HiltAndroidRule(this)
-
-    @Module
-    @InstallIn(SingletonComponent::class) // módulo anidado: solo existe para esta clase de prueba
-    object NetworkModuleDePrueba {
-        @Provides
-        @Singleton
-        fun provideApiService(): ApiService = object : ApiService {
-            override suspend fun obtenerTareas() = listOf(TareaDTO("t-1", "Tarea de prueba"))
-        }
-    }
-
-    @Inject lateinit var api: ApiService
-
-    @Before fun inyectar() = hiltRule.inject()
-
-    @Test
-    fun usaElApiServiceDePrueba() = runTest {
-        assertEquals("Tarea de prueba", api.obtenerTareas().single().titulo)
-    }
+    return PeriodicWorkRequestBuilder<SincronizarWorker>(15, TimeUnit.MINUTES)
+        .setConstraints(constraints)
+        .build()
 }
 ```
 
 ```bash
-./gradlew :app:connectedDebugAndroidTest
+./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
 python3 -c "
-class ObjetoCostoso:
-    contador_de_construcciones = 0
-    def __init__(self):
-        ObjetoCostoso.contador_de_construcciones += 1
+def constraints_se_cumplen(hay_red, bateria_porcentaje):
+    red_conectada = hay_red
+    bateria_no_baja = bateria_porcentaje > 15  # 'batería baja' según umbral típico del sistema
+    return red_conectada and bateria_no_baja
 
-class ContenedorSingleton:
-    def __init__(self):
-        self._instancia = None
-    def obtener(self):
-        if self._instancia is None:
-            self._instancia = ObjetoCostoso()
-        return self._instancia
+escenarios = [
+    ('con red y batería alta', True, 80),
+    ('sin red, batería alta', False, 80),
+    ('con red, batería crítica', True, 5),
+    ('sin red, batería crítica', False, 5),
+]
 
-class ContenedorSinCache:  # equivalente a un scope corto sin reutilización
-    def obtener(self):
-        return ObjetoCostoso()
+for descripcion, hay_red, bateria in escenarios:
+    puede_ejecutar = constraints_se_cumplen(hay_red, bateria)
+    print(f'{descripcion}: {\"EJECUTA\" if puede_ejecutar else \"ESPERA\"}')
+"
+```
 
-ObjetoCostoso.contador_de_construcciones = 0
-singleton = ContenedorSingleton()
-for _ in range(5):
-    singleton.obtener()
-print('con @Singleton, construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
+</details>
 
-ObjetoCostoso.contador_de_construcciones = 0
-sin_cache = ContenedorSinCache()
-for _ in range(5):
-    sin_cache.obtener()
-print('SIN singleton (scope corto), construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
+### Tema 3: Notificaciones desde background work · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás disparar una notificación desde doWork() al completar un trabajo, y verificar que el trabajo persiste tras cerrar la app.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** comunicar al usuario un resultado ocurrido fuera de su interacción directa.
+
+Disparar una notificación local desde dentro de `doWork()` al completar la sincronización comunica al usuario que ocurrió algo relevante mientras la app no estaba en primer plano, sin requerir que la abra activamente. Verificar con `adb shell dumpsys jobscheduler` que el trabajo periódico persiste correctamente incluso después de cerrar la app confirma en la práctica la garantía descrita en el Tema 1: la solicitud vive en almacenamiento del sistema gestionado por WorkManager, independiente del proceso que la encoló.
+
+**Analogía:** una notificación desde background work es como un mensaje de texto automático que confirma la entrega de un paquete, enviado independientemente de si el destinatario está revisando activamente el estado del envío, permitiéndole enterarse del resultado sin consultar manualmente.
+
+**Diagrama:**
+
+```
+┌── CoroutineWorker.doWork() completa exitosamente ──┐
+└──────────┬───────────────────────────────┘
+           │
+           ▼
+┌── NotificationManagerCompat.notify(...) ───────────┐
+│ el usuario ve la notificación SIN haber abierto la app  │
+└───────────────────────────────────────────────┘
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── CoroutineWorker.doWork() completa exitosamente ──┐
+└──────────┬───────────────────────────────┘
+           │
+           ▼
+┌── NotificationManagerCompat.notify(...) ───────────┐
+│ el usuario ve la notificación SIN haber abierto la app  │
+└───────────────────────────────────────────────┘
+```
+
+```bash
+# Este script python3 modela el envío de la notificación tras completar el trabajo
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt`:
+
+```kotlin
+package com.academia.android
+
+import android.content.Context
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.work.CoroutineWorker
+import kotlin.coroutines.cancellation.CancellationException
+import androidx.work.WorkerParameters
+
+class SincronizarWorkerConNotificacion(
+    private val contexto: Context,
+    params: WorkerParameters
+) : CoroutineWorker(contexto, params) {
+    override suspend fun doWork(): Result {
+        return try {
+            // repositorio.sincronizar() -- Módulo 5/6
+            val notificacion = NotificationCompat.Builder(contexto, "canal_sincronizacion")
+                .setContentTitle("Sincronización completada")
+                .build()
+            NotificationManagerCompat.from(contexto).notify(1, notificacion)
+            Result.success()
+        } catch (e: CancellationException) {
+            throw e   // WorkManager canceló el trabajo: no lo conviertas en un reintento
+        } catch (e: Exception) {
+            Result.retry()
+        }
+    }
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+python3 -c "
+eventos = []
+
+def completar_trabajo_en_background():
+    eventos.append('doWork() ejecuta la sincronización')
+    eventos.append('sincronización exitosa')
+    eventos.append('NotificationManagerCompat.notify() dispara la notificación')
+
+def usuario_ve_notificacion_sin_abrir_la_app():
+    eventos.append('usuario ve la notificación en la barra de estado (app NO está en primer plano)')
+
+completar_trabajo_en_background()
+usuario_ve_notificacion_sin_abrir_la_app()
+
+for i, evento in enumerate(eventos, 1):
+    print(f'{i}. {evento}')
 "
 ```
 

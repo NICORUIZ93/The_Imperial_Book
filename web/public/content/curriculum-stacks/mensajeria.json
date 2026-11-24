@@ -1,0 +1,168 @@
+{
+ "schemaVersion": 1,
+ "stackId": "mensajeria",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Eventos de dominio e integración: hechos, no comandos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-eventos-de-dominio-e-integracion-hechos-no-comandos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Outbox transaccional: guardar el hecho y el mensaje juntos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-outbox-transaccional-guardar-el-hecho-y-el-mensaje-juntos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Idempotencia y orden: consumidores que sobreviven a reintentos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-idempotencia-y-orden-consumidores-que-sobreviven-a-reintentos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sagas y compensaciones: procesos largos sin transacción distribuida",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-sagas-y-compensaciones-procesos-largos-sin-transaccion-distribuida"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts (raíz)",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "build-gradle-kts-raiz"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml (Kafka + Schema Registry)",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "docker-compose-yml-kafka-schema-registry"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kafka, particiones y consumer groups",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "tema-1-kafka-particiones-y-consumer-groups"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "RabbitMQ, acks y DLQ",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 7,
+      "fragment": "tema-2-rabbitmq-acks-y-dlq"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Schema Registry y evolución",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 8,
+      "fragment": "tema-3-schema-registry-y-evolucion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Idempotencia en consumidores",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 9,
+      "fragment": "tema-4-idempotencia-en-consumidores"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

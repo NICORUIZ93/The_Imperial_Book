@@ -1,16 +1,16 @@
-# Módulo 7: Identidad y acceso con IAM
+# Módulo 7: Azure y GCP con Floci
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Principio de mínimo privilegio · Avanzado · 30 min
+### Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a escribir la política real que necesita el rol de confirmar-entrega (Módulo 5): ni más ni menos de lo que esa función hace. Prerrequisitos: Módulo 5 completo.
+Al finalizar vas a portar la foto de prueba de entrega del bucket pruebas-entrega (Módulo 2, S3) a un contenedor Blob Storage, para comparar el mismo caso real en otro proveedor. Prerrequisitos: Módulo 2, floci-az corriendo (Módulo 0).
 
 </details>
 
@@ -19,42 +19,37 @@ Al finalizar vas a escribir la política real que necesita el rol de confirmar-e
 
 #### Código y verificación
 ```
-Sin mínimo privilegio:                  Con mínimo privilegio:
-┌─────────────────────┐               ┌─────────────────────┐
-│ Usuario con acceso      │               │ Usuario con acceso      │
-│ TOTAL a todos los         │               │ SOLO a lo que necesita   │
-│ servicios y recursos       │               │ para su función especifica│
-└─────────────────────┘               └─────────────────────┘
-Si se compromete:                       Si se compromete:
-  daño potencial = TODO                    daño potencial = LIMITADO
-```
-
-Crea el archivo `politica-minima.json`:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    { "Effect": "Allow", "Action": "dynamodb:PutItem", "Resource": "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents" },
-    { "Effect": "Allow", "Action": ["sqs:ReceiveMessage","sqs:DeleteMessage"], "Resource": "arn:aws:sqs:us-east-1:000000000000:delivery-commands" }
-  ]
-}
+AWS                    Azure (floci-az)
+┌──────────────┐      ┌──────────────────┐
+│ S3             │ ──▶  │ Blob Storage        │
+│ SQS            │ ──▶  │ Queue Storage       │
+│ DynamoDB       │ ──▶  │ Cosmos DB           │
+│ Lambda         │ ──▶  │ Azure Functions     │
+└──────────────┘      └──────────────────┘
 ```
 
 ```bash
-POLICY_ARN=$(aws iam create-policy --policy-name RutaFlowMinimoPrivilegio --policy-document file://politica-minima.json --query Policy.Arn --output text)
-aws iam simulate-custom-policy --policy-input-list file://politica-minima.json --action-names dynamodb:PutItem --resource-arns arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents
+mkdir ejemplo && cd ejemplo && floci az start
+eval "$(floci az env)"   # exporta AZURE_STORAGE_CONNECTION_STRING (puerto 4577)
+printf 'foto de prueba de la entrega 001\n' > entrega-001.jpg
+```
+
+```bash
+az storage container create --name pruebas-entrega --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+diff entrega-001.jpg descargada-azure.jpg
 ```
 
 </details>
 
-### Tema 2: Modelo de responsabilidad compartida · Avanzado · 30 min
+### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a comprobar, con un error real provocado a propósito, qué parte de la seguridad de ShipmentEvents depende de AWS/Floci y qué parte depende exclusivamente de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a modelar el mismo "confirmar entrega" de DeliveryCommands (Módulo 3, SQS) como un topic Pub/Sub real en GCP. Prerrequisitos: Módulo 3, floci-gcp corriendo (Módulo 0).
 
 </details>
 
@@ -63,41 +58,40 @@ Al finalizar vas a comprobar, con un error real provocado a propósito, qué par
 
 #### Código y verificación
 ```
-┌───────────────────────────────────────────────────┐
-│  RESPONSABILIDAD DEL CLIENTE                          │
-│  Configuración de IAM, políticas de bucket, datos,      │
-│  gestión de credenciales, cifrado de aplicación           │
-├───────────────────────────────────────────────────┤
-│  RESPONSABILIDAD DEL PROVEEDOR                        │
-│  Infraestructura física, virtualización, disponibilidad  │
-│  del servicio, seguridad del software base                │
-└───────────────────────────────────────────────────┘
+AWS                    GCP (floci-gcp)
+┌──────────────┐      ┌──────────────────┐
+│ S3             │ ──▶  │ Cloud Storage       │
+│ SQS            │ ~~▶  │ Pub/Sub (más parecido│
+│                │      │  a un patrón fan-out) │
+│ DynamoDB       │ ──▶  │ Firestore           │
+│ Lambda         │ ──▶  │ Cloud Functions     │
+└──────────────┘      └──────────────────┘
 ```
 
 ```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
-
-Crea el archivo `politica-excesiva.json`:
-
-```json
-{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"dynamodb:*","Resource":"*"}]}
+mkdir ejemplo && cd ejemplo && floci gcp start
+export PUBSUB_EMULATOR_HOST=localhost:4588   # Pub/Sub de floci-gcp
 ```
 
 ```bash
-aws iam simulate-custom-policy --policy-input-list file://politica-excesiva.json \
-  --action-names dynamodb:DeleteTable --resource-arns "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"
+gcloud pubsub topics create delivery-commands --project floci-local
+gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project floci-local
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project floci-local
+gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project floci-local
 ```
 
 </details>
 
-### Tema 3: Usuarios, grupos y roles · Avanzado · 30 min
+### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a crear el rol real que confirmar-entrega debería usar, en vez de un usuario con claves fijas. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a comprobar en vivo una diferencia real (no solo de nombre) entre SQS y Pub/Sub, usando el mismo comando de RutaFlow de los Temas 1-2. Prerrequisitos: Temas 1-2 de este módulo.
+
+#### ► REGLA PRÁCTICA
+No asumas que un servicio "equivalente" en otra nube se comporta igual: S3/Blob Storage/Cloud Storage son casi intercambiables, pero SQS es una cola simple mientras que Pub/Sub hace fan-out nativo a varios suscriptores — verifica siempre el comportamiento real, no solo el nombre de la categoría.
 
 </details>
 
@@ -106,123 +100,60 @@ Al finalizar vas a crear el rol real que confirmar-entrega debería usar, en vez
 
 #### Código y verificación
 ```
-Usuario IAM                    Grupo IAM                    Rol IAM
-┌───────────────┐             ┌───────────────┐           ┌───────────────┐
-│ Credenciales de   │             │ Colección de       │           │ Sin credenciales   │
-│ larga duración      │             │ usuarios que          │           │ propias; se "asume"  │
-│ (persona, o app     │             │ comparten políticas    │           │ y da credenciales     │
-│  con menos           │             │                       │           │ TEMPORALES             │
-│  recomendación)      │             │                       │           │ (Lambda, servicios)    │
-└───────────────┘             └───────────────┘           └───────────────┘
-```
+Categoría          AWS              Azure               GCP
+────────────────────────────────────────────────────────────────
+Almacenamiento      S3               Blob Storage         Cloud Storage
+                     (equivalencia funcional muy directa entre los tres)
 
-Crea el archivo `trust-lambda.json`:
+Mensajería           SQS              Queue Storage        Pub/Sub
+                     (cola simple)    (más básico)          (fan-out nativo,
+                                                              distinto de SQS)
 
-```json
-{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}
+Base de datos        DynamoDB         Cosmos DB            Firestore
+NoSQL                (esquema de      (multi-modelo,       (sin esquema de
+                      clave explícito) más flexible)        clave, más simple)
+
+Serverless           Lambda           Azure Functions      Cloud Functions
+                     (muy similares entre los tres en propuesta de valor central)
 ```
 
 ```bash
-ROLE_ARN=$(aws iam create-role --role-name RutaFlowConfirmarEntregaRole --assume-role-policy-document file://trust-lambda.json --query Role.Arn --output text)
-aws iam attach-role-policy --role-name RutaFlowConfirmarEntregaRole --policy-arn "$POLICY_ARN"
-aws lambda update-function-configuration --function-name confirmar-entrega --role "$ROLE_ARN"
+mkdir ejemplo && cd ejemplo && floci gcp start
+export PUBSUB_EMULATOR_HOST=localhost:4588
+```
+
+```bash
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project floci-local
 ```
 
 </details>
 
-### Tema 4: Estructura de una política — acciones, recursos y condiciones · Avanzado · 30 min
+### Laboratorio 8.1 — Azure: Blob Storage y Queue Storage
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás leer una policy desde cero. Prerrequisitos: AWS CLI y Node.js; verifica node --version.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::mi-bucket/*"
-    },
-    {
-      "Effect": "Deny",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::mi-bucket/privado/*"
-    }
-  ]
-}
-   → Permite leer cualquier objeto de "mi-bucket",
-     EXCEPTO los que estén bajo el prefijo "privado/"
-     (el Deny explícito gana sobre el Allow general)
-```
-
-```bash
-mkdir -p ejemplo-policy/src && cd ejemplo-policy
-```
-
-Crea el archivo `src/policy.json`:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {"Effect": "Allow", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/*"},
-    {"Effect": "Deny", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/privado/*"}
-  ]
-}
-```
-
-```bash
-for objeto in publico/guia.pdf privado/nomina.pdf; do
-  aws iam simulate-custom-policy --policy-input-list file://src/policy.json \
-    --action-names s3:GetObject --resource-arns "arn:aws:s3:::mi-bucket/$objeto" \
-    --query 'EvaluationResults[0].ResourceSpecificResults[0].[EvalResourceName,EvalResourceDecision]' --output text
-done
-```
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 8.1 — azure: blob storage y queue storage.
 
 </details>
 
-### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales · Avanzado · 30 min
+### Laboratorio 8.2 — GCP: Cloud Storage y Pub/Sub
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a rotar de verdad las claves del usuario-de-prueba que creaste en el Tema 3, y a confirmar que la clave vieja queda inutilizable. Prerrequisitos: Tema 3 de este módulo.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```
-┌──────────────────────────────────────────────────────┐
-│           Defensa en profundidad de IAM                   │
-├──────────────────────────────────────────────────────┤
-│  Mínimo privilegio     → limita el daño si algo falla       │
-│  Roles sobre usuarios   → credenciales temporales, no       │
-│                            permanentes, para servicios        │
-│  Rotación de credenciales → reduce ventana de exposición      │
-│  MFA                    → una contraseña filtrada no basta    │
-│  Auditoría periódica    → detecta permisos de más con tiempo  │
-└──────────────────────────────────────────────────────┘
-```
-
-```bash
-OLD_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
-NEW_KEY=$(aws iam create-access-key --user-name usuario-de-prueba --query 'AccessKey.AccessKeyId' --output text)
-aws iam update-access-key --user-name usuario-de-prueba --access-key-id "$OLD_KEY" --status Inactive
-aws iam list-access-keys --user-name usuario-de-prueba
-```
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 8.2 — gcp: cloud storage y pub/sub.
 
 </details>

@@ -1,16 +1,43 @@
-# Módulo 11: Publicación en Google Play
+# Módulo 11: Proyecto integrador: app Android completa
 
 
 ## Aprende construyendo
 
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist en Python solo comprueba que existan archivos; no demuestra que funcionen.
 
-### Tema 1: Firma de la app · Avanzado · 40 min
+
+### Tema 1: Arquitectura MVVM completa con UDF · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás generar una keystore real, configurar la firma de un build de release leyendo credenciales desde variables de entorno, y explicar por qué perder la keystore original es en gran medida irreversible.
+Al finalizar podrás integrar Compose, navegación, StateFlow, Room y Retrofit en una única arquitectura MVVM+UDF coherente, y explicar por qué cada capa se comunica en una única dirección.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** cada capa con una única responsabilidad, comunicación en una única dirección.
+
+Este proyecto integra cada módulo anterior: la UI declarativa con state hoisting (Módulo 2) se combina con navegación con argumentos tipados (Módulo 3), UDF completo con `StateFlow` (Módulo 4), persistencia offline-first con Room (Módulo 6), inyección de dependencias con Hilt (Módulo 7), y una suite de tests (Módulo 9). La clave es que cada capa tiene una única responsabilidad y se comunica con las adyacentes en una única dirección: la UI nunca conoce Room ni Retrofit directamente, el ViewModel nunca construye vistas Compose directamente.
+
+**Analogía:** esta arquitectura es como una cadena de producción industrial donde cada estación tiene una función clara y bien delimitada, y el producto fluye en una única dirección de estación en estación: ninguna estación necesita conocer los detalles internos de las demás.
+
+**Diagrama:**
+
+```
+┌── UI (Compose, Módulo 2) ──────────────────┐
+└──────────┬──────────────────────────────┘
+           │ collectAsStateWithLifecycle / eventos (Módulo 4)
+           ▼
+┌── ViewModel (StateFlow, UDF) ───────────────┐
+└──────────┬──────────────────────────────┘
+           │
+           ▼
+┌── Repositorio (offline-first, Módulo 6) ────┐
+└────┬─────────────────────────┬──────────┘
+     ▼                             ▼
+┌── Room (caché local) ──┐   ┌── Retrofit (API remota, Módulo 5) ──┐
+└─────────────────┘   └───────────────────────────┘
+```
 
 </details>
 
@@ -19,77 +46,87 @@ Al finalizar podrás generar una keystore real, configurar la firma de un build 
 
 #### Código y verificación
 ```
-┌── tu clave de subida (academia-upload.jks) ──┐
-│  firma el .aab que subes a Play Console          │
-└──────────┬─────────────────────────────┘
-           │ Play comprueba la clave de subida
+┌── UI (Compose, Módulo 2) ──────────────────┐
+└──────────┬──────────────────────────────┘
+           │ collectAsStateWithLifecycle / eventos (Módulo 4)
            ▼
-┌── Play App Signing (clave de firma de la app) ┐
-│  Google firma los APK que instalan los usuarios    │
-│  clave de subida perdida → restablecimiento        │
-└───────────────────────────────────────────┘
+┌── ViewModel (StateFlow, UDF) ───────────────┐
+└──────────┬──────────────────────────────┘
+           │
+           ▼
+┌── Repositorio (offline-first, Módulo 6) ────┐
+└────┬─────────────────────────┬──────────┘
+     ▼                             ▼
+┌── Room (caché local) ──┐   ┌── Retrofit (API remota, Módulo 5) ──┐
+└─────────────────┘   └───────────────────────────┘
 ```
 
 ```bash
+# Este script python3 verifica que la integración conecta las capas en el orden correcto
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p "$HOME/claves-android"                        # fuera del proyecto: nunca se sube a Git
-export KEYSTORE_PATH="$HOME/claves-android/academia-upload.jks"
-export KEYSTORE_PASSWORD="clave-de-prueba-academia"
-export KEY_PASSWORD="clave-de-prueba-academia"
-keytool -genkeypair -v -keystore "$KEYSTORE_PATH" -alias subida \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
-  -dname "CN=The Imperial Book, OU=Desarrollo, O=Academia, L=Ciudad, S=Estado, C=CL"
-# por si alguien copia una clave dentro del proyecto, que Git la ignore
-grep -qx '*.jks' .gitignore 2>/dev/null || echo '*.jks' >> .gitignore
+mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt`:
+
 ```kotlin
-android {
-    // ...lo que ya tienes...
-    signingConfigs {
-        create("release") {
-            storeFile = System.getenv("KEYSTORE_PATH")?.let { file(it) }
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = "subida"
-            keyPassword = System.getenv("KEY_PASSWORD")
-        }
-    }
-    buildTypes {
-        release {
-            // ...lo que ya tienes (isMinifyEnabled, proguardFiles)...
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
+package com.academia.android
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import dagger.hilt.android.lifecycle.HiltViewModel
+
+@HiltViewModel
+class TareasViewModelIntegrado @Inject constructor(
+    private val repo: TareaRepository // Room + Retrofit por debajo (Módulo 6), inyectado por Hilt (Módulo 7)
+) : ViewModel() {
+    val tareas: StateFlow<List<Tarea>> = repo.tareas
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun sincronizar() = viewModelScope.launch { repo.sincronizar() }
 }
 ```
 
 ```bash
-./gradlew :app:bundleRelease
-keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | grep "SHA256:"
+./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
-keytool -list -v -keystore "$KEYSTORE_PATH" -alias subida -storepass "$KEYSTORE_PASSWORD" | grep "SHA256:"
-```
+python3 -c "
+capas = {
+    'UI':          {'conoce_directamente': ['ViewModel']},
+    'ViewModel':   {'conoce_directamente': ['Repositorio']},
+    'Repositorio': {'conoce_directamente': ['Room', 'Retrofit']},
+    'Room':        {'conoce_directamente': []},
+    'Retrofit':     {'conoce_directamente': []},
+}
 
-```bash
-keytool -list -v -keystore "$HOME/claves-android/otra.jks" -alias subida -storepass "otra-clave" | grep "SHA256:"
-keytool -list -v -keystore "$KEYSTORE_PATH" -alias subida -storepass "$KEYSTORE_PASSWORD" | grep "SHA256:"
+def viola_udf(capas):
+    violaciones = []
+    if 'Room' in capas['UI']['conoce_directamente'] or 'Retrofit' in capas['UI']['conoce_directamente']:
+        violaciones.append('UI conoce Room/Retrofit directamente, saltándose ViewModel y Repositorio')
+    if 'Room' in capas['ViewModel']['conoce_directamente'] or 'Retrofit' in capas['ViewModel']['conoce_directamente']:
+        violaciones.append('ViewModel conoce Room/Retrofit directamente, saltándose el Repositorio')
+    return violaciones
+
+print('violaciones de capas encontradas:', viola_udf(capas))
+"
 ```
 
 </details>
 
-### Tema 2: App Bundle vs APK · Avanzado · 40 min
+### Tema 2: Inyección de dependencias en toda la app · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás explicar por qué Google Play requiere un App Bundle en vez de un APK universal, y cómo eso reduce el tamaño de descarga real por dispositivo.
-
-#### ► REGLA PRÁCTICA
-Para publicar en Google Play, sube siempre el App Bundle (`.aab`), nunca un APK universal: Play genera y firma por ti los APKs optimizados por idioma, densidad de pantalla y arquitectura de CPU, así que cada usuario descarga solo los recursos que su dispositivo necesita, no los de los tres idiomas y las tres densidades que el APK universal empaqueta para todos.
+Al finalizar podrás confirmar que ninguna clase de la app instancia manualmente sus dependencias, y explicar por qué eso habilita el testing completo del sistema.
 
 </details>
 
@@ -98,51 +135,63 @@ Para publicar en Google Play, sube siempre el App Bundle (`.aab`), nunca un APK 
 
 #### Código y verificación
 ```
-┌── app-release.aab (UN único artefacto) ──────┐
-└──────────┬─────────────────────────────┘
-           │ Google Play genera automáticamente
-     ┌─────┼──────────┬──────────────┐
-     ▼                 ▼               ▼
-APK (ARM64,      APK (x86,        APK (ARM64,
- español,          inglés,          portugués,
- xxhdpi)           hdpi)            xhdpi)
+┌── Auditoría: "grep -r 'Retrofit(' o 'Room.databaseBuilder' " ─┐
+│ en TODO el código de la app                                          │
+├── 0 resultados fuera de NetworkModule/DatabaseModule ──────┤
+│   → ninguna instanciación manual                                    │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ```bash
-# modela lo que Gradle produciría con ./gradlew bundleRelease, antes de medir el efecto real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src
-mkdir -p simulacion-bundle/recursos-es simulacion-bundle/recursos-en simulacion-bundle/recursos-pt
-# genera contenido real (no solo metadatos) para medir tamaño real en disco
-for idioma in es en pt; do
-  head -c $((50 * 1024)) /dev/urandom > "simulacion-bundle/recursos-$idioma/strings.dat"
-done
-cat simulacion-bundle/recursos-es/strings.dat simulacion-bundle/recursos-en/strings.dat simulacion-bundle/recursos-pt/strings.dat > simulacion-bundle/apk-universal-simulado.dat
-ls -la simulacion-bundle/*.dat simulacion-bundle/recursos-*/*.dat
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.lifecycle.ViewModel
+import javax.inject.Inject
+import dagger.hilt.android.lifecycle.HiltViewModel
+
+@HiltViewModel
+class ViewModelBienInyectado @Inject constructor(
+    private val repo: TareaRepository // inyectado, nunca instanciado manualmente
+) : ViewModel()
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ViewModelMalInyectado.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.lifecycle.ViewModel
+
+class ViewModelMalInyectado : ViewModel() {
+    // ANTIPATRÓN deliberado para esta demostración: instanciación manual
+    private val retrofitManual = Retrofit.Builder().baseUrl("https://api.miapp.com/").build()
+}
 ```
 
 ```bash
-./gradlew assembleDebug
-./gradlew test
+grep -rn "Retrofit.Builder()\|Room.databaseBuilder(" app/src/main/kotlin/com/academia/android/ | grep -v "NetworkModule.kt"
 ```
 
 ```bash
-tamano_universal=$(stat -c%s simulacion-bundle/apk-universal-simulado.dat 2>/dev/null || stat -f%z simulacion-bundle/apk-universal-simulado.dat)
-tamano_optimizado=$(stat -c%s simulacion-bundle/recursos-es/strings.dat 2>/dev/null || stat -f%z simulacion-bundle/recursos-es/strings.dat)
-echo "tamaño del 'APK universal' (los 3 idiomas): $tamano_universal bytes"
-echo "tamaño del 'APK optimizado' (solo español, generado por Play): $tamano_optimizado bytes"
-awk -v u="$tamano_universal" -v o="$tamano_optimizado" 'BEGIN { printf "reducción real: %.1f%%\n", (1 - o/u) * 100 }'
+./gradlew :app:compileDebugKotlin
 ```
 
 </details>
 
-### Tema 3: Versionado, tracks y políticas · Avanzado · 40 min
+### Tema 3: Cierre del track y próximos pasos · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás distinguir versionCode de versionName, y explicar el propósito de los tracks progresivos de validación en Play Console.
+Al finalizar podrás articular, con una checklist verificable, qué hace a una app Android profesionalmente completa más allá de su UI visual.
 
 </details>
 
@@ -151,41 +200,46 @@ Al finalizar podrás distinguir versionCode de versionName, y explicar el propó
 
 #### Código y verificación
 ```
-┌── versionCode: 11 → 12 → 13 ── entero, SIEMPRE incremental, uso interno de Play ┐
-└─────────────────────────────────────────────────────────┘
-┌── versionName: "1.2.0" → "1.3.0" ── string semver, visible al usuario ────────┐
-└─────────────────────────────────────────────────────────┘
-┌── Pruebas internas → Pruebas cerradas → Pruebas abiertas → Producción ────────┐
-└─────────────────────────────────────────────────────────┘
+┌── App Android profesional = ───────────────────────┐
+│   UI atractiva (Compose)                                │
+│ + flujo de datos predecible (UDF)                          │
+│ + resiliencia offline (Room + Retrofit)                       │
+│ + dependencias desacopladas (Hilt)                              │
+│ + confianza antes de publicar (tests)                              │
+└───────────────────────────────────────────────┘
 ```
 
 ```bash
+# Este script python3 ejecuta la checklist ejecutable definida a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app
 ```
 
-Crea el archivo `app/build.gradle.kts.fragmento-version`:
+Crea el archivo `app/checklist-cierre-track.py`:
 
-```text
-android {
-    defaultConfig {
-        versionCode = 12
-        versionName = "1.3.0"
-    }
+```python
+import os
+
+archivos_del_proyecto = os.popen("find app/src/main/kotlin -name '*.kt' 2>/dev/null").read()
+
+criterios = {
+    "ui_compose": "@Composable" in archivos_del_proyecto or os.path.exists("app/src/main/kotlin/com/academia/android/TarjetaTarea.kt"),
+    "udf_stateflow": os.path.exists("app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt"),
+    "offline_first_room": os.path.exists("app/src/main/kotlin/com/academia/android/AppDatabase.kt"),
+    "dependencias_hilt": os.path.exists("app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt"),
+    "tests_existen": os.path.exists("app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt"),  # src/test, nunca src/main
 }
+
+for nombre, cumplido in criterios.items():
+    print(f"[{'CUMPLE' if cumplido else 'NO CUMPLE'}] {nombre}")
+
+total = len(criterios)
+cumplidos = sum(criterios.values())
+print(f"Resumen: {cumplidos}/{total} dimensiones de una app Android completa presentes")
 ```
 
 ```bash
-version_code=$(grep -oE 'versionCode = [0-9]+' app/build.gradle.kts.fragmento-version | grep -oE '[0-9]+')
-version_name=$(grep -oE 'versionName = "[^"]+"' app/build.gradle.kts.fragmento-version | sed -E 's/versionName = "(.*)"/\1/')
-echo "versionCode actual: $version_code"
-echo "versionName actual: $version_name"
-if [[ "$version_name" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "versionName sigue semver correctamente (MAJOR.MINOR.PATCH)"
-else
-  echo "versionName NO sigue MAJOR.MINOR.PATCH" >&2
-  exit 1
-fi
+python3 app/checklist-cierre-track.py
 ```
 
 ```bash
@@ -193,25 +247,111 @@ fi
 ./gradlew test
 ```
 
-```bash
-releases_ya_publicados=(10 11 12)  # versionCode ya subidos a Play
+</details>
 
-play_console_acepta_upload() {
-  local nuevo_version_code="$1"
-  local ultimo_publicado=0
-  for vc in "${releases_ya_publicados[@]}"; do
-    (( vc > ultimo_publicado )) && ultimo_publicado=$vc
-  done
-  (( nuevo_version_code > ultimo_publicado ))
+### Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Continúa la app RutaFlowConductor con Hilt configurado. Crea el paquete co.rutaflow.conductor.domain. Los casos de uso no importan nada de android.*.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** capa de dominio, caso de uso, `operator fun invoke`, repositorio, Kotlin puro, prueba unitaria sin Android.
+
+La guía de arquitectura de Android propone tres capas: **UI** (pantallas y ViewModels), **dominio** (opcional) y **datos** (repositorios). La capa de dominio contiene **casos de uso**: clases pequeñas con una sola responsabilidad que combinan datos de uno o más repositorios y aplican reglas del negocio.
+
+- Un caso de uso se nombra con un verbo: `PuedeTomarEnvioUseCase`.
+- Expone una sola función, normalmente `operator fun invoke(...)`, para llamarlo como `puedeTomar(envio)`.
+- No conoce Android ni la interfaz: recibe datos y devuelve un resultado.
+
+Solo crea casos de uso cuando la lógica se reutiliza o es compleja; si un ViewModel solo pasa datos de un repositorio, un caso de uso agrega una capa vacía.
+
+**Analogía:** el caso de uso es el reglamento del depósito pegado en una sola pared: todos los turnos lo consultan en el mismo lugar. La analogía falla en que el reglamento no sabe quién lo lee; el caso de uso tampoco sabe qué pantalla lo llama.
+
+**Límite de uso:** no crees un caso de uso por cada llamada a un repositorio. No pongas en el dominio formatos de pantalla (textos, colores): eso es de la UI.
+
+```mermaid
+flowchart LR
+    L["ListaViewModel"] --> U["PuedeTomarEnvioUseCase"]
+    D["DetalleViewModel"] --> U
+    U --> C["ConductorRepository"]
+    U --> E["EnvioRepository"]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    L["ListaViewModel"] --> U["PuedeTomarEnvioUseCase"]
+    D["DetalleViewModel"] --> U
+    U --> C["ConductorRepository"]
+    U --> E["EnvioRepository"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```kotlin
+package co.rutaflow.conductor.domain
+
+import javax.inject.Inject
+
+data class Envio(val codigo: String, val kilos: Int)
+data class Conductor(val id: String, val capacidadKilos: Int, val cargaActualKilos: Int)
+
+interface ConductorRepository { suspend fun actual(): Conductor }
+
+sealed interface Decision {
+    data object Puede : Decision
+    data class NoPuede(val faltanKilos: Int) : Decision
 }
 
-for candidato in 12 13 5; do
-  if play_console_acepta_upload "$candidato"; then
-    echo "versionCode $candidato: ACEPTADO"
-  else
-    echo "versionCode $candidato: RECHAZADO"
-  fi
-done
+class PuedeTomarEnvioUseCase @Inject constructor(
+    private val conductores: ConductorRepository,
+) {
+    suspend operator fun invoke(envio: Envio): Decision {
+        val conductor = conductores.actual()
+        val libre = conductor.capacidadKilos - conductor.cargaActualKilos
+        return if (envio.kilos <= libre) Decision.Puede else Decision.NoPuede(envio.kilos - libre)
+    }
+}
+```
+
+```kotlin
+package co.rutaflow.conductor.domain
+
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class PuedeTomarEnvioUseCaseTest {
+    private val repo = object : ConductorRepository {
+        override suspend fun actual() = Conductor("C-7", capacidadKilos = 100, cargaActualKilos = 80)
+    }
+    private val puedeTomar = PuedeTomarEnvioUseCase(repo)
+
+    @Test fun `acepta si cabe`() = runTest { assertEquals(Decision.Puede, puedeTomar(Envio("ENV-1", 20))) }
+
+    @Test fun `rechaza y dice cuánto falta`() = runTest {
+        assertEquals(Decision.NoPuede(faltanKilos = 5), puedeTomar(Envio("ENV-2", 25)))
+    }
+}
+```
+
+```bash
+./gradlew :app:testDebugUnitTest --tests "*PuedeTomarEnvioUseCaseTest"
+```
+
+```text
+> Task :app:testDebugUnitTest
+PuedeTomarEnvioUseCaseTest > acepta si cabe PASSED
+PuedeTomarEnvioUseCaseTest > rechaza y dice cuánto falta PASSED
+BUILD SUCCESSFUL
 ```
 
 </details>

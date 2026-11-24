@@ -1,204 +1,29 @@
-# Módulo 3: Mensajería asíncrona con SQS
+# Módulo 3: Bases de datos NoSQL con DynamoDB
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Colas, productores y consumidores · Intermedio · 40 min
+### Tema 1: Qué es NoSQL y cuándo usarlo · Intermedio · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
+Al finalizar podrás comprobar en vivo, con datos reales, por qué DynamoDB no obliga a un esquema fijo. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    P["Productor\n(API, servicio)\nNo sabe nada del consumidor,\nno espera respuesta directa"] -->|"envía mensaje"| Q["Cola SQS\n(almacena hasta que se procese)\nPersiste el mensaje de forma duradera"]
-    C["Consumidor\n(Lambda, proceso, etc.)\nNo sabe nada del productor"] -->|"recibe mensaje"| Q
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","accion":"confirmar-entrega"}'
-aws sqs receive-message --queue-url "$QUEUE_URL"
-```
-
-</details>
-
-### Tema 2: Ciclo de vida de un mensaje · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente. Prerrequisitos: Tema 1 completo (cola delivery-commands con al menos un mensaje).
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    SM["send-message"] --> MV["Mensaje en cola, visible"]
-    MV --> RM["receive-message"]
-    RM --> INV["Mensaje invisible durante el visibility timeout\n(el consumidor recibe el ReceiptHandle)"]
-    INV --> DEL["delete-message a tiempo"]
-    INV --> TO["Timeout expira sin borrado"]
-    DEL --> ELIM["Mensaje eliminado definitivamente"]
-    TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TD
-    SM["send-message"] --> MV["Mensaje en cola, visible"]
-    MV --> RM["receive-message"]
-    RM --> INV["Mensaje invisible durante el visibility timeout\n(el consumidor recibe el ReceiptHandle)"]
-    INV --> DEL["delete-message a tiempo"]
-    INV --> TO["Timeout expira sin borrado"]
-    DEL --> ELIM["Mensaje eliminado definitivamente"]
-    TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
-```
-
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
-
-```bash
-QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471"}'
-RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
-aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
-aws sqs receive-message --queue-url "$QUEUE_URL"
-```
-
-</details>
-
-### Tema 3: Dead Letter Queues (DLQ) · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin bloquear el resto de la cola. Prerrequisitos: Tema 2 completo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    ME["Mensaje enviado"] --> CP["Cola principal"]
-    CP -->|"recibido, falla, vuelve a ser visible\n(se repite hasta maxReceiveCount)"| Q{"¿Se alcanzó maxReceiveCount?"}
-    Q -->|"No — reintento normal"| CP
-    Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TD
-    ME["Mensaje enviado"] --> CP["Cola principal"]
-    CP -->|"recibido, falla, vuelve a ser visible\n(se repite hasta maxReceiveCount)"| Q{"¿Se alcanzó maxReceiveCount?"}
-    Q -->|"No — reintento normal"| CP
-    Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
-```
-
-```bash
-DLQ_URL=$(aws sqs create-queue --queue-name delivery-commands-dlq --query QueueUrl --output text)
-DLQ_ARN=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
-aws sqs set-queue-attributes --queue-url "$QUEUE_URL" --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"2\"}"
-aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-9999","accion":"comando-malformado"}'
-```
-
-```bash
-aws sqs receive-message --queue-url "$DLQ_URL"
-```
-
-</details>
-
-### Tema 4: Colas FIFO vs Standard · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado. Prerrequisitos: Tema 1 completo.
-
-#### ► LA ANALOGÍA
-FIFO es una fila única con turnos; Standard prioriza velocidad y no promete orden.
-
-**Conceptos clave:** cola Standard, cola FIFO, orden garantizado, deduplicación, `MessageGroupId`, `MessageDeduplicationId`.
-
-Una cola Standard prioriza el rendimiento y la disponibilidad por encima del orden estricto: puede entregar mensajes en un orden distinto al que se enviaron, y como viste en el Tema 2, puede entregar el mismo mensaje más de una vez en casos poco frecuentes. A cambio, ofrece un rendimiento prácticamente ilimitado en cuanto a mensajes por segundo, lo que la hace adecuada para la gran mayoría de los casos de uso donde el orden exacto de procesamiento no es crítico para la corrección del sistema (por ejemplo, procesar imágenes subidas por distintos usuarios: no importa si la imagen del usuario A se procesa antes o después que la del usuario B).
-
-Una cola FIFO (First In, First Out, identificada porque su nombre debe terminar en `.fifo`) garantiza dos propiedades que Standard no garantiza: el orden estricto de entrega dentro de un mismo grupo de mensajes, y una deduplicación automática de mensajes idénticos enviados en una ventana corta de tiempo. Para lograr esto, una cola FIFO introduce dos conceptos nuevos: el `MessageGroupId`, que agrupa mensajes que deben procesarse en orden entre sí (mensajes de grupos distintos sí pueden procesarse en paralelo, sin orden relativo entre ellos), y el `MessageDeduplicationId`, que SQS usa para descartar automáticamente mensajes duplicados enviados dentro de una ventana de deduplicación (por defecto, cinco minutos).
-
-El precio de estas garantías es un límite de rendimiento notablemente menor que el de una cola Standard (aunque las colas FIFO con procesamiento por lotes de alto rendimiento pueden alcanzar cifras mucho más altas que las FIFO clásicas, siguen estando por debajo del rendimiento prácticamente ilimitado de Standard), y la necesidad de pensar explícitamente en cómo agrupar tus mensajes mediante el `MessageGroupId` para no perder el paralelismo que sí necesitas entre grupos independientes.
-
-La decisión entre FIFO y Standard depende enteramente de si tu caso de uso requiere orden estricto o tolera reordenamiento. Ejemplos típicos que sí necesitan FIFO: procesar las transacciones de una misma cuenta bancaria en el orden exacto en que ocurrieron (aplicar un cargo antes que un reembolso importa), o aplicar actualizaciones de estado de un mismo pedido en secuencia (no puedes marcar un pedido como "entregado" antes de procesar el evento de "enviado"). Ejemplos típicos que toleran Standard: procesar notificaciones push independientes a distintos usuarios, o encolar tareas de procesamiento de imágenes sin relación de orden entre sí.
-
-**Analogía:** una cola Standard es como una fila de autoservicio en una tienda con varias cajas abiertas: es rápida y eficiente, pero no hay garantía de que quien llegó primero a la tienda sea necesariamente el primero en pagar si eligió una caja más lenta. Una cola FIFO es como una única fila estricta de un solo carril, donde el orden de llegada se respeta exactamente, a costa de que todo el mundo avanza a la velocidad de una sola caja (o de un carril concreto, si divides la fila en varios `MessageGroupId` independientes).
-
-**¿Por qué es importante?** Elegir el tipo de cola equivocado tiene consecuencias distintas según el error: usar Standard cuando se necesitaba orden estricto puede introducir bugs sutiles y difíciles de reproducir (que dependen del orden de llegada, algo que rara vez se prueba explícitamente); usar FIFO cuando no se necesitaba puede introducir un cuello de botella de rendimiento innecesario. Entender esta disyuntiva desde el diseño inicial evita ambos problemas.
-
-**Regla práctica:** si procesar un mensaje antes que otro del mismo grupo cambiaría el resultado correcto (cargos de una misma cuenta, estados de un mismo pedido), usa FIFO; si los mensajes son independientes entre sí, usa Standard y gana rendimiento prácticamente ilimitado.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
-        S1["Msg 3"]
-        S2["Msg 1"]
-        S3["Msg 2"]
+    subgraph SQL["Base de datos relacional (SQL) — esquema fijo, todas las filas tienen las mismas columnas"]
+        direction TB
+        R1["id=1, titulo=A, estado=pendiente"]
+        R2["id=2, titulo=B, estado=hecho"]
     end
-    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
-        direction LR
-        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
-    end
-    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
-        direction LR
-        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
-    end
-```
-
-A y B se procesan en paralelo entre sí.
-
-En el proyecto integrador RutaFlow, la tabla DynamoDB `ShipmentEvents` depende de que los
-eventos `creado → asignado → en camino → entregado` de un mismo envío lleguen en orden — por eso
-una futura cola de eventos de estado de ese mismo sistema debería declararse `.fifo` con
-`MessageGroupId=shipmentId`, no Standard.
-
----
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
-        S1["Msg 3"]
-        S2["Msg 1"]
-        S3["Msg 2"]
-    end
-    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
-        direction LR
-        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
-    end
-    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
-        direction LR
-        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    subgraph DDB["DynamoDB (NoSQL)"]
+        direction TB
+        D1["id: 1 · titulo: A · estado: pendiente"]
+        D2["id: 2 · titulo: B · estado: hecho · prioridad: alta (atributo extra)"]
     end
 ```
 
@@ -208,34 +33,345 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```error-output
+An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Missing the key sequence in the item
+```
+
+```bash
+# ❌ INCORRECTO: falta 'sequence'
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"tipo":{"S":"creado"}}'
+
+# ✅ CORRECTO: ambas claves presentes
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"}}'
+```
+
 ```mermaid
 flowchart LR
-    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
-        S1["Msg 3"]
-        S2["Msg 1"]
-        S3["Msg 2"]
+    subgraph SQL["Base de datos relacional (SQL) — esquema fijo, todas las filas tienen las mismas columnas"]
+        direction TB
+        R1["id=1, titulo=A, estado=pendiente"]
+        R2["id=2, titulo=B, estado=hecho"]
     end
-    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
-        direction LR
-        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
-    end
-    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
-        direction LR
-        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    subgraph DDB["DynamoDB (NoSQL)"]
+        direction TB
+        D1["id: 1 · titulo: A · estado: pendiente"]
+        D2["id: 2 · titulo: B · estado: hecho · prioridad: alta (atributo extra)"]
     end
 ```
 
 ```bash
-FIFO_URL=$(aws sqs create-queue --queue-name shipment-events.fifo --attributes FifoQueue=true --query QueueUrl --output text)
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "asignado" --message-group-id env-4471 --message-deduplication-id d1
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "en-camino" --message-group-id env-4471 --message-deduplication-id d2
-aws sqs send-message --queue-url "$FIFO_URL" --message-body "entregado" --message-group-id env-4471 --message-deduplication-id d3
-aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
+aws dynamodb create-table --table-name ShipmentEvents \
+  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N \
+  --key-schema AttributeName=shipmentId,KeyType=HASH AttributeName=sequence,KeyType=RANGE \
+  --billing-mode PAY_PER_REQUEST
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"},"origen":{"S":"bodega-norte"}}'
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"},"tipo":{"S":"entregado"},"fotoKey":{"S":"envio-4471/entrega-001.jpg"},"firmaCliente":{"BOOL":true}}'
 ```
 
 </details>
 
-### Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ
+### Tema 2: Tablas, items y atributos · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a distinguir, sobre la tabla ShipmentEvents que ya creaste, qué es obligatorio en un item y qué no. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    T["Tabla: Tareas (clave primaria: id)"]
+    T --> I1["Item 1: id t-001, Comprar leche, pendiente"]
+    T --> I2["Item 2: id t-002, Pagar factura, hecho, prioridad alta"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+Clave elegida (Primaria o GSI): ________
+HASH: ________
+RANGE: ________ (o NONE si solo HASH)
+Justificación en 2 líneas: ________
+Unidades de lectura Scan vs Query: ________ vs ________
+```
+
+```mermaid
+flowchart TD
+    T["Tabla: Tareas (clave primaria: id)"]
+    T --> I1["Item 1: id t-001, Comprar leche, pendiente"]
+    T --> I2["Item 2: id t-002, Pagar factura, hecho, prioridad alta"]
+```
+
+```bash
+aws dynamodb list-tables
+aws dynamodb describe-table --table-name ShipmentEvents --query "Table.KeySchema"
+aws dynamodb get-item --table-name ShipmentEvents \
+  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
+```
+
+</details>
+
+### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás modelar un evento de entrega real con tipos anidados (lista y mapa). Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 1-2 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    I["Item con distintos tipos de dato"]
+    I --> A1["id: S = &quot;t-001&quot;"]
+    I --> A2["prioridad: N = 3"]
+    I --> A3["completada: BOOL = false"]
+    I --> A4["etiquetas: L"]
+    A4 --> A4a["S = &quot;urgente&quot;"]
+    A4 --> A4b["S = &quot;casa&quot;"]
+    I --> A5["direccion: M"]
+    A5 --> A5a["ciudad: S = &quot;Bogotá&quot;"]
+    A5 --> A5b["cp: S = &quot;110111&quot;"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+Foto 1: { formato: "jpg", tamaño: 1243 bytes, timestamp: "2026-10-06T14:23:15Z", resolucion: "1920x1080" }
+Foto 2: { formato: "webp", tamaño: 891 bytes, timestamp: "2026-10-06T14:23:22Z", resolucion: "1920x1080" }
+```
+
+```json
+{
+  "shipmentId": { "S": "env-4471" },
+  "fotos": {
+    "L": [
+      {
+        "M": {
+          "ruta": { "S": "envio-4471/entrega-001.jpg" },
+          "formato": { "S": "jpg" },
+          "tamaño": { "N": "1243" },
+          "timestamp": { "S": "2026-10-06T14:23:15Z" },
+          "resolucion": { "S": "1920x1080" }
+        }
+      },
+      ...
+    ]
+  }
+}
+```
+
+```error-output
+# Sin error en put-item (DynamoDB lo acepta)
+# Pero error cuando intentas ordenar:
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "shipmentId = :id AND #s BETWEEN :start AND :end" \
+  --expression-attribute-names '{"#s":"sequence"}' \
+  --expression-attribute-values '{":id":{"S":"env-4471"},":start":{"N":"1"},":end":{"N":"10"}}' 
+
+# El problema: si guardaste sequence como {"S":"2"} en vez de {"N":"2"},
+# el BETWEEN falla en comparar números correctamente (ordena "10" < "2" lexicográficamente)
+```
+
+```bash
+# ❌ INCORRECTO: tipo mismatch
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"S":"2"}}'  # String, no número!
+
+# ✅ CORRECTO: tipo correcto
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"}}'  # Número
+```
+
+```bash
+# Si guardaste sequence como S y luego haces:
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "sequence BETWEEN :s1 AND :s10" \
+  --expression-attribute-values '{":s1":{"N":"1"},":s10":{"N":"10"}}'
+
+# Resultado INCORRECTO: ordena lexicográficamente
+# Devuelve: "1", "10", "2", "3", etc. (como strings)
+# Esperado: 1, 2, 3, ..., 10 (números)
+```
+
+```bash
+# Scan para traer items problemáticos
+aws dynamodb scan --table-name ShipmentEvents \
+  --projection-expression "shipmentId, #s" \
+  --expression-attribute-names '{"#s":"sequence"}' > items.json
+
+# Reescribir con tipo correcto (script en Python):
+python3 << 'EOF'
+import json, boto3
+ddb = boto3.client('dynamodb')
+
+for item in json.load(open('items.json'))['Items']:
+    # Fijar: convertir sequence de S a N
+    shipmentId = item['shipmentId']
+    sequence_value = item['sequence'].get('S') or item['sequence'].get('N')
+    
+    ddb.put_item(TableName='ShipmentEvents', Item={
+        'shipmentId': shipmentId,
+        'sequence': {'N': str(sequence_value)}  # Fuerza N
+    })
+EOF
+```
+
+</details>
+
+### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE) · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a comprobar en la propia tabla ShipmentEvents por qué necesita clave compuesta y no una clave simple. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 1-3 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    subgraph SIMP["Clave simple (solo HASH) — Tabla: Usuarios — cada id es único"]
+        direction TB
+        U1["id (HASH) = u-001"]
+        U2["id (HASH) = u-002"]
+    end
+    subgraph COMP["Clave compuesta (HASH + RANGE) — Tabla: Pedidos"]
+        direction TB
+        P1["usuario_id=u-001, fecha_pedido=2026-01-05"]
+        P2["usuario_id=u-001, fecha_pedido=2026-02-14 ← mismo HASH, distinto RANGE"]
+        P3["usuario_id=u-002, fecha_pedido=2026-01-20"]
+    end
+```
+
+#### ► REGLA PRÁCTICA
+Usa clave simple (solo HASH) cuando cada entidad es un único ítem identificado por un valor único, como Usuarios; usa clave compuesta (HASH + RANGE) cuando un mismo HASH agrupa varios ítems relacionados que necesitas ordenar o filtrar, como los pedidos de un mismo usuario por fecha.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```bash
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "shipmentId = :id" \
+  --expression-attribute-values '{":id":{"S":"env-4471"}}'
+```
+
+</details>
+
+### Tema 5: Índices secundarios globales (GSI) y locales (LSI) · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear y usar el índice EstadoIndex que ya está declarado en template.yaml sobre ShipmentEvents. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Tema 4 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    Primary["Tabla base<br/>HASH: shipmentId<br/>RANGE: sequence"]
+    Primary -->|"eventual consistency"| GSI["GSI EstadoIndex<br/>HASH: estado<br/>RANGE: sequence"]
+    Primary -->|"strong consistency"| LSI["LSI opcional<br/>Misma HASH<br/>RANGE distinto<br/>Límite 10GB"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    Primary["Tabla base<br/>HASH: shipmentId<br/>RANGE: sequence"]
+    Primary -->|"eventual consistency"| GSI["GSI EstadoIndex<br/>HASH: estado<br/>RANGE: sequence"]
+    Primary -->|"strong consistency"| LSI["LSI opcional<br/>Misma HASH<br/>RANGE distinto<br/>Límite 10GB"]
+```
+
+```mermaid
+flowchart TD
+    BASE["Tabla base: Pedidos (HASH: usuario_id, RANGE: fecha_pedido)"]
+    BASE --> GSI["GSI por estado: HASH estado, RANGE fecha_pedido"]
+    GSI --> GP["permite consultar pedidos enviados por fecha"]
+    BASE --> LSI["LSI por monto: HASH usuario_id, RANGE monto_total"]
+    LSI --> LP["permite consultar pedidos del usuario ordenados por monto"]
+```
+
+```bash
+aws dynamodb update-table --table-name ShipmentEvents \
+  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N AttributeName=estado,AttributeType=S \
+  --global-secondary-index-updates '[{"Create":{"IndexName":"EstadoIndex","KeySchema":[{"AttributeName":"estado","KeyType":"HASH"},{"AttributeName":"sequence","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}}]'
+aws dynamodb put-item --table-name ShipmentEvents --item \
+  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},"estado":{"S":"entregado"}}'
+aws dynamodb query --table-name ShipmentEvents --index-name EstadoIndex \
+  --key-condition-expression "estado = :e" --expression-attribute-values '{":e":{"S":"entregado"}}'
+```
+
+</details>
+
+### Tema 6: Query vs Scan · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a medir, con números reales, la diferencia de costo entre Query y Scan sobre ShipmentEvents. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 2 y 4 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    Q["Query usuario_id = u-001; lee solo items de esa particion"]
+    S["Scan estado pendiente; examina todos los items de la tabla"]
+```
+
+#### ► REGLA PRÁCTICA
+Si conoces la clave de partición que buscas, usa Query: lee solo esa partición. Si necesitas filtrar por un atributo que no es la clave, un Scan examina toda la tabla antes de filtrar — suele ser la señal de que falta un índice secundario adecuado.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+Nombre del GSI: ________
+HASH: ________
+RANGE: ________
+Justificación: ________
+Costo estimado Scan vs Query: ________
+```
+
+```mermaid
+flowchart LR
+    Q["Query usuario_id = u-001; lee solo items de esa particion"]
+    S["Scan estado pendiente; examina todos los items de la tabla"]
+```
+
+```bash
+aws dynamodb scan --table-name ShipmentEvents --select COUNT
+aws dynamodb query --table-name ShipmentEvents \
+  --key-condition-expression "shipmentId = :id" \
+  --expression-attribute-values '{":id":{"S":"env-4471"}}' --select COUNT
+```
+
+</details>
+
+### Laboratorio 4.1 — CRUD completo
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -246,11 +382,11 @@ aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.1 — ciclo completo con cola standard y dlq.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 4.1 — crud completo.
 
 </details>
 
-### Laboratorio 3.2 — Cola FIFO con MessageGroupId
+### Laboratorio 4.2 — Query vs Scan
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -261,6 +397,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.2 — cola fifo con messagegroupid.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 4.2 — query vs scan.
 
 </details>

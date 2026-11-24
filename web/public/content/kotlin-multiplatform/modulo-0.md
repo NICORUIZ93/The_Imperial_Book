@@ -1,45 +1,24 @@
-# Módulo 0: Fundamentos de Kotlin
+# Módulo 0: Arquitectura de un proyecto KMP
 
-Este módulo no se lee una sola vez: se practica hasta que la sintaxis sale sin pensarla. Cada tema se estudia por separado, con su propia demostración, su propia repetición progresiva y su propio reto de memoria — para que null safety, `data class`, `when` y destructuring queden en el mismo lugar mental que el resto de la sintaxis que ya usas sin esfuerzo.
-
-
-## Antes de comenzar: entorno Kotlin Multiplatform
-
-Kotlin Multiplatform combina herramientas de varias plataformas. Para empezar instala **JDK 25** (LTS), Git e **IntelliJ IDEA** con el plugin Kotlin. Para Android necesitarás Android Studio; para compilar el destino iOS necesitarás obligatoriamente un Mac con Xcode.
-
-| Sistema | Qué puedes desarrollar | Instalación mínima |
-|---|---|---|
-| Windows | commonMain, JVM, Android y Desktop | JDK 25, Gradle 9.7+, IntelliJ/Android Studio, Git |
-| macOS | Todos los destinos, incluido iOS | JDK 25, Gradle 9.7+, Xcode, Android Studio, Git |
-| Linux | commonMain, JVM, Android y Desktop | OpenJDK 25, Gradle 9.7+, IntelliJ/Android Studio, Git |
-
-El track usa Kotlin 2.4.21 con JDK 25. Si el asistente genera una versión anterior de Kotlin o un wrapper anterior a Gradle 9.7, actualízalos antes de continuar. No uses un JDK más nuevo para compilar: con JDK 27, Kotlin 2.4.21 avisa «Kotlin does not yet support 27 JDK target, falling back to Kotlin JVM_26 JVM target».
-
-Verifica `java --version` (25), `./gradlew --version` (Gradle 9.7 o superior) y `git --version`. En macOS abre Xcode una vez y acepta su licencia; comprueba `xcodebuild -version`. Crea un proyecto desde el asistente **Kotlin Multiplatform** de Android Studio/IntelliJ y ejecuta primero el destino Desktop o Android. Usa siempre el Gradle Wrapper incluido:
-
-```bash
-./gradlew tasks          # macOS/Linux
-.\gradlew.bat tasks      # Windows
-```
-
-Si Gradle no encuentra Java, configura `JAVA_HOME` hacia el JDK, no hacia una JRE. No intentes resolver problemas de lógica común y de toolchain iOS al mismo tiempo: haz funcionar primero los tests de `commonTest` en JVM, después cada plataforma por separado.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria — source sets, `expect`/`actual`, targets de Gradle y jerarquías intermedias son la estructura sobre la que se apoya todo el resto del track.
 
 
-### Paso 0 · Crea el proyecto `academia-kmp`
+## Aprende construyendo
+
+
+### Tema 1: Source sets · Intermedio · 25 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
+#### ► DE QUÉ TRATA
+Al finalizar podrás decidir si un archivo Kotlin pertenece a commonMain o a un source set específico de plataforma, y verificar que commonMain nunca importa una API específica de una sola plataforma.
+
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–1"]
-    E1["Aplicación<br/>módulos 2–3"]
-    E2["Integración<br/>módulos 4–6"]
-    E3["Experto<br/>módulos 7–13"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
+flowchart TB
+  A[commonMain: código compartido] --> B[androidMain: APIs de Android]
+  A --> C[iosMain: APIs de iOS]
 ```
 
 </details>
@@ -48,161 +27,380 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+
+```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/Tarea.kt
+package com.academia.kmp
+
+data class Tarea(val id: String, val titulo: String, val completada: Boolean)
+```
+
+```kotlin
+// shared/src/androidMain/kotlin/com/academia/kmp/Plataforma.android.kt
+package com.academia.kmp
+
+import android.os.Build
+
+actual fun nombrePlataforma(): String = "Android ${Build.VERSION.SDK_INT}"
+```
+
 ```bash
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp \
-         academia-kmp/shared/src/commonTest/kotlin/com/academia/kmp
+# crea la estructura de source sets y compila el módulo compartido con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+mkdir -p academia-kmp/shared/src/androidMain/kotlin/com/academia/kmp
+mkdir -p academia-kmp/shared/src/iosMain/kotlin/com/academia/kmp
 cd academia-kmp
+./gradlew :shared:compileKotlinMetadata
 ```
 
-Crea el archivo `settings.gradle.kts`:
+```kotlin
+// data class Usuario(val id: String, val nombre: String)         -> vive en: ____Main
+// import android.content.SharedPreferences ...                    -> vive en: ____Main
+// import platform.Foundation.NSUserDefaults ...                   -> vive en: ____Main
+```
+
+</details>
+
+### Tema 2: expect/actual · Intermedio · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás declarar una función expect en commonMain y sus implementaciones actual correspondientes por plataforma, y explicar por qué el compilador exige una actual por cada target configurado.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A["expect fun nombrePlataforma()"] --> B["actual (androidMain): Build.VERSION"]
+  A --> C["actual (iosMain): UIDevice.systemName"]
+  D[compilador] -->|vincula en COMPILACIÓN, no en ejecución| B
+  D --> C
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["expect fun nombrePlataforma()"] --> B["actual (androidMain): Build.VERSION"]
+  A --> C["actual (iosMain): UIDevice.systemName"]
+  D[compilador] -->|vincula en COMPILACIÓN, no en ejecución| B
+  D --> C
+```
 
 ```kotlin
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
+// shared/src/commonMain/kotlin/com/academia/kmp/Plataforma.kt
+package com.academia.kmp
+
+expect fun nombrePlataforma(): String
+expect fun idUnicoDispositivo(): String
+```
+
+```kotlin
+// shared/src/androidMain/kotlin/com/academia/kmp/Plataforma.android.kt
+package com.academia.kmp
+
+actual fun nombrePlataforma(): String = "Android"
+actual fun idUnicoDispositivo(): String = "android-id-simulado"
+```
+
+```bash
+# crea la estructura de source sets y compila el módulo compartido con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+mkdir -p academia-kmp/shared/src/androidMain/kotlin/com/academia/kmp
+cd academia-kmp
+./gradlew :shared:compileKotlinMetadata :shared:compileDebugKotlinAndroid
+```
+
+```kotlin
+// commonMain
+____ fun rutaDeAlmacenamiento(): String
+
+// androidMain
+____ fun rutaDeAlmacenamiento(): String = context.filesDir.path
+```
+
+</details>
+
+### Tema 3: Gradle multiplataforma y targets disponibles · Intermedio · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás configurar los targets de compilación de un proyecto KMP, y declarar una dependencia en el bloque sourceSets correcto según si debe estar disponible en todo el código compartido o solo en una plataforma.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```kotlin
+kotlin {
+    androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.ktor:ktor-client-core:3.5.0")
+        }
     }
 }
+```
+
+```
+┌── kotlin { } ────────────────────────────────────────────┐
+│  androidTarget()  iosX64()  iosArm64()  iosSimulatorArm64() │
+│  sourceSets { commonMain.dependencies { ... } }              │
+└──────────────────────────────────────────────────────┘
+```
+
+```kotlin
+kotlin {
+    androidTarget()
+    iosX64(); iosArm64(); iosSimulatorArm64()
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.ktor:ktor-client-core:3.5.0")
+        }
+    }
+}
+```
+
+```bash
+# lista los proyectos y confirma que la configuración de Gradle es válida
+mkdir -p academia-kmp
+cd academia-kmp
+./gradlew projects
+```
+
+```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/ClienteHttp.kt
+package com.academia.kmp
+
+import io.ktor.client.*
+
+fun crearCliente(): HttpClient = HttpClient()
+```
+
+```bash
+# compila el módulo compartido, confirmando que ve la dependencia de commonMain.dependencies
+cd academia-kmp
+./gradlew :shared:compileKotlinMetadata
+```
+
+</details>
+
+### Tema 4: Jerarquía de source sets intermedios · Intermedio · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás usar un source set intermedio (como appleMain) para compartir código entre plataformas similares sin duplicarlo en cada una y sin subirlo hasta commonMain.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+  A[commonMain] --> B[appleMain]
+  A --> C[androidMain]
+  B --> D[iosMain]
+  B --> E[macosMain]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+  A[commonMain] --> B[appleMain]
+  A --> C[androidMain]
+  B --> D[iosMain]
+  B --> E[macosMain]
+```
+
+```kotlin
+// jerarquía intermedia: iosMain y macosMain dependen de appleMain, no directamente de commonMain
+sourceSets {
+    val appleMain by creating { dependsOn(commonMain.get()) }
+    iosMain.get().dependsOn(appleMain)
+    // macosMain.get().dependsOn(appleMain) -- se agregaría igual si el target macOS está habilitado
+}
+```
+
+```bash
+# crea la estructura de source sets y compila el target iOS con Gradle
+mkdir -p academia-kmp/shared/src/{commonMain,appleMain,iosMain,macosMain,androidMain}/kotlin/com/academia/kmp
+cd academia-kmp
+./gradlew :shared:compileKotlinIosX64
+```
+
+```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/JerarquiaSourceSets.kt
+package com.academia.kmp
+
+fun puedeVer(jerarquia: Map<String, List<String>>, origen: String, sourceSetBuscado: String): Boolean {
+    val visibles = mutableSetOf(origen)
+    val pendientes = mutableListOf(origen)
+    while (pendientes.isNotEmpty()) {
+        val actual = pendientes.removeAt(pendientes.lastIndex)
+        for (padre in jerarquia[actual].orEmpty()) {
+            if (visibles.add(padre)) pendientes.add(padre)
+        }
+    }
+    return sourceSetBuscado in visibles
+}
+```
+
+```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/JerarquiaSourceSetsTest.kt
+package com.academia.kmp
+
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class JerarquiaSourceSetsTest {
+    private val jerarquia = mapOf(
+        "commonMain" to emptyList(),
+        "appleMain" to listOf("commonMain"),
+        "iosMain" to listOf("appleMain", "commonMain"),
+        "macosMain" to listOf("appleMain", "commonMain"),
+        "androidMain" to listOf("commonMain"),
+    )
+
+    @Test
+    fun iosMainYMacosMainVenAppleMain() {
+        assertTrue(puedeVer(jerarquia, "iosMain", "appleMain"))
+        assertTrue(puedeVer(jerarquia, "macosMain", "appleMain"))
+    }
+
+    @Test
+    fun androidMainNoVeAppleMain() {
+        assertFalse(puedeVer(jerarquia, "androidMain", "appleMain"))
+    }
+}
+```
+
+```bash
+# ejecuta el test Kotlin del módulo compartido
+cd academia-kmp
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa un proyecto KMP con al menos dos módulos (shared y feature-envios) y Gradle 8.5 o superior. Crea la carpeta build-logic en la raíz.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    T["gradle/libs.versions.toml"] --> P["build-logic: rutaflow.kmp.library"]
+    P --> S["shared/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    P --> F["feature-envios/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    T --> S & F
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    T["gradle/libs.versions.toml"] --> P["build-logic: rutaflow.kmp.library"]
+    P --> S["shared/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    P --> F["feature-envios/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    T --> S & F
+```
+
+```toml
+[versions]
+kotlin = "2.4.21"
+ktor = "3.5.0"
+coroutines = "1.11.0"
+
+[libraries]
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+```
+
+```kotlin
+plugins { `kotlin-dsl` }
+
+dependencies {
+    implementation(libs.kotlin.gradle.plugin) // el plugin necesita el plugin de Kotlin para configurarlo
+}
+```
+
+```kotlin
 dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-    }
+    repositories { mavenCentral(); gradlePluginPortal() }
+    versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
 }
-rootProject.name = "academia-kmp"
-include(":shared")
 ```
 
-Crea el archivo `shared/build.gradle.kts`:
-
 ```kotlin
-plugins {
-    kotlin("multiplatform") version "2.4.21"
-}
+// Plugin precompilado: su id es el nombre del archivo, "rutaflow.kmp.library".
+plugins { id("org.jetbrains.kotlin.multiplatform") }
 
 kotlin {
     jvm()
-    sourceSets {
-        commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0") // módulo 2
-        }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0") // módulo 2
-        }
+    iosArm64()
+    iosSimulatorArm64() // ningún módulo puede olvidarlo
+    jvmToolchain(25) // JDK 25, la línea del curso (docs/VERSIONES.md)
+    compilerOptions { allWarningsAsErrors.set(true) }
+}
+```
+
+```kotlin
+plugins { id("rutaflow.kmp.library") }
+
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(libs.ktor.client.core)
+        implementation(libs.kotlinx.coroutines.core)
     }
 }
 ```
 
-```bash
-gradle wrapper --gradle-version 9.7.0
-./gradlew :shared:jvmTest
-```
-
-```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–1"]
-    E1["Aplicación<br/>módulos 2–3"]
-    E2["Integración<br/>módulos 4–6"]
-    E3["Experto<br/>módulos 7–13"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
-```
-
 </details>
 
-### Tema 1: Null safety real · Básico · 40 min
+### Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás distinguir en cualquier firma de tipo si un valor puede ser null, elegir entre safe call, non-null assertion y operador Elvis según el contexto, y explicar por qué el compilador rechaza el acceso directo a un tipo nullable.
+Continúa el proyecto con el convention plugin. Necesitas Node.js para ejecutar las pruebas de JS y un navegador moderno para Wasm.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart LR
-  A[valor: Tipo?] --> B{es null?}
-  B -->|sí| C["?. devuelve null / ?: usa el valor por defecto"]
-  B -->|no| D["?. accede normalmente / !! fuerza el acceso"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```kotlin
-package com.academia.kmp
-
-fun describirApodo(apodo: String?): String {
-    val largo = apodo?.length ?: 0
-    return if (apodo != null) "El apodo '$apodo' tiene $largo caracteres" else "Sin apodo (largo: $largo)"
-}
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-
-class NullSafetyTest {
-    @Test
-    fun conApodoPresente() {
-        assertEquals("El apodo 'Nico' tiene 4 caracteres", describirApodo("Nico"))
-    }
-
-    @Test
-    fun conApodoAusente() {
-        assertEquals("Sin apodo (largo: 0)", describirApodo(null))
-    }
-
-    @Test
-    fun accesoForzadoSobreNullLanzaExcepcion() {
-        val apodo: String? = null
-        assertFailsWith<NullPointerException> { apodo!!.length }
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-```kotlin
-fun saludo(nombre: String?): String {
-    val quienSaluda = nombre ____ "invitado"
-    return "Hola, $quienSaluda"
-}
-```
-
-</details>
-
-### Tema 2: data class y funciones de extensión · Básico · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás declarar una data class y usar copy() para producir una variante inmutable, y escribir una función de extensión que agregue comportamiento a un tipo existente sin heredar de él.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A["data class Persona(nombre, edad)"] --> B[equals/hashCode/toString/copy generados]
-  C["fun String.esEmailValido()"] --> D[nuevo método sobre String sin heredar]
+flowchart TB
+    C["commonMain: tarifa()"] --> J["jvm: servidor Ktor"]
+    C --> S["js: cotizador web (@JsExport)"]
+    C --> W["wasmJs: Compose web"]
+    C --> I["ios / android: apps"]
 ```
 
 </details>
@@ -212,243 +410,59 @@ flowchart LR
 
 #### Código y verificación
 ```mermaid
-flowchart LR
-  A["data class Persona(nombre, edad)"] --> B[equals/hashCode/toString/copy generados]
-  C["fun String.esEmailValido()"] --> D[nuevo método sobre String sin heredar]
+flowchart TB
+    C["commonMain: tarifa()"] --> J["jvm: servidor Ktor"]
+    C --> S["js: cotizador web (@JsExport)"]
+    C --> W["wasmJs: Compose web"]
+    C --> I["ios / android: apps"]
 ```
 
 ```kotlin
-package com.academia.kmp
-
-data class Persona(val nombre: String, val edad: Int)
-
-fun String.esEmailValido(): Boolean = this.contains("@") && this.contains(".")
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
+pluginManagement { includeBuild("build-logic") }
+dependencyResolutionManagement {
+    repositories { mavenCentral() }
+}
+rootProject.name = "rutaflow"
+include(":shared", ":feature-envios")
 ```
 
 ```kotlin
-package com.academia.kmp
+plugins { id("rutaflow.kmp.library") }
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
-class PersonaTest {
-    @Test
-    fun copySobrescribeSoloElCampoIndicado() {
-        val ana = Persona("Ana", 28)
-        val anaCumpleanos = ana.copy(edad = 29)
-        assertEquals("Ana", anaCumpleanos.nombre)
-        assertEquals(29, anaCumpleanos.edad)
-    }
-
-    @Test
-    fun igualdadEsPorValorNoPorIdentidad() {
-        assertEquals(Persona("Ana", 28), Persona("Ana", 28))
-    }
-
-    @Test
-    fun funcionDeExtensionValidaElEmail() {
-        assertTrue("ana@ejemplo.com".esEmailValido())
-        assertTrue(!"ana-sin-arroba".esEmailValido())
-    }
+kotlin {
+    js { browser(); nodejs(); binaries.library() }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs { browser() }
 }
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
 ```
 
 ```kotlin
-val correo = "ana@ejemplo.com"
-val emailValido: Boolean = correo.____()
-```
+package co.rutaflow.tarifa
 
-</details>
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
-### Tema 3: when como expresión · Básico · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás usar when para devolver un valor directamente en vez de asignarlo dentro de cada rama, y aprovechar la verificación de exhaustividad del compilador sobre una sealed class.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A[valor de entrada] --> B{when}
-  B -->|rango 1| C[valor 1]
-  B -->|rango 2| D[valor 2]
-  B -->|else| E[valor por defecto]
-  C --> F[devuelto directamente]
-  D --> F
-  E --> F
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-val descripcion = when (edad) {
-    in 0..12 -> "niño"
-    in 13..17 -> "adolescente"
-    else -> "adulto"
+@OptIn(ExperimentalJsExport::class)
+@JsExport // nombre estable para JavaScript
+fun tarifaCentavos(kilos: Int, urgente: Boolean): Int {
+    require(kilos > 0) { "peso inválido" }
+    val base = 1_000 + kilos * 120
+    return if (urgente) base * 2 else base
 }
-```
 
-```mermaid
-flowchart LR
-  A[valor de entrada] --> B{when}
-  B -->|rango 1| C[valor 1]
-  B -->|rango 2| D[valor 2]
-  B -->|else| E[valor por defecto]
-  C --> F[devuelto directamente]
-  D --> F
-  E --> F
+expect fun plataforma(): String
 ```
 
 ```kotlin
-package com.academia.kmp
+package co.rutaflow.tarifa
 
-sealed class EstadoUI {
-    object Cargando : EstadoUI()
-    data class Exito(val datos: List<String>) : EstadoUI()
-    data class Error(val mensaje: String) : EstadoUI()
-}
-
-fun describir(estado: EstadoUI): String = when (estado) {
-    is EstadoUI.Cargando -> "cargando..."
-    is EstadoUI.Exito -> "éxito: ${estado.datos.size} elementos"
-    is EstadoUI.Error -> "error: ${estado.mensaje}"
-    // sin else: el compilador exige cubrir los tres casos de la sealed class
-}
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
+actual fun plataforma(): String = "JVM ${System.getProperty("java.version")}"
 ```
 
 ```kotlin
-package com.academia.kmp
+package co.rutaflow.tarifa
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class EstadoUITest {
-    @Test
-    fun describeCargando() {
-        assertEquals("cargando...", describir(EstadoUI.Cargando))
-    }
-
-    @Test
-    fun describeExito() {
-        assertEquals("éxito: 3 elementos", describir(EstadoUI.Exito(listOf("a", "b", "c"))))
-    }
-
-    @Test
-    fun describeError() {
-        assertEquals("error: sin conexión", describir(EstadoUI.Error("sin conexión")))
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-</details>
-
-### Tema 4: Destructuring declarations y rangos · Básico · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás desestructurar una data class en variables individuales con una sola declaración, e iterar un rango con el paso y la dirección correctos.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── data class Punto(x, y) ──┐
-│  val (a, b) = punto          │  →  a = punto.x (component1), b = punto.y (component2)
-└───────────────────────────┘
-
-1 ..2.. 3 ..4.. 5 ..6.. 7   con step 2:  1, 3, 5, 7
-7 ..6.. 5 ..4.. 3 ..2.. 1   con downTo:  7, 6, 5, 4, 3, 2, 1
-```
-
-```kotlin
-package com.academia.kmp
-
-data class Punto(val x: Int, val y: Int)
-
-fun distanciaAlOrigen(punto: Punto): Double {
-    val (x, y) = punto  // destructuring: usa component1()/component2() generados por data class
-    return kotlin.math.sqrt((x * x + y * y).toDouble())
-}
-
-fun pasosImpares(hasta: Int): List<Int> {
-    return (1..hasta step 2).toList()
-}
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class DestructuringTest {
-    @Test
-    fun distanciaAlOrigenDeTriangulo3_4_5() {
-        assertEquals(5.0, distanciaAlOrigen(Punto(3, 4)))
-    }
-
-    @Test
-    fun pasosImparesHasta10() {
-        assertEquals(listOf(1, 3, 5, 7, 9), pasosImpares(10))
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-```kotlin
-data class Producto(val nombre: String, val precio: Double)
-val (nombre, precio) ____ Producto("Café", 3.50)
-
-for (i in 5 ____ 1) {
-    println(i)
-}
+actual fun plataforma(): String = "JavaScript"
 ```
 
 </details>

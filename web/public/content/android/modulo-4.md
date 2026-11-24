@@ -1,20 +1,44 @@
-# Módulo 4: Estado con StateFlow y Compose
+# Módulo 4: Networking con Retrofit/Ktor
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`, `implementation(libs.androidx.lifecycle.viewmodel.compose)` (si no lo hiciste en el Módulo 1) e `implementation(libs.androidx.lifecycle.runtime.compose)`; esta última trae `collectAsStateWithLifecycle`, que el Tema 2 importa. Pulsa **Sync Now**.
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`:
 >
-> **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la app en el emulador: rotar, enviar a segundo plano y observar qué se muestra.
+> ```kotlin
+> plugins {
+>     // ...los que ya tienes...
+>     alias(libs.plugins.kotlin.serialization)   // si no lo añadiste en el Módulo 3
+> }
+> dependencies {
+>     // ...las que ya tienes...
+>     implementation(libs.retrofit)
+>     implementation(libs.retrofit.kotlinx.serialization)
+>     implementation(libs.kotlinx.serialization.json)
+>     implementation(libs.okhttp.logging)
+> }
+> ```
+>
+> En el `build.gradle.kts` de la raíz, `alias(libs.plugins.kotlin.serialization) apply false` (si no está). En `app/src/main/AndroidManifest.xml`, antes de `<application>`, declara `<uses-permission android:name="android.permission.INTERNET" />`. Como el servidor de prueba usa `http://` sin TLS y desde Android 9 el tráfico en texto plano está bloqueado por defecto, permítelo **solo en depuración** creando `app/src/debug/AndroidManifest.xml`:
+>
+> ```xml
+> <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+>     <application android:usesCleartextTraffic="true" />
+> </manifest>
+> ```
+>
+> Pulsa **Sync Now**. Sin estas dependencias, `import retrofit2.http.GET` no compila.
+>
+> **Los scripts `python3` y `curl` de este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
 
 
-### Tema 1: StateFlow en el ViewModel · Intermedio · 40 min
+### Tema 1: Retrofit con coroutines · Intermedio · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateFlow, garantizando que siempre haya un valor actual disponible.
+Al finalizar podrás declarar un endpoint HTTP con Retrofit como una función suspend, y explicar por qué evita el anidamiento de callbacks del Retrofit clásico.
 
 </details>
 
@@ -23,25 +47,135 @@ Al finalizar podrás exponer un estado de pantalla desde un ViewModel con StateF
 
 #### Código y verificación
 ```
-┌── ViewModel ──────────────────────────────┐
-│ private val _estado = MutableStateFlow(Cargando)  │
-│ val estado: StateFlow<EstadoUI> = _estado.asStateFlow() │
+┌── interface ApiService ────────────────────┐
+│  @GET("tareas")                                 │
+│  suspend fun obtenerTareas(): List<TareaDTO>       │
 └──────────┬─────────────────────────────┘
-           │ solo lectura hacia afuera
+           │ Retrofit genera la implementación real
            ▼
-┌── Cualquier observador nuevo ──────────────┐
-│ recibe INMEDIATAMENTE el valor actual         │
-│ (nunca espera a un evento futuro)                │
+┌── val tareas = apiService.obtenerTareas() ──┐
+│  se lee LINEAL, sin callbacks anidados          │
 └───────────────────────────────────────┘
 ```
 
 ```bash
-# compila con Gradle el archivo Kotlin generado a continuación
+# Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt`:
+Crea el archivo `servidor_prueba.py`:
+
+```python
+import json
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class ManejadorTareas(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/tareas":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps([
+                {"id": "1", "titulo": "Comprar leche"},
+                {"id": "2", "titulo": "Pagar el alquiler"},
+            ]).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+    def log_message(self, *args):
+        pass
+
+if __name__ == "__main__":
+    HTTPServer(("localhost", 8000), ManejadorTareas).serve_forever()
+```
+
+```bash
+python3 servidor_prueba.py &
+sleep 1
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ApiService.kt`:
+
+```kotlin
+package com.academia.android
+
+import kotlinx.serialization.Serializable
+import retrofit2.http.GET
+
+@Serializable
+data class TareaDTO(val id: String, val titulo: String)
+
+interface ApiService {
+    @GET("tareas")
+    suspend fun obtenerTareas(): List<TareaDTO>
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+curl -s http://localhost:8000/tareas | python3 -m json.tool
+kill %1 2>/dev/null || true
+```
+
+```kotlin
+package com.academia.android
+
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+
+// En el emulador, 10.0.2.2 es el localhost de tu ordenador
+fun crearApiService(baseUrl: String = "http://10.0.2.2:8000/"): ApiService =
+    Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
+        .build()
+        .create(ApiService::class.java)
+```
+
+```bash
+./gradlew :app:installDebug
+adb logcat -s Red:D
+```
+
+</details>
+
+### Tema 2: Manejo de errores HTTP · Intermedio · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás distinguir HttpException de IOException en un ViewModel, dando un mensaje específico y accionable para cada caso.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── Petición HTTP ──────────────────────────────────┐
+│  ├─ éxito                    → EstadoUI.Exito(datos)  │
+│  ├─ HttpException (código)    → EstadoUI.Error("Error N")│
+│  └─ IOException (sin conexión) → EstadoUI.Error("Sin conexión")│
+└───────────────────────────────────────────────┘
+```
+
+```bash
+# Script en python3 que levanta de nuevo el servidor de prueba con una ruta que falla
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+python3 servidor_prueba.py &
+sleep 1
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt`:
 
 ```kotlin
 package com.academia.android
@@ -49,31 +183,22 @@ package com.academia.android
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
-// Contrato mínimo de este módulo. El repositorio completo (Room + Retrofit) llega en el Módulo 6
-// con otro nombre, TareaRepository; mantenerlos separados evita que un módulo rompa al otro.
-interface FuenteDeTareas {
-    suspend fun obtenerTareas(): List<String>
-}
-
-sealed class EstadoUI {
-    object Cargando : EstadoUI()
-    data class Exito(val datos: List<String>) : EstadoUI()
-    data class Error(val mensaje: String?) : EstadoUI()
-}
-
-class TareasViewModelConEstado(private val repo: FuenteDeTareas) : ViewModel() {
+class TareasViewModelConErrores(private val api: ApiService) : ViewModel() {
     private val _estado = MutableStateFlow<EstadoUI>(EstadoUI.Cargando)
-    val estado: StateFlow<EstadoUI> = _estado.asStateFlow()
+    val estado = _estado.asStateFlow()
 
     fun cargar() = viewModelScope.launch {
         _estado.value = try {
-            EstadoUI.Exito(repo.obtenerTareas())
-        } catch (e: Exception) {
-            EstadoUI.Error(e.message)
+            EstadoUI.Exito(api.obtenerTareas().map { it.titulo })
+        } catch (e: HttpException) {
+            EstadoUI.Error("Error ${e.code()}")
+        } catch (e: IOException) {
+            EstadoUI.Error("Sin conexión")
         }
     }
 }
@@ -84,47 +209,21 @@ class TareasViewModelConEstado(private val repo: FuenteDeTareas) : ViewModel() {
 ```
 
 ```bash
-python3 -c "
-class StateFlowSimulado:
-    def __init__(self, valor_inicial):
-        self.valor_actual = valor_inicial  # SIEMPRE hay un valor
-
-    def actualizar(self, nuevo_valor):
-        self.valor_actual = nuevo_valor
-
-    def nuevo_observador_recibe(self):
-        return self.valor_actual  # inmediato, sin importar cuándo se suscribe
-
-estado = StateFlowSimulado('Cargando')
-estado.actualizar('Exito: [tarea1, tarea2]')
-print('observador que llega tarde recibe de inmediato:', estado.nuevo_observador_recibe())
-"
+curl -s -o /dev/null -w "código HTTP con servidor activo: %{http_code}\n" http://localhost:8000/tareas
+kill %1 2>/dev/null || true
+sleep 1
+curl -s -o /dev/null -w "código con servidor detenido: %{http_code}\n" --max-time 2 http://localhost:8000/tareas 2>&1 || echo "conexión falló (equivalente a IOException): sin respuesta del servidor"
 ```
 
 </details>
 
-### Tema 2: collectAsStateWithLifecycle y UDF · Intermedio · 40 min
+### Tema 3: Interceptores de OkHttp · Intermedio · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás observar un StateFlow desde Compose de forma consciente del ciclo de vida, y explicar el principio UDF que rige la dirección del flujo de datos.
-
-#### ► LA ANALOGÍA
-**Conceptos clave:** recolección consciente del ciclo de vida, flujo de datos en una única dirección.
-
-`collectAsStateWithLifecycle` pausa automáticamente la recolección cuando la Activity va a background (tras `onStop`, Módulo 1) y la reanuda al volver a foreground, ahorrando recursos que `collectAsState` (la versión simple, sin esa consciencia) desperdiciaría. UDF generaliza el state hoisting del Módulo 2 hacia la relación completa `ViewModel`↔UI: el estado fluye desde el `ViewModel` hacia la UI, y las intenciones del usuario fluyen en la dirección contraria, nunca al revés.
-
-**Analogía:** `collectAsStateWithLifecycle` es como un asistente que deja de tomar notas cuando la sala de reuniones está vacía y retoma al volver alguien; UDF es como una cadena de mando donde las órdenes fluyen de arriba hacia abajo y los reportes de abajo hacia arriba, sin que un subordinado emita órdenes directamente a sus pares.
-
-**Diagrama:**
-
-```
-┌── Usuario hace click ──▶ ViewModel.accion() ──▶ actualiza StateFlow ──▶ Compose recompone ─┐
-│                                                                                                │
-└──────────────── la UI NUNCA modifica el estado directamente ─────────────────────┘
-```
+Al finalizar podrás configurar interceptores de OkHttp para logging y autenticación, y explicar por qué el orden de registro importa.
 
 </details>
 
@@ -133,224 +232,80 @@ Al finalizar podrás observar un StateFlow desde Compose de forma consciente del
 
 #### Código y verificación
 ```
-┌── Usuario hace click ──▶ ViewModel.accion() ──▶ actualiza StateFlow ──▶ Compose recompone ─┐
-│                                                                                                │
-└──────────────── la UI NUNCA modifica el estado directamente ─────────────────────┘
+┌── addInterceptor(auth) PRIMERO ────────────────┐
+│ request → [agrega header Authorization] → [logging]  │
+│                                     log MUESTRA el header │
+└─────────────────────────────────────────┘
+┌── addInterceptor(logging) PRIMERO ─────────────┐
+│ request → [logging] → [agrega header Authorization]  │
+│         log NO muestra el header (aún no se agregó)      │
+└─────────────────────────────────────────┘
 ```
 
 ```bash
-# compila con Gradle el archivo Kotlin generado a continuación
+# Script en python3 que confirma el comportamiento antes de escribir el Kotlin real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt`:
+Crea el archivo `servidor_prueba_headers.py`:
+
+```python
+import json
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class ManejadorHeaders(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps({"authorization_recibido": self.headers.get("Authorization")}).encode())
+    def log_message(self, *args):
+        pass
+
+if __name__ == "__main__":
+    HTTPServer(("localhost", 8001), ManejadorHeaders).serve_forever()
+```
+
+```bash
+python3 servidor_prueba_headers.py &
+sleep 1
+curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ClienteHttpConInterceptores.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
-@Composable
-fun PantallaTareasUDF(viewModel: TareasViewModelConEstado) {
-    val estado by viewModel.estado.collectAsStateWithLifecycle()
-    when (estado) {
-        is EstadoUI.Cargando -> Spinner()
-        is EstadoUI.Exito -> ListaTareas((estado as EstadoUI.Exito).datos)
-        is EstadoUI.Error -> MensajeError()
+fun crearClienteHttp(token: String): OkHttpClient {
+    val loggingInterceptor = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    val authInterceptor = okhttp3.Interceptor { chain ->
+        chain.proceed(chain.request().newBuilder().addHeader("Authorization", "Bearer $token").build())
     }
+    return OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)     // primero: agrega el header
+        .addInterceptor(loggingInterceptor)  // segundo: loguea ya CON el header agregado
+        .build()
 }
 ```
 
 ```bash
+kill %1 2>/dev/null || true
 ./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
-python3 -c "
-eventos = ['foreground', 'foreground', 'background', 'background', 'background', 'foreground']
-
-recolecciones_simple = sum(1 for e in eventos)  # collectAsState: recolecta siempre, sin importar el estado
-recolecciones_consciente = sum(1 for e in eventos if e == 'foreground')  # pausa en background
-
-print('eventos totales:', len(eventos))
-print('recolecciones con collectAsState (simple):', recolecciones_simple)
-print('recolecciones con collectAsStateWithLifecycle:', recolecciones_consciente)
-print('ahorro:', recolecciones_simple - recolecciones_consciente, 'recolecciones evitadas en background')
-"
-```
-
-</details>
-
-### Tema 3: SharedFlow para eventos de un solo uso · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás explicar por qué un SharedFlow puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como estado que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── StateFlow (estado persistente) ─────────────┐
-│ nuevo observador SIEMPRE recibe el valor actual     │
-│ (correcto para "lista de tareas actual")               │
-└─────────────────────────────────────────┘
-┌── SharedFlow sin replay (evento) ─────────────┐
-│ se entrega solo a quien escucha EN ESE INSTANTE      │
-│ (riesgo: se pierde durante rotación o background)       │
-└─────────────────────────────────────────┘
-┌── Estado + confirmación (recomendado) ────────┐
-│ mensajeUsuario = "Tarea guardada" hasta que la UI    │
-│ llama mensajeMostrado() → null (ni se pierde ni repite) │
-└─────────────────────────────────────────┘
-```
-
-```bash
-# compila con Gradle el archivo Kotlin generado a continuación
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt`:
-
-```kotlin
-package com.academia.android
-
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-
-data class EdicionTareaUiState(
-    val guardando: Boolean = false,
-    val mensajeUsuario: String? = null,
-)
-
-class EventosTareasViewModel : ViewModel() {
-    private val _estado = MutableStateFlow(EdicionTareaUiState())
-    val estado = _estado.asStateFlow()
-
-    fun guardarTarea() = viewModelScope.launch {
-        _estado.update { it.copy(guardando = true) }
-        // ... lógica de guardado real ...
-        _estado.update { it.copy(guardando = false, mensajeUsuario = "Tarea guardada") }
-    }
-
-    // La UI lo llama cuando ya mostró el mensaje: así no se repite tras rotar
-    fun mensajeMostrado() {
-        _estado.update { it.copy(mensajeUsuario = null) }
-    }
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```kotlin
-val estado by viewModel.estado.collectAsStateWithLifecycle()
-estado.mensajeUsuario?.let { mensaje ->
-    LaunchedEffect(mensaje) {
-        snackbarHostState.showSnackbar(mensaje)
-        viewModel.mensajeMostrado()
-    }
-}
-```
-
-```bash
-python3 -c "
-class StateFlowSimulado:
-    def __init__(self, valor_inicial):
-        self.valor_actual = valor_inicial
-    def actualizar(self, valor):
-        self.valor_actual = valor
-    def nuevo_observador_recibe(self):
-        return self.valor_actual  # SIEMPRE recibe el último valor
-
-class SharedFlowSimulado:
-    def __init__(self):
-        self.observadores_activos_en_el_momento_de_emitir = []
-    def emitir(self, evento):
-        for callback in self.observadores_activos_en_el_momento_de_emitir:
-            callback(evento)
-        # el evento NO queda retenido para nadie que se suscriba después
-
-estado = StateFlowSimulado('lista_vacia')
-estado.actualizar('lista_cargada')
-# un observador que llega DESPUÉS de la actualización de StateFlow:
-print('StateFlow -> observador tardío recibe:', estado.nuevo_observador_recibe())
-
-eventos = SharedFlowSimulado()
-eventos.emitir('TareaGuardada')  # nadie estaba escuchando todavía
-# un observador que llega DESPUÉS de la emisión de SharedFlow:
-observador_tardio_vio_algo = len(eventos.observadores_activos_en_el_momento_de_emitir) > 0
-print('SharedFlow -> observador tardío vio el evento:', observador_tardio_vio_algo)
-"
-```
-
-</details>
-
-### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. Prerrequisitos: Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con…
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-package com.example.restauracion
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MaterialTheme {
-                var nota by rememberSaveable { mutableStateOf("") }
-                Column(Modifier.padding(24.dp)) {
-                    Text("Borrador de entrega")
-                    OutlinedTextField(value = nota, onValueChange = { nota = it },
-                        label = { Text("Observación") })
-                    Text("Texto transitorio; aún no enviado")
-                }
-            }
-        }
-    }
-}
-```
-
-```bash
-./gradlew assembleDebug
+python3 servidor_prueba_headers.py &
+sleep 1
+echo "--- con header Authorization (como haría authInterceptor) ---"
+curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
+echo "--- sin header Authorization (como sería si el orden estuviera invertido y el logging ocurriera antes) ---"
+curl -s http://localhost:8001/ | python3 -m json.tool
+kill %1 2>/dev/null || true
 ```
 
 </details>

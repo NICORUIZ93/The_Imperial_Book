@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ArrowLeft, LucideAngularModule, Menu, Moon, Search, Sun, X } from 'lucide-angular';
 import { filter, map, startWith } from 'rxjs';
-import { findTrack } from '../course-data';
+import { findTrack, trackLogo } from '../course-data';
 import { CommandPaletteService } from '../command-palette.service';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
@@ -62,7 +62,7 @@ export class CourseShellComponent {
   private readonly openSidebarButton = viewChild<ElementRef<HTMLButtonElement>>('openSidebarButton');
   readonly trackLogo = computed(() => {
     const id = this.trackId();
-    return id && id !== 'rutaflow' ? `brands/${id}.svg` : null;
+    return id ? trackLogo(id) : null;
   });
 
   readonly percent = computed(() => {

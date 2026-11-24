@@ -1,0 +1,168 @@
+{
+ "schemaVersion": 1,
+ "stackId": "seguridad",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Activos, amenazas, riesgos y límites de confianza",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-activos-amenazas-riesgos-y-limites-de-confianza"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Identidad, contraseñas, sesiones y autorización",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-identidad-contrasenas-sesiones-y-autorizacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Criptografía aplicada, TLS, claves y secretos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-criptografia-aplicada-tls-claves-y-secretos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Validación, vulnerabilidades web, privacidad y respuesta",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-validacion-vulnerabilidades-web-privacidad-y-respuesta"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-ingenieria-social-phishing-y-respuesta-analizar-el-correo-no-solo-mirarlo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 6: inventario endurecido",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "proyecto-6-inventario-endurecido"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 7,
+   "topics": [
+    {
+     "title": "Escaneo de imágenes y dependencias (Trivy, Snyk)",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Integración en el pipeline",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-integracion-en-el-pipeline"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Gestión de secretos (Vault, SOPS)",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-gestion-de-secretos-vault-sops"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Menor privilegio en CI/CD",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-menor-privilegio-en-ci-cd"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "SBOM y supply chain security",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-sbom-y-supply-chain-security"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "SAST, DAST y SCA — diferencias y herramientas",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 7,
+      "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

@@ -1,108 +1,25 @@
-# Módulo 10: Secretos y configuración: Secrets Manager, Key Vault y Secret Manager
+# Módulo 10: Mensajería Pub/Sub: SNS, EventBridge y Azure Event Hubs
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas · Básico · 40 min
+### Tema 1: El patrón fan-out con SNS · Intermedio · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a sacar una clave real de RutaFlow de un archivo versionado y meterla donde corresponde. Prerrequisitos: Módulo 9 completo.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-aws secretsmanager create-secret --name /app/db-password --secret-string "mi-password-segura"
-aws secretsmanager get-secret-value --secret-id /app/db-password --query SecretString --output text
-```
-
-```bash
-aws secretsmanager create-secret --name /app/db-password --secret-string "mi-password-segura"
-aws secretsmanager get-secret-value --secret-id /app/db-password --query SecretString --output text
-```
-
-```bash
-echo "SMS_GATEWAY_API_KEY=demo_rutaflow_12345" > .env
-grep SMS_GATEWAY_API_KEY .env
-aws secretsmanager create-secret --name /rutaflow/sms-gateway-api-key --secret-string "demo_rutaflow_12345"
-```
-
-```bash
-git init -q && git add .env && git commit -qm "config: agrega .env por error"
-git rm -q .env && git commit -qm "config: elimina .env"
-git log --all --oneline -- .env
-git show HEAD~1:.env
-```
-
-</details>
-
-### Tema 2: KMS y envelope encryption · Básico · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a cifrar un respaldo local de la clave del Tema 1 con KMS, y a comprobar qué pasa si alguien sin permiso intenta descifrarlo. Prerrequisitos: Tema 1 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    A["Clave maestra (KMS, nunca sale del servicio)"] -->|cifra| B["Clave de datos (efímera, cifra los datos reales localmente)"]
-    B -->|cifra| C["Datos reales (volumen grande, cifrado localmente con la clave de datos)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-aws kms create-key --description "Clave de la app"
-aws kms encrypt --key-id alias/mi-clave --plaintext fileb://secreto.txt --query CiphertextBlob --output text | base64 -d > secreto.enc
-aws kms decrypt --ciphertext-blob fileb://secreto.enc --query Plaintext --output text | base64 -d
-```
-
-```mermaid
-flowchart TD
-    A["Clave maestra (KMS, nunca sale del servicio)"] -->|cifra| B["Clave de datos (efímera, cifra los datos reales localmente)"]
-    B -->|cifra| C["Datos reales (volumen grande, cifrado localmente con la clave de datos)"]
-```
-
-```bash
-aws kms create-key --description "Clave de respaldo RutaFlow" --query KeyMetadata.KeyId --output text
-aws kms create-alias --alias-name alias/rutaflow-backup --target-key-id "$(aws kms list-keys --query 'Keys[-1].KeyId' --output text)"
-echo "demo_rutaflow_12345" > respaldo-secreto.txt
-aws kms encrypt --key-id alias/rutaflow-backup --plaintext fileb://respaldo-secreto.txt --query CiphertextBlob --output text | base64 -d > respaldo-secreto.enc
-aws kms decrypt --ciphertext-blob fileb://respaldo-secreto.enc --query Plaintext --output text | base64 -d
-```
-
-</details>
-
-### Tema 3: SSM Parameter Store vs Secrets Manager · Básico · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a separar, para RutaFlow, qué va en SSM Parameter Store y qué va en Secrets Manager, y a comprobar por qué un rol sin permiso específico no puede leer ninguno de los dos. Prerrequisitos: Temas 1-2 de este módulo.
+Al finalizar vas a distribuir el evento real "envío entregado" de RutaFlow a dos consumidores independientes sin que confirmar-entrega conozca a ninguno de los dos. Prerrequisitos: Módulo 5 completo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    A["SSM Parameter Store"] --> A1["configuración general, económico, rotación manual"]
-    B["Secrets Manager"] --> B1["secretos sensibles, rotación automática programada, auditoría completa"]
+    P["Publicador"] --> T["Topic SNS"]
+    T --> S1["Suscriptor 1 (SQS: procesar)"]
+    T --> S2["Suscriptor 2 (Lambda: notificar)"]
+    T --> S3["Suscriptor 3 (Email: alertar)"]
 ```
-
-#### ► REGLA PRÁCTICA
-Si rotar manualmente es aceptable y el dato no es sensible, usa Parameter Store por costo; si el dato requiere rotación automática programada y auditoría, usa Secrets Manager aunque cueste más.
 
 </details>
 
@@ -111,18 +28,120 @@ Si rotar manualmente es aceptable y el dato no es sensible, usa Parameter Store 
 
 #### Código y verificación
 ```bash
-aws ssm put-parameter --name /app/api-url --value "http://localhost:4566" --type String
+aws sns create-topic --name mis-alertas
+aws sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:mis-alertas --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:mi-cola
+aws sns publish --topic-arn ... --message "Alerta importante"
 ```
 
 ```mermaid
 flowchart LR
-    A["SSM Parameter Store"] --> A1["configuración general, económico, rotación manual"]
-    B["Secrets Manager"] --> B1["secretos sensibles, rotación automática programada, auditoría completa"]
+    P["Publicador"] --> T["Topic SNS"]
+    T --> S1["Suscriptor 1 (SQS: procesar)"]
+    T --> S2["Suscriptor 2 (Lambda: notificar)"]
+    T --> S3["Suscriptor 3 (Email: alertar)"]
 ```
 
 ```bash
-aws ssm put-parameter --name /rutaflow/sms-gateway-url --value "https://sms-provider.example.com/v1" --type String
-aws ssm get-parameter --name /rutaflow/sms-gateway-url --query Parameter.Value --output text
+TOPIC_ARN=$(aws sns create-topic --name rutaflow-envio-entregado --query TopicArn --output text)
+NOTIF_Q=$(aws sqs create-queue --queue-name notificaciones-cliente --query QueueUrl --output text)
+ANALYTICS_Q=$(aws sqs create-queue --queue-name analitica-entregas --query QueueUrl --output text)
+# Cada cola debe autorizar al tema a escribir en ella; sin esta política, en AWS real el mensaje no llega.
+permitir_sns() {
+  QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$1" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+  python3 -c 'import json,sys; q,t=sys.argv[1:]; p={"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"sns.amazonaws.com"},"Action":"sqs:SendMessage","Resource":q,"Condition":{"ArnEquals":{"aws:SourceArn":t}}}]}; print(json.dumps({"Policy":json.dumps(p)}))' "$QUEUE_ARN" "$TOPIC_ARN" > atributos.json
+  aws sqs set-queue-attributes --queue-url "$1" --attributes file://atributos.json
+}
+permitir_sns "$NOTIF_Q"
+permitir_sns "$ANALYTICS_Q"
+aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
+aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$ANALYTICS_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-4471","estado":"entregado"}'
+aws sqs receive-message --queue-url "$NOTIF_Q"
+aws sqs receive-message --queue-url "$ANALYTICS_Q"
+```
+
+</details>
+
+### Tema 2: EventBridge: bus de eventos con filtrado declarativo · Intermedio · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a filtrar los eventos de ShipmentEvents (Módulo 4) para que solo "entregado" dispare la notificación SMS, sin que creado o en_ruta la activen por error. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    E1["evento estado=entregado"] --> BUS["Event Bus rutaflow-eventos"]
+    E2["evento estado=en_ruta"] --> BUS
+    BUS --> RULE{"Regla SoloEntregados\ndetail.estado == entregado"}
+    RULE -->|"coincide"| DEST["destino configurado\n(ej. notificar SMS)"]
+    RULE -->|"no coincide"| DROP["entra al bus, no dispara nada"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+aws events create-event-bus --name mi-bus
+aws events put-rule --name ReglaEjemplo --event-bus-name mi-bus --event-pattern '{"source":["mi.app"]}'
+aws events put-events --entries '[{"Source":"mi.app","DetailType":"TareaCreada","Detail":"{\"id\":\"001\"}","EventBusName":"mi-bus"}]'
+```
+
+```bash
+aws events put-rule --name ReglaEjemplo --event-bus-name mi-bus --event-pattern '{"source":["mi.app"]}'
+# Solo eventos con source="mi.app" disparan esta regla, filtrado declarativo sobre el contenido
+```
+
+```mermaid
+flowchart LR
+    E1["evento estado=entregado"] --> BUS["Event Bus rutaflow-eventos"]
+    E2["evento estado=en_ruta"] --> BUS
+    BUS --> RULE{"Regla SoloEntregados\ndetail.estado == entregado"}
+    RULE -->|"coincide"| DEST["destino configurado\n(ej. notificar SMS)"]
+    RULE -->|"no coincide"| DROP["entra al bus, no dispara nada"]
+```
+
+```bash
+aws events create-event-bus --name rutaflow-eventos
+aws events put-rule --name SoloEntregados --event-bus-name rutaflow-eventos \
+  --event-pattern '{"source":["rutaflow.envios"],"detail":{"estado":["entregado"]}}'
+aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"entregado\"}","EventBusName":"rutaflow-eventos"}]'
+aws events put-events --entries '[{"Source":"rutaflow.envios","DetailType":"CambioEstado","Detail":"{\"shipmentId\":\"env-4471\",\"estado\":\"en_ruta\"}","EventBusName":"rutaflow-eventos"}]'
+```
+
+</details>
+
+### Tema 3: SNS + SQS juntos, y Azure Event Hubs · Intermedio · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a comprobar que notificaciones-cliente (Tema 1) no pierde ningún mensaje aunque nadie lo esté leyendo por un rato. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    T["Topic SNS"] --> Q1["Cola SQS (Suscriptor 1)"] --> R1["retiene mensajes si el consumidor está caído"]
+    T --> Q2["Cola SQS (Suscriptor 2)"] --> R2["retiene mensajes independientemente"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```bash
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5002","estado":"entregado"}'
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5003","estado":"entregado"}'
+aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names ApproximateNumberOfMessages
 ```
 
 </details>

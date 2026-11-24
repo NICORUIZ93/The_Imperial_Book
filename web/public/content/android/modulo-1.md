@@ -1,26 +1,297 @@
-# Módulo 1: Ciclo de vida: Activities y ViewModel
+# Módulo 1: Jetpack Compose: UI declarativa
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Trabajas en el proyecto `academia-android` del Módulo 0, creado con el paquete `com.academia.android`. En `app/build.gradle.kts`, dentro de `dependencies { }`, añade `implementation(libs.androidx.lifecycle.viewmodel.compose)` (catálogo del Módulo 0, Tema 3) y pulsa **Sync Now**: trae `ViewModel`, `viewModelScope` y `SavedStateHandle` de forma explícita en lugar de depender de lo que llegue de forma transitiva.
+> **Antes de empezar este módulo.** No necesitas dependencias nuevas: la plantilla Empty Activity ya declara el BOM de Compose, `ui`, `material3` y `activity-compose`.
 >
-> **Los scripts `python3` de este módulo son modelos, no pruebas.** Sirven para razonar sobre qué sobrevive y qué se pierde, pero no ejecutan Android. La evidencia real de cada tema es la que aparece como **Verificación real en Android**: logs de `adb logcat` en el emulador con una salida esperada concreta.
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: para ver la recomposición de verdad, muestra el composable con `setContent { … }` desde `MainActivity`, ejecuta la app y abre **Layout Inspector** con el contador de recomposiciones activado; el número de `TarjetaTarea` solo sube cuando cambia un parámetro que lee.
 
 
-### Tema 1: Ciclo de vida de una Activity · Básico · 45 min
+### Tema 1: Composables y recomposición · Básico · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás predecir en qué callback específico del ciclo de vida es seguro iniciar o liberar un recurso costoso, y explicar por qué el estado simple se pierde al rotar.
+Al finalizar podrás explicar qué activa @Composable en el compilador, y predecir cuándo Compose recompone una función ante un cambio de sus parámetros.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── TarjetaTarea(titulo, completada) ──────┐
+│  describe la UI para ESE estado exacto      │
+└──────────┬───────────────────────┘
+           │ cambia `titulo` o `completada`
+           ▼
+┌── Compose RECOMPONE la función ──────────┐
+│  nueva descripción de UI, reconciliada         │
+│  automáticamente contra la anterior              │
+└───────────────────────────────────────┘
+```
+
+```bash
+# compila con Gradle el archivo Kotlin generado a continuación
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TarjetaTarea.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.style.TextDecoration
+
+@Composable
+fun TarjetaTarea(titulo: String, completada: Boolean) {
+    Text(
+        text = titulo,
+        textDecoration = if (completada) TextDecoration.LineThrough else null
+    )
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+python3 -c "
+def recomponer_si_cambia(historial_completada):
+    recomposiciones = 0
+    anterior = None
+    for valor in historial_completada:
+        if valor != anterior:
+            recomposiciones += 1
+            anterior = valor
+    return recomposiciones
+
+secuencia = [False, False, True, True, True, False]
+print('cambios de estado:', secuencia)
+print('recomposiciones necesarias:', recomponer_si_cambia(secuencia))
+"
+```
+
+</details>
+
+### Tema 2: State hoisting · Básico · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elevar el estado de un composable hijo hacia su padre, dejando al hijo como una función pura que solo refleja lo que recibe.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── PantallaCrearTarea (padre) ─────────────┐
+│ var titulo by remember { mutableStateOf("") } │
+│        │                                        │
+│        ▼ pasa valor + callback                    │
+│  CampoTitulo(valor = titulo,                          │
+│              onValorCambia = { titulo = it })            │
+│        │  (SIN estado propio, solo refleja)                  │
+│        ▼ notifica cambios hacia arriba                          │
+└───────────────────────────────────────┘
+```
+
+```bash
+# compila con Gradle el archivo Kotlin generado a continuación
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/CampoTitulo.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
+@Composable
+fun CampoTitulo(valor: String, onValorCambia: (String) -> Unit) {
+    TextField(value = valor, onValueChange = onValorCambia) // sin estado propio
+}
+
+@Composable
+fun PantallaCrearTarea() {
+    var titulo by remember { mutableStateOf("") } // el estado vive en el padre
+    CampoTitulo(valor = titulo, onValorCambia = { titulo = it })
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+python3 -c "
+def campo_titulo(valor, on_cambia):
+    return {'texto_mostrado': valor, 'notificar': on_cambia}
+
+# contexto 1: formulario de creación, empieza vacío
+estado_creacion = {'titulo': ''}
+campo_1 = campo_titulo(estado_creacion['titulo'], lambda v: estado_creacion.__setitem__('titulo', v))
+campo_1['notificar']('Comprar leche')
+print('creación tras escribir:', estado_creacion['titulo'])
+
+# contexto 2: formulario de edición, empieza con un valor existente
+estado_edicion = {'titulo': 'Tarea existente'}
+campo_2 = campo_titulo(estado_edicion['titulo'], lambda v: estado_edicion.__setitem__('titulo', v))
+campo_2['notificar']('Tarea existente editada')
+print('edición tras escribir:', estado_edicion['titulo'])
+"
+```
+
+</details>
+
+### Tema 3: remember, rememberSaveable y layout básico · Básico · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir entre remember y rememberSaveable según si un valor debe sobrevivir a rotación, y combinar Column, Row y Box para construir un layout.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── remember { mutableStateOf(0) } ────────┐   ┌── rememberSaveable { mutableStateOf(0) } ─┐
+│ sobrevive recomposición,                     │   │ sobrevive recomposición Y rotación             │
+│ se PIERDE al rotar                              │   │ (serializado a un Bundle de estado)            │
+└─────────────────────────────────┘   └───────────────────────────────────┘
+```
+
+```bash
+# compila con Gradle el archivo Kotlin generado a continuación
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/PantallaContador.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun PantallaContador() {
+    var contadorVolatil by remember { mutableStateOf(0) }       // se pierde al rotar
+    var contadorPersistente by rememberSaveable { mutableStateOf(0) } // sobrevive a la rotación
+
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Row {
+            Text("Volátil: $contadorVolatil")
+            Spacer(Modifier.weight(1f))
+            Text("Persistente: $contadorPersistente")
+        }
+    }
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+python3 -c "
+class InstanciaActivity:
+    def __init__(self, memoria_volatil=0, bundle_guardado=None):
+        self.memoria_volatil = memoria_volatil          # como remember: no persiste
+        self.bundle_guardado = bundle_guardado or {}      # como rememberSaveable: sí persiste
+
+def rotar(instancia):
+    # una rotación real destruye la instancia y crea una nueva,
+    # pero el Bundle de estado SÍ se transfiere a la nueva instancia
+    return InstanciaActivity(memoria_volatil=0, bundle_guardado=instancia.bundle_guardado)
+
+actividad = InstanciaActivity()
+actividad.memoria_volatil = 7
+actividad.bundle_guardado['contador_persistente'] = 7
+print('antes de rotar -> volatil:', actividad.memoria_volatil, '| persistente:', actividad.bundle_guardado['contador_persistente'])
+
+nueva_actividad = rotar(actividad)
+print('tras rotar      -> volatil:', nueva_actividad.memoria_volatil, '| persistente:', nueva_actividad.bundle_guardado.get('contador_persistente'))
+"
+```
+
+</details>
+
+### Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Android Studio con un proyecto «Empty Activity» (Compose) llamado RutaFlowConductor. Verifica que build.gradle.kts del módulo app tenga androidx.compose.material3:material3 (viene en la plantilla).
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** `MaterialTheme`, `ColorScheme`, roles de color (`primary`, `onPrimary`, `surface`), color dinámico, `Typography`, modo oscuro.
+
+Material 3 organiza los colores por **roles**, no por nombres de color: `primary` es el color principal de la marca y `onPrimary` es el color del texto encima de él. Cada rol tiene su versión clara y oscura en un `ColorScheme`.
+
+- `MaterialTheme(colorScheme, typography)` envuelve la app y entrega el tema a todo lo que está adentro.
+- Los componentes (`Button`, `Card`, `TopAppBar`) toman sus colores del tema.
+- En tu código lees el tema con `MaterialTheme.colorScheme.primary`, nunca con un `Color(0xFF...)` fijo.
+- En Android 12+ el **color dinámico** (`dynamicLightColorScheme`) genera el esquema a partir del fondo de pantalla del usuario.
+
+**Analogía:** los roles de color son los cargos de una empresa: «jefe de turno» es un papel, aunque cada día lo ocupe otra persona. La analogía falla en que, con color dinámico, quien elige a la persona es el usuario, no tú.
+
+**Límite de uso:** el color dinámico cambia tus colores de marca por los del usuario: desactívalo en pantallas donde la marca o un color de estado (rojo = error) deben ser exactos.
+
+```mermaid
+flowchart TB
+    T["RutaFlowTheme"] --> D{"Android 12+ y dinámico?"}
+    D -->|sí| DY["dynamicLight/DarkColorScheme"]
+    D -->|no| FX["esquema propio claro/oscuro"]
+    DY & FX --> M["MaterialTheme"]
+    M --> B["Button, Card, Text leen roles"]
+```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart LR
-    A["onCreate"] --> B["onStart"] --> C["onResume"] --> D["(en pantalla)"] --> E["onPause"] --> F["onStop"] --> G["onDestroy"]
-    G -->|"rotación: destruye y recrea todo el ciclo"| A
+flowchart TB
+    T["RutaFlowTheme"] --> D{"Android 12+ y dinámico?"}
+    D -->|sí| DY["dynamicLight/DarkColorScheme"]
+    D -->|no| FX["esquema propio claro/oscuro"]
+    DY & FX --> M["MaterialTheme"]
+    M --> B["Button, Card, Text leen roles"]
 ```
 
 </details>
@@ -30,212 +301,76 @@ flowchart LR
 
 #### Código y verificación
 
-```bash
-# compila con Gradle el archivo Kotlin generado a continuación
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-# la plantilla del Módulo 0 ya creó MainActivity en java/; la reemplazas en el mismo archivo
-# (si la crearas también en kotlin/, habría dos clases MainActivity y no compilaría)
-```
-
-Crea el archivo `app/src/main/java/com/academia/android/MainActivity.kt`:
-
 ```kotlin
-package com.academia.android
+package co.rutaflow.conductor.ui.theme
 
-import android.os.Bundle
-import android.util.Log
-import androidx.activity.ComponentActivity
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
-private const val ETIQUETA = "CicloDeVida"
+private val Claro = lightColorScheme(primary = Color(0xFF0B57D0), secondary = Color(0xFF00897B))
+private val Oscuro = darkColorScheme(primary = Color(0xFFA8C7FA), secondary = Color(0xFF80CBC4))
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(ETIQUETA, "onCreate")
-    }
-    override fun onStart() { super.onStart(); Log.d(ETIQUETA, "onStart") }
-    override fun onResume() { super.onResume(); Log.d(ETIQUETA, "onResume") }
-    override fun onPause() { super.onPause(); Log.d(ETIQUETA, "onPause") }
-    override fun onStop() { super.onStop(); Log.d(ETIQUETA, "onStop") }
-    override fun onDestroy() { super.onDestroy(); Log.d(ETIQUETA, "onDestroy") }
-}
-```
-
-```bash
-grep -c "override fun on" app/src/main/java/com/academia/android/MainActivity.kt
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-adb logcat -s CicloDeVida:D
-```
-
-</details>
-
-### Tema 2: ViewModel sobrevive a la rotación · Básico · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás mover un estado a un ViewModel y confirmar que sobrevive a una rotación de pantalla, a diferencia del estado simple del Tema 1.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── Rotación ────────────────────────────────────────────┐
-│ Activity destruida → recreada → ViewModelStore PRESERVADO   │
-│ → misma instancia de ViewModel recuperada                       │
-└─────────────────────────────────────────────────┘
-┌── Muerte de proceso ─────────────────────────┐
-│ TODO se destruye, incluyendo el ViewModelStore     │
-└─────────────────────────────────────────┘
-```
-
-```bash
-# compila con Gradle el archivo Kotlin generado a continuación
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModel.kt`:
-
-```kotlin
-package com.academia.android
-
-import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-
-class TareasViewModel : ViewModel() {
-    private val _contador = MutableStateFlow(0)
-    val contador = _contador.asStateFlow()
-
-    fun incrementar() {
-        _contador.value++
-    }
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-class ActivitySimulada:
-    def __init__(self):
-        self.contador = 0  # se reinicia en cada recreación
-    def recrear(self):
-        return ActivitySimulada()  # instancia nueva: estado perdido
-
-class ViewModelStoreSimulado:
-    def __init__(self):
-        self.view_models = {}
-    def obtener_o_crear(self, clave, fabrica):
-        if clave not in self.view_models:
-            self.view_models[clave] = fabrica()
-        return self.view_models[clave]  # misma instancia: estado preservado
-
-store = ViewModelStoreSimulado()
-vm = store.obtener_o_crear('TareasViewModel', lambda: {'contador': 0})
-vm['contador'] += 1
-print('contador en ViewModel antes de rotar:', vm['contador'])
-vm_tras_rotar = store.obtener_o_crear('TareasViewModel', lambda: {'contador': 0})
-print('contador en ViewModel tras rotar (misma instancia):', vm_tras_rotar['contador'])
-"
-```
-
-```kotlin
-val vm = androidx.lifecycle.ViewModelProvider(this)[TareasViewModel::class.java]
-vm.incrementar()
-Log.d(ETIQUETA, "ViewModel ${System.identityHashCode(vm)} contador=${vm.contador.value}")
-```
-
-</details>
-
-### Tema 3: SavedStateHandle · Básico · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás usar SavedStateHandle para persistir un valor que sobreviva incluso a la muerte del proceso, no solo a la rotación.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── ViewModel normal ───────────────────────────────┐
-│ sobrevive rotación,  NO sobrevive muerte de proceso    │
-└───────────────────────────────────────────┘
-┌── ViewModel + SavedStateHandle ────────────────────┐
-│ sobrevive rotación,  SÍ sobrevive muerte de proceso     │
-│ (solo para los valores explícitamente guardados en él)    │
-└───────────────────────────────────────────┘
-```
-
-```bash
-# compila con Gradle el archivo Kotlin generado a continuación
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt`:
-
-```kotlin
-package com.academia.android
-
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-
-class TareasConFiltroViewModel(
-    private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
-    var filtro: String
-        get() = savedStateHandle["filtro"] ?: ""
-        set(value) {
-            savedStateHandle["filtro"] = value
+@Composable
+fun RutaFlowTheme(
+    oscuro: Boolean = isSystemInDarkTheme(),
+    colorDinamico: Boolean = true,
+    contenido: @Composable () -> Unit,
+) {
+    val esquema = when {
+        colorDinamico && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val contexto = LocalContext.current
+            if (oscuro) dynamicDarkColorScheme(contexto) else dynamicLightColorScheme(contexto)
         }
+        oscuro -> Oscuro
+        else -> Claro
+    }
+    MaterialTheme(colorScheme = esquema, content = contenido)
+}
+```
+
+```kotlin
+package co.rutaflow.conductor
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaEntrega(codigo: String, estado: String, alEntregar: () -> Unit) {
+    Card(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(codigo, style = MaterialTheme.typography.titleMedium)
+            // Rol del tema, no un color fijo: funciona en claro y oscuro.
+            Text(estado, color = MaterialTheme.colorScheme.secondary)
+            Button(onClick = alEntregar) { Text("Marcar entregado") }
+        }
+    }
 }
 ```
 
 ```bash
-./gradlew :app:compileDebugKotlin
+./gradlew installDebug
+adb shell "cmd uimode night yes"   # cambia a modo oscuro sin tocar el teléfono
 ```
 
-```bash
-python3 -c "
-class ProcesoAndroid:
-    def __init__(self):
-        self.view_model_store = {}       # se pierde por completo en muerte de proceso
-        self.bundle_persistido = {}      # sobrevive a la muerte de proceso (SavedStateHandle)
-
-    def matar_proceso(self):
-        self.view_model_store = {}       # todo el ViewModelStore desaparece
-        # el bundle_persistido NO se toca: representa el mecanismo del sistema que sí sobrevive
-
-proceso = ProcesoAndroid()
-proceso.view_model_store['contador'] = 5           # como el Tema 2, solo en memoria
-proceso.bundle_persistido['filtro'] = 'pendientes' # como SavedStateHandle
-
-proceso.matar_proceso()
-
-print('contador tras muerte de proceso (ViewModel normal):', proceso.view_model_store.get('contador', 'PERDIDO'))
-print('filtro tras muerte de proceso (SavedStateHandle):', proceso.bundle_persistido.get('filtro', 'PERDIDO'))
-"
-```
-
-```bash
-adb shell am kill com.academia.android
+```text
+En modo claro: tarjeta clara, botón con el color primary y estado en secondary legible.
+Tras `cmd uimode night yes`: la misma tarjeta con fondo oscuro y textos claros, sin recompilar.
+Con color dinámico en Android 12+: el botón toma un tono del fondo de pantalla del dispositivo.
 ```
 
 </details>

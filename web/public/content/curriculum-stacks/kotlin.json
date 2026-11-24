@@ -1,0 +1,261 @@
+{
+ "schemaVersion": 1,
+ "stackId": "kotlin",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Estructura de un proyecto Android Studio",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-estructura-de-un-proyecto-android-studio"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Recursos externalizados",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-recursos-externalizados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "AndroidManifest.xml y módulos Gradle",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-androidmanifest-xml-y-modulos-gradle"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kotlin esencial para Android — lo que usarás en cada pantalla",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-kotlin-esencial-para-android-lo-que-usaras-en-cada-pantalla"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-lambdas-y-funciones-de-orden-superior-en-kotlin-contratos-captura-y-receptores"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Coroutines — asincronía sin bloquear la UI",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-coroutines-asincronia-sin-bloquear-la-ui"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Paso 0 · Crea el proyecto `academia-kmp`",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "paso-0-crea-el-proyecto-academia-kmp"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Null safety real",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-1-null-safety-real"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "data class y funciones de extensión",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-2-data-class-y-funciones-de-extension"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "when como expresión",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-3-when-como-expresion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Destructuring declarations y rangos",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-4-destructuring-declarations-y-rangos"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Funciones de orden superior",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-funciones-de-orden-superior"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Scope functions",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-scope-functions"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sealed classes y colecciones funcionales",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-sealed-classes-y-colecciones-funcionales"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Lambdas con receptor y builders tipo DSL",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-lambdas-con-receptor-y-builders-tipo-dsl"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Genéricos en Kotlin: varianza con in y out, restricciones y reified",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "suspend functions y concurrencia estructurada",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-suspend-functions-y-concurrencia-estructurada"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Flow, StateFlow y SharedFlow",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "tema-2-flow-stateflow-y-sharedflow"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Manejo de errores y exclusión mutua",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "tema-3-manejo-de-errores-y-exclusion-mutua"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Dispatchers y withContext: en qué hilo corre tu código",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-dispatchers-y-withcontext-en-que-hilo-corre-tu-codigo"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

@@ -1,193 +1,27 @@
-# Módulo 16: Android profesional — privacidad, datos, escala e identidad
-
-Este módulo cubre seis huecos detectados al contrastar el track completo con Android
-Basics with Compose, las guías de calidad de Google, temarios actuales por proyectos
-y libros modernos de Kotlin/Compose. Continúa sobre `academia-android`; cada tema deja
-una evidencia independiente y termina integrándose en RutaFlow.
+# Módulo 16: Compose profesional — layouts, formularios, listas y efectos
 
 ## Aprende construyendo
 
-> **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3), dentro de `dependencies { }` de `app/build.gradle.kts`: Tema 2, `implementation(libs.androidx.datastore.preferences)`; Tema 3, `implementation(libs.androidx.paging.runtime)` e `implementation(libs.androidx.paging.compose)`; Tema 4, `implementation(platform(libs.firebase.bom))` e `implementation(libs.firebase.messaging)`, más el plugin `alias(libs.plugins.google.services)` (raíz con `apply false`) y el `google-services.json` de tu proyecto de Firebase en `app/`; Tema 6, `implementation(libs.androidx.credentials)` e `implementation(libs.androidx.credentials.play.services.auth)`; Tema 7, `implementation(libs.play.integrity)`.
+Este módulo convierte el conocimiento inicial de Compose en una interfaz mantenible.
+Trabajarás sobre RutaFlow y separarás estado, presentación, interacción y efectos. Cada
+tema deja una prueba observable; una captura bonita no sustituye comportamiento correcto.
 
 
-### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar rechazo y elegir Photo Picker cuando no necesitas acceso general. Prerrequisitos: Módulo 15 Tema 1 (Activity Result API) y AndroidManifest.
-
-#### ► LA ANALOGÍA
-Un permiso peligroso se declara en el manifiesto y se solicita durante la acción que
-lo justifica. Antes de pedirlo, comprueba si ya fue concedido; si el sistema recomienda
-una explicación, muestra una razón concreta; si se rechaza, conserva un flujo útil.
-`ActivityResultContracts.RequestPermission` devuelve la decisión sin códigos mágicos.
-
-La mejor petición puede ser ninguna: Photo Picker y Storage Access Framework permiten
-elegir contenido sin permiso general. **Analogía:** un permiso amplio entrega una llave
-del archivo; el picker deja que el usuario entregue una sola carpeta. La analogía no
-implica propiedad permanente: la URI puede necesitar persistencia explícita según el
-contrato usado.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-package com.academia.privacidad
-
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-
-@Composable
-fun AdjuntarFoto(onSeleccionada: (Uri) -> Unit) {
-    val picker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri -> uri?.let(onSeleccionada) }
-
-    Button(onClick = {
-        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }) { Text("Elegir comprobante") }
-}
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:assembleDebug :app:processDebugMainManifest
-grep -R "READ_MEDIA_IMAGES" app/build/intermediates/merged_manifests || echo "sin permiso amplio"
-```
-
-</details>
-
-### Tema 2: DataStore para preferencias consistentes y migrables · Avanzado · 45 min
+### Tema 1: Constraints, Modifier y componentes con slots · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás guardar una preferencia con DataStore, observarla como Flow y decidir entre Preferences, un esquema tipado y Room. Prerrequisitos: corrutinas, Flow y Módulo 6.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-package com.academia.ajustes
-
-import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-
-private val Context.ajustesDataStore by preferencesDataStore("ajustes")
-
-class AjustesRepository(private val context: Context) {
-    private val altoContraste = booleanPreferencesKey("alto_contraste")
-
-    val altoContrasteFlow: Flow<Boolean> = context.ajustesDataStore.data
-        .map { it[altoContraste] ?: false }
-
-    suspend fun cambiarAltoContraste(activo: Boolean) {
-        context.ajustesDataStore.edit { it[altoContraste] = activo }
-    }
-}
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:compileDebugKotlin :app:testDebugUnitTest
-./gradlew :app:test
-```
-
-</details>
-
-### Tema 3: Paging 3, estados de carga y RemoteMediator · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar cuándo combinar red y Room con RemoteMediator. Prerrequisitos: Retrofit, Room, Flow y LazyColumn.
-
-#### ► LA ANALOGÍA
-`PagingSource` carga una fuente; `Pager` expone `Flow<PagingData<T>>`; Compose consume
-con `collectAsLazyPagingItems`. `LoadState` distingue refresh y append. Cuando Room es
-la fuente de verdad, `RemoteMediator` trae páginas remotas y las escribe en una
-transacción. **Analogía:** el catálogo entrega bandejas bajo demanda; RemoteMediator
-repone el depósito local, no entrega directamente a cada pantalla.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-package com.academia.paging
-
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-
-data class Entrega(val id: Int)
-
-class EntregasPagingSource(
-    private val cargar: suspend (pagina: Int, tamano: Int) -> List<Entrega>
-) : PagingSource<Int, Entrega>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Entrega> = try {
-        val pagina = params.key ?: 1
-        val datos = cargar(pagina, params.loadSize)
-        LoadResult.Page(
-            data = datos,
-            prevKey = if (pagina == 1) null else pagina - 1,
-            nextKey = if (datos.isEmpty()) null else pagina + 1,
-        )
-    } catch (error: Exception) {
-        LoadResult.Error(error)
-    }
-
-    override fun getRefreshKey(state: PagingState<Int, Entrega>): Int? =
-        state.anchorPosition?.let(state::closestPageToPosition)?.let { page ->
-            page.prevKey?.plus(1) ?: page.nextKey?.minus(1)
-        }
-}
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:testDebugUnitTest --tests '*PagingSource*'
-```
-
-</details>
-
-### Tema 4: FCM, permiso de notificaciones y sincronización confiable · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android 13+ y tratar el push como señal para sincronizar. Prerrequisitos: notificaciones locales, deep links, WorkManager y backend autenticado.
+Al finalizar podrás explicar el ciclo medir–dimensionar–colocar, ordenar modificadores sin resultados accidentales y diseñar un componente por slots. Abre academia-android y crea el paquete com.academia.ui.componentes. Prerrequisitos: Compose básico del Módulo 2.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    F[FCM: envio_id] --> S[MessagingService]
-    S --> W[Trabajo único en WorkManager]
-    W --> A[API autenticada]
-    A --> R[Room: fuente local de verdad]
-    R --> U[UI observa Flow]
-    U -. no toma el push como estado final .-> F
+    P[Padre envía constraints] --> M[Hijo mide]
+    M --> T[Elige tamaño permitido]
+    T --> U[Padre coloca]
+    U --> D[Dibujo, semántica e interacción]
 ```
 
 </details>
@@ -198,75 +32,65 @@ flowchart LR
 #### Código y verificación
 
 ```kotlin
-package com.academia.push
-
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
-
-class RutaFlowMessagingService : FirebaseMessagingService() {
-    override fun onNewToken(token: String) {
-        // En producción: encolar registro autenticado; nunca imprimir el token.
-        TokenPendiente.guardar(token)
-    }
-
-    override fun onMessageReceived(message: RemoteMessage) {
-        val envioId = message.data["envio_id"] ?: return
-        if (!envioId.matches(Regex("RF-[0-9]+"))) return
-        SincronizacionEnvio.encolar(applicationContext, envioId)
+@Composable
+fun EntregaCard(
+    titulo: String,
+    modifier: Modifier = Modifier,
+    estado: @Composable RowScope.() -> Unit,
+    acciones: @Composable RowScope.() -> Unit,
+) {
+    Card(modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(titulo, style = MaterialTheme.typography.titleMedium)
+            Row(content = estado)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), content = acciones)
+        }
     }
 }
 ```
 
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:processDebugMainManifest :app:testDebugUnitTest
 ./gradlew :app:test
-grep -R "MESSAGING_EVENT\|exported=\"false\"" app/build/intermediates/merged_manifests
+./gradlew :app:assembleDebug
 ```
 
 </details>
 
-### Tema 5: Interfaces adaptativas para teléfono, tablet y foldable · Avanzado · 45 min
+### Tema 2: LazyColumn, grids, claves estables y estado de scroll · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado al redimensionar y probar teléfono, tablet, split-screen y foldable. Prerrequisitos: Compose, Navigation y pruebas UI.
+Al finalizar podrás renderizar colecciones grandes, preservar identidad al reordenar y medir rendimiento en release. Crea ui/entregas/ListaEntregas.kt; necesitas estado inmutable. Prerrequisitos: colecciones Kotlin y Paging del Módulo 16.
 
 #### ► LA ANALOGÍA
-Diseño adaptativo responde al tamaño de la ventana, no al modelo del dispositivo.
-Compact suele usar una pantalla; medium/expanded puede usar lista y detalle simultáneos,
-con `NavigationSuiteScaffold` eligiendo barra o rail. Los datos y la selección viven
-fuera del layout para sobrevivir al cambio. **Analogía:** el mismo inventario se organiza
-en un mostrador pequeño o una bodega; no cambia el contenido, cambia su distribución.
-
-La decisión se reevalúa cuando cambia la ventana: una bisagra puede introducir una zona
-no utilizable, así que el ancho por sí solo no autoriza colocar controles sobre el
-pliegue. Teclado, foco y orden semántico deben conservar una secuencia comprensible
-aunque los componentes cambien de columna.
+`LazyColumn` y `LazyVerticalGrid` reciben un DSL. `key` debe ser única y estable; el
+índice no lo es si insertas u ordenas. `contentType` permite reutilizar composiciones
+entre estructuras equivalentes. `rememberLazyListState` conserva posición durante
+recomposición; `rememberSaveable` o ViewModel cubren recreación según el requisito.
+`derivedStateOf` reduce cambios observables y `snapshotFlow` convierte lecturas Compose
+en Flow para telemetría. **Analogía:** una biblioteca trae a la mesa los libros visibles,
+pero cada ejemplar conserva su ISBN aunque cambie de estante.
 
 ```mermaid
 flowchart TD
-    W[Tamaño y postura actuales] --> C{Espacio útil}
-    C -->|Compacto| O[Una superficie + barra]
-    C -->|Medio| M[Rail o dos paneles si caben]
-    C -->|Expandido| E[Lista y detalle]
-    O --> S[Estado compartido fuera del layout]
-    M --> S
-    E --> S
+    A[Colección de entregas] --> B[Viewport y margen]
+    B --> C[Items compuestos]
+    A --> D{Clave estable}
+    D -->|id| E[Estado y animación siguen la entidad]
+    D -->|índice| F[Estado salta al reordenar]
 ```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
-    W[Tamaño y postura actuales] --> C{Espacio útil}
-    C -->|Compacto| O[Una superficie + barra]
-    C -->|Medio| M[Rail o dos paneles si caben]
-    C -->|Expandido| E[Lista y detalle]
-    O --> S[Estado compartido fuera del layout]
-    M --> S
-    E --> S
+    A[Colección de entregas] --> B[Viewport y margen]
+    B --> C[Items compuestos]
+    A --> D{Clave estable}
+    D -->|id| E[Estado y animación siguen la entidad]
+    D -->|índice| F[Estado salta al reordenar]
 ```
 
 </details>
@@ -277,163 +101,184 @@ flowchart TD
 #### Código y verificación
 ```mermaid
 flowchart TD
-    W[Tamaño y postura actuales] --> C{Espacio útil}
-    C -->|Compacto| O[Una superficie + barra]
-    C -->|Medio| M[Rail o dos paneles si caben]
-    C -->|Expandido| E[Lista y detalle]
-    O --> S[Estado compartido fuera del layout]
-    M --> S
-    E --> S
+    A[Colección de entregas] --> B[Viewport y margen]
+    B --> C[Items compuestos]
+    A --> D{Clave estable}
+    D -->|id| E[Estado y animación siguen la entidad]
+    D -->|índice| F[Estado salta al reordenar]
 ```
 
 ```kotlin
-package com.academia.adaptive
-
-enum class Ancho { COMPACTO, MEDIO, EXPANDIDO }
-enum class Presentacion { UNA_PANTALLA, LISTA_Y_DETALLE }
-
-fun presentacion(ancho: Ancho): Presentacion = when (ancho) {
-    Ancho.COMPACTO -> Presentacion.UNA_PANTALLA
-    Ancho.MEDIO, Ancho.EXPANDIDO -> Presentacion.LISTA_Y_DETALLE
-}
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:testDebugUnitTest --tests '*Adaptive*' :app:connectedDebugAndroidTest
-```
-
-</details>
-
-### Tema 6: Credential Manager, passkeys y verificación en servidor · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico de una passkey y separar autenticación local de autorización del backend. Prerrequisitos: HTTP, deep links y seguridad del Módulo 13.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant A as App Android
-    participant S as Servidor
-    participant C as Credential Manager
-    A->>S: solicita challenge de un solo uso
-    S-->>A: opciones WebAuthn y challenge
-    A->>C: getCredential(opciones)
-    C-->>A: respuesta firmada
-    A->>S: assertion completa
-    S-->>A: sesión si origen, firma y challenge son válidos
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-    participant A as App Android
-    participant S as Servidor
-    participant C as Credential Manager
-    A->>S: solicita challenge de un solo uso
-    S-->>A: opciones WebAuthn y challenge
-    A->>C: getCredential(opciones)
-    C-->>A: respuesta firmada
-    A->>S: assertion completa
-    S-->>A: sesión si origen, firma y challenge son válidos
-```
-
-```kotlin
-package com.academia.identidad
-
-import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetPublicKeyCredentialOption
-import androidx.credentials.PublicKeyCredential
-
-class IniciarSesion(private val context: Context, private val api: IdentidadApi) {
-    suspend fun ejecutar(): String {
-        val opcionesJson = api.crearChallenge()
-        val request = GetCredentialRequest(
-            listOf(GetPublicKeyCredentialOption(opcionesJson))
-        )
-        val respuesta = CredentialManager.create(context).getCredential(context, request)
-        val passkey = respuesta.credential as? PublicKeyCredential
-            ?: error("tipo de credencial no soportado")
-        return api.verificarYCrearSesion(passkey.authenticationResponseJson)
+@Composable
+fun ListaEntregas(entregas: List<Entrega>, onAbrir: (String) -> Unit) {
+    val estado = rememberLazyListState()
+    val mostrarSubir by remember { derivedStateOf { estado.firstVisibleItemIndex > 5 } }
+    Box {
+        LazyColumn(state = estado) {
+            items(entregas, key = { it.id }, contentType = { "entrega" }) { entrega ->
+                EntregaCard(entrega.titulo, Modifier.animateItem(),
+                    estado = { Text(entrega.estado) },
+                    acciones = { Button({ onAbrir(entrega.id) }) { Text("Abrir") } })
+            }
+        }
+        if (mostrarSubir) Text("Volver arriba", Modifier.align(Alignment.BottomEnd))
     }
 }
 ```
 
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:compileDebugKotlin :app:testDebugUnitTest
 ./gradlew :app:test
+./gradlew :app:assembleRelease
 ```
 
 </details>
 
-### Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Avanzado · 45 min
+### Tema 3: Formularios, IME, foco y validación accesible · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y com.google.android.play:integrity en el módulo app. El servidor descifra el token con la API de Google.
+Al finalizar podrás modelar valor, error y envío; configurar teclado y foco; y conservar un borrador sin mezclar validación con widgets. Crea ui/entregas/EditarEntrega.kt. Prerrequisitos: state hoisting, ViewModel y SavedStateHandle.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+stateDiagram-v2
+    [*] --> Editando
+    Editando --> Enviando: envío válido
+    Enviando --> Guardado: respuesta aceptada
+    Enviando --> Error: timeout o rechazo
+    Error --> Editando: corregir sin perder texto
+    Guardado --> [*]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+stateDiagram-v2
+    [*] --> Editando
+    Editando --> Enviando: envío válido
+    Enviando --> Guardado: respuesta aceptada
+    Enviando --> Error: timeout o rechazo
+    Error --> Editando: corregir sin perder texto
+    Guardado --> [*]
+```
+
+```kotlin
+data class Formulario(val direccion: String = "", val tocado: Boolean = false) {
+    val error get() = if (tocado && direccion.length < 8) "Escribe una dirección completa" else null
+}
+
+@Composable
+fun CampoDireccion(form: Formulario, onCambio: (String) -> Unit, onSiguiente: () -> Unit) {
+    OutlinedTextField(
+        value = form.direccion, onValueChange = onCambio,
+        label = { Text("Dirección") }, isError = form.error != null,
+        supportingText = { form.error?.let { Text(it) } },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = { onSiguiente() }),
+        modifier = Modifier.fillMaxWidth().semantics { form.error?.let { error(it) } }
+    )
+}
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+./gradlew :app:test
+./gradlew :app:connectedDebugAndroidTest
+```
+
+</details>
+
+### Tema 4: Side effects, lifecycle y APIs imperativas · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir LaunchedEffect, DisposableEffect, SideEffect, rememberUpdatedState y produceState. Crea ui/mapa/SeguimientoEffect.kt y usa un fake antes de conectar ubicación real. Prerrequisitos: coroutines, lifecycle y UDF.
 
 #### ► LA ANALOGÍA
-**Conceptos clave:** atestación, token de integridad, nonce o `requestHash`, veredicto de app (`appRecognitionVerdict`), de dispositivo (`deviceRecognitionVerdict`) y de cuenta, decodificación en servidor.
-
-Flujo de una **solicitud estándar**:
-
-1. La app prepara el proveedor con `prepareIntegrityToken` (una vez, al iniciar).
-2. Al confirmar la entrega, pide un token con un **`requestHash`**: el hash de los datos de la acción (envío, hora). Así el token solo sirve para esa acción.
-3. El servidor envía el token a la API `decodeIntegrityToken` de Google y recibe el **veredicto**.
-4. El servidor compara el `requestHash` y decide.
-
-| Veredicto | Valor esperado |
-|---|---|
-| app | `PLAY_RECOGNIZED`: la app es la tuya, sin modificar |
-| dispositivo | contiene `MEETS_DEVICE_INTEGRITY` |
-| cuenta | `LICENSED` si la cuenta obtuvo la app desde Play |
-
-La decisión **siempre** se toma en el servidor: la app nunca decide si es confiable.
-
-**Analogía:** es el sello de seguridad de un documento que el banco revisa en su oficina, no el cliente en su casa. La analogía falla en que un sello válido no dice que la persona sea honesta, solo que el documento es auténtico.
-
-**Límite de uso:** no bloquees todo ante un veredicto negativo: hay dispositivos legítimos sin la integridad más alta. Usa la señal para pedir verificación extra o revisar, no como única defensa. La API tiene cuotas diarias.
+`LaunchedEffect(key)` inicia una coroutine ligada a la presencia del nodo y reinicia al
+cambiar la clave. `DisposableEffect` exige liberar listener. `SideEffect` publica estado
+tras composición exitosa. `rememberUpdatedState` permite que un efecto largo invoque la
+callback reciente sin reiniciarse. `produceState` adapta una fuente a `State`. Las claves
+representan identidad, no valores casuales. Para Flow del ViewModel usa colección
+lifecycle-aware. **Analogía:** un efecto es un contrato de alquiler: registra cuándo
+entras, qué cambio exige mudanza y cómo devuelves las llaves.
 
 ```mermaid
-sequenceDiagram
-    participant A as App del conductor
-    participant P as Play Integrity
-    participant S as API RutaFlow
-    participant G as Google (decode)
-    A->>P: request(requestHash de la entrega)
-    P-->>A: token
-    A->>S: POST /entregas + token
-    S->>G: decodeIntegrityToken
-    G-->>S: veredicto
-    S->>S: compara requestHash y decide
+flowchart LR
+    C[Composición] --> L[LaunchedEffect con clave]
+    C --> D[DisposableEffect con clave]
+    L --> X[Coroutine cancelada al salir]
+    D --> Y[onDispose libera el listener]
+    K[Cambio de clave] --> L
+    K --> D
 ```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-sequenceDiagram
-    participant A as App del conductor
-    participant P as Play Integrity
-    participant S as API RutaFlow
-    participant G as Google (decode)
-    A->>P: request(requestHash de la entrega)
-    P-->>A: token
-    A->>S: POST /entregas + token
-    S->>G: decodeIntegrityToken
-    G-->>S: veredicto
-    S->>S: compara requestHash y decide
+flowchart LR
+    C[Composición] --> L[LaunchedEffect con clave]
+    C --> D[DisposableEffect con clave]
+    L --> X[Coroutine cancelada al salir]
+    D --> Y[onDispose libera el listener]
+    K[Cambio de clave] --> L
+    K --> D
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+Al finalizar podrás elegir `LaunchedEffect`, `DisposableEffect`, `SideEffect`,
+`rememberUpdatedState` y `produceState`. Crea `ui/mapa/SeguimientoEffect.kt` y usa un
+fake antes de conectar ubicación real. **Prerrequisitos:** coroutines, lifecycle y UDF.
+
+</details>
+
+### Tema 5: Gestos, Canvas y componentes personalizados accesibles · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir una abstracción de gesto, dibujar progreso y ofrecer una operación equivalente por semántica. Crea ui/ruta/ProgresoRuta.kt; necesitas coroutines y accesibilidad de los módulos 10 y 14. Prerrequisitos: Canvas, coroutines y semántica.
+
+#### ► LA ANALOGÍA
+Gestos de alto nivel agregan foco, ripple, teclado y semántica. Detectores como
+`detectDragGestures` consumen eventos dentro de `pointerInput`; su key controla reinicio.
+Canvas usa píxeles bajo `DrawScope`, por lo que conviertes `Dp` con density. El estado no
+pertenece al dibujo: recibe progreso normalizado y emite intención. Expón
+`progressBarRangeInfo`, descripción y acciones; respeta tamaño táctil y reduce motion
+cuando la animación no sea esencial. **Analogía:** Canvas pinta el tablero, pero la capa
+semántica escribe instrucciones para lector, teclado y pruebas.
+
+```mermaid
+flowchart LR
+    G[Gesto de puntero] --> E[Progreso normalizado]
+    B[Botón o control estándar] --> E
+    E --> V[Canvas dibuja]
+    E --> S[Semántica anuncia el valor]
+    S --> T[TalkBack y pruebas]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    G[Gesto de puntero] --> E[Progreso normalizado]
+    B[Botón o control estándar] --> E
+    E --> V[Canvas dibuja]
+    E --> S[Semántica anuncia el valor]
+    S --> T[TalkBack y pruebas]
 ```
 
 </details>
@@ -443,73 +288,38 @@ sequenceDiagram
 
 #### Código y verificación
 ```mermaid
-sequenceDiagram
-    participant A as App del conductor
-    participant P as Play Integrity
-    participant S as API RutaFlow
-    participant G as Google (decode)
-    A->>P: request(requestHash de la entrega)
-    P-->>A: token
-    A->>S: POST /entregas + token
-    S->>G: decodeIntegrityToken
-    G-->>S: veredicto
-    S->>S: compara requestHash y decide
+flowchart LR
+    G[Gesto de puntero] --> E[Progreso normalizado]
+    B[Botón o control estándar] --> E
+    E --> V[Canvas dibuja]
+    E --> S[Semántica anuncia el valor]
+    S --> T[TalkBack y pruebas]
 ```
 
 ```kotlin
-package co.rutaflow.conductor.integridad
-
-import android.content.Context
-import com.google.android.play.core.integrity.IntegrityManagerFactory
-import com.google.android.play.core.integrity.StandardIntegrityManager.*
-import java.security.MessageDigest
-import kotlinx.coroutines.tasks.await
-
-class Integridad(contexto: Context, private val numeroProyecto: Long) {
-    private val gestor = IntegrityManagerFactory.createStandard(contexto)
-    private var proveedor: StandardIntegrityTokenProvider? = null
-
-    suspend fun preparar() { // una vez, al iniciar la app
-        proveedor = gestor.prepareIntegrityToken(
-            PrepareIntegrityTokenRequest.builder().setCloudProjectNumber(numeroProyecto).build()).await()
+@Composable
+fun ProgresoRuta(progreso: Float, onCambio: (Float) -> Unit) {
+    val valor = progreso.coerceIn(0f, 1f)
+    Canvas(
+        Modifier.fillMaxWidth().height(48.dp)
+            .semantics {
+                progressBarRangeInfo = ProgressBarRangeInfo(valor, 0f..1f)
+                setProgress { onCambio(it.coerceIn(0f, 1f)); true }
+            }
+            .pointerInput(Unit) {
+                detectTapGestures { onCambio((it.x / size.width).coerceIn(0f, 1f)) }
+            }
+    ) {
+        drawLine(Color.Gray, Offset(0f, center.y), Offset(size.width, center.y), 8.dp.toPx())
+        drawCircle(Color.Blue, 12.dp.toPx(), Offset(size.width * valor, center.y))
     }
-
-    suspend fun tokenParaEntrega(codigo: String, epochSegundos: Long): String {
-        val hash = MessageDigest.getInstance("SHA-256")
-            .digest("$codigo|$epochSegundos".toByteArray())
-            .joinToString("") { "%02x".format(it) }
-        val token = requireNotNull(proveedor).request(
-            StandardIntegrityTokenRequest.builder().setRequestHash(hash).build()).await()
-        return token.token()
-    }
-}
-```
-
-```kotlin
-package co.rutaflow.api
-
-// Respuesta ya decodificada por la API de Google (playintegrity.googleapis.com/v1/{paquete}:decodeIntegrityToken).
-data class Veredicto(val requestHash: String, val app: String, val dispositivo: List<String>)
-
-enum class Decision { ACEPTAR, VERIFICAR_EXTRA, RECHAZAR }
-
-fun decidir(veredicto: Veredicto, hashEsperado: String): Decision = when {
-    veredicto.requestHash != hashEsperado -> Decision.RECHAZAR       // token de otra acción
-    veredicto.app != "PLAY_RECOGNIZED" -> Decision.RECHAZAR          // app modificada o desconocida
-    "MEETS_DEVICE_INTEGRITY" !in veredicto.dispositivo -> Decision.VERIFICAR_EXTRA
-    else -> Decision.ACEPTAR
 }
 ```
 
 ```bash
-./gradlew bundleRelease   # sube el .aab a la pista de prueba interna de Play Console
-# instala desde Play en un dispositivo de prueba y confirma una entrega
-```
-
-```text
-App instalada desde Play en un dispositivo real: veredicto app PLAY_RECOGNIZED, dispositivo [MEETS_DEVICE_INTEGRITY] y decisión ACEPTAR.
-La misma app instalada con un APK modificado: app UNRECOGNIZED_VERSION y decisión RECHAZAR.
-Un token reutilizado para otra entrega: requestHash distinto y decisión RECHAZAR.
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+./gradlew :app:test
+./gradlew :app:connectedDebugAndroidTest
 ```
 
 </details>

@@ -57,4 +57,21 @@ describe('module-renumbering', () => {
     expect(out['java'].completedModules).toEqual([7]);
     expect(out['java'].completedTopics).toEqual(['1:tema-5-record-modelos-inmutables-sin-boilerplate']);
   });
+
+  it('reestructuración v5–v6: el progreso de DevOps y de los microservicios llega a sus cursos nuevos', () => {
+    const viejo = {
+      devops: { completedModules: [1, 6], completedExercises: [], completedTopics: ['1:tema-1-x', '6:tema-2-y'] },
+      'spring-microservices': { completedModules: [0, 7], completedExercises: [], completedTopics: [] },
+      android: { completedModules: [0, 1], completedExercises: [], completedTopics: [] },
+    };
+    const out = applyRenumberings(viejo, 4);
+    expect(out['git'].completedModules).toEqual([0]);
+    expect(out['git'].completedTopics).toEqual(['0:tema-1-x']);
+    expect(out['kubernetes'].completedModules).toEqual([0]);
+    expect(out['microservicios'].completedModules).toEqual([14]);
+    expect(out['kotlin'].completedModules).toEqual([0]);
+    expect(out['android'].completedModules).toEqual([0]);
+    expect(out['devops']?.completedModules ?? []).toEqual([]);
+    expect(Object.keys(out).filter(id => id.startsWith('__v5__') && out[id].completedModules.length)).toEqual([]);
+  });
 });

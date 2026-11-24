@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CloudCog, Search, BookOpen, ArrowUpRight, LucideAngularModule, LucideIconData, Moon, Sun } from 'lucide-angular';
-import { TRACKS } from '../course-data';
+import { TRACKS, trackLogo } from '../course-data';
 import { TRACK_GUIDES } from '../track-guides';
 import { CommandPaletteService } from '../command-palette.service';
 import { TRACK_ICONS, TRACK_MARKS } from '../icon-registry';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
 import { TopicIndexService } from '../topic-index.service';
-import { ACADEMY_STAGES, TRACK_PREREQUISITES, academyTrackPosition, stageForTrack } from '../learning-paths';
+import { ACADEMY_STAGES, LEARNING_ROUTES, TRACK_PREREQUISITES, academyTrackPosition, stageForTrack } from '../learning-paths';
 
 interface TrackCard {
   id: string;
@@ -50,8 +50,8 @@ export class CourseCatalogComponent {
   readonly categories = [
     { id: 'all', label: 'Todos los cursos' }, { id: 'base', label: 'Desde cero' },
     { id: 'web', label: 'Desarrollo web' }, { id: 'backend', label: 'Backend' },
-    { id: 'mobile', label: 'Aplicaciones móviles' }, { id: 'platform', label: 'Cloud y DevOps' },
-    { id: 'project', label: 'Proyecto RutaFlow' }, { id: 'engineering', label: 'Ingeniería' },
+    { id: 'mobile', label: 'Aplicaciones móviles' }, { id: 'platform', label: 'Infraestructura y DevOps' },
+    { id: 'engineering', label: 'Ingeniería' },
   ];
   readonly themeService = inject(ThemeService);
   readonly topicIndex = inject(TopicIndexService);
@@ -68,7 +68,7 @@ export class CourseCatalogComponent {
       color: track.color,
       icon: TRACK_ICONS[track.icon],
       mark: TRACK_MARKS[track.id],
-      logo: track.id === 'rutaflow' ? null : `brands/${track.id}.svg`,
+      logo: trackLogo(track.id),
       moduleCount: track.modules.length,
       percent: this.percentFor(track.id, track.modules.length),
       totalHours: this.totalHours(track.modules),
@@ -84,8 +84,13 @@ export class CourseCatalogComponent {
     }))
   );
 
-  readonly featuredTracks = computed(() => this.cards().filter(card => ['rutaflow', 'cloud', 'devops'].includes(card.id)));
-  readonly foundationTracks = computed(() => this.cards().filter(card => ['foundations', 'javascript', 'java', 'node', 'angular', 'react', 'spring-boot'].includes(card.id)));
+  readonly routes = computed(() => LEARNING_ROUTES.map(route => ({
+    ...route,
+    steps: route.trackIds.map(id => this.cards().find(card => card.id === id)).filter((card): card is TrackCard => Boolean(card)),
+  })));
+
+  readonly featuredTracks = computed(() => this.cards().filter(card => ['microservicios', 'docker', 'cloud'].includes(card.id)));
+  readonly foundationTracks = computed(() => this.cards().filter(card => ['foundations', 'git', 'sql', 'javascript', 'java', 'node', 'angular', 'react', 'spring-boot'].includes(card.id)));
   readonly mobileTracks = computed(() => this.cards().filter(card => ['flutter', 'android', 'ios', 'kotlin-multiplatform'].includes(card.id)));
 
   readonly filteredCards = computed(() => {

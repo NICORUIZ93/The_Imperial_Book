@@ -139,3 +139,11 @@ Control 1 se queda tal cual: es material de la universidad.
 **Riesgos:**
 - **Progreso y enlaces.** El progreso del alumno se guarda por curso y número de módulo (`localStorage`). Mover módulos rompe ese progreso y los enlaces a temas. Como el sitio aún no está publicado, este es el momento barato para hacerlo.
 - **Pruebas de la app.** `app.spec.ts` y `learning-activities.spec.ts` cuentan los cursos; hay que actualizarlas, y de paso se corrigen las dos que hoy fallan por RutaFlow.
+
+## Estado
+
+- **Fase 1 hecha (2026-11-24).** 27 cursos y 5 rutas. DevOps, RutaFlow y los dos cursos de microservicios ya no existen
+  como cursos; su contenido vive en Git, Linux, Docker, Kubernetes, CI/CD, IaC, Observabilidad, Mensajería,
+  Arquitectura, Seguridad y Microservicios (rutas Spring y Node). El progreso guardado se traslada solo (pasos 5 y 6
+  de `module-renumbering.ts`). La biblioteca de temarios se genera con `scripts/build_curriculum_catalog.py`.
+- **Control 1:** se toma la opción 1 (curso propio «Python para ingeniería»), salvo que se decida otra cosa; se aplica en la fase 2.

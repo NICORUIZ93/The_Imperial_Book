@@ -1,0 +1,105 @@
+{
+ "schemaVersion": 1,
+ "stackId": "git",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Trunk-based development vs GitFlow",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-trunk-based-development-vs-gitflow"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rebase interactivo vs merge",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-rebase-interactivo-vs-merge"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Bisect para encontrar regresiones",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-bisect-para-encontrar-regresiones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Hooks de Git y commits firmados",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-hooks-de-git-y-commits-firmados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Monorepos vs polyrepos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-monorepos-vs-polyrepos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "git cherry-pick, git stash, git reset vs git revert",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-git-cherry-pick-git-stash-git-reset-vs-git-revert"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "git reflog, git worktree y git submodule",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-git-reflog-git-worktree-y-git-submodule"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Referencia rápida de Git: los tres árboles y los comandos por intención",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-8-referencia-rapida-de-git-los-tres-arboles-y-los-comandos-por-intencion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

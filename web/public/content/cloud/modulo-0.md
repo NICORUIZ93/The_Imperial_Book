@@ -25,40 +25,40 @@ flowchart LR
 | Módulo | Etapa | Qué aprendes |
 |---|---|---|
 | 0 | Fundamentos | [Introducción y preparación](/curso/cloud/0) |
-| 1 | Fundamentos | [Fundamentos de Docker y contenedores](/curso/cloud/1) |
-| 2 | Aplicación | [Almacenamiento en la nube con S3](/curso/cloud/2) |
-| 3 | Aplicación | [Mensajería asíncrona con SQS](/curso/cloud/3) |
-| 4 | Aplicación | [Bases de datos NoSQL con DynamoDB](/curso/cloud/4) |
-| 5 | Integración | [Serverless con Lambda](/curso/cloud/5) |
-| 6 | Integración | [APIs con API Gateway](/curso/cloud/6) |
-| 7 | Integración | [Identidad y acceso con IAM](/curso/cloud/7) |
-| 8 | Experto | [Azure y GCP con Floci](/curso/cloud/8) |
-| 9 | Experto | [Proyecto final: Sistema de Gestión de Tareas](/curso/cloud/9) |
-| 10 | Fundamentos | [Secretos y configuración: Secrets Manager, Key Vault y Secret Manager](/curso/cloud/10) |
-| 11 | Aplicación | [Mensajería Pub/Sub: SNS, EventBridge y Azure Event Hubs](/curso/cloud/11) |
-| 12 | Aplicación | [Observabilidad con CloudWatch: logs, métricas y alarmas](/curso/cloud/12) |
-| 13 | Integración | [Bases de datos relacionales con RDS (PostgreSQL real)](/curso/cloud/13) |
-| 14 | Integración | [Contenedores: ECR, ECS y comparación con Cloud Run](/curso/cloud/14) |
-| 15 | Integración | [Infraestructura como código con CloudFormation](/curso/cloud/15) |
-| 16 | Integración | [Orquestación de flujos con Step Functions](/curso/cloud/16) |
-| 17 | Experto | [Streaming: Kinesis, MSK (Kafka) y Pub/Sub avanzado](/curso/cloud/17) |
-| 18 | Experto | [Autenticación de usuarios con Cognito](/curso/cloud/18) |
-| 19 | Experto | [Analítica de datos con Athena y Glue](/curso/cloud/19) |
-| 20 | Experto | [IA y servicios especializados: Bedrock, Textract y Transcribe](/curso/cloud/20) |
-| 21 | Integración | [Cómputo elástico con EC2 y Auto Scaling](/curso/cloud/21) |
-| 22 | Integración | [Balanceo de carga, CDN y DNS — ELB, CloudFront, Route53 y ACM](/curso/cloud/22) |
-| 23 | Integración | [Caché en memoria con ElastiCache](/curso/cloud/23) |
-| 24 | Experto | [CI/CD nativo de AWS con CodeBuild y CodeDeploy](/curso/cloud/24) |
-| 25 | Experto | [Gobierno, configuración y continuidad — AWS Config, AppConfig y Backup](/curso/cloud/25) |
-| 26 | Experto | [Streaming e integración avanzada — Firehose y EventBridge Pipes](/curso/cloud/26) |
-| 27 | Experto | [APIs GraphQL con AppSync y correo transaccional con SES](/curso/cloud/27) |
-| 28 | Experto | [Bases de datos de grafos y búsqueda — Neptune y OpenSearch](/curso/cloud/28) |
-| 29 | Experto | [FinOps y gobierno de cuenta — Cost Explorer, Pricing, BCM Data Exports, Resource Groups Tagging y STS](/curso/cloud/29) |
-| 30 | Experto | [Transferencia de archivos gestionada con Transfer Family](/curso/cloud/30) |
-| 31 | Experto | [Proyecto integrador: API multi-nube con AWS, Azure y GCP](/curso/cloud/31) |
-| 32 | Experto | [Arquitectura cloud resiliente: redes, landing zones y recuperación](/curso/cloud/32) |
-| 33 | Experto | [Cloud Master: plataforma, seguridad, datos y FinOps](/curso/cloud/33) |
-| 34 | Experto | [Floci oficial completo: plataforma, servicios y laboratorios](/curso/cloud/34) |
+| 1 | Fundamentos | [Fundamentos de Docker y contenedores](/curso/docker/2) |
+| 2 | Aplicación | [Almacenamiento en la nube con S3](/curso/cloud/1) |
+| 3 | Aplicación | [Mensajería asíncrona con SQS](/curso/cloud/2) |
+| 4 | Aplicación | [Bases de datos NoSQL con DynamoDB](/curso/cloud/3) |
+| 5 | Integración | [Serverless con Lambda](/curso/cloud/4) |
+| 6 | Integración | [APIs con API Gateway](/curso/cloud/5) |
+| 7 | Integración | [Identidad y acceso con IAM](/curso/cloud/6) |
+| 8 | Experto | [Azure y GCP con Floci](/curso/cloud/7) |
+| 9 | Experto | [Proyecto final: Sistema de Gestión de Tareas](/curso/cloud/8) |
+| 10 | Fundamentos | [Secretos y configuración: Secrets Manager, Key Vault y Secret Manager](/curso/cloud/9) |
+| 11 | Aplicación | [Mensajería Pub/Sub: SNS, EventBridge y Azure Event Hubs](/curso/cloud/10) |
+| 12 | Aplicación | [Observabilidad con CloudWatch: logs, métricas y alarmas](/curso/cloud/11) |
+| 13 | Integración | [Bases de datos relacionales con RDS (PostgreSQL real)](/curso/cloud/12) |
+| 14 | Integración | [Contenedores: ECR, ECS y comparación con Cloud Run](/curso/cloud/13) |
+| 15 | Integración | [Infraestructura como código con CloudFormation](/curso/cloud/14) |
+| 16 | Integración | [Orquestación de flujos con Step Functions](/curso/cloud/15) |
+| 17 | Experto | [Streaming: Kinesis, MSK (Kafka) y Pub/Sub avanzado](/curso/cloud/16) |
+| 18 | Experto | [Autenticación de usuarios con Cognito](/curso/cloud/17) |
+| 19 | Experto | [Analítica de datos con Athena y Glue](/curso/cloud/18) |
+| 20 | Experto | [IA y servicios especializados: Bedrock, Textract y Transcribe](/curso/cloud/19) |
+| 21 | Integración | [Cómputo elástico con EC2 y Auto Scaling](/curso/cloud/20) |
+| 22 | Integración | [Balanceo de carga, CDN y DNS — ELB, CloudFront, Route53 y ACM](/curso/cloud/21) |
+| 23 | Integración | [Caché en memoria con ElastiCache](/curso/cloud/22) |
+| 24 | Experto | [CI/CD nativo de AWS con CodeBuild y CodeDeploy](/curso/cloud/23) |
+| 25 | Experto | [Gobierno, configuración y continuidad — AWS Config, AppConfig y Backup](/curso/cloud/24) |
+| 26 | Experto | [Streaming e integración avanzada — Firehose y EventBridge Pipes](/curso/cloud/25) |
+| 27 | Experto | [APIs GraphQL con AppSync y correo transaccional con SES](/curso/cloud/26) |
+| 28 | Experto | [Bases de datos de grafos y búsqueda — Neptune y OpenSearch](/curso/cloud/27) |
+| 29 | Experto | [FinOps y gobierno de cuenta — Cost Explorer, Pricing, BCM Data Exports, Resource Groups Tagging y STS](/curso/cloud/28) |
+| 30 | Experto | [Transferencia de archivos gestionada con Transfer Family](/curso/cloud/29) |
+| 31 | Experto | [Proyecto integrador: API multi-nube con AWS, Azure y GCP](/curso/cloud/30) |
+| 32 | Experto | [Arquitectura cloud resiliente: redes, landing zones y recuperación](/curso/cloud/31) |
+| 33 | Experto | [Cloud Master: plataforma, seguridad, datos y FinOps](/curso/cloud/32) |
+| 34 | Experto | [Floci oficial completo: plataforma, servicios y laboratorios](/curso/cloud/33) |
 
 ## Aprende construyendo
 

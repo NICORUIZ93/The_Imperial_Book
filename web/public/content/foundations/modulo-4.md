@@ -1,2349 +1,766 @@
-# Módulo 4: Modelado de datos, SQL y persistencia
+# Módulo 4: Testing, depuración, Git y CI
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 con SQLite 3.53.1 (módulo `sqlite3` de la biblioteca estándar) en Linux x86_64. El Tema 6 se ejecutó con `psql` contra PostgreSQL 16.15. El Tema 7 usa openpyxl 3.1.5 y LibreOffice 24.2.7 para recalcular fórmulas. Todas las salidas son literales de esas ejecuciones. Los comandos `docker` del Tema 6 no se ejecutaron en este entorno: el mismo archivo SQL se ejecutó con `psql` sobre un servidor local.
+**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64, pytest 9.2.0 con pytest-cov 7.1.0, Ruff 0.17.6 y Git 2.43.0. La línea de referencia del curso es Python 3.14 (`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs` (tu `~/labs`). Los commits se hicieron con autor y fecha fijos para que los hashes sean reproducibles: si repites los pasos, tus hashes y fechas serán distintos. El workflow de GitHub Actions del Tema 4 no se ejecutó en GitHub: se validó su YAML y sus órdenes se ejecutaron en un clon limpio local.
 
-**Al terminar este módulo podrás:**
-- modelar entidades y relaciones, y crear el esquema desde un archivo de migración;
-- consultar con `SELECT` y `JOIN` usando parámetros;
-- proteger los datos con restricciones y transacciones;
-- medir el efecto de un índice;
-- llevar una consulta SQL a un reporte de Excel.
+Al terminar este módulo podrás:
+- reproducir y corregir un defecto con una prueba de regresión;
+- construir una suite `pytest` con pruebas unitarias y de integración sobre SQLite;
+- resolver un conflicto de merge explicando la intención de ambos cambios;
+- configurar CI para ejecutar formato, análisis y pruebas en cada pull request.
 
-**Qué necesitas saber antes:** Módulo 1 (variables, funciones, excepciones con `try`/`except`) y Módulo 2 (listas,
-diccionarios y el inventario JSON del Proyecto 2).
+**Qué necesitas saber antes:** casos de prueba, `assert` y excepciones (Módulo 1, Tema 1); funciones (Módulo 1, Tema 4); SQLite desde Python (Módulo 4).
+
 
 ## Aprende construyendo
 
 
-### Tema 1: Del mundo real al modelo relacional · Intermedio · 60 min
+### Tema 1: Depurar con evidencia, no con cambios aleatorios · Intermedio · 50 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- identificar entidades, atributos y relaciones en una situación de RutaFlow;
-- traducir ese modelo a tablas con clave primaria y clave foránea en SQLite;
-- comprobar si la base protege la integridad referencial al borrar un dato;
-- explicar con una medición por qué un modelo normalizado evita datos contradictorios.
+- reproducir un defecto con el caso más pequeño posible y escribir tu hipótesis antes de tocar el código;
+- leer un traceback de abajo hacia arriba y ubicar la línea que falló y la que la llamó;
+- detener un programa con el depurador `pdb` en un punto de interrupción e inspeccionar sus variables;
+- dejar evidencia con `logging` y cerrar cada corrección con una prueba de regresión.
 
-**Conceptos clave:** persistencia, base de datos relacional, SQL, conexión, entidad, atributo, relación, tabla, fila, columna, clave primaria, clave foránea, integridad referencial, normalización
+**Conceptos clave:** defecto, síntoma, reproducción, hipótesis, traceback, depurador, punto de interrupción, registro, prueba de regresión
 
 #### El problema
-El equipo de RutaFlow guarda sus tareas en un archivo JSON. Cada tarea repite el nombre y el color de su categoría.
-Ayer alguien escribió «Trabajo» con mayúscula y el reporte mostró dos categorías distintas. Hoy borraron una
-categoría y nadie supo qué pasó con sus tareas. ¿Cómo se organiza un dato para que exista en un solo lugar y nadie
-pueda dejarlo huérfano?
+La coordinadora de RutaFlow abre el reporte de la mañana y ve los envíos **entregados** en la lista de pendientes.
+Alguien propone «cambiar cosas hasta que salga bien». Ese camino arregla por casualidad o rompe otra parte. ¿Cómo
+encuentras la causa real con evidencia y cómo te aseguras de que el error no vuelva?
+
+Este tema usa lo que ya conoces: **caso de prueba**, **caso límite**, **excepción** y **assert** tienen su ficha en
+el Módulo 1, Tema 1. Aquí no se redefinen.
 
 #### Glosario del tema
 
-**persistencia**
-- **Definición técnica:** propiedad de un dato de sobrevivir al proceso que lo creó, porque quedó escrito en un almacenamiento no volátil (disco).
-- **En palabras sencillas:** que el dato siga ahí mañana, aunque cierres el programa o apagues el computador.
-- **Dónde se rompe la comparación:** escribir en disco no basta; si el programa falla a mitad de una escritura, el dato puede quedar a medias (Tema 4).
-- **Ejemplo:** ejecutas el esquema de `modelo.py` sobre `rutaflow.db`, cierras el programa y en otra ejecución `SELECT COUNT(*) FROM tareas` devuelve `[(2,)]`.
-- **Error típico:** usar `sqlite3.connect(":memory:")` y esperar encontrar los datos después: esa base vive solo en la memoria del proceso.
+**defecto y síntoma**
+- **Definición técnica:** un defecto (*bug*) es la instrucción incorrecta en el código; el síntoma es el comportamiento observable que produce al ejecutarse.
+- **En palabras sencillas:** el síntoma es la fiebre; el defecto es la infección que la causa.
+- **Dónde se rompe la comparación:** un mismo defecto puede dar síntomas distintos según los datos, y algunos defectos no dan ningún síntoma hasta mucho después.
+- **Ejemplo:** síntoma: el reporte muestra `obtenido: ['RF-102']`; defecto: la línea 3 de `envios.py` compara con `"entregado"`.
+- **Error típico:** «arreglar» el síntoma (filtrar la salida a mano) y dejar el defecto vivo en el código.
 
-**base de datos relacional**
-- **Definición técnica:** sistema que guarda los datos en tablas relacionadas por valores comunes y los consulta con SQL. SQLite es una que vive en un archivo.
-- **En palabras sencillas:** un archivador con cajones (tablas) donde cada ficha puede apuntar a fichas de otro cajón.
-- **Dónde se rompe la comparación:** el archivador no te impide guardar basura; la base sí puede rechazarla si declaras reglas.
-- **Ejemplo:** `SELECT name FROM sqlite_master WHERE type = 'table'` sobre la base de `modelo.py` devuelve `[('categorias',), ('tareas',)]`.
-- **Error típico:** tratar la base como una hoja de cálculo y meter todo en una sola tabla gigante.
+**reproducción**
+- **Definición técnica:** conjunto mínimo de pasos y datos que provoca el síntoma de forma repetible.
+- **En palabras sencillas:** la receta para hacer que el error aparezca siempre, a voluntad.
+- **Dónde se rompe la comparación:** algunos errores dependen del tiempo o del orden de ejecución y no salen en cada intento; ahí la receta incluye esas condiciones.
+- **Ejemplo:** `python3 reproducir.py` con dos envíos muestra `esperado: ['RF-101']` y `obtenido: ['RF-102']`.
+- **Error típico:** intentar depurar con la base de datos completa de producción en vez de reducir el caso a dos o tres datos.
 
-**SQL**
-- **Definición técnica:** lenguaje declarativo estándar para definir estructuras (`CREATE TABLE`), modificar datos (`INSERT`, `UPDATE`, `DELETE`) y consultarlos (`SELECT`).
-- **En palabras sencillas:** el idioma en el que le pides cosas a la base: dices qué quieres, no cómo buscarlo.
-- **Dónde se rompe la comparación:** cada motor tiene su dialecto; SQLite y PostgreSQL comparten la base del idioma pero no todos los detalles.
-- **Ejemplo:** `SELECT * FROM categorias` devuelve `[(1, 'trabajo'), (2, 'personal')]`.
-- **Error típico:** escribir mal el nombre de una tabla: `SELECT * FROM tarea` produce `sqlite3.OperationalError: no such table: tarea`.
+**hipótesis**
+- **Definición técnica:** explicación concreta y comprobable de la causa del síntoma, escrita antes de cambiar el código.
+- **En palabras sencillas:** tu sospecha en una línea, lo bastante precisa para poder demostrar que es falsa.
+- **Dónde se rompe la comparación:** a diferencia de una corazonada, una hipótesis dice qué experimento la confirma o la descarta.
+- **Ejemplo:** «el filtro compara con el estado equivocado; si imprimo los estados, veré `'pendiente'` y aun así no saldrá».
+- **Error típico:** escribir una hipótesis vaga («algo falla en el filtro») que ningún experimento puede descartar.
 
-**conexión**
-- **Definición técnica:** objeto `sqlite3.Connection` que abre un archivo de base de datos (o una base en memoria) y ejecuta sentencias SQL sobre él con `execute`.
-- **En palabras sencillas:** la línea telefónica abierta entre tu programa y la base; por ella mandas SQL y recibes filas.
-- **Dónde se rompe la comparación:** una llamada se corta sola al colgar; una conexión debe cerrarse con `close()` o se queda abierta.
-- **Ejemplo:** `sqlite3.connect(":memory:").execute("PRAGMA foreign_keys").fetchone()` devuelve `(0,)`: las claves foráneas vienen apagadas.
-- **Error típico:** conectarse a `"rutaflow.db"` desde otra carpeta: SQLite crea un archivo vacío nuevo en vez de avisar.
+**traceback**
+- **Definición técnica:** informe que Python imprime cuando una excepción termina el programa; lista las llamadas activas, de la más externa a la más interna, y termina con el tipo y el mensaje de la excepción.
+- **En palabras sencillas:** el rastro de migas que dice por qué funciones pasó el programa hasta caerse.
+- **Dónde se rompe la comparación:** se lee al revés: la causa inmediata está en la **última** línea, no en la primera.
+- **Ejemplo:** el traceback de `bodega.py` termina en `ValueError: Stock insuficiente`, lanzado en la línea 10.
+- **Error típico:** leer solo la primera línea (`Traceback (most recent call last):`) y no bajar hasta el mensaje.
 
-**entidad**
-- **Definición técnica:** cosa del dominio con identidad propia sobre la que el sistema guarda información; en el modelo relacional se representa con una tabla.
-- **En palabras sencillas:** un sustantivo importante del negocio: tarea, categoría, mensajero, envío.
-- **Dónde se rompe la comparación:** no todo sustantivo es entidad; «color» es una característica de la categoría, no una entidad.
-- **Ejemplo:** la entidad Categoría vive en la tabla `categorias`; `SELECT COUNT(*) FROM categorias` devuelve `[(2,)]`.
-- **Error típico:** crear una tabla por cada valor posible (`tareas_trabajo`, `tareas_personal`) en vez de una entidad con un atributo.
+**depurador**
+- **Definición técnica:** programa que ejecuta otro paso a paso y permite pausarlo, inspeccionar variables y avanzar; el de Python es `pdb` y se abre con `python3 -m pdb archivo.py`.
+- **En palabras sencillas:** un control remoto con pausa y lupa para mirar el programa por dentro mientras corre.
+- **Dónde se rompe la comparación:** el depurador no adivina la causa; solo te deja mirar. Sin hipótesis, solo das pasos sin rumbo.
+- **Ejemplo:** `python3 -m pdb bodega.py` se detiene antes de la primera instrucción y muestra `-> import logging`.
+- **Error típico:** confundir `next` (ejecuta la línea sin entrar en funciones) con `step` (entra en la función llamada).
 
-**atributo**
-- **Definición técnica:** propiedad de una entidad que tiene un nombre y un tipo de dato; en la tabla se convierte en una columna.
-- **En palabras sencillas:** un dato que describe a la entidad: el título de una tarea, el nombre de una categoría.
-- **Dónde se rompe la comparación:** un atributo guarda un solo valor; una lista de valores pide otra tabla.
-- **Ejemplo:** `SELECT nombre FROM categorias` devuelve `[('trabajo',), ('personal',)]`.
-- **Error típico:** guardar varias cosas en un atributo, como `"azul,urgente"`, y luego no poder filtrar por una de ellas.
+**punto de interrupción**
+- **Definición técnica:** marca que hace que el depurador pause la ejecución al llegar a una línea o función; en `pdb` se crea con `break` y en el código con la función integrada `breakpoint()`.
+- **En palabras sencillas:** un «alto» pintado en el camino: el programa corre normal hasta ahí y se detiene.
+- **Dónde se rompe la comparación:** si la marca está en una función que se llama varias veces, el programa se detiene en **cada** llamada.
+- **Ejemplo:** `break retirar` responde `Breakpoint 1 at /home/estudiante/labs/depuracion/bodega.py:9`.
+- **Error típico:** dejar un `breakpoint()` en el código entregado: el programa se queda esperando órdenes en producción.
 
-**relación**
-- **Definición técnica:** asociación entre entidades con una cardinalidad, por ejemplo uno a muchos: una categoría agrupa muchas tareas y cada tarea tiene una categoría.
-- **En palabras sencillas:** cómo se conectan las cosas: «esta tarea es de esta categoría».
-- **Dónde se rompe la comparación:** en la base la relación no es una flecha: es un número guardado en una columna de la tabla «muchos».
-- **Ejemplo:** `SELECT titulo FROM tareas WHERE categoria_id = 1` devuelve `[('Pagar factura',)]`, las tareas de la categoría 1.
-- **Error típico:** poner la referencia en el lado equivocado: una columna `tarea_id` en `categorias` solo admite una tarea por categoría.
+**registro**
+- **Definición técnica:** mensajes con nivel (`DEBUG`, `INFO`, `WARNING`, `ERROR`) que un programa escribe mientras corre; en Python los produce el módulo estándar `logging`.
+- **En palabras sencillas:** la bitácora del programa: deja anotado qué hizo y con qué datos, aunque nadie esté mirando.
+- **Dónde se rompe la comparación:** una bitácora se lee completa; un registro se filtra por nivel, y por defecto `logging` oculta `DEBUG` e `INFO`.
+- **Ejemplo:** `logging.warning("stock bajo en A-1")` escribe `WARNING:root:stock bajo en A-1`.
+- **Error típico:** usar `print` para depurar y olvidarlo en el código; un registro se apaga cambiando el nivel, sin borrar líneas.
 
-**tabla**
-- **Definición técnica:** estructura con un nombre y un conjunto fijo de columnas tipadas que almacena filas; se crea con `CREATE TABLE`.
-- **En palabras sencillas:** una cuadrícula con encabezados fijos; cada renglón es un registro.
-- **Dónde se rompe la comparación:** a diferencia de una hoja de cálculo, las filas no tienen un orden garantizado si no lo pides.
-- **Ejemplo:** `SELECT name, type FROM pragma_table_info('tareas')` devuelve `[('id', 'INTEGER'), ('titulo', 'TEXT'), ('categoria_id', 'INTEGER')]`.
-- **Error típico:** crear dos veces la misma tabla: `table categorias already exists`; usa `CREATE TABLE IF NOT EXISTS` si el script se repite.
-
-**fila**
-- **Definición técnica:** registro de una tabla con un valor por cada columna; en Python, `sqlite3` la entrega como una tupla.
-- **En palabras sencillas:** un renglón de la cuadrícula: una tarea concreta con todos sus datos.
-- **Dónde se rompe la comparación:** una fila no se identifica por su posición, sino por su clave primaria.
-- **Ejemplo:** `SELECT * FROM tareas WHERE id = 2` devuelve `[(2, 'Comprar pan', 2)]`.
-- **Error típico:** confiar en «la tercera fila»: tras borrar o reordenar, la tercera ya es otra.
-
-**columna**
-- **Definición técnica:** atributo de una tabla con un nombre, un tipo declarado y reglas opcionales, presente en todas sus filas.
-- **En palabras sencillas:** un encabezado de la cuadrícula y todos los valores que hay debajo.
-- **Dónde se rompe la comparación:** SQLite admite que guardes texto en una columna `INTEGER` si no declaras `STRICT`; otros motores lo rechazan.
-- **Ejemplo:** `SELECT titulo FROM tareas` devuelve `[('Pagar factura',), ('Comprar pan',)]`.
-- **Error típico:** pedir una columna que no existe: `no such column: estatus`.
-
-**clave primaria (PRIMARY KEY)**
-- **Definición técnica:** columna (o conjunto de columnas) cuyo valor identifica de forma única cada fila y no puede repetirse.
-- **En palabras sencillas:** la cédula de la fila: dos filas nunca tienen la misma.
-- **Dónde se rompe la comparación:** la cédula la asigna el Estado; aquí, si no das un `id`, SQLite asigna el siguiente libre.
-- **Ejemplo:** tras `INSERT INTO categorias(nombre) VALUES ('bodega')`, `SELECT last_insert_rowid()` devuelve `[(3,)]`.
-- **Error típico:** repetir un `id` a mano: `INSERT INTO categorias(id, nombre) VALUES (1, 'otra')` produce `UNIQUE constraint failed: categorias.id`.
-
-**clave foránea (FOREIGN KEY)**
-- **Definición técnica:** columna que guarda la clave primaria de otra tabla y declara con `REFERENCES` que ese valor debe existir allí.
-- **En palabras sencillas:** una nota que dice «esta tarea pertenece a la categoría número 1», con la promesa de que la 1 existe.
-- **Dónde se rompe la comparación:** en SQLite la promesa solo se cumple si activas `PRAGMA foreign_keys = ON` en cada conexión.
-- **Ejemplo:** con las claves activas, `INSERT INTO tareas(titulo, categoria_id) VALUES ('Llamar cliente', 99)` produce `FOREIGN KEY constraint failed`.
-- **Error típico:** declarar `REFERENCES` y suponer que ya protege: sin el `PRAGMA`, SQLite acepta el 99 sin quejarse.
-
-**integridad referencial**
-- **Definición técnica:** garantía de que toda clave foránea apunta a una fila que existe; el motor la verifica al insertar, actualizar o borrar.
-- **En palabras sencillas:** ninguna tarea queda señalando una categoría que ya no existe.
-- **Dónde se rompe la comparación:** la base no adivina qué querías; rechaza el borrado, salvo que declares otra acción como `ON DELETE CASCADE`.
-- **Ejemplo:** tras borrar la categoría 1 sin claves activas, `PRAGMA foreign_key_check` devuelve `[('tareas', 1, 'categorias', 0)]`: la tarea 1 quedó huérfana.
-- **Error típico:** descubrir los huérfanos meses después, cuando un reporte cuenta tareas sin categoría.
-
-**normalización**
-- **Definición técnica:** proceso de diseño que reparte los atributos en tablas. Cada hecho se guarda una vez y depende solo de la clave de su tabla.
-- **En palabras sencillas:** no copiar el mismo dato en muchos lugares; guardarlo una vez y apuntar a él.
-- **Dónde se rompe la comparación:** normalizar no es partir todo en mil tablas; un reporte que solo se lee puede repetir datos a propósito.
-- **Ejemplo:** cambiar el color de «trabajo» en `categorias` afecta `1` fila; en la tabla repetida afecta `2` y deja una fila vieja.
-- **Error típico:** repetir texto escrito a mano («trabajo» y «Trabajo») y obtener dos categorías donde había una.
+**prueba de regresión**
+- **Definición técnica:** caso de prueba que reproduce un defecto ya encontrado; falla mientras el defecto existe y pasa cuando se corrige, y se conserva para siempre.
+- **En palabras sencillas:** una alarma instalada justo donde ya entró el ladrón, por si vuelve.
+- **Dónde se rompe la comparación:** no protege contra defectos nuevos, solo contra el regreso de uno conocido.
+- **Ejemplo:** `prueba_regresion.py` falla con `AssertionError: se esperaba ['RF-101'] y llegó ['RF-102']` antes de la corrección.
+- **Error típico:** escribir la prueba **después** de corregir; entonces nunca la viste fallar y no sabes si detecta el defecto.
 
 #### ► CÓMO FUNCIONA
-Modelar es pasar de palabras a tablas en tres pasos. Primero subrayas los **sustantivos** que importan: son las
-entidades. Después anotas qué dato describe a cada una: son los atributos. Al final, para cada par de entidades,
-preguntas «¿cuántos de un lado van con uno del otro?»: esa es la relación.
+Depurar es un experimento, no una búsqueda a ciegas. Partes de un **síntoma**, lo **reproduces** con pocos datos y
+aíslas la parte del código que lo produce. Luego escribes una **hipótesis**, diseñas un **experimento** que la pueda
+descartar y solo entonces conoces la **causa**. Antes de corregir, escribes la **prueba de regresión** y la ves fallar.
 
-Una relación uno a muchos se guarda poniendo una **clave foránea en la tabla del lado «muchos»**. En el
-inventario de la bodega de RutaFlow, una categoría clasifica muchos productos y cada producto registra muchos
-movimientos de entrada o salida:
+| Herramienta | Qué es | Qué haces con ella |
+|---|---|---|
+| Traceback | Informe de la excepción | Lo lees de abajo hacia arriba para hallar la línea que falló |
+| `print` / `repr` | Salida temporal | Muestras un valor exacto en un punto, con comillas y espacios visibles |
+| `pdb` | Depurador de Python | Pausas, inspeccionas variables y subes a la función que llamó |
+| `logging` | Registro con niveles | Dejas evidencia permanente con datos, sin depender de mirar la pantalla |
 
 ```mermaid
-erDiagram
-    CATEGORIA ||--o{ PRODUCTO : clasifica
-    PRODUCTO ||--o{ MOVIMIENTO : registra
-    CATEGORIA { int id PK }
-    PRODUCTO { int id PK int categoria_id FK string sku UK }
-    MOVIMIENTO { int id PK int producto_id FK }
+flowchart LR
+    S["síntoma"] --> R["reproducir"] --> I["aislar"] --> H["hipótesis"]
+    H --> E["experimento"] --> C["causa"] --> T["prueba de regresión"] --> F["corrección"]
+    E -. "la descarta" .-> H
 ```
 
-Lee el diagrama así: `||` significa «exactamente uno» y `o{` significa «cero o muchos». `PK` marca la clave
-primaria, `FK` la foránea y `UK` un valor único. En este tema usas `CREATE TABLE`, `INSERT` y `SELECT *` de forma
-básica; el Tema 2 las explica a fondo.
-
 #### Problema resuelto 1.1
-Modela las tareas de RutaFlow con dos tablas relacionadas. Luego comprueba qué pasa al borrar una categoría que
-todavía tiene tareas, con las claves foráneas apagadas y encendidas.
+El reporte de pendientes de RutaFlow muestra envíos entregados. Encuentra la causa con evidencia, escribe una prueba
+de regresión que falle y corrige el defecto.
 
 **Razonamiento:**
-1. Entidades: Categoría y Tarea. Relación: una categoría tiene muchas tareas; cada tarea tiene una categoría.
-2. La clave foránea va en `tareas` (el lado «muchos»): columna `categoria_id` que referencia `categorias(id)`.
-3. Para comparar, ejecuta el mismo borrado dos veces: una sin `PRAGMA foreign_keys = ON` y otra con él.
-4. Si la base protege la integridad, el segundo borrado debe fallar con `IntegrityError`.
+1. Reproducir: armar la ruta más pequeña que muestra el síntoma, un pendiente y un entregado.
+2. Hipótesis en una línea, antes de abrir el editor: «el filtro compara con el estado equivocado».
+3. Experimento: imprimir cada estado con `repr` para ver el texto exacto, comillas incluidas.
+4. Prueba de regresión primero; corrección después; la misma prueba debe pasar.
+
+Este es el código con el defecto:
 
 ```python
-# modelo.py — categorías y tareas de RutaFlow con clave foránea
+# envios.py — filtra los envíos pendientes de una ruta (versión con defecto)
+def listar_pendientes(envios):
+    return [envio for envio in envios if envio["estado"] == "entregado"]
+```
+
+```python
+# reproducir.py — reproduce el defecto con el caso más pequeño posible
+from envios import listar_pendientes
+
+ruta = [
+    {"guia": "RF-101", "estado": "pendiente"},
+    {"guia": "RF-102", "estado": "entregado"},
+]
+for envio in ruta:
+    print("revisando", envio["guia"], "estado:", repr(envio["estado"]))
+resultado = listar_pendientes(ruta)
+print("esperado: ['RF-101']")
+print("obtenido:", [envio["guia"] for envio in resultado])
+```
+
+```text
+$ python3 reproducir.py
+revisando RF-101 estado: 'pendiente'
+revisando RF-102 estado: 'entregado'
+esperado: ['RF-101']
+obtenido: ['RF-102']
+```
+
+El experimento descarta otra sospecha común: los datos están bien escritos (`'pendiente'`, sin mayúsculas ni
+espacios). La hipótesis queda confirmada: el filtro deja pasar justo el estado contrario. Ahora la prueba de regresión:
+
+```python
+# prueba_regresion.py — falla mientras el defecto exista
+from envios import listar_pendientes
+
+ruta = [
+    {"guia": "RF-101", "estado": "pendiente"},
+    {"guia": "RF-102", "estado": "entregado"},
+]
+guias = [envio["guia"] for envio in listar_pendientes(ruta)]
+assert guias == ["RF-101"], f"se esperaba ['RF-101'] y llegó {guias}"
+print("regresión cubierta: solo se listan pendientes")
+```
+
+```text
+$ python3 prueba_regresion.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/depuracion/prueba_regresion.py", line 9, in <module>
+    assert guias == ["RF-101"], f"se esperaba ['RF-101'] y llegó {guias}"
+           ^^^^^^^^^^^^^^^^^^^
+AssertionError: se esperaba ['RF-101'] y llegó ['RF-102']
+```
+
+La corrección cambia una sola palabra en la línea 3 de `envios.py`:
+
+```python
+# envios.py — filtra los envíos pendientes de una ruta
+def listar_pendientes(envios):
+    return [envio for envio in envios if envio["estado"] == "pendiente"]
+```
+
+```text
+$ python3 prueba_regresion.py
+regresión cubierta: solo se listan pendientes
+```
+
+**Explicación por partes.**
+- `envios.py`, línea 3: la comprensión de lista conserva los envíos cuya condición es verdadera; con `"entregado"` conserva los equivocados.
+- `reproducir.py`, líneas 4–7: dos envíos bastan; con uno de cada estado, el síntoma se ve a simple vista.
+- `reproducir.py`, línea 9: `repr` muestra el texto con comillas, así verías un espacio sobrante como `'pendiente '`.
+- `prueba_regresion.py`, línea 9: el `assert` lleva un mensaje que dice qué se esperaba y qué llegó.
+- La prueba se vio fallar antes de corregir y pasar después: eso demuestra que detecta este defecto.
+
+> **Error común.** Cambiar varias cosas a la vez «a ver si funciona». Si después del tercer cambio el síntoma
+> desaparece, no sabes cuál lo arregló ni si otro rompió algo. Cambia una cosa, ejecuta la reproducción y anota el resultado.
+
+> **Buena práctica.** Escribe la hipótesis en una línea antes de tocar el código, por ejemplo en el ticket. Si el
+> experimento la descarta, escribe la siguiente; el registro de hipótesis descartadas también ahorra tiempo al equipo.
+
+#### Problema resuelto 1.2
+La bodega de RutaFlow despacha pedidos y descuenta cajas del stock. Un pedido de 8 cajas detiene el programa. Ubica
+dónde nace el error con el traceback, inspecciona los valores con `pdb` y deja registro de cada retirada.
+
+**Razonamiento:**
+1. El traceback se lee de abajo hacia arriba: primero el mensaje, luego la línea que lo lanzó y después quién la llamó.
+2. Un punto de interrupción en `retirar` pausa el programa justo antes de la comparación que falla.
+3. `logging` deja una línea por retirada con el SKU y la cantidad: así queda evidencia aunque nadie esté mirando.
+
+```python
+# bodega.py — despacha pedidos descontando cajas del stock
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s sku=%(sku)s cantidad=%(cantidad)s")
+logger = logging.getLogger(__name__)
+
+
+def retirar(stock, cantidad):
+    if cantidad > stock:
+        raise ValueError("Stock insuficiente")
+    return stock - cantidad
+
+
+def despachar(pedido, stock):
+    logger.info("retirada_solicitada", extra={"sku": pedido["sku"], "cantidad": pedido["cantidad"]})
+    return retirar(stock, pedido["cantidad"])
+
+
+print("quedan:", despachar({"sku": "A-1", "cantidad": 3}, stock=5))
+print("quedan:", despachar({"sku": "A-1", "cantidad": 8}, stock=5))
+```
+
+```text
+$ python3 bodega.py
+INFO retirada_solicitada sku=A-1 cantidad=3
+quedan: 2
+INFO retirada_solicitada sku=A-1 cantidad=8
+Traceback (most recent call last):
+  File "/home/estudiante/labs/depuracion/bodega.py", line 20, in <module>
+    print("quedan:", despachar({"sku": "A-1", "cantidad": 8}, stock=5))
+                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/estudiante/labs/depuracion/bodega.py", line 16, in despachar
+    return retirar(stock, pedido["cantidad"])
+  File "/home/estudiante/labs/depuracion/bodega.py", line 10, in retirar
+    raise ValueError("Stock insuficiente")
+ValueError: Stock insuficiente
+```
+
+Léelo de abajo hacia arriba. El mensaje es `Stock insuficiente` y lo lanzó la línea 10, dentro de `retirar`. A
+`retirar` la llamó la línea 16 de `despachar`, y a `despachar`, la línea 20. Ahora confirma los valores con `pdb`:
+
+```text
+$ python3 -m pdb bodega.py
+> /home/estudiante/labs/depuracion/bodega.py(2)<module>()
+-> import logging
+(Pdb) break retirar
+Breakpoint 1 at /home/estudiante/labs/depuracion/bodega.py:9
+(Pdb) continue
+INFO retirada_solicitada sku=A-1 cantidad=3
+> /home/estudiante/labs/depuracion/bodega.py(9)retirar()
+-> if cantidad > stock:
+(Pdb) continue
+quedan: 2
+INFO retirada_solicitada sku=A-1 cantidad=8
+> /home/estudiante/labs/depuracion/bodega.py(9)retirar()
+-> if cantidad > stock:
+(Pdb) p stock, cantidad
+(5, 8)
+(Pdb) up
+> /home/estudiante/labs/depuracion/bodega.py(16)despachar()
+-> return retirar(stock, pedido["cantidad"])
+(Pdb) p pedido
+{'sku': 'A-1', 'cantidad': 8}
+(Pdb) quit
+```
+
+**Explicación por partes.**
+- `bodega.py`, línea 4: `basicConfig` fija el nivel mínimo (`INFO`) y el formato; `%(sku)s` y `%(cantidad)s` salen de `extra`.
+- Líneas 8–11: `retirar` rechaza con una excepción (Módulo 1, Tema 1) cuando la cantidad supera el stock.
+- Línea 15: cada despacho deja una línea `INFO` con los datos; por eso el registro muestra `cantidad=8` antes del traceback.
+- Sesión de `pdb`: `break retirar` crea el punto de interrupción en la primera línea de la función (la 9).
+- El primer `continue` se detiene en el pedido de 3 cajas; el segundo, en el de 8. Una pausa por cada llamada.
+- `p stock, cantidad` imprime `(5, 8)`: se piden 8 cajas con 5 en stock. `up` sube a `despachar` y `p pedido` muestra de dónde salió el 8.
+- Conclusión: el código hace lo correcto; el defecto está en el pedido. La corrección es validar antes de despachar, no tocar `retirar`.
+
+> **Error común.** Llamar al registro sin `extra` cuando el formato pide `%(sku)s`. Con
+> `logging.getLogger(__name__).info("inicio_turno")` el programa sigue, pero el mensaje se pierde y aparece
+> `--- Logging error ---` seguido de `ValueError: Formatting field not found in record: 'sku'`. Cada llamada debe
+> traer todos los campos que el formato nombra.
+
+> **Prevenir errores.** Antes de abrir el depurador, decide qué variable quieres ver y en qué línea. Un punto de
+> interrupción con pregunta («¿cuánto vale `cantidad` aquí?») se resuelve en un minuto; sin pregunta, en una tarde.
+
+#### Checkpoint 1.1
+En el traceback de `bodega.py`, ¿qué línea lanzó la excepción y qué línea de tu código empezó la cadena de llamadas?
+
+Respuesta: la lanzó la línea 10 (`raise ValueError("Stock insuficiente")`, dentro de `retirar`). La cadena empezó en
+la línea 20, la segunda llamada a `despachar`. El traceback las lista de la más externa (20) a la más interna (10).
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Prepara la carpeta
+Crea `~/labs/depuracion` y entra con `cd ~/labs/depuracion`. Escribe `envios.py` con el defecto y `reproducir.py`.
+
+#### Paso 2 · Reproduce y escribe la hipótesis
+Ejecuta `python3 reproducir.py` y confirma que la salida dice `obtenido: ['RF-102']`. Escribe tu hipótesis en un
+archivo `hipotesis.txt`, en una línea, antes de abrir `envios.py`.
+
+#### Paso 3 · Mira fallar la prueba de regresión
+Escribe `prueba_regresion.py` y ejecútalo. Debe terminar con `AssertionError: se esperaba ['RF-101'] y llegó ['RF-102']`.
+Corrige la línea 3 de `envios.py` y ejecútalo de nuevo: debe mostrar `regresión cubierta: solo se listan pendientes`.
+
+#### Paso 4 · Traceback, pdb y registro
+Escribe `bodega.py`, ejecútalo y señala en el traceback las líneas 10, 16 y 20. Luego repite la sesión de
+`python3 -m pdb bodega.py` del Problema resuelto 1.2, escribiendo tú cada orden después del `(Pdb)`.
+
+#### Resumen
+- El **síntoma** es lo que ves; el **defecto** es la instrucción que lo causa. Se corrige el defecto, no el síntoma.
+- Una **reproducción** mínima hace que el error aparezca siempre y con pocos datos.
+- La **hipótesis** se escribe antes de cambiar el código y se pone a prueba con un experimento que pueda descartarla.
+- El **traceback** se lee de abajo hacia arriba: mensaje, línea que lanzó y cadena de llamadas.
+- El **depurador** `pdb` pausa en un **punto de interrupción** (`break`, `breakpoint()`) y deja inspeccionar con `p` y `up`.
+- El **registro** con `logging` deja evidencia con nivel y datos; cada campo del formato debe llegar en `extra`.
+- Toda corrección se cierra con una **prueba de regresión** que se vio fallar antes de corregir.
+
+#### Ejercicio verificable 1
+Básico. En `bodega.py`, cambia la línea 20 para pedir 5 cajas en vez de 8. Antes de ejecutar, predice la salida.
+
+Respuesta esperada: no hay traceback. La salida es `INFO … cantidad=3`, `quedan: 2`, `INFO … cantidad=5` y `quedan: 0`,
+porque `5 > 5` es falso y `retirar` devuelve `5 - 5`.
+
+#### Ejercicio verificable 2
+Intermedio. Una compañera reporta que `contar_pendientes([{"estado": "Pendiente"}])` devuelve `0`, con la función de
+`inventario.py` del Tema 2. Escribe la reproducción, la hipótesis y la prueba de regresión.
+
+Respuesta esperada: reproducción: esa misma llamada imprime `0`. Hipótesis: «el estado llega con mayúscula y la
+comparación distingue mayúsculas». Experimento: `print(repr(envio["estado"]))` muestra `'Pendiente'`. Prueba:
+`assert contar_pendientes([{"estado": "Pendiente"}]) == 1`, que falla hasta normalizar con `.lower()`.
+
+#### Ejercicio verificable 3
+Reto. Modifica `despachar` para que registre un `WARNING` llamado `retirada_rechazada`, con SKU y cantidad, cuando
+`retirar` lance `ValueError`, y deje pasar la excepción igual.
+
+Respuesta esperada: guardar los datos en `datos = {"sku": …, "cantidad": …}`, envolver la llamada en `try`, y en
+`except ValueError:` hacer `logger.warning("retirada_rechazada", extra=datos)` seguido de `raise`. Con un pedido de 8
+cajas la salida empieza con `INFO retirada_solicitada sku=A-1 cantidad=8`, sigue con
+`WARNING retirada_rechazada sku=A-1 cantidad=8` y termina con `ValueError: Stock insuficiente`.
+
+#### En el trabajo
+En una empresa, un reporte de error llega como ticket y casi nunca trae la causa. Lo primero que pide un equipo
+serio es la reproducción; lo último, la prueba de regresión dentro del cambio que corrige. En producción no hay
+depurador: solo quedan los registros. Por eso se escriben con nivel y con los datos del caso (SKU, cantidad, guía),
+nunca con contraseñas ni datos personales.
+
+</details>
+
+### Tema 2: Pruebas con propósito y niveles adecuados · Intermedio · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- escribir y ejecutar pruebas unitarias con `pytest`, incluida la comprobación de excepciones con `pytest.raises`;
+- preparar una base SQLite de prueba con una fixture y escribir una prueba de integración real;
+- demostrar por qué un doble de prueba puede seguir en verde con la consulta SQL rota;
+- medir la cobertura y explicar por qué un porcentaje alto no garantiza pruebas valiosas.
+
+**Conceptos clave:** prueba unitaria, prueba de integración, prueba de extremo a extremo, pirámide de pruebas, pytest, fixture, doble de prueba, cobertura
+
+#### El problema
+En el Tema 1 escribiste una prueba de regresión con `assert` en un archivo suelto. RutaFlow ya tiene decenas de
+reglas: retirar cajas, contar pendientes, consultar SQLite. Ejecutar un archivo por regla no escala, y un `assert`
+que falla detiene todo en la primera falla. ¿Cómo ejecutas cientos de pruebas con una orden, y qué conviene probar
+con base de datos real y qué sin ella?
+
+Este tema usa **caso de prueba**, **caso límite**, **excepción** y **assert** (Módulo 1, Tema 1), la **prueba de
+regresión** (Tema 1 de este módulo) y SQLite (Módulo 4).
+
+#### Glosario del tema
+
+**prueba unitaria**
+- **Definición técnica:** prueba automática de una unidad pequeña de código, normalmente una función, aislada de bases de datos, red y archivos.
+- **En palabras sencillas:** revisar una pieza sola en el banco de trabajo, antes de montarla en la máquina.
+- **Dónde se rompe la comparación:** una pieza que funciona sola puede fallar al conectarse con otras; la unitaria no ve esas uniones.
+- **Ejemplo:** `test_retirar_descuenta_stock` comprueba que `retirar(stock=5, cantidad=2)` devuelve `3` y `pytest` la marca `PASSED`.
+- **Error típico:** llamar «unitaria» a una prueba que abre la base de datos real; se vuelve lenta y falla por motivos ajenos a la función.
+
+**prueba de integración**
+- **Definición técnica:** prueba que ejecuta varias piezas juntas a través de una frontera real, como el código más una base SQLite verdadera.
+- **En palabras sencillas:** montar dos piezas y comprobar que encajan de verdad, no en el plano.
+- **Dónde se rompe la comparación:** se usa una base pequeña y desechable, no la de producción; encaja con la real solo si el esquema es el mismo.
+- **Ejemplo:** `test_cuenta_pendientes_en_sqlite` ejecuta el `SELECT` real y espera `2`.
+- **Error típico:** compartir la misma base entre pruebas: una deja datos y la siguiente falla o pasa según el orden.
+
+**prueba de extremo a extremo**
+- **Definición técnica:** prueba que ejecuta el programa completo como lo usaría una persona, desde la entrada (comando, archivo) hasta la salida visible; se abrevia E2E.
+- **En palabras sencillas:** probar el carro manejándolo, no revisando el motor por separado.
+- **Dónde se rompe la comparación:** cuando falla, no dice qué pieza se rompió; solo que el recorrido completo no llegó.
+- **Ejemplo:** `test_reporte_muestra_pendientes` corre `python reporte.py envios.db` y espera la salida `pendientes: 1`.
+- **Error típico:** probarlo todo con E2E: la suite se vuelve lenta y cada falla obliga a depurar desde cero.
+
+**pirámide de pruebas**
+- **Definición técnica:** guía de proporciones: muchas pruebas unitarias rápidas en la base, menos de integración en el medio y pocas E2E críticas arriba.
+- **En palabras sencillas:** muchas revisiones baratas, algunas medianas y pocas caras.
+- **Dónde se rompe la comparación:** no es una regla con números fijos; un programa que casi solo consulta SQL necesita más integración.
+- **Ejemplo:** la suite de este tema tiene 5 unitarias, 2 de integración y 1 E2E.
+- **Error típico:** invertir la pirámide: pocas unitarias y muchas E2E lentas y frágiles.
+
+**pytest**
+- **Definición técnica:** herramienta de Python que encuentra archivos `test_*.py`, ejecuta las funciones `test_*` y reporta cada `assert` fallido con los valores comparados; `pytest.raises` comprueba que se lance una excepción.
+- **En palabras sencillas:** un revisor automático que corre todas tus pruebas con una orden y te dice cuáles fallaron y por qué.
+- **Dónde se rompe la comparación:** solo encuentra lo que sigue sus nombres: un archivo `prueba_inventario.py` no se ejecuta.
+- **Ejemplo:** `python -m pytest -q` termina con `8 passed in 0.04s`.
+- **Error típico:** ejecutar `pytest` en vez de `python -m pytest` con el código en la raíz: falla con `ModuleNotFoundError: No module named 'inventario'`.
+
+**fixture**
+- **Definición técnica:** función marcada con `@pytest.fixture` que prepara un recurso para una prueba y, tras su `yield`, lo limpia; la prueba la recibe nombrándola como parámetro.
+- **En palabras sencillas:** la persona que arma la mesa antes de cada prueba y la recoge al terminar.
+- **Dónde se rompe la comparación:** no se llama a mano; `pytest` la ejecuta por su nombre, otra vez para cada prueba que la pide.
+- **Ejemplo:** la fixture `conexion` crea una base SQLite en memoria con tres envíos; `tmp_path` es una fixture incluida que da una carpeta temporal.
+- **Error típico:** escribir mal el nombre del parámetro: `pytest` responde `fixture 'conexion' not found` y la prueba ni empieza.
+
+**doble de prueba**
+- **Definición técnica:** objeto que reemplaza una dependencia real (base, red, reloj) durante una prueba e imita solo la parte que el código usa; un *fake* es un doble con respuestas fijas.
+- **En palabras sencillas:** el doble de riesgo del cine: se parece al actor en la escena, pero no es él.
+- **Dónde se rompe la comparación:** el doble no ejecuta el SQL; si la consulta está rota, el doble sigue respondiendo como si nada.
+- **Ejemplo:** `ConexionFalsa` devuelve siempre `(2,)` y `test_cuenta_pendientes_con_doble` pasa.
+- **Error típico:** probar con dobles lo que solo una frontera real puede comprobar, como una consulta SQL.
+
+**cobertura**
+- **Definición técnica:** porcentaje de líneas del código que se ejecutaron durante las pruebas; en Python se mide con `coverage` o con el complemento `pytest-cov`.
+- **En palabras sencillas:** un mapa de qué partes del código visitaron las pruebas.
+- **Dónde se rompe la comparación:** visitar una línea no es comprobarla: una prueba sin `assert` sube la cobertura y no detecta nada.
+- **Ejemplo:** con solo las pruebas unitarias, `inventario.py` queda en `82%` y faltan las líneas `15-16`.
+- **Error típico:** perseguir el 100 % con pruebas sin comprobaciones, en vez de probar los casos que importan.
+
+#### ► CÓMO FUNCIONA
+`pytest` recorre la carpeta `tests/`, importa cada archivo `test_*.py` y ejecuta cada función `test_*` por separado.
+Si una función pide un parámetro, busca la fixture con ese nombre, la ejecuta y le pasa el resultado. Un `assert` que
+falla marca **esa** prueba como fallida y sigue con las demás.
+
+| Nivel | Qué prueba | Velocidad | En este tema |
+|---|---|---|---|
+| Unitaria | Una función sola, sin base de datos | Milisegundos | `retirar`, `contar_pendientes` |
+| Integración | Código + SQLite real | Algo más lenta | `contar_pendientes_bd` con la fixture `conexion` |
+| E2E | El programa completo por la terminal | La más lenta | `reporte.py` con una base en `tmp_path` |
+
+```mermaid
+flowchart BT
+    UNIT["muchas unitarias rápidas"] --> INT["integraciones reales con SQLite"] --> E2E["pocas E2E críticas"]
+```
+
+#### Problema resuelto 2.1
+La bodega de RutaFlow necesita que `retirar` descuente cajas, rechace cantidades no positivas y rechace pedidos sin
+stock. Escribe las pruebas unitarias con `pytest` y ejecútalas en un entorno virtual.
+
+**Razonamiento:**
+1. Cada regla es un caso de prueba: un camino feliz y dos excepciones. La lista vacía es el caso límite de `contar_pendientes`.
+2. Las excepciones se comprueban con `pytest.raises` y un trozo del mensaje (`match`), no con `try` a mano.
+3. Las pruebas van en `tests/` y el código en la raíz; por eso se ejecutan con `python -m pytest`.
+
+```python
+# inventario.py — reglas de la bodega y conteo de envíos de RutaFlow
+def retirar(stock, cantidad):
+    if cantidad <= 0:
+        raise ValueError("La cantidad debe ser positiva")
+    if cantidad > stock:
+        raise ValueError("Stock insuficiente")
+    return stock - cantidad
+
+
+def contar_pendientes(envios):
+    return len([envio for envio in envios if envio["estado"] == "pendiente"])
+
+
+def contar_pendientes_bd(conexion):
+    cursor = conexion.execute("SELECT COUNT(*) FROM envios WHERE estado = 'pendiente'")
+    return cursor.fetchone()[0]
+```
+
+```python
+# tests/test_inventario.py — pruebas unitarias: sin base de datos ni archivos
+import pytest
+
+from inventario import contar_pendientes, retirar
+
+
+def test_retirar_descuenta_stock():
+    resultado = retirar(stock=5, cantidad=2)
+    assert resultado == 3
+
+
+def test_retirar_rechaza_cantidad_negativa():
+    with pytest.raises(ValueError, match="positiva"):
+        retirar(stock=5, cantidad=-2)
+
+
+def test_retirar_rechaza_si_no_alcanza():
+    with pytest.raises(ValueError, match="insuficiente"):
+        retirar(stock=5, cantidad=8)
+
+
+def test_contar_pendientes_ruta_vacia():
+    assert contar_pendientes([]) == 0
+```
+
+```text
+$ python3 -m venv .venv
+$ source .venv/bin/activate
+$ python -m pip install -q pytest pytest-cov
+$ python -m pytest -v tests/test_inventario.py
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /home/estudiante/labs/pruebas/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/labs/pruebas
+plugins: cov-7.1.0
+collecting ... collected 4 items
+
+tests/test_inventario.py::test_retirar_descuenta_stock PASSED            [ 25%]
+tests/test_inventario.py::test_retirar_rechaza_cantidad_negativa PASSED  [ 50%]
+tests/test_inventario.py::test_retirar_rechaza_si_no_alcanza PASSED      [ 75%]
+tests/test_inventario.py::test_contar_pendientes_ruta_vacia PASSED       [100%]
+
+============================== 4 passed in 0.02s ===============================
+```
+
+Para ver cómo reporta una falla, cambia temporalmente la línea 9 de la prueba a `assert resultado == 7`:
+
+```text
+$ python -m pytest -q tests/test_inventario.py
+F...                                                                     [100%]
+=================================== FAILURES ===================================
+_________________________ test_retirar_descuenta_stock _________________________
+
+    def test_retirar_descuenta_stock():
+        resultado = retirar(stock=5, cantidad=2)
+>       assert resultado == 7
+E       assert 3 == 7
+
+tests/test_inventario.py:9: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_inventario.py::test_retirar_descuenta_stock - assert 3 == 7
+1 failed, 3 passed in 0.01s
+```
+
+**Explicación por partes.**
+- `inventario.py`, líneas 3–6: dos cláusulas de guarda (Módulo 1, Tema 3) con mensajes distintos; las pruebas los distinguen con `match`.
+- `test_inventario.py`, línea 4: la prueba importa el código igual que cualquier otro programa.
+- Líneas 7–9: patrón de tres pasos: preparar, ejecutar (`retirar`) y comprobar (`assert`).
+- Líneas 12–14: `pytest.raises` pasa solo si el bloque lanza `ValueError` y el mensaje contiene `positiva`.
+- En la falla, `E       assert 3 == 7` muestra el valor real (3) y el esperado (7) sin que escribas un mensaje.
+- `F...`: una letra por prueba. `F` es falla y `.` es éxito; las otras tres siguieron ejecutándose.
+
+> **Error común.** Nombrar el archivo `tests/prueba_inventario.py`. `pytest` solo busca `test_*.py` o `*_test.py`,
+> así que responde `no tests ran in 0.00s` y termina con código 5. No hay error de Python: simplemente no encontró nada.
+
+> **Error común.** Ejecutar `pytest -q` en lugar de `python -m pytest -q` cuando el código está en la raíz y las pruebas
+> en `tests/`. Falla al recoger con `E   ModuleNotFoundError: No module named 'inventario'`. `python -m` agrega la carpeta
+> actual a la ruta de importación.
+
+> **Buena práctica.** Nombra cada prueba como una frase: `test_retirar_rechaza_si_no_alcanza`. Cuando falle en CI,
+> el nombre ya cuenta qué regla se rompió, antes de leer el código.
+
+#### Problema resuelto 2.2
+`contar_pendientes_bd` consulta SQLite. Escribe una prueba con un doble, una de integración con una fixture y una
+E2E. Luego rompe la consulta y observa qué pruebas lo detectan.
+
+**Razonamiento:**
+1. El doble imita `execute` y `fetchone`, pero no entiende SQL: sirve para ver si detecta una consulta rota.
+2. La fixture crea una base en memoria (`:memory:`), nueva para cada prueba, y la cierra al final.
+3. La E2E crea un archivo de base en `tmp_path` y ejecuta `reporte.py` con `subprocess`, como en la terminal.
+
+```python
+# reporte.py — muestra cuántos envíos pendientes hay en una base SQLite
+import sqlite3
+import sys
+
+from inventario import contar_pendientes_bd
+
+conexion = sqlite3.connect(sys.argv[1])
+print("pendientes:", contar_pendientes_bd(conexion))
+conexion.close()
+```
+
+```python
+# tests/test_doble.py — prueba unitaria con un doble de la conexión
+from inventario import contar_pendientes_bd
+
+
+class CursorFalso:
+    def fetchone(self):
+        return (2,)
+
+
+class ConexionFalsa:
+    def execute(self, sql):
+        return CursorFalso()
+
+
+def test_cuenta_pendientes_con_doble():
+    assert contar_pendientes_bd(ConexionFalsa()) == 2
+```
+
+```python
+# tests/test_integracion.py — la consulta SQL real contra SQLite
 import sqlite3
 
-ESQUEMA = """
-CREATE TABLE categorias(
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL UNIQUE
-);
-CREATE TABLE tareas(
-  id INTEGER PRIMARY KEY,
-  titulo TEXT NOT NULL,
-  categoria_id INTEGER NOT NULL REFERENCES categorias(id)
-);
-INSERT INTO categorias(nombre) VALUES ('trabajo'), ('personal');
-INSERT INTO tareas(titulo, categoria_id) VALUES ('Pagar factura', 1), ('Comprar pan', 2);
-"""
+import pytest
+
+from inventario import contar_pendientes_bd
 
 
-def probar_borrado(activar_claves):
+@pytest.fixture
+def conexion():
     conexion = sqlite3.connect(":memory:")
-    if activar_claves:
-        conexion.execute("PRAGMA foreign_keys = ON")
-    conexion.executescript(ESQUEMA)
-    print("foreign_keys =", conexion.execute("PRAGMA foreign_keys").fetchone()[0])
-    try:
-        conexion.execute("DELETE FROM categorias WHERE nombre = 'trabajo'")
-        print("  borrado aceptado; categorías:", conexion.execute("SELECT * FROM categorias").fetchall())
-        print("  tareas:", conexion.execute("SELECT * FROM tareas").fetchall())
-    except sqlite3.IntegrityError as error:
-        print("  borrado rechazado:", error)
+    conexion.execute("CREATE TABLE envios (guia TEXT PRIMARY KEY, estado TEXT NOT NULL)")
+    conexion.executemany(
+        "INSERT INTO envios VALUES (?, ?)",
+        [("RF-101", "pendiente"), ("RF-102", "entregado"), ("RF-103", "pendiente")],
+    )
+    yield conexion
     conexion.close()
 
 
-probar_borrado(activar_claves=False)
-probar_borrado(activar_claves=True)
+def test_cuenta_pendientes_en_sqlite(conexion):
+    assert contar_pendientes_bd(conexion) == 2
+
+
+def test_tabla_vacia_da_cero(conexion):
+    conexion.execute("DELETE FROM envios")
+    assert contar_pendientes_bd(conexion) == 0
 ```
-
-```text
-$ python3 modelo.py
-foreign_keys = 0
-  borrado aceptado; categorías: [(2, 'personal')]
-  tareas: [(1, 'Pagar factura', 1), (2, 'Comprar pan', 2)]
-foreign_keys = 1
-  borrado rechazado: FOREIGN KEY constraint failed
-```
-
-**Explicación por partes.**
-- Líneas 5–8: la tabla `categorias` con su clave primaria `id` y un `nombre` que no puede faltar ni repetirse.
-- Línea 12: `categoria_id` es la clave foránea; `REFERENCES categorias(id)` declara a qué apunta.
-- Líneas 14–15: dos categorías y dos tareas; la tarea «Pagar factura» apunta a la categoría 1.
-- Líneas 20–22: una base en memoria nueva por cada prueba; el `PRAGMA` se activa antes de crear las tablas.
-- Primera prueba: el borrado se acepta y la tarea 1 sigue apuntando a una categoría 1 que ya no existe.
-- Segunda prueba: con el `PRAGMA`, SQLite rechaza el borrado y la integridad se conserva.
-
-> **Error común.** Declarar `REFERENCES` y creer que ya estás protegido. En SQLite las claves foráneas vienen
-> apagadas: `PRAGMA foreign_keys` devuelve `0` y el borrado deja huérfanos sin ningún mensaje. Ejecuta
-> `PRAGMA foreign_keys = ON` justo después de abrir cada conexión.
-
-> **Buena práctica.** Nombra las tablas en plural (`tareas`) y las claves foráneas como `<entidad>_id`
-> (`categoria_id`). Quien lee el esquema entiende la relación sin abrir el diagrama.
-
-#### Problema resuelto 1.2
-Compara un diseño que repite el nombre y el color de la categoría en cada tarea con uno normalizado. Cambia el
-color de «trabajo» a morado en ambos y cuenta cuántas filas toca cada `UPDATE`.
-
-**Razonamiento:**
-1. En el diseño repetido, el color de «trabajo» vive en cada tarea de esa categoría.
-2. En el normalizado, vive una sola vez en `categorias`; las tareas solo guardan el número.
-3. `cursor.rowcount` dice cuántas filas cambió la última sentencia: esa es la medición.
 
 ```python
-# normalizar.py — el mismo dato repetido contra el dato en un solo lugar
+# tests/test_e2e.py — ejecuta el programa completo como lo haría una persona
 import sqlite3
+import subprocess
+import sys
 
-conexion = sqlite3.connect(":memory:")
-conexion.executescript("""
-CREATE TABLE tareas_mal_disenadas(
-  id INTEGER PRIMARY KEY,
-  titulo TEXT,
-  categoria_nombre TEXT,
-  categoria_color TEXT
-);
-INSERT INTO tareas_mal_disenadas(titulo, categoria_nombre, categoria_color) VALUES
-  ('Pagar factura', 'trabajo', 'azul'),
-  ('Revisar ruta', 'trabajo', 'azul'),
-  ('Cargar camión', 'Trabajo', 'azul'),
-  ('Comprar pan', 'personal', 'verde');
 
-CREATE TABLE categorias(id INTEGER PRIMARY KEY, nombre TEXT NOT NULL UNIQUE, color TEXT NOT NULL);
-CREATE TABLE tareas(
-  id INTEGER PRIMARY KEY,
-  titulo TEXT NOT NULL,
-  categoria_id INTEGER NOT NULL REFERENCES categorias(id)
-);
-INSERT INTO categorias(nombre, color) VALUES ('trabajo', 'azul'), ('personal', 'verde');
-INSERT INTO tareas(titulo, categoria_id) VALUES
-  ('Pagar factura', 1), ('Revisar ruta', 1), ('Cargar camión', 1), ('Comprar pan', 2);
-""")
+def test_reporte_muestra_pendientes(tmp_path):
+    ruta_bd = tmp_path / "envios.db"
+    conexion = sqlite3.connect(ruta_bd)
+    conexion.execute("CREATE TABLE envios (guia TEXT PRIMARY KEY, estado TEXT NOT NULL)")
+    conexion.execute("INSERT INTO envios VALUES ('RF-101', 'pendiente')")
+    conexion.commit()
+    conexion.close()
 
-malo = conexion.execute(
-    "UPDATE tareas_mal_disenadas SET categoria_color = 'morado' WHERE categoria_nombre = 'trabajo'"
-)
-print("diseño repetido: filas cambiadas =", malo.rowcount)
-print(conexion.execute("SELECT titulo, categoria_nombre, categoria_color FROM tareas_mal_disenadas").fetchall())
-
-bueno = conexion.execute("UPDATE categorias SET color = 'morado' WHERE nombre = 'trabajo'")
-print("diseño normalizado: filas cambiadas =", bueno.rowcount)
-print(conexion.execute("SELECT * FROM categorias").fetchall())
+    resultado = subprocess.run(
+        [sys.executable, "reporte.py", str(ruta_bd)], capture_output=True, text=True, check=True
+    )
+    assert resultado.stdout == "pendientes: 1\n"
 ```
 
 ```text
-$ python3 normalizar.py
-diseño repetido: filas cambiadas = 2
-[('Pagar factura', 'trabajo', 'morado'), ('Revisar ruta', 'trabajo', 'morado'), ('Cargar camión', 'Trabajo', 'azul'), ('Comprar pan', 'personal', 'verde')]
-diseño normalizado: filas cambiadas = 1
-[(1, 'trabajo', 'morado'), (2, 'personal', 'verde')]
+$ python -m pytest -v
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /home/estudiante/labs/pruebas/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/estudiante/labs/pruebas
+plugins: cov-7.1.0
+collecting ... collected 8 items
+
+tests/test_doble.py::test_cuenta_pendientes_con_doble PASSED             [ 12%]
+tests/test_e2e.py::test_reporte_muestra_pendientes PASSED                [ 25%]
+tests/test_integracion.py::test_cuenta_pendientes_en_sqlite PASSED       [ 37%]
+tests/test_integracion.py::test_tabla_vacia_da_cero PASSED               [ 50%]
+tests/test_inventario.py::test_retirar_descuenta_stock PASSED            [ 62%]
+tests/test_inventario.py::test_retirar_rechaza_cantidad_negativa PASSED  [ 75%]
+tests/test_inventario.py::test_retirar_rechaza_si_no_alcanza PASSED      [ 87%]
+tests/test_inventario.py::test_contar_pendientes_ruta_vacia PASSED       [100%]
+
+============================== 8 passed in 0.06s ===============================
 ```
 
-**Explicación por partes.**
-- Líneas 6–16: el diseño repetido; observa la línea 15, donde alguien escribió «Trabajo» con mayúscula.
-- Líneas 18–26: el diseño normalizado; el color aparece una sola vez, en la línea 24.
-- Líneas 29–32: el `UPDATE` cambia 2 filas y deja «Cargar camión» en azul: la base ahora se contradice.
-- Líneas 35–36: el mismo cambio en el diseño normalizado toca 1 fila y todas las tareas lo ven.
-
-> **Prevenir errores.** Si un `UPDATE` tiene que tocar muchas filas para cambiar **un** hecho, el modelo repite
-> datos. Antes de crear una columna de texto, pregúntate si ese texto describe a otra entidad.
-
-#### Checkpoint 1.1
-En `modelo.py`, con las claves activas, ¿qué pasa si en lugar de borrar «trabajo» borras «personal»?
-
-Respuesta: también se rechaza con `FOREIGN KEY constraint failed`, porque la tarea «Comprar pan» apunta a la
-categoría 2. Solo se puede borrar una categoría sin tareas.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea la carpeta del módulo y entra en ella:
-
-```bash
-mkdir -p fundamentos-sqlite/src
-cd fundamentos-sqlite
-```
-
-#### Paso 2 · Dibuja el modelo
-Escribe en papel las entidades Categoría, Producto y Movimiento, sus atributos y las dos relaciones uno a muchos.
-Compáralo con el diagrama de «Cómo funciona».
-
-#### Paso 3 · Comprueba la integridad
-Guarda `modelo.py` en `src/`, ejecútalo con `python3 src/modelo.py` y confirma las dos líneas `foreign_keys`. La
-segunda prueba debe terminar con `borrado rechazado: FOREIGN KEY constraint failed`.
-
-#### Paso 4 · Agrega los movimientos
-Añade al esquema una tabla `movimientos(id, producto_id, cantidad)` con `producto_id` como clave foránea hacia
-`productos(id)`. Con las claves activas, inserta un movimiento del producto 99. Debes ver
-`FOREIGN KEY constraint failed`.
-
-#### Paso 5 · Mide la normalización
-Ejecuta `normalizar.py` y anota los dos valores de `filas cambiadas`. Deben ser `2` y `1`.
-
-#### Resumen
-- La **persistencia** mantiene los datos después de cerrar el programa; una **base de datos relacional** los guarda en tablas.
-- Una **entidad** se vuelve **tabla**; cada **atributo**, **columna**; cada registro, **fila**.
-- La **clave primaria** identifica cada fila; la **clave foránea** guarda la clave de otra tabla y expresa la **relación**.
-- La **integridad referencial** impide huérfanos, pero en SQLite exige `PRAGMA foreign_keys = ON` en cada **conexión**.
-- La **normalización** guarda cada hecho una vez; se mide contando las filas que toca un `UPDATE`.
-
-#### Ejercicio verificable 1
-Básico. Crea `mensajeros(id, nombre)` y `envios(id, guia, mensajero_id)` con clave foránea. Inserta un mensajero y
-dos envíos. Con las claves activas, inserta un envío con `mensajero_id = 7`.
-
-Respuesta esperada: `sqlite3.IntegrityError: FOREIGN KEY constraint failed`. La clave foránea va en `envios`, el
-lado «muchos» de la relación.
-
-#### Ejercicio verificable 2
-Intermedio. En `normalizar.py`, cambia el filtro del primer `UPDATE` por `WHERE lower(categoria_nombre) = 'trabajo'`.
-¿Cuántas filas cambian ahora?
-
-Respuesta esperada: `3`. `lower` convierte «Trabajo» a minúsculas y la fila olvidada entra en el cambio. Es un
-parche: el diseño normalizado no necesita ese truco.
-
-#### Ejercicio verificable 3
-Reto. En una base sin claves activas, borra la categoría 1 de `modelo.py`, guarda el cambio con `commit()` y
-ejecuta `PRAGMA foreign_key_check`. Explica cada valor de la fila que devuelve.
-
-Respuesta esperada: `[('tareas', 1, 'categorias', 0)]`. Significa: en la tabla `tareas`, la fila con `id` 1 apunta
-a `categorias` y rompe la clave foránea número 0 de esa tabla.
-
-#### En el trabajo
-Antes de escribir una sola línea de un backend, los equipos dibujan el modelo entidad-relación y lo revisan con
-quien conoce el negocio. Un error de modelo es caro: cambiar dónde vive un dato con millones de filas exige una
-migración. Por eso las empresas activan las claves foráneas desde el primer día y ejecutan `foreign_key_check`
-antes de cada migración importante.
-
-</details>
-
-### Tema 2: SQL para definir, escribir, consultar y relacionar · Intermedio · 60 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- crear un esquema desde un archivo de migración y aplicarlo una sola vez;
-- insertar filas y consultarlas con `SELECT`, `WHERE` y `ORDER BY`;
-- combinar tablas con `JOIN` y `LEFT JOIN` y resumirlas con `GROUP BY`;
-- provocar una inyección SQL real y corregirla con una consulta parametrizada.
-
-**Conceptos clave:** CREATE TABLE, INSERT, SELECT, WHERE, ORDER BY, JOIN, LEFT JOIN, GROUP BY, función de agregado, cursor, consulta parametrizada, inyección SQL, migración
-
-#### El problema
-La jefa de bodega de RutaFlow pide cada lunes dos datos. Primero, qué productos tienen menos de 5 unidades, con su
-categoría. Segundo, cuántas unidades hay por categoría. Además, la pantalla de búsqueda recibe el SKU que escribe
-cualquier usuario. ¿Cómo se piden esos datos a la base y cómo se evita que un texto malicioso cambie la consulta?
-
-#### Glosario del tema
-
-**CREATE TABLE**
-- **Definición técnica:** sentencia DDL (lenguaje de definición de datos) que crea una tabla con sus columnas, tipos y restricciones.
-- **En palabras sencillas:** la orden que dibuja la cuadrícula vacía con sus encabezados y sus reglas.
-- **Dónde se rompe la comparación:** el dibujo queda guardado en la base; puedes leerlo después en `sqlite_master`.
-- **Ejemplo:** `SELECT sql FROM sqlite_master WHERE name = 'categorias'` devuelve el texto `CREATE TABLE categorias (...)` que la creó.
-- **Error típico:** ejecutar el script dos veces: la segunda falla con `table categorias already exists`.
-
-**INSERT**
-- **Definición técnica:** sentencia DML (manipulación de datos) que agrega filas a una tabla; las columnas omitidas toman su `DEFAULT` o `NULL`.
-- **En palabras sencillas:** escribir un renglón nuevo en la cuadrícula.
-- **Dónde se rompe la comparación:** un renglón en papel siempre entra; la base lo rechaza si rompe una regla.
-- **Ejemplo:** `INSERT INTO productos(sku, nombre) VALUES ('H-30', 'Martillo')` agrega 1 fila y `stock` queda en `0` por su `DEFAULT`.
-- **Error típico:** repetir un SKU: `UNIQUE constraint failed: productos.sku`.
-
-**SELECT**
-- **Definición técnica:** sentencia que lee datos y devuelve un conjunto de filas con las columnas pedidas, sin modificar la tabla.
-- **En palabras sencillas:** la pregunta que le haces a la base; la respuesta es una tabla nueva y temporal.
-- **Dónde se rompe la comparación:** sin `ORDER BY` el orden de la respuesta no está garantizado, aunque hoy salga ordenada.
-- **Ejemplo:** `SELECT sku, nombre FROM productos` devuelve `[('A-10', 'Teclado'), ('A-11', 'Mouse'), ('E-20', 'Caja mediana'), ('E-21', 'Cinta'), ('S-99', 'Muestra')]`.
-- **Error típico:** dejar una comilla sin cerrar: `WHERE nombre = 'Teclado` produce `unrecognized token: "'Teclado"`.
-
-**WHERE**
-- **Definición técnica:** cláusula que filtra las filas y conserva solo las que hacen verdadera una condición.
-- **En palabras sencillas:** el colador: deja pasar las filas que cumplen la regla.
-- **Dónde se rompe la comparación:** un colador no compara tipos; SQLite compara `stock = 'cuatro'` sin error y devuelve `[]`.
-- **Ejemplo:** `SELECT sku FROM productos WHERE stock < 5 AND categoria_id = 1` devuelve `[('A-10',)]`.
-- **Error típico:** comparar con `= NULL`; para buscar vacíos se usa `IS NULL`.
-
-**ORDER BY**
-- **Definición técnica:** cláusula que ordena el resultado por una o más expresiones, ascendente (`ASC`, por defecto) o descendente (`DESC`).
-- **En palabras sencillas:** pedir la respuesta ordenada, de menor a mayor o al revés.
-- **Dónde se rompe la comparación:** los `NULL` también se ordenan: en SQLite van primero con `ASC` y al final con `DESC`.
-- **Ejemplo:** `SELECT sku, stock FROM productos ORDER BY stock DESC LIMIT 2` devuelve `[('E-21', 40), ('A-11', 12)]`.
-- **Error típico:** ordenar números guardados como texto: `'12'` queda antes que `'4'`.
-
-**JOIN (INNER JOIN)**
-- **Definición técnica:** operación que combina filas de dos tablas cuando cumplen la condición `ON`; las filas sin pareja se descartan.
-- **En palabras sencillas:** juntar cada producto con su categoría usando el número que comparten.
-- **Dónde se rompe la comparación:** si un producto no tiene categoría, desaparece del resultado sin aviso.
-- **Ejemplo:** `SELECT p.sku FROM productos p JOIN categorias c ON c.id = p.categoria_id` devuelve 4 filas; `S-99` no sale porque no tiene categoría.
-- **Error típico:** usar `id` sin prefijo cuando ambas tablas lo tienen: `ambiguous column name: id`.
-
-**LEFT JOIN**
-- **Definición técnica:** combinación que conserva todas las filas de la tabla izquierda y rellena con `NULL` las columnas de la derecha cuando no hay pareja.
-- **En palabras sencillas:** juntar productos con categorías sin perder los productos huérfanos.
-- **Dónde se rompe la comparación:** un `WHERE` sobre la tabla derecha puede volver a esconder las filas con `NULL`.
-- **Ejemplo:** `SELECT p.sku FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id WHERE c.id IS NULL` devuelve `[('S-99',)]`.
-- **Error típico:** filtrar `WHERE c.nombre <> 'Empaque'`: devuelve `[('A-10',), ('A-11',)]` y pierde `S-99`, porque `NULL <> 'Empaque'` no es verdadero.
-
-**GROUP BY**
-- **Definición técnica:** cláusula que reúne las filas con el mismo valor en las columnas indicadas y produce una fila por grupo.
-- **En palabras sencillas:** hacer montoncitos por categoría y luego contar o sumar cada montón.
-- **Dónde se rompe la comparación:** los productos sin categoría forman su propio montón, con clave `NULL`.
-- **Ejemplo:** `SELECT categoria_id, COUNT(*) FROM productos GROUP BY categoria_id` devuelve `[(None, 1), (1, 2), (2, 2)]`.
-- **Error típico:** pedir una columna que no está agrupada (`sku`); SQLite no falla y devuelve un valor cualquiera del grupo.
-
-**función de agregado**
-- **Definición técnica:** función que recibe muchas filas y devuelve un solo valor: `COUNT`, `SUM`, `MIN`, `MAX`, `AVG`.
-- **En palabras sencillas:** la calculadora que resume un montón en un número.
-- **Dónde se rompe la comparación:** ignora los `NULL`: `COUNT(categoria_id)` no cuenta productos sin categoría.
-- **Ejemplo:** `SELECT COUNT(*), SUM(stock), MIN(stock), MAX(stock), AVG(stock) FROM productos` devuelve `[(5, 60, 1, 40, 12.0)]`.
-- **Error típico:** esperar `0` de un `SUM` sin filas: devuelve `NULL` (`None` en Python), como pasa con «Herramientas».
-
-**cursor**
-- **Definición técnica:** objeto `sqlite3.Cursor` que ejecuta una sentencia y entrega su resultado con `fetchone()` (una fila) o `fetchall()` (todas).
-- **En palabras sencillas:** el dedo que recorre la respuesta renglón por renglón.
-- **Dónde se rompe la comparación:** el dedo no vuelve atrás: después de leer una fila, `fetchone()` entrega la siguiente.
-- **Ejemplo:** con `cursor = conexion.execute("SELECT sku FROM productos")`, dos `fetchone()` seguidos devuelven `('A-10',)` y `('A-11',)`.
-- **Error típico:** llamar `fetchall()` dos veces y recibir `[]` la segunda, porque el cursor ya llegó al final.
-
-**consulta parametrizada**
-- **Definición técnica:** sentencia con marcadores `?` cuyos valores se envían aparte; el motor nunca interpreta esos valores como código SQL.
-- **En palabras sencillas:** un formulario con casillas: el usuario llena la casilla, pero no puede reescribir el formulario.
-- **Dónde se rompe la comparación:** los marcadores sirven para valores, no para nombres de tablas o columnas.
-- **Ejemplo:** `conexion.execute("SELECT nombre FROM productos WHERE sku = ?", ("E-21",))` devuelve `[('Cinta',)]`.
-- **Error típico:** pasar el texto sin tupla: `("A-10")` es un `str` de 4 letras y produce `Incorrect number of bindings supplied. The current statement uses 1, and there are 4 supplied.`.
-
-**inyección SQL**
-- **Definición técnica:** vulnerabilidad en la que un dato del usuario, unido como texto a la sentencia, cambia su estructura y su significado.
-- **En palabras sencillas:** el usuario escribe en la casilla un pedazo de orden y la base le obedece.
-- **Dónde se rompe la comparación:** no hace falta un «hacker»: un apellido con apóstrofo como O'Brien ya rompe la consulta concatenada.
-- **Ejemplo:** con `sku = "x' OR '1'='1"`, la consulta concatenada devuelve todos los productos en vez de ninguno.
-- **Error típico:** «limpiar» comillas a mano; la única defensa fiable es la consulta parametrizada.
-
-**migración**
-- **Definición técnica:** archivo versionado con las sentencias que llevan el esquema de una versión a la siguiente; se aplica una sola vez y queda registrado.
-- **En palabras sencillas:** la receta numerada de cambios de la base: la 001 crea las tablas, la 002 agrega una columna.
-- **Dónde se rompe la comparación:** una receta se puede repetir; una migración repetida falla o duplica datos, por eso se registra su versión.
-- **Ejemplo:** tras aplicar `migracion_001.sql`, `PRAGMA user_version` devuelve `1` y la segunda ejecución la salta.
-- **Error típico:** editar una migración ya aplicada en otro equipo; se escribe una migración nueva.
-
-#### ► CÓMO FUNCIONA
-Escribes `SELECT` primero, pero el motor no lo ejecuta primero. Lógicamente, la base arma las filas con `FROM` y
-`JOIN`, las filtra con `WHERE` y las agrupa con `GROUP BY`. Después filtra grupos con `HAVING`, calcula las
-columnas de `SELECT` y al final ordena y recorta:
-
-```mermaid
-flowchart LR
-    FROM["FROM / JOIN"] --> WHERE["WHERE"] --> GROUP["GROUP BY"]
-    GROUP --> HAVING["HAVING"] --> SELECT["SELECT"] --> ORDER["ORDER BY"] --> LIMIT["LIMIT"]
-```
-
-Ese orden explica dos reglas. Un alias creado en `SELECT` (como `unidades`) sirve en `ORDER BY`, pero no en
-`WHERE`. Y un filtro sobre un total (`SUM(...) > 10`) va en `HAVING`, porque en `WHERE` los grupos aún no existen.
-
-#### Problema resuelto 2.1
-Responde las dos preguntas de la jefa de bodega sobre un inventario con tres categorías y cinco productos. Uno de
-ellos, `S-99`, no tiene categoría.
-
-**Razonamiento:**
-1. Stock bajo: filtrar `stock < 5` y traer el nombre de la categoría con un `JOIN`.
-2. Para no perder `S-99`, el `JOIN` debe ser `LEFT JOIN`; se muestra también el `JOIN` simple para comparar.
-3. Unidades por categoría: partir de `categorias`, unir sus productos, agrupar por categoría y sumar `stock`.
-
-```python
-# consultas.py — inventario de la bodega de RutaFlow
-import sqlite3
-
-conexion = sqlite3.connect(":memory:")
-conexion.executescript("""
-CREATE TABLE categorias (
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL UNIQUE
-);
-CREATE TABLE productos (
-  id INTEGER PRIMARY KEY,
-  sku TEXT NOT NULL UNIQUE,
-  nombre TEXT NOT NULL,
-  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
-  categoria_id INTEGER,
-  FOREIGN KEY (categoria_id) REFERENCES categorias(id)
-);
-INSERT INTO categorias(nombre) VALUES ('Periféricos'), ('Empaque'), ('Herramientas');
-INSERT INTO productos(sku, nombre, stock, categoria_id) VALUES
-  ('A-10', 'Teclado', 4, 1),
-  ('A-11', 'Mouse', 12, 1),
-  ('E-20', 'Caja mediana', 3, 2),
-  ('E-21', 'Cinta', 40, 2),
-  ('S-99', 'Muestra', 1, NULL);
-""")
-
-
-def mostrar(titulo, sql):
-    print("--", titulo)
-    cursor = conexion.execute(sql)
-    for fila in cursor.fetchall():
-        print("  ", fila)
-
-
-mostrar("Stock bajo con su categoría (LEFT JOIN)", """
-SELECT p.sku, p.nombre, p.stock, c.nombre AS categoria
-FROM productos AS p
-LEFT JOIN categorias AS c ON c.id = p.categoria_id
-WHERE p.stock < 5
-ORDER BY p.stock ASC""")
-
-mostrar("Stock bajo solo con categoría (JOIN)", """
-SELECT p.sku, c.nombre
-FROM productos AS p
-JOIN categorias AS c ON c.id = p.categoria_id
-WHERE p.stock < 5
-ORDER BY p.sku""")
-
-mostrar("Unidades por categoría (GROUP BY)", """
-SELECT c.nombre, COUNT(p.id) AS productos, SUM(p.stock) AS unidades
-FROM categorias c
-LEFT JOIN productos p ON p.categoria_id = c.id
-GROUP BY c.id, c.nombre
-ORDER BY unidades DESC""")
-```
+Ahora rompe la consulta: en la línea 15 de `inventario.py` escribe `'pendientes'` (con «s») en vez de `'pendiente'`.
 
 ```text
-$ python3 consultas.py
--- Stock bajo con su categoría (LEFT JOIN)
-   ('S-99', 'Muestra', 1, None)
-   ('E-20', 'Caja mediana', 3, 'Empaque')
-   ('A-10', 'Teclado', 4, 'Periféricos')
--- Stock bajo solo con categoría (JOIN)
-   ('A-10', 'Periféricos')
-   ('E-20', 'Empaque')
--- Unidades por categoría (GROUP BY)
-   ('Empaque', 2, 43)
-   ('Periféricos', 2, 16)
-   ('Herramientas', 0, None)
+$ python -m pytest -q --tb=short
+.FF.....                                                                 [100%]
+=================================== FAILURES ===================================
+_______________________ test_reporte_muestra_pendientes ________________________
+tests/test_e2e.py:18: in test_reporte_muestra_pendientes
+    assert resultado.stdout == "pendientes: 1\n"
+E   AssertionError: assert 'pendientes: 0\n' == 'pendientes: 1\n'
+E     
+E     - pendientes: 1
+E     ?             ^
+E     + pendientes: 0
+E     ?             ^
+_______________________ test_cuenta_pendientes_en_sqlite _______________________
+tests/test_integracion.py:22: in test_cuenta_pendientes_en_sqlite
+    assert contar_pendientes_bd(conexion) == 2
+E   assert 0 == 2
+E    +  where 0 = contar_pendientes_bd(<sqlite3.Connection object at 0x7f3100d09b70>)
+=========================== short test summary info ============================
+FAILED tests/test_e2e.py::test_reporte_muestra_pendientes - AssertionError: a...
+FAILED tests/test_integracion.py::test_cuenta_pendientes_en_sqlite - assert 0...
+2 failed, 6 passed in 0.05s
 ```
 
 **Explicación por partes.**
-- Líneas 6–17: el esquema de la bodega; la línea 14 da `stock` por defecto 0 y prohíbe negativos.
-- Líneas 18–24: los datos de prueba; la línea 24 inserta `S-99` con `categoria_id` en `NULL`.
-- Líneas 28–32: `mostrar` ejecuta la consulta, recibe un cursor y recorre todas sus filas.
-- Líneas 36–40: `LEFT JOIN` conserva `S-99` con categoría `None`; `ORDER BY` pone primero el stock más bajo.
-- Líneas 43–47: el `JOIN` simple descarta `S-99`: solo salen dos productos.
-- Líneas 50–54: «Herramientas» no tiene productos: `COUNT` da `0` y `SUM` da `None`, que `DESC` deja al final.
+- `test_doble.py`, líneas 10–12: `ConexionFalsa.execute` recibe el SQL y lo ignora; por eso el primer `.` sigue verde con la consulta rota.
+- `test_integracion.py`, línea 9: `@pytest.fixture` convierte `conexion` en una fixture; la línea 21 la pide por su nombre.
+- Líneas 17–18: lo que va antes de `yield` prepara; lo que va después limpia, aunque la prueba falle.
+- Línea 25: `test_tabla_vacia_da_cero` borra todo y sigue pasando: la consulta rota también da 0 con tabla vacía.
+- `test_e2e.py`, línea 7: `tmp_path` es una fixture de `pytest`; cada prueba recibe una carpeta temporal nueva.
+- Líneas 15–17: `subprocess.run` ejecuta `reporte.py` con el mismo Python (`sys.executable`); `check=True` falla si el programa termina con error.
+- La dirección `0x7f3100d09b70` cambia en cada ejecución: es dónde quedó el objeto en memoria.
 
-> **Error común.** Escribir `SELECT id, nombre FROM productos p JOIN categorias c ON c.id = p.categoria_id`.
-> SQLite responde `sqlite3.OperationalError: ambiguous column name: id`, porque las dos tablas tienen `id`.
-> Prefija cada columna con su alias: `p.id`, `c.nombre`.
-
-> **Buena práctica.** Da un alias corto a cada tabla (`productos AS p`) y escribe cada cláusula en su propia
-> línea. Una consulta de reporte se lee como un párrafo y se revisa cláusula por cláusula.
-
-#### Problema resuelto 2.2
-La búsqueda por SKU recibe el texto `x' OR '1'='1`. Compara la consulta armada con `+` y la parametrizada.
-
-**Razonamiento:**
-1. Con `+`, el texto del usuario se pega dentro de las comillas y cierra la comilla antes de tiempo.
-2. La sentencia resultante es `... WHERE sku = 'x' OR '1'='1'`, y `'1'='1'` siempre es verdadero.
-3. Con `?`, el texto completo es un valor: se busca un SKU que se llame literalmente así.
-
-```python
-# inyeccion.py — texto concatenado contra consulta parametrizada
-import sqlite3
-
-conexion = sqlite3.connect(":memory:")
-cursor = conexion.cursor()
-cursor.execute("CREATE TABLE productos (sku TEXT, nombre TEXT)")
-cursor.executemany("INSERT INTO productos VALUES (?, ?)", [("A-1", "lápiz"), ("B-2", "regla")])
-sku = "x' OR '1'='1"  # entrada maliciosa escrita en un formulario
-
-# Incorrecto: el texto del usuario se vuelve parte del SQL
-cursor.execute("SELECT * FROM productos WHERE sku = '" + sku + "'")
-print("concatenando:", cursor.fetchall())
-
-# Correcto: el driver envía el SQL y el dato por separado
-cursor.execute("SELECT * FROM productos WHERE sku = ?", (sku,))
-print("parametrizado:", cursor.fetchall())
-```
+Por último, mide la cobertura solo con las pruebas unitarias, y después con todas:
 
 ```text
-$ python3 inyeccion.py
-concatenando: [('A-1', 'lápiz'), ('B-2', 'regla')]
-parametrizado: []
+$ python -m pytest -q --cov=inventario --cov-report=term-missing tests/test_inventario.py
+....                                                                     [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
+
+Name            Stmts   Miss  Cover   Missing
+---------------------------------------------
+inventario.py      11      2    82%   15-16
+---------------------------------------------
+TOTAL              11      2    82%
+4 passed in 0.02s
+$ python -m pytest -q --cov=inventario --cov-report=term-missing
+........                                                                 [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
+
+Name            Stmts   Miss  Cover   Missing
+---------------------------------------------
+inventario.py      11      0   100%
+---------------------------------------------
+TOTAL              11      0   100%
+8 passed in 0.06s
 ```
 
-**Explicación por partes.**
-- Línea 5: `conexion.cursor()` crea un cursor explícito; `cursor.execute` funciona igual que `conexion.execute`.
-- Línea 7: `executemany` repite el mismo `INSERT` parametrizado para cada tupla de la lista.
-- Línea 11: la concatenación entrega toda la tabla a quien no conocía ningún SKU.
-- Línea 15: el marcador `?` y la tupla `(sku,)` devuelven `[]`: ningún producto tiene ese SKU.
+La columna `Missing` dice que las unitarias nunca visitaron las líneas 15–16, la consulta SQL. Con todas las pruebas
+llega al 100 %. Pero cuidado: la cobertura mide visitas, no comprobaciones.
 
-> **Error común.** Pasar un solo parámetro sin coma: `execute("... WHERE sku = ?", "A-10")`. Python ve un texto de
-> 4 caracteres y responde `sqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement
-> uses 1, and there are 4 supplied.`. Escribe la tupla con coma: `("A-10",)`.
+> **Error común.** Confiar en una prueba sin `assert`. Si cambias `return stock - cantidad` por `return stock + cantidad`
+> y la única prueba es una que llama `retirar(stock=5, cantidad=2)` sin comprobar nada, `pytest` responde
+> `1 passed` con `64%` de cobertura. El defecto pasa en verde.
 
-> **Prevenir errores.** Busca en tu proyecto `execute(` seguido de `+` o de una f-string. Cada coincidencia con
-> datos externos es una inyección esperando un usuario creativo.
+> **Prevenir errores.** Por cada doble de prueba, pregúntate qué frontera real está ocultando. Si es SQL, red o
+> archivos, agrega al menos una prueba de integración que cruce esa frontera de verdad.
 
 #### Checkpoint 2.1
-En el Problema resuelto 2.1, ¿qué devuelve la tercera consulta si cambias `LEFT JOIN` por `JOIN`?
+Con la consulta rota (`'pendientes'`), ¿por qué `test_tabla_vacia_da_cero` sigue pasando?
 
-Respuesta: desaparece la fila de «Herramientas», porque no tiene productos con los que emparejarse. Quedan
-`('Empaque', 2, 43)` y `('Periféricos', 2, 16)`.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea la carpeta y entra en ella:
-
-```bash
-mkdir -p fundamentos-sql/src
-cd fundamentos-sql
-```
-
-#### Paso 2 · Escribe la migración
-Guarda el esquema en un archivo versionado. `PRAGMA user_version` es un número que SQLite guarda en la base: lo
-usarás como versión del esquema.
-
-```sql
--- migracion_001.sql — esquema inicial del inventario
-CREATE TABLE categorias (
-  id INTEGER PRIMARY KEY,
-  nombre TEXT NOT NULL UNIQUE
-);
-CREATE TABLE productos (
-  id INTEGER PRIMARY KEY,
-  sku TEXT NOT NULL UNIQUE,
-  nombre TEXT NOT NULL,
-  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
-  categoria_id INTEGER REFERENCES categorias(id)
-);
-PRAGMA user_version = 1;
-```
-
-#### Paso 3 · Aplica la migración una sola vez
-El programa lee la versión, aplica el archivo si hace falta y lista las tablas. Ejecútalo dos veces:
-
-```python
-# aplicar.py — aplica la migración 001 a inventario.db una sola vez
-import sqlite3
-from pathlib import Path
-
-conexion = sqlite3.connect("inventario.db")
-version = conexion.execute("PRAGMA user_version").fetchone()[0]
-if version >= 1:
-    print("migración 001 ya aplicada; versión", version)
-else:
-    conexion.executescript(Path("migracion_001.sql").read_text(encoding="utf-8"))
-    print("migración 001 aplicada; versión", conexion.execute("PRAGMA user_version").fetchone()[0])
-tablas = conexion.execute("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
-print("tablas:", [fila[0] for fila in tablas])
-conexion.close()
-```
-
-```text
-$ python3 aplicar.py
-migración 001 aplicada; versión 1
-tablas: ['categorias', 'productos']
-$ python3 aplicar.py
-migración 001 ya aplicada; versión 1
-tablas: ['categorias', 'productos']
-```
-
-La segunda ejecución no vuelve a crear las tablas: por eso no aparece `table categorias already exists`.
-
-#### Paso 4 · Consulta y defiende la búsqueda
-Ejecuta `consultas.py` e `inyeccion.py` y compara tus salidas con las de los problemas resueltos. Luego cambia la
-línea 11 de `inyeccion.py` por una consulta parametrizada y confirma que la salida `concatenando:` queda en `[]`.
-
-#### Resumen
-- `CREATE TABLE` define la estructura; `INSERT` agrega filas; una **migración** versionada aplica esos cambios una sola vez.
-- `SELECT` lee; `WHERE` filtra filas; `ORDER BY` ordena; el motor los evalúa en un orden lógico distinto al escrito.
-- `JOIN` descarta filas sin pareja; `LEFT JOIN` las conserva con `NULL`.
-- `GROUP BY` forma grupos y cada **función de agregado** resume un grupo en un valor.
-- Un **cursor** entrega las filas con `fetchone()` o `fetchall()`.
-- La **consulta parametrizada** (`?` más una tupla) es la defensa contra la **inyección SQL**.
-
-#### Ejercicio verificable 1
-Básico. Sobre la base de `consultas.py`, pide los dos productos con más stock, de mayor a menor.
-
-Respuesta esperada: `SELECT sku, stock FROM productos ORDER BY stock DESC LIMIT 2` devuelve `[('E-21', 40), ('A-11', 12)]`.
-
-#### Ejercicio verificable 2
-Intermedio. Escribe una consulta que liste los productos sin categoría usando `LEFT JOIN`.
-
-Respuesta esperada: `SELECT p.sku FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id WHERE c.id IS NULL`
-devuelve `[('S-99',)]`.
-
-#### Ejercicio verificable 3
-Reto. Escribe una búsqueda por parte del nombre que reciba el texto del usuario de forma segura. Pruébala con
-`"ca"`.
-
-Respuesta esperada: `conexion.execute("SELECT sku, nombre FROM productos WHERE nombre LIKE ? ORDER BY sku", ("%ca%",))`
-devuelve `[('E-20', 'Caja mediana')]`. Los `%` van dentro del valor, nunca pegados al SQL.
-
-#### En el trabajo
-En un backend, cada pantalla de listado es un `SELECT` con `JOIN` y cada formulario termina en un `INSERT`
-parametrizado. Las migraciones viven en el repositorio junto al código y una herramienta (Alembic, Flyway,
-Liquibase) las aplica en orden en cada ambiente. La inyección SQL sigue en el OWASP Top 10: los revisores de código
-rechazan cualquier `execute` con texto concatenado.
-
-</details>
-
-### Tema 3: Índices, restricciones y planes de consulta · Intermedio · 50 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- declarar restricciones `NOT NULL`, `UNIQUE`, `CHECK` y `DEFAULT` y leer el error literal de cada una;
-- crear un índice y comprobar con `EXPLAIN QUERY PLAN` el paso de `SCAN` a `SEARCH`;
-- elegir el orden de las columnas de un índice compuesto según las consultas;
-- medir el costo que cada índice agrega a las escrituras.
-
-**Conceptos clave:** restricción, NOT NULL, UNIQUE, CHECK, DEFAULT, índice, EXPLAIN QUERY PLAN, SCAN y SEARCH, índice compuesto, selectividad
-
-#### El problema
-La tabla de tareas de RutaFlow ya tiene 10 000 filas y la pantalla «pendientes» tarda cada día más. Al mismo
-tiempo, alguien cargó un producto sin nombre y otro con stock negativo. ¿Cómo se consigue que la base rechace los
-datos imposibles y que encuentre rápido las 100 tareas pendientes entre 10 000?
-
-#### Glosario del tema
-
-**restricción**
-- **Definición técnica:** regla declarada en el esquema que el motor verifica en cada `INSERT` y `UPDATE`; si se viola, la sentencia falla con `IntegrityError`.
-- **En palabras sencillas:** un portero en la puerta de la tabla que revisa cada dato antes de dejarlo entrar.
-- **Dónde se rompe la comparación:** el portero solo revisa lo que le dijiste; las reglas no declaradas no existen para él.
-- **Ejemplo:** en `restricciones.py`, tres intentos inválidos fallan y `SELECT * FROM productos` sigue devolviendo solo `[(1, 'A-10', 'Teclado', 0)]`.
-- **Error típico:** validar solo en Python; otro programa que escriba en la misma base se salta esa validación.
-
-**NOT NULL**
-- **Definición técnica:** restricción de columna que prohíbe el valor `NULL` (ausencia de valor).
-- **En palabras sencillas:** «este dato es obligatorio».
-- **Dónde se rompe la comparación:** un texto vacío `''` no es `NULL`; `NOT NULL` lo deja pasar.
-- **Ejemplo:** `INSERT INTO productos(sku) VALUES ('A-11')` produce `NOT NULL constraint failed: productos.nombre`.
-- **Error típico:** agregar después una columna obligatoria sin valor por defecto: `Cannot add a NOT NULL column with default value NULL`.
-
-**UNIQUE**
-- **Definición técnica:** restricción que impide que dos filas tengan el mismo valor en una columna o combinación de columnas; el motor crea un índice para comprobarla.
-- **En palabras sencillas:** «no puede haber dos iguales».
-- **Dónde se rompe la comparación:** distingue mayúsculas (`'a@x.co'` y `'A@x.co'` entran ambos) y admite varios `NULL`.
-- **Ejemplo:** repetir `'A-10'` produce `UNIQUE constraint failed: productos.sku`.
-- **Error típico:** comprobar en Python si el SKU existe y luego insertarlo: dos usuarios a la vez pasan la comprobación.
-
-**CHECK**
-- **Definición técnica:** restricción con una condición booleana que cada fila debe cumplir.
-- **En palabras sencillas:** una regla de negocio escrita dentro de la tabla, como «el stock no baja de cero».
-- **Dónde se rompe la comparación:** si la condición da `NULL`, el `CHECK` la acepta; combínalo con `NOT NULL`.
-- **Ejemplo:** `UPDATE productos SET stock = -3 WHERE sku = 'A-10'` produce `CHECK constraint failed: stock >= 0`.
-- **Error típico:** declarar `CHECK (stock >= 0)` sin `NOT NULL`: un `INSERT` con `stock` en `NULL` se acepta.
-
-**DEFAULT**
-- **Definición técnica:** valor que el motor asigna a una columna cuando el `INSERT` no la menciona.
-- **En palabras sencillas:** el valor de fábrica que se usa si no dices nada.
-- **Dónde se rompe la comparación:** si escribes `NULL` a propósito, el `DEFAULT` no se aplica.
-- **Ejemplo:** `INSERT INTO productos(sku, nombre) VALUES ('A-10', 'Teclado')` guarda `stock` en `0`.
-- **Error típico:** usar `DEFAULT` para tapar un dato que debía ser obligatorio.
-
-**índice**
-- **Definición técnica:** estructura auxiliar ordenada (un árbol B en SQLite) que asocia valores de una o más columnas con la ubicación de sus filas.
-- **En palabras sencillas:** el índice alfabético al final de un libro: vas directo a la página sin leerlo entero.
-- **Dónde se rompe la comparación:** el libro no cambia; la tabla sí, y cada cambio obliga a actualizar el índice.
-- **Ejemplo:** tras `CREATE INDEX idx_tareas_estado ON tareas(estado)`, `SELECT name, tbl_name FROM sqlite_master WHERE type = 'index'` devuelve `[('idx_tareas_estado', 'tareas')]`.
-- **Error típico:** crearlo dos veces: `index idx_tareas_estado already exists`; usa `CREATE INDEX IF NOT EXISTS` en migraciones.
-
-**EXPLAIN QUERY PLAN**
-- **Definición técnica:** prefijo que hace que SQLite no ejecute la consulta y devuelva, en cambio, el plan que usaría para resolverla.
-- **En palabras sencillas:** preguntarle a la base «¿cómo vas a buscar esto?» antes de que lo busque.
-- **Dónde se rompe la comparación:** el plan describe la estrategia, no mide el tiempo; para medir hay que ejecutar.
-- **Ejemplo:** `EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE id = 7` devuelve `SEARCH tareas USING INTEGER PRIMARY KEY (rowid=?)` en su cuarta columna.
-- **Error típico:** leer la tupla completa en vez de la cuarta columna (`fila[3]`), que es la que trae el texto del plan.
-
-**SCAN y SEARCH**
-- **Definición técnica:** `SCAN` significa recorrer todas las filas de la tabla. `SEARCH` significa llegar a las filas pedidas por un índice o por la clave primaria.
-- **En palabras sencillas:** leer el libro entero contra ir al índice y saltar a la página.
-- **Dónde se rompe la comparación:** en tablas pequeñas un `SCAN` es tan rápido que no importa.
-- **Ejemplo:** `WHERE lower(estado) = 'pendiente'` da `SCAN tareas` aunque exista `idx_tareas_estado`, porque el índice guarda `estado`, no `lower(estado)`.
-- **Error típico:** crear el índice y no comprobar el plan: una función sobre la columna lo deja sin uso.
-
-**índice compuesto**
-- **Definición técnica:** índice sobre varias columnas, ordenado primero por la primera, luego por la segunda dentro de cada valor de la primera, y así sucesivamente.
-- **En palabras sencillas:** una guía telefónica: ordenada por apellido y, dentro de cada apellido, por nombre.
-- **Dónde se rompe la comparación:** buscar solo por nombre en la guía obliga a leerla entera; igual pasa con la segunda columna.
-- **Ejemplo:** con `(categoria_id, stock)`, `WHERE categoria_id = 2 AND stock < 5` usa el índice, pero `WHERE stock < 5` da `SCAN productos`.
-- **Error típico:** elegir el orden de las columnas al azar en vez de mirar qué filtran las consultas reales.
-
-**selectividad**
-- **Definición técnica:** proporción de filas que devuelve un filtro; un filtro muy selectivo devuelve una fracción pequeña de la tabla.
-- **En palabras sencillas:** cuánto descarta el colador: cuanto menos deja pasar, más ayuda el índice.
-- **Dónde se rompe la comparación:** la selectividad depende del valor buscado: «pendiente» es raro y «completada» es casi todo.
-- **Ejemplo:** `SELECT estado, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM tareas) FROM tareas GROUP BY estado` devuelve `[('completada', 99.0), ('pendiente', 1.0)]`.
-- **Error típico:** indexar una columna con dos valores repartidos a medias: el índice casi nunca ahorra lecturas.
-
-#### ► CÓMO FUNCIONA
-Sin índice, para encontrar las tareas pendientes la base lee las 10 000 filas una por una. Con un índice sobre
-`estado`, baja por un árbol ordenado desde la raíz hasta el rango donde empiezan las pendientes y solo lee esas
-filas:
-
-```mermaid
-flowchart LR
-    subgraph SCAN["Sin índice"]
-      S1["fila 1"] --> S2["fila 2"] --> SN["fila N"]
-    end
-    subgraph SEARCH["Con índice"]
-      ROOT["raíz"] --> BRANCH["rama"] --> RANGE["rango de filas"]
-    end
-```
-
-El índice no es gratis. Ocupa espacio y cada `INSERT`, `UPDATE` o `DELETE` debe actualizarlo. Las restricciones
-`UNIQUE` y `PRIMARY KEY` crean su propio índice automático: por eso buscar por SKU ya es un `SEARCH`.
-
-#### Problema resuelto 3.1
-Declara las reglas del producto en la tabla e intenta tres cargas inválidas: sin nombre, con SKU repetido y con
-stock negativo.
-
-**Razonamiento:**
-1. Cada regla de negocio se traduce en una restricción: nombre obligatorio, SKU único, stock no negativo.
-2. Cada intento va en su propio `try` para ver el mensaje exacto de cada violación.
-3. Al final se consulta la tabla: solo debe quedar la fila válida.
-
-```python
-# restricciones.py — la base rechaza datos que rompen las reglas
-import sqlite3
-
-conexion = sqlite3.connect(":memory:")
-conexion.execute("""
-CREATE TABLE productos (
-  id INTEGER PRIMARY KEY,
-  sku TEXT NOT NULL UNIQUE,
-  nombre TEXT NOT NULL,
-  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0)
-)""")
-conexion.execute("INSERT INTO productos(sku, nombre) VALUES ('A-10', 'Teclado')")
-
-intentos = [
-    ("sin nombre", "INSERT INTO productos(sku) VALUES ('A-11')"),
-    ("sku repetido", "INSERT INTO productos(sku, nombre) VALUES ('A-10', 'Otro teclado')"),
-    ("stock negativo", "UPDATE productos SET stock = -3 WHERE sku = 'A-10'"),
-]
-for motivo, sql in intentos:
-    try:
-        conexion.execute(sql)
-        print(f"{motivo}: aceptado")
-    except sqlite3.IntegrityError as error:
-        print(f"{motivo}: rechazado -> {error}")
-
-print("filas guardadas:", conexion.execute("SELECT * FROM productos").fetchall())
-```
-
-```text
-$ python3 restricciones.py
-sin nombre: rechazado -> NOT NULL constraint failed: productos.nombre
-sku repetido: rechazado -> UNIQUE constraint failed: productos.sku
-stock negativo: rechazado -> CHECK constraint failed: stock >= 0
-filas guardadas: [(1, 'A-10', 'Teclado', 0)]
-```
-
-**Explicación por partes.**
-- Líneas 8–10: cada restricción se escribe junto a su columna; la línea 10 combina `NOT NULL`, `DEFAULT` y `CHECK`.
-- Línea 12: el primer producto no menciona `stock`, así que el `DEFAULT` lo deja en `0`.
-- Líneas 14–18: la lista de intentos guarda un motivo y la sentencia que lo provoca.
-- Líneas 19–24: cada mensaje dice qué restricción falló y en qué columna, sin que escribas un solo `if`.
-
-> **Error común.** Confiar en `CHECK` para datos ausentes. `INSERT INTO p(sku, stock) VALUES ('A-2', NULL)` en una
-> tabla con `CHECK (stock >= 0)` y sin `NOT NULL` se acepta y guarda `None`. La comparación con `NULL` da `NULL`, y
-> `CHECK` solo rechaza lo que da falso.
-
-> **Buena práctica.** Declara las reglas en la base **y** valida en el programa. La base es la última línea de
-> defensa; el programa da mensajes amables al usuario.
-
-#### Problema resuelto 3.2
-Mide cómo cambia el plan de la consulta de tareas pendientes al crear un índice sobre `estado`.
-
-**Razonamiento:**
-1. Crear 10 000 tareas donde solo 1 de cada 100 está pendiente: un filtro muy selectivo.
-2. Pedir el plan con `EXPLAIN QUERY PLAN` antes y después del índice.
-3. `ANALYZE` guarda estadísticas de la tabla para que el planificador decida con datos.
-
-```python
-# indice.py — plan de consulta antes y después de crear un índice
-import sqlite3
-
-conexion = sqlite3.connect(":memory:")
-conexion.execute(
-    "CREATE TABLE tareas (id INTEGER PRIMARY KEY, titulo TEXT NOT NULL, estado TEXT NOT NULL)"
-)
-conexion.executemany(
-    "INSERT INTO tareas(titulo, estado) VALUES (?, ?)",
-    (
-        (f"Tarea {numero}", "pendiente" if numero % 100 == 0 else "completada")
-        for numero in range(10_000)
-    ),
-)
-conexion.commit()
-
-
-def mostrar_plan(etiqueta):
-    print(etiqueta)
-    plan = conexion.execute(
-        "EXPLAIN QUERY PLAN SELECT titulo FROM tareas WHERE estado = ?",
-        ("pendiente",),
-    )
-    for fila in plan:
-        print(f"  {fila[3]}")
-
-
-mostrar_plan("Antes del índice:")
-conexion.execute("CREATE INDEX idx_tareas_estado ON tareas(estado)")
-conexion.execute("ANALYZE")
-mostrar_plan("Después del índice:")
-pendientes = conexion.execute("SELECT COUNT(*) FROM tareas WHERE estado = 'pendiente'").fetchone()[0]
-print("pendientes:", pendientes, "de 10000")
-conexion.close()
-```
-
-```text
-$ python3 indice.py
-Antes del índice:
-  SCAN tareas
-Después del índice:
-  SEARCH tareas USING INDEX idx_tareas_estado (estado=?)
-pendientes: 100 de 10000
-```
-
-**Explicación por partes.**
-- Líneas 8–14: `executemany` inserta 10 000 filas desde un generador; cada número múltiplo de 100 es «pendiente».
-- Líneas 18–25: `mostrar_plan` imprime la cuarta columna (`fila[3]`) de cada paso del plan.
-- Línea 28: sin índice, el plan es `SCAN tareas`: lectura completa.
-- Líneas 29–31: con el índice, el plan es `SEARCH ... USING INDEX idx_tareas_estado (estado=?)`.
-- Líneas 32–33: el filtro devuelve 100 filas de 10 000, una selectividad del 1 %.
-
-Ahora comprueba el orden de un índice compuesto con cuatro consultas:
-
-```python
-# compuesto.py — el orden de las columnas en un índice compuesto
-import sqlite3
-
-conexion = sqlite3.connect(":memory:")
-conexion.execute("""
-CREATE TABLE productos (
-  id INTEGER PRIMARY KEY,
-  sku TEXT NOT NULL UNIQUE,
-  stock INTEGER NOT NULL,
-  categoria_id INTEGER NOT NULL
-)""")
-conexion.execute("CREATE INDEX idx_productos_categoria_stock ON productos(categoria_id, stock)")
-
-consultas = [
-    "SELECT sku FROM productos WHERE categoria_id = 2 AND stock < 5",
-    "SELECT sku FROM productos WHERE categoria_id = 2",
-    "SELECT sku FROM productos WHERE stock < 5",
-    "SELECT stock FROM productos WHERE sku = 'A-10'",
-]
-for sql in consultas:
-    plan = conexion.execute("EXPLAIN QUERY PLAN " + sql).fetchall()
-    print(sql)
-    print("  ->", plan[0][3])
-```
-
-```text
-$ python3 compuesto.py
-SELECT sku FROM productos WHERE categoria_id = 2 AND stock < 5
-  -> SEARCH productos USING INDEX idx_productos_categoria_stock (categoria_id=? AND stock<?)
-SELECT sku FROM productos WHERE categoria_id = 2
-  -> SEARCH productos USING INDEX idx_productos_categoria_stock (categoria_id=?)
-SELECT sku FROM productos WHERE stock < 5
-  -> SCAN productos
-SELECT stock FROM productos WHERE sku = 'A-10'
-  -> SEARCH productos USING INDEX sqlite_autoindex_productos_1 (sku=?)
-```
-
-La tercera consulta filtra solo por `stock`, la segunda columna del índice: el plan vuelve a `SCAN`. La cuarta usa
-`sqlite_autoindex_productos_1`, el índice que SQLite creó solo por el `UNIQUE` de `sku`.
-
-Cada índice se actualiza en cada escritura. Este programa inserta 200 000 filas con 0, 1 y 3 índices y mide el
-tiempo:
-
-```python
-# costo_indices.py — cada índice extra se actualiza en cada INSERT
-import sqlite3
-import time
-
-
-def medir_insercion(cantidad_indices):
-    conexion = sqlite3.connect(":memory:")
-    conexion.execute("CREATE TABLE envios (id INTEGER PRIMARY KEY, guia TEXT, zona TEXT, kilos REAL)")
-    columnas = ["guia", "zona", "kilos"][:cantidad_indices]
-    for columna in columnas:
-        conexion.execute(f"CREATE INDEX idx_{columna} ON envios({columna})")
-    filas = [(f"RF-{n}", f"Z{n % 7}", n % 30 + 0.5) for n in range(200_000)]
-    inicio = time.perf_counter()
-    conexion.executemany("INSERT INTO envios(guia, zona, kilos) VALUES (?, ?, ?)", filas)
-    conexion.commit()
-    return time.perf_counter() - inicio
-
-
-for indices in (0, 1, 3):
-    print(f"{indices} índices: {medir_insercion(indices):.2f} s para 200000 filas")
-```
-
-```text
-$ python3 costo_indices.py
-0 índices: 0.11 s para 200000 filas
-1 índices: 0.22 s para 200000 filas
-3 índices: 0.47 s para 200000 filas
-```
-
-> **Rendimiento.** En esta ejecución, tres índices multiplicaron el tiempo de inserción por más de cuatro. Tus números
-> cambiarán según la máquina, pero la proporción se repite: crea solo los índices que alguna consulta usa.
-
-#### Checkpoint 3.1
-En `indice.py`, ¿qué plan obtienes si la consulta fuera `WHERE titulo = 'Tarea 5'`?
-
-Respuesta: `SCAN tareas`. El índice está sobre `estado`, no sobre `titulo`; para esa búsqueda haría falta
-`CREATE INDEX idx_tareas_titulo ON tareas(titulo)`.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea la carpeta del ejemplo y entra en ella:
-
-```bash
-mkdir -p ejemplo-indice && cd ejemplo-indice
-```
-
-#### Paso 2 · Provoca cada restricción
-Guarda y ejecuta `restricciones.py`. Debes ver tres líneas `rechazado` con los mensajes `NOT NULL`, `UNIQUE` y
-`CHECK`, y una sola fila guardada.
-
-#### Paso 3 · Compara los planes
-Guarda `indice.py` y ejecútalo con `python3 indice.py`. Confirma el paso de `SCAN tareas` a
-`SEARCH tareas USING INDEX idx_tareas_estado (estado=?)`.
-
-#### Paso 4 · Prueba el orden del índice compuesto
-Ejecuta `compuesto.py`. Después agrega `CREATE INDEX idx_productos_stock ON productos(stock)` antes del ciclo y
-vuelve a ejecutarlo: la tercera consulta debe cambiar a `SEARCH`.
-
-#### Paso 5 · Mide el costo
-Ejecuta `costo_indices.py` dos veces y anota los tiempos. Comprueba que el orden se mantiene: 0 índices es lo más
-rápido y 3 índices lo más lento.
-
-#### Resumen
-- Una **restricción** hace que la base rechace datos inválidos con `IntegrityError` y un mensaje literal.
-- `NOT NULL` exige valor; `UNIQUE` prohíbe repetidos; `CHECK` exige una condición; `DEFAULT` rellena lo omitido.
-- Un **índice** acelera búsquedas y cuesta en escrituras y espacio.
-- `EXPLAIN QUERY PLAN` muestra si la consulta hace **SCAN** (todo) o **SEARCH** (por índice).
-- En un **índice compuesto** importa el orden: sirve para filtrar por la primera columna, sola o con las siguientes.
-- La **selectividad** indica cuánto ayuda un índice: cuanto menos filas devuelve el filtro, mejor.
-
-#### Ejercicio verificable 1
-Básico. Sobre la tabla de `restricciones.py`, intenta `INSERT INTO productos(sku, nombre, stock) VALUES ('A-12', 'Mouse', -1)`.
-
-Respuesta esperada: `sqlite3.IntegrityError: CHECK constraint failed: stock >= 0`.
-
-#### Ejercicio verificable 2
-Intermedio. En una tabla `tareas` vacía con la estructura de `indice.py`, pide el plan de
-`SELECT estado FROM tareas WHERE titulo = 'Tarea 5'`, crea `idx_tareas_titulo` y pídelo otra vez.
-
-Respuesta esperada: primero `SCAN tareas`; después `SEARCH tareas USING INDEX idx_tareas_titulo (titulo=?)`.
-
-#### Ejercicio verificable 3
-Reto. En `compuesto.py`, logra que `WHERE stock < 5` use un índice sin borrar el compuesto. ¿Qué plan obtienes?
-
-Respuesta esperada: con `CREATE INDEX idx_productos_stock ON productos(stock)`, el plan es
-`SEARCH productos USING INDEX idx_productos_stock (stock<?)`. Ahora cada escritura actualiza un índice más.
-
-#### En el trabajo
-En una empresa, la consulta lenta se diagnostica con el plan, no con intuición: `EXPLAIN` en SQLite, `EXPLAIN
-ANALYZE` en PostgreSQL. Los equipos revisan los índices en cada migración y borran los que ninguna consulta usa,
-porque frenan las escrituras. Las restricciones evitan los incidentes más caros: datos imposibles que ya se
-facturaron o se despacharon.
-
-</details>
-
-### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL · Intermedio · 60 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- agrupar varias escrituras en una transacción con `BEGIN`, `COMMIT` y `ROLLBACK`;
-- demostrar que un fallo a mitad de camino deja la base exactamente como estaba;
-- reproducir el error `database is locked` cuando dos conexiones escriben a la vez;
-- decidir con criterios concretos cuándo un dato va en tablas y cuándo en un documento.
-
-**Conceptos clave:** transacción, BEGIN, COMMIT, ROLLBACK, atomicidad, ACID, modo autocommit, concurrencia, bloqueo, NoSQL
-
-#### El problema
-RutaFlow traslada mercancía entre la bodega Norte y la Sur. Un traslado son dos escrituras: restar en el origen y
-sumar en el destino. Si el programa falla entre las dos, desaparecen unidades. Y si dos cajeros mueven el mismo
-producto a la vez, ¿quién gana? Necesitas que las dos escrituras ocurran juntas o no ocurran.
-
-#### Glosario del tema
-
-**transacción**
-- **Definición técnica:** unidad de trabajo formada por una o más sentencias que la base aplica completa o descarta completa.
-- **En palabras sencillas:** un paquete de cambios con la regla «todo o nada».
-- **Dónde se rompe la comparación:** mientras no confirmas, los otros usuarios siguen viendo los datos viejos.
-- **Ejemplo:** en `mover_stock.py`, el traslado fallido hacia el destino 99 deja `[(1, 'Norte', 6), (2, 'Sur', 4)]`, igual que antes.
-- **Error típico:** hacer cada `UPDATE` por separado: si el segundo falla, el primero ya quedó guardado.
-
-**BEGIN**
-- **Definición técnica:** sentencia que abre una transacción explícita; los cambios siguientes quedan pendientes hasta `COMMIT` o `ROLLBACK`.
-- **En palabras sencillas:** «a partir de aquí, nada es definitivo».
-- **Dónde se rompe la comparación:** no se pueden anidar: dentro de una transacción no puedes abrir otra.
-- **Ejemplo:** tras `BEGIN`, `conexion.in_transaction` pasa de `False` a `True`.
-- **Error típico:** ejecutar `BEGIN` dos veces: `cannot start a transaction within a transaction`.
-
-**COMMIT**
-- **Definición técnica:** sentencia que confirma la transacción: sus cambios se vuelven permanentes y visibles para las demás conexiones.
-- **En palabras sencillas:** firmar el paquete de cambios.
-- **Dónde se rompe la comparación:** una firma se puede impugnar; un `COMMIT` no se deshace, solo se corrige con otra transacción.
-- **Ejemplo:** `BEGIN`, `UPDATE productos SET stock = 8 WHERE id = 2`, `COMMIT` y luego `SELECT stock FROM productos WHERE id = 2` devuelve `(8,)`.
-- **Error típico:** `COMMIT` sin transacción abierta: `cannot commit - no transaction is active`.
-
-**ROLLBACK**
-- **Definición técnica:** sentencia que descarta todos los cambios de la transacción abierta y devuelve la base al estado anterior a `BEGIN`.
-- **En palabras sencillas:** romper el paquete sin abrirlo.
-- **Dónde se rompe la comparación:** solo deshace lo que hizo la base; un correo enviado desde Python ya salió.
-- **Ejemplo:** `BEGIN`, `UPDATE productos SET stock = 0 WHERE id = 1` muestra `(0,)`; tras `ROLLBACK` vuelve a `(7,)`.
-- **Error típico:** atrapar la excepción y no ejecutar `ROLLBACK`: la transacción queda abierta y bloquea a los demás.
-
-**atomicidad**
-- **Definición técnica:** propiedad por la cual una transacción no puede quedar aplicada en parte: o se ven todos sus efectos o ninguno.
-- **En palabras sencillas:** el traslado no se puede partir en dos mitades.
-- **Dónde se rompe la comparación:** «átomo» suena a indivisible; por dentro la transacción sí tiene pasos, pero nadie ve los intermedios.
-- **Ejemplo:** sin transacción, restar 3 en Norte y sumar en el destino 99 (`rowcount` `0`) deja el stock total en `7`. Se perdieron 3 unidades.
-- **Error típico:** comprobar el resultado solo al final; el daño ya ocurrió en el primer `UPDATE`.
-
-**ACID**
-- **Definición técnica:** las cuatro garantías de una transacción: Atomicidad, Consistencia (respeta las restricciones), Aislamiento (no ve trabajo a medias) y Durabilidad (lo confirmado sobrevive a un corte).
-- **En palabras sencillas:** la promesa completa de la base: todo o nada, sin romper reglas, sin mirar a medias, sin olvidar.
-- **Dónde se rompe la comparación:** el aislamiento tiene niveles; no todos los motores aíslan igual por defecto.
-- **Ejemplo:** consistencia: `UPDATE productos SET stock = stock - 100 WHERE id = 1` produce `CHECK constraint failed: stock >= 0`; durabilidad: tras `COMMIT`, cerrar y reabrir `d.db`, `SELECT COUNT(*)` devuelve `(1,)`.
-- **Error típico:** creer que ACID protege la lógica del programa; si restas mal, la base guarda fielmente un dato malo.
-
-**modo autocommit**
-- **Definición técnica:** en `sqlite3`, `isolation_level=None` desactiva las transacciones implícitas del módulo; cada sentencia se confirma sola salvo que abras `BEGIN`.
-- **En palabras sencillas:** tú decides dónde empieza y termina cada paquete; Python no abre ninguno a escondidas.
-- **Dónde se rompe la comparación:** en el modo por defecto, Python abre una transacción antes de cada `INSERT` o `UPDATE` sin avisarte.
-- **Ejemplo:** con la conexión por defecto, tras un `INSERT`, `in_transaction` ya es `True` e `isolation_level` es `''`.
-- **Error típico:** mezclar modos: en el modo por defecto, un `BEGIN` después de un `INSERT` da `cannot start a transaction within a transaction`.
-
-**concurrencia**
-- **Definición técnica:** situación en la que varias conexiones o procesos acceden a los mismos datos en intervalos de tiempo que se solapan.
-- **En palabras sencillas:** dos cajeros tocando el mismo producto al mismo tiempo.
-- **Dónde se rompe la comparación:** «al mismo tiempo» no exige dos procesadores; basta con que una transacción empiece antes de que otra termine.
-- **Ejemplo:** en `bloqueo.py`, B lee `10` mientras A ya restó 3 pero aún no confirma.
-- **Error típico:** probar solo con un usuario y descubrir los choques en producción.
-
-**bloqueo**
-- **Definición técnica:** mecanismo con el que el motor reserva un recurso para una transacción; SQLite permite un solo escritor a la vez en todo el archivo.
-- **En palabras sencillas:** el turno para escribir: mientras A lo tiene, B espera o recibe un «ocupado».
-- **Dónde se rompe la comparación:** PostgreSQL bloquea filas, no el archivo entero: dos escritores en filas distintas no se estorban.
-- **Ejemplo:** con `timeout=0`, el `UPDATE` de B mientras A tiene el turno produce `database is locked`.
-- **Error típico:** dejar una transacción abierta mientras esperas al usuario; todos los demás escritores se quedan sin turno.
-
-**NoSQL**
-- **Definición técnica:** familia de bases que no usan el modelo de tablas relacionadas; la más común guarda documentos JSON completos y anidados (MongoDB, Firestore).
-- **En palabras sencillas:** guardar la ficha entera del pedido en una sola carpeta, en vez de repartirla en cajones relacionados.
-- **Dónde se rompe la comparación:** «sin SQL» no significa sin reglas ni sin transacciones; significa que las reglas y uniones las defines de otra forma.
-- **Ejemplo:** SQLite puede guardar un documento JSON: `SELECT json_extract(doc, '$.cliente.ciudad'), json_array_length(doc, '$.paquetes') FROM envios_doc` devuelve `[('Bogotá', 2)]`.
-- **Error típico:** elegir NoSQL «porque escala» para datos muy relacionados como inventario y movimientos, y reimplementar los `JOIN` a mano.
-
-#### ► CÓMO FUNCIONA
-Una transacción tiene un solo camino feliz y una salida de emergencia en cada paso. Si cualquier paso falla, el
-programa ejecuta `ROLLBACK` y la base vuelve al estado de `BEGIN`:
-
-```mermaid
-flowchart LR
-    BEGIN["BEGIN"] --> SUB["restar origen"] --> ADD["sumar destino"] --> COMMIT["COMMIT"]
-    SUB -. "fallo" .-> ROLLBACK["ROLLBACK"]
-    ADD -. "fallo" .-> ROLLBACK
-```
-
-Para elegir entre SQL y NoSQL, pregunta cómo se **consultan** los datos. Si combinas entidades (productos con
-movimientos, envíos con mensajeros) y necesitas reglas entre ellas, usa tablas. Si siempre lees y escribes la ficha
-completa y su forma cambia mucho, un documento es razonable. Muchos sistemas combinan ambos.
-
-#### Problema resuelto 4.1
-Traslada stock entre bodegas de forma atómica. Un traslado a un destino inexistente debe dejar las dos bodegas
-intactas.
-
-**Razonamiento:**
-1. Validar antes de tocar la base: cantidad positiva y bodegas distintas.
-2. Abrir `BEGIN`; restar en el origen solo si alcanza el stock (`AND stock >= ?`).
-3. `rowcount` dice si cada `UPDATE` encontró su fila; si no, lanzar `ValueError`.
-4. Cualquier excepción ejecuta `ROLLBACK` y se vuelve a lanzar para que quien llamó se entere.
-
-```python
-# mover_stock.py — traslado entre bodegas: todo o nada
-import sqlite3
-
-conexion = sqlite3.connect(":memory:", isolation_level=None)  # sin transacciones implícitas
-conexion.executescript("""
-CREATE TABLE productos (id INTEGER PRIMARY KEY, bodega TEXT NOT NULL, stock INTEGER NOT NULL CHECK (stock >= 0));
-INSERT INTO productos VALUES (1, 'Norte', 10), (2, 'Sur', 0);
-""")
-
-
-def mover_stock(conexion, origen, destino, cantidad):
-    if cantidad <= 0:
-        raise ValueError("La cantidad debe ser positiva")
-    if origen == destino:
-        raise ValueError("El origen y el destino deben ser distintos")
-
-    try:
-        conexion.execute("BEGIN")
-        filas_origen = conexion.execute(
-            "UPDATE productos SET stock = stock - ? WHERE id = ? AND stock >= ?",
-            (cantidad, origen, cantidad),
-        ).rowcount
-        if filas_origen != 1:
-            raise ValueError("El origen no existe o no tiene stock suficiente")
-        filas_destino = conexion.execute(
-            "UPDATE productos SET stock = stock + ? WHERE id = ?",
-            (cantidad, destino),
-        ).rowcount
-        if filas_destino != 1:
-            raise ValueError("El destino no existe")
-        conexion.execute("COMMIT")
-    except Exception:
-        conexion.execute("ROLLBACK")
-        raise
-
-
-def mostrar(etiqueta):
-    print(etiqueta, conexion.execute("SELECT id, bodega, stock FROM productos").fetchall())
-
-
-mostrar("inicio:      ")
-mover_stock(conexion, 1, 2, 4)
-mostrar("mueve 4:     ")
-try:
-    mover_stock(conexion, 1, 99, 3)
-except ValueError as error:
-    print("fallo:", error)
-mostrar("tras fallo:  ")
-```
-
-```text
-$ python3 mover_stock.py
-inicio:       [(1, 'Norte', 10), (2, 'Sur', 0)]
-mueve 4:      [(1, 'Norte', 6), (2, 'Sur', 4)]
-fallo: El destino no existe
-tras fallo:   [(1, 'Norte', 6), (2, 'Sur', 4)]
-```
-
-**Explicación por partes.**
-- Línea 4: `isolation_level=None` deja que el programa controle `BEGIN`, `COMMIT` y `ROLLBACK`.
-- Líneas 12–15: las validaciones que no necesitan la base se hacen antes de abrir la transacción.
-- Líneas 19–24: el `UPDATE` del origen solo afecta la fila si hay stock suficiente; si no, `rowcount` es `0`.
-- Líneas 25–30: el destino 99 no existe; `rowcount` es `0` y se lanza `ValueError`.
-- Líneas 32–34: `ROLLBACK` deshace la resta de la línea 20 y `raise` reenvía el error.
-- Salida: tras el fallo, Norte sigue en 6 y Sur en 4; no se perdió ninguna unidad.
-
-> **Error común.** Llamar `COMMIT` o `ROLLBACK` cuando no hay transacción abierta. SQLite responde
-> `sqlite3.OperationalError: cannot commit - no transaction is active` o `cannot rollback - no transaction is active`.
-> Suele pasar cuando el `BEGIN` quedó dentro de un `if` que no se ejecutó.
-
-> **Buena práctica.** Usa `rowcount` para comprobar que cada escritura tocó las filas que esperabas. Un `UPDATE`
-> que no encuentra su fila no es un error para SQL: devuelve `0` filas en silencio.
-
-#### Problema resuelto 4.2
-Dos conexiones (dos cajeros) intentan descontar stock del mismo producto a la vez. Observa qué ve y qué puede hacer
-la segunda mientras la primera no confirma.
-
-**Razonamiento:**
-1. Las dos conexiones abren el mismo archivo; `timeout=0` hace que no esperen el turno.
-2. A abre `BEGIN IMMEDIATE`, que pide el turno de escritura desde el inicio, y resta 3.
-3. B intenta restar 5: debe fallar. B intenta leer: debe ver el valor confirmado, no el de A.
-4. Cuando A confirma, B ya puede escribir.
-
-```python
-# bloqueo.py — dos conexiones quieren escribir a la vez
-import sqlite3
-from pathlib import Path
-
-Path("bodega.db").unlink(missing_ok=True)
-caja_a = sqlite3.connect("bodega.db", isolation_level=None, timeout=0)
-caja_b = sqlite3.connect("bodega.db", isolation_level=None, timeout=0)
-caja_a.execute("CREATE TABLE productos (id INTEGER PRIMARY KEY, stock INTEGER NOT NULL)")
-caja_a.execute("INSERT INTO productos VALUES (1, 10)")
-
-caja_a.execute("BEGIN IMMEDIATE")                       # A toma el permiso de escritura
-caja_a.execute("UPDATE productos SET stock = stock - 3 WHERE id = 1")
-try:
-    caja_b.execute("UPDATE productos SET stock = stock - 5 WHERE id = 1")
-except sqlite3.OperationalError as error:
-    print("B no pudo escribir:", error)
-print("B lee mientras A no confirma:", caja_b.execute("SELECT stock FROM productos").fetchone()[0])
-
-caja_a.execute("COMMIT")                                # A libera el permiso
-caja_b.execute("UPDATE productos SET stock = stock - 5 WHERE id = 1")
-print("stock final:", caja_b.execute("SELECT stock FROM productos").fetchone()[0])
-caja_a.close()
-caja_b.close()
-```
-
-```text
-$ python3 bloqueo.py
-B no pudo escribir: database is locked
-B lee mientras A no confirma: 10
-stock final: 2
-```
-
-**Explicación por partes.**
-- Líneas 6–7: dos conexiones al mismo archivo; en memoria no compartirían datos.
-- Línea 11: `BEGIN IMMEDIATE` toma el turno de escritura antes del primer cambio.
-- Líneas 13–16: B no consigue el turno y recibe `database is locked` al instante.
-- Línea 17: B lee `10`, el último valor confirmado: el cambio de A está aislado.
-- Líneas 19–21: tras el `COMMIT` de A, B resta 5: 10 − 3 − 5 = 2.
-
-> **Prevenir errores.** En un programa real usa un `timeout` de unos segundos (el valor por defecto es 5) y
-> transacciones cortas. Nunca esperes una respuesta del usuario con una transacción abierta.
-
-#### Checkpoint 4.1
-En `mover_stock.py`, ¿qué pasaría si borras la línea 33 (`ROLLBACK`) pero dejas el `raise`?
-
-Respuesta: la resta del origen queda pendiente en una transacción abierta. La misma conexión ya ve Norte en `3`, y
-el siguiente traslado falla con `cannot start a transaction within a transaction`.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea la carpeta del ejemplo y entra en ella:
-
-```bash
-mkdir -p ejemplo-transaccion && cd ejemplo-transaccion
-```
-
-#### Paso 2 · Completa una tarea con su historial
-Marcar una tarea como completada y registrar el cambio en el historial deben ocurrir juntos. Guarda este programa,
-que simula un fallo entre las dos escrituras:
-
-```python
-# historial.py — completar una tarea y registrarla en el historial, juntos
-import sqlite3
-
-conexion = sqlite3.connect("tareas.db", isolation_level=None)
-conexion.executescript("""
-CREATE TABLE IF NOT EXISTS tareas(id INTEGER PRIMARY KEY, titulo TEXT, estado TEXT NOT NULL DEFAULT 'pendiente');
-CREATE TABLE IF NOT EXISTS historial(id INTEGER PRIMARY KEY, tarea_id INTEGER NOT NULL, accion TEXT NOT NULL);
-INSERT OR IGNORE INTO tareas(id, titulo, estado) VALUES (2, 'enviar pedido', 'pendiente');
-""")
-
-
-def completar_con_transaccion(tarea_id, simular_fallo=False):
-    try:
-        conexion.execute("BEGIN")
-        conexion.execute("UPDATE tareas SET estado='completada' WHERE id=?", (tarea_id,))
-        if simular_fallo:
-            raise RuntimeError("fallo simulado: el disco se llenó")
-        conexion.execute("INSERT INTO historial(tarea_id, accion) VALUES (?, 'completada')", (tarea_id,))
-        conexion.execute("COMMIT")
-        print("Confirmado")
-    except Exception as error:
-        conexion.execute("ROLLBACK")
-        print("Revertido:", error)
-
-
-completar_con_transaccion(2, simular_fallo=True)
-print(conexion.execute("SELECT id, estado FROM tareas WHERE id=2").fetchone())
-print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
-completar_con_transaccion(2)
-print(conexion.execute("SELECT id, estado FROM tareas WHERE id=2").fetchone())
-print(conexion.execute("SELECT * FROM historial WHERE tarea_id=2").fetchall())
-conexion.close()
-```
-
-```text
-$ python3 historial.py
-Revertido: fallo simulado: el disco se llenó
-(2, 'pendiente')
-[]
-Confirmado
-(2, 'completada')
-[(1, 2, 'completada')]
-```
-
-Con el fallo simulado, la tarea sigue `pendiente` y el historial está vacío. Sin fallo, ambos cambios aparecen
-juntos. Como la base vive en `tareas.db`, borra ese archivo antes de repetir la prueba.
-
-#### Paso 3 · Rompe la atomicidad a propósito
-En `mover_stock.py`, comenta las líneas 18, 31 y 33 (`BEGIN`, `COMMIT`, `ROLLBACK`). Ejecuta el traslado al destino
-99 y suma el stock: el total baja de 10 a 7.
-
-#### Paso 4 · Reproduce el bloqueo
-Ejecuta `bloqueo.py`. Luego cambia `timeout=0` por `timeout=2` en la línea 7. La línea 14 esperará 2 segundos y
-mostrará el mismo `database is locked`, porque A no suelta el turno a tiempo.
-
-#### Resumen
-- Una **transacción** agrupa sentencias con la regla todo o nada.
-- `BEGIN` la abre; `COMMIT` confirma; `ROLLBACK` descarta y vuelve al estado inicial.
-- La **atomicidad** es la A de **ACID**, junto con consistencia, aislamiento y durabilidad.
-- El **modo autocommit** (`isolation_level=None`) te deja controlar las transacciones sin sorpresas.
-- En **concurrencia**, SQLite da el **bloqueo** de escritura a un solo escritor; los demás ven `database is locked`.
-- **NoSQL** sirve para documentos que se leen completos; los datos muy relacionados van en tablas.
-
-#### Ejercicio verificable 1
-Básico. En `mover_stock.py`, intenta mover 50 unidades de la bodega 2 a la 1. ¿Qué mensaje sale y cómo queda la
-tabla?
-
-Respuesta esperada: `El origen no existe o no tiene stock suficiente`. La tabla sigue en
-`[(1, 'Norte', 6), (2, 'Sur', 4)]`, porque el `UPDATE` con `AND stock >= ?` no tocó ninguna fila.
-
-#### Ejercicio verificable 2
-Intermedio. En una conexión con `isolation_level=None`, ejecuta `COMMIT` sin haber abierto nada. ¿Qué error ves?
-
-Respuesta esperada: `sqlite3.OperationalError: cannot commit - no transaction is active`.
-
-#### Ejercicio verificable 3
-Reto. Guarda en una tabla `envios_doc(id, doc)` el documento
-`{"guia": "RF-7", "paquetes": [{"kilos": 2.5}, {"kilos": 1.0}], "cliente": {"ciudad": "Bogotá"}}` con
-`json.dumps(..., ensure_ascii=False)` y una consulta parametrizada. Obtén la ciudad y el número de paquetes con SQL.
-
-Respuesta esperada: `SELECT json_extract(doc, '$.cliente.ciudad'), json_array_length(doc, '$.paquetes') FROM envios_doc`
-devuelve `[('Bogotá', 2)]`. Para sumar kilos de muchos envíos, unas tablas `envios` y `paquetes` serían más simples.
-
-#### En el trabajo
-Los pagos, los traslados de inventario y los cambios de estado con auditoría siempre van en una transacción. En los
-frameworks se declara con una anotación o un bloque (`@Transactional` en Spring, `with conexion:` en Python). Los
-equipos registran en un ADR por qué eligieron SQL o NoSQL para cada dato, con las consultas reales como argumento.
-
-</details>
-
-### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana · Intermedio · 60 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- escribir subconsultas en `WHERE`, en `SELECT` y en `FROM`, y distinguir una correlacionada;
-- guardar una consulta como vista y consultarla como si fuera una tabla;
-- automatizar una auditoría y una regla de negocio con triggers;
-- ordenar dentro de grupos sin perder filas con funciones de ventana.
-
-**Conceptos clave:** subconsulta, subconsulta correlacionada, tabla derivada, vista, trigger, OLD y NEW, RAISE, función de ventana, PARTITION BY, RANK
-
-#### El problema
-La coordinación de RutaFlow pide cuatro cosas. Quiere las entregas más pesadas que el promedio y la efectividad por
-zona. También la entrega más pesada de cada mensajero y un registro automático de cada cambio de estado. Además, una entrega ya
-entregada no debe volver atrás, la cambie quien la cambie. Con `SELECT`, `JOIN` y `GROUP BY` solos no alcanza.
-
-#### Glosario del tema
-
-**subconsulta**
-- **Definición técnica:** `SELECT` escrito entre paréntesis dentro de otra sentencia; su resultado se usa como un valor, una lista o una tabla.
-- **En palabras sencillas:** una pregunta dentro de otra pregunta: primero averiguas el promedio y luego comparas con él.
-- **Dónde se rompe la comparación:** el motor no siempre la ejecuta «primero»; puede reescribirla como un `JOIN`.
-- **Ejemplo:** `SELECT nombre FROM mensajero WHERE id IN (SELECT mensajero_id FROM entrega WHERE estado = 'fallida')` devuelve `[('Beto',)]`.
-- **Error típico:** usar `=` con una subconsulta que devuelve varias filas; SQLite no falla y toma solo la primera (`[('Ana',)]` en vez de tres mensajeros).
-
-**subconsulta correlacionada**
-- **Definición técnica:** subconsulta que usa columnas de la consulta exterior, por lo que se evalúa una vez por cada fila exterior.
-- **En palabras sencillas:** por cada mensajero, una pregunta pequeña sobre sus propias entregas.
-- **Dónde se rompe la comparación:** parece un ciclo de Python, pero el motor puede optimizarla; aun así, en tablas grandes suele ser más lenta que un `GROUP BY`.
-- **Ejemplo:** `SELECT nombre, (SELECT MAX(kilos) FROM entrega e WHERE e.mensajero_id = m.id) FROM mensajero m ORDER BY nombre` devuelve `[('Ana', 8.5), ('Beto', 3.0), ('Caro', 12.0)]`.
-- **Error típico:** olvidar el alias exterior (`m.id`) y comparar la columna consigo misma: la subconsulta deja de depender de cada fila.
-
-**tabla derivada**
-- **Definición técnica:** subconsulta escrita en el `FROM`; su resultado actúa como una tabla temporal para la consulta exterior.
-- **En palabras sencillas:** un borrador intermedio sobre el que haces una segunda cuenta.
-- **Dónde se rompe la comparación:** el borrador no se guarda; desaparece al terminar la consulta.
-- **Ejemplo:** `SELECT zona, SUM(total) FROM (SELECT * FROM resumen_mensajero) GROUP BY zona ORDER BY zona` devuelve `[('Norte', 4), ('Sur', 2)]`.
-- **Error típico:** filtrar un agregado con `WHERE` en vez de `HAVING`: `HAVING COUNT(*) > 1 AND kilos > 100` no falla, pero devuelve `[]`.
-
-**vista**
-- **Definición técnica:** consulta guardada con nombre en el esquema (`CREATE VIEW`); se consulta como una tabla y se recalcula en cada uso.
-- **En palabras sencillas:** un atajo con nombre para una consulta larga que usas a menudo.
-- **Dónde se rompe la comparación:** no guarda filas propias: si cambian las entregas, la vista cambia sola.
-- **Ejemplo:** `SELECT * FROM resumen_mensajero ORDER BY nombre` devuelve `[('Ana', 'Norte', 2, 2), ('Beto', 'Sur', 2, 1), ('Caro', 'Norte', 2, 1)]`.
-- **Error típico:** escribir en ella: `INSERT INTO resumen_mensajero ...` produce `cannot modify resumen_mensajero because it is a view`.
-
-**trigger**
-- **Definición técnica:** bloque de sentencias que el motor ejecuta automáticamente antes (`BEFORE`) o después (`AFTER`) de un `INSERT`, `UPDATE` o `DELETE` sobre una tabla.
-- **En palabras sencillas:** una alarma programada: «cada vez que cambie el estado, anótalo».
-- **Dónde se rompe la comparación:** se dispara aunque el valor no cambie: `UPDATE ... SET estado = estado` también lo activa.
-- **Ejemplo:** `SELECT name, tbl_name FROM sqlite_master WHERE type = 'trigger'` devuelve `[('auditar_estado', 'entrega')]` en una base con ese trigger.
-- **Error típico:** auditar sin filtro: con solo `auditar_estado`, `UPDATE entrega SET estado = estado` guarda `(10, 'entregada', 'entregada')` y `(14, 'pendiente', 'pendiente')`.
-
-**OLD y NEW**
-- **Definición técnica:** dentro de un trigger de fila, `OLD` es la fila antes del cambio y `NEW` la fila después. `INSERT` solo tiene `NEW`; `DELETE`, solo `OLD`.
-- **En palabras sencillas:** la foto de antes y la foto de después de la fila que se modificó.
-- **Dónde se rompe la comparación:** en un trigger `BEFORE`, la foto `NEW` todavía no está guardada en la tabla.
-- **Ejemplo:** tras `UPDATE entrega SET estado = 'entregada' WHERE id = 14`, la auditoría guarda `(14, 'pendiente', 'entregada')`: `OLD.estado` y `NEW.estado`.
-- **Error típico:** usar `OLD` en un trigger de `INSERT`, donde no hay fila anterior.
-
-**RAISE**
-- **Definición técnica:** función de SQLite usable en triggers; `RAISE(ABORT, 'mensaje')` cancela la sentencia en curso y devuelve ese mensaje como error.
-- **En palabras sencillas:** el trigger dice «no» y explica por qué.
-- **Dónde se rompe la comparación:** `ABORT` deshace solo la sentencia actual; las anteriores de la transacción siguen pendientes.
-- **Ejemplo:** `UPDATE entrega SET estado = 'fallida' WHERE id = 10` produce `IntegrityError: una entrega entregada no puede cambiar de estado`.
-- **Error típico:** escribir la regla solo en Python; un script de mantenimiento con SQL directo se la salta.
-
-**función de ventana**
-- **Definición técnica:** función que calcula un valor para cada fila mirando un conjunto de filas relacionadas (la ventana), definido con `OVER (...)`, sin agruparlas en una sola.
-- **En palabras sencillas:** cada fila conserva su lugar y recibe un dato sobre su grupo, como «eres la segunda más pesada».
-- **Dónde se rompe la comparación:** a diferencia de `GROUP BY`, no reduce filas: salen tantas como entraron.
-- **Ejemplo:** `SELECT id, kilos, SUM(kilos) OVER (ORDER BY id) FROM entrega` da un acumulado que termina en `(15, 4.0, 30.5)`.
-- **Error típico:** usarla en `WHERE`: `misuse of window function RANK()`; se calcula en una tabla derivada y se filtra afuera.
-
-**PARTITION BY**
-- **Definición técnica:** parte de `OVER` que divide las filas en grupos independientes; la función de ventana se reinicia en cada grupo.
-- **En palabras sencillas:** hacer la cuenta por separado para cada mensajero.
-- **Dónde se rompe la comparación:** parece `GROUP BY`, pero las filas no se juntan.
-- **Ejemplo:** `ROUND(AVG(kilos) OVER (PARTITION BY mensajero_id), 2)` pone `5.25` en las dos entregas de Ana.
-- **Error típico:** olvidarlo: el ranking se calcula sobre todas las entregas y no por mensajero.
-
-**RANK**
-- **Definición técnica:** función de ventana que numera las filas según el `ORDER BY` de su ventana; las filas empatadas reciben el mismo puesto y el siguiente salta.
-- **En palabras sencillas:** el podio: dos empatados en primer lugar y el siguiente queda tercero.
-- **Dónde se rompe la comparación:** `ROW_NUMBER()` nunca empata; desempata de forma arbitraria.
-- **Ejemplo:** con dos entregas de 8.5 kg de Ana, `RANK()` da `1, 1, 3` y `ROW_NUMBER()` da `1, 2, 3`.
-- **Error típico:** usar `RANK() = 1` para «una sola fila por grupo» y recibir dos cuando hay empate.
-
-#### ► CÓMO FUNCIONA
-Las subconsultas y las vistas reorganizan **preguntas**. Los triggers reaccionan a **cambios**. Este es el camino de
-un `UPDATE` sobre el estado de una entrega con los dos triggers del Problema resuelto 5.2:
-
-```mermaid
-flowchart LR
-    U[UPDATE estado] --> B{trigger BEFORE no_revertir}
-    B -- entregada --> X[ABORT]
-    B -- ok --> W[se escribe la fila]
-    W --> A[trigger AFTER auditar_estado]
-    A --> T[(auditoria)]
-```
-
-Las funciones de ventana se calculan después de `WHERE` y `GROUP BY` y antes de `ORDER BY`. Por eso no se pueden
-filtrar en `WHERE`: cuando el `WHERE` corre, todavía no existen.
-
-#### Problema resuelto 5.1
-Con tres mensajeros y seis entregas, responde tres preguntas. ¿Qué entregas superan el peso promedio? ¿Cuál es la
-efectividad por zona? ¿Cómo se ordenan los kilos dentro de cada mensajero?
-
-**Razonamiento:**
-1. El promedio es un solo valor: subconsulta en `WHERE`.
-2. Contar entregas por mensajero sin `GROUP BY`: subconsulta correlacionada en `SELECT`.
-3. La efectividad por zona reutiliza un resumen por mensajero: vista más tabla derivada.
-4. «La más pesada de cada uno» sin perder filas: `RANK()` con `PARTITION BY`.
-
-```python
-# consultas_avanzadas.py — subconsultas, vista y función de ventana
-import sqlite3
-
-db = sqlite3.connect(":memory:")
-db.executescript("""
-CREATE TABLE mensajero (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, zona TEXT NOT NULL);
-CREATE TABLE entrega (
-  id INTEGER PRIMARY KEY,
-  mensajero_id INTEGER NOT NULL REFERENCES mensajero(id),
-  kilos REAL NOT NULL,
-  estado TEXT NOT NULL CHECK (estado IN ('pendiente', 'entregada', 'fallida'))
-);
-INSERT INTO mensajero VALUES (1, 'Ana', 'Norte'), (2, 'Beto', 'Sur'), (3, 'Caro', 'Norte');
-INSERT INTO entrega VALUES
-  (10, 1, 2.0, 'entregada'), (11, 1, 8.5, 'entregada'), (12, 2, 1.0, 'fallida'),
-  (13, 2, 3.0, 'entregada'), (14, 3, 12.0, 'pendiente'), (15, 3, 4.0, 'entregada');
-
--- Vista: una consulta guardada con nombre, se consulta como si fuera una tabla
-CREATE VIEW resumen_mensajero AS
-SELECT m.nombre, m.zona, COUNT(e.id) AS total,
-       SUM(e.estado = 'entregada') AS entregadas
-FROM mensajero m LEFT JOIN entrega e ON e.mensajero_id = m.id
-GROUP BY m.id, m.nombre, m.zona;
-""")
-
-
-def mostrar(titulo, sql):
-    print(f"-- {titulo}")
-    for fila in db.execute(sql):
-        print("  ", fila)
-
-
-mostrar("Subconsulta en WHERE: entregas más pesadas que el promedio",
-        "SELECT id, kilos FROM entrega WHERE kilos > (SELECT AVG(kilos) FROM entrega) ORDER BY id")
-mostrar("Subconsulta correlacionada en SELECT: entregas por mensajero",
-        "SELECT nombre, (SELECT COUNT(*) FROM entrega e WHERE e.mensajero_id = m.id) FROM mensajero m ORDER BY nombre")
-mostrar("Subconsulta en FROM sobre la vista: efectividad por zona",
-        """SELECT zona, ROUND(100.0 * SUM(entregadas) / SUM(total)) AS efectividad
-           FROM (SELECT * FROM resumen_mensajero) GROUP BY zona ORDER BY zona""")
-mostrar("Función de ventana: ranking de kilos dentro de cada mensajero",
-        """SELECT mensajero_id, id, kilos,
-                  RANK() OVER (PARTITION BY mensajero_id ORDER BY kilos DESC) AS puesto
-           FROM entrega ORDER BY mensajero_id, puesto""")
-```
-
-```text
-$ python3 consultas_avanzadas.py
--- Subconsulta en WHERE: entregas más pesadas que el promedio
-   (11, 8.5)
-   (14, 12.0)
--- Subconsulta correlacionada en SELECT: entregas por mensajero
-   ('Ana', 2)
-   ('Beto', 2)
-   ('Caro', 2)
--- Subconsulta en FROM sobre la vista: efectividad por zona
-   ('Norte', 75.0)
-   ('Sur', 50.0)
--- Función de ventana: ranking de kilos dentro de cada mensajero
-   (1, 11, 8.5, 1)
-   (1, 10, 2.0, 2)
-   (2, 13, 3.0, 1)
-   (2, 12, 1.0, 2)
-   (3, 14, 12.0, 1)
-   (3, 15, 4.0, 2)
-```
-
-**Explicación por partes.**
-- Línea 11: `CHECK ... IN (...)` limita el estado a tres valores (ficha de `CHECK` en el Tema 3).
-- Líneas 19–23: la vista; `SUM(e.estado = 'entregada')` suma 1 por cada comparación verdadera.
-- Línea 34: el promedio es 5.08 kg; solo las entregas 11 y 14 lo superan.
-- Línea 36: `m.id` viene de la consulta exterior; la subconsulta se evalúa por cada mensajero.
-- Líneas 38–39: Norte tiene 3 de 4 entregadas (75 %); Sur, 1 de 2 (50 %).
-- Líneas 41–43: el puesto se reinicia en 1 para cada `mensajero_id`.
-
-> **Error común.** Filtrar con una función de ventana en `WHERE`:
-> `SELECT id FROM entrega WHERE RANK() OVER (ORDER BY kilos) = 1` produce
-> `sqlite3.OperationalError: misuse of window function RANK()`. Calcula el ranking en una tabla derivada y filtra en
-> la consulta exterior.
-
-> **Buena práctica.** Pon nombre a las vistas por lo que responden (`resumen_mensajero`), no por cómo se calculan.
-> Así el reporte no cambia cuando optimizas la consulta interna.
-
-#### Problema resuelto 5.2
-Registra cada cambio de estado en una tabla de auditoría y prohíbe que una entrega `entregada` cambie de estado.
-
-**Razonamiento:**
-1. La auditoría ocurre **después** del cambio y necesita el antes y el después: trigger `AFTER` con `OLD` y `NEW`.
-2. La prohibición debe actuar **antes** de escribir: trigger `BEFORE` con `WHEN OLD.estado = 'entregada'`.
-3. `RAISE(ABORT, ...)` cancela la sentencia con un mensaje claro.
-
-```python
-# triggers.py — reglas que la base ejecuta sola en cada cambio
-import sqlite3
-
-db = sqlite3.connect(":memory:")
-db.executescript("""
-CREATE TABLE entrega (
-  id INTEGER PRIMARY KEY,
-  estado TEXT NOT NULL CHECK (estado IN ('pendiente', 'entregada', 'fallida'))
-);
-CREATE TABLE auditoria (entrega_id INTEGER, antes TEXT, despues TEXT);
-INSERT INTO entrega VALUES (10, 'entregada'), (14, 'pendiente');
-
--- Trigger de auditoría: se ejecuta solo, después de cada cambio de estado
-CREATE TRIGGER auditar_estado AFTER UPDATE OF estado ON entrega
-BEGIN
-  INSERT INTO auditoria VALUES (OLD.id, OLD.estado, NEW.estado);
-END;
-
--- Trigger de regla de negocio: una entrega entregada no vuelve atrás
-CREATE TRIGGER no_revertir BEFORE UPDATE OF estado ON entrega
-WHEN OLD.estado = 'entregada'
-BEGIN
-  SELECT RAISE(ABORT, 'una entrega entregada no puede cambiar de estado');
-END;
-""")
-
-db.execute("UPDATE entrega SET estado = 'entregada' WHERE id = 14")
-print("auditoría:", db.execute("SELECT * FROM auditoria").fetchall())
-try:
-    db.execute("UPDATE entrega SET estado = 'fallida' WHERE id = 10")
-except sqlite3.IntegrityError as error:
-    print("rechazado por trigger:", error)
-print("estados:", db.execute("SELECT * FROM entrega ORDER BY id").fetchall())
-```
-
-```text
-$ python3 triggers.py
-auditoría: [(14, 'pendiente', 'entregada')]
-rechazado por trigger: una entrega entregada no puede cambiar de estado
-estados: [(10, 'entregada'), (14, 'entregada')]
-```
-
-**Explicación por partes.**
-- Líneas 14–17: el trigger de auditoría copia el `id`, el estado anterior y el nuevo.
-- Líneas 20–24: `WHEN` hace que el trigger solo actúe si la fila ya estaba entregada.
-- Línea 27: la entrega 14 pasa de pendiente a entregada y la auditoría lo registra sola.
-- Líneas 29–32: la entrega 10 ya estaba entregada: `RAISE` cancela el cambio con `IntegrityError`.
-- Línea 33: la entrega 10 sigue `entregada`; el `ABORT` deshizo la sentencia.
-
-> **Prevenir errores.** Agrega `WHEN OLD.estado <> NEW.estado` al trigger de auditoría. Así un `UPDATE` que no
-> cambia el valor no llena la tabla con filas inútiles.
-
-#### Checkpoint 5.1
-En `triggers.py`, después de rechazar el cambio de la entrega 10, ¿cuántas filas tiene `auditoria`?
-
-Respuesta: una sola, `(14, 'pendiente', 'entregada')`. El trigger `BEFORE` canceló la sentencia antes de escribir,
-así que el trigger `AFTER` nunca se disparó.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea la carpeta y entra en ella:
-
-```bash
-mkdir sql-avanzado && cd sql-avanzado
-```
-
-#### Paso 2 · Ejecuta las consultas
-Guarda `consultas_avanzadas.py` y ejecútalo con `python3 consultas_avanzadas.py`. Compara cada bloque con la salida
-del Problema resuelto 5.1.
-
-#### Paso 3 · Agrega los triggers
-Guarda `triggers.py` y ejecútalo. Confirma la línea `rechazado por trigger` y que la entrega 10 sigue `entregada`.
-
-#### Paso 4 · Afina la auditoría
-Agrega `WHEN OLD.estado <> NEW.estado` al trigger `auditar_estado`. Antes de la línea 27, ejecuta
-`UPDATE entrega SET estado = estado WHERE id = 14`. La auditoría debe terminar con una sola fila.
-
-#### Resumen
-- Una **subconsulta** responde una pregunta intermedia; la **subconsulta correlacionada** se evalúa por cada fila exterior.
-- Una **tabla derivada** es una subconsulta en `FROM`; una **vista** es una consulta guardada con nombre.
-- Un **trigger** se ejecuta solo ante un cambio; usa **OLD y NEW** para ver la fila antes y después.
-- `RAISE(ABORT, ...)` cancela la sentencia y convierte una regla de negocio en un error de la base.
-- Una **función de ventana** calcula sobre un grupo sin juntar filas; **PARTITION BY** define el grupo y **RANK** numera con empates.
-
-#### Ejercicio verificable 1
-Básico. Lista los mensajeros que tienen al menos una entrega `fallida`, con una subconsulta.
-
-Respuesta esperada: `SELECT nombre FROM mensajero WHERE id IN (SELECT mensajero_id FROM entrega WHERE estado = 'fallida')`
-devuelve `[('Beto',)]`.
-
-#### Ejercicio verificable 2
-Intermedio. Calcula el acumulado de kilos de todas las entregas ordenadas por `id`. ¿Cuál es el último valor?
-
-Respuesta esperada: `SELECT id, kilos, SUM(kilos) OVER (ORDER BY id) FROM entrega` termina en `(15, 4.0, 30.5)`.
-
-#### Ejercicio verificable 3
-Reto. Sin el trigger `no_revertir`, crea `auditar_estado` con `WHEN OLD.estado <> NEW.estado`. Ejecuta
-`UPDATE entrega SET estado = estado` y luego cambia la entrega 14 a `fallida`.
-
-Respuesta esperada: tras el primer `UPDATE`, `auditoria` sigue en `[]`. Tras el segundo, contiene
-`[(14, 'pendiente', 'fallida')]`.
-
-#### En el trabajo
-Los reportes de operación se construyen sobre vistas que el equipo de datos mantiene. Las funciones de ventana
-responden preguntas típicas de negocio: «el último estado de cada envío», «el mejor mensajero de cada zona». Los
-triggers de auditoría son comunes en sistemas regulados. La lógica de negocio compleja, en cambio, suele vivir en la
-aplicación, donde se prueba con más facilidad.
-
-</details>
-
-### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL · Intermedio · 60 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- escribir una función en PL/pgSQL y usarla dentro de un `SELECT`;
-- escribir un procedimiento y ejecutarlo con `CALL`, y explicar por qué no se usa `SELECT`;
-- recorrer un resultado fila por fila con un cursor implícito (`FOR`) y uno explícito (`OPEN`, `FETCH`, `CLOSE`);
-- lanzar una excepción con `RAISE EXCEPTION` y capturarla con `EXCEPTION WHEN`.
-
-**Conceptos clave:** PostgreSQL, PL/pgSQL, función almacenada, procedimiento almacenado, CALL, cursor explícito, RAISE NOTICE y RAISE EXCEPTION, bloque DO, EXCEPTION WHEN, PERFORM
-
-#### El problema
-RutaFlow migró sus entregas a PostgreSQL. La tarifa se calcula en tres aplicaciones distintas y cada una redondea
-los kilos a su manera. Además, cada noche alguien ejecuta a mano el cierre del día por mensajero. ¿Cómo se guarda
-la regla de la tarifa y el proceso de cierre **dentro** de la base, para que todos usen la misma versión?
-
-#### Glosario del tema
-
-**PostgreSQL**
-- **Definición técnica:** sistema gestor de bases de datos relacional de código abierto que funciona como servidor: los programas se conectan a él por red.
-- **En palabras sencillas:** una base como SQLite, pero que vive en su propio programa y atiende a muchos clientes a la vez.
-- **Dónde se rompe la comparación:** SQLite es un archivo que abre tu programa; PostgreSQL es un servicio que hay que instalar, arrancar y al que hay que autenticarse.
-- **Ejemplo:** `SELECT version();` devolvió `PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, ...` en el servidor usado para este tema.
-- **Error típico:** pegar SQL de SQLite sin revisar el dialecto: tipos como `serial` o `numeric(6,2)` y comillas dobles se comportan distinto.
-
-**PL/pgSQL**
-- **Definición técnica:** lenguaje procedimental de PostgreSQL que añade variables, condiciones (`IF`), ciclos (`LOOP`, `FOR`) y manejo de errores al SQL.
-- **En palabras sencillas:** SQL con las herramientas de un lenguaje de programación, ejecutándose dentro del servidor.
-- **Dónde se rompe la comparación:** no es Python: cada sentencia termina en `;`, la asignación es `:=` y el cuerpo va entre `$$`.
-- **Ejemplo:** `SELECT tarifa(2.1) AS t1, tarifa(3) AS t2;` devuelve `8600 | 8600`, porque `ceil` redondea 2.1 hacia 3.
-- **Error típico:** usar `%` en `RAISE` sin pasar el valor: `too few parameters specified for RAISE`.
-
-**función almacenada**
-- **Definición técnica:** rutina guardada en la base con `CREATE FUNCTION` que recibe parámetros, devuelve un valor y se invoca dentro de una expresión SQL.
-- **En palabras sencillas:** una fórmula con nombre que vive en la base y cualquiera puede usar en sus consultas.
-- **Dónde se rompe la comparación:** no puede confirmar ni deshacer transacciones; corre dentro de la transacción de quien la llama.
-- **Ejemplo:** en `SELECT guia, kilos, tarifa(kilos) FROM entrega`, la fila de `BO-4` (7.25 kg) muestra `14600`.
-- **Error típico:** pasarle un texto: `SELECT tarifa('dos')` produce `invalid input syntax for type numeric: "dos"`.
-
-**procedimiento almacenado**
-- **Definición técnica:** rutina guardada con `CREATE PROCEDURE` que ejecuta un proceso, no devuelve un valor en una expresión y se invoca con `CALL`.
-- **En palabras sencillas:** un botón con nombre que dispara una tarea completa, como el cierre del día.
-- **Dónde se rompe la comparación:** a diferencia de la función, sí puede ejecutar `COMMIT` dentro de su cuerpo en PostgreSQL 11 o superior.
-- **Ejemplo:** `SELECT proname, prokind FROM pg_proc WHERE proname IN ('tarifa', 'cerrar_dia')` devuelve `cerrar_dia | p` y `tarifa | f`.
-- **Error típico:** llamarlo con `SELECT cerrar_dia();`: `ERROR:  cerrar_dia() is a procedure` con la pista `To call a procedure, use CALL.`.
-
-**CALL**
-- **Definición técnica:** sentencia SQL que ejecuta un procedimiento almacenado con sus argumentos.
-- **En palabras sencillas:** apretar el botón del procedimiento.
-- **Dónde se rompe la comparación:** no sirve para funciones, aunque las dos parezcan «rutinas».
-- **Ejemplo:** `CALL cerrar_dia();` llena `cierre_diario` y muestra un aviso por cada mensajero.
-- **Error típico:** `CALL tarifa(2);` produce `ERROR:  tarifa(integer) is not a procedure` con la pista `To call a function, use SELECT.`.
-
-**cursor explícito (PL/pgSQL)**
-- **Definición técnica:** variable que representa una consulta abierta en el servidor; se abre con `OPEN`, entrega filas con `FETCH` y se libera con `CLOSE`.
-- **En palabras sencillas:** un marcapáginas sobre el resultado: lees un renglón, avanzas, y al final lo guardas.
-- **Dónde se rompe la comparación:** el `FOR fila IN cursor LOOP` hace el `OPEN`, los `FETCH` y el `CLOSE` por ti.
-- **Ejemplo:** en `cursor_explicito.sql`, dos `FETCH` entregan `BO-2` y `BO-5`, y el total por cobrar es `16000`.
-- **Error típico:** hacer `FETCH` sin `OPEN`: `cursor variable "c_guias" is null`.
-
-**RAISE NOTICE y RAISE EXCEPTION**
-- **Definición técnica:** `RAISE NOTICE` envía un mensaje informativo al cliente y sigue; `RAISE EXCEPTION` lanza un error que aborta la sentencia, salvo que se capture.
-- **En palabras sencillas:** `NOTICE` es un `print`; `EXCEPTION` es un `raise ValueError`.
-- **Dónde se rompe la comparación:** un `NOTICE` no se guarda en ninguna tabla: si nadie lo lee, se pierde.
-- **Ejemplo:** `SELECT tarifa(-1);` produce `ERROR:  kilos debe ser positivo: -1` y la línea `CONTEXT:  PL/pgSQL function tarifa(numeric) line 4 at RAISE`.
-- **Error típico:** usar `RAISE NOTICE` para un dato inválido: el proceso sigue y guarda un resultado malo.
-
-**bloque DO**
-- **Definición técnica:** sentencia que ejecuta un bloque anónimo de PL/pgSQL una sola vez, sin guardarlo en la base.
-- **En palabras sencillas:** un borrador de procedimiento que se usa y se tira.
-- **Dónde se rompe la comparación:** no recibe parámetros ni devuelve resultados; solo actúa y emite avisos.
-- **Ejemplo:** `DO $$ BEGIN RAISE NOTICE 'hola desde un bloque DO: %', 2 + 3; END $$;` muestra `NOTICE:  hola desde un bloque DO: 5`.
-- **Error típico:** escribir `SELECT tarifa(2);` dentro del bloque: `query has no destination for result data`.
-
-**EXCEPTION WHEN**
-- **Definición técnica:** sección de un bloque PL/pgSQL que captura errores por nombre de condición (`division_by_zero`, `raise_exception`) y ejecuta un manejador.
-- **En palabras sencillas:** el `except` de PL/pgSQL.
-- **Dónde se rompe la comparación:** al entrar al manejador, PostgreSQL deshace todo lo que hizo el bloque antes del error.
-- **Ejemplo:** `DO $$ BEGIN PERFORM 1 / 0; EXCEPTION WHEN division_by_zero THEN RAISE NOTICE 'capturado: %', SQLERRM; END $$;` muestra `NOTICE:  capturado: division by zero`.
-- **Error típico:** capturar `OTHERS` y no hacer nada: el error desaparece sin dejar rastro.
-
-**PERFORM**
-- **Definición técnica:** sentencia PL/pgSQL que ejecuta una consulta y descarta su resultado.
-- **En palabras sencillas:** «hazlo, no me importa la respuesta».
-- **Dónde se rompe la comparación:** fuera de PL/pgSQL no existe; en SQL normal escribes `SELECT`.
-- **Ejemplo:** `PERFORM tarifa(0);` dentro del `DO` de `plpgsql.sql` termina en `NOTICE:  error controlado: kilos debe ser positivo: 0`.
-- **Error típico:** usar `SELECT` sin `INTO`; PostgreSQL responde con la pista `If you want to discard the results of a SELECT, use PERFORM instead.`.
-
-#### ► CÓMO FUNCIONA
-Una función responde: se usa donde va un valor, como una columna de un `SELECT`. Un procedimiento actúa: se
-ejecuta solo, con `CALL`, y puede recorrer datos y escribir en otras tablas.
-
-```mermaid
-flowchart LR
-    S[SELECT tarifa kilos] --> F[función: devuelve valor]
-    C[CALL cerrar_dia] --> P[procedimiento]
-    P --> K[cursor por mensajero]
-    K --> I[INSERT en cierre_diario]
-```
-
-Para recorrer filas, PL/pgSQL usa un cursor. La forma corta es `FOR fila IN cursor LOOP`. La forma larga (`OPEN`,
-`FETCH`, `EXIT WHEN NOT FOUND`, `CLOSE`) te da control para detenerte antes o combinar dos cursores.
-
-#### Problema resuelto 6.1
-Guarda en PostgreSQL la tarifa (5000 más 1200 por cada kilo o fracción) y el cierre diario por mensajero. Prueba
-también que un peso de 0 kg produce un error que se puede capturar.
-
-**Razonamiento:**
-1. La tarifa devuelve un número y se usa por fila: es una función. `ceil` cuenta la fracción como kilo completo.
-2. El cierre recorre mensajeros y escribe en `cierre_diario`: es un procedimiento con un cursor.
-3. Un peso no positivo es un dato imposible: `RAISE EXCEPTION`. Un bloque `DO` demuestra cómo capturarlo.
-
-Arranca un servidor PostgreSQL 16 desechable con Docker y ejecuta el archivo:
-
-```bash
-mkdir plpgsql && cd plpgsql
-docker run -d --rm --name pg-fundamentos-m4 -e POSTGRES_PASSWORD=dev -p 127.0.0.1:5432:5432 postgres:16
-until docker exec pg-fundamentos-m4 pg_isready -U postgres; do sleep 1; done
-docker exec -i pg-fundamentos-m4 psql -U postgres -q -X < plpgsql.sql
-```
-
-```sql
--- plpgsql.sql — tarifa y cierre diario de RutaFlow en PostgreSQL
-DROP TABLE IF EXISTS entrega, cierre_diario;
-CREATE TABLE entrega (
-  id serial PRIMARY KEY,
-  guia text UNIQUE NOT NULL,
-  mensajero text NOT NULL,
-  kilos numeric(6,2) NOT NULL CHECK (kilos > 0),
-  estado text NOT NULL DEFAULT 'pendiente'
-);
-CREATE TABLE cierre_diario (mensajero text PRIMARY KEY, entregadas int, kilos numeric(8,2));
-INSERT INTO entrega (guia, mensajero, kilos, estado) VALUES
-  ('BO-1', 'ana', 2.5, 'entregada'), ('BO-2', 'ana', 4, 'pendiente'),
-  ('BO-3', 'beto', 1, 'entregada'), ('BO-4', 'beto', 7.25, 'entregada');
-
--- FUNCIÓN: devuelve un valor y se usa dentro de un SELECT
-CREATE OR REPLACE FUNCTION tarifa(p_kilos numeric) RETURNS integer
-LANGUAGE plpgsql IMMUTABLE AS $$
-BEGIN
-  IF p_kilos <= 0 THEN
-    RAISE EXCEPTION 'kilos debe ser positivo: %', p_kilos;
-  END IF;
-  RETURN 5000 + ceil(p_kilos) * 1200;
-END $$;
-
--- PROCEDIMIENTO: recorre un CURSOR y guarda el cierre de cada mensajero
-CREATE OR REPLACE PROCEDURE cerrar_dia()
-LANGUAGE plpgsql AS $$
-DECLARE
-  fila record;
-  c_mensajeros CURSOR FOR
-    SELECT mensajero, count(*) AS n, sum(kilos) AS k
-    FROM entrega WHERE estado = 'entregada' GROUP BY mensajero ORDER BY mensajero;
-BEGIN
-  DELETE FROM cierre_diario;
-  FOR fila IN c_mensajeros LOOP                       -- el FOR abre, recorre y cierra el cursor
-    INSERT INTO cierre_diario VALUES (fila.mensajero, fila.n, fila.k);
-    RAISE NOTICE 'cierre de %: % entregas, % kg', fila.mensajero, fila.n, fila.k;
-  END LOOP;
-END $$;
-
-SELECT guia, kilos, tarifa(kilos) AS tarifa FROM entrega ORDER BY guia;
-CALL cerrar_dia();
-SELECT * FROM cierre_diario ORDER BY mensajero;
-
--- Manejo de excepciones dentro de un bloque anónimo
-DO $$
-BEGIN
-  PERFORM tarifa(0);
-EXCEPTION WHEN raise_exception THEN
-  RAISE NOTICE 'error controlado: %', SQLERRM;
-END $$;
-```
-
-```text
-$ psql -U postgres -q -X < plpgsql.sql
-NOTICE:  table "entrega" does not exist, skipping
-NOTICE:  table "cierre_diario" does not exist, skipping
- guia | kilos | tarifa 
-------+-------+--------
- BO-1 |  2.50 |   8600
- BO-2 |  4.00 |   9800
- BO-3 |  1.00 |   6200
- BO-4 |  7.25 |  14600
-(4 rows)
-
-NOTICE:  cierre de ana: 1 entregas, 2.50 kg
-NOTICE:  cierre de beto: 2 entregas, 8.25 kg
- mensajero | entregadas | kilos 
------------+------------+-------
- ana       |          1 |  2.50
- beto      |          2 |  8.25
-(2 rows)
-
-NOTICE:  error controlado: kilos debe ser positivo: 0
-```
-
-**Explicación por partes.**
-- Línea 2: el `DROP ... IF EXISTS` permite repetir el script; la primera vez avisa que las tablas no existían.
-- Líneas 16–23: la función; `IMMUTABLE` declara que el mismo peso siempre da la misma tarifa.
-- Línea 22: `ceil(2.5)` es 3, así que `BO-1` cuesta 5000 + 3 × 1200 = 8600.
-- Líneas 30–32: el cursor declara la consulta de entregadas agrupadas por mensajero.
-- Líneas 35–38: el `FOR` abre el cursor, inserta una fila por mensajero, emite un aviso y cierra el cursor.
-- Líneas 46–51: `PERFORM` llama la función con 0; `EXCEPTION WHEN raise_exception` captura el error y `SQLERRM` trae su mensaje.
-
-> **Error común.** Llamar un procedimiento como si fuera función. `SELECT cerrar_dia();` produce
-> `ERROR:  cerrar_dia() is a procedure` y la pista `HINT:  To call a procedure, use CALL.`. Lee siempre la línea
-> `HINT`: PostgreSQL te dice la corrección.
-
-> **Buena práctica.** Prefija los parámetros (`p_kilos`) y las variables (`v_total`). Si un parámetro se llama igual
-> que una columna, PostgreSQL no sabe a cuál te refieres y la consulta falla por ambigüedad.
-
-#### Problema resuelto 6.2
-Calcula el total por cobrar de las entregas pendientes, recorriéndolas una por una con un cursor explícito.
-
-**Razonamiento:**
-1. Asegurar una segunda entrega pendiente (`BO-5`) sin fallar si ya existe: `ON CONFLICT (guia) DO NOTHING`.
-2. Declarar el cursor sobre las pendientes, abrirlo y pedir filas con `FETCH` hasta que `FOUND` sea falso.
-3. Acumular la tarifa de cada entrega y cerrar el cursor al final.
-
-```sql
--- cursor_explicito.sql — recorrer guías una por una con OPEN, FETCH y CLOSE
-INSERT INTO entrega (guia, mensajero, kilos) VALUES ('BO-5', 'beto', 0.4)
-ON CONFLICT (guia) DO NOTHING;
-
-DO $$
-DECLARE
-  c_guias CURSOR FOR SELECT guia, kilos FROM entrega WHERE estado = 'pendiente' ORDER BY guia;
-  v_guia text;
-  v_kilos numeric;
-  v_total integer := 0;
-BEGIN
-  OPEN c_guias;
-  LOOP
-    FETCH c_guias INTO v_guia, v_kilos;
-    EXIT WHEN NOT FOUND;                       -- FOUND es falso cuando ya no hay filas
-    v_total := v_total + tarifa(v_kilos);
-    RAISE NOTICE 'pendiente %: % kg', v_guia, v_kilos;
-  END LOOP;
-  CLOSE c_guias;
-  RAISE NOTICE 'total por cobrar: %', v_total;
-END $$;
-```
-
-```text
-$ psql -U postgres -q -X < cursor_explicito.sql
-NOTICE:  pendiente BO-2: 4.00 kg
-NOTICE:  pendiente BO-5: 0.40 kg
-NOTICE:  total por cobrar: 16000
-```
-
-**Explicación por partes.**
-- Líneas 2–3: `ON CONFLICT` hace que el script se pueda repetir sin `duplicate key`.
-- Línea 7: el cursor se declara, pero todavía no consulta nada.
-- Líneas 12–15: `OPEN` ejecuta la consulta; cada `FETCH` llena dos variables; `EXIT WHEN NOT FOUND` termina el ciclo.
-- Línea 16: la función del Problema resuelto 6.1 se reutiliza: 9800 + 6200 = 16000.
-- Línea 19: `CLOSE` libera el cursor en el servidor.
-
-> **Prevenir errores.** Escribe `EXIT WHEN NOT FOUND` justo después de cada `FETCH`. Sin esa línea, el `LOOP` nunca
-> termina y la sesión queda ocupada hasta que la canceles.
-
-#### Checkpoint 6.1
-¿Qué tarifa devuelve `tarifa(0.4)` y por qué?
-
-Respuesta: `6200`. `ceil(0.4)` es 1, así que la tarifa es 5000 + 1 × 1200. Es la tarifa de `BO-5` en el Problema
-resuelto 6.2.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Arranca el servidor
-Ejecuta los comandos `docker` del Problema resuelto 6.1. `pg_isready` debe terminar con `accepting connections`.
-
-#### Paso 2 · Crea la función y el procedimiento
-Guarda `plpgsql.sql` y ejecútalo con `docker exec -i pg-fundamentos-m4 psql -U postgres -q -X < plpgsql.sql`. Compara
-la tabla de tarifas y el cierre con la salida del problema resuelto.
-
-#### Paso 3 · Recorre con un cursor explícito
-Guarda `cursor_explicito.sql` y ejecútalo con el mismo comando. Ejecútalo dos veces: el total sigue en `16000`.
-
-#### Paso 4 · Provoca los errores
-Ejecuta `SELECT cerrar_dia();` y `CALL tarifa(2);` dentro de `psql` y lee las líneas `HINT`. Al terminar, detén el
-servidor con `docker stop pg-fundamentos-m4`.
-
-#### Resumen
-- **PostgreSQL** es un servidor relacional; **PL/pgSQL** agrega variables, ciclos y manejo de errores al SQL.
-- Una **función almacenada** devuelve un valor y se usa en `SELECT`; un **procedimiento almacenado** ejecuta un proceso con **CALL**.
-- Un **cursor explícito** se abre, se lee con `FETCH` y se cierra; `FOR ... IN cursor LOOP` hace esos pasos por ti.
-- **RAISE NOTICE y RAISE EXCEPTION** informan o detienen; **EXCEPTION WHEN** captura el error por su nombre.
-- Un **bloque DO** ejecuta PL/pgSQL una vez; **PERFORM** ejecuta una consulta y descarta su resultado.
-
-#### Ejercicio verificable 1
-Básico. ¿Qué devuelve `SELECT tarifa(10);`?
-
-Respuesta esperada: `17000`. Son 5000 + 10 × 1200; `ceil(10)` es 10.
-
-#### Ejercicio verificable 2
-Intermedio. Ejecuta `CALL tarifa(2);`. Copia el error y la pista exactos.
-
-Respuesta esperada: `ERROR:  tarifa(integer) is not a procedure` y `HINT:  To call a function, use SELECT.`.
-
-#### Ejercicio verificable 3
-Reto. Después de `plpgsql.sql`, marca `BO-2` como entregada y vuelve a ejecutar el cierre. ¿Qué filas tiene
-`cierre_diario`?
-
-Respuesta esperada: con `UPDATE entrega SET estado = 'entregada' WHERE guia = 'BO-2';` y `CALL cerrar_dia();`, la
-tabla queda en `ana | 2 | 6.50` y `beto | 2 | 8.25`. El `DELETE` de la línea 34 evita duplicar filas.
-
-#### En el trabajo
-Bancos, aseguradoras y operadores logísticos guardan en la base las reglas que varias aplicaciones deben compartir,
-como una tarifa o un cierre contable. Los procedimientos se ejecutan desde tareas programadas o desde el backend con
-`CALL`. El costo es que esa lógica se prueba y se versiona aparte del código. Por eso los equipos la guardan en
-migraciones y la cubren con pruebas.
-
-</details>
-
-### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas · Intermedio · 50 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### Objetivos
-Al terminar este tema podrás:
-- convertir el resultado de una consulta SQL en una hoja de Excel con encabezados tomados del cursor;
-- escribir fórmulas que Excel recalcula y darles formato de porcentaje;
-- crear una tabla de Excel con filtros y estilo;
-- verificar el archivo generado leyéndolo de nuevo, distinguiendo fórmulas de valores calculados.
-
-**Conceptos clave:** openpyxl, libro y hoja, celda, cursor.description, fórmula viva, formato numérico, tabla de Excel, data_only
-
-#### El problema
-La gerencia de RutaFlow no abre bases de datos: abre Excel. Cada lunes alguien copia a mano el resumen por zona y
-escribe los porcentajes con la calculadora. Si un número de la base cambia, el porcentaje queda viejo. ¿Cómo se
-genera el archivo directamente desde SQL, con fórmulas que se actualicen solas?
-
-#### Glosario del tema
-
-**openpyxl**
-- **Definición técnica:** biblioteca de Python, externa a la biblioteca estándar, que lee y escribe archivos `.xlsx` (formato Office Open XML) sin necesitar Excel instalado.
-- **En palabras sencillas:** la herramienta que le permite a Python fabricar y abrir libros de Excel.
-- **Dónde se rompe la comparación:** fabrica el archivo, pero no es Excel: no calcula las fórmulas que escribe.
-- **Ejemplo:** `pip install openpyxl` instaló la versión 3.1.5 usada en este tema.
-- **Error típico:** ejecutar el script sin instalarla: `ModuleNotFoundError: No module named 'openpyxl'`.
-
-**libro y hoja**
-- **Definición técnica:** el libro (`Workbook`) es el archivo `.xlsx`; contiene una o más hojas (`Worksheet`), cada una con su nombre y su cuadrícula.
-- **En palabras sencillas:** el libro es la carpeta y las hojas son las páginas con pestaña.
-- **Dónde se rompe la comparación:** un libro nuevo ya trae una hoja llamada `Sheet`; no empieza vacío.
-- **Ejemplo:** `Workbook().active.title` devuelve `'Sheet'`; en el reporte se renombra a `"Resumen por zona"`.
-- **Error típico:** pedir una hoja con otro nombre: `libro["Resumen"]` produce `KeyError: 'Worksheet Resumen does not exist.'`.
-
-**celda**
-- **Definición técnica:** intersección de una columna (letra) y una fila (número) que guarda un valor, una fórmula y un formato; se accede con `hoja["B2"]`.
-- **En palabras sencillas:** una casilla de la cuadrícula con su dirección, como en el juego de batalla naval.
-- **Dónde se rompe la comparación:** en Excel las filas empiezan en 1, no en 0 como las listas de Python.
-- **Ejemplo:** tras `hoja["B2"] = 5`, `hoja["B2"].value` devuelve `5` y `hoja.cell(row=2, column=2).coordinate` devuelve `'B2'`.
-- **Error típico:** escribir los datos desde la fila 1 y pisar los encabezados.
-
-**cursor.description**
-- **Definición técnica:** atributo del cursor de `sqlite3` con una tupla por columna del resultado; el primer elemento de cada tupla es el nombre de la columna.
-- **En palabras sencillas:** los encabezados de la respuesta de la base.
-- **Dónde se rompe la comparación:** solo el nombre tiene valor; los otros seis campos vienen en `None` en SQLite.
-- **Ejemplo:** `conexion.execute("SELECT 1 AS uno, 'x' AS letra").description` devuelve `(('uno', None, None, None, None, None, None), ('letra', None, None, None, None, None, None))`.
-- **Error típico:** escribir los encabezados a mano y olvidarse de cambiarlos cuando cambia la consulta.
-
-**fórmula viva**
-- **Definición técnica:** texto que empieza con `=` guardado en una celda. La aplicación de hojas de cálculo lo evalúa al abrir el archivo y cuando cambian sus celdas de origen.
-- **En palabras sencillas:** la celda guarda la cuenta, no el resultado; si cambias un dato, el resultado cambia solo.
-- **Dónde se rompe la comparación:** openpyxl guarda la fórmula como texto: el resultado no existe hasta que una aplicación la calcula.
-- **Ejemplo:** tras `hoja["C2"] = "=B2*2"`, `hoja["C2"].value` devuelve `'=B2*2'` y `hoja["C2"].data_type` devuelve `'f'` (fórmula).
-- **Error típico:** calcular el porcentaje en Python y escribir el número: el reporte deja de ser vivo.
-
-**formato numérico**
-- **Definición técnica:** propiedad `number_format` de la celda que define cómo se **muestra** el valor sin cambiar el valor guardado.
-- **En palabras sencillas:** el disfraz del número: `0.6667` se ve como `67%`.
-- **Dónde se rompe la comparación:** el disfraz no redondea el valor: las cuentas siguen usando todos los decimales.
-- **Ejemplo:** tras `hoja["D2"] = 0.6667` y `hoja["D2"].number_format = "0%"`, el valor sigue siendo `0.6667` y el formato es `'0%'`.
-- **Error típico:** multiplicar por 100 y además aplicar `0%`: Excel muestra `6667%`.
-
-**tabla de Excel**
-- **Definición técnica:** objeto `Table` que marca un rango con encabezados como tabla estructurada: agrega filtros, estilo de bandas y un nombre propio.
-- **En palabras sencillas:** convertir un rango suelto en una tabla con flechitas de filtro en cada encabezado.
-- **Dónde se rompe la comparación:** el rango no crece solo desde Python; si agregas filas, debes ampliar `ref`.
-- **Ejemplo:** en el reporte, `list(hoja.tables.keys())` devuelve `['ResumenZonas']` con rango `'A1:E3'`.
-- **Error típico:** usar espacios en el nombre: `Table(displayName="Resumen Zonas", ...)` produce `ValueError: Table names cannot have spaces`.
-
-**data_only**
-- **Definición técnica:** parámetro de `load_workbook`; con `data_only=True` lee el último valor calculado guardado en el archivo en lugar del texto de la fórmula.
-- **En palabras sencillas:** pedir el resultado, no la cuenta.
-- **Dónde se rompe la comparación:** si ninguna aplicación calculó el archivo, no hay resultado guardado y obtienes `None`.
-- **Ejemplo:** recién creado por openpyxl, `load_workbook("reporte-entregas.xlsx", data_only=True)` entrega `None` en la columna de efectividad.
-- **Error típico:** abrir con `data_only=True`, modificar y guardar: las fórmulas se pierden y quedan solo valores.
-
-#### ► CÓMO FUNCIONA
-El trabajo se reparte. **SQL agrupa y cuenta**, porque lo hace mejor y más rápido. **Excel presenta, filtra y
-recalcula**, porque es donde trabaja quien lee el reporte. Python solo une las dos partes:
-
-```mermaid
-flowchart LR
-    D[(SQLite)] --> Q[consulta GROUP BY]
-    Q --> W[openpyxl]
-    W --> X[reporte-entregas.xlsx]
-    X --> F[fórmulas y filtros en Excel]
-```
-
-Una fórmula escrita por openpyxl viaja como texto dentro del `.xlsx`. Excel o LibreOffice la calculan al abrir el
-archivo. Por eso la verificación tiene dos niveles: leer las fórmulas y, si quieres los números, recalcular.
-
-#### Problema resuelto 7.1
-Genera `reporte-entregas.xlsx` con el resumen por zona: envíos, entregadas, kilos y efectividad como fórmula, más
-una fila de total y una tabla con filtros.
-
-**Razonamiento:**
-1. La consulta agrupa por zona; `cursor.description` da los encabezados sin escribirlos a mano.
-2. Los datos empiezan en la fila 2; la efectividad de la fila `i` es `=C{i}/B{i}`, con formato `0%`.
-3. La tabla de Excel cubre encabezados y datos; el total va debajo, fuera de la tabla.
-4. Para verificar, el script vuelve a abrir el archivo y muestra cada fila.
-
-```bash
-mkdir sql-excel && cd sql-excel
-pip install openpyxl
-```
-
-```python
-# reporte_excel.py — de una consulta SQL a un Excel con fórmulas vivas
-import sqlite3
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font
-from openpyxl.worksheet.table import Table, TableStyleInfo
-
-db = sqlite3.connect(":memory:")
-db.executescript("""
-CREATE TABLE entrega (guia TEXT, zona TEXT, mensajero TEXT, kilos REAL, estado TEXT);
-INSERT INTO entrega VALUES
- ('BO-1','Norte','Ana',2.5,'entregada'), ('BO-2','Norte','Ana',4,'fallida'),
- ('BO-3','Sur','Beto',1,'entregada'),    ('BO-4','Sur','Beto',7.25,'entregada'),
- ('BO-5','Norte','Caro',3,'entregada');
-""")
-
-# SQL hace el trabajo pesado (agrupar); Excel presenta, filtra y calcula sobre el resultado
-consulta = """
-SELECT zona, COUNT(*) AS envios,
-       SUM(estado = 'entregada') AS entregadas,
-       ROUND(SUM(kilos), 2) AS kilos
-FROM entrega GROUP BY zona ORDER BY zona
-"""
-cursor = db.execute(consulta)
-columnas = [c[0] for c in cursor.description]
-filas = cursor.fetchall()
-
-libro = Workbook()
-hoja = libro.active
-hoja.title = "Resumen por zona"
-hoja.append(columnas + ["efectividad"])
-for i, fila in enumerate(filas, start=2):
-    hoja.append(list(fila) + [f"=C{i}/B{i}"])        # fórmula viva: Excel la recalcula
-    hoja[f"E{i}"].number_format = "0%"
-for celda in hoja[1]:
-    celda.font = Font(bold=True)
-total = len(filas) + 2
-hoja[f"A{total}"] = "Total"
-hoja[f"B{total}"] = f"=SUM(B2:B{total - 1})"
-tabla = Table(displayName="ResumenZonas", ref=f"A1:E{total - 1}")
-tabla.tableStyleInfo = TableStyleInfo(name="TableStyleMedium9", showRowStripes=True)
-hoja.add_table(tabla)                                # tabla de Excel: filtros y estilo
-libro.save("reporte-entregas.xlsx")
-
-# Verificación: volver a leer el archivo generado
-leido = load_workbook("reporte-entregas.xlsx")["Resumen por zona"]
-for fila in leido.iter_rows(values_only=True):
-    print(fila)
-```
-
-```text
-$ python3 reporte_excel.py
-('zona', 'envios', 'entregadas', 'kilos', 'efectividad')
-('Norte', 3, 2, 9.5, '=C2/B2')
-('Sur', 2, 2, 8.25, '=C3/B3')
-('Total', '=SUM(B2:B3)', None, None, None)
-```
-
-**Explicación por partes.**
-- Líneas 18–21: `SUM(estado = 'entregada')` cuenta entregadas; `ROUND(..., 2)` deja dos decimales en kilos.
-- Línea 24: cada elemento de `cursor.description` es una tupla; `c[0]` es el nombre de la columna.
-- Líneas 31–33: `enumerate(..., start=2)` da el número de fila de Excel; la fórmula usa ese número.
-- Líneas 36–38: el total queda en la fila 4 con `=SUM(B2:B3)`.
-- Líneas 39–41: la tabla `ResumenZonas` cubre `A1:E3` y activa los filtros.
-- Salida: la columna de efectividad muestra el texto de la fórmula, no un número. Eso es correcto.
-
-> **Error común.** Nombrar la tabla con espacios. `Table(displayName="Resumen Zonas", ref="A1:E3")` termina con
-> `ValueError: Table names cannot have spaces`. Usa nombres en *PascalCase* (`ResumenZonas`) o con guion bajo.
-
-> **Buena práctica.** Deja que SQL agregue y que Excel solo calcule proporciones simples sobre esas filas. Si
-> mueves el `GROUP BY` a Excel, el archivo pesa más y la lógica queda repartida en dos lugares.
-
-#### Problema resuelto 7.2
-Comprueba que las fórmulas producen los números esperados. Lee el archivo con `data_only=True` antes y después de
-recalcularlo con LibreOffice en modo sin ventana.
-
-**Razonamiento:**
-1. Recién generado, el archivo no tiene valores calculados: se espera `None`.
-2. LibreOffice puede abrirlo, recalcular y guardarlo de nuevo con `--convert-to xlsx`.
-3. Después, Norte debe dar 2/3 ≈ 0.667, Sur 1 y el total 5.
-
-```python
-# verificar.py — fórmulas guardadas contra valores calculados
-import sys
-from openpyxl import load_workbook
-
-archivo = sys.argv[1]
-hoja = load_workbook(archivo, data_only=True).active   # data_only: valores, no fórmulas
-for fila in hoja.iter_rows(min_row=2, values_only=True):
-    print(fila)
-```
-
-```text
-$ python3 verificar.py reporte-entregas.xlsx
-('Norte', 3, 2, 9.5, None)
-('Sur', 2, 2, 8.25, None)
-('Total', None, None, None, None)
-$ soffice --headless --convert-to xlsx --outdir calculado reporte-entregas.xlsx > /dev/null
-$ python3 verificar.py calculado/reporte-entregas.xlsx
-('Norte', 3, 2, 9.5, 0.666666666666667)
-('Sur', 2, 2, 8.25, 1)
-('Total', 5, None, None, None)
-```
-
-**Explicación por partes.**
-- Línea 5: el nombre del archivo llega como argumento, así el mismo programa revisa los dos archivos.
-- Línea 6: `data_only=True` pide los valores calculados; `.active` es la primera hoja.
-- Primera ejecución: la columna de efectividad y el total están en `None`; nadie los calculó aún.
-- Segunda ejecución: LibreOffice calculó `0.666666666666667` para Norte, `1` para Sur y `5` en el total.
-
-> **Prevenir errores.** Si no tienes LibreOffice, abre el archivo en Excel y revisa la columna E. Nunca entregues un
-> reporte verificado solo con `data_only=True` sobre un archivo recién creado: los `None` no prueban nada.
-
-#### Checkpoint 7.1
-Si en la base cambias `BO-2` a `entregada` y vuelves a ejecutar `reporte_excel.py`, ¿qué muestra Excel en la
-efectividad de Norte?
-
-Respuesta: `100%`. La consulta devuelve 3 entregadas de 3 envíos, y la fórmula `=C2/B2` da 1, que el formato `0%`
-muestra como `100%`.
+Respuesta: porque con la tabla vacía la consulta correcta y la rota devuelven `0`. Esa prueba no distingue entre las
+dos; solo una prueba con filas pendientes, como `test_cuenta_pendientes_en_sqlite`, detecta el defecto.
 
 </details>
 
@@ -2351,157 +768,884 @@ muestra como `100%`.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara el entorno
-Crea la carpeta `sql-excel`, instala openpyxl con `pip install openpyxl` y comprueba la versión con
-`python3 -c "import openpyxl; print(openpyxl.__version__)"`.
+Crea `~/labs/pruebas` con una carpeta `tests/`. Dentro de `~/labs/pruebas` ejecuta `python3 -m venv .venv`,
+`source .venv/bin/activate` y `python -m pip install pytest pytest-cov`. En Windows la activación es `.venv\Scripts\activate`.
 
-#### Paso 2 · Genera el reporte
-Guarda `reporte_excel.py` y ejecútalo. La salida debe mostrar cuatro filas, con fórmulas en la columna E y en el total.
+#### Paso 2 · Pruebas unitarias
+Escribe `inventario.py` y `tests/test_inventario.py`. Ejecuta `python -m pytest -v tests/test_inventario.py` y
+comprueba los cuatro `PASSED`. Cambia el `3` por `7`, mira la falla y deja el `3` de nuevo.
 
-#### Paso 3 · Abre el archivo
-Abre `reporte-entregas.xlsx` en Excel o LibreOffice. Comprueba que los encabezados tienen flechas de filtro y que
-la efectividad se ve como `67%` y `100%`.
+#### Paso 3 · Doble, integración y E2E
+Escribe `reporte.py`, `tests/test_doble.py`, `tests/test_integracion.py` y `tests/test_e2e.py`. Ejecuta
+`python -m pytest -v`: deben salir `8 passed`.
 
-#### Paso 4 · Verifica los valores
-Guarda `verificar.py` y ejecútalo antes y después de recalcular, como en el Problema resuelto 7.2.
+#### Paso 4 · Rompe la consulta y mide
+Escribe `'pendientes'` en la consulta y ejecuta `python -m pytest -q --tb=short`: deben fallar exactamente la
+integración y la E2E. Restaura la consulta y mide la cobertura con `--cov=inventario --cov-report=term-missing`.
 
 #### Resumen
-- **openpyxl** escribe y lee `.xlsx` desde Python; un **libro** contiene **hojas** y cada hoja, **celdas**.
-- **cursor.description** entrega los nombres de las columnas de la consulta.
-- Una **fórmula viva** se guarda como texto que empieza con `=` y la calcula la aplicación de hojas de cálculo.
-- El **formato numérico** cambia cómo se ve un valor, no el valor.
-- Una **tabla de Excel** agrega filtros y estilo a un rango con nombre.
-- `data_only=True` lee valores calculados; en un archivo recién creado devuelve `None`.
+- Una **prueba unitaria** revisa una función aislada; una **prueba de integración** cruza una frontera real como SQLite.
+- La **prueba de extremo a extremo** ejecuta el programa completo; es la más realista y la más lenta.
+- La **pirámide de pruebas** pide muchas unitarias, menos integraciones y pocas E2E.
+- **pytest** ejecuta las funciones `test_*`, muestra los valores de cada `assert` fallido y comprueba excepciones con `pytest.raises`.
+- Una **fixture** prepara y limpia un recurso por prueba; `tmp_path` da una carpeta temporal.
+- Un **doble de prueba** no ejecuta lo que reemplaza: puede seguir en verde con el SQL roto.
+- La **cobertura** dice qué líneas se visitaron, no si se comprobaron.
 
 #### Ejercicio verificable 1
-Básico. Agrega una columna F `kilos_promedio` con la fórmula `=D{i}/B{i}` en cada fila de datos. ¿Qué valor muestra
-LibreOffice para Norte?
+Básico. Agrega una prueba unitaria para el caso límite de retirar todo el stock: `retirar(stock=5, cantidad=5)`.
 
-Respuesta esperada: `3.16666666666667` (9.5 kg entre 3 envíos). En el archivo, la celda F2 guarda el texto `=D2/B2`.
+Respuesta esperada: `def test_retirar_todo_el_stock(): assert retirar(stock=5, cantidad=5) == 0`. Pasa, porque la
+condición es `cantidad > stock` y `5 > 5` es falso. La suite queda en `9 passed`.
 
 #### Ejercicio verificable 2
-Intermedio. Cambia `displayName="ResumenZonas"` por `displayName="Resumen Zonas"` y ejecuta el script.
+Intermedio. Agrega una prueba de integración que inserte un envío con estado `'Pendiente'` (mayúscula). ¿Cuánto
+devuelve `contar_pendientes_bd`? ¿La prueba descubre una regla que falta?
 
-Respuesta esperada: `ValueError: Table names cannot have spaces`. El archivo no se guarda, porque el error ocurre
-antes de `libro.save`.
+Respuesta esperada: devuelve `0`, porque en SQLite `=` distingue mayúsculas por defecto. La prueba obliga a decidir:
+normalizar el estado al guardar o comparar con `lower(estado) = 'pendiente'`. Es la versión SQL del Ejercicio 2 del Tema 1.
 
 #### Ejercicio verificable 3
-Reto. Agrega una hoja `Detalle` con todas las entregas ordenadas por guía, usando `libro.create_sheet("Detalle")` y
-`cursor.description` para los encabezados. Lee el archivo y muestra los nombres de las hojas y las filas de `Detalle`.
+Reto. Escribe una prueba E2E que ejecute `reporte.py` contra una base SQLite vacía, sin tabla, y compruebe que el
+programa termina con error y lo explica.
 
-Respuesta esperada: `libro.sheetnames` devuelve `['Resumen por zona', 'Detalle']` y `max_row` de `Detalle` es `6`:
-un encabezado y cinco entregas.
+Respuesta esperada: usar `subprocess.run(..., capture_output=True, text=True)` **sin** `check=True`, y comprobar
+`resultado.returncode != 0` y `"no such table: envios" in resultado.stderr`. El programa termina con
+`sqlite3.OperationalError: no such table: envios`.
 
 #### En el trabajo
-Muchas áreas de una empresa viven en Excel: finanzas, operaciones, comercial. Un reporte generado desde SQL con
-fórmulas vivas evita las copias a mano y sus errores. En producción, estos scripts corren en una tarea programada y
-envían el archivo por correo o lo dejan en una carpeta compartida. Para tableros interactivos se usan herramientas
-de BI, pero el Excel generado sigue siendo el formato que todos abren.
+En un equipo, las pruebas son la red de seguridad que permite cambiar código ajeno sin miedo. La suite unitaria
+corre en segundos en cada guardado; las de integración usan una base desechable, a menudo en un contenedor; y las
+E2E cubren solo los recorridos que cuestan dinero si fallan, como cobrar un envío. Un informe de cobertura sirve para
+encontrar zonas sin probar, no como meta: los revisores leen los `assert`, no el porcentaje.
 
 </details>
 
-### Proyecto 4: migrar el inventario JSON a SQLite
+### Tema 3: Git como historial de decisiones y colaboración · Intermedio · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-En el Proyecto 2 (Módulo 2) guardaste el inventario de la bodega en `inventario.json`. Ahora lo pasas a la base relacional de este módulo:
-categorías y productos en tablas separadas, restricciones que rechazan datos inválidos y una sola transacción. Si
-un producto falla, no se migra ninguno.
+#### Objetivos
+Al terminar este tema podrás:
+- crear un repositorio, preparar cambios en el área de preparación y registrarlos en commits con mensajes útiles;
+- leer el historial con `git log` y los cambios con `git diff`, de un archivo o entre dos commits;
+- trabajar en una rama, unirla con `merge` y resolver un conflicto explicando la intención de ambos cambios;
+- deshacer un commit publicado con `git revert` y explicar por qué no se usa `reset` en ramas compartidas.
 
-**Criterios de aceptación:**
-- el esquema tiene `categorias` y `productos` con clave primaria, clave foránea, `UNIQUE` y `CHECK`;
-- todos los `INSERT` son consultas parametrizadas;
-- un SKU repetido cancela la migración completa y la base queda con 0 productos;
-- con datos válidos, el número de productos en la base es igual al número de objetos del JSON.
+**Conceptos clave:** Git, repositorio, área de preparación, commit, rama, merge, conflicto, git revert
+
+#### El problema
+La tarifa base de RutaFlow cambió dos veces la semana pasada y volvió al valor original. Este es el historial real
+del archivo:
+
+```text
+$ git log --oneline
+bae3c21 fix 2
+bff695e fix
+a3ae0bf cambios
+```
+
+Nadie sabe por qué subió ni por qué bajó. Además, dos personas editan `estados.py` a la vez y una pisa el trabajo de
+la otra. ¿Cómo guardas cada cambio con su motivo y cómo unes el trabajo de dos personas sin perder ninguno?
+
+#### Glosario del tema
+
+**Git**
+- **Definición técnica:** sistema de control de versiones distribuido: registra instantáneas del proyecto y cada copia guarda el historial completo.
+- **En palabras sencillas:** una máquina del tiempo para tu carpeta, con una nota que explica cada viaje.
+- **Dónde se rompe la comparación:** Git no guarda solo: registra únicamente lo que tú decides preparar y confirmar.
+- **Ejemplo:** `git --version` responde `git version 2.43.0`.
+- **Error típico:** confundir Git (la herramienta, en tu equipo) con GitHub (un servicio web que aloja repositorios Git).
+
+**repositorio**
+- **Definición técnica:** carpeta de proyecto más una subcarpeta oculta `.git` donde Git guarda el historial, las ramas y la configuración.
+- **En palabras sencillas:** la carpeta del proyecto con su archivo de memoria escondido dentro.
+- **Dónde se rompe la comparación:** si borras `.git`, los archivos quedan pero el historial desaparece.
+- **Ejemplo:** `git init -b main` responde `Initialized empty Git repository in /home/estudiante/labs/historial-envios/.git/`.
+- **Error típico:** ejecutar `git init` en la carpeta personal completa y versionar sin querer miles de archivos ajenos.
+
+**área de preparación**
+- **Definición técnica:** zona intermedia (*staging area* o índice) donde `git add` coloca los cambios que entrarán en el siguiente commit.
+- **En palabras sencillas:** la caja donde metes lo que vas a enviar, antes de cerrarla y ponerle la etiqueta.
+- **Dónde se rompe la comparación:** si editas el archivo después de `git add`, la caja conserva la versión vieja hasta que vuelvas a agregarlo.
+- **Ejemplo:** tras `git add estados.py`, `git status --short` muestra `A  estados.py` (agregado y preparado).
+- **Error típico:** ejecutar `git commit` sin `git add`: Git responde `no changes added to commit`.
+
+**commit**
+- **Definición técnica:** instantánea confirmada de los archivos preparados, con autor, fecha, mensaje y un identificador único (hash) calculado a partir de su contenido.
+- **En palabras sencillas:** una foto del proyecto pegada en el álbum, con fecha, firma y una nota de por qué la tomaste.
+- **Dónde se rompe la comparación:** una foto se puede retocar; cambiar un commit crea uno nuevo con otro hash.
+- **Ejemplo:** `git commit -m "Definir estados de un envío"` responde `[main (root-commit) 51d4ca6] Definir estados de un envío`.
+- **Error típico:** mensajes como `fix` o `cambios`, que dicen que algo cambió pero no qué ni por qué.
+
+**rama**
+- **Definición técnica:** puntero con nombre a un commit, que avanza solo cuando confirmas en ella; permite desarrollar en paralelo sin tocar `main`.
+- **En palabras sencillas:** un borrador aparte, donde pruebas cambios sin tocar la versión buena.
+- **Dónde se rompe la comparación:** crear una rama no copia archivos; es solo una etiqueta, por eso es instantánea.
+- **Ejemplo:** `git switch -c feature/devuelto` responde `Switched to a new branch 'feature/devuelto'`.
+- **Error típico:** olvidar en qué rama estás y confirmar en `main`; revisa siempre la primera línea de `git status`.
+
+**merge**
+- **Definición técnica:** operación que integra en la rama actual los commits de otra; si ambas avanzaron, crea un commit de unión con dos padres.
+- **En palabras sencillas:** juntar el borrador con la versión buena, conservando lo que cada uno aportó.
+- **Dónde se rompe la comparación:** Git une líneas, no ideas: si los dos cambios son incompatibles en lógica pero tocan líneas distintas, el merge sale «limpio» y el programa queda mal.
+- **Ejemplo:** `git merge feature/devuelto` seguido de `git commit --no-edit` crea `[main 3f6ed92] Merge branch 'feature/devuelto'`.
+- **Error típico:** unir sin ejecutar las pruebas después; un merge sin conflictos no garantiza un programa correcto.
+
+**conflicto**
+- **Definición técnica:** situación en la que dos ramas cambiaron la misma zona de un archivo de forma distinta; Git detiene el merge y marca ambas versiones con `<<<<<<<`, `=======` y `>>>>>>>`.
+- **En palabras sencillas:** dos personas corrigieron la misma frase de dos formas, y Git te pide decidir.
+- **Dónde se rompe la comparación:** la solución casi nunca es elegir una de las dos; suele ser combinar la intención de ambas.
+- **Ejemplo:** `CONFLICT (content): Merge conflict in estados.py`.
+- **Error típico:** borrar la versión del otro sin preguntar su motivo, o dejar las marcas dentro del archivo.
+
+**git revert**
+- **Definición técnica:** orden que crea un commit nuevo con los cambios inversos de uno anterior, sin borrar historial.
+- **En palabras sencillas:** en vez de arrancar la página del cuaderno, escribes debajo «anulo lo anterior».
+- **Dónde se rompe la comparación:** `git reset` sí mueve la rama hacia atrás y «borra» commits de su historial; en una rama compartida eso rompe las copias de los demás.
+- **Ejemplo:** `git revert --no-edit HEAD` responde `[main 149ee96] Revert "Admitir el estado en_ruta"`.
+- **Error típico:** usar `git reset --hard` sobre commits que otros ya descargaron.
+
+#### ► CÓMO FUNCIONA
+Un cambio viaja por tres lugares. Lo editas en la **carpeta de trabajo**; con `git add` lo pasas al **área de
+preparación**; con `git commit` queda en el **historial**. Las ramas son etiquetas que apuntan a commits, y `merge`
+junta dos historias en una.
+
+| Orden | Qué es | Qué haces con ella |
+|---|---|---|
+| `git status` | Estado de la carpeta | Ves la rama actual y qué está modificado, preparado o sin seguir |
+| `git diff` | Diferencia línea a línea | Ves qué cambió antes de prepararlo; `git diff A B` compara dos commits |
+| `git log` | Historial | Lees los commits; `git log --oneline -- archivo` filtra por archivo |
+| `git switch -c` | Crear y cambiar de rama | Abres un borrador para un cambio concreto |
+
+```mermaid
+gitGraph
+    commit id: "51d4ca6 estados"
+    commit id: "0779f50 en_ruta"
+    branch feature/devuelto
+    commit id: "3936692 devuelto"
+    checkout main
+    commit id: "80ca398 retenido"
+    merge feature/devuelto id: "3f6ed92 merge"
+```
+
+#### Problema resuelto 3.1
+Crea el repositorio de estados de envío de RutaFlow, confirma la primera versión y agrega el estado `en_ruta` con un
+mensaje que explique el motivo.
+
+**Razonamiento:**
+1. `git status` antes y después de cada paso: te dice dónde está cada cambio.
+2. `git diff` antes de preparar: revisas lo que vas a confirmar, línea por línea.
+3. El mensaje tiene un título corto en imperativo (qué hace) y un cuerpo con el porqué.
+
+```python
+# estados.py — estados que puede tener un envío de RutaFlow
+ESTADO_INICIAL = "pendiente"
+ESTADOS_ADMITIDOS = {"pendiente", "entregado"}
+```
+
+```text
+$ git init -b main
+Initialized empty Git repository in /home/estudiante/labs/historial-envios/.git/
+$ git status
+On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	estados.py
+
+nothing added to commit but untracked files present (use "git add" to track)
+$ git add estados.py
+$ git status --short
+A  estados.py
+$ git commit -m "Definir estados de un envío"
+[main (root-commit) 51d4ca6] Definir estados de un envío
+ 1 file changed, 3 insertions(+)
+ create mode 100644 estados.py
+```
+
+Ahora agrega `"en_ruta"` a la línea 3 de `estados.py` y revisa el cambio antes de confirmarlo:
+
+```text
+$ git diff
+diff --git a/estados.py b/estados.py
+index 90b5514..c65907b 100644
+--- a/estados.py
++++ b/estados.py
+@@ -1,3 +1,3 @@
+ # estados.py — estados que puede tener un envío de RutaFlow
+ ESTADO_INICIAL = "pendiente"
+-ESTADOS_ADMITIDOS = {"pendiente", "entregado"}
++ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado"}
+$ git commit -m "Admitir el estado en_ruta"
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   estados.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+$ git add estados.py
+$ git commit -m "Admitir el estado en_ruta" -m "El conductor marca el envío al salir de bodega; sin este estado el panel lo mostraba pendiente."
+[main 0779f50] Admitir el estado en_ruta
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git log
+commit 0779f50bc3aa2d15d41e54826d42930084afeae8
+Author: Estudiante <estudiante@example.com>
+Date:   Tue Nov 24 09:10:00 2026 -0500
+
+    Admitir el estado en_ruta
+    
+    El conductor marca el envío al salir de bodega; sin este estado el panel lo mostraba pendiente.
+
+commit 51d4ca6a3527c200417fcbf292bc763a78e36bdc
+Author: Estudiante <estudiante@example.com>
+Date:   Tue Nov 24 09:00:00 2026 -0500
+
+    Definir estados de un envío
+$ git log --oneline -- estados.py
+0779f50 Admitir el estado en_ruta
+51d4ca6 Definir estados de un envío
+```
+
+**Explicación por partes.**
+- `Untracked files`: Git ve el archivo pero todavía no lo sigue. `git add` lo pasa al área de preparación.
+- `A  estados.py`: la `A` en la primera columna significa «agregado y preparado».
+- `git diff`: las líneas con `-` salen y las líneas con `+` entran. Solo cambió la línea 3.
+- El primer `git commit` del cambio falla a propósito: el archivo estaba modificado, pero no preparado.
+- El segundo `-m` agrega el cuerpo del mensaje. `git log` lo muestra completo: dentro de un año seguirá diciendo por qué.
+- `git log --oneline -- estados.py` muestra solo los commits que tocaron ese archivo, uno por línea.
+
+> **Error común.** Ejecutar `git commit -m "…"` sin `git add`. Git no crea nada y responde
+> `no changes added to commit (use "git add" and/or "git commit -a")`. Lee la línea `modified:`: ahí está lo que
+> falta preparar.
+
+> **Buena práctica.** Título del commit en imperativo, menor de unos 50 caracteres, que complete la frase «este
+> commit va a…»: «Admitir el estado en_ruta». El cuerpo responde «¿por qué?». Compáralo con `fix 2`.
+
+#### Problema resuelto 3.2
+Tú agregas el estado `devuelto` en una rama. Mientras tanto, una compañera agrega `retenido` (por aduana)
+directamente en `main`. Une las dos ramas y resuelve el conflicto sin perder ninguna intención.
+
+**Razonamiento:**
+1. Cada cambio va en su rama con un commit que explique su motivo.
+2. Al unir, Git detecta que ambos cambiaron la línea 3 y se detiene: no sabe cuál conservar.
+3. Las dos intenciones son compatibles: un envío puede quedar retenido **o** ser devuelto. La resolución conserva ambos estados.
+
+```text
+$ git switch -c feature/devuelto
+Switched to a new branch 'feature/devuelto'
+$ git commit -am "Admitir el estado devuelto"
+[feature/devuelto 3936692] Admitir el estado devuelto
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git switch main
+Switched to branch 'main'
+$ git commit -am "Admitir el estado retenido por aduana"
+[main 80ca398] Admitir el estado retenido por aduana
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git merge feature/devuelto
+Auto-merging estados.py
+CONFLICT (content): Merge conflict in estados.py
+Automatic merge failed; fix conflicts and then commit the result.
+$ git status
+On branch main
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+	both modified:   estados.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+$ cat estados.py
+# estados.py — estados que puede tener un envío de RutaFlow
+ESTADO_INICIAL = "pendiente"
+<<<<<<< HEAD
+ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado", "retenido"}
+=======
+ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado", "devuelto"}
+>>>>>>> feature/devuelto
+```
+
+Antes de cada `git commit -am` se editó la línea 3 en la rama correspondiente. Ahora resuelve: deja una sola línea
+con los dos estados y borra las tres marcas.
+
+```python
+# estados.py — estados que puede tener un envío de RutaFlow
+ESTADO_INICIAL = "pendiente"
+ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado", "retenido", "devuelto"}
+```
+
+```text
+$ git add estados.py
+$ git commit --no-edit
+[main 3f6ed92] Merge branch 'feature/devuelto'
+$ git log --oneline --graph
+*   3f6ed92 Merge branch 'feature/devuelto'
+|\  
+| * 3936692 Admitir el estado devuelto
+* | 80ca398 Admitir el estado retenido por aduana
+|/  
+* 0779f50 Admitir el estado en_ruta
+* 51d4ca6 Definir estados de un envío
+$ git diff HEAD~1 HEAD
+diff --git a/estados.py b/estados.py
+index 03f250a..38a8d0f 100644
+--- a/estados.py
++++ b/estados.py
+@@ -1,3 +1,3 @@
+ # estados.py — estados que puede tener un envío de RutaFlow
+ ESTADO_INICIAL = "pendiente"
+-ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado", "retenido"}
++ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado", "retenido", "devuelto"}
+```
+
+**Explicación por partes.**
+- `git commit -am`: la `a` prepara todos los archivos ya seguidos que cambiaron; la `m` da el mensaje. No sirve para archivos nuevos.
+- Entre `<<<<<<< HEAD` y `=======` está tu rama actual (`main`); entre `=======` y `>>>>>>> feature/devuelto`, la que llega.
+- `both modified`: ambas ramas tocaron el archivo. `git add` marca el conflicto como resuelto.
+- `git commit --no-edit` acepta el mensaje que Git propone: `Merge branch 'feature/devuelto'`.
+- En el grafo, cada `*` es un commit; las dos líneas muestran el trabajo paralelo y cómo se unió.
+- `git diff HEAD~1 HEAD` compara el commit anterior de `main` (`HEAD~1`) con el actual: el merge agregó `devuelto`.
+
+> **Error común.** Confirmar el archivo con las marcas todavía dentro. Git lo acepta, pero Python no: al ejecutar
+> `python3 estados.py` aparece `SyntaxError: invalid syntax` señalando la línea 3, `<<<<<<< HEAD`. Busca `<<<<<<<`
+> antes de `git add`.
+
+> **Buena práctica.** Una rama por cambio, con nombre que diga qué hace: `feature/devuelto`, `fix/cantidad-negativa`.
+> Ramas cortas, de horas o pocos días, tienen menos conflictos que ramas de semanas.
+
+> **Prevenir errores.** Si no entiendes la intención del otro cambio, no resuelvas a ciegas: `git merge --abort`
+> devuelve todo a como estaba antes del merge, y puedes preguntar.
+
+#### Checkpoint 3.1
+Después del merge, alguien descubre que el estado `en_ruta` causa errores en el panel. El commit `0779f50` ya está en
+`main` y tus compañeros ya lo descargaron. ¿Usas `git reset` o `git revert`?
+
+Respuesta: `git revert 0779f50`. Crea un commit nuevo que deshace ese cambio y conserva el historial que los demás ya
+tienen. `git reset` movería `main` hacia atrás y dejaría sus copias en desacuerdo con la tuya.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara los datos
-Crea `inventario.json` con un SKU repetido a propósito:
+#### Paso 1 · Crea el repositorio
+Crea `~/labs/historial-envios` y entra. Ejecuta `git init -b main`, `git config user.name "Estudiante"` y
+`git config user.email "estudiante@example.com"` (usa tus datos). Escribe `estados.py` y confírmalo.
 
-```json
-[
-  {
-    "sku": "A-10",
-    "nombre": "Teclado",
-    "stock": 4,
-    "categoria": "Periféricos"
-  },
-  {
-    "sku": "A-11",
-    "nombre": "Mouse",
-    "stock": 12,
-    "categoria": "Periféricos"
-  },
-  {
-    "sku": "E-20",
-    "nombre": "Caja mediana",
-    "stock": 3,
-    "categoria": "Empaque"
-  }
-]
+#### Paso 2 · Un cambio con motivo
+Agrega `en_ruta`, revisa con `git diff`, prepara con `git add` y confirma con título y cuerpo. Comprueba el resultado
+con `git log` y con `git log --oneline -- estados.py`.
+
+#### Paso 3 · Provoca el conflicto
+Crea `feature/devuelto`, agrega `devuelto` y confirma. Vuelve a `main`, agrega `retenido` en la misma línea y
+confirma. Ejecuta `git merge feature/devuelto` y comprueba que aparece `CONFLICT (content)`.
+
+#### Paso 4 · Resuelve y explica
+Deja ambos estados, borra las marcas, ejecuta `git add estados.py` y `git commit --no-edit`. Escribe en
+`resolucion.txt` qué pretendía cada cambio y por qué los dos caben. Verifica con `git log --oneline --graph`.
+
+#### Resumen
+- **Git** registra instantáneas del proyecto; el **repositorio** guarda el historial en la carpeta `.git`.
+- Un cambio pasa de la carpeta de trabajo al **área de preparación** (`git add`) y al historial (`git commit`).
+- Un **commit** lleva hash, autor, fecha y un mensaje que debe decir qué hace y por qué.
+- Una **rama** es un puntero a un commit; permite trabajar en paralelo sin tocar `main`.
+- Un **merge** une dos ramas; un **conflicto** aparece cuando ambas cambiaron la misma zona.
+- Resolver un conflicto es combinar intenciones, no elegir un ganador.
+- **git revert** deshace con un commit nuevo; `git reset` reescribe la historia y no se usa en ramas compartidas.
+
+#### Ejercicio verificable 1
+Básico. Con el grafo final del Problema resuelto 3.2, ¿qué commit agregó `retenido` y cuántos padres tiene `3f6ed92`?
+
+Respuesta esperada: `80ca398` («Admitir el estado retenido por aduana»). `3f6ed92` tiene dos padres, `80ca398` y
+`3936692`, porque es un commit de merge.
+
+#### Ejercicio verificable 2
+Intermedio. ¿Qué orden muestra exactamente lo que cambió entre la primera versión y la que admite `en_ruta`? ¿Qué
+línea sale y cuál entra?
+
+Respuesta esperada: `git diff 51d4ca6 0779f50`. Sale `-ESTADOS_ADMITIDOS = {"pendiente", "entregado"}` y entra
+`+ESTADOS_ADMITIDOS = {"pendiente", "en_ruta", "entregado"}`, igual que el `git diff` previo al commit.
+
+#### Ejercicio verificable 3
+Reto. Provoca un conflicto en `ESTADO_INICIAL`: en una rama cámbialo a `"registrado"` y en `main` a `"recibido"`.
+Resuélvelo y escribe un mensaje de merge que explique la decisión.
+
+Respuesta esperada: `git merge` muestra `CONFLICT (content): Merge conflict in estados.py` y `git status` marca
+`both modified`. Aquí las intenciones **no** caben juntas: solo hay un estado inicial. Hay que acordar uno con la otra
+persona y dejar la decisión en el mensaje. Por ejemplo: `git commit -m "Unir estado inicial: usar recibido" -m
+"registrado y recibido significaban lo mismo; se acordó recibido con logística"`.
+
+#### En el trabajo
+En una empresa nadie confirma directo en `main`. Cada tarea vive en una rama, se sube a un servidor como GitHub o
+GitLab y se une mediante una revisión (lo verás en el Tema 4). El historial es la documentación más fiel del
+proyecto. `git blame` muestra, línea por línea, el último commit que la tocó. Cuando algo falla en producción,
+`git log` y `git blame` dicen quién cambió esa línea, cuándo y por qué. Un mensaje como `fix` le quita esa
+respuesta a la persona que te reemplace.
+
+</details>
+
+### Tema 4: Calidad estática, revisión e integración continua · Intermedio · 60 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- usar Ruff para detectar errores y problemas de formato antes de ejecutar el código;
+- reproducir la trampa de «funciona en mi máquina» con un clon limpio y corregir la prueba que depende de archivos locales;
+- escribir un workflow de GitHub Actions que ejecute formato, análisis y pruebas en cada pull request;
+- explicar qué revisa una persona en una revisión de código y qué deja a la máquina.
+
+**Conceptos clave:** análisis estático, linter, formateador, entorno limpio, integración continua, pipeline, GitHub Actions, pull request, revisión de código
+
+#### El problema
+En RutaFlow, las pruebas del Tema 2 pasan en el computador de quien las escribió. Al día siguiente, en el de otra
+persona, fallan. Y un error de escritura en una función poco usada llegó a producción porque nadie la ejecutó. ¿Cómo
+detectas errores sin ejecutar el código y cómo garantizas que **cada** cambio se prueba igual, en un equipo limpio,
+antes de unirse a `main`?
+
+Este tema usa **pytest** y **fixture** (Tema 2), **commit**, **rama** y **merge** (Tema 3).
+
+#### Glosario del tema
+
+**análisis estático**
+- **Definición técnica:** revisión automática del código fuente sin ejecutarlo, que busca errores, construcciones sospechosas o violaciones de estilo.
+- **En palabras sencillas:** un corrector que lee tu código como un texto y subraya lo sospechoso, sin correrlo.
+- **Dónde se rompe la comparación:** no sabe qué datos llegarán en ejecución; un error que depende de los datos no lo ve.
+- **Ejemplo:** Ruff encuentra ``F821 Undefined name `envio` `` en una función que ninguna prueba llamó.
+- **Error típico:** creer que «sin avisos» significa «sin defectos»; el análisis estático complementa las pruebas, no las reemplaza.
+
+**linter**
+- **Definición técnica:** herramienta de análisis estático que aplica un conjunto de reglas con código propio (`F401`, `F821`…) y reporta archivo, línea y columna; Ruff es un linter para Python.
+- **En palabras sencillas:** un revisor exigente con una lista de reglas numeradas.
+- **Dónde se rompe la comparación:** algunas reglas son de gusto y otras de error real; el equipo decide cuáles activa.
+- **Ejemplo:** `ruff check .` responde ``F401 [*] `os` imported but unused`` en `pendientes.py:2:8`.
+- **Error típico:** silenciar avisos con `# noqa` sin leerlos, o aplicar `--fix` sin revisar qué cambió.
+
+**formateador**
+- **Definición técnica:** herramienta que reescribe el código con un estilo único (espacios, saltos de línea, comillas) sin cambiar lo que hace; Ruff incluye uno en `ruff format`.
+- **En palabras sencillas:** el corrector de estilo que deja todos los textos con la misma letra y márgenes.
+- **Dónde se rompe la comparación:** solo toca la forma; un programa mal formateado y otro bien formateado hacen exactamente lo mismo.
+- **Ejemplo:** `ruff format --diff .` propone cambiar `def tarifa( peso_kg ):` por `def tarifa(peso_kg):`.
+- **Error típico:** discutir estilo en las revisiones; eso lo decide el formateador y la revisión se dedica a la lógica.
+
+**entorno limpio**
+- **Definición técnica:** entorno de ejecución creado desde cero, solo con el código del repositorio y las dependencias declaradas, sin archivos ni configuraciones locales.
+- **En palabras sencillas:** una cocina recién lavada: si la receta necesita algo, tiene que estar en la lista de ingredientes.
+- **Dónde se rompe la comparación:** «limpio» no significa idéntico a producción; versiones de sistema u horario pueden seguir siendo distintas.
+- **Ejemplo:** `git clone` a una carpeta nueva más `python3 -m venv .venv` reproduce lo que verá CI.
+- **Error típico:** «funciona en mi máquina»: la prueba depende de un archivo que solo existe en tu carpeta.
+
+**integración continua**
+- **Definición técnica:** práctica de unir los cambios a la rama principal con frecuencia y verificarlos automáticamente en un servidor, en entorno limpio, en cada envío; se abrevia CI.
+- **En palabras sencillas:** un control de calidad automático en la puerta: ningún cambio entra sin pasar por él.
+- **Dónde se rompe la comparación:** el control solo revisa lo que le pediste; si la suite no prueba algo, CI tampoco lo detecta.
+- **Ejemplo:** en cada pull request, CI ejecuta `ruff check .`, `ruff format --check .` y `python -m pytest -q`.
+- **Error típico:** unir con CI en rojo «porque es urgente»; el siguiente cambio ya no sabe si lo rompió él.
+
+**pipeline**
+- **Definición técnica:** secuencia ordenada de etapas automáticas (instalar, analizar, probar, construir) que se detiene en la primera que falla.
+- **En palabras sencillas:** una línea de ensamblaje: si una estación rechaza la pieza, no pasa a la siguiente.
+- **Dónde se rompe la comparación:** algunas etapas pueden correr en paralelo; no siempre es una fila estricta.
+- **Ejemplo:** instalar → `ruff check` → `ruff format --check` → `pytest`; con un `F821`, las pruebas ni siquiera corren.
+- **Error típico:** poner las etapas lentas primero; las rápidas (lint, formato) deben fallar antes.
+
+**GitHub Actions**
+- **Definición técnica:** servicio de CI de GitHub que ejecuta *workflows*, archivos YAML en `.github/workflows/`, ante eventos como `push` o `pull_request`; cada *job* corre en una máquina limpia y ejecuta *steps* en orden.
+- **En palabras sencillas:** el robot de GitHub que, cada vez que subes código, sigue la receta escrita en un archivo.
+- **Dónde se rompe la comparación:** la máquina se crea y se destruye en cada ejecución; no recuerda nada de la anterior.
+- **Ejemplo:** `.github/workflows/calidad.yml` con un job `test` que corre en `ubuntu-latest`.
+- **Error típico:** indentar mal el YAML; los espacios definen la estructura, como en Python.
+
+**pull request**
+- **Definición técnica:** solicitud, en GitHub, para unir una rama con otra (por ejemplo `feature/devuelto` → `main`); agrupa el diff, la discusión, los resultados de CI y las aprobaciones.
+- **En palabras sencillas:** «revisen mi borrador antes de pasarlo a la versión buena».
+- **Dónde se rompe la comparación:** no es una orden de Git; es una función del servicio web. En GitLab se llama *merge request*.
+- **Ejemplo:** subes la rama con `git push -u origin feature/devuelto` y en GitHub eliges «Compare & pull request».
+- **Error típico:** pull requests de miles de líneas: nadie los revisa de verdad. Mejor cambios pequeños y frecuentes.
+
+**revisión de código**
+- **Definición técnica:** lectura del cambio por otra persona antes de unirlo, para buscar defectos, riesgos y falta de pruebas, y para compartir conocimiento.
+- **En palabras sencillas:** que otra persona lea tu trabajo antes de entregarlo, como un compañero que revisa un informe.
+- **Dónde se rompe la comparación:** no es un examen al autor; se revisa el cambio, con comentarios concretos y amables.
+- **Ejemplo:** «¿Qué pasa si la ruta llega vacía? No veo prueba para ese caso».
+- **Error típico:** aprobar sin leer porque CI está en verde; CI no sabe si la regla de negocio es la correcta.
+
+#### ► CÓMO FUNCIONA
+Cada push o pull request dispara el pipeline en una máquina limpia. Primero se instalan las dependencias declaradas;
+luego van las etapas baratas (lint y formato) y después las pruebas. Si todo pasa, una persona revisa el cambio y
+decide si se une. La máquina cuida lo mecánico; la persona, la intención.
+
+| Etapa | Herramienta | Qué detecta |
+|---|---|---|
+| Lint | `ruff check .` | Nombres inexistentes, imports sin usar, errores probables |
+| Formato | `ruff format --check .` | Código que no sigue el estilo acordado |
+| Pruebas | `python -m pytest -q` | Reglas que no se cumplen al ejecutar |
+| Revisión | Una persona | Lógica, riesgos, pruebas que faltan |
+
+```mermaid
+flowchart LR
+    PUSH["push / PR"] --> INSTALL["instalar limpio"] --> LINT["lint: ruff check"]
+    LINT --> FMT["formato: ruff format --check"] --> TEST["pytest"] --> REVIEW["revisión humana"] --> MERGE["merge a main"]
+    LINT -. "falla" .-> STOP["CI en rojo"]
+    TEST -. "falla" .-> STOP
 ```
 
-#### Paso 2 · Escribe la migración
-El programa crea el esquema, activa las claves foráneas y migra dentro de una transacción. La categoría se busca con
-una subconsulta en el mismo `INSERT`:
+#### Problema resuelto 4.1
+`pendientes.py` tiene un import sobrante y un nombre mal escrito en `resumen`, una función que ninguna prueba llama.
+Encuéntralos con Ruff sin ejecutar el programa, y comprueba qué habría pasado en ejecución.
+
+**Razonamiento:**
+1. El nombre mal escrito solo falla cuando alguien llama a `resumen`: las pruebas no lo ven si no la llaman.
+2. Un linter lee todas las funciones, se llamen o no: lo encuentra igual.
+3. Después de corregir, `ruff check` y `ruff format --check` deben pasar.
 
 ```python
-# migrar_json.py — pasa inventario.json a inventario.db en una sola transacción
-import json
-import sqlite3
-from pathlib import Path
+# pendientes.py — cuenta los envíos pendientes de una ruta
+import os
 
-productos = json.loads(Path("inventario.json").read_text(encoding="utf-8"))
-Path("inventario.db").unlink(missing_ok=True)
-conexion = sqlite3.connect("inventario.db", isolation_level=None)
-conexion.execute("PRAGMA foreign_keys = ON")
-conexion.executescript("""
-CREATE TABLE categorias (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL UNIQUE);
-CREATE TABLE productos (
-  id INTEGER PRIMARY KEY,
-  sku TEXT NOT NULL UNIQUE,
-  nombre TEXT NOT NULL,
-  stock INTEGER NOT NULL CHECK (stock >= 0),
-  categoria_id INTEGER NOT NULL REFERENCES categorias(id)
-);
-""")
 
-try:
-    conexion.execute("BEGIN")
-    for producto in productos:
-        conexion.execute("INSERT OR IGNORE INTO categorias(nombre) VALUES (?)", (producto["categoria"],))
-        conexion.execute(
-            "INSERT INTO productos(sku, nombre, stock, categoria_id) "
-            "VALUES (?, ?, ?, (SELECT id FROM categorias WHERE nombre = ?))",
-            (producto["sku"], producto["nombre"], producto["stock"], producto["categoria"]),
-        )
-    conexion.execute("COMMIT")
-    print("migrados:", len(productos))
-except sqlite3.IntegrityError as error:
-    conexion.execute("ROLLBACK")
-    print("migración cancelada:", error, "| producto:", producto["sku"])
-print("productos en la base:", conexion.execute("SELECT COUNT(*) FROM productos").fetchone()[0])
-conexion.close()
+def contar_pendientes(envios):
+    return len([envio for envio in envios if envio["estado"] == "pendiente"])
+
+
+def resumen(envios):
+    return f"{contar_pendientes(envio)} pendientes de {len(envios)}"
 ```
 
 ```text
-$ python3 migrar_json.py
-migrados: 3
-productos en la base: 3
-$ python3 migrar_json.py
-migrados: 3
-productos en la base: 3
+$ python -m pip install -q pytest ruff
+$ ruff check .
+F401 [*] `os` imported but unused
+ --> pendientes.py:2:8
+  |
+1 | # pendientes.py — cuenta los envíos pendientes de una ruta
+2 | import os
+  |        ^^
+help: Remove unused import: `os`
+  |
+1 | # pendientes.py — cuenta los envíos pendientes de una ruta
+  - import os
+2 |
+  |
+
+F821 Undefined name `envio`
+  --> pendientes.py:10:33
+   |
+ 9 | def resumen(envios):
+10 |     return f"{contar_pendientes(envio)} pendientes de {len(envios)}"
+   |                                 ^^^^^
+
+Found 2 errors.
+[*] 1 fixable with `--fix`.
+$ ruff format --check .
+1 file already formatted
 ```
 
-La primera ejecución encuentra `E-20` repetido, ejecuta `ROLLBACK` y deja 0 productos. Tras borrar el objeto
-repetido del JSON, la segunda ejecución migra los 3.
+Esto es lo que habría pasado al llamar a `resumen` en ejecución, con
+`python3 -c 'import pendientes; print(pendientes.resumen([{"estado": "pendiente"}]))'`:
 
-#### Paso 3 · Consulta el resultado
-Con la base migrada, aplica las consultas del Tema 2: stock bajo con `LEFT JOIN` y unidades por categoría. Después
-genera el reporte del Tema 7 a partir de estas tablas.
+```text
+    return f"{contar_pendientes(envio)} pendientes de {len(envios)}"
+                                ^^^^^
+NameError: name 'envio' is not defined. Did you mean: 'envios'?
+```
+
+**Explicación por partes.**
+- `pendientes.py:2:8`: archivo, línea y columna. `F401` es la regla «import sin usar»; `[*]` indica que `--fix` puede corregirla.
+- `F821` en la línea 10, columna 33: `envio` no existe en esa función; el parámetro se llama `envios`.
+- `F821` no lleva `[*]`: Ruff no adivina qué nombre querías. Lo corriges tú.
+- `ruff format --check` solo informa; `1 file already formatted` dice que el estilo ya cumple.
+- El `NameError` es el mismo defecto, pero descubierto en ejecución: en producción, frente a un cliente.
+
+> **Error común.** Leer `Found 2 errors.` y aplicar `ruff check --fix .` a ciegas. Responde `Found 2 errors (1 fixed, 1 remaining).`:
+> borró el import, pero el `F821` sigue ahí y el comando termina con error. Lee cada regla, decide y vuelve a ejecutar hasta ver `All checks passed!`.
+
+> **Buena práctica.** Ejecuta `ruff check .` y `ruff format .` antes de cada commit. Así CI solo confirma lo que ya
+> sabías, y la revisión no se gasta en espacios ni imports.
+
+#### Problema resuelto 4.2
+Una prueba de RutaFlow lee `datos/ruta.json`, un archivo que generaste a mano y que `.gitignore` excluye. Pasa en tu
+carpeta. Reproduce lo que verá CI con un clon limpio, corrígela y configura el workflow.
+
+**Razonamiento:**
+1. CI parte de un `git clone`: solo existe lo confirmado. Un clon local a otra carpeta reproduce esa condición.
+2. La prueba debe crear sus propios datos con la fixture `tmp_path` (Tema 2), no depender de archivos sueltos.
+3. El workflow ejecuta las mismas órdenes que ejecutaste a mano, en el mismo orden.
+
+```python
+# pendientes.py — cuenta los envíos pendientes de una ruta
+import json
+
+
+def contar_pendientes(envios):
+    return len([envio for envio in envios if envio["estado"] == "pendiente"])
+
+
+def cargar_ruta(ruta_archivo):
+    with open(ruta_archivo, encoding="utf-8") as archivo:
+        return json.load(archivo)
+```
+
+```python
+# generar_ruta.py — crea a mano el archivo de la ruta del día
+import json
+from pathlib import Path
+
+Path("datos").mkdir(exist_ok=True)
+envios = [
+    {"guia": "RF-101", "estado": "pendiente"},
+    {"guia": "RF-102", "estado": "entregado"},
+    {"guia": "RF-103", "estado": "pendiente"},
+]
+Path("datos/ruta.json").write_text(json.dumps(envios), encoding="utf-8")
+print("ruta guardada en datos/ruta.json")
+```
+
+```python
+# tests/test_pendientes.py — versión que depende de un archivo local
+from pendientes import cargar_ruta, contar_pendientes
+
+
+def test_ruta_del_dia():
+    envios = cargar_ruta("datos/ruta.json")
+    assert contar_pendientes(envios) == 2
+```
+
+El archivo `.gitignore` contiene `.venv/`, `datos/`, `__pycache__/`, `.pytest_cache/` y `.ruff_cache/`, uno por línea.
+En tu carpeta todo pasa:
+
+```text
+$ python generar_ruta.py
+ruta guardada en datos/ruta.json
+$ ruff check .
+All checks passed!
+$ ruff format --check .
+3 files already formatted
+$ python -m pytest -q
+.                                                                        [100%]
+1 passed in 0.01s
+$ git status --short --ignored
+!! .pytest_cache/
+!! .ruff_cache/
+!! .venv/
+!! __pycache__/
+!! datos/
+!! tests/__pycache__/
+```
+
+Confirma todo con `git add .` y `git commit`. Luego clona el repositorio en una carpeta nueva, crea allí su entorno
+virtual e instala las dependencias, como hará CI:
+
+```text
+$ git clone /home/estudiante/labs/calidad-envios clon-limpio
+Cloning into 'clon-limpio'...
+done.
+$ ruff check .
+All checks passed!
+$ python -m pytest -q
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________________ test_ruta_del_dia _______________________________
+
+    def test_ruta_del_dia():
+>       envios = cargar_ruta("datos/ruta.json")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_pendientes.py:6: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ruta_archivo = 'datos/ruta.json'
+
+    def cargar_ruta(ruta_archivo):
+>       with open(ruta_archivo, encoding="utf-8") as archivo:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'datos/ruta.json'
+
+pendientes.py:10: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_pendientes.py::test_ruta_del_dia - FileNotFoundError: [Errn...
+1 failed in 0.02s
+```
+
+La corrección: la prueba fabrica sus datos en una carpeta temporal.
+
+```python
+# tests/test_pendientes.py — la prueba crea sus propios datos
+import json
+
+from pendientes import cargar_ruta, contar_pendientes
+
+
+def test_ruta_del_dia(tmp_path):
+    archivo = tmp_path / "ruta.json"
+    envios = [{"estado": "pendiente"}, {"estado": "entregado"}, {"estado": "pendiente"}]
+    archivo.write_text(json.dumps(envios), encoding="utf-8")
+    assert contar_pendientes(cargar_ruta(archivo)) == 2
+```
+
+```text
+$ git commit -m "Hacer que la prueba de la ruta cree sus propios datos"
+[main 2fca2c5] Hacer que la prueba de la ruta cree sus propios datos
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+```
+
+De vuelta en `clon-limpio`, trae el cambio y repite el pipeline:
+
+```text
+$ git pull -q
+$ ruff check .
+All checks passed!
+$ ruff format --check .
+3 files already formatted
+$ python -m pytest -q
+.                                                                        [100%]
+1 passed in 0.01s
+```
+
+Por último, el workflow que ejecutará estos pasos en GitHub en cada pull request y en cada push a `main`. Va en
+`.github/workflows/calidad.yml`:
+
+```yaml
+name: calidad
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - run: python -m pip install pytest ruff
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m pytest -q
+```
+
+Este archivo no se ejecutó en GitHub para esta edición; su YAML se validó y sus órdenes son las del clon limpio. Cuando
+abras el pull request, la pestaña «Checks» mostrará el job `test`. Cada línea `uses` o `run` aparece como un paso,
+en verde o en rojo.
+
+**Explicación por partes.**
+- `pendientes.py`, líneas 9–11: `cargar_ruta` abre el archivo que le indiquen; no sabe nada de `datos/`.
+- `git status --short --ignored`: `!!` marca lo ignorado. `datos/` no viajará con el repositorio: ahí estaba la trampa.
+- En el clon, la última línea útil es `E       FileNotFoundError: [Errno 2] No such file or directory: 'datos/ruta.json'`.
+- Prueba corregida, líneas 7–11: `tmp_path` da una carpeta nueva; la prueba escribe ahí su JSON y no depende de nada externo.
+- YAML, líneas 2–5: se dispara en todo pull request y en cada push a `main`.
+- Línea 9: `runs-on: ubuntu-latest` pide una máquina Linux nueva. Líneas 11–14: descargan el código e instalan Python 3.14.
+- Líneas 15–18: las mismas órdenes del clon limpio. Si `ruff check` falla, los pasos siguientes no se ejecutan.
+
+> **Error común.** Escribir `pytest -q` en vez de `python -m pytest -q` en el workflow, con el código en la raíz. En
+> el clon limpio, `pytest -q` falla al recoger con `E   ModuleNotFoundError: No module named 'pendientes'` y
+> `Interrupted: 1 error during collection`, aunque en tu carpeta parezca que todo está bien configurado.
+
+> **Prevenir errores.** Antes de abrir un pull request, ejecuta el pipeline en un clon limpio, como en este problema.
+> Si pasa ahí, pasará en CI salvo diferencias de versión.
+
+> **Ingeniería de software.** Protege `main` en la configuración del repositorio: exige CI en verde y al menos una
+> aprobación antes de unir. Así la regla no depende de la memoria de nadie.
+
+#### Checkpoint 4.1
+¿Por qué la prueba original pasaba en tu carpeta y fallaba en el clon, si el código era idéntico?
+
+Respuesta: porque dependía de `datos/ruta.json`, que creaste a mano con `generar_ruta.py` y que `.gitignore` excluye.
+El clon solo tiene lo confirmado. La prueba probaba tu carpeta, no el código.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Paso 1 · Prepara el proyecto
+Crea `~/labs/calidad-envios` con `tests/`, su entorno virtual y `python -m pip install pytest ruff`. Ejecuta
+`git init -b main` y configura tu nombre y correo como en el Tema 3.
+
+#### Paso 2 · Lint y formato
+Escribe la versión con defectos de `pendientes.py`, ejecuta `ruff check .` y corrige los dos avisos a mano. Repite
+hasta ver `All checks passed!`.
+
+#### Paso 3 · Reproduce «funciona en mi máquina»
+Escribe la versión de `pendientes.py` con `cargar_ruta`, `generar_ruta.py`, la prueba que lee `datos/ruta.json` y el
+`.gitignore`. Ejecuta todo, confirma, clona en `~/labs/clon-limpio` y observa el `FileNotFoundError`.
+
+#### Paso 4 · Corrige y escribe el workflow
+Corrige la prueba con `tmp_path`, confirma y comprueba en el clon con `git pull`. Crea
+`.github/workflows/calidad.yml` y confírmalo. Si tienes cuenta de GitHub, sube el repositorio y abre un pull request
+desde una rama para ver el job `test`.
+
+#### Resumen
+- El **análisis estático** revisa el código sin ejecutarlo; un **linter** como Ruff lo hace con reglas numeradas (`F401`, `F821`).
+- El **formateador** (`ruff format`) unifica el estilo y saca esas discusiones de la revisión.
+- Un **entorno limpio** solo tiene lo confirmado y lo declarado; reproduce las fallas de «funciona en mi máquina».
+- La **integración continua** verifica cada cambio automáticamente antes de unirlo a `main`.
+- Un **pipeline** ordena las etapas de la más barata a la más cara y se detiene en la primera falla.
+- **GitHub Actions** ejecuta el workflow YAML de `.github/workflows/` en una máquina nueva por cada evento.
+- Un **pull request** reúne diff, CI y discusión; la **revisión de código** cuida la lógica que CI no entiende.
+
+#### Ejercicio verificable 1
+Básico. Escribe `avisos.py` con `import os` sin usar y una función `aviso(guia)` que devuelva un texto. Ejecuta
+`ruff check --fix .`. ¿Qué responde y cómo queda el archivo?
+
+Respuesta esperada: `Found 1 error (1 fixed, 0 remaining).` El import desaparece y el archivo conserva la función
+intacta. `ruff check .` posterior responde `All checks passed!`.
+
+#### Ejercicio verificable 2
+Intermedio. Escribe a propósito `def tarifa( peso_kg ):` con `return 8000 if peso_kg<=1 else 12000` y ejecuta
+`ruff format --diff .`. ¿Qué cambios propone y qué código de salida da?
+
+Respuesta esperada: propone `def tarifa(peso_kg):` y `peso_kg <= 1`, con líneas `-` y `+` como un `git diff`, y
+termina con `1 file would be reformatted`. Sale con código 1, así que en CI ese paso fallaría hasta ejecutar `ruff format .`.
+
+#### Ejercicio verificable 3
+Reto. Haz que el workflow falle si la cobertura baja del 90 %, usando `pytest-cov` (Tema 2).
+
+Respuesta esperada: instalar `pytest-cov` en el paso de `pip` y cambiar el último paso a
+`python -m pytest -q --cov=. --cov-fail-under=90`. Si no alcanza, `pytest-cov` imprime una línea como
+`FAIL Required test coverage of 90% not reached. Total coverage: 81.82%` y el paso termina en rojo.
+
+#### En el trabajo
+En un equipo profesional, ningún cambio llega a `main` sin pasar por un pull request con CI en verde y una
+aprobación. Las empresas agregan más etapas al mismo pipeline: análisis de seguridad, construcción de la imagen y
+despliegue a un entorno de pruebas. El principio no cambia: lo que se puede verificar con una máquina no se deja a la
+memoria de una persona, y la persona revisa lo que una máquina no entiende.
+
+</details>
+
+### Proyecto 5: convertir el inventario en un repositorio confiable
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+El proyecto une los cuatro temas en un solo repositorio. El inventario persistente del Módulo 4 pasa a tener
+regresiones, pruebas aisladas e integradas, un pipeline de CI y una revisión documentada. No hay técnicas nuevas: cada
+paso remite al tema donde se explicó.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Entregables
+1. **Repositorio.** El inventario en Git, con `.gitignore` para `.venv/`, cachés y bases de datos locales, y commits con título y motivo (Tema 3).
+2. **Regresión.** Un defecto real del inventario documentado con reproducción, hipótesis y prueba de regresión que se vio fallar antes de la corrección (Tema 1).
+3. **Suite.** Pruebas unitarias de las reglas, pruebas de integración con una fixture SQLite y una prueba E2E del programa principal, ejecutables con `python -m pytest -q` (Tema 2).
+4. **Conflicto.** Un merge con conflicto resuelto y un mensaje que explique la intención de ambos cambios (Tema 3).
+5. **CI.** `.github/workflows/calidad.yml` con `ruff check .`, `ruff format --check .` y `python -m pytest -q`, comprobado antes en un clon limpio (Tema 4).
+6. **Revisión.** Un pull request con descripción del cambio y al menos un comentario de revisión respondido (Tema 4).
+
+#### Criterio de terminado
+Un clon limpio del repositorio, con un entorno virtual nuevo, pasa las tres órdenes del pipeline sin pasos manuales
+adicionales.
 
 </details>

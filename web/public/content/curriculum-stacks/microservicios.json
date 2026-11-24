@@ -1,0 +1,2479 @@
+{
+ "schemaVersion": 1,
+ "stackId": "microservicios",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 13,
+   "topics": [
+    {
+     "title": "Spring MVC y DispatcherServlet",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-spring-mvc-y-dispatcherservlet"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "DTOs, Jackson y validación",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-2-dtos-jackson-y-validacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Manejo global de excepciones",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 9,
+      "fragment": "tema-3-manejo-global-de-excepciones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Spring Data JPA, Hibernate y transacciones",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 10,
+      "fragment": "tema-4-spring-data-jpa-hibernate-y-transacciones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Criteria/Specifications",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 11,
+      "fragment": "tema-5-criteria-specifications"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Flyway/Liquibase",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 12,
+      "fragment": "tema-6-flyway-liquibase"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "PostgreSQL y MySQL",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 13,
+      "fragment": "tema-7-postgresql-y-mysql"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Express: routing, middleware, error handling",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-express-routing-middleware-error-handling"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "NestJS: módulos, controllers, providers, interceptors, guards",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Validación con Zod o class-validator",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-validacion-con-zod-o-class-validator"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "DTOs",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-dtos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "OpenAPI/Swagger",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-openapi-swagger"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "MongoDB + Mongoose",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-mongodb-mongoose"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "PostgreSQL + Prisma/Sequelize",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-postgresql-prisma-sequelize"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Database-per-service",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-database-per-service"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Connection pooling y transacciones",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-connection-pooling-y-transacciones"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 11,
+   "topics": [
+    {
+     "title": "JUnit 5, Mockito y MockMvc",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-junit-5-mockito-y-mockmvc"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 5,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 6,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Testcontainers",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 7,
+      "fragment": "tema-2-testcontainers"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contract Testing con Pact",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 8,
+      "fragment": "tema-3-contract-testing-con-pact"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ArchUnit",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 9,
+      "fragment": "tema-4-archunit"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "SonarQube",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 10,
+      "fragment": "tema-5-sonarqube"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Floci para emular dependencias cloud en tests/CI",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 11,
+      "fragment": "tema-6-floci-para-emular-dependencias-cloud-en-tests-ci"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Jest",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 1,
+      "fragment": "tema-1-jest"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Supertest",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 2,
+      "fragment": "tema-2-supertest"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contract Testing con Pact",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 3,
+      "fragment": "tema-3-contract-testing-con-pact"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Testcontainers para Node",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 4,
+      "fragment": "tema-4-testcontainers-para-node"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "@Cacheable, @CacheEvict y TTL",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 1,
+      "fragment": "tema-1-cacheable-cacheevict-y-ttl"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Read-through, write-through, write-behind",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 2,
+      "fragment": "tema-2-read-through-write-through-write-behind"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Distributed locking y fencing tokens",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 3,
+      "fragment": "tema-3-distributed-locking-y-fencing-tokens"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cache stampede y mitigaciones",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 4,
+      "fragment": "tema-4-cache-stampede-y-mitigaciones"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "kind": "current",
+   "title": null,
+   "topicCount": 10,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 3,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 5,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Monolito modular vs microservicios",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 6,
+      "fragment": "tema-1-monolito-modular-vs-microservicios"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "DDD: bounded contexts, aggregates y domain events",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 7,
+      "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Spring Modulith",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 8,
+      "fragment": "tema-3-spring-modulith"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Strangler Fig",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 9,
+      "fragment": "tema-4-strangler-fig"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Database-per-service",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 10,
+      "fragment": "tema-5-database-per-service"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "DDD y bounded contexts en Node",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 1,
+      "fragment": "tema-1-ddd-y-bounded-contexts-en-node"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Outbox y consistencia eventual",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 2,
+      "fragment": "tema-2-outbox-y-consistencia-eventual"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sagas y compensaciones",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 3,
+      "fragment": "tema-3-sagas-y-compensaciones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Anti-patrones y monolito distribuido",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 4,
+      "fragment": "tema-4-anti-patrones-y-monolito-distribuido"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Strangler Fig y métricas DORA",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 5,
+      "fragment": "tema-5-strangler-fig-y-metricas-dora"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ADRs y fitness functions",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 6,
+      "fragment": "tema-6-adrs-y-fitness-functions"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "REST con Spring MVC y WebClient",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 1,
+      "fragment": "tema-1-rest-con-spring-mvc-y-webclient"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "gRPC con Spring",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 2,
+      "fragment": "tema-2-grpc-con-spring"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Mensajería con Spring Cloud Stream",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 3,
+      "fragment": "tema-3-mensajeria-con-spring-cloud-stream"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sync vs async, timeouts e idempotencia",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 4,
+      "fragment": "tema-4-sync-vs-async-timeouts-e-idempotencia"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "HTTP Service Clients declarativos y RSocket",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 5,
+      "fragment": "tema-5-http-service-clients-declarativos-y-rsocket"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "REST con Axios/Fetch",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 1,
+      "fragment": "tema-1-rest-con-axios-fetch"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "gRPC con @grpc/grpc-js",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 2,
+      "fragment": "tema-2-grpc-con-grpc-grpc-js"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GraphQL con Apollo Server",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 3,
+      "fragment": "tema-3-graphql-con-apollo-server"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "KafkaJS, amqplib",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 4,
+      "fragment": "tema-4-kafkajs-amqplib"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "NATS",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 5,
+      "fragment": "tema-5-nats"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sync vs async",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 6,
+      "fragment": "tema-6-sync-vs-async"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "kind": "current",
+   "title": null,
+   "topicCount": 7,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts (raíz)",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 3,
+      "fragment": "build-gradle-kts-raiz"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml (Nacos)",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 5,
+      "fragment": "docker-compose-yml-nacos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Service discovery con Eureka/Consul/Nacos",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 6,
+      "fragment": "tema-1-service-discovery-con-eureka-consul-nacos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Spring Cloud Gateway",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 7,
+      "fragment": "tema-2-spring-cloud-gateway"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Service discovery y configuración centralizada",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 1,
+      "fragment": "tema-1-service-discovery-y-configuracion-centralizada"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "API Gateway y composición",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 2,
+      "fragment": "tema-2-api-gateway-y-composicion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Resiliencia distribuida",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 3,
+      "fragment": "tema-3-resiliencia-distribuida"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Observabilidad distribuida",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 4,
+      "fragment": "tema-4-observabilidad-distribuida"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Estructura de carpetas escalable",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 1,
+      "fragment": "tema-1-estructura-de-carpetas-escalable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "dotenv",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 2,
+      "fragment": "tema-2-dotenv"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Service Discovery con Consul",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 3,
+      "fragment": "tema-3-service-discovery-con-consul"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Configuración centralizada",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 4,
+      "fragment": "tema-4-configuracion-centralizada"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Gateway pattern",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 1,
+      "fragment": "tema-1-gateway-pattern"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "BFF (Backend for Frontend)",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 2,
+      "fragment": "tema-2-bff-backend-for-frontend"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Auth en edge, rate limiting y request shaping",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 3,
+      "fragment": "tema-3-auth-en-edge-rate-limiting-y-request-shaping"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Agregación, version routing y resiliencia en edge",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 4,
+      "fragment": "tema-4-agregacion-version-routing-y-resiliencia-en-edge"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Circuit breaker — dos microservicios conectados y protegidos",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 1,
+      "fragment": "tema-1-circuit-breaker-dos-microservicios-conectados-y-protegidos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Timeouts en cascada",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 2,
+      "fragment": "tema-2-timeouts-en-cascada"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fallback strategies",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 3,
+      "fragment": "tema-3-fallback-strategies"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Chaos engineering",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 4,
+      "fragment": "tema-4-chaos-engineering"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "15",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Circuit Breaker con opossum o cockatiel",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 1,
+      "fragment": "tema-1-circuit-breaker-con-opossum-o-cockatiel"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Retry con jitter",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 2,
+      "fragment": "tema-2-retry-con-jitter"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rate Limiting con Redis",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 3,
+      "fragment": "tema-3-rate-limiting-con-redis"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Timeouts",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 4,
+      "fragment": "tema-4-timeouts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fallback strategies",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 5,
+      "fragment": "tema-5-fallback-strategies"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "16",
+   "kind": "current",
+   "title": null,
+   "topicCount": 10,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 3,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 5,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml (Keycloak)",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 6,
+      "fragment": "docker-compose-yml-keycloak"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Spring Security filter chain",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 7,
+      "fragment": "tema-1-spring-security-filter-chain"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "JWT y OAuth2/OIDC",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 8,
+      "fragment": "tema-2-jwt-y-oauth2-oidc"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "RBAC, scopes y mTLS/Zero-Trust",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 9,
+      "fragment": "tema-3-rbac-scopes-y-mtls-zero-trust"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Vault, gestión de secretos, SBOM y CVE scanning",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 10,
+      "fragment": "tema-4-vault-gestion-de-secretos-sbom-y-cve-scanning"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "17",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "JWT con jsonwebtoken",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 1,
+      "fragment": "tema-1-jwt-con-jsonwebtoken"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Passport.js",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 2,
+      "fragment": "tema-2-passport-js"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Helmet, CORS",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 3,
+      "fragment": "tema-3-helmet-cors"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Prevención de inyecciones NoSQL",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 4,
+      "fragment": "tema-4-prevencion-de-inyecciones-nosql"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "OWASP Top 10",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 5,
+      "fragment": "tema-5-owasp-top-10"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 6,
+      "fragment": "tema-6-secretos-aws-secrets-manager-vault-azure-key-vault"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "18",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 3,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 5,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 6,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Micrometer y Prometheus",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 7,
+      "fragment": "tema-1-micrometer-y-prometheus"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "OpenTelemetry por defecto: métricas, trazas y logs correlacionados",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 8,
+      "fragment": "tema-2-opentelemetry-por-defecto-metricas-trazas-y-logs-correlacionados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Logs estructurados y propagación de contexto",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 9,
+      "fragment": "tema-3-logs-estructurados-y-propagacion-de-contexto"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "19",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "OpenTelemetry para Node",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 1,
+      "fragment": "tema-1-opentelemetry-para-node"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Propagación de traceparent en AMQP/Kafka",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 2,
+      "fragment": "tema-2-propagacion-de-traceparent-en-amqp-kafka"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Pino/Winston",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 3,
+      "fragment": "tema-3-pino-winston"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ELK o Grafana Loki",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 4,
+      "fragment": "tema-4-elk-o-grafana-loki"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Prometheus client",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 5,
+      "fragment": "tema-5-prometheus-client"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "20",
+   "kind": "current",
+   "title": null,
+   "topicCount": 7,
+   "topics": [
+    {
+     "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 1,
+      "fragment": "tema-1-rabbitmq-publisher-confirms-consumer-acknowledgments"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Deduplicación con Redis",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 2,
+      "fragment": "tema-2-deduplicacion-con-redis"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sagas con NestJS CQRS",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 3,
+      "fragment": "tema-3-sagas-con-nestjs-cqrs"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compensaciones idempotentes",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 4,
+      "fragment": "tema-4-compensaciones-idempotentes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Event Sourcing con EventStoreDB o MongoDB",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 5,
+      "fragment": "tema-5-event-sourcing-con-eventstoredb-o-mongodb"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecciones materializadas",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 6,
+      "fragment": "tema-6-proyecciones-materializadas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "CQRS",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 7,
+      "fragment": "tema-7-cqrs"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "21",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts (raíz)",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 3,
+      "fragment": "build-gradle-kts-raiz"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 5,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Outbox y CDC con Debezium",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 6,
+      "fragment": "tema-1-outbox-y-cdc-con-debezium"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sagas orquestadas y coreografiadas",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 7,
+      "fragment": "tema-2-sagas-orquestadas-y-coreografiadas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Idempotencia real y exactly-once práctico",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 8,
+      "fragment": "tema-3-idempotencia-real-y-exactly-once-practico"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Por qué evitar 2PC",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 9,
+      "fragment": "tema-4-por-que-evitar-2pc"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "22",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Consistencia eventual y sagas",
+     "status": "actual",
+     "current": {
+      "module": "22",
+      "order": 1,
+      "fragment": "tema-1-consistencia-eventual-y-sagas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contratos de API y compatibilidad",
+     "status": "actual",
+     "current": {
+      "module": "22",
+      "order": 2,
+      "fragment": "tema-2-contratos-de-api-y-compatibilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Operación distribuida: idempotencia, retries, DLQ",
+     "status": "actual",
+     "current": {
+      "module": "22",
+      "order": 3,
+      "fragment": "tema-3-operacion-distribuida-idempotencia-retries-dlq"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "23",
+   "kind": "current",
+   "title": null,
+   "topicCount": 12,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts (raíz)",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 3,
+      "fragment": "build-gradle-kts-raiz"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Dockerfile",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 5,
+      "fragment": "dockerfile"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": ".dockerignore",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 6,
+      "fragment": "dockerignore"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 7,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Dockerfile multi-stage y runtime Java",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 8,
+      "fragment": "tema-1-dockerfile-multi-stage-y-runtime-java"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kubernetes Deployments, Services, ConfigMaps, Secrets, probes",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 9,
+      "fragment": "tema-2-kubernetes-deployments-services-configmaps-secrets-probes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "HPA, Helm y despliegues progresivos",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 10,
+      "fragment": "tema-3-hpa-helm-y-despliegues-progresivos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GitOps con ArgoCD",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 11,
+      "fragment": "tema-4-gitops-con-argocd"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GraalVM Native Image, CRaC y JVM tuning para contenedores",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 12,
+      "fragment": "tema-5-graalvm-native-image-crac-y-jvm-tuning-para-contenedores"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "24",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Dockerfile multi-stage",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 1,
+      "fragment": "tema-1-dockerfile-multi-stage"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kubernetes",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 2,
+      "fragment": "tema-2-kubernetes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "HPA",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 3,
+      "fragment": "tema-3-hpa"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GitHub Actions",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 4,
+      "fragment": "tema-4-github-actions"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Blue-Green y Canary",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 5,
+      "fragment": "tema-5-blue-green-y-canary"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GitOps con ArgoCD",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 6,
+      "fragment": "tema-6-gitops-con-argocd"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "25",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Caching layers y invalidación",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 1,
+      "fragment": "tema-1-caching-layers-y-invalidacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Profiling y event loop delay",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 2,
+      "fragment": "tema-2-profiling-y-event-loop-delay"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Memory leaks y heap",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 3,
+      "fragment": "tema-3-memory-leaks-y-heap"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Escalado horizontal, clustering y load leveling",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 4,
+      "fragment": "tema-4-escalado-horizontal-clustering-y-load-leveling"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "26",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 3,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 5,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ADRs y C4",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 6,
+      "fragment": "tema-1-adrs-y-c4"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fitness functions y ATAM ligero",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 7,
+      "fragment": "tema-2-fitness-functions-y-atam-ligero"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "FinOps: costo, right-sizing y observability tax",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 8,
+      "fragment": "tema-3-finops-costo-right-sizing-y-observability-tax"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ley de Conway y Team Topologies",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 9,
+      "fragment": "tema-4-ley-de-conway-y-team-topologies"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "27",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "SLO, alertas y runbooks",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 1,
+      "fragment": "tema-1-slo-alertas-y-runbooks"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Postmortems y mejora continua",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 2,
+      "fragment": "tema-2-postmortems-y-mejora-continua"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "FinOps, supply chain y hardening operativo",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 3,
+      "fragment": "tema-3-finops-supply-chain-y-hardening-operativo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Evolución de contratos y deprecación",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 4,
+      "fragment": "tema-4-evolucion-de-contratos-y-deprecacion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "28",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 3,
+      "fragment": "build-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "application.yml",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 5,
+      "fragment": "application-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Monolito distribuido y sobre-descomposición",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 6,
+      "fragment": "tema-1-monolito-distribuido-y-sobre-descomposicion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sagas innecesarias y acoplamiento temporal",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 7,
+      "fragment": "tema-2-sagas-innecesarias-y-acoplamiento-temporal"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Strangler Fig y coexistencia de datos",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 8,
+      "fragment": "tema-3-strangler-fig-y-coexistencia-de-datos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Métricas DORA y deuda técnica",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 9,
+      "fragment": "tema-4-metricas-dora-y-deuda-tecnica"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "29",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Prerrequisitos",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 1,
+      "fragment": "prerrequisitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estructura del proyecto",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 2,
+      "fragment": "estructura-del-proyecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "build.gradle.kts (raíz)",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 3,
+      "fragment": "build-gradle-kts-raiz"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "settings.gradle.kts",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 4,
+      "fragment": "settings-gradle-kts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "docker-compose.yml",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 5,
+      "fragment": "docker-compose-yml"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Diseño del sistema y límites",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 6,
+      "fragment": "tema-1-diseno-del-sistema-y-limites"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contratos, idempotencia y saga/outbox",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 7,
+      "fragment": "tema-2-contratos-idempotencia-y-saga-outbox"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Observabilidad, seguridad y despliegue",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 8,
+      "fragment": "tema-3-observabilidad-seguridad-y-despliegue"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Carga, restricción sobrevenida y defensa ARB",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 9,
+      "fragment": "tema-4-carga-restriccion-sobrevenida-y-defensa-arb"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "30",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Alcance y arquitectura del sistema",
+     "status": "actual",
+     "current": {
+      "module": "30",
+      "order": 1,
+      "fragment": "tema-1-alcance-y-arquitectura-del-sistema"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contratos, idempotencia y mensajería",
+     "status": "actual",
+     "current": {
+      "module": "30",
+      "order": 2,
+      "fragment": "tema-2-contratos-idempotencia-y-mensajeria"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Observabilidad, resiliencia y seguridad",
+     "status": "actual",
+     "current": {
+      "module": "30",
+      "order": 3,
+      "fragment": "tema-3-observabilidad-resiliencia-y-seguridad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Prueba de carga, restricción sobrevenida y defensa ARB",
+     "status": "actual",
+     "current": {
+      "module": "30",
+      "order": 4,
+      "fragment": "tema-4-prueba-de-carga-restriccion-sobrevenida-y-defensa-arb"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

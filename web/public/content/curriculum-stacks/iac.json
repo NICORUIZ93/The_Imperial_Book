@@ -1,0 +1,116 @@
+{
+ "schemaVersion": 1,
+ "stackId": "iac",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Providers, resources y data sources",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-providers-resources-y-data-sources"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "State remoto y locking",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-state-remoto-y-locking"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Módulos reutilizables",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-modulos-reutilizables"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "terraform plan vs apply",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-terraform-plan-vs-apply"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Workspaces para múltiples entornos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-workspaces-para-multiples-entornos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ansible — playbooks, roles, inventory y módulos",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-ansible-playbooks-roles-inventory-y-modulos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Pulumi como alternativa a HCL",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-pulumi-como-alternativa-a-hcl"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "OpenTofu, plan y estado sin recursos cloud",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-8-opentofu-plan-y-estado-sin-recursos-cloud"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 9,
+      "fragment": "tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

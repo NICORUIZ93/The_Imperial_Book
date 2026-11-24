@@ -1,439 +1,50 @@
-# Módulo 6: Persistencia compartida con SQLDelight
-
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra SQLite real (el motor que SQLDelight envuelve) para que cada afirmación sea comprobable, no solo descrita.
+# Módulo 6: Testing multiplataforma
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Esquemas SQLDelight y queries tipadas · Avanzado · 30 min
+### Tema 1: kotlin.test en commonTest · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás declarar un esquema .sq con queries tipadas, y explicar por qué SQLDelight detecta un error de SQL en compilación mientras un ORM dinámico lo detectaría recién en tiempo de ejecución.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A[archivo .sq: esquema + queries SQL] --> B[SQLDelight genera código Kotlin tipado]
-  B --> C["database.tareaQueries.selectTodas()"]
-  C --> D["List<Tarea> tipado"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp
-cd academia-kmp
-```
-
-```sql
--- shared/src/commonMain/sqldelight/com/academia/kmp/Tarea.sq
-CREATE TABLE Tarea (
-    id TEXT NOT NULL PRIMARY KEY,
-    titulo TEXT NOT NULL,
-    completada INTEGER AS Boolean NOT NULL DEFAULT 0
-);
-
-selectTodas:
-SELECT * FROM Tarea;
-
-insertar:
-INSERT INTO Tarea(id, titulo, completada) VALUES (?, ?, ?);
-```
-
-```kotlin
-sqldelight {
-    databases {
-        create("Database") {               // nombre de la clase generada: Database
-            packageName.set("com.academia.kmp")
-        }
-    }
-}
-```
-
-```kotlin
-// shared/src/jvmTest/kotlin/com/academia/kmp/TareaQueriesTest.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.ColumnAdapter
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-// adapta la columna SQLite INTEGER (0/1) hacia el Boolean que usa el resto del dominio (Módulos 3-4, 9)
-val adaptadorBooleano = object : ColumnAdapter<Boolean, Long> {
-    override fun decode(databaseValue: Long): Boolean = databaseValue == 1L
-    override fun encode(value: Boolean): Long = if (value) 1L else 0L
-}
-
-class TareaQueriesTest {
-
-    private fun crearBaseDeDatosEnMemoria(): Database {
-        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
-        Database.Schema.create(driver)
-        return Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
-    }
-
-    @Test
-    fun `insertar y selectTodas devuelven la fila insertada`() {
-        val database = crearBaseDeDatosEnMemoria()
-
-        database.tareaQueries.insertar(id = "1", titulo = "Comprar leche", completada = false)
-
-        val filas = database.tareaQueries.selectTodas().executeAsList()
-        assertEquals(listOf(Tarea(id = "1", titulo = "Comprar leche", completada = false)), filas)
-    }
-}
-```
-
-```bash
-# Gradle ejecuta el test real contra SQLite vía JdbcSqliteDriver
-./gradlew :shared:jvmTest --tests "com.academia.kmp.TareaQueriesTest"
-```
-
-</details>
-
-### Tema 2: Drivers por plataforma · Avanzado · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás explicar por qué las queries compartidas en commonMain requieren un driver distinto por plataforma, y confirmar que el mismo conjunto de queries produce el mismo resultado sin importar qué driver las ejecute.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A["queries compartidas (commonMain)"] --> B["AndroidSqliteDriver (androidMain)"]
-  A --> C["NativeSqliteDriver (iosMain)"]
-  B --> D[mismo resultado]
-  C --> D
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  A["queries compartidas (commonMain)"] --> B["AndroidSqliteDriver (androidMain)"]
-  A --> C["NativeSqliteDriver (iosMain)"]
-  B --> D[mismo resultado]
-  C --> D
-```
-
-```bash
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
-mkdir -p academia-kmp/shared/src/androidMain/kotlin/com/academia/kmp
-mkdir -p academia-kmp/shared/src/iosMain/kotlin/com/academia/kmp
-cd academia-kmp
-```
-
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/Driver.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.db.SqlDriver
-
-expect fun crearDriver(): SqlDriver
-```
-
-```kotlin
-// shared/src/androidMain/kotlin/com/academia/kmp/Driver.android.kt
-package com.academia.kmp
-
-import android.content.Context
-import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-
-actual fun crearDriver(): SqlDriver = AndroidSqliteDriver(Database.Schema, appContext, "app.db")
-```
-
-```kotlin
-// shared/src/iosMain/kotlin/com/academia/kmp/Driver.ios.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.native.NativeSqliteDriver
-
-actual fun crearDriver(): SqlDriver = NativeSqliteDriver(Database.Schema, "app.db")
-```
-
-```kotlin
-// shared/src/jvmTest/kotlin/com/academia/kmp/DriverIndependenciaTest.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class DriverIndependenciaTest {
-
-    // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1),
-    // visible aquí sin import porque ambos archivos viven en el mismo paquete com.academia.kmp
-    private fun ejecutarQueriesCompartidas(): List<Tarea> {
-        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
-        Database.Schema.create(driver)
-        val database = Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
-        database.tareaQueries.insertar(id = "1", titulo = "Comprar leche", completada = false)
-        return database.tareaQueries.selectTodas().executeAsList()
-    }
-
-    @Test
-    fun `mismas queries producen el mismo resultado en instancias de driver distintas`() {
-        val resultadoInstanciaA = ejecutarQueriesCompartidas()
-        val resultadoInstanciaB = ejecutarQueriesCompartidas()
-
-        assertEquals(resultadoInstanciaA, resultadoInstanciaB)
-    }
-}
-```
-
-</details>
-
-### Tema 3: Migraciones de esquema · Avanzado · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás escribir una migración .sqm versionada que agrega una columna sin perder datos existentes, y confirmar contra SQLite real que los datos previos se preservan tras aplicarla.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── esquema v1: Tarea(id, titulo, completada) ──┐
-│  datos existentes del usuario                    │
-└────────────────┬──────────────────────────┘
-                  │ 2.sqm: ALTER TABLE ADD COLUMN prioridad
-                  ▼
-┌── esquema v2: Tarea(id, titulo, completada, prioridad) ──┐
-│  MISMOS datos existentes + columna nueva con default        │
-└────────────────────────────────────────────────────┘
-```
-
-```bash
-mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp/migrations
-cd academia-kmp
-```
-
-```sql
--- shared/src/commonMain/sqldelight/com/academia/kmp/migrations/2.sqm
-ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0;
-```
-
-```kotlin
-// shared/src/jvmTest/kotlin/com/academia/kmp/MigracionTest.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class MigracionTest {
-
-    @Test
-    fun `migrar de v1 a v2 preserva los datos existentes`() {
-        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
-
-        // crea el esquema en versión 1 a mano (sin la columna prioridad)
-        driver.execute(null, "CREATE TABLE Tarea (id TEXT NOT NULL PRIMARY KEY, titulo TEXT NOT NULL, completada INTEGER NOT NULL DEFAULT 0)", 0)
-        driver.execute(null, "INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)", 0)
-        driver.execute(null, "INSERT INTO Tarea VALUES ('2', 'Pagar factura', 0)", 0)
-
-        // aplica las migraciones pendientes de la 1 a la 2 (ejecuta 2.sqm)
-        Database.Schema.migrate(driver, oldVersion = 1, newVersion = 2)
-        // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1)
-        val database = Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
-
-        val filas = database.tareaQueries.selectTodas().executeAsList()
-        assertEquals(
-            listOf(
-                Tarea(id = "1", titulo = "Comprar leche", completada = false, prioridad = 0),
-                Tarea(id = "2", titulo = "Pagar factura", completada = false, prioridad = 0),
-            ),
-            filas,
-        )
-    }
-}
-```
-
-```bash
-# Gradle ejecuta la migración real contra SQLite en memoria
-./gradlew :shared:jvmTest --tests "com.academia.kmp.MigracionTest"
-```
-
-```sql
-ALTER TABLE Tarea ____ COLUMN fechaLimite TEXT;
-```
-
-</details>
-
-### Tema 4: Transacciones: atomicidad en operaciones multi-tabla · Avanzado · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás agrupar varias escrituras relacionadas en una transacción, y confirmar contra SQLite real que un fallo a mitad de la transacción revierte TODAS las escrituras, no solo la que falló.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── transacción { insertar tarea; incrementar contador } ──┐
-│  AMBAS escrituras se aplican  ──►  COMMIT (ambas persisten)  │
-│  CUALQUIERA falla            ──►  ROLLBACK (ninguna persiste) │
-└───────────────────────────────────────────────────┘
-```
-
-```bash
-mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp
-cd academia-kmp
-```
-
-```sql
--- shared/src/commonMain/sqldelight/com/academia/kmp/ContadorTareas.sq
-CREATE TABLE ContadorTareas (
-    total INTEGER NOT NULL
-);
-
-INSERT INTO ContadorTareas(total) VALUES (0);
-
-total:
-SELECT total FROM ContadorTareas;
-
-incrementar:
-UPDATE ContadorTareas SET total = total + 1;
-```
-
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/Transacciones.kt
-package com.academia.kmp
-
-class FalloSimuladoException(mensaje: String) : Exception(mensaje)
-
-fun insertarTareaConContador(database: Database, id: String, titulo: String, forzarFallo: Boolean = false) {
-    database.transaction {
-        database.tareaQueries.insertar(id, titulo, false)
-        if (forzarFallo) {
-            throw FalloSimuladoException("fallo simulado a mitad de la transacción")
-        }
-        database.contadorQueries.incrementar()
-    }
-}
-```
-
-```kotlin
-// shared/src/jvmTest/kotlin/com/academia/kmp/TransaccionesTest.kt
-package com.academia.kmp
-
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-
-class TransaccionesTest {
-
-    // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1)
-    private fun crearBaseDeDatosEnMemoria(): Database {
-        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
-        Database.Schema.create(driver)
-        return Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
-    }
-
-    @Test
-    fun `transaccion exitosa aplica ambas escrituras`() {
-        val database = crearBaseDeDatosEnMemoria()
-
-        insertarTareaConContador(database, "1", "Comprar leche")
-
-        assertEquals(1, database.tareaQueries.selectTodas().executeAsList().size)
-        assertEquals(1L, database.contadorQueries.total().executeAsOne())
-    }
-
-    @Test
-    fun `transaccion fallida revierte AMBAS escrituras, no solo la que fallo`() {
-        val database = crearBaseDeDatosEnMemoria()
-        insertarTareaConContador(database, "1", "Comprar leche")
-
-        assertFailsWith<FalloSimuladoException> {
-            insertarTareaConContador(database, "2", "Pagar factura", forzarFallo = true)
-        }
-
-        // la tarea '2' NO quedó guardada: la transacción revirtió la inserción también
-        assertEquals(1, database.tareaQueries.selectTodas().executeAsList().size)
-        assertEquals(1L, database.contadorQueries.total().executeAsOne())
-    }
-}
-```
-
-```bash
-# Gradle ejecuta ambos tests reales contra SQLite en memoria
-./gradlew :shared:jvmTest --tests "com.academia.kmp.TransaccionesTest"
-```
-
-</details>
-
-### Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-No necesitas dependencias extra: en Android se usa el Android Keystore del sistema y en iOS el Keychain con platform.Security. (La librería androidx.security:security-crypto y su EncryptedSharedPreferences quedaron obsoletas en 2025; no la uses en código nuevo.) Trabajarás en sha…
+Al finalizar vas a escribir un test en commonTest que verifique ObtenerTareasPendientesUseCase (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar…
 
 #### ► LA ANALOGÍA
-**Conceptos clave:** secreto, Android Keystore, AES-GCM, iOS Keychain, `kSecAttrAccessible`, interfaz común, implementación por plataforma.
+`kotlin.test` ofrece aserciones (`assertEquals`, `assertTrue`) que se compilan contra la implementación de testing de cada target, permitiendo escribir un único test en `commonTest` que corre de forma nativa en ambas plataformas. La analogía es una única inspección de calidad aplicada automáticamente a dos fábricas que siguen el mismo plano.
 
-Una **interfaz común** (`AlmacenSecreto`) dice qué se puede hacer: guardar, leer y borrar un secreto. Cada plataforma lo implementa con su almacén seguro:
+**Conceptos clave:** un único test, ejecutado contra ambos targets.
 
-| Plataforma | Almacén | Protección |
-|---|---|---|
-| Android | valor cifrado con AES-GCM usando una clave del **Keystore** | la clave nunca sale del hardware seguro |
-| iOS | **Keychain** con `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` | cifrado por el sistema, no viaja a otros dispositivos |
-
-El código común (por ejemplo, el repositorio de sesión) recibe la interfaz por constructor. En las pruebas comunes usas una implementación falsa en memoria.
-
-Los **secretos de la app** (claves de API del servidor) no van en el binario: cualquiera puede extraerlos. Esos se quedan en el servidor.
-
-**Analogía:** la interfaz es la palabra «caja fuerte» en el manual; cada sistema operativo trae su propia marca de caja fuerte. El código común solo pide «guarda esto en la caja fuerte». La analogía falla en que ninguna caja protege un secreto que ya viene impreso en el manual (el binario).
-
-**Límite de uso:** un dispositivo con root o jailbreak puede leer más de lo esperado: el almacén seguro reduce el riesgo, no lo elimina. No guardes en el cliente secretos compartidos entre usuarios.
-
-```mermaid
-flowchart TB
-    C["commonMain: SesionRepository"] --> I["interface AlmacenSecreto"]
-    I --> A["androidMain: AES-GCM + Keystore"]
-    I --> S["iosMain: Keychain"]
-    I --> F["commonTest: AlmacenFalso"]
+```kotlin
+class ObtenerTareasPendientesUseCaseTest {
+    @Test
+    fun filtraSoloPendientes() = runTest {
+        val repoFake = TareaRepositoryFake(listOf(
+            Tarea("1", "A", completada = false),
+            Tarea("2", "B", completada = true),
+        ))
+        val resultado = ObtenerTareasPendientesUseCase(repoFake)()
+        assertEquals(1, resultado.size)
+    }
+}
 ```
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TB
-    C["commonMain: SesionRepository"] --> I["interface AlmacenSecreto"]
-    I --> A["androidMain: AES-GCM + Keystore"]
-    I --> S["iosMain: Keychain"]
-    I --> F["commonTest: AlmacenFalso"]
-```
+Este test, escrito una única vez en el source set `commonTest` (el equivalente de `commonMain` pero para código de pruebas), se compila y ejecuta contra el target Android y contra el target iOS de forma completamente independiente, confirmando que la lógica del caso de uso `ObtenerTareasPendientesUseCase` (Módulo 4) se comporta de forma idéntica en ambas plataformas sin necesidad de duplicar el esfuerzo de escribir y mantener dos suites de pruebas separadas y potencialmente divergentes, una directa consecuencia de que la lógica bajo prueba en sí vive completamente en `commonMain` sin ningún código específico de plataforma que pudiera comportarse de forma distinta entre ambos targets.
+
+Esta capacidad de "escribir una vez, probar en ambas plataformas" es el complemento natural de "escribir una vez, ejecutar en ambas plataformas" (el principio central de KMP estudiado desde el Módulo 3): si la lógica de negocio vive completamente en código compartido, las pruebas de esa lógica también pueden y deben vivir completamente en código compartido, obteniendo automáticamente el mismo beneficio de verificación dual sin trabajo adicional específico por plataforma.
+
+**Analogía:** un test en `commonTest` es como una única inspección de calidad que se aplica automáticamente al producto fabricado en cualquiera de dos fábricas idénticas que siguen exactamente el mismo plano de fabricación, confirmando que ambas fábricas producen resultados consistentes sin necesidad de un inspector distinto y un criterio de evaluación separado para cada fábrica.
+
+**¿Por qué es importante?** Un test escrito una única vez en `commonTest` confirma que la lógica compartida se comporta de forma idéntica en ambas plataformas, sin duplicar el esfuerzo de escribir y mantener suites de pruebas separadas por plataforma.
+
+**Casos de uso reales:**
+- Verificar `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y confiar en que el resultado es idéntico en Android e iOS.
+- Detectar en CI (Módulo 10) si un cambio en `commonMain` rompe la lógica compartida antes de compilar ambas apps completas.
+- Cubrir reglas de negocio críticas (cálculo de precios, validaciones) con un único test suite mantenido por un solo equipo.
+
+**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Prueba en commonTest las reglas de confirmación con datos válidos, duplicados e incompletos. Ejecuta los targets disponibles y documenta las pruebas nativas adicionales que commonTest no sustituye.
 
 </details>
 
@@ -441,6 +52,188 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Objetivo observable
-No necesitas dependencias extra: en Android se usa el Android Keystore del sistema y en iOS el Keychain con `platform.Security`. (La librería `androidx.security:security-crypto` y su EncryptedSharedPreferences quedaron obsoletas en 2025; no la uses en código nuevo.) Trabajarás en `shared/src/{commonMain,androidMain,iosMain}`.
+Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
+
+</details>
+
+### Tema 2: Fakes en vez de mocks · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a reemplazar un mock generado dinámicamente por un TareaRepositoryFake escrito a mano, compatible con cualquier target de Kotlin Multiplatform. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    CT[commonTest] --> Fake[TareaRepositoryFake Kotlin puro]
+    CT --> Mock[Mock dinamico via bytecode JVM]
+    Fake --> AND[Target Android compila]
+    Fake --> IOS[Target iOS Kotlin Native compila]
+    Mock --> AND
+    Mock --> FAIL[compileKotlinIosArm64 falla]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```kotlin
+class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
+    override suspend fun obtenerTodas() = datos
+}
+```
+
+```bash
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Tema 3: runTest para coroutines · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a escribir un test con runTest que verifique una función suspend con delay() interno, corriendo instantáneamente en tiempo real. Prerrequisitos: Tema 2 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant Test as Test runTest
+    participant VD as Dispatcher tiempo virtual
+    Test->>VD: delay 5000 ms simulados
+    VD-->>Test: avanza sin esperar reloj real
+    Test->>Test: assertEquals esperado resultado
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```kotlin
+@Test
+fun pruebaConDelay() = runTest {
+    val resultado = funcionConDelay() // el delay() interno se "salta" en tiempo virtual, el test corre instantáneo
+    assertEquals(esperado, resultado)
+}
+```
+
+```mermaid
+sequenceDiagram
+    participant Test as Test runTest
+    participant VD as Dispatcher tiempo virtual
+    Test->>VD: delay 5000 ms simulados
+    VD-->>Test: avanza sin esperar reloj real
+    Test->>Test: assertEquals esperado resultado
+```
+
+```kotlin
+@Test
+fun pruebaConDelay() = runTest {
+    val resultado = funcionConDelay() // el delay() interno se "salta" en tiempo virtual
+    assertEquals(esperado, resultado)
+}
+```
+
+```bash
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa un proyecto KMP con el plugin org.jetbrains.kotlinx.benchmark y la librería kotlinx-benchmark-runtime. El plugin allopen es necesario para la JVM. Crea el source set de benchmarks en commonMain o en un módulo benchmarks.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    B["@Benchmark en commonMain"] --> J["jvmBenchmark (JMH)"]
+    B --> N["macosArm64Benchmark (Native)"]
+    J & N --> R["ops/s ± error"]
+    R --> D["comparar implementaciones por target"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    B["@Benchmark en commonMain"] --> J["jvmBenchmark (JMH)"]
+    B --> N["macosArm64Benchmark (Native)"]
+    J & N --> R["ops/s ± error"]
+    R --> D["comparar implementaciones por target"]
+```
+
+```kotlin
+plugins {
+    id("rutaflow.kmp.library")
+    id("org.jetbrains.kotlinx.benchmark") version "0.4.14"
+    kotlin("plugin.allopen") version "2.4.21"
+}
+
+allOpen { annotation("org.openjdk.jmh.annotations.State") }
+
+kotlin {
+    macosArm64()
+    sourceSets.commonMain.dependencies { implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.14") }
+}
+
+benchmark {
+    targets { register("jvm"); register("macosArm64") }
+    configurations.named("main") { warmups = 3; iterations = 5; iterationTime = 1; iterationTimeUnit = "s" }
+}
+```
+
+```kotlin
+package co.rutaflow.bench
+
+import kotlinx.benchmark.*
+
+@State(Scope.Benchmark)
+class ParadasBenchmark {
+    private lateinit var codigos: List<String>
+    private lateinit var buscados: List<String>
+
+    @Setup fun preparar() {
+        codigos = List(5_000) { "ENV-$it" }
+        buscados = List(500) { "ENV-${it * 7}" }
+    }
+
+    @Benchmark fun buscarEnLista(): Int = buscados.count { it in codigos }  // O(n) por búsqueda
+
+    @Benchmark fun buscarEnSet(): Int {
+        val conjunto = codigos.toHashSet()                                  // O(1) por búsqueda
+        return buscados.count { it in conjunto }
+    }
+}
+```
+
+```bash
+./gradlew :shared:jvmBenchmark
+./gradlew :shared:macosArm64Benchmark   # en una Mac con chip Apple
+```
+
+```text
+Benchmark                            Mode  Cnt      Score     Error  Units
+ParadasBenchmark.buscarEnLista      thrpt    5     ~260   ±   10  ops/s
+ParadasBenchmark.buscarEnSet        thrpt    5   ~3 900   ±  120  ops/s
+(las cifras dependen de la máquina; buscarEnSet debe ganar por un orden de magnitud en los dos targets)
+```
 
 </details>

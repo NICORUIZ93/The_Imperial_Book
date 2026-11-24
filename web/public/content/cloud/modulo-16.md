@@ -1,131 +1,75 @@
-# Módulo 16: Orquestación de flujos con Step Functions
+# Módulo 16: Streaming: Kinesis, MSK (Kafka) y Pub/Sub avanzado
 
 
 ## Aprende construyendo
 
 
-### Tema 1: State machine y Task states · Avanzado · 45 min
+### Tema 1: Streams vs colas · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a declarar como state machine el mismo flujo que confirmar-entrega (Módulo 5) ya hace en código: validar, guardar el evento, notificar. Prerrequisitos: Módulos 5 y 11 completos.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-aws stepfunctions create-state-machine --name FlujoTareas --definition file://maquina.json --role-arn arn:aws:iam::000000000000:role/sfn-role
-aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:FlujoTareas --input '{"tarea":"001"}'
-```
-
-```json
-{
-  "StartAt": "ValidarTarea",
-  "States": {
-    "ValidarTarea": { "Type": "Task", "Resource": "arn:...", "Next": "GuardarEnDynamoDB" },
-    "GuardarEnDynamoDB": { "Type": "Task", "Resource": "arn:...", "Next": "EnviarNotificacion" },
-    "EnviarNotificacion": { "Type": "Task", "Resource": "arn:...", "End": true }
-  }
-}
-```
-
-Crea el archivo `maquina-confirmar.json`:
-
-```json
-{
-  "StartAt": "GuardarEvento",
-  "States": {
-    "GuardarEvento": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::dynamodb:putItem",
-      "Parameters": {"TableName": "ShipmentEvents", "Item": {"shipmentId": {"S.$": "$.shipmentId"}, "sequence": {"N": "1"}, "estado": {"S": "entregado"}}},
-      "Next": "Notificar"
-    },
-    "Notificar": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::sns:publish",
-      "Parameters": {"TopicArn": "arn:aws:sns:us-east-1:000000000000:rutaflow-envio-entregado", "Message.$": "$.shipmentId"},
-      "End": true
-    }
-  }
-}
-```
-
-```bash
-aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --definition file://maquina-confirmar.json --role-arn arn:aws:iam::000000000000:role/sfn-role
-aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --input '{"shipmentId":"env-7001"}'
-```
-
-</details>
-
-### Tema 2: Choice state, Retry y Catch · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a agregarle a ConfirmarEntregaFlow (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa. Prerrequisitos: Tema 1 de este módulo.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Objetivo observable
-Al finalizar vas a agregarle a `ConfirmarEntregaFlow` (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa. Prerrequisitos: Tema 1 de este módulo.
-
-</details>
-
-### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a decidir, con números reales, si ConfirmarEntregaFlow debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.
+Al finalizar vas a transmitir la ubicación GPS real de un conductor de RutaFlow por un stream que dos consumidores distintos leen de forma independiente. Prerrequisitos: Módulo 4 completo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    A["Standard workflow"] --> A1["larga duración, ejecución exactamente una vez, trazabilidad completa"]
-    B["Express workflow"] --> B1["alto volumen, corta duración, al menos una vez, económico"]
-    C["EventBridge Pipes"] --> C1["conexión directa simple entre dos servicios, sin orquestación compleja"]
+    S["SQS: mensaje consumido por UN consumidor"] --> S1["eliminado de la cola"]
+    K["Kinesis/Kafka: registro persiste durante el retention period"] --> K1["múltiples consumidores leen independientemente, cada uno con su propio offset"]
 ```
 
 #### ► REGLA PRÁCTICA
-Si solo necesitas conectar dos servicios sin pasos intermedios, usa EventBridge Pipes y ahórrate Step Functions. Si sí necesitas orquestar varios pasos, elige Standard cuando el flujo sea largo y deba ejecutarse exactamente una vez con trazabilidad completa, y Express cuando sea de alto volumen, corta duración y tolere al menos una vez.
+Si solo un consumidor debe procesar cada mensaje y luego puede descartarse, usa una cola (SQS). Si varios consumidores independientes necesitan leer el mismo evento (cada uno a su propio ritmo), usa un stream (Kinesis/Kafka).
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Objetivo observable
-Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.
+#### Código y verificación
+```bash
+aws kinesis create-stream --stream-name mi-stream --shard-count 2
+aws kinesis put-record --stream-name mi-stream --partition-key user-001 --data $(echo -n "evento-1" | base64)
+```
+
+```mermaid
+flowchart LR
+    S["SQS: mensaje consumido por UN consumidor"] --> S1["eliminado de la cola"]
+    K["Kinesis/Kafka: registro persiste durante el retention period"] --> K1["múltiples consumidores leen independientemente, cada uno con su propio offset"]
+```
+
+```bash
+aws kinesis create-stream --stream-name rutaflow-ubicacion-conductores --shard-count 1
+aws kinesis put-record --stream-name rutaflow-ubicacion-conductores --partition-key conductor-c891 --data $(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
+SHARD_ID=$(aws kinesis describe-stream --stream-name rutaflow-ubicacion-conductores --query 'StreamDescription.Shards[0].ShardId' --output text)
+ITERATOR=$(aws kinesis get-shard-iterator --stream-name rutaflow-ubicacion-conductores --shard-id "$SHARD_ID" --shard-iterator-type TRIM_HORIZON --query ShardIterator --output text)
+aws kinesis get-records --shard-iterator "$ITERATOR"
+```
 
 </details>
 
-### Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min
+### Tema 2: MSK (Kafka gestionado) y consumer groups · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/lotes. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
+Al finalizar vas a modelar el mismo topic de ubicaciones del Tema 1 sobre MSK, con dos consumer groups independientes (mapa en vivo y alertas de desvío). Prerrequisitos: Tema 1 de este módulo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart LR
-    E["10 archivos"] --> L1["lote 1"] & L2["lote 2"] & L3["lote 3"]
-    L2 -->|"timeout"| R["reintento (máx. 3)"]
-    R --> L2
-    L1 & L2 & L3 --> S["procesados/*.ok<br/>idempotente"]
-    R -->|"3 fallos"| Q["cola de revisión"]
+flowchart TD
+    T["Topic con 3 particiones"]
+    subgraph GA["Consumer Group A"]
+        C1["Consumidor 1 (partición 0)"]
+        C2["Consumidor 2 (partición 1,2)"]
+    end
+    subgraph GB["Consumer Group B (independiente)"]
+        C3["lee las mismas particiones con su propio offset, sin afectar al Group A"]
+    end
+    T --> GA
+    T --> GB
 ```
 
 </details>
@@ -134,55 +78,65 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```bash
+aws kafka create-cluster --cluster-name mi-kafka --broker-node-group-info '{"InstanceType":"kafka.m5.large", ...}' --number-of-broker-nodes 1 --kafka-version "3.5.1"
+```
 
-```python
-import json
-from pathlib import Path
-
-ENTRADA = [f"guias-{dia:02d}.csv" for dia in range(1, 11)]  # 10 archivos del mes
-TAMANO_LOTE = 4
-INTENTOS = 3
-salida = Path("procesados"); salida.mkdir(exist_ok=True)
-fallos_simulados = {"guias-06.csv": 1}  # falla una vez (por ejemplo, un timeout de red)
-
-def procesar(archivo: str) -> None:
-    destino = salida / (archivo + ".ok")
-    if destino.exists():            # idempotente: si ya se hizo, no se repite
-        return
-    if fallos_simulados.get(archivo, 0) > 0:
-        fallos_simulados[archivo] -= 1
-        raise TimeoutError(f"{archivo}: tiempo agotado")
-    destino.write_text(json.dumps({"archivo": archivo, "filas": 1000}))
-
-# Cada lote es como un trabajo de un array job: independiente y reintentable.
-for n, inicio in enumerate(range(0, len(ENTRADA), TAMANO_LOTE), start=1):
-    lote = ENTRADA[inicio:inicio + TAMANO_LOTE]
-    for intento in range(1, INTENTOS + 1):
-        try:
-            for archivo in lote:
-                procesar(archivo)
-            print(f"lote {n} ({len(lote)} archivos): ok en el intento {intento}")
-            break
-        except TimeoutError as error:
-            print(f"lote {n}: {error}, reintentando")
-    else:
-        print(f"lote {n}: falló {INTENTOS} veces, va a la cola de revisión")
-
-print(f"procesados: {len(list(salida.glob('*.ok')))} de {len(ENTRADA)}")
+```mermaid
+flowchart TD
+    T["Topic con 3 particiones"]
+    subgraph GA["Consumer Group A"]
+        C1["Consumidor 1 (partición 0)"]
+        C2["Consumidor 2 (partición 1,2)"]
+    end
+    subgraph GB["Consumer Group B (independiente)"]
+        C3["lee las mismas particiones con su propio offset, sin afectar al Group A"]
+    end
+    T --> GA
+    T --> GB
 ```
 
 ```bash
-cd academia-labs/cloud/lotes
-python3 lote.py
-python3 lote.py   # segunda vez: idempotente
+aws kafka create-cluster --cluster-name rutaflow-ubicacion-kafka \
+  --broker-node-group-info '{"InstanceType":"kafka.m5.large","ClientSubnets":["subnet-local"]}' \
+  --number-of-broker-nodes 1 --kafka-version "3.5.1"
+kafka-topics.sh --create --topic ubicacion-conductores --bootstrap-server localhost:9092
+kafka-console-consumer.sh --topic ubicacion-conductores --group mapa-en-vivo --bootstrap-server localhost:9092 --from-beginning --max-messages 1
+kafka-consumer-groups.sh --describe --group mapa-en-vivo --bootstrap-server localhost:9092
 ```
 
-```text
-lote 1 (4 archivos): ok en el intento 1
-lote 2: guias-06.csv: tiempo agotado, reintentando
-lote 2 (4 archivos): ok en el intento 2
-lote 3 (2 archivos): ok en el intento 1
-procesados: 10 de 10
+</details>
+
+### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a decidir qué parte del flujo de ubicaciones de RutaFlow necesita Kinesis Data Streams y cuál puede resolverse con Firehose. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["Kinesis Data Streams"] --> A1["control fino, procesamiento personalizado en tiempo real"]
+    B["Kinesis Data Firehose"] --> B1["entrega automatizada gestionada hacia S3/warehouse, sin código de consumidor propio"]
+```
+
+#### ► REGLA PRÁCTICA
+Si solo necesitas entregar los datos a un destino fijo (S3, un warehouse) sin procesarlos tú mismo, usa Firehose y evita escribir un consumidor. Si necesitas lógica de procesamiento personalizada en tiempo real sobre cada registro, usa Kinesis Data Streams.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```bash
+aws s3 mb s3://rutaflow-ubicaciones-historico
+aws firehose create-delivery-stream --delivery-stream-name ubicaciones-a-s3 \
+  --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/firehose-role,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico
+aws firehose put-record --delivery-stream-name ubicaciones-a-s3 --record Data=$(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
 ```
 
 </details>

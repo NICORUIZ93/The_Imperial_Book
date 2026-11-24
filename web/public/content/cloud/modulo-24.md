@@ -1,179 +1,51 @@
-# Módulo 24: CI/CD nativo de AWS con CodeBuild y CodeDeploy
+# Módulo 24: Gobierno, configuración y continuidad — AWS Config, AppConfig y Backup
 
 
 ## Aprende construyendo
 
 
-### Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker · Avanzado · 40 min
+### Tema 1: AWS Config — rastrear reglas sobre tus recursos · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto demo-build que sube el artefacto a S3. Prerrequisitos: Módulo 2 completo.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-# archivo: src/labs/modulo-24/tema-1-codebuild-real.sh — ejecutar con: bash tema-1-codebuild-real.sh
-aws s3 mb s3://demo-artefactos
-aws codebuild create-project --name demo-build --source type=NO_SOURCE \
-  --artifacts type=S3,location=demo-artefactos \
-  --environment type=LINUX_CONTAINER,image=public.ecr.aws/docker/library/alpine:latest,computeType=BUILD_GENERAL1_SMALL \
-  --service-role arn:aws:iam::000000000000:role/codebuild-role
-ID=$(aws codebuild start-build --project-name demo-build \
-  --buildspec-override 'version: 0.2
-phases:
-  build:
-    commands:
-      - echo hola desde Floci > salida.txt
-artifacts:
-  files:
-    - salida.txt' --query 'build.id' --output text)
-aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus'
-```
-
-```bash
-aws s3 mb s3://demo-artefactos
-aws codebuild create-project --name demo-build --source type=NO_SOURCE \
-  --artifacts type=S3,location=demo-artefactos \
-  --environment type=LINUX_CONTAINER,image=public.ecr.aws/docker/library/alpine:latest,computeType=BUILD_GENERAL1_SMALL \
-  --service-role arn:aws:iam::000000000000:role/codebuild-role
-ID=$(aws codebuild start-build --project-name demo-build \
-  --buildspec-override 'version: 0.2
-phases:
-  build:
-    commands:
-      - echo servicio-de-seguimiento-compilado > salida.txt
-artifacts:
-  files:
-    - salida.txt' --query 'build.id' --output text)
-aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus'
-```
-
-</details>
-
-### Tema 2: buildspec.yml — fases y artefactos · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-mkdir ejemplo-buildspec && cd ejemplo-buildspec
-```
-
-Crea el archivo `buildspec.yml`:
-
-```yaml
-version: 0.2
-phases:
-  install:
-    commands:
-      - echo "instalando dependencias"
-  pre_build:
-    commands:
-      - mkdir -p dist
-  build:
-    commands:
-      - echo "servicio-de-seguimiento 1.0" > dist/app.txt
-  post_build:
-    commands:
-      - sha256sum dist/app.txt > dist/app.sha256
-artifacts:
-  base-directory: dist
-  files:
-    - app.txt
-    - app.sha256
-```
-
-```bash
-ID=$(aws codebuild start-build --project-name demo-build --buildspec-override "$(cat buildspec.yml)" \
-  --query 'build.id' --output text)
-until [ "$(aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildComplete' --output text)" = "True" ]; do sleep 3; done
-aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus' --output text
-aws s3 ls s3://demo-artefactos/ --recursive
-```
-
-```bash
-# archivo: src/labs/modulo-24/tema-2-fases.sh — ejecutar con: bash tema-2-fases.sh
-aws codebuild start-build --project-name demo-build \
-  --buildspec-override 'version: 0.2
-phases:
-  install:
-    commands:
-      - echo "instalando dependencias"
-  pre_build:
-    commands:
-      - echo "paso previo"
-  build:
-    commands:
-      - echo "compilando" > build.log
-  post_build:
-    commands:
-      - echo "empaquetando" >> build.log
-artifacts:
-  files:
-    - build.log'
-```
-
-</details>
-
-### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a crear demo-app, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a declarar la regla que, contra AWS real, vigilaría que el bucket de evidencias de entrega de RutaFlow (pruebas-entrega, Módulo 2) siempre tenga versionado activo. Prerrequisitos: Módulo 2 completo.
 
 #### ► LA ANALOGÍA
-El grupo de implementación es la flota a reemplazar; la configuración de despliegue decide qué tan rápido (o cuidadosamente) se reemplaza.
+Una regla de Config es un checklist ("este bucket debe tener versionado"); el grabador conserva evidencia de qué recursos existen; el estado de cumplimiento agrupa el resultado de aplicar el checklist a cada uno.
 
-**Conceptos clave:** `computePlatform`, grupo de implementación, configuración de despliegue, las 17 configuraciones integradas.
+**Conceptos clave:** regla de configuración, grabador de configuración, paquete de conformidad, estado de cumplimiento.
 
-CodeDeploy organiza el trabajo en dos niveles: una aplicación (`CreateApplication`) define la plataforma de cómputo objetivo —`Server`, `Lambda` o `ECS`—, y un grupo de implementación (`CreateDeploymentGroup`) dentro de esa aplicación define la configuración concreta del despliegue: qué configuración de despliegue usar, y para ECS específicamente, a qué servicio y grupos objetivo de balanceador apunta. AWS —y Floci, fielmente— provee 17 configuraciones de despliegue predefinidas que no puedes eliminar: desde `AllAtOnce` (todo de una vez) hasta variantes canary y lineales con distintos porcentajes y ventanas de tiempo, tanto para Lambda como para ECS.
+AWS Config existe para responder una pregunta que crece en importancia a medida que una cuenta tiene más recursos: "¿mis recursos cumplen las reglas que definí, y quién cambió qué y cuándo?" El servicio se organiza en tres piezas: reglas de configuración (`PutConfigRule`) que describen una condición deseada —por ejemplo, "todo bucket S3 debe tener versionado activo"—, un grabador de configuración (`PutConfigurationRecorder`) que decide qué tipos de recursos observar, y paquetes de conformidad (`PutConformancePack`) que agrupan varias reglas relacionadas para desplegarlas juntas como una política reutilizable.
 
-Elegir entre estas configuraciones predefinidas es una decisión de riesgo: `AllAtOnce` es la más rápida pero la más arriesgada si el nuevo código tiene un bug, mientras que una estrategia canary (por ejemplo, `LambdaCanary10Percent5Minutes`) envía solo el 10% del tráfico a la versión nueva durante 5 minutos antes de decidir si continuar, limitando el impacto de un despliegue defectuoso a una fracción pequeña de usuarios durante poco tiempo.
+En Floci, las reglas, grabadores y paquetes de conformidad se almacenan y se devuelven correctamente vía API —puedes construir y probar la lógica de gestión de tu infraestructura como código (Terraform, CDK) contra ellos—, pero el estado de cumplimiento siempre reporta `INSUFFICIENT_DATA`, porque Floci no ejecuta la evaluación real de recursos que en AWS verificaría si, por ejemplo, tus buckets realmente tienen versionado activo. Esta es una limitación explícita y documentada, no un bug: evaluar cumplimiento real requeriría reimplementar la lógica completa de cada regla administrada por AWS.
 
-**Analogía:** las configuraciones de despliegue predefinidas son como los ajustes de velocidad de una cinta transportadora en una fábrica: puedes elegir "máxima velocidad, todo de una vez" o "arranque lento, verificando calidad en cada tramo antes de acelerar" — la decisión depende de cuánto te puedes permitir arriesgar si algo sale mal.
+**Analogía:** AWS Config en Floci es como tener el formulario de auditoría completamente diseñado y archivado correctamente, pero sin un auditor real todavía revisando cada expediente para marcar aprobado o rechazado — la estructura del proceso está lista, falta la evaluación de contenido.
 
-**¿Por qué es importante?** La elección de estrategia de despliegue es una de las decisiones de ingeniería con mayor impacto directo en la disponibilidad de un sistema en producción; entender las opciones disponibles —no solo memorizar el comando para crear un despliegue— es la habilidad real que se evalúa aquí.
+**¿Por qué es importante?** Practicar la creación de reglas, grabadores y paquetes de conformidad vía IaC es exactamente el mismo flujo de trabajo que usarías para desplegar gobierno de cumplimiento en una cuenta real, aunque la verificación de "¿de verdad cumple?" la debas validar contra AWS real antes de confiar en ella para producción.
 
 **Practícalo tú:**
 
 ```bash
 
-# archivo: src/labs/modulo-24/tema-3-aplicacion-y-grupo.sh — ejecutar con: bash tema-3-aplicacion-y-grupo.sh
-aws deploy create-application --application-name demo-app --compute-platform Lambda
-aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
-  --deployment-config-name CodeDeployDefault.LambdaCanary10Percent5Minutes \
-  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
-  --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL
-aws deploy list-deployment-configs --query "deploymentConfigsList" --output text | wc -w
+# archivo: src/labs/modulo-25/tema-1-config-rule.sh — ejecutar con: bash tema-1-config-rule.sh
+aws configservice put-config-rule --config-rule '{"ConfigRuleName":"demo-s3-versionado","Source":{"Owner":"AWS","SourceIdentifier":"S3_BUCKET_VERSIONING_ENABLED"}}'
+aws configservice describe-config-rules --query "ConfigRules[?ConfigRuleName=='demo-s3-versionado']"
+aws configservice describe-compliance-by-config-rule --config-rule-names demo-s3-versionado
 ```
 
-`--application-name` nombra la aplicación; `--compute-platform` fija dónde despliega (`Lambda`, `Server` o `ECS`). Al crear el grupo, `--deployment-group-name` lo nombra; `--deployment-config-name` elige cuál de las 17 estrategias predefinidas usar; `--service-role-arn` es el rol de IAM con el que CodeDeploy opera; `--deployment-style` fija el tipo de despliegue (acá, `BLUE_GREEN` con control de tráfico, en vez de reemplazar todo de una vez in-place). En resumen: `--application-name` es la bandera que nombra la aplicación, `--compute-platform` es la bandera que fija dónde despliega, y `--deployment-group-name` es la bandera que nombra el grupo de despliegue.
+`--config-rule` es el JSON que describe la regla (acá, referenciando una regla administrada por AWS, `S3_BUCKET_VERSIONING_ENABLED`); `--config-rule-names` filtra la consulta de cumplimiento por el nombre de esa regla específica. En resumen: `--config-rule-names` es la bandera que filtra la consulta por nombre de regla.
 
-**Resultado esperado:** `create-application` y `create-deployment-group` devuelven confirmación con sus IDs; `list-deployment-configs` lista las 17 configuraciones predefinidas, incluida `LambdaCanary10Percent5Minutes` que acabas de usar.
+**Resultado esperado:** la regla queda registrada y consultable con `describe-config-rules`; `describe-compliance-by-config-rule` devuelve `INSUFFICIENT_DATA` — recuerda que Floci no evalúa cumplimiento real, solo gestiona el plano de reglas.
 
-**Modifica esto:** crea un segundo grupo usando `CodeDeployDefault.LambdaAllAtOnce` en vez de canary, y compara en la documentación qué diferencia de riesgo implica frente al que acabas de crear.
+**Modifica esto:** agrupa esta regla dentro de un paquete de conformidad con `put-conformance-pack` y confirma con `describe-conformance-packs` que quedó asociada.
 
-**Cuándo no usarlo:** no elijas `AllAtOnce` para una función crítica sin un plan de rollback probado; resérvalo para funciones de bajo impacto o entornos donde un rollback rápido no es crítico.
+**Cuándo no usarlo:** no reportes `INSUFFICIENT_DATA` como "cumple" en ningún dashboard real; es la ausencia de evaluación, no una aprobación.
 
-**Cómo crece tu proyecto:** `demo-app` es la aplicación CodeDeploy que gestionará todos los despliegues canary de las funciones Lambda del proyecto integrador.
+**Cómo crece tu proyecto:** esta regla es la que, contra AWS real, verificaría que el bucket de evidencias de entrega del proyecto siempre tenga versionado activo.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Define una regla de configuración para los recursos de evidencias. Introduce una desviación controlada y registra tanto el resultado de evaluación como la corrección aplicada al recurso afectado.
 
 
 </details>
@@ -183,68 +55,64 @@ aws deploy list-deployment-configs --query "deploymentConfigsList" --output text
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-24/tema-3-aplicacion-y-grupo.sh — ejecutar con: bash tema-3-aplicacion-y-grupo.sh
-aws deploy create-application --application-name demo-app --compute-platform Lambda
-aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
-  --deployment-config-name CodeDeployDefault.LambdaCanary10Percent5Minutes \
-  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
-  --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL
-aws deploy list-deployment-configs --query "deploymentConfigsList" --output text | wc -w
+# archivo: src/labs/modulo-25/tema-1-config-rule.sh — ejecutar con: bash tema-1-config-rule.sh
+aws configservice put-config-rule --config-rule '{"ConfigRuleName":"demo-s3-versionado","Source":{"Owner":"AWS","SourceIdentifier":"S3_BUCKET_VERSIONING_ENABLED"}}'
+aws configservice describe-config-rules --query "ConfigRules[?ConfigRuleName=='demo-s3-versionado']"
+aws configservice describe-compliance-by-config-rule --config-rule-names demo-s3-versionado
 ```
 
 ```bash
-aws deploy create-application --application-name demo-app --compute-platform Lambda
-aws deploy create-deployment-group --application-name demo-app --deployment-group-name demo-grupo \
-  --deployment-config-name CodeDeployDefault.LambdaCanary10Percent5Minutes \
-  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
-  --deployment-style deploymentType=BLUE_GREEN,deploymentOption=WITH_TRAFFIC_CONTROL
+aws configservice put-config-rule --config-rule '{"ConfigRuleName":"pruebas-entrega-versionado","Source":{"Owner":"AWS","SourceIdentifier":"S3_BUCKET_VERSIONING_ENABLED"}}'
+aws configservice describe-config-rules --query "ConfigRules[?ConfigRuleName=='pruebas-entrega-versionado']"
 ```
 
 </details>
 
-### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias · Avanzado · 40 min
+### Tema 2: AppConfig — desplegar configuración sin redeployar código · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a mover el alias live del servicio de seguimiento de la versión 1 a la versión 2 con el canary de demo-grupo (Tema 3), y a confirmar que un hook fallido revierte solo. Prerrequisitos: Tema 3 de este módulo, Módulo 5 (versiones y alias).
+Al finalizar vas a crear un feature flag real para activar el modo mantenimiento del servicio de seguimiento (Módulo 24), sin recompilar ni redesplegar nada. Prerrequisitos: Módulo 24 completo.
 
 #### ► LA ANALOGÍA
-El alias Lambda es el puntero que CodeDeploy mueve gradualmente; los lifecycle hooks son catadores que prueban cada lote antes de dejarlo avanzar al resto del tráfico.
+AppConfig es un archivador por aplicación, entorno y perfil: cada cambio de configuración queda versionado y auditable, como un despliegue de código, no como sobrescribir un archivo a mano.
 
-**Conceptos clave:** alias Lambda, `RoutingConfig`, lifecycle hook `BeforeAllowTraffic`/`AfterAllowTraffic`, reversión automática.
+**Conceptos clave:** aplicación, entorno, perfil de configuración, estrategia de despliegue.
 
-Para `computePlatform: Lambda`, `CreateDeployment` ejecuta un cambio de tráfico real sobre el alias de tu función: lee la estrategia configurada en el grupo de implementación (todo a la vez, canary o lineal), y si es canary o lineal, actualiza gradualmente el `RoutingConfig` del alias para enrutar un porcentaje del tráfico hacia la nueva versión, espera el intervalo configurado, y luego completa el cambio al 100%. Si configuraste lifecycle hooks —funciones Lambda adicionales que se invocan en puntos específicos del despliegue, como `BeforeAllowTraffic` o `AfterAllowTraffic`—, CodeDeploy las invoca y espera a que reporten éxito vía `PutLifecycleEventHookExecutionStatus` antes de continuar.
+AppConfig resuelve un problema muy concreto: cambiar un valor de configuración —un feature flag, un límite de tasa, un mensaje de mantenimiento— sin tener que recompilar y redesplegar toda tu aplicación. El modelo tiene cuatro niveles: una aplicación (`CreateApplication`) agrupa el trabajo; un entorno (`CreateEnvironment`, por ejemplo `dev` o `prod`) representa dónde se aplica la configuración; un perfil de configuración (`CreateConfigurationProfile`) define de dónde viene el contenido —en este curso, configuración "alojada" directamente en AppConfig—; y una versión de configuración alojada (`CreateHostedConfigurationVersion`) es el contenido real, versionado como cualquier artefacto.
 
-El detalle más importante de este flujo es la reversión automática: si cualquier lifecycle hook reporta `Failed`, CodeDeploy revierte automáticamente el alias a la versión anterior y marca el despliegue completo como `Failed` — sin que tengas que intervenir manualmente para deshacer un despliegue problemático. Este es exactamente el tipo de red de seguridad que justifica usar una herramienta de despliegue dedicada en vez de cambiar el alias manualmente con un script propio.
+Para efectivamente cambiar la configuración que ve tu aplicación, creas una estrategia de despliegue (`CreateDeploymentStrategy`, por ejemplo "inmediata" con duración cero) y ejecutas `StartDeployment` apuntando una versión de configuración específica a un entorno. Esto es deliberadamente distinto de simplemente sobrescribir un archivo: cada despliegue de configuración queda versionado y auditable, exactamente como un despliegue de código.
 
-**Analogía:** un lifecycle hook que valida el despliegue es como un catador que prueba cada lote antes de que salga a la venta: si algo sale mal, ese lote específico se retira automáticamente antes de que llegue a más clientes, en vez de esperar a que se quejen después.
+**Analogía:** AppConfig es como un panel de control central de un edificio inteligente donde puedes cambiar la temperatura objetivo de todos los termostatos con una sola actualización versionada y reversible, en vez de tener que ir físicamente a reprogramar cada termostato uno por uno.
 
-**¿Por qué es importante?** La combinación de cambio de tráfico gradual más validación automática con reversión es el patrón de despliegue de más bajo riesgo que existe para funciones serverless; dominarlo aquí te prepara directamente para operar Lambda en producción con confianza.
+**¿Por qué es importante?** Separar "cambios de comportamiento" (configuración) de "cambios de código" (despliegue de artefactos) es lo que permite reaccionar en minutos —no en un ciclo completo de CI/CD— ante un feature flag que hay que desactivar urgentemente en producción.
 
 **Practícalo tú:**
 
 ```bash
 
-# archivo: src/labs/modulo-24/tema-4-canary-lambda.sh — ejecutar con: bash tema-4-canary-lambda.sh
-ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
-  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
-  --query 'deploymentId' --output text)
-aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
+# archivo: src/labs/modulo-25/tema-2-appconfig.sh — ejecutar con: bash tema-2-appconfig.sh
+APP_ID=$(aws appconfig create-application --name demo-config --query 'Id' --output text)
+ENV_ID=$(aws appconfig create-environment --application-id "$APP_ID" --name dev --query 'Id' --output text)
+PROFILE_ID=$(aws appconfig create-configuration-profile --application-id "$APP_ID" \
+  --name feature-flags --location-uri hosted --type AWS.Freeform --query 'Id' --output text)
+aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
+  --configuration-profile-id "$PROFILE_ID" --content '{"modo_mantenimiento": false}' --content-type application/json
 ```
 
-`--revision` es el contenido que describe qué desplegar — acá, un AppSpec inline que dice qué alias mover de la versión 1 a la versión 2; `--deployment-id` (usado después con `get-deployment`) identifica ese despliegue puntual para consultar su estado. En resumen: `--deployment-id` es la bandera que identifica ese despliegue específico.
+`--application-id` encadena cada comando a la aplicación creada en el paso anterior; `--location-uri hosted` le dice al perfil que el contenido vive dentro de AppConfig mismo (no en un S3 o SSM externo); `--configuration-profile-id` identifica ese perfil al crear una versión de configuración; `--content` es el valor real (acá, JSON) y `--content-type` declara su formato. En resumen: `--application-id` es la bandera que fija a qué aplicación pertenece cada recurso, y `--location-uri` es la bandera que fija dónde vive el contenido del perfil.
 
-**Resultado esperado:** el estado empieza en `InProgress` mientras el 10% del tráfico se enruta a la versión 2 durante la ventana de 5 minutos configurada, y termina en `Succeeded` con el alias `live` apuntando al 100% a la versión nueva.
+**Resultado esperado:** cada comando devuelve el ID correspondiente (`APP_ID`, `ENV_ID`, `PROFILE_ID`) y la versión de configuración queda registrada con `VersionNumber: 1`, lista para desplegarse.
 
-**Modifica esto:** simula un lifecycle hook fallido devolviendo `Failed` con `put-lifecycle-event-hook-execution-status` y confirma que CodeDeploy revierte automáticamente el alias a la versión 1, sin que tú hagas el rollback manualmente.
+**Modifica esto:** crea una segunda versión con `"modo_mantenimiento": true` y despliega solo esa versión — confirma que la anterior sigue existiendo, versionada, para poder volver a ella.
 
-**Cuándo no usarlo:** no uses una ventana canary de 5 minutos para una función con tráfico muy bajo; si recibe pocas invocaciones, esos 5 minutos podrían no acumular suficiente señal para detectar un problema real antes de completar el despliegue.
+**Cuándo no usarlo:** no uses AppConfig para secretos (contraseñas, claves API); para eso está Secrets Manager o Parameter Store con cifrado, no configuración de aplicación en texto plano.
 
-**Cómo crece tu proyecto:** este es el despliegue exacto que promueve una nueva versión del servicio de seguimiento sin interrumpir a los repartidores que ya están usando la versión anterior.
+**Cómo crece tu proyecto:** este feature flag activa o desactiva el modo mantenimiento del servicio de seguimiento sin recompilar ni redesplegar código.
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Publica dos versiones de la función de confirmación y usa un alias para seleccionar tráfico. Envía peticiones identificables, observa la versión ejecutada y practica volver a la anterior.
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Controla la activación de un proveedor de notificaciones mediante configuración versionada. Prueba un despliegue gradual y una reversión manteniendo el mismo artefacto de aplicación.
 
 
 </details>
@@ -254,74 +122,231 @@ aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-24/tema-4-canary-lambda.sh — ejecutar con: bash tema-4-canary-lambda.sh
-ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
-  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
-  --query 'deploymentId' --output text)
-aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
+# archivo: src/labs/modulo-25/tema-2-appconfig.sh — ejecutar con: bash tema-2-appconfig.sh
+APP_ID=$(aws appconfig create-application --name demo-config --query 'Id' --output text)
+ENV_ID=$(aws appconfig create-environment --application-id "$APP_ID" --name dev --query 'Id' --output text)
+PROFILE_ID=$(aws appconfig create-configuration-profile --application-id "$APP_ID" \
+  --name feature-flags --location-uri hosted --type AWS.Freeform --query 'Id' --output text)
+aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
+  --configuration-profile-id "$PROFILE_ID" --content '{"modo_mantenimiento": false}' --content-type application/json
 ```
 
 ```bash
-ID=$(aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo \
-  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"miFuncion\":{\"Type\":\"AWS::Lambda::Function\",\"Properties\":{\"Name\":\"demo-tracking\",\"Alias\":\"live\",\"CurrentVersion\":\"1\",\"TargetVersion\":\"2\"}}}]}"}' \
-  --query 'deploymentId' --output text)
-aws deploy get-deployment --deployment-id "$ID" --query 'deploymentInfo.status'
+APP_ID=$(aws appconfig create-application --name demo-config --query 'Id' --output text)
+ENV_ID=$(aws appconfig create-environment --application-id "$APP_ID" --name dev --query 'Id' --output text)
+PROFILE_ID=$(aws appconfig create-configuration-profile --application-id "$APP_ID" \
+  --name feature-flags --location-uri hosted --type AWS.Freeform --query 'Id' --output text)
+aws appconfig create-hosted-configuration-version --application-id "$APP_ID" \
+  --configuration-profile-id "$PROFILE_ID" --content '{"modo_mantenimiento": false}' --content-type application/json
 ```
 
 </details>
 
-### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB · Avanzado · 40 min
+### Tema 3: AppConfigData — el plano de datos que consume tu aplicación · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de demo-alb (Módulo 22) para cambiar tráfico de azul a verde. Prerrequisitos: Módulo 22 completo, Módulo 14 (ECS).
+Al finalizar vas a leer el feature flag del Tema 2 exactamente como lo leería el servicio de seguimiento en ejecución, sin reiniciarse. Prerrequisitos: Tema 2 de este módulo.
 
 #### ► LA ANALOGÍA
-Blue/Green es mantener dos flotas completas y mover el letrero del listener hacia la nueva recién cuando está lista, en vez de reemplazar tareas una por una mientras siguen atendiendo tráfico real.
+La sesión de AppConfigData entrega un token; cada consulta posterior con ese token devuelve solo lo que cambió desde la última vez, como suscribirte a las actualizaciones de un documento en vez de redescargarlo entero.
 
-**Conceptos clave:** conjunto de tareas verde, `TargetService`, promoción a PRIMARY, AppSpec.
+**Conceptos clave:** sesión de configuración, `GetLatestConfiguration`, token de configuración.
 
-Para `computePlatform: ECS`, el despliegue Blue/Green es más elaborado: CodeDeploy analiza un AppSpec en formato JSON que describe la nueva definición de tarea, crea un "conjunto de tareas verde" en tu servicio ECS apuntando a esa nueva definición, ejecuta los lifecycle hooks configurados, y luego cambia atómicamente la regla de reenvío por defecto del listener ELB v2 para dirigir tráfico hacia el grupo objetivo verde —de forma inmediata (`AllAtOnce`), gradual por pasos (`Canary`) o en incrementos lineales (`Linear`), según la configuración elegida. Al finalizar exitosamente, el conjunto de tareas verde se promueve a `PRIMARY` y el conjunto azul original se elimina.
+Mientras AppConfig es el plano de gestión que tú usas para definir y desplegar configuración, AppConfigData es el plano de datos que tu aplicación en ejecución usa para leerla: primero abre una sesión con `StartConfigurationSession` especificando la aplicación, entorno y perfil que le interesan, recibiendo un token inicial; luego, periódicamente, llama a `GetLatestConfiguration` con ese token, que devuelve el contenido de configuración más reciente (o una respuesta vacía si no cambió desde la última consulta, ahorrando ancho de banda) junto con un nuevo token para la siguiente consulta.
 
-Este flujo asume que tu servicio ECS fue creado con `deploymentController.type: EXTERNAL` —delegando el control del despliegue a CodeDeploy en vez de al mecanismo de actualización continua nativo de ECS— y que ya tienes un listener ELB v2 con grupos objetivo azul y verde configurados, lo que conecta directamente con lo que practicaste en el Módulo 22.
+Este patrón de "sesión más polling eficiente" es exactamente lo que hace el SDK de AppConfig del lado del cliente para tu aplicación de forma transparente, y entender el flujo subyacente te ayuda a diagnosticar problemas de configuración que no se están actualizando cuando esperas que lo hagan.
 
-**Analogía:** un despliegue Blue/Green de ECS es como preparar un segundo turno completo de personal (verde) entrenado y listo antes de rotar la asignación de clientes hacia ellos, en vez de reemplazar al personal actual (azul) uno por uno mientras siguen atendiendo — si algo sale mal con el turno nuevo, el turno anterior sigue disponible para retomar sin fricción.
+**Analogía:** una sesión de AppConfigData es como suscribirte a las actualizaciones de un documento colaborativo: en vez de volver a descargar el documento completo cada vez que quieres saber si cambió, simplemente preguntas "¿hay algo nuevo desde la última vez que pregunté?" y solo recibes contenido cuando efectivamente cambió.
 
-**¿Por qué es importante?** Blue/Green es la estrategia de despliegue con menor riesgo de tiempo de inactividad porque el entorno anterior sigue existiendo intacto durante todo el proceso, listo para recibir tráfico de vuelta si algo falla — la diferencia entre esto y un despliegue in-place es central para entender por qué las arquitecturas críticas prefieren Blue/Green.
+**¿Por qué es importante?** Separar explícitamente plano de gestión (quién despliega configuración) de plano de datos (cómo la consume la aplicación) es el mismo patrón arquitectónico que ya viste en otros servicios de AWS, y reconocerlo aquí refuerza esa intuición general.
 
 **Practícalo tú:**
 
 ```bash
 
-# archivo: src/labs/modulo-24/tema-5-blue-green-ecs.sh — ejecutar con: bash tema-5-blue-green-ecs.sh
-# El listener se recupera por nombre del ALB del Módulo 22 — no hace falta
-# haber conservado ninguna variable de esa sesión de terminal.
-LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
-LISTENER_ARN=$(aws elbv2 describe-listeners --load-balancer-arn "$LB_ARN" --query 'Listeners[0].ListenerArn' --output text)
+# archivo: src/labs/modulo-25/tema-3-appconfigdata.sh — ejecutar con: bash tema-3-appconfigdata.sh
+# Los tres IDs se recuperan por nombre, no de la sesión de terminal del Tema 2.
+APP_ID=$(aws appconfig list-applications --query "Items[?Name=='demo-config'].Id | [0]" --output text)
+ENV_ID=$(aws appconfig list-environments --application-id "$APP_ID" --query "Items[?Name=='dev'].Id | [0]" --output text)
+PROFILE_ID=$(aws appconfig list-configuration-profiles --application-id "$APP_ID" \
+  --query "Items[?Name=='feature-flags'].Id | [0]" --output text)
 
-aws deploy create-application --application-name demo-app-ecs --compute-platform ECS
-aws deploy create-deployment-group --application-name demo-app-ecs --deployment-group-name demo-grupo-ecs \
-  --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
-  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
-  --ecs-services serviceName=demo-service,clusterName=demo-cluster \
-  --load-balancer-info targetGroupPairInfoList='[{prodTrafficRoute={listenerArns=["'"$LISTENER_ARN"'"]},targetGroups=[{name=demo-objetivos-azul},{name=demo-objetivos-verde}]}]'
+TOKEN=$(aws appconfigdata start-configuration-session \
+  --application-identifier "$APP_ID" --environment-identifier "$ENV_ID" \
+  --configuration-profile-identifier "$PROFILE_ID" --query InitialConfigurationToken --output text)
+aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
 ```
 
-`--ecs-services` identifica qué servicio y cluster de ECS gestiona este grupo de implementación; `--load-balancer-info` describe la pareja de grupos objetivo (azul y verde) y el listener del ALB entre los que CodeDeploy va a mover el tráfico — la misma infraestructura que creaste en el Módulo 22. En resumen: `--ecs-services` es la bandera que identifica servicio y cluster, y `--load-balancer-info` es la bandera que describe los grupos objetivo azul/verde y el listener.
+`--application-identifier`, `--environment-identifier` y `--configuration-profile-identifier` son los mismos tres IDs de siempre (aplicación, entorno, perfil), solo que con nombre de bandera distinto en esta API de plano de datos; `--configuration-token` es el token de sesión que te dice qué versión ya viste, para no volver a descargar contenido que no cambió. En resumen: `--application-identifier` es la bandera equivalente a `--application-id` en la API de plano de datos; `--environment-identifier` es la bandera equivalente a `--environment-id`; y `--configuration-profile-identifier` es la bandera equivalente a `--configuration-profile-id`.
 
-**Resultado esperado:** el grupo de implementación queda creado con `deploymentType=BLUE_GREEN`; al iniciar un despliegue real sobre este grupo, `describe-services` en ECS mostraría temporalmente dos conjuntos de tareas (azul y verde) hasta que el verde se promueve a `PRIMARY`.
+**Resultado esperado:** tras desplegar la configuración del Tema 2, `get-latest-configuration` devuelve el JSON `{"modo_mantenimiento": false}` y un nuevo token para la siguiente consulta.
 
-**Modifica esto:** cambia `CodeDeployDefault.ECSAllAtOnce` por `CodeDeployDefault.ECSLinear10PercentEvery1Minutes` y compara cuánto tarda en completarse un despliegue de prueba con cada configuración.
+**Modifica esto:** vuelve a llamar `get-latest-configuration` inmediatamente con el nuevo token, sin que haya cambiado nada, y confirma que el contenido viene vacío — así ahorra ancho de banda cuando no hay novedades.
 
-**Cuándo no usarlo:** no configures Blue/Green en un servicio ECS que sigue usando `deploymentController.type` nativo (`ECS` en vez de `EXTERNAL`); CodeDeploy no puede tomar control de un servicio que no delegó su despliegue explícitamente.
+**Cuándo no usarlo:** no abras una sesión nueva en cada petición de tu aplicación; el patrón correcto es abrir una sesión una vez y reusar el token en cada consulta periódica.
 
-**Cómo crece tu proyecto:** este grupo Blue/Green es el que usará el servicio ECS en producción para desplegar sin interrumpir el tráfico del ALB creado en el Módulo 22.
+**Cómo crece tu proyecto:** el servicio de seguimiento usa exactamente este flujo de sesión + polling para enterarse de cambios de configuración sin reiniciarse.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Haz que el consumidor consulte configuración usando el protocolo del plano de datos. Registra versión y renovación de la sesión sin interpretar una respuesta sin cambios como una configuración vacía.
+
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-3-appconfigdata.sh — ejecutar con: bash tema-3-appconfigdata.sh
+# Los tres IDs se recuperan por nombre, no de la sesión de terminal del Tema 2.
+APP_ID=$(aws appconfig list-applications --query "Items[?Name=='demo-config'].Id | [0]" --output text)
+ENV_ID=$(aws appconfig list-environments --application-id "$APP_ID" --query "Items[?Name=='dev'].Id | [0]" --output text)
+PROFILE_ID=$(aws appconfig list-configuration-profiles --application-id "$APP_ID" \
+  --query "Items[?Name=='feature-flags'].Id | [0]" --output text)
+
+TOKEN=$(aws appconfigdata start-configuration-session \
+  --application-identifier "$APP_ID" --environment-identifier "$ENV_ID" \
+  --configuration-profile-identifier "$PROFILE_ID" --query InitialConfigurationToken --output text)
+aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
+```
+
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+TOKEN=$(aws appconfigdata start-configuration-session \
+  --application-identifier "$APP_ID" --environment-identifier "$ENV_ID" \
+  --configuration-profile-identifier "$PROFILE_ID" --query InitialConfigurationToken --output text)
+aws appconfigdata get-latest-configuration --configuration-token "$TOKEN"
+```
+
+</details>
+
+### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a centralizar el respaldo diario de ShipmentEvents (Módulo 4) en un plan de AWS Backup, en vez de gestionar snapshots sueltos servicio por servicio. Prerrequisitos: Módulo 4 completo.
+
+#### ► LA ANALOGÍA
+Una bóveda guarda los puntos de recuperación; un plan define cuándo y con qué frecuencia respaldar; una selección asigna recursos concretos (por ARN) a ese plan — una sola póliza en vez de varias independientes por servicio.
+
+**Conceptos clave:** bóveda de respaldo, plan de respaldo, selección de recursos, punto de recuperación.
+
+En lugar de configurar copias de seguridad servicio por servicio —snapshots de RDS por un lado, respaldos de DynamoDB por otro—, AWS Backup centraliza la política: una bóveda de respaldo (`CreateBackupVault`) es el contenedor donde se almacenan los puntos de recuperación; un plan de respaldo (`CreateBackupPlan`) define reglas de cuándo y con qué frecuencia respaldar (expresadas como una expresión cron), hacia qué bóveda, y con qué ventanas de tiempo permitidas; y una selección de recursos (`CreateBackupSelection`) asigna recursos específicos —identificados por ARN— a ese plan.
+
+Además de los respaldos programados por el plan, puedes iniciar un respaldo bajo demanda con `StartBackupJob` apuntando directamente a un recurso y una bóveda. Floci soporta como tipos de recurso S3, RDS, DynamoDB, EFS, EC2, EBS, Aurora, DocumentDB, Neptune, FSx y máquinas virtuales genéricas — la misma lista amplia de AWS real, aunque la copia de seguridad en sí se simula: no se leen ni escriben datos reales de los recursos referenciados, solo se gestiona correctamente el ciclo de vida del trabajo y del punto de recuperación resultante.
+
+**Analogía:** AWS Backup es como contratar un servicio único de seguros que cubre tu casa, tu auto y tu negocio con una sola póliza y un solo calendario de revisiones, en vez de gestionar tres pólizas independientes con tres aseguradoras distintas.
+
+**¿Por qué es importante?** Centralizar la política de respaldo reduce drásticamente la probabilidad de que un servicio quede sin protección por descuido — un riesgo real y común en cuentas AWS que crecen orgánicamente sin una estrategia de respaldo unificada desde el principio.
+
+**Practícalo tú:**
+
+```bash
+
+# archivo: src/labs/modulo-25/tema-4-backup-plan.sh — ejecutar con: bash tema-4-backup-plan.sh
+aws backup create-backup-vault --backup-vault-name demo-boveda
+PLAN_ID=$(aws backup create-backup-plan --backup-plan \
+  '{"BackupPlanName":"demo-diario","Rules":[{"RuleName":"diario","TargetBackupVaultName":"demo-boveda","ScheduleExpression":"cron(0 12 * * ? *)"}]}' \
+  --query 'BackupPlanId' --output text)
+aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selection \
+  '{"SelectionName":"tablas-demo","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas"]}'
+```
+
+`--backup-vault-name` nombra la bóveda de destino; `--backup-plan` es el JSON con las reglas de cuándo respaldar (acá, una expresión cron diaria); `--backup-plan-id` (tomado de la respuesta anterior) identifica a qué plan asignarle la selección; `--backup-selection` es el JSON que dice qué recursos concretos (por ARN) protege ese plan.
+
+**Resultado esperado:** la bóveda, el plan y la selección quedan creados y encadenados; `aws backup list-backup-plans` muestra `demo-diario` con su regla cron de las 12:00.
+
+**Modifica esto:** intenta borrar `demo-boveda` con `delete-backup-vault` antes de tener ningún punto de recuperación — a diferencia del Tema 5, aquí sí debería funcionar porque todavía no hay puntos de recuperación que proteger.
+
+**Cuándo no usarlo:** no confíes en la ejecución real de datos de este respaldo: Floci gestiona el ciclo de vida del trabajo, pero no lee ni escribe los datos reales de la tabla DynamoDB referenciada.
+
+**Cómo crece tu proyecto:** este plan protege la tabla de entregas con un respaldo diario automático, sin que nadie tenga que ejecutarlo a mano.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Asigna retención y objetivos de recuperación a los datos de entregas. Selecciona los recursos cubiertos y demuestra una restauración de prueba; una política creada sin recuperación observada no cierra el incremento.
+
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-25/tema-4-backup-plan.sh — ejecutar con: bash tema-4-backup-plan.sh
+aws backup create-backup-vault --backup-vault-name demo-boveda
+PLAN_ID=$(aws backup create-backup-plan --backup-plan \
+  '{"BackupPlanName":"demo-diario","Rules":[{"RuleName":"diario","TargetBackupVaultName":"demo-boveda","ScheduleExpression":"cron(0 12 * * ? *)"}]}' \
+  --query 'BackupPlanId' --output text)
+aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selection \
+  '{"SelectionName":"tablas-demo","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas"]}'
+```
+
+```bash
+aws backup create-backup-vault --backup-vault-name demo-boveda
+PLAN_ID=$(aws backup create-backup-plan --backup-plan \
+  '{"BackupPlanName":"demo-diario","Rules":[{"RuleName":"diario","TargetBackupVaultName":"demo-boveda","ScheduleExpression":"cron(0 12 * * ? *)"}]}' \
+  --query 'BackupPlanId' --output text)
+aws backup create-backup-selection --backup-plan-id "$PLAN_ID" --backup-selection \
+  '{"SelectionName":"shipment-events","IamRoleArn":"arn:aws:iam::000000000000:role/backup-role","Resources":["arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"]}'
+```
+
+</details>
+
+### Tema 5: El ciclo de vida de un trabajo de respaldo · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a disparar un respaldo bajo demanda de ShipmentEvents antes de una migración riesgosa, sin esperar al cron diario del Tema 4. Prerrequisitos: Tema 4 de este módulo.
+
+#### ► LA ANALOGÍA
+El estado del job de respaldo es un semáforo (`CREATED → RUNNING → COMPLETED`) que te dice si ya es seguro continuar con la migración o si todavía hay que esperar.
+
+**Conceptos clave:** `CREATED → RUNNING → COMPLETED`, punto de recuperación, `StopBackupJob`.
+
+Un trabajo de respaldo iniciado con `StartBackupJob` transiciona automáticamente por estados: `CREATED` al iniciar, `RUNNING` aproximadamente un segundo después, y `COMPLETED` tras un retraso configurable (por defecto 3 segundos en Floci, ajustable con `FLOCI_SERVICES_BACKUP_JOB_COMPLETION_DELAY_SECONDS` para acelerar pruebas automatizadas). Al llegar a `COMPLETED`, se crea un punto de recuperación en la bóveda de destino, y el contador de puntos de recuperación de esa bóveda se incrementa — información que puedes auditar en cualquier momento con `DescribeBackupVault`.
+
+Restricciones importantes a tener en cuenta: no puedes eliminar una bóveda que contiene puntos de recuperación (`DeleteBackupVault` falla con `InvalidRequestException`), ni un plan que todavía tiene selecciones activas asociadas — tienes que deshacer las dependencias en orden inverso a como las creaste, el mismo patrón de "no puedes borrar lo que todavía está en uso" que ya viste con grupos objetivo de ELB en el Módulo 22.
+
+**Analogía:** el ciclo de vida de un trabajo de respaldo es como el proceso de un banco al procesar un depósito: primero se registra la solicitud (`CREATED`), luego se procesa activamente (`RUNNING`), y finalmente queda confirmado y disponible en tu cuenta (`COMPLETED`) — no puedes cerrar la cuenta bancaria mientras haya depósitos pendientes de procesar.
+
+**¿Por qué es importante?** Entender que las restricciones de eliminación existen para prevenir pérdida accidental de datos de respaldo —no son limitaciones arbitrarias de la API— te ayuda a diseñar scripts de limpieza de infraestructura que respeten el orden correcto de dependencias.
+
+**Practícalo tú:**
+
+```bash
+
+# archivo: src/labs/modulo-25/tema-5-ciclo-de-vida.sh — ejecutar con: bash tema-5-ciclo-de-vida.sh
+JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
+  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas \
+  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
+sleep 4
+aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
+aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'
+```
+
+`--resource-arn` es el recurso puntual a respaldar (fuera de la programación del plan, "ahora mismo"); `--iam-role-arn` es el rol con el que Backup accede a ese recurso; `--backup-job-id` (tomado de la respuesta) identifica este trabajo específico para consultar su estado después.
+
+**Resultado esperado:** el trabajo pasa de `CREATED` a `RUNNING` y, tras ~3 segundos, a `COMPLETED`; `NumberOfRecoveryPoints` en la bóveda aumenta en uno.
+
+**Modifica esto:** intenta ahora sí borrar `demo-boveda` con `delete-backup-vault` y confirma el error `InvalidRequestException` — a diferencia del Tema 4, ahora la bóveda sí tiene un punto de recuperación que la protege de eliminación.
+
+**Cuándo no usarlo:** no uses `StopBackupJob` esperando poder reanudar después; detener un trabajo lo cancela por completo, no lo pausa.
+
+**Cómo crece tu proyecto:** este es el trabajo bajo demanda que ejecutarías antes de una migración riesgosa de la tabla de entregas, sin esperar al cron programado.
 
 ---
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara dos revisiones del servicio de seguimiento con grupos objetivo separados. Cambia el listener en laboratorio y demuestra que puedes restaurar el destino anterior sin reconstruir la imagen.
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue un trabajo de respaldo desde solicitud hasta estado terminal. Simula o registra un fallo y comprueba que la automatización no anuncia éxito mientras el trabajo continúe pendiente.
 
 
 </details>
@@ -331,29 +356,30 @@ aws deploy create-deployment-group --application-name demo-app-ecs --deployment-
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-24/tema-5-blue-green-ecs.sh — ejecutar con: bash tema-5-blue-green-ecs.sh
-# El listener se recupera por nombre del ALB del Módulo 22 — no hace falta
-# haber conservado ninguna variable de esa sesión de terminal.
-LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
-LISTENER_ARN=$(aws elbv2 describe-listeners --load-balancer-arn "$LB_ARN" --query 'Listeners[0].ListenerArn' --output text)
-
-aws deploy create-application --application-name demo-app-ecs --compute-platform ECS
-aws deploy create-deployment-group --application-name demo-app-ecs --deployment-group-name demo-grupo-ecs \
-  --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
-  --service-role-arn arn:aws:iam::000000000000:role/codedeploy-role \
-  --ecs-services serviceName=demo-service,clusterName=demo-cluster \
-  --load-balancer-info targetGroupPairInfoList='[{prodTrafficRoute={listenerArns=["'"$LISTENER_ARN"'"]},targetGroups=[{name=demo-objetivos-azul},{name=demo-objetivos-verde}]}]'
+# archivo: src/labs/modulo-25/tema-5-ciclo-de-vida.sh — ejecutar con: bash tema-5-ciclo-de-vida.sh
+JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
+  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/demo-entregas \
+  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
+sleep 4
+aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
+aws backup describe-backup-vault --backup-vault-name demo-boveda --query 'NumberOfRecoveryPoints'
 ```
 
 ```bash
-LB_ARN=$(aws elbv2 describe-load-balancers --names demo-alb --query 'LoadBalancers[0].LoadBalancerArn' --output text)
-aws deploy create-deployment --application-name demo-app --deployment-group-name demo-grupo-ecs \
-  --revision 'revisionType=AppSpecContent,appSpecContent={content="{\"version\":0.0,\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"arn:aws:ecs:us-east-1:000000000000:task-definition/rutaflow-planificador-task:2\"}}}]}"}'
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+JOB_ID=$(aws backup start-backup-job --backup-vault-name demo-boveda \
+  --resource-arn arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents \
+  --iam-role-arn arn:aws:iam::000000000000:role/backup-role --query 'BackupJobId' --output text)
+sleep 4
+aws backup describe-backup-job --backup-job-id "$JOB_ID" --query 'State'
 ```
 
 </details>
 
-### Laboratorio 24.1 — Compilación real con CodeBuild
+### Laboratorio 25.1 — Configuración dinámica con AppConfig
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -364,11 +390,11 @@ aws deploy create-deployment --application-name demo-app --deployment-group-name
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 24.1 — compilación real con codebuild.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 25.1 — configuración dinámica con appconfig.
 
 </details>
 
-### Laboratorio 24.2 — Despliegue canary de Lambda con CodeDeploy
+### Laboratorio 25.2 — Plan de respaldo para DynamoDB
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -379,6 +405,56 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 24.2 — despliegue canary de lambda con codedeploy.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 25.2 — plan de respaldo para dynamodb.
+
+</details>
+
+### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. Prerrequisitos: archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+mkdir simulacro-backup
+cd simulacro-backup
+```
+
+```python
+from pathlib import Path
+import hashlib
+import json
+import shutil
+
+original = Path('envios.json')
+backup = Path('envios.backup.json')
+restored = Path('restaurado.json')
+original.write_text('[{"id": "ENV-42", "estado": "creado"}]', encoding='utf-8')
+shutil.copy2(original, backup)
+expected = hashlib.sha256(original.read_bytes()).hexdigest()
+# El destino separado evita sobrescribir datos activos.
+shutil.copy2(backup, restored)
+assert hashlib.sha256(restored.read_bytes()).hexdigest() == expected
+rows = json.loads(restored.read_text(encoding='utf-8'))
+assert rows[0]['id'] == 'ENV-42'
+assert rows[0]['estado'] == 'creado'
+print('Contenido y estructura recuperados: ENV-42')
+# También comprobamos que una copia alterada se detecta.
+backup.write_text('[]', encoding='utf-8')
+assert hashlib.sha256(backup.read_bytes()).hexdigest() != expected
+print('Corrupción detectada')
+```
+
+```bash
+python3 restaurar.py
+```
 
 </details>

@@ -1,456 +1,23 @@
-# Módulo 13: Android en producción — seguridad, sincronización y calidad
+# Módulo 13: Compose Master — pruebas, accesibilidad y animación
 
-Una app móvil se ejecuta en un dispositivo que puede perderse, restaurarse, quedarse días sin red o recibir intents de otras aplicaciones. El APK puede inspeccionarse y la versión instalada puede permanecer meses. Este módulo endurece el proyecto final considerando esas condiciones en lugar de asumir un dispositivo confiable y siempre conectado.
+Una pantalla Compose que "se ve bien" en el emulador puede seguir rota para quien usa TalkBack, o para un cambio futuro que nadie prueba automáticamente. Este módulo cierra el track cubriendo tres disciplinas que no aparecen en el resultado visual: verificar UI con pruebas reales, exponer la interfaz a servicios de accesibilidad, y animar transiciones con una especificación medible en vez de "una animación que se ve fluida".
 
 
 ## Aprende construyendo
 
-> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En el Tema 2, la criptografía en Python no usa `AndroidKeyStore`: para probar tu `CifradoSensible.kt` de verdad, escribe una prueba instrumentada en `app/src/androidTest` que cifre y descifre un texto y ejecútala con `./gradlew :app:connectedDebugAndroidTest` (el almacén de claves de Android solo existe en el dispositivo o emulador).
 
-
-### Tema 1: El sistema operativo conecta tu app con entradas externas · Avanzado · 45 min
+### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás validar un deep link entrante (scheme, host, path, autorización) antes de actuar sobre él, y explicar por qué un intent recibido es entrada no confiable.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── otra app/web ──▶ intent/deep link ──▶ componente exportado ──┐
-└──────────┬───────────────────────────────────────┘
-           │
-           ▼
-     validar FORMA (scheme, host, path)
-           │
-           ▼
-     autenticar/autorizar (¿esta sesión puede leer ESTE recurso?)
-           │
-           ▼
-     confirmar efecto (nunca acción destructiva directa)
-```
-
-```bash
-# compila con Gradle el archivo Kotlin generado a continuación
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt`:
-
-```kotlin
-package com.academia.android
-
-import android.net.Uri
-
-class SesionInvalidaException(mensaje: String) : Exception(mensaje)
-
-fun parseTaskLink(uri: Uri, sesionPuedeLeer: (String) -> Boolean): String {
-    require(uri.scheme == "https") { "scheme inválido: ${uri.scheme}" }
-    require(uri.host == "tasks.example.com") { "host inválido: ${uri.host}" }
-    require(uri.pathSegments.size == 2 && uri.pathSegments.first() == "tasks") { "path inválido" }
-    val id = uri.pathSegments.last()
-    if (!sesionPuedeLeer(id)) throw SesionInvalidaException("sesión no autorizada para leer $id")
-    return id
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-from urllib.parse import urlparse
-
-class SesionInvalida(Exception): pass
-
-def parse_task_link(uri_str, sesion_puede_leer):
-    uri = urlparse(uri_str)
-    if uri.scheme != 'https':
-        raise ValueError(f'scheme inválido: {uri.scheme}')
-    if uri.hostname != 'tasks.example.com':
-        raise ValueError(f'host inválido: {uri.hostname}')
-    partes = [p for p in uri.path.split('/') if p]
-    if len(partes) != 2 or partes[0] != 'tasks':
-        raise ValueError('path inválido')
-    id_tarea = partes[1]
-    if not sesion_puede_leer(id_tarea):
-        raise SesionInvalida(f'sesión no autorizada para leer {id_tarea}')
-    return id_tarea
-
-tareas_del_usuario_actual = {'42'}
-sesion_puede_leer = lambda id_tarea: id_tarea in tareas_del_usuario_actual
-
-casos = [
-    ('https://tasks.example.com/tasks/42', 'válido, tarea propia'),
-    ('https://tasks.evil.com/tasks/42', 'host falso'),
-    ('http://tasks.example.com/tasks/42', 'scheme inseguro'),
-    ('https://tasks.example.com/tasks/99', 'ID de tarea AJENA'),
-]
-for uri_str, descripcion in casos:
-    try:
-        id_tarea = parse_task_link(uri_str, sesion_puede_leer)
-        print(f'{descripcion}: ACEPTADO, id={id_tarea}')
-    except (ValueError, SesionInvalida) as e:
-        print(f'{descripcion}: RECHAZADO ({e})')
-"
-```
-
-</details>
-
-### Tema 2: Proteger datos exige conocer copias y ciclo de vida · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás cifrar un dato sensible con una construcción autenticada (AEAD) real, y enumerar las copias adicionales (backup, logs, notificaciones) que ese cifrado por sí solo no protege.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── dato sensible ──▶ ¿necesario guardarlo? ──▶ storage privado ──▶ cifrado (Keystore) ┐
-└──────────────────────────────────────────────────────────────┘
-                         copias adicionales que el cifrado de Room NO alcanza:
-                         backup | logs | crash reports | notificación | clipboard
-```
-
-```bash
-# Este script python3 es un MODELO de AES-GCM; no usa AndroidKeyStore (la prueba real es instrumentada)
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/CifradoSensible.kt`:
-
-```kotlin
-package com.academia.android
-
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
-import javax.crypto.KeyGenerator
-
-fun generarClaveEnKeystore() {
-    val generador = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-    generador.init(
-        KeyGenParameterSpec.Builder(
-            "local_sensitive_v1",
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-        )
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .build(),
-    )
-    generador.generateKey() // material de clave NO exportable, vive dentro del Keystore
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import os
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
-clave = AESGCM.generate_key(bit_length=256)  # equivalente a la clave generada en el Keystore
-aesgcm = AESGCM(clave)
-nonce = os.urandom(12)  # NUNCA reutilizar este nonce con la misma clave
-
-dato_sensible = b'numero-de-tarjeta-de-prueba-4242'
-ciphertext = aesgcm.encrypt(nonce, dato_sensible, None)
-print('cifrado exitoso, longitud del ciphertext:', len(ciphertext))
-
-descifrado = aesgcm.decrypt(nonce, ciphertext, None)
-print('descifrado exitoso, coincide con el original:', descifrado == dato_sensible)
-
-# manipulación deliberada del ciphertext (como un atacante alterando el archivo cifrado)
-ciphertext_manipulado = bytearray(ciphertext)
-ciphertext_manipulado[0] ^= 0xFF
-try:
-    aesgcm.decrypt(nonce, bytes(ciphertext_manipulado), None)
-    print('INESPERADO: el ciphertext manipulado se descifró sin error')
-except Exception as e:
-    print('ciphertext manipulado RECHAZADO:', type(e).__name__)
-"
-```
-
-</details>
-
-### Tema 3: Offline-first necesita un protocolo de cambios · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás implementar un patrón outbox con operation ID idempotente sobre SQLite real, y resolver un conflicto de sincronización con una política explícita, no "last-write-wins" ciego.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── UI ──▶ Room (fuente local) + outbox op-42 (UNA transacción) ─┐
-└──────────┬───────────────────────────────────────┘
-           │ WorkManager drena al volver la red
-           ▼
-┌── API (idempotente por operation ID) ──────────────────────┐
-│  accepted + version   O   409 conflict + version actual        │
-└──────────┬───────────────────────────────────────┘
-           ▼
-     Room TX: aplicar y limpiar outbox   O   marcar conflicto visible a la UI
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/OutboxOffline.kt`:
-
-```kotlin
-package com.academia.android
-
-import java.util.UUID
-
-data class PendingMutation(
-    val operationId: String,
-    val entityId: String,
-    val baseVersion: Long,
-    val kind: String,
-    val payload: String,
-)
-
-class OutboxRepository {
-    // en Room real: @Transaction — ambas escrituras en la MISMA transacción
-    fun renameOffline(taskId: String, title: String, baseVersion: Long): PendingMutation {
-        val mutacion = PendingMutation(
-            operationId = UUID.randomUUID().toString(),
-            entityId = taskId,
-            baseVersion = baseVersion,
-            kind = "rename",
-            payload = title,
-        )
-        return mutacion
-    }
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import sqlite3, uuid
-
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE tareas (id TEXT PRIMARY KEY, titulo TEXT, version INTEGER, sync_state TEXT)')
-con.execute('CREATE TABLE outbox (operation_id TEXT PRIMARY KEY, entity_id TEXT, base_version INTEGER, payload TEXT)')
-con.execute(\"INSERT INTO tareas VALUES ('t1', 'Comprar leche', 1, 'synced')\")
-
-def rename_offline(con, entity_id, nuevo_titulo, base_version):
-    op_id = str(uuid.uuid4())
-    with con:  # UNA transacción real para ambas escrituras
-        con.execute('UPDATE tareas SET titulo=?, sync_state=? WHERE id=?', (nuevo_titulo, 'pending', entity_id))
-        con.execute('INSERT INTO outbox VALUES (?,?,?,?)', (op_id, entity_id, base_version, nuevo_titulo))
-    return op_id
-
-servidor_version_actual = {'t1': 1}
-operaciones_ya_procesadas_por_servidor = set()
-
-def drenar_outbox(con, servidor_version_actual, operaciones_procesadas):
-    for op_id, entity_id, base_version, payload in con.execute('SELECT * FROM outbox').fetchall():
-        if op_id in operaciones_procesadas:
-            continue  # idempotencia: reintento del mismo operation ID, no duplicar efecto
-        if base_version < servidor_version_actual[entity_id]:
-            print(f'op {op_id[:8]}: CONFLICTO (base_version={base_version} < servidor={servidor_version_actual[entity_id]})')
-            con.execute('UPDATE tareas SET sync_state=? WHERE id=?', ('conflict', entity_id))
-        else:
-            servidor_version_actual[entity_id] += 1
-            operaciones_procesadas.add(op_id)
-            con.execute('UPDATE tareas SET sync_state=?, version=? WHERE id=?', ('synced', servidor_version_actual[entity_id], entity_id))
-            con.execute('DELETE FROM outbox WHERE operation_id=?', (op_id,))
-            print(f'op {op_id[:8]}: ACEPTADA, nueva versión={servidor_version_actual[entity_id]}')
-
-op1 = rename_offline(con, 't1', 'Comprar leche y pan', 1)
-drenar_outbox(con, servidor_version_actual, operaciones_ya_procesadas_por_servidor)
-print('estado final:', con.execute('SELECT * FROM tareas').fetchall())
-print('outbox restante:', con.execute('SELECT * FROM outbox').fetchall())
-"
-```
-
-</details>
-
-### Tema 4: La calidad se opera por dispositivo y versión · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás identificar una operación bloqueante en el hilo principal que causaría ANR, y diseñar un rollout gradual con gates de calidad antes de producción completa.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── commit ──▶ tests/benchmark ──▶ internal ──▶ staged 5% ──▶ vitals por versión ┐
-└──────────┬───────────────────────────────────────────────┘
-           │
-     ┌─────┴─────┐
-     ▼             ▼
-   sano         regresión
-     │             │
-  ampliar    detener + hotfix/kill switch
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt`:
-
-```kotlin
-package com.academia.android
-
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
-
-class FileRepository(
-    private val io: CoroutineDispatcher = Dispatchers.IO
-) {
-    suspend fun load(archivo: File): String = withContext(io) {
-        archivo.readText() // I/O síncrono, pero movido explícitamente FUERA del hilo principal
-    }
-}
-```
-
-```bash
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 -c "
-import threading
-import time
-
-def trabajo_de_io_lento():
-    time.sleep(0.2)  # simula una lectura de archivo/red lenta
-    return 'datos cargados'
-
-resultados = {}
-
-def bloquea_hilo_principal():
-    inicio = time.time()
-    resultados['dato'] = trabajo_de_io_lento()  # ejecutado DIRECTAMENTE en este hilo
-    resultados['hilo_principal_bloqueado_por'] = time.time() - inicio
-
-def main_safe_con_hilo_io():
-    contenedor = {}
-    def en_hilo_io():
-        contenedor['dato'] = trabajo_de_io_lento()
-    hilo_io = threading.Thread(target=en_hilo_io)
-    inicio = time.time()
-    hilo_io.start()
-    # el 'hilo principal' queda libre para hacer otra cosa mientras tanto
-    tiempo_libre_hilo_principal = time.time() - inicio
-    hilo_io.join()
-    return tiempo_libre_hilo_principal, contenedor['dato']
-
-bloquea_hilo_principal()
-print(f'BLOQUEANDO el hilo principal: bloqueado por {resultados[\"hilo_principal_bloqueado_por\"]:.3f}s')
-
-tiempo_libre, dato = main_safe_con_hilo_io()
-print(f'MAIN-SAFE (hilo de I/O separado): hilo principal libre en {tiempo_libre:.4f}s (dato: {dato})')
-"
-```
-
-</details>
-
-### Android 17: privacidad, compatibilidad y dispositivos grandes
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar android 17: privacidad, compatibilidad y dispositivos grandes.
-
-</details>
-
-### Proyecto: app resistente a dispositivo, red y release
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: app resistente a dispositivo, red y release.
-
-</details>
-
-### Método de estudio y proyecto de ampliación
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
-
-</details>
-
-### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar recogerás evidencias de memoria, estado térmico y arranque en un dispositivo de pruebas, distinguiendo mediciones disponibles de garantías de seguridad. Prerrequisitos: Android Studio, Platform Tools, una app de laboratorio instalada y autorización de depuración del…
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart TD
-    D["Dispositivo de laboratorio"] --> M1["dumpsys meminfo"]
-    D --> M2["dumpsys thermalservice"]
-    D --> M3["getprop ro.boot.verifiedbootstate"]
-    M1 --> F["Tres archivos y README con hora y acción"]
-    M2 --> F
-    M3 --> F
-    F --> C["Comparar dos muestras"]
-    C --> N["Correlación observada, no causalidad demostrada"]
+flowchart LR
+  A[composable real] --> B[ComposeTestRule.setContent]
+  B --> C[espera recomposición estable]
+  C --> D[árbol semántico navegable]
+  D --> E[finder + assertion]
 ```
 
 </details>
@@ -461,16 +28,489 @@ flowchart TD
 #### Código y verificación
 
 ```bash
-mkdir diagnostico-android
-cd diagnostico-android
-adb devices
-adb shell dumpsys -l
+mkdir -p app/src/androidTest/kotlin/com/academia/android
+```
+
+```kotlin
+package com.academia.android
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+
+@Composable
+fun ContadorDePrueba() {
+    var cantidad by remember { mutableStateOf(0) }
+    Column {
+        Text("Contador: $cantidad")
+        Button(onClick = { cantidad++ }) { Text("Incrementar") }
+    }
+}
+```
+
+```kotlin
+// app/src/androidTest/kotlin/com/academia/android/ContadorTest.kt
+package com.academia.android
+
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.assertTextEquals
+import org.junit.Rule
+import org.junit.Test
+
+class ContadorTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    @Test
+    fun alHacerClicIncrementaElContador() {
+        compose.setContent { ContadorDePrueba() }
+        compose.onNodeWithText("Contador: 0").assertExists()
+        compose.onNodeWithText("Incrementar").performClick()
+        compose.onNodeWithText("Contador: 1").assertExists()
+    }
+}
+```
+
+```kotlin
+android { defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" } }
+dependencies {
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
 ```
 
 ```bash
-adb shell dumpsys meminfo com.example.restauracion > memoria.txt
-adb shell dumpsys thermalservice > termico.txt
-adb shell getprop ro.boot.verifiedbootstate > arranque.txt
+./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.ContadorTest"
+```
+
+</details>
+
+### Tema 2: Finders, assertions y actions navegan el árbol semántico · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir el finder correcto para un nodo (por texto, por tag, por rol) y encadenar assertions y actions sin ambigüedad cuando existan varios nodos similares.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A[finder] -->|cero nodos| B[falla: no encontrado]
+  A -->|un nodo| C[assertion/action sobre ESE nodo]
+  A -->|varios nodos| D[falla: ambiguo, usa onAllNodes o testTag]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A[finder] -->|cero nodos| B[falla: no encontrado]
+  A -->|un nodo| C[assertion/action sobre ESE nodo]
+  A -->|varios nodos| D[falla: ambiguo, usa onAllNodes o testTag]
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/androidTest/kotlin/com/academia/android
+```
+
+```kotlin
+// app/src/androidTest/kotlin/com/academia/android/FormularioDobleTest.kt
+package com.academia.android
+
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assertCountEquals
+import org.junit.Rule
+import org.junit.Test
+
+class FormularioDobleTest {
+    @get:Rule
+    val compose = createComposeRule()
+
+    @Test
+    fun `dos campos comparten placeholder, buscar por texto es ambiguo`() {
+        compose.setContent { PantallaFormularioDoble() }
+        // ambos campos muestran el placeholder "Guardar": onAllNodesWithText confirma la ambigüedad
+        compose.onAllNodesWithText("Guardar").assertCountEquals(2)
+    }
+
+    @Test
+    fun escribeEnElCampoDeTituloDeLaTareaNoEnElDeNota() {
+        compose.setContent { PantallaFormularioDoble() }
+        // dos campos comparten el placeholder "Guardar"; testTag es la única forma no ambigua
+        compose.onNodeWithTag("campo_titulo_tarea").performTextInput("Comprar leche")
+        compose.onNodeWithTag("campo_titulo_tarea").assertTextEquals("Comprar leche")
+    }
+}
+```
+
+```bash
+# Gradle ejecuta el test instrumentado de Compose que usa testTag
+./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.FormularioDobleTest"
+```
+
+</details>
+
+### Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar cómo Compose fusiona (mergeDescendants) la semántica de un grupo de nodos hijos, y cuándo clearAndSetSemantics debe reemplazar esa fusión con una descripción manual coherente.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** nodo semántico, `mergeDescendants`, `clearAndSetSemantics`, enunciado coherente.
+
+Cada composable puede aportar propiedades semánticas (texto, rol, estado) a un nodo; un contenedor con `mergeDescendants = true` combina las de sus hijos en un solo nodo navegable, útil para una tarjeta que debe anunciarse como una unidad. `clearAndSetSemantics` descarta la fusión automática y define manualmente la descripción completa, necesario cuando la fusión automática produce un orden o redundancia que no tiene sentido leído en voz alta.
+
+**Analogía:** la fusión automática es como leer en voz alta cada etiqueta de una caja por separado; `clearAndSetSemantics` es escribir una sola frase que resume el contenido de la caja de forma que tenga sentido escuchada de corrido.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A[ícono + título + fecha] -->|mergeDescendants automático| B["ícono, Comprar leche, hoy" -- 3 anuncios sueltos]
+  A -->|clearAndSetSemantics manual| C["Tarea: Comprar leche, vence hoy" -- 1 anuncio coherente]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A[ícono + título + fecha] -->|mergeDescendants automático| B["ícono, Comprar leche, hoy" -- 3 anuncios sueltos]
+  A -->|clearAndSetSemantics manual| C["Tarea: Comprar leche, vence hoy" -- 1 anuncio coherente]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+Al finalizar podrás explicar cómo Compose fusiona (`mergeDescendants`) la semántica de un grupo de nodos hijos, y cuándo `clearAndSetSemantics` debe reemplazar esa fusión con una descripción manual coherente.
+
+**Conocimiento previo:** `contentDescription` (Módulo 10, Tema 3 de este track); Tema 2 de este módulo (árbol semántico).
+
+</details>
+
+### Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás auditar una pantalla completa detectando qué nodos carecen de descripción accesible, y explicar qué anunciaría TalkBack recorriendo esa pantalla en el orden real del árbol.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** `AccessibilityService`, TalkBack, orden de navegación, foco de accesibilidad.
+
+`AccessibilityService` es la API que TalkBack usa para recibir eventos del árbol semántico y anunciarlos mediante voz; no interpreta píxeles, solo la información semántica expuesta. El orden en que TalkBack navega sigue por defecto el orden del árbol de composición, que puede no coincidir con el orden visual si el layout usa superposición o reordenamiento visual sin ajustar la semántica. Un nodo interactivo (botón, ícono clicable) sin `contentDescription` se anuncia como "botón sin etiqueta", inutilizable para quien depende de voz.
+
+**Analogía:** TalkBack es un guía que solo puede describir lo que está etiquetado; un ícono sin descripción es una puerta sin cartel — el guía sabe que existe pero no puede decir para qué sirve.
+
+**Diagrama:**
+
+```
+┌── árbol semántico completo ──┐
+│  nodo 1: "Volver" (botón)      │
+│  nodo 2: sin contentDescription│ ◀── TalkBack anuncia "botón sin etiqueta"
+│  nodo 3: "Comprar leche"        │
+└─────────────────────────────────┘
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── árbol semántico completo ──┐
+│  nodo 1: "Volver" (botón)      │
+│  nodo 2: sin contentDescription│ ◀── TalkBack anuncia "botón sin etiqueta"
+│  nodo 3: "Comprar leche"        │
+└─────────────────────────────────┘
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+```kotlin
+// app/src/main/kotlin/com/academia/android/AuditoriaAccesibilidad.kt
+package com.academia.android
+
+data class NodoAuditado(val id: String, val esInteractivo: Boolean, val contentDescription: String?)
+
+/** Detecta nodos interactivos sin contentDescription, tal como los anunciaría TalkBack. */
+fun auditarArbol(nodos: List<NodoAuditado>): List<String> =
+    nodos.filter { it.esInteractivo && it.contentDescription.isNullOrEmpty() }.map { it.id }
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```kotlin
+// app/src/test/kotlin/com/academia/android/AuditoriaAccesibilidadTest.kt
+package com.academia.android
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class AuditoriaAccesibilidadTest {
+
+    private val pantallaResumen = listOf(
+        NodoAuditado(id = "boton_volver", esInteractivo = true, contentDescription = "Volver"),
+        NodoAuditado(id = "icono_editar", esInteractivo = true, contentDescription = null),
+        NodoAuditado(id = "texto_tarea", esInteractivo = false, contentDescription = null),
+        NodoAuditado(id = "icono_mas", esInteractivo = true, contentDescription = null),
+    )
+
+    @Test
+    fun `detecta solo nodos interactivos sin descripcion`() {
+        val problemas = auditarArbol(pantallaResumen)
+
+        assertEquals(listOf("icono_editar", "icono_mas"), problemas)
+    }
+}
+```
+
+```bash
+# Gradle ejecuta el test unitario real sobre la JVM
+./gradlew :app:testDebugUnitTest --tests "com.academia.android.AuditoriaAccesibilidadTest"
+```
+
+</details>
+
+### Tema 5: Animaciones de estado y visibilidad usan una especificación medible · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás calcular el valor interpolado de una animación en un instante dado usando una especificación de easing explícita, en vez de describir la animación como "algo que se ve fluida".
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A[valor inicial] --> B[easing: fraccion_tiempo -> fraccion_progreso]
+  B --> C[valor interpolado en instante t]
+  C --> D[valor final al completarse duracion]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A[valor inicial] --> B[easing: fraccion_tiempo -> fraccion_progreso]
+  B --> C[valor interpolado en instante t]
+  C --> D[valor final al completarse duracion]
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+```kotlin
+// app/src/main/kotlin/com/academia/android/AnimacionTareaCompletada.kt
+package com.academia.android
+
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Composable
+
+@Composable
+fun opacidadTareaCompletada(completada: Boolean): Float {
+    val opacidad by animateFloatAsState(
+        targetValue = if (completada) 0.4f else 1.0f,
+        animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing),
+        label = "opacidadTarea",
+    )
+    return opacidad
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```kotlin
+// app/src/test/kotlin/com/academia/android/AnimacionTareaCompletadaTest.kt
+package com.academia.android
+
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
+class AnimacionTareaCompletadaTest {
+
+    private fun valorInterpolado(inicial: Float, final: Float, duracionMs: Int, tiempoTranscurridoMs: Int): Float {
+        val fraccionTiempo = (tiempoTranscurridoMs.toFloat() / duracionMs).coerceAtMost(1f)
+        val fraccionProgreso = LinearOutSlowInEasing.transform(fraccionTiempo)
+        return inicial + (final - inicial) * fraccionProgreso
+    }
+
+    @Test
+    fun `LinearOutSlowInEasing progresa mas de la mitad antes de la mitad del tiempo`() {
+        val progresoAMitadTiempo = LinearOutSlowInEasing.transform(0.5f)
+
+        assertTrue(progresoAMitadTiempo > 0.5f, "ease-out debe progresar más de la mitad antes de la mitad del tiempo")
+    }
+
+    @Test
+    fun `a mitad de tiempo la opacidad esta mas cerca del final que con interpolacion lineal`() {
+        val valorConEasingReal = valorInterpolado(inicial = 1.0f, final = 0.4f, duracionMs = 300, tiempoTranscurridoMs = 150)
+        val valorLineal = 1.0f + (0.4f - 1.0f) * 0.5f // 0.7, el punto medio lineal sin easing
+
+        assertTrue(valorConEasingReal < valorLineal, "con LinearOutSlowInEasing, a mitad de tiempo ya debería estar más cerca de 0.4 que la interpolación lineal")
+    }
+}
+```
+
+```bash
+# Gradle ejecuta el test unitario real usando la función Easing real de Compose (sin emulador)
+./gradlew :app:testDebugUnitTest --tests "com.academia.android.AnimacionTareaCompletadaTest"
+```
+
+</details>
+
+### Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir entre un tween (duración fija) y un spring (basado en física) según el comportamiento deseado, y simular numéricamente cómo converge un resorte hacia su valor final.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A[tween: duracion fija] --> B[llega exactamente a los N ms]
+  C[spring: fisica simulada] --> D[converge segun stiffness y damping, sin duracion fija]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A[tween: duracion fija] --> B[llega exactamente a los N ms]
+  C[spring: fisica simulada] --> D[converge segun stiffness y damping, sin duracion fija]
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+```kotlin
+// app/src/main/kotlin/com/academia/android/TransicionListaTareas.kt
+package com.academia.android
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.runtime.Composable
+
+@Composable
+fun TransicionContadorTareas(cantidad: Int) {
+    AnimatedContent(
+        targetState = cantidad,
+        transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        },
+        label = "contadorTareas",
+    ) { valorObjetivo ->
+        // el tamaño del texto anima con un spring, no con duracion fija
+        TextoConSpring(valorObjetivo, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+    }
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```kotlin
+// app/src/main/kotlin/com/academia/android/SimulacionSpring.kt
+package com.academia.android
+
+import kotlin.math.sqrt
+
+/** Integra la ecuación de movimiento de un oscilador armónico amortiguado (método de Euler). */
+fun simularSpring(
+    valorInicial: Double,
+    valorFinal: Double,
+    stiffness: Double,
+    dampingRatio: Double,
+    pasos: Int = 20,
+    dt: Double = 0.016,
+): List<Double> {
+    var posicion = valorInicial
+    var velocidad = 0.0
+    val masa = 1.0
+    val dampingCoef = dampingRatio * 2 * sqrt(stiffness * masa)
+    val trayectoria = mutableListOf(posicion)
+    repeat(pasos) {
+        val desplazamiento = posicion - valorFinal
+        val fuerza = -stiffness * desplazamiento - dampingCoef * velocidad
+        val aceleracion = fuerza / masa
+        velocidad += aceleracion * dt
+        posicion += velocidad * dt
+        trayectoria.add(posicion)
+    }
+    return trayectoria
+}
+```
+
+```kotlin
+// app/src/test/kotlin/com/academia/android/SimulacionSpringTest.kt
+package com.academia.android
+
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
+class SimulacionSpringTest {
+
+    @Test
+    fun `damping bajo rebota mas alla del objetivo antes de asentarse`() {
+        val trayectoria = simularSpring(valorInicial = 0.0, valorFinal = 10.0, stiffness = 200.0, dampingRatio = 0.3)
+
+        assertTrue(trayectoria.max() > 10.0, "con damping bajo el resorte debe sobrepasar el objetivo (rebote)")
+    }
+
+    @Test
+    fun `damping alto converge sin sobrepasar significativamente el objetivo`() {
+        val trayectoria = simularSpring(valorInicial = 0.0, valorFinal = 10.0, stiffness = 200.0, dampingRatio = 1.2)
+
+        assertTrue(trayectoria.max() <= 10.05, "con damping alto el resorte no debe sobrepasar significativamente el objetivo")
+    }
+}
 ```
 
 </details>

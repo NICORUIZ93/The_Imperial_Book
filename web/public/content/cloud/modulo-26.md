@@ -1,16 +1,16 @@
-# Módulo 26: Streaming e integración avanzada — Firehose y EventBridge Pipes
+# Módulo 26: APIs GraphQL con AppSync y correo transaccional con SES
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios · Avanzado · 40 min
+### Tema 1: AppSync — APIs GraphQL gestionadas · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a acumular eventos reales de "entregado" en un stream Firehose que los deja en S3 sin que escribas ningún consumidor. Prerrequisitos: Módulo 19 completo.
+Al finalizar podrás definir una API GraphQL desde cero. Prerrequisitos: Node.js y Docker; verifica node --version.
 
 </details>
 
@@ -19,68 +19,112 @@ Al finalizar vas a acumular eventos reales de "entregado" en un stream Firehose 
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-26/tema-1-firehose.sh — ejecutar con: bash tema-1-firehose.sh
-aws firehose create-delivery-stream --delivery-stream-name demo-eventos
-for i in 1 2 3 4 5; do
-  aws firehose put-record --delivery-stream-name demo-eventos \
-    --record "{\"Data\": \"{\\\"guia\\\": \\\"RF-00$i\\\", \\\"evento\\\": \\\"entregado\\\"}\"}"
-done
-aws s3 ls s3://floci-firehose-results/ --recursive
+# archivo: src/labs/modulo-27/tema-1-appsync-api.sh — ejecutar con: bash tema-1-appsync-api.sh
+API_ID=$(aws appsync create-graphql-api --name demo-api --authentication-type API_KEY --query 'graphqlApi.apiId' --output text)
+printf 'type Query { estadoEntrega(guia: String!): String }\n' > schema.graphql
+aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://schema.graphql
 ```
 
 ```bash
-aws firehose create-delivery-stream --delivery-stream-name demo-eventos
-for i in 1 2 3 4 5; do
-  aws firehose put-record --delivery-stream-name demo-eventos \
-    --record "{\"Data\": \"{\\\"guia\\\": \\\"RF-00$i\\\", \\\"evento\\\": \\\"entregado\\\"}\"}"
-done
-aws s3 ls s3://floci-firehose-results/ --recursive
+mkdir -p ejemplo-graphql/src && cd ejemplo-graphql
+```
+
+Crea el archivo `src/schema.graphql`:
+
+```text
+type Query {
+  estadoEntrega(guia: String!): String
+}
+```
+
+```bash
+API_ID=$(aws appsync create-graphql-api --name demo-api-esquema --authentication-type API_KEY \
+  --query 'graphqlApi.apiId' --output text)
+aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://src/schema.graphql
+aws appsync get-schema-creation-status --api-id "$API_ID" --query status --output text
+aws appsync get-introspection-schema --api-id "$API_ID" --format SDL esquema-publicado.graphql
+grep estadoEntrega esquema-publicado.graphql
 ```
 
 </details>
 
-### Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos · Avanzado · 40 min
+### Tema 2: Fuentes de datos y resolvers · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a comparar, con comandos reales, el stream de ubicaciones del Módulo 17 (que tú consumís) contra demo-eventos del Tema 1 (que Firehose consume por vos). Prerrequisitos: Módulo 17 completo, Tema 1 de este módulo.
+Al finalizar vas a conectar el campo estadoEntrega de demo-api (Tema 1) a un resolver local, antes de tener lista la tabla DynamoDB real detrás. Prerrequisitos: Tema 1 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+# archivo: src/labs/modulo-27/tema-2-resolver-local.sh — ejecutar con: bash tema-2-resolver-local.sh
+# El apiId se recupera por nombre, no de la sesión de terminal del Tema 1.
+API_ID=$(aws appsync list-graphql-apis --query "graphqlApis[?name=='demo-api'].apiId | [0]" --output text)
+aws appsync create-data-source --api-id "$API_ID" --name origen-local --type NONE
+aws appsync create-resolver --api-id "$API_ID" --type-name Query --field-name estadoEntrega \
+  --data-source-name origen-local
+aws appsync create-api-key --api-id "$API_ID" --description "clave de prueba"
+```
+
+```bash
+API_ID=$(aws appsync list-graphql-apis --query "graphqlApis[?name=='demo-api'].apiId | [0]" --output text)
+aws appsync create-data-source --api-id "$API_ID" --name origen-local --type NONE
+aws appsync create-resolver --api-id "$API_ID" --type-name Query --field-name estadoEntrega \
+  --data-source-name origen-local
+```
+
+</details>
+
+### Tema 3: SES — identidades, envío y plantillas · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a crear la plantilla real que RutaFlow usa para notificar por correo cuando un paquete se marca entregado. Prerrequisitos: Módulo 20 (ya viste SMS vía Bedrock; esto es el equivalente por correo).
 
 #### ► LA ANALOGÍA
-Operar un consumidor propio es conducir el camión tú mismo; delegar en Firehose es contratar una empresa de logística que entrega sin que manejes nada en el camino.
+Verificar una identidad es registrar quién puede enviar en nombre de ese remitente; una plantilla es un formato reutilizable con marcadores, no un string armado a mano en cada envío.
 
-**Conceptos clave:** consumidor propio vs entrega gestionada, latencia de entrega, transformación en tránsito.
+**Conceptos clave:** `VerifyEmailIdentity`, `SendEmail`, plantilla de correo, SES v1 vs v2.
 
-Ya viste Kinesis Data Streams en el Módulo 17: streams particionados con shards, donde tú escribes consumidores que leen registros con iteradores de shard y decides qué hacer con cada uno. Firehose, en cambio, no expone shards ni iteradores: no hay un "consumidor" que tú operes, porque el propio servicio actúa como consumidor gestionado que entrega hacia el destino configurado. Esta es la decisión de diseño que debes usar para elegir entre ambos: si necesitas procesamiento personalizado en tiempo real con múltiples consumidores independientes leyendo el mismo stream (fan-out), usas Kinesis Data Streams; si solo necesitas que los datos terminen de forma confiable en un destino de almacenamiento sin lógica intermedia compleja, usas Firehose.
+Enviar correo transaccional desde una aplicación —confirmaciones de pedido, restablecimiento de contraseña, notificaciones— requiere primero verificar la identidad remitente: en AWS real, esto implica probar que controlas esa dirección o dominio (mediante un enlace de confirmación o un registro DNS); en Floci, `VerifyEmailIdentity` y `VerifyDomainIdentity` marcan la identidad como verificada de inmediato, sin ese flujo de validación real, para que puedas iterar rápido en desarrollo. A partir de ahí, `SendEmail` envía un correo estructurado con asunto y cuerpo de texto o HTML, `SendRawEmail` acepta un mensaje MIME completo para casos con adjuntos o estructura compleja, y `SendTemplatedEmail` resuelve una plantilla previamente creada con `CreateTemplate` contra los datos que le pases, útil cuando el mismo tipo de correo se envía con distintos valores miles de veces.
 
-En arquitecturas reales, ambos conviven con frecuencia: un productor escribe a un stream de Kinesis Data Streams, y Firehose se suscribe a ese mismo stream como uno de sus consumidores para garantizar que, además del procesamiento en tiempo real que hagan otros consumidores, siempre exista una copia completa y ordenada en S3 para análisis histórico.
+SES existe en dos versiones de API en Floci: la consulta clásica v1 (la que usan los comandos `aws ses ...`) y la REST JSON v2 (`aws sesv2 ...`), pero comparten el mismo estado subyacente — una identidad o plantilla creada con v1 es completamente visible y utilizable desde v2, y viceversa, así que puedes mezclar ambas superficies según lo que tu SDK o código existente use.
 
-**Analogía:** Kinesis Data Streams es una cinta transportadora donde varios trabajadores (consumidores) pueden inspeccionar cada paquete mientras pasa; Firehose es una cinta transportadora que termina automáticamente en un almacén (S3), sin trabajadores intermedios que decidan nada sobre cada paquete individual.
+**Analogía:** verificar una identidad de correo es como validar tu remitente en un servicio postal antes de que acepten enviar cartas en tu nombre: en Floci ese trámite se aprueba al instante para que puedas concentrarte en probar el contenido y el flujo de tus correos, no el papeleo de verificación.
 
-**¿Por qué es importante?** Esta distinción —¿necesito lógica de procesamiento en tránsito o solo entrega confiable?— es la misma pregunta de diseño que ya aplicaste al elegir entre SQS y SNS, o entre EventBridge y Step Functions: reconocer el patrón general de "¿cuánto control necesito realmente?" te ahorra sobre-ingeniería.
-
-**Regla práctica:** si necesitas procesamiento personalizado en tiempo real con varios consumidores independientes leyendo el mismo stream, usa Kinesis Data Streams; si solo necesitas que los datos terminen de forma confiable en un destino sin lógica intermedia, usa Firehose.
+**¿Por qué es importante?** Practicar plantillas y envío estructurado desde el principio —en vez de concatenar strings de HTML manualmente en cada llamada— es el hábito que evita correos inconsistentes o rotos cuando tu aplicación crece y empieza a enviar decenas de tipos distintos de notificación.
 
 **Practícalo tú:**
 
 ```bash
 
-# archivo: src/labs/modulo-26/tema-2-comparar-firehose-kinesis.sh — ejecutar con: bash tema-2-comparar-firehose-kinesis.sh
-aws firehose describe-delivery-stream --delivery-stream-name demo-eventos \
-  --query 'DeliveryStreamDescription.DeliveryStreamStatus'
-aws kinesis describe-stream --stream-name demo-stream --query 'StreamDescription.Shards' 2>&1 | head -5
+# archivo: src/labs/modulo-27/tema-3-ses-plantilla.sh — ejecutar con: bash tema-3-ses-plantilla.sh
+aws ses verify-email-identity --email-address notificaciones@demo.example.com
+aws ses create-template --template '{"TemplateName":"entrega-confirmada","SubjectPart":"Tu pedido {{guia}} fue entregado","TextPart":"Hola {{nombre}}, tu paquete {{guia}} llegó."}'
+aws ses send-templated-email --source notificaciones@demo.example.com \
+  --destination ToAddresses=success@simulator.amazonses.com \
+  --template entrega-confirmada --template-data '{"guia":"RF-001","nombre":"Ana"}'
 ```
 
-**Resultado esperado:** Firehose responde con un estado simple (`ACTIVE`) y ningún concepto de shard; Kinesis Data Streams responde con una lista de shards que tú tendrías que iterar manualmente para leer registros — la diferencia estructural entre "entrega gestionada" y "stream que tú consumes".
+`--destination` (con `ToAddresses=...`) es a quién le llega el correo; `--template` elige qué plantilla usar de las ya creadas; `--template-data` es el JSON con los valores que rellenan los `{{marcadores}}` de esa plantilla (acá, la guía y el nombre). En resumen: `--email-address` es la bandera que fija qué dirección verificar como remitente, y `--destination` es la bandera que fija a quién le llega el correo.
 
-**Modifica esto:** crea un stream Kinesis (`aws kinesis create-stream --stream-name demo-stream --shard-count 1`) y repite la comparación para verla con datos reales en vez de un stream inexistente.
+**Resultado esperado:** la identidad queda verificada de inmediato; la plantilla se crea; `send-templated-email` devuelve un `MessageId` y el correo resuelto con los datos de Ana llega al buzón de inspección local.
 
-**Cuándo no usarlo:** no migres un consumidor Kinesis existente a Firehose solo por simplicidad si ese consumidor depende de leer registros en tiempo real con múltiples lectores independientes (fan-out); perderías esa capacidad.
+**Modifica esto:** reenvía el mismo correo pero con `template-data` distinto (`{"guia":"RF-002","nombre":"Luis"}`) y confirma en el buzón de inspección que cada mensaje muestra su propio contenido resuelto, sin mezclarse.
 
-**Cómo crece tu proyecto:** El proyecto usa Kinesis Data Streams para el tracking GPS en tiempo real (Módulo 17) y Firehose en paralelo para el histórico de entregas — la misma combinación que describe este tema.
+**Cuándo no usarlo:** no uses `SendEmail` con strings concatenados a mano para el mismo tipo de correo que envías cientos de veces; ahí es exactamente donde una plantilla evita inconsistencias.
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Compara el consumo interactivo de posiciones con su archivo analítico. Justifica quién controla lectura, reintentos y retención en cada alternativa y comprueba un lote de eventos con identificadores conocidos.
+**Cómo crece tu proyecto:** esta plantilla es la que El proyecto usa para notificar automáticamente a cada cliente cuando su paquete se marca como entregado.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara una plantilla de aviso de entrega con datos de prueba. Verifica identidad remitente, destinatario y escape de variables antes de habilitar envíos desde el flujo operativo.
 
 
 </details>
@@ -90,28 +134,31 @@ aws kinesis describe-stream --stream-name demo-stream --query 'StreamDescription
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-26/tema-2-comparar-firehose-kinesis.sh — ejecutar con: bash tema-2-comparar-firehose-kinesis.sh
-aws firehose describe-delivery-stream --delivery-stream-name demo-eventos \
-  --query 'DeliveryStreamDescription.DeliveryStreamStatus'
-aws kinesis describe-stream --stream-name demo-stream --query 'StreamDescription.Shards' 2>&1 | head -5
+# archivo: src/labs/modulo-27/tema-3-ses-plantilla.sh — ejecutar con: bash tema-3-ses-plantilla.sh
+aws ses verify-email-identity --email-address notificaciones@demo.example.com
+aws ses create-template --template '{"TemplateName":"entrega-confirmada","SubjectPart":"Tu pedido {{guia}} fue entregado","TextPart":"Hola {{nombre}}, tu paquete {{guia}} llegó."}'
+aws ses send-templated-email --source notificaciones@demo.example.com \
+  --destination ToAddresses=success@simulator.amazonses.com \
+  --template entrega-confirmada --template-data '{"guia":"RF-001","nombre":"Ana"}'
 ```
 
 ```bash
-aws firehose describe-delivery-stream --delivery-stream-name demo-eventos \
-  --query 'DeliveryStreamDescription.DeliveryStreamStatus'
-aws kinesis create-stream --stream-name rutaflow-ubicacion-conductores --shard-count 1 2>/dev/null
-aws kinesis describe-stream --stream-name rutaflow-ubicacion-conductores --query 'StreamDescription.Shards'
+aws ses verify-email-identity --email-address notificaciones@demo.example.com
+aws ses create-template --template '{"TemplateName":"entrega-confirmada","SubjectPart":"Tu pedido {{guia}} fue entregado","TextPart":"Hola {{nombre}}, tu paquete {{guia}} llegó."}'
+aws ses send-templated-email --source notificaciones@demo.example.com \
+  --destination ToAddresses=success@simulator.amazonses.com \
+  --template entrega-confirmada --template-data '{"guia":"RF-001","nombre":"Ana"}'
 ```
 
 </details>
 
-### Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento · Avanzado · 40 min
+### Tema 4: El simulador de buzones y el punto de inspección local · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a conectar una cola de notificaciones directamente a una Lambda con un pipe, sin escribir ninguna función que haga polling. Prerrequisitos: Módulo 11 completo.
+Al finalizar vas a provocar a propósito un rebote de correo real para probar el manejador de rebotes de RutaFlow, sin depender de una dirección inválida real. Prerrequisitos: Tema 3 de este módulo.
 
 </details>
 
@@ -120,51 +167,11 @@ Al finalizar vas a conectar una cola de notificaciones directamente a una Lambda
 
 #### Código y verificación
 ```bash
-# archivo: src/labs/modulo-26/tema-3-pipe.sh — ejecutar con: bash tema-3-pipe.sh
-# Crea la cola aquí mismo: el ejercicio no depende de haber corrido nada antes.
-aws sqs create-queue --queue-name demo-cola
-COLA_URL=$(aws sqs get-queue-url --queue-name demo-cola --query QueueUrl --output text)
-
-aws pipes create-pipe --name demo-pipe \
-  --source arn:aws:sqs:us-east-1:000000000000:demo-cola \
-  --target arn:aws:lambda:us-east-1:000000000000:function:demo-notificar \
-  --role-arn arn:aws:iam::000000000000:role/pipe-role
-aws sqs send-message --queue-url "$COLA_URL" --message-body '{"tarea":"notificar-entrega"}'
-aws logs tail /aws/lambda/demo-notificar --since 1m
-```
-
-```bash
-aws sqs create-queue --queue-name demo-cola
-COLA_URL=$(aws sqs get-queue-url --queue-name demo-cola --query QueueUrl --output text)
-aws pipes create-pipe --name demo-pipe \
-  --source arn:aws:sqs:us-east-1:000000000000:demo-cola \
-  --target arn:aws:lambda:us-east-1:000000000000:function:demo-notificar \
-  --role-arn arn:aws:iam::000000000000:role/pipe-role
-aws sqs send-message --queue-url "$COLA_URL" --message-body '{"tarea":"notificar-entrega"}'
-aws logs tail /aws/lambda/demo-notificar --since 1m
-```
-
-</details>
-
-### Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a confirmar, consultando las tres APIs reales, que RutaFlow ya usa las tres piezas de integración donde corresponde: Pipes, reglas EventBridge y Step Functions. Prerrequisitos: Módulos 11 y 16, Tema 3 de este módulo.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-# archivo: src/labs/modulo-26/tema-4-cuando-cada-uno.sh — ejecutar con: bash tema-4-cuando-cada-uno.sh
-aws pipes describe-pipe --name demo-pipe --query 'Source'
-aws events list-rules --event-bus-name demo-bus --query 'Rules[].Name' 2>&1 | head -5
-aws stepfunctions list-state-machines --query 'stateMachines[].name' 2>&1 | head -5
+# archivo: src/labs/modulo-27/tema-4-simulador.sh — ejecutar con: bash tema-4-simulador.sh
+aws ses send-email --from notificaciones@demo.example.com \
+  --destination ToAddresses=bounce@simulator.amazonses.com \
+  --message "Subject={Data=Prueba rebote},Body={Text={Data=Hola}}"
+curl -s http://localhost:4566/_aws/ses | grep -o '"bounce@simulator.amazonses.com"'
 ```
 
 ```bash
@@ -172,14 +179,15 @@ mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
-aws pipes describe-pipe --name demo-pipe --query 'Source'
-aws events list-rules --event-bus-name rutaflow-eventos --query 'Rules[].Name'
-aws stepfunctions list-state-machines --query 'stateMachines[].name'
+aws ses send-email --from notificaciones@demo.example.com \
+  --destination ToAddresses=bounce@simulator.amazonses.com \
+  --message "Subject={Data=Prueba rebote},Body={Text={Data=Hola}}"
+curl -s http://localhost:4566/_aws/ses | grep -o '"bounce@simulator.amazonses.com"'
 ```
 
 </details>
 
-### Laboratorio 26.1 — Entrega automática con Firehose
+### Laboratorio 27.1 — API GraphQL con resolver local
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -190,11 +198,11 @@ aws stepfunctions list-state-machines --query 'stateMachines[].name'
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 26.1 — entrega automática con firehose.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 27.1 — api graphql con resolver local.
 
 </details>
 
-### Laboratorio 26.2 — Pipe de SQS a Lambda sin código intermedio
+### Laboratorio 27.2 — Simulador de entrega, rebote y queja con SES
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -205,6 +213,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 26.2 — pipe de sqs a lambda sin código intermedio.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 27.2 — simulador de entrega, rebote y queja con ses.
 
 </details>

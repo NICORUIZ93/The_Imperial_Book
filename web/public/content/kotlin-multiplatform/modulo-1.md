@@ -1,25 +1,41 @@
-# Módulo 1: Programación funcional en Kotlin
+# Módulo 1: Lógica de negocio compartida
 
-Cada tema de este módulo se practica hasta que la sintaxis sale sin pensarla, con su propia repetición progresiva y su propio reto de memoria — funciones de orden superior, scope functions, sealed classes y lambdas con receptor son patrones que vas a usar en cada línea de código del resto del track.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria — modelos de dominio, repositorios con interfaz común, inyección de dependencias con Koin, y modelado explícito de errores son la base de cualquier capa de dominio compartida entre Android e iOS.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Funciones de orden superior · Básico · 25 min
+### Tema 1: Modelos de dominio y casos de uso · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás declarar una función que recibe otra función como parámetro, y usar la sintaxis de lambda final de Kotlin para invocarla de forma idiomática.
+Al finalizar podrás declarar un modelo de dominio en commonMain y un caso de uso que depende de una interfaz (no de una implementación concreta), y explicar por qué esa dependencia hacia la interfaz permite testear el caso de uso de forma aislada.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** `data class` compartida en `commonMain`, caso de uso dependiente de interfaz (no de implementación).
+
+`data class Tarea(val id: String, val titulo: String, val completada: Boolean)` en `commonMain` representa una entidad central sin ninguna dependencia hacia persistencia, red o UI de ninguna plataforma específica. `class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) { suspend operator fun invoke(): List<Tarea> = repositorio.obtenerTodas().filter { !it.completada } }` encapsula lógica de negocio dependiendo explícitamente de la INTERFAZ `TareaRepository`, no de ninguna implementación concreta — el mismo principio de inversión de dependencias visto para Spring (Módulo 0 del track Spring Boot), aquí manual, sin framework de IoC automático.
+
+**Analogía:** un modelo de dominio compartido es una definición única y oficial que todos los departamentos usan exactamente igual, evitando interpretaciones divergentes; un caso de uso que depende de una interfaz es un procedimiento que especifica qué información necesita sin importarle de qué proveedor específico proviene, siempre que cumpla el formato acordado.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
+  B -.->|implementación real| C[TareaRepositoryImpl]
+  B -.->|implementación fake| D[FakeTareaRepository]
+```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-  A["procesarLista(lista, accion)"] --> B["lista.forEach { accion(it) }"]
-  C["accion: (Int) -> Unit"] --> A
-  B --> D[cada elemento pasa por la función recibida]
+  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
+  B -.->|implementación real| C[TareaRepositoryImpl]
+  B -.->|implementación fake| D[FakeTareaRepository]
 ```
 
 </details>
@@ -32,36 +48,56 @@ flowchart LR
 ```kotlin
 package com.academia.kmp
 
-fun procesarLista(lista: List<Int>, accion: (Int) -> Unit) {
-    lista.forEach { accion(it) }
+data class Tarea(val id: String, val titulo: String, val completada: Boolean)
+
+interface TareaRepository {
+    suspend fun obtenerTodas(): List<Tarea>
+    suspend fun guardar(tarea: Tarea)
+}
+
+class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) {
+    suspend operator fun invoke(): List<Tarea> =
+        repositorio.obtenerTodas().filter { !it.completada }
 }
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
 package com.academia.kmp
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class OrdenSuperiorTest {
-    @Test
-    fun duplicaCadaElemento() {
-        val resultados = mutableListOf<Int>()
-        procesarLista(listOf(1, 2, 3)) { numero -> resultados.add(numero * 2) }
-        assertEquals(listOf(2, 4, 6), resultados)
-    }
+private val tareaPendiente = Tarea("1", "Comprar leche", completada = false)
 
+class RepositorioEnMemoria : TareaRepository {
+    override suspend fun obtenerTodas(): List<Tarea> = listOf(tareaPendiente)
+    override suspend fun guardar(tarea: Tarea) = Unit
+}
+
+class RepositorioConLatencia : TareaRepository {
+    override suspend fun obtenerTodas(): List<Tarea> {
+        delay(300) // simula red/DB real
+        return listOf(tareaPendiente)
+    }
+    override suspend fun guardar(tarea: Tarea) = Unit
+}
+
+class DominioTest {
     @Test
-    fun elevaAlCuadradoCadaElemento() {
-        val resultadosCuadrado = mutableListOf<Int>()
-        procesarLista(listOf(1, 2, 3)) { numero -> resultadosCuadrado.add(numero * numero) }
-        assertEquals(listOf(1, 4, 9), resultadosCuadrado)
+    fun elCasoDeUsoProduceElMismoResultadoConCualquierImplementacion() = runTest {
+        val resultadoFake = ObtenerTareasPendientesUseCase(RepositorioEnMemoria())()
+        val resultadoConLatencia = ObtenerTareasPendientesUseCase(RepositorioConLatencia())()
+        assertEquals(resultadoFake, resultadoConLatencia)
+        assertEquals(listOf(tareaPendiente), resultadoFake)
     }
 }
 ```
@@ -73,19 +109,20 @@ cd academia-kmp
 ```
 
 ```kotlin
-fun transformar(valor: Int, f: ____ -> Int): Int = f(valor)
-val resultado = transformar(5) { it * 3 }
+class GuardarTareaUseCase(private val repositorio: ____) {
+    suspend operator fun invoke(tarea: Tarea) = repositorio.guardar(tarea)
+}
 ```
 
 </details>
 
-### Tema 2: Scope functions · Básico · 25 min
+### Tema 2: Repositorios con interfaz común · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás elegir entre let, run, apply y also según qué necesites devolver (el receptor original o el resultado de un bloque) y cómo referenciar el receptor (this o it).
+Al finalizar podrás definir una interfaz de repositorio en commonMain con al menos dos implementaciones, y explicar por qué esto permite testear la lógica de negocio sin infraestructura real.
 
 </details>
 
@@ -94,56 +131,52 @@ Al finalizar podrás elegir entre let, run, apply y also según qué necesites d
 
 #### Código y verificación
 ```
-┌──────────────┬───────────────────────┬───────────────────────────────┐
-│              │ devuelve el RECEPTOR   │ devuelve el RESULTADO del bloque │
-├──────────────┼───────────────────────┼───────────────────────────────┤
-│ this implícito │        apply         │              run                │
-│ it explícito   │        also          │              let                │
-└──────────────┴───────────────────────┴───────────────────────────────┘
+┌── interface TareaRepository ─────────────────────────────┐
+│  suspend fun obtenerTodas(): List<Tarea>                    │
+│  suspend fun guardar(tarea: Tarea)                           │
+└──────┬─────────────────────────────────┬──────────────┘
+       │                                    │
+┌──────▼──────────┐                ┌──────▼──────────┐
+│ TareaRepositoryImpl │                │ FakeTareaRepository │
+│ (api + db reales)    │                │ (en memoria, tests)   │
+└─────────────────┘                └─────────────────┘
 ```
 
 ```kotlin
 package com.academia.kmp
 
-data class Config(var timeout: Int = 10, var reintentos: Int = 1)
-
-fun construirConfig(): Config = Config().apply {
-    timeout = 30
-    reintentos = 3
+class TareaRepositoryImpl(private val api: Any, private val db: Any) : TareaRepository {
+    override suspend fun obtenerTodas(): List<Tarea> = emptyList() // combinaría api y db reales
+    override suspend fun guardar(tarea: Tarea) { /* persiste en db, sincroniza con api */ }
 }
 
-fun saludarSiExiste(nombre: String?): String? = nombre?.let { n -> "Hola, $n" }
+class FakeTareaRepository(private val datos: MutableList<Tarea> = mutableListOf()) : TareaRepository {
+    override suspend fun obtenerTodas(): List<Tarea> = datos.toList()
+    override suspend fun guardar(tarea: Tarea) { datos.add(tarea) }
+}
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
 package com.academia.kmp
 
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
-class ScopeFunctionsTest {
+class RepositorioTest {
     @Test
-    fun applyDevuelveElReceptorConfigurado() {
-        val config = construirConfig()
-        assertEquals(30, config.timeout)
-        assertEquals(3, config.reintentos)
-    }
-
-    @Test
-    fun letDevuelveElResultadoDelBloqueConValorPresente() {
-        assertEquals("Hola, Nico", saludarSiExiste("Nico"))
-    }
-
-    @Test
-    fun letNoEjecutaElBloqueConNull() {
-        assertNull(saludarSiExiste(null))
+    fun fakeGuardaYDevuelveLoGuardado() = runTest {
+        val repo: TareaRepository = FakeTareaRepository()
+        val tarea = Tarea("1", "Comprar leche", completada = false)
+        repo.guardar(tarea)
+        assertEquals(listOf(tarea), repo.obtenerTodas())
     }
 }
 ```
@@ -155,25 +188,47 @@ cd academia-kmp
 ```
 
 ```kotlin
-val texto: String? = direccion ____ { d -> "Envía a: $d" }
+class FakeTareaRepository : ____ {
+    private val datos = mutableListOf<Tarea>()
+    override suspend fun obtenerTodas(): List<Tarea> = datos.toList()
+    override suspend fun guardar(tarea: Tarea) { datos.add(tarea) }
+}
 ```
 
 </details>
 
-### Tema 3: Sealed classes y colecciones funcionales · Básico · 25 min
+### Tema 3: Inyección de dependencias multiplataforma con Koin · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás modelar un conjunto cerrado de estados con sealed class, y encadenar filter/map/fold para transformar una colección de forma declarativa.
+Al finalizar podrás distinguir entre una dependencia single (una única instancia compartida) y una factory (nueva instancia cada vez), y configurar Koin para resolver la cadena completa de dependencias una sola vez para todas las plataformas.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** `single` (instancia única compartida), `factory` (nueva instancia por solicitud), módulo de Koin en `commonMain`.
+
+`val sharedModule = module { single<TareaRepository> { TareaRepositoryImpl(get(), get()) }; factory { ObtenerTareasPendientesUseCase(get()) } }` configura Koin (un framework de DI ligero, sin generación de código en compilación) para resolver automáticamente la cadena de dependencias: `TareaRepository` se resuelve como una única instancia compartida (`single`), mientras `ObtenerTareasPendientesUseCase` se crea nueva cada vez que se solicita (`factory`). Koin funciona idénticamente en `commonMain` para todas las plataformas, sin un framework de DI distinto por plataforma.
+
+**Analogía:** Koin es un directorio de contactos universal que funciona igual en cualquier oficina de la empresa, resolviendo automáticamente quién debe conectarse con quién según relaciones declaradas una única vez.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
+  A -->|misma instancia siempre| C[segunda solicitud]
+  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
+  D -->|instancia NUEVA| F[segunda solicitud]
+```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-  A[personas] -->|filter edad>=18| B[adultos]
-  B -->|map nombre| C[nombres]
-  D[pedidos] -->|fold suma| E[total acumulado]
+  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
+  A -->|misma instancia siempre| C[segunda solicitud]
+  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
+  D -->|instancia NUEVA| F[segunda solicitud]
 ```
 
 </details>
@@ -182,57 +237,89 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```kotlin
-sealed class EstadoUI {
-    object Cargando : EstadoUI()
-    data class Exito(val datos: List<String>) : EstadoUI()
-    data class Error(val mensaje: String) : EstadoUI()
-}
-```
-
-```kotlin
-val nombres = personas.filter { it.edad >= 18 }.map { it.nombre }
-```
-
-```kotlin
-val total = pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }
-```
-
 ```mermaid
 flowchart LR
-  A[personas] -->|filter edad>=18| B[adultos]
-  B -->|map nombre| C[nombres]
-  D[pedidos] -->|fold suma| E[total acumulado]
+  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
+  A -->|misma instancia siempre| C[segunda solicitud]
+  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
+  D -->|instancia NUEVA| F[segunda solicitud]
 ```
 
 ```kotlin
 package com.academia.kmp
 
-data class Persona(val nombre: String, val edad: Int)
-data class Pedido(val monto: Double)
+import org.koin.dsl.module
 
-fun nombresAdultos(personas: List<Persona>): List<String> =
-    personas.filter { it.edad >= 18 }.map { it.nombre }
-
-fun totalPedidos(pedidos: List<Pedido>): Double =
-    pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }
+val sharedModule = module {
+    single<TareaRepository> { FakeTareaRepository() }
+    factory { ObtenerTareasPendientesUseCase(get()) }
+}
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
+```
+
+```kotlin
+package com.academia.kmp
+
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
+
+class DiModuleTest : KoinTest {
+    @BeforeTest
+    fun iniciarKoin() { startKoin { modules(sharedModule) } }
+
+    @AfterTest
+    fun detenerKoin() { stopKoin() }
+
+    @Test
+    fun singleDevuelveSiempreLaMismaInstancia() {
+        val repo1: TareaRepository by inject()
+        val repo2: TareaRepository by inject()
+        assertSame(repo1, repo2)
+    }
+
+    @Test
+    fun factoryDevuelveUnaInstanciaNuevaEnCadaSolicitud() {
+        val caso1: ObtenerTareasPendientesUseCase by inject()
+        val caso2: ObtenerTareasPendientesUseCase by inject()
+        assertNotSame(caso1, caso2)
+    }
+}
+```
+
+```bash
+# ejecuta el test Kotlin del módulo compartido, arrancando Koin de verdad
+cd academia-kmp
+./gradlew :shared:allTests
+```
+
+```kotlin
+val sharedModule = module {
+    ____<TareaRepository> { TareaRepositoryImpl(get(), get()) }
+}
 ```
 
 </details>
 
-### Tema 4: Lambdas con receptor y builders tipo DSL · Básico · 25 min
+### Tema 4: Modelado de errores de dominio con un tipo Result explícito · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás escribir una función que reciba una lambda con receptor (T.() -> Unit), y explicar por qué esta capacidad es la base de los DSL que usarás en Gradle y Compose Multiplatform.
+Al finalizar podrás modelar el resultado de una operación que puede fallar con un tipo explícito (Exito/Error), y explicar por qué esto obliga al llamador a manejar el caso de error sin depender de excepciones no documentadas en la firma.
 
 </details>
 
@@ -241,34 +328,40 @@ Al finalizar podrás escribir una función que reciba una lambda con receptor (T
 
 #### Código y verificación
 ```
-┌── lambda normal ──────────────────────────────────────────┐
-│  (persona) -> println(persona.nombre)   -- "it." explícito │
-└─────────────────────────────────────────────────────────┘
-┌── lambda con receptor ────────────────────────────────────┐
-│  Persona.() -> println(nombre)   -- "this." implícito, se omite │
-└─────────────────────────────────────────────────────────┘
+┌── fun guardarTarea(): Resultado<Tarea> ──────────────┐
+│  el tipo de retorno YA declara que puede fallar         │
+└──────┬───────────────────────────────┬──────────┘
+       │                                    │
+┌──────▼──────┐                    ┌──────▼──────┐
+│  Exito(tarea) │                    │ Error(mensaje) │
+└─────────────┘                    └─────────────┘
+   when exhaustivo obliga a manejar AMBOS casos
 ```
 
 ```kotlin
 package com.academia.kmp
 
-class RutaBuilder {
-    private val paradas = mutableListOf<String>()
-    fun parada(nombre: String) { paradas.add(nombre) }
-    fun construir(): List<String> = paradas.toList()
+sealed class Resultado<out T> {
+    data class Exito<T>(val datos: T) : Resultado<T>()
+    data class Error(val mensaje: String) : Resultado<Nothing>()
 }
 
-fun ruta(bloque: RutaBuilder.() -> Unit): List<String> {
-    val builder = RutaBuilder()
-    builder.bloque()  // el bloque se ejecuta CON RutaBuilder como receptor implícito
-    return builder.construir()
+fun guardarTareaSegura(tarea: Tarea, simularFalloRed: Boolean): Resultado<Tarea> {
+    if (simularFalloRed) return Resultado.Error("sin conexión")
+    return Resultado.Exito(tarea)
+}
+
+fun guardarTareaConExcepcion(tarea: Tarea, simularFalloRed: Boolean): Tarea {
+    if (simularFalloRed) throw IllegalStateException("sin conexión")
+    return tarea
 }
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
@@ -276,16 +369,31 @@ package com.academia.kmp
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
-class DslBuilderTest {
+private val tarea = Tarea("1", "Comprar leche", completada = false)
+
+fun manejar(resultado: Resultado<Tarea>): String = when (resultado) {
+    is Resultado.Exito -> "guardado: ${resultado.datos.titulo}"
+    is Resultado.Error -> "error manejado explícitamente: ${resultado.mensaje}"
+}
+
+class ResultadoTest {
     @Test
-    fun construyeRutaSinPrefijoDentroDelBloque() {
-        val miRuta = ruta {
-            parada("Depósito central")  // llamado sin prefijo: "this." implícito es el RutaBuilder
-            parada("Cliente A")
-            parada("Cliente B")
+    fun elCasoDeExitoSeManejaSinLanzarNada() {
+        assertEquals("guardado: Comprar leche", manejar(guardarTareaSegura(tarea, simularFalloRed = false)))
+    }
+
+    @Test
+    fun elCasoDeErrorSeManejaComoValorNormalNoComoExcepcion() {
+        assertEquals("error manejado explícitamente: sin conexión", manejar(guardarTareaSegura(tarea, simularFalloRed = true)))
+    }
+
+    @Test
+    fun laVersionConExcepcionesPropagaSiNadieLaCaptura() {
+        assertFailsWith<IllegalStateException> {
+            guardarTareaConExcepcion(tarea, simularFalloRed = true)
         }
-        assertEquals(listOf("Depósito central", "Cliente A", "Cliente B"), miRuta)
     }
 }
 ```
@@ -297,32 +405,21 @@ cd academia-kmp
 ```
 
 ```kotlin
-class Ajustes { var modoOscuro = false; var idioma = "es" }
-
-fun configurar(bloque: Ajustes.____ Unit): Ajustes {
-    val ajustes = Ajustes()
-    ajustes.bloque()
-    return ajustes
+fun eliminarTarea(id: String): ____<Unit> {
+    if (!existe(id)) return Resultado.Error("tarea no encontrada")
+    return Resultado.Exito(Unit)
 }
 ```
 
 </details>
 
-### Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min
+### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa un proyecto KMP (por ejemplo, creado con el asistente de kmp.jetbrains.com) y escribe en shared/src/commonMain/kotlin/co/rutaflow/genericos/. Las pruebas van en commonTest.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    E["Resultado<Envio>"] -->|"out T: se acepta"| A["Resultado<Any>"]
-    C["Comparator<Any>"] -->|"in T: se acepta"| CE["Comparator<Envio>"]
-    R["inline fun <reified T>"] --> I["is T en ejecución"]
-```
+Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. Prerrequisitos: interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.
 
 </details>
 
@@ -330,68 +427,33 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E["Resultado<Envio>"] -->|"out T: se acepta"| A["Resultado<Any>"]
-    C["Comparator<Any>"] -->|"in T: se acepta"| CE["Comparator<Envio>"]
-    R["inline fun <reified T>"] --> I["is T en ejecución"]
+```bash
+mkdir reloj-kotlin
+cd reloj-kotlin
 ```
 
 ```kotlin
-package co.rutaflow.genericos
-
-sealed interface Resultado<out T> {           // covariante: solo produce T
-    data class Exito<out T>(val valor: T) : Resultado<T>
-    data class Fallo(val mensaje: String) : Resultado<Nothing> // Nothing sirve para cualquier T
+class Oferta(private val venceEnMs: Long, private val ahoraMs: () -> Long) {
+    fun vencida(): Boolean = ahoraMs() >= venceEnMs
 }
 
-data class Envio(val codigo: String, val kilos: Int) : Comparable<Envio> {
-    override fun compareTo(other: Envio) = kilos.compareTo(other.kilos)
-}
-
-fun describir(r: Resultado<Any>): String = when (r) {  // acepta Resultado<Envio> gracias a out
-    is Resultado.Exito -> "ok: ${r.valor}"
-    is Resultado.Fallo -> "error: ${r.mensaje}"
-}
-
-fun <T : Comparable<T>> mayor(a: T, b: T): T = if (a >= b) a else b  // restricción
-
-inline fun <reified T> List<Any>.soloDe(): List<T> = filter { it is T }.map { it as T } // reified
-```
-
-```kotlin
-package co.rutaflow.genericos
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class GenericosTest {
-    @Test fun covarianza() {
-        val r: Resultado<Envio> = Resultado.Exito(Envio("ENV-42", 2))
-        assertEquals("ok: Envio(codigo=ENV-42, kilos=2)", describir(r))
-        assertEquals("error: sin red", describir(Resultado.Fallo("sin red")))
-    }
-
-    @Test fun restriccion() {
-        assertEquals("ENV-2", mayor(Envio("ENV-1", 3), Envio("ENV-2", 7)).codigo)
-    }
-
-    @Test fun reified() {
-        val mezcla: List<Any> = listOf(Envio("ENV-1", 1), "nota", Envio("ENV-2", 2), 42)
-        assertEquals(listOf("ENV-1", "ENV-2"), mezcla.soloDe<Envio>().map { it.codigo })
-    }
+fun main() {
+    var reloj = 1_000L
+    val oferta = Oferta(31_000L) { reloj }
+    check(!oferta.vencida())
+    reloj = 30_999L
+    check(!oferta.vencida())
+    reloj = 31_000L
+    check(oferta.vencida()) // El límite también pertenece al contrato.
+    reloj = 31_001L
+    check(oferta.vencida())
+    println("Antes, límite y después: correctos")
 }
 ```
 
 ```bash
-./gradlew :shared:allTests
-```
-
-```text
-> Task :shared:jvmTest
-> Task :shared:iosSimulatorArm64Test
-BUILD SUCCESSFUL
-(3 pruebas aprobadas por target en shared/build/reports/tests)
+kotlinc Vencimiento.kt -include-runtime -d vencimiento.jar
+java -jar vencimiento.jar
 ```
 
 </details>

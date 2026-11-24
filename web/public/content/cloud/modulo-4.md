@@ -1,31 +1,27 @@
-# Módulo 4: Bases de datos NoSQL con DynamoDB
+# Módulo 4: Serverless con Lambda
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Qué es NoSQL y cuándo usarlo · Intermedio · 30 min
+### Tema 1: Qué es serverless — ventajas y desventajas · Avanzado · 25 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás comprobar en vivo, con datos reales, por qué DynamoDB no obliga a un esquema fijo. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
+Al finalizar vas a desplegar la función confirmar-entrega del proyecto integrador RutaFlow y a medir con números reales la diferencia entre su primera invocación y las siguientes. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    subgraph SQL["Base de datos relacional (SQL) — esquema fijo, todas las filas tienen las mismas columnas"]
-        direction TB
-        R1["id=1, titulo=A, estado=pendiente"]
-        R2["id=2, titulo=B, estado=hecho"]
-    end
-    subgraph DDB["DynamoDB (NoSQL)"]
-        direction TB
-        D1["id: 1 · titulo: A · estado: pendiente"]
-        D2["id: 2 · titulo: B · estado: hecho · prioridad: alta (atributo extra)"]
-    end
+    RuntimeChoice["Runtime elegido"]
+    RuntimeChoice -->|"Cold start <100ms<br/>Usuarios esperando"| Go["Go + Provisioned"]
+    RuntimeChoice -->|"Cold start aceptable<br/>Eventos asíncrono"| NodeJS["Node.js (sin provisioned)"]
 ```
+
+#### ► CUÁNDO NO USAR ESTO
+Escenario: RutaFlow considera cambiar confirmar-entrega de Node.js a Go para reducir cold start en una nueva función: "api-rastreo" que usuarios llaman directamente (esperan &lt;100ms).
 
 </details>
 
@@ -34,230 +30,64 @@ flowchart LR
 
 #### Código y verificación
 ```error-output
-An error occurred (ValidationException) when calling the PutItem operation: One or more parameter values were invalid: Missing the key sequence in the item
-```
-
-```bash
-# ❌ INCORRECTO: falta 'sequence'
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"tipo":{"S":"creado"}}'
-
-# ✅ CORRECTO: ambas claves presentes
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"}}'
-```
-
-```mermaid
-flowchart LR
-    subgraph SQL["Base de datos relacional (SQL) — esquema fijo, todas las filas tienen las mismas columnas"]
-        direction TB
-        R1["id=1, titulo=A, estado=pendiente"]
-        R2["id=2, titulo=B, estado=hecho"]
-    end
-    subgraph DDB["DynamoDB (NoSQL)"]
-        direction TB
-        D1["id: 1 · titulo: A · estado: pendiente"]
-        D2["id: 2 · titulo: B · estado: hecho · prioridad: alta (atributo extra)"]
-    end
-```
-
-```bash
-aws dynamodb create-table --table-name ShipmentEvents \
-  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N \
-  --key-schema AttributeName=shipmentId,KeyType=HASH AttributeName=sequence,KeyType=RANGE \
-  --billing-mode PAY_PER_REQUEST
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"},"tipo":{"S":"creado"},"origen":{"S":"bodega-norte"}}'
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"},"tipo":{"S":"entregado"},"fotoKey":{"S":"envio-4471/entrega-001.jpg"},"firmaCliente":{"BOOL":true}}'
-```
-
-</details>
-
-### Tema 2: Tablas, items y atributos · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a distinguir, sobre la tabla ShipmentEvents que ya creaste, qué es obligatorio en un item y qué no. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Tema 1 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    T["Tabla: Tareas (clave primaria: id)"]
-    T --> I1["Item 1: id t-001, Comprar leche, pendiente"]
-    T --> I2["Item 2: id t-002, Pagar factura, hecho, prioridad alta"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-Clave elegida (Primaria o GSI): ________
-HASH: ________
-RANGE: ________ (o NONE si solo HASH)
-Justificación en 2 líneas: ________
-Unidades de lectura Scan vs Query: ________ vs ________
-```
-
-```mermaid
-flowchart TD
-    T["Tabla: Tareas (clave primaria: id)"]
-    T --> I1["Item 1: id t-001, Comprar leche, pendiente"]
-    T --> I2["Item 2: id t-002, Pagar factura, hecho, prioridad alta"]
-```
-
-```bash
-aws dynamodb list-tables
-aws dynamodb describe-table --table-name ShipmentEvents --query "Table.KeySchema"
-aws dynamodb get-item --table-name ShipmentEvents \
-  --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
-```
-
-</details>
-
-### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás modelar un evento de entrega real con tipos anidados (lista y mapa). Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 1-2 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    I["Item con distintos tipos de dato"]
-    I --> A1["id: S = &quot;t-001&quot;"]
-    I --> A2["prioridad: N = 3"]
-    I --> A3["completada: BOOL = false"]
-    I --> A4["etiquetas: L"]
-    A4 --> A4a["S = &quot;urgente&quot;"]
-    A4 --> A4b["S = &quot;casa&quot;"]
-    I --> A5["direccion: M"]
-    A5 --> A5a["ciudad: S = &quot;Bogotá&quot;"]
-    A5 --> A5b["cp: S = &quot;110111&quot;"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-Foto 1: { formato: "jpg", tamaño: 1243 bytes, timestamp: "2026-10-06T14:23:15Z", resolucion: "1920x1080" }
-Foto 2: { formato: "webp", tamaño: 891 bytes, timestamp: "2026-10-06T14:23:22Z", resolucion: "1920x1080" }
-```
-
-```json
 {
-  "shipmentId": { "S": "env-4471" },
-  "fotos": {
-    "L": [
-      {
-        "M": {
-          "ruta": { "S": "envio-4471/entrega-001.jpg" },
-          "formato": { "S": "jpg" },
-          "tamaño": { "N": "1243" },
-          "timestamp": { "S": "2026-10-06T14:23:15Z" },
-          "resolucion": { "S": "1920x1080" }
-        }
-      },
-      ...
-    ]
-  }
+  "errorMessage": "index.handler is undefined or not exported",
+  "errorType": "Runtime.HandlerNotFound",
+  "stackTrace": []
 }
 ```
 
-```error-output
-# Sin error en put-item (DynamoDB lo acepta)
-# Pero error cuando intentas ordenar:
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "shipmentId = :id AND #s BETWEEN :start AND :end" \
-  --expression-attribute-names '{"#s":"sequence"}' \
-  --expression-attribute-values '{":id":{"S":"env-4471"},":start":{"N":"1"},":end":{"N":"10"}}' 
+```bash
+# ❌ INCORRECTO: ZIP vacío
+zip funcion-vacio.zip
+# Sin agregar index.js
 
-# El problema: si guardaste sequence como {"S":"2"} en vez de {"N":"2"},
-# el BETWEEN falla en comparar números correctamente (ordena "10" < "2" lexicográficamente)
+aws lambda create-function --function-name confirmar-entrega \
+  --runtime nodejs24.x \
+  --handler index.handler \
+  --zip-file fileb://funcion-vacio.zip \
+  --role arn:aws:iam::000000000000:role/lambda-role
+
+# create-function FUNCIONA (sin error)
+# Pero invoke FALLA con Runtime.HandlerNotFound
+
+aws lambda invoke --function-name confirmar-entrega salida.json
+# → Runtime.HandlerNotFound en salida.json
 ```
 
 ```bash
-# ❌ INCORRECTO: tipo mismatch
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"S":"2"}}'  # String, no número!
-
-# ✅ CORRECTO: tipo correcto
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"2"}}'  # Número
+# ✅ CORRECTO: Crear el archivo ANTES del ZIP
+echo 'exports.handler = async () => ({ mensaje: "ok" });' > index.js
+zip funcion.zip index.js
+# Ahora sí la estructura es válida
 ```
 
 ```bash
-# Si guardaste sequence como S y luego haces:
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "sequence BETWEEN :s1 AND :s10" \
-  --expression-attribute-values '{":s1":{"N":"1"},":s10":{"N":"10"}}'
+   time aws lambda invoke --function-name confirmar-entrega ... salida.json
+   ```
 
-# Resultado INCORRECTO: ordena lexicográficamente
-# Devuelve: "1", "10", "2", "3", etc. (como strings)
-# Esperado: 1, 2, 3, ..., 10 (números)
+```mermaid
+flowchart LR
+    RuntimeChoice["Runtime elegido"]
+    RuntimeChoice -->|"Cold start <100ms<br/>Usuarios esperando"| Go["Go + Provisioned"]
+    RuntimeChoice -->|"Cold start aceptable<br/>Eventos asíncrono"| NodeJS["Node.js (sin provisioned)"]
 ```
 
-```bash
-# Scan para traer items problemáticos
-aws dynamodb scan --table-name ShipmentEvents \
-  --projection-expression "shipmentId, #s" \
-  --expression-attribute-names '{"#s":"sequence"}' > items.json
-
-# Reescribir con tipo correcto (script en Python):
-python3 << 'EOF'
-import json, boto3
-ddb = boto3.client('dynamodb')
-
-for item in json.load(open('items.json'))['Items']:
-    # Fijar: convertir sequence de S a N
-    shipmentId = item['shipmentId']
-    sequence_value = item['sequence'].get('S') or item['sequence'].get('N')
-    
-    ddb.put_item(TableName='ShipmentEvents', Item={
-        'shipmentId': shipmentId,
-        'sequence': {'N': str(sequence_value)}  # Fuerza N
-    })
-EOF
+```mermaid
+flowchart LR
+    A["Servidor tradicional\nCapacidad reservada 24/7, coste fijo\naunque no haya tráfico"]
+    B["Serverless (Lambda)\nSin capacidad reservada\nSe aprovisiona por invocación,\ncoste solo mientras se ejecuta"]
 ```
 
 </details>
 
-### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE) · Intermedio · 30 min
+### Tema 2: Estructura de una función Lambda · Avanzado · 25 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a comprobar en la propia tabla ShipmentEvents por qué necesita clave compuesta y no una clave simple. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 1-3 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    subgraph SIMP["Clave simple (solo HASH) — Tabla: Usuarios — cada id es único"]
-        direction TB
-        U1["id (HASH) = u-001"]
-        U2["id (HASH) = u-002"]
-    end
-    subgraph COMP["Clave compuesta (HASH + RANGE) — Tabla: Pedidos"]
-        direction TB
-        P1["usuario_id=u-001, fecha_pedido=2026-01-05"]
-        P2["usuario_id=u-001, fecha_pedido=2026-02-14 ← mismo HASH, distinto RANGE"]
-        P3["usuario_id=u-002, fecha_pedido=2026-01-20"]
-    end
-```
-
-#### ► REGLA PRÁCTICA
-Usa clave simple (solo HASH) cuando cada entidad es un único ítem identificado por un valor único, como Usuarios; usa clave compuesta (HASH + RANGE) cuando un mismo HASH agrupa varios ítems relacionados que necesitas ordenar o filtrar, como los pedidos de un mismo usuario por fecha.
+Al finalizar vas a hacer que confirmar-entrega reciba y valide un comando real de entrega con el contrato shipmentId + recipientPin que escribirás en tu propio handler. Prerrequisitos: Tema 1 de este módulo.
 
 </details>
 
@@ -265,29 +95,414 @@ Usa clave simple (solo HASH) cuando cada entidad es un único ítem identificado
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```bash
+npm init -y
+npm install --save-dev jest
+```
+
+Crea el archivo `index.test.js`:
+
+```js
+const { handler } = require('./index');
+
+describe('confirmar-entrega handler', () => {
+  test('acepta shipmentId + PIN válido de 6 dígitos', async () => {
+    const result = await handler({
+      shipmentId: 'env-4471',
+      recipientPin: '837201'
+    });
+    expect(result.shipmentId).toBe('env-4471');
+    expect(result.status).toBe('delivered');
+  });
+
+  test('rechaza PIN corto (< 6 dígitos)', async () => {
+    const promise = handler({
+      shipmentId: 'env-4471',
+      recipientPin: '1234'
+    });
+    await expect(promise).rejects.toThrow('comando de entrega inválido');
+  });
+
+  test('rechaza shipmentId faltante', async () => {
+    const promise = handler({
+      recipientPin: '837201'
+    });
+    await expect(promise).rejects.toThrow('comando de entrega inválido');
+  });
+
+  test('rechaza PIN no-numérico', async () => {
+    const promise = handler({
+      shipmentId: 'env-4471',
+      recipientPin: 'abcdef'
+    });
+    await expect(promise).rejects.toThrow('comando de entrega inválido');
+  });
+});
+```
 
 ```bash
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "shipmentId = :id" \
+# Ejecuta las pruebas
+npm test
+
+# Resultado esperado:
+# PASS  ./index.test.js
+#   confirmar-entrega handler
+#     ✓ acepta shipmentId + PIN válido de 6 dígitos (5ms)
+#     ✓ rechaza PIN corto (2ms)
+#     ✓ rechaza shipmentId faltante (1ms)
+#     ✓ rechaza PIN no-numérico (1ms)
+# 
+# Test Suites: 1 passed, 1 total
+# Tests:       4 passed, 4 total
+```
+
+```bash
+aws lambda invoke --function-name confirmar-entrega \
+  --payload '{"shipmentId":"env-4471","recipientPin":"1234"}' \
+  --cli-binary-format raw-in-base64-out salida.json
+
+cat salida.json
+# {"errorType":"TypeError","errorMessage":"comando de entrega inválido"}
+
+# Pero también en CloudWatch:
+# [ERROR] TypeError: comando de entrega inválido
+#     at Runtime.exports.handler (/var/task/index.js:7:5)
+```
+
+```
+Invocación de una Lambda
+┌──────────────────────────────────────────────┐
+│  handler(event, context)                        │
+│    event:   datos de negocio de ESTA invocación   │
+│    context: metadatos de ESTA ejecución            │
+│                                                    │
+│  return { ... }  ← se devuelve al invocador        │
+│                                                    │
+│  (nada garantiza que una variable en memoria        │
+│   sobreviva hasta la siguiente invocación)          │
+└──────────────────────────────────────────────┘
+```
+
+Crea el archivo `index.js`:
+
+```js
+exports.handler = async (event) => {
+  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin)) {
+    throw new TypeError('comando de entrega inválido');
+  }
+  return { shipmentId: event.shipmentId, status: 'delivered' };
+};
+```
+
+```bash
+zip funcion.zip index.js
+aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
+aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+
+</details>
+
+### Tema 3: Runtimes — Node.js, Python, Java, Go · Avanzado · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a comprobar en vivo qué pasa cuando el código de confirmar-entrega necesita una dependencia que el runtime de Node.js no trae incluida, y aprenderás a empaquetar correctamente con dependencias REALES del proyecto integrador. Prerrequisitos: Tema 2 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+Tu código (handler + dependencias)
+          │
+          ▼
+┌───────────────────────────────────┐
+│  Runtime de Lambda (Node.js/Python/ │
+│  Java/Go/...) traduce el evento      │
+│  entrante a tu lenguaje, invoca tu    │
+│  handler, y traduce tu respuesta       │
+│  de vuelta al formato esperado         │
+└───────────────────────────────────┘
+```
+
+```bash
+# Primero, crea el handler que ESÍ ESCRIBE EN DYNAMODB (como RutaFlow real)
+```
+
+Crea el archivo `index.js`:
+
+```js
+const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+
+// El cliente usa variables de entorno que Floci configura automáticamente
+const client = new DynamoDBClient({
+  endpoint: process.env.AWS_ENDPOINT_URL,
+  region: 'us-east-1'
+});
+
+exports.handler = async (event) => {
+  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin)) {
+    throw new TypeError('comando de entrega inválido');
+  }
+  
+  // Escribe en ShipmentEvents — la misma tabla de Módulo 4
+  try {
+    await client.send(new PutItemCommand({
+      TableName: 'ShipmentEvents',
+      Item: {
+        shipmentId: { S: event.shipmentId },
+        sequence: { N: String(Date.now()) },
+        tipo: { S: 'entregado' },
+        recipientPin: { S: event.recipientPin },
+        timestamp: { S: new Date().toISOString() }
+      }
+    }));
+  } catch (error) {
+    if (error.name === 'ValidationException' || error.name === 'ResourceNotFoundException') {
+      return { statusCode: 400, errorType: 'ClientError', errorMessage: error.message };
+    }
+    throw error;  // Re-lanza errores de infraestructura (5xx)
+  }
+  
+  return { shipmentId: event.shipmentId, status: 'delivered' };
+};
+```
+
+```bash
+# Inicializa npm e instala la dependencia REAL
+npm init -y
+npm install @aws-sdk/client-dynamodb
+
+# Empaqueta código + dependencias
+zip funcion.zip index.js
+zip -r funcion.zip node_modules/
+
+# Actualiza la función y prueba
+aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
+aws lambda invoke --function-name confirmar-entrega \
+  --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+
+</details>
+
+### Tema 4: Payload de entrada y respuesta · Avanzado · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a envolver confirmar-entrega en el formato de respuesta que va a exigir API Gateway en el Módulo 6, siempre dentro del proyecto integrador RutaFlow. Prerrequisitos: Temas 2-3 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```javascript
+exports.handler = async (event) => {
+  const errors = [];
+  
+  // Validación: el cliente mandó mal el request
+  if (!event.shipmentId) {
+    errors.push({ field: 'shipmentId', reason: 'requerido' });
+  }
+  if (!event.recipientPin) {
+    errors.push({ field: 'recipientPin', reason: 'requerido' });
+  } else if (!/^\d{6}$/.test(event.recipientPin)) {
+    errors.push({ 
+      field: 'recipientPin', 
+      reason: 'debe ser 6 dígitos, recibido: ' + event.recipientPin 
+    });
+  }
+  
+  // Si hay errores de validación, responde 400 (culpa del cliente)
+  if (errors.length > 0) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        error: 'validación fallida',
+        details: errors,
+        timestamp: new Date().toISOString(),
+        requestId: event.requestId || 'unknown'
+      })
+    };
+  }
+  
+  try {
+    // Lógica de negocio aquí
+    return { 
+      statusCode: 200, 
+      body: JSON.stringify({ 
+        shipmentId: event.shipmentId, 
+        status: 'delivered' 
+      }) 
+    };
+  } catch (error) {
+    // Error interno: loguea contexto pero NO devuelves detalles internos
+    console.error('Error procesando entrega:', {
+      shipmentId: event.shipmentId,
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Responde genérico (no reveles secretos ni stack traces)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'error interno del servidor',
+        requestId: event.requestId || 'unknown'
+      })
+    };
+  }
+};
+```
+
+```
+Invocación directa:                    Vía API Gateway (proxy):
+event = {"nombre": "Ana"}              event = { httpMethod, path,
+    │                                            headers, body, ... }
+    ▼                                      │
+return {"saludo": "Hola Ana"}              ▼
+                                        return {
+                                          "statusCode": 200,
+                                          "headers": {...},
+                                          "body": "{\"saludo\":\"Hola Ana\"}"
+                                        }
+```
+
+Crea el archivo `index.js`:
+
+```js
+exports.handler = async (event) => {
+  if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin || '')) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'comando inválido' }) };
+  }
+  return { statusCode: 200, body: JSON.stringify({ shipmentId: event.shipmentId, status: 'delivered' }) };
+};
+```
+
+```bash
+zip funcion.zip index.js
+aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
+aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+
+</details>
+
+### Tema 5: Versionado y alias · Avanzado · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a publicar una versión fija de confirmar-entrega y a mover un alias produccion entre versiones, simulando un rollback real en el proyecto integrador. Prerrequisitos: Temas 1-4 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+aws lambda publish-version --function-name confirmar-entrega
+# Devuelve: "Version": "2"
+
+aws lambda create-alias --function-name confirmar-entrega \
+  --name canary --function-version 1 \
+  --routing-config AdditionalVersionWeight={"2"=0.10}
+```
+
+```
+$LATEST (mutable, cambia con cada actualización de código)
+   │
+   │  publish-version
+   ▼
+Versión 1 (fija)   Versión 2 (fija)   Versión 3 (fija, la más reciente publicada)
+                                             ▲
+                            alias "produccion" apunta aquí
+                            (se puede mover a otra versión
+                             en cualquier momento)
+```
+
+```bash
+aws lambda publish-version --function-name confirmar-entrega --description "payload con statusCode/body"
+aws lambda create-alias --function-name confirmar-entrega --name produccion --function-version 1
+aws lambda invoke --function-name confirmar-entrega:produccion \
+  --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
+  --cli-binary-format raw-in-base64-out salida.json && cat salida.json
+```
+
+</details>
+
+### Tema 6: Integración con S3, DynamoDB Streams y API Gateway · Avanzado · 25 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a cerrar el ciclo completo del proyecto integrador RutaFlow: conectar DeliveryCommands (Módulo 3) para que dispare confirmar-entrega automáticamente, sin que nadie la invoque a mano. Prerrequisitos: Módulo 3 completo, Temas 1-5 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+> aws sqs create-queue --queue-name DeliveryCommands-DLQ
+> # Obtén DLQ ARN, configura el mapping:
+> aws lambda update-event-source-mapping --uuid <mapping-uuid> \
+>   --function-response-types ReportBatchItemFailures \
+>   --on-failure '{"Destination":"arn:aws:sqs:...DeliveryCommands-DLQ"}'
+> ```
+
+```
+Trigger S3 (asíncrono)          DynamoDB Streams (asíncrono)     API Gateway (síncrono)
+┌───────────────┐              ┌───────────────────┐          ┌──────────────────┐
+│ Sube archivo     │             │ Item modificado      │          │ Petición HTTP        │
+│      │           │             │      │               │          │      │               │
+│      ▼           │             │      ▼               │          │      ▼               │
+│ Invoca Lambda     │             │ Invoca Lambda con     │          │ Invoca Lambda,        │
+│ (sin esperar        │           │ lote de cambios         │          │ ESPERA la respuesta    │
+│  respuesta directa)  │          │ (sin esperar respuesta)  │         │ (statusCode/body)       │
+└───────────────┘              └───────────────────┘          └──────────────────┘
+```
+
+```bash
+QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$QUEUE_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+aws lambda create-event-source-mapping --function-name confirmar-entrega --event-source-arn "$QUEUE_ARN" --batch-size 5
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","recipientPin":"837201"}'
+sleep 2
+aws dynamodb query --table-name ShipmentEvents --key-condition-expression "shipmentId = :id" \
   --expression-attribute-values '{":id":{"S":"env-4471"}}'
 ```
 
 </details>
 
-### Tema 5: Índices secundarios globales (GSI) y locales (LSI) · Intermedio · 30 min
+### Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Avanzado · 35 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a crear y usar el índice EstadoIndex que ya está declarado en template.yaml sobre ShipmentEvents. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Tema 4 de este módulo.
+Usa Python 3.10 o superior. Crea academia-labs/cloud/deprecaciones. En una cuenta real, el inventario sale de aws lambda list-functions y el calendario de la tabla oficial de runtimes de Lambda.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    Primary["Tabla base<br/>HASH: shipmentId<br/>RANGE: sequence"]
-    Primary -->|"eventual consistency"| GSI["GSI EstadoIndex<br/>HASH: estado<br/>RANGE: sequence"]
-    Primary -->|"strong consistency"| LSI["LSI opcional<br/>Misma HASH<br/>RANGE distinto<br/>Límite 10GB"]
+    I["inventario de funciones"] --> C["cruce con el calendario oficial"]
+    C --> V["VENCIDO: migrar ya"]
+    C --> P["vence en <= 180 días: planear"]
+    C --> O["ok"]
 ```
 
 </details>
@@ -296,82 +511,87 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    Primary["Tabla base<br/>HASH: shipmentId<br/>RANGE: sequence"]
-    Primary -->|"eventual consistency"| GSI["GSI EstadoIndex<br/>HASH: estado<br/>RANGE: sequence"]
-    Primary -->|"strong consistency"| LSI["LSI opcional<br/>Misma HASH<br/>RANGE distinto<br/>Límite 10GB"]
+
+```json
+{
+  "_fuente": "Copia las fechas de la tabla oficial de runtimes de AWS Lambda; estas son de ejemplo para el ejercicio.",
+  "nodejs18.x": "2025-09-01",
+  "python3.9": "2025-12-15",
+  "python3.12": "2028-10-31",
+  "java21": "2029-06-30",
+  "nodejs22.x": "2027-04-30"
+}
 ```
 
-```mermaid
-flowchart TD
-    BASE["Tabla base: Pedidos (HASH: usuario_id, RANGE: fecha_pedido)"]
-    BASE --> GSI["GSI por estado: HASH estado, RANGE fecha_pedido"]
-    GSI --> GP["permite consultar pedidos enviados por fecha"]
-    BASE --> LSI["LSI por monto: HASH usuario_id, RANGE monto_total"]
-    LSI --> LP["permite consultar pedidos del usuario ordenados por monto"]
+```json
+[
+  {
+    "funcion": "cotizar-envio",
+    "runtime": "nodejs18.x"
+  },
+  {
+    "funcion": "generar-guia",
+    "runtime": "python3.9"
+  },
+  {
+    "funcion": "notificar-cliente",
+    "runtime": "nodejs22.x"
+  },
+  {
+    "funcion": "procesar-foto",
+    "runtime": "python3.12"
+  },
+  {
+    "funcion": "liquidar",
+    "runtime": "java21"
+  }
+]
 ```
 
-```bash
-aws dynamodb update-table --table-name ShipmentEvents \
-  --attribute-definitions AttributeName=shipmentId,AttributeType=S AttributeName=sequence,AttributeType=N AttributeName=estado,AttributeType=S \
-  --global-secondary-index-updates '[{"Create":{"IndexName":"EstadoIndex","KeySchema":[{"AttributeName":"estado","KeyType":"HASH"},{"AttributeName":"sequence","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}}]'
-aws dynamodb put-item --table-name ShipmentEvents --item \
-  '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"4"},"tipo":{"S":"entregado"},"estado":{"S":"entregado"}}'
-aws dynamodb query --table-name ShipmentEvents --index-name EstadoIndex \
-  --key-condition-expression "estado = :e" --expression-attribute-values '{":e":{"S":"entregado"}}'
-```
+```python
+import json
+from datetime import date
 
-</details>
+HOY = date(2026, 11, 18)         # fija para que el ejercicio sea reproducible; en producción usa date.today()
+AVISO_DIAS = 180                 # avisar con seis meses de anticipación
 
-### Tema 6: Query vs Scan · Intermedio · 30 min
+calendario = {k: date.fromisoformat(v) for k, v in json.load(open("calendario.json")).items() if not k.startswith("_")}
+inventario = json.load(open("inventario.json"))
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+def estado(runtime: str) -> tuple[int, str]:
+    fin = calendario.get(runtime)
+    if fin is None:
+        return (0, "DESCONOCIDO: agrégalo al calendario")
+    dias = (fin - HOY).days
+    if dias < 0:
+        return (1, f"VENCIDO hace {-dias} días")
+    if dias <= AVISO_DIAS:
+        return (2, f"vence en {dias} días: planear migración")
+    return (3, f"ok hasta {fin.isoformat()}")
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a medir, con números reales, la diferencia de costo entre Query y Scan sobre ShipmentEvents. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)), Temas 2 y 4 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    Q["Query usuario_id = u-001; lee solo items de esa particion"]
-    S["Scan estado pendiente; examina todos los items de la tabla"]
-```
-
-#### ► REGLA PRÁCTICA
-Si conoces la clave de partición que buscas, usa Query: lee solo esa partición. Si necesitas filtrar por un atributo que no es la clave, un Scan examina toda la tabla antes de filtrar — suele ser la señal de que falta un índice secundario adecuado.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-Nombre del GSI: ________
-HASH: ________
-RANGE: ________
-Justificación: ________
-Costo estimado Scan vs Query: ________
-```
-
-```mermaid
-flowchart LR
-    Q["Query usuario_id = u-001; lee solo items de esa particion"]
-    S["Scan estado pendiente; examina todos los items de la tabla"]
+# Ordena por urgencia: desconocidos y vencidos primero.
+for f in sorted(inventario, key=lambda f: estado(f["runtime"])[0]):
+    print(f"{f['funcion']:<18} {f['runtime']:<12} {estado(f['runtime'])[1]}")
 ```
 
 ```bash
-aws dynamodb scan --table-name ShipmentEvents --select COUNT
-aws dynamodb query --table-name ShipmentEvents \
-  --key-condition-expression "shipmentId = :id" \
-  --expression-attribute-values '{":id":{"S":"env-4471"}}' --select COUNT
+cd academia-labs/cloud/deprecaciones
+# en una cuenta real, genera el inventario así:
+# aws lambda list-functions --query "Functions[].{funcion:FunctionName,runtime:Runtime}" > inventario.json
+python3 deprecaciones.py
+```
+
+```text
+cotizar-envio      nodejs18.x   VENCIDO hace 443 días
+generar-guia       python3.9    VENCIDO hace 338 días
+notificar-cliente  nodejs22.x   vence en 163 días: planear migración
+procesar-foto      python3.12   ok hasta 2028-10-31
+liquidar           java21       ok hasta 2029-06-30
 ```
 
 </details>
 
-### Laboratorio 4.1 — CRUD completo
+### Laboratorio 5.1 — Desplegar e invocar
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -382,11 +602,11 @@ aws dynamodb query --table-name ShipmentEvents \
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 4.1 — crud completo.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 5.1 — desplegar e invocar.
 
 </details>
 
-### Laboratorio 4.2 — Query vs Scan
+### Laboratorio 5.2 — Actualizar código y configuración
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -397,6 +617,77 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 4.2 — query vs scan.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 5.2 — actualizar código y configuración.
+
+</details>
+
+### El Problema
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar el problema.
+
+</details>
+
+### Tu Tarea
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar tu tarea.
+
+</details>
+
+### Solución Esperada
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+GSI: "EstadoRutaFlow" o "PorEstadoYTiempo"
+  HASH: estado (ej. "en_ruta")
+  RANGE: timestamp (ISO 8601)
+
+Lambda: obtener-envios-en-ruta
+  Input: { estado: "en_ruta", limit: 100 }
+  Output: { count: 45, envios: [...], queryTime: "45ms" }
+  Errores: 400 si estado inválido, 500 si DynamoDB falla
+
+Test: ✓ devuelve count, ✓ devuelve array de envios, ✓ incluye queryTime
+```
+
+</details>
+
+### Por Qué Importa
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar por qué importa.
 
 </details>

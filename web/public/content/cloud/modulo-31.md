@@ -1,22 +1,26 @@
-# Módulo 31: Proyecto integrador: API multi-nube con AWS, Azure y GCP
+# Módulo 31: Arquitectura cloud resiliente — redes, landing zones y recuperación
+
+Una colección de servicios funcionales todavía puede fallar como sistema. La arquitectura experta hace explícitas las fronteras de red y gobierno, conecta disponibilidad con necesidades del negocio y demuestra recuperación mediante experimentos. El objetivo no es dibujar nubes redundantes, sino justificar y verificar qué ocurre cuando una zona, una identidad o un conjunto de datos deja de estar disponible.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento · Avanzado · 45 min
+### Tema 1: Una red segura empieza por flujos, no por subredes · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a escribir y probar un confirmDelivery de RutaFlow diseñado contra un puerto DeliveryRepository, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
+Al finalizar vas a declarar el flujo real que demo-nodo (Módulo 21) necesita hacia la base de datos de facturación (Módulo 13), por referencia de grupo, no por rango abierto. Prerrequisitos: Módulos 13 y 21 completos.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    A["Principio: #quot;desacoplar productor y consumidor con una cola#quot;"] --> A1["PORTABLE"]
-    B["Sintaxis: aws sqs send-message vs az servicebus queue send"] --> B1["ESPECÍFICO de cada proveedor"]
+    I["Internet"] --> W["edge/WAF"] --> B["balanceador"] --> A["API privada"] --> D["DB privada"]
+    B --> L["logs/metrics"]
+    A --> EP["endpoint privado"]
+    ND["flujo no declarado"] -->|bloqueado| X["✗"]
 ```
 
 </details>
@@ -25,181 +29,52 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```
-AWS: API Gateway → Lambda → DynamoDB / SQS / S3, protegido con Cognito, desplegado con CloudFormation
-Azure: Functions → Cosmos DB / Service Bus / Blob Storage local
-GCP: Firestore + Cloud Storage + Pub/Sub local (solo lectura)
+```hcl
+resource "aws_security_group_rule" "api_to_db" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.db.id
+  source_security_group_id = aws_security_group.api.id
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  description              = "Solo la API accede a PostgreSQL"
+}
 ```
 
 ```mermaid
 flowchart LR
-    A["Principio: #quot;desacoplar productor y consumidor con una cola#quot;"] --> A1["PORTABLE"]
-    B["Sintaxis: aws sqs send-message vs az servicebus queue send"] --> B1["ESPECÍFICO de cada proveedor"]
+    I["Internet"] --> W["edge/WAF"] --> B["balanceador"] --> A["API privada"] --> D["DB privada"]
+    B --> L["logs/metrics"]
+    A --> EP["endpoint privado"]
+    ND["flujo no declarado"] -->|bloqueado| X["✗"]
 ```
 
 ```bash
-mkdir rutaflow-puertos
-cd rutaflow-puertos
-npm init -y
-npm install --save-dev tsx
-mkdir src tests
-```
-
-```ts
-export type ConfirmDeliveryCommand = {
-  shipmentId: string;
-  commandId: string;
-  recipientPin: string;
-};
-
-export type DeliveryResult = {
-  shipmentId: string;
-  commandId: string;
-  status: 'confirmed';
-};
-
-export interface DeliveryRepository {
-  findCommandResult(commandId: string): Promise<DeliveryResult | undefined>;
-  confirm(command: ConfirmDeliveryCommand): Promise<DeliveryResult>;
-}
-
-export async function confirmDelivery(
-  command: ConfirmDeliveryCommand,
-  repository: DeliveryRepository
-): Promise<DeliveryResult> {
-  if (!command.shipmentId) throw new TypeError('shipmentId es obligatorio');
-  if (!/^\d{6}$/.test(command.recipientPin)) {
-    throw new TypeError('recipientPin debe tener 6 dígitos');
-  }
-
-  const previous = await repository.findCommandResult(command.commandId);
-  if (previous) return previous;
-  return repository.confirm(command);
-}
-```
-
-```ts
-import type {
-  ConfirmDeliveryCommand,
-  DeliveryRepository,
-  DeliveryResult
-} from './confirm-delivery';
-
-export class MemoryDeliveryRepository implements DeliveryRepository {
-  private readonly results = new Map<string, DeliveryResult>();
-  confirmCalls = 0;
-
-  async findCommandResult(commandId: string): Promise<DeliveryResult | undefined> {
-    return this.results.get(commandId);
-  }
-
-  async confirm(command: ConfirmDeliveryCommand): Promise<DeliveryResult> {
-    this.confirmCalls += 1;
-    const result: DeliveryResult = {
-      shipmentId: command.shipmentId,
-      commandId: command.commandId,
-      status: 'confirmed'
-    };
-    this.results.set(command.commandId, result);
-    return result;
-  }
-}
-```
-
-```ts
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { confirmDelivery } from '../src/confirm-delivery';
-import { MemoryDeliveryRepository } from '../src/memory-delivery-repository';
-
-const command = {
-  shipmentId: 'env-4471',
-  commandId: 'cmd-001',
-  recipientPin: '837201'
-};
-
-test('confirma una sola vez por commandId', async () => {
-  const repository = new MemoryDeliveryRepository();
-  const first = await confirmDelivery(command, repository);
-  const second = await confirmDelivery(command, repository);
-  assert.deepEqual(second, first);
-  assert.equal(repository.confirmCalls, 1);
-});
-
-test('rechaza un PIN inválido antes de escribir', async () => {
-  const repository = new MemoryDeliveryRepository();
-  await assert.rejects(
-    confirmDelivery({ ...command, recipientPin: '1234' }, repository),
-    /6 dígitos/
-  );
-  assert.equal(repository.confirmCalls, 0);
-});
+DB_SG=$(aws ec2 create-security-group --group-name rutaflow-db-interna \
+  --description "Solo accesible desde demo-nodo" --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id "$DB_SG" --protocol tcp --port 5432 \
+  --source-group demo-nodo
 ```
 
 </details>
 
-### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD · Avanzado · 45 min
+### Tema 2: Una landing zone convierte gobierno en una base repetible · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["RDS (cloud local)"] --> A1["PostgreSQL REAL corriendo"]
-    B["ECS (cloud local)"] --> B1["contenedores Docker REALES"]
-    C["Lambda (cloud local)"] --> C1["runtime REAL en contenedor Docker"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-mkdir ejemplo-ci && cd ejemplo-ci
-```
-
-Crea el archivo `ci-integracion.sh`:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-NOMBRE=floci-ci-$$
-docker run -d --rm --name "$NOMBRE" -p 4566:4566 floci/floci:2.2.0 > /dev/null
-trap 'docker stop "$NOMBRE" > /dev/null; echo "limpieza: $NOMBRE detenido"' EXIT
-for intento in $(seq 1 30); do
-  curl -sf http://localhost:4566/_floci/health > /dev/null && break
-  sleep 1
-done
-export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
-aws s3 mb "s3://ci-evidencias-$$"
-aws s3 ls | grep -q "ci-evidencias-$$" && echo "prueba de integración: ok"
-```
-
-```bash
-bash ci-integracion.sh
-```
-
-</details>
-
-### Tema 3: Migración desde otros emuladores, y límites de un emulador · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a levantar Floci con un único docker-compose.yml y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS. Prerrequisitos: Módulo 30 completo.
+Al finalizar vas a escribir el guardrail real que impediría que alguien desactive CloudTrail en la cuenta de producción de RutaFlow. Prerrequisitos: Módulo 29 (STS, cuentas).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
-    A["LocalStack + Azurite + gcloud emulators (3 herramientas separadas)"] -->|migración| B["cloud local (1 único endpoint, AWS + Azure + GCP)"]
+    ID["identidad federada"] --> ORG["organización RutaFlow"]
+    ORG --> SEC["cuenta seguridad/logs\n(inmutables)"]
+    ORG --> PROD["cuenta producción"]
+    ORG --> NOPROD["cuenta no-producción"]
+    ORG --> SAND["cuenta sandbox"]
+    SEC -.->|"guardrail: Deny StopLogging"| PROD
 ```
 
 </details>
@@ -208,9 +83,127 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Deny",
+    "Action": "cloudtrail:StopLogging",
+    "Resource": "*",
+    "Condition": {"StringNotLike": {"aws:PrincipalArn": "*/SecurityAutomation"}}
+  }]
+}
+```
+
 ```mermaid
 flowchart TD
-    A["LocalStack + Azurite + gcloud emulators (3 herramientas separadas)"] -->|migración| B["cloud local (1 único endpoint, AWS + Azure + GCP)"]
+    ID["identidad federada"] --> ORG["organización RutaFlow"]
+    ORG --> SEC["cuenta seguridad/logs\n(inmutables)"]
+    ORG --> PROD["cuenta producción"]
+    ORG --> NOPROD["cuenta no-producción"]
+    ORG --> SAND["cuenta sandbox"]
+    SEC -.->|"guardrail: Deny StopLogging"| PROD
+```
+
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+Crea el archivo `guardrail-cloudtrail.json`:
+
+```json
+{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"cloudtrail:StopLogging","Resource":"*",
+  "Condition":{"StringNotLike":{"aws:PrincipalArn":"*/SecurityAutomation"}}}]}
+```
+
+```bash
+aws iam simulate-custom-policy --policy-input-list file://guardrail-cloudtrail.json \
+  --action-names cloudtrail:StopLogging --resource-arns "*"
+```
+
+</details>
+
+### Tema 3: Disponibilidad y recuperación responden preguntas distintas · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a asignar un RTO y un RPO reales a tres servicios concretos de RutaFlow, no un "lo más rápido posible" genérico. Prerrequisitos: Módulos 4 y 13 completos.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["región A: zonas A/B\n(disponibilidad)"] -->|"réplica/backup"| B["región B o almacén aislado\n(recuperación)"]
+    F["fallo"] --> DET["detectar"] --> CONT["contener"] --> REST["conmutar/restaurar"] --> VAL["validar"] --> COM["comunicar"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```text
+Servicio         RTO       RPO       Estrategia
+catálogo         4 h       24 h      reconstruir + backup
+pedidos          30 min    5 min     warm standby + réplica
+pagos            5 min     ~0        proveedor idempotente + failover ensayado
+```
+
+```mermaid
+flowchart LR
+    A["región A: zonas A/B\n(disponibilidad)"] -->|"réplica/backup"| B["región B o almacén aislado\n(recuperación)"]
+    F["fallo"] --> DET["detectar"] --> CONT["contener"] --> REST["conmutar/restaurar"] --> VAL["validar"] --> COM["comunicar"]
+```
+
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```text
+Servicio                  RTO       RPO       Estrategia
+confirmar-entrega         5 min     ~0        rol IAM temporal + reintentos (Módulo 5), sin estado propio que perder
+ShipmentEvents            30 min    5 min     PITR de DynamoDB (Módulo 4) + réplica
+rutaflow-facturacion      4 h       24 h      snapshot diario (Módulo 13) + restore probado
+```
+
+</details>
+
+### Tema 4: Un backup solo existe operativamente después de restaurarlo · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a restaurar de verdad el snapshot de rutaflow-facturacion (Módulo 13) y a medir si el RTO del Tema 3 se cumple en la práctica, no solo en la tabla. Prerrequisitos: Módulo 13 Tema 2, Tema 3 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    B["backup"] --> R["restaurar aislado"] --> I["integridad"] --> PF["prueba funcional"] --> M["medir RTO/RPO"]
+    H["hipótesis"] --> L["limitar"] --> IF["inyectar fallo"] --> O["observar"] --> AB["abortar/recuperar"] --> AP["aprender"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```yaml
+experiment:
+  hypothesis: "La API conserva su SLO al perder una réplica"
+  steady_state: "success_rate >= 0.99 and p95_ms < 500"
+  action: "terminar una réplica no líder"
+  abort: "error_rate > 0.05 for 2m"
+  verify: ["alarm fired", "traffic shifted", "capacity recovered"]
+```
+
+```mermaid
+flowchart LR
+    B["backup"] --> R["restaurar aislado"] --> I["integridad"] --> PF["prueba funcional"] --> M["medir RTO/RPO"]
+    H["hipótesis"] --> L["limitar"] --> IF["inyectar fallo"] --> O["observar"] --> AB["abortar/recuperar"] --> AP["aprender"]
 ```
 
 ```bash
@@ -218,447 +211,95 @@ mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
-docker compose up -d
-eval $(floci env)
-aws s3 mb s3://demo-multi-nube
+time aws rds restore-db-instance-from-db-snapshot --db-instance-identifier rutaflow-facturacion-gameday \
+  --db-snapshot-identifier snap-facturacion-001
+aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion-gameday
+psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
 ```
 
 </details>
 
-### Tema 4: Testcontainers — pruebas de integración automatizadas · Avanzado · 45 min
+### Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
-
-#### ► LA ANALOGÍA
-El módulo gestiona ciclo de vida como un técnico que prepara y limpia el laboratorio.
-
-**Conceptos clave:** módulo Testcontainers oficial por lenguaje, ciclo de vida gestionado automáticamente, sin puerto fijo ni contenedor persistente entre suites.
-
-Floci publica módulos Testcontainers propios para los lenguajes SDK principales: `io.floci:testcontainers-floci` en Maven Central (Java), `@floci/testcontainers` en npm (Node.js/TypeScript) y `testcontainers-floci` en PyPI (Python). Cada módulo expone una clase `FlociContainer` que envuelve la imagen `floci/floci:latest`: al arrancar, espera a que el puerto 4566 esté listo dentro del contenedor y expone cuatro métodos — `getEndpoint()`, `getRegion()`, `getAccessKey()` y `getSecretKey()` — que se pasan directamente al cliente del SDK que estés probando, sin variables de entorno ni configuración manual del endpoint.
-
-La diferencia frente a levantar Floci con `floci start` o Docker Compose (como hiciste en el resto del track) es el ciclo de vida: Testcontainers arranca un contenedor Floci **nuevo y aislado** para cada suite de pruebas (o para toda la sesión de pruebas, según el scope que elijas) y lo destruye automáticamente al terminar. Esto elimina dos problemas típicos de compartir un único Floci de larga duración entre suites de test: estado que se filtra de una prueba a otra (un bucket creado en el test A todavía existe cuando corre el test B), y conflictos de puerto cuando varias suites corren en paralelo (Testcontainers asigna un puerto de host aleatorio y disponible en cada arranque, expuesto vía `getEndpoint()`).
-
-**Ejemplo en Java (JUnit 5):**
-
-```java
-import io.floci.testcontainers.FlociContainer;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-
-import java.net.URI;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Testcontainers
-class S3IntegrationTest {
-
-    @Container
-    static FlociContainer floci = new FlociContainer();
-
-    @Test
-    void shouldCreateBucket() {
-        S3Client s3 = S3Client.builder()
-                .endpointOverride(URI.create(floci.getEndpoint()))
-                .region(Region.of(floci.getRegion()))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(floci.getAccessKey(), floci.getSecretKey())))
-                .forcePathStyle(true)
-                .build();
-
-        s3.createBucket(b -> b.bucket("my-bucket"));
-
-        assertThat(s3.listBuckets().buckets())
-                .anyMatch(b -> b.name().equals("my-bucket"));
-    }
-}
-```
-
-**Ejemplo en Node.js (Jest):**
-
-```typescript
-import { FlociContainer } from "@floci/testcontainers";
-import { S3Client, CreateBucketCommand, ListBucketsCommand } from "@aws-sdk/client-s3";
-
-describe("S3", () => {
-    let floci: FlociContainer;
-
-    beforeAll(async () => {
-        floci = await new FlociContainer().start();
-    });
-
-    afterAll(async () => {
-        await floci.stop();
-    });
-
-    it("should create and list a bucket", async () => {
-        const s3 = new S3Client({
-            endpoint: floci.getEndpoint(),
-            region: floci.getRegion(),
-            credentials: {
-                accessKeyId: floci.getAccessKey(),
-                secretAccessKey: floci.getSecretKey(),
-            },
-            forcePathStyle: true,
-        });
-
-        await s3.send(new CreateBucketCommand({ Bucket: "my-bucket" }));
-
-        const { Buckets } = await s3.send(new ListBucketsCommand({}));
-        expect(Buckets?.some(b => b.Name === "my-bucket")).toBe(true);
-    });
-});
-```
-
-**Ejemplo en Python (pytest, fixture de sesión):**
-
-Instala el paquete con la versión fijada: `pip install testcontainers-floci==0.4.0 pytest boto3`. Aunque el paquete se llama `testcontainers-floci`, el módulo que importas se llama `floci`.
-
-```python
-import pytest
-import boto3
-from floci import FlociContainer
-
-@pytest.fixture(scope="session")
-def floci():
-    with FlociContainer() as container:
-        yield container
-
-@pytest.fixture(scope="session")
-def s3_client(floci):
-    return boto3.client(
-        "s3",
-        endpoint_url=floci.get_endpoint(),
-        region_name=floci.get_region(),
-        aws_access_key_id=floci.get_access_key(),
-        aws_secret_access_key=floci.get_secret_key(),
-    )
-
-def test_create_bucket(s3_client):
-    s3_client.create_bucket(Bucket="my-bucket")
-    buckets = [b["Name"] for b in s3_client.list_buckets()["Buckets"]]
-    assert "my-bucket" in buckets
-```
-
-Fíjate en el patrón compartido por los tres lenguajes: el contenedor se declara una sola vez con alcance de sesión o de clase (`@Container static` en Java, `beforeAll`/`afterAll` en Jest, el fixture `scope="session"` en pytest), no dentro de cada test individual — arrancar un contenedor Docker por cada test sería innecesariamente lento. El módulo Go equivalente (`testcontainers-floci-go`) está en desarrollo activo en el momento de escribir esto; para Go, sigue usando el patrón manual del Módulo 1 (`floci start` + variables de entorno) en tus pruebas de integración.
-
-**Analogía:** un Floci levantado con `floci start` para desarrollo diario es como la cocina de tu propia casa: siempre está ahí, acumula lo que vas dejando en ella entre una comida y otra. Un Floci gestionado por Testcontainers es como una cocina de alquiler por horas que llega completamente limpia y vacía para cada evento, y se desmonta por completo al terminar — ideal precisamente porque ninguna prueba puede heredar por accidente algo que dejó la prueba anterior.
-
-**¿Por qué es importante?** Los módulos Testcontainers oficiales convierten "prueba de integración contra Floci" en una línea de configuración dentro del propio código de test, sin depender de que un Floci externo esté corriendo de antemano (ni en tu máquina ni en el runner de CI) ni de gestionar manualmente su ciclo de vida — el mismo patrón que ya usaste conceptualmente en el Módulo 9 al mencionar CI/CD, pero ahora con el contenedor arrancando y destruyéndose automáticamente alrededor de cada suite.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-    subgraph SIN["Sin Testcontainers"]
-        S1["CI arranca Floci manualmente"] --> S2["corren las suites"] --> S3["CI apaga Floci manualmente"]
-        S3 -.-> N1["estado compartido entre suites, puerto fijo, arranque/apagado a mano"]
-    end
-    subgraph CON["Con Testcontainers"]
-        A1["Suite A: FlociContainer.start()"] --> A2["prueba"] --> A3["stop() (aislado, puerto aleatorio)"]
-        B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
-    end
-```
-
----
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea recursos únicos por prueba de integración y consulta una evidencia recién almacenada. Ejecuta dos pruebas en paralelo y demuestra que no comparten nombres ni dejan recursos tras un fallo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    subgraph SIN["Sin Testcontainers"]
-        S1["CI arranca Floci manualmente"] --> S2["corren las suites"] --> S3["CI apaga Floci manualmente"]
-        S3 -.-> N1["estado compartido entre suites, puerto fijo, arranque/apagado a mano"]
-    end
-    subgraph CON["Con Testcontainers"]
-        A1["Suite A: FlociContainer.start()"] --> A2["prueba"] --> A3["stop() (aislado, puerto aleatorio)"]
-        B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
-    end
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import io.floci.testcontainers.FlociContainer;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-
-import java.net.URI;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Testcontainers
-class S3IntegrationTest {
-
-    @Container
-    static FlociContainer floci = new FlociContainer();
-
-    @Test
-    void shouldCreateBucket() {
-        S3Client s3 = S3Client.builder()
-                .endpointOverride(URI.create(floci.getEndpoint()))
-                .region(Region.of(floci.getRegion()))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(floci.getAccessKey(), floci.getSecretKey())))
-                .forcePathStyle(true)
-                .build();
-
-        s3.createBucket(b -> b.bucket("my-bucket"));
-
-        assertThat(s3.listBuckets().buckets())
-                .anyMatch(b -> b.name().equals("my-bucket"));
-    }
-}
-```
-
-```typescript
-import { FlociContainer } from "@floci/testcontainers";
-import { S3Client, CreateBucketCommand, ListBucketsCommand } from "@aws-sdk/client-s3";
-
-describe("S3", () => {
-    let floci: FlociContainer;
-
-    beforeAll(async () => {
-        floci = await new FlociContainer().start();
-    });
-
-    afterAll(async () => {
-        await floci.stop();
-    });
-
-    it("should create and list a bucket", async () => {
-        const s3 = new S3Client({
-            endpoint: floci.getEndpoint(),
-            region: floci.getRegion(),
-            credentials: {
-                accessKeyId: floci.getAccessKey(),
-                secretAccessKey: floci.getSecretKey(),
-            },
-            forcePathStyle: true,
-        });
-
-        await s3.send(new CreateBucketCommand({ Bucket: "my-bucket" }));
-
-        const { Buckets } = await s3.send(new ListBucketsCommand({}));
-        expect(Buckets?.some(b => b.Name === "my-bucket")).toBe(true);
-    });
-});
-```
-
-```python
-import pytest
-import boto3
-from floci import FlociContainer
-
-@pytest.fixture(scope="session")
-def floci():
-    with FlociContainer() as container:
-        yield container
-
-@pytest.fixture(scope="session")
-def s3_client(floci):
-    return boto3.client(
-        "s3",
-        endpoint_url=floci.get_endpoint(),
-        region_name=floci.get_region(),
-        aws_access_key_id=floci.get_access_key(),
-        aws_secret_access_key=floci.get_secret_key(),
-    )
-
-def test_create_bucket(s3_client):
-    s3_client.create_bucket(Bucket="my-bucket")
-    buckets = [b["Name"] for b in s3_client.list_buckets()["Buckets"]]
-    assert "my-bucket" in buckets
-```
-
-```mermaid
-flowchart TD
-    subgraph SIN["Sin Testcontainers"]
-        S1["CI arranca Floci manualmente"] --> S2["corren las suites"] --> S3["CI apaga Floci manualmente"]
-        S3 -.-> N1["estado compartido entre suites, puerto fijo, arranque/apagado a mano"]
-    end
-    subgraph CON["Con Testcontainers"]
-        A1["Suite A: FlociContainer.start()"] --> A2["prueba"] --> A3["stop() (aislado, puerto aleatorio)"]
-        B1["Suite B: FlociContainer.start()"] --> B2["prueba"] --> B3["stop() (aislado, puerto aleatorio)"]
-    end
-```
-
-```python
-import uuid
-
-import boto3
-import pytest
-from floci import FlociContainer
-
-
-@pytest.fixture(scope="session")
-def s3():
-    with FlociContainer() as floci:
-        yield boto3.client(
-            "s3",
-            endpoint_url=floci.get_endpoint(),
-            region_name=floci.get_region(),
-            aws_access_key_id=floci.get_access_key(),
-            aws_secret_access_key=floci.get_secret_key(),
-        )
-
-
-def bucket_unico() -> str:
-    return f"evidencias-{uuid.uuid4().hex[:12]}"
-
-
-def test_guarda_evidencia(s3):
-    bucket = bucket_unico()
-    s3.create_bucket(Bucket=bucket)
-    s3.put_object(Bucket=bucket, Key="RF-101.json", Body=b'{"estado":"entregado"}')
-    assert s3.get_object(Bucket=bucket, Key="RF-101.json")["Body"].read() == b'{"estado":"entregado"}'
-
-
-def test_bucket_nuevo_esta_vacio(s3):
-    bucket = bucket_unico()
-    s3.create_bucket(Bucket=bucket)
-    assert s3.list_objects_v2(Bucket=bucket).get("KeyCount") == 0
-```
-
-```bash
-mkdir -p ejemplo-isolated-tests/tests && cd ejemplo-isolated-tests
-python3 -m venv .venv && . .venv/bin/activate
-pip install testcontainers-floci==0.4.0 pytest boto3
-python3 -m pytest -q tests/test_aislado.py
-```
-
-</details>
-
-### Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/migracion. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TB
-    A["¿Se usa?"] -->|no| R1["Retirar"]
-    A -->|sí| B["¿Depende de algo local?"]
-    B -->|sí| R2["Retener"]
-    B -->|no| C["¿Hay SaaS equivalente?"]
-    C -->|sí| R3["Recomprar"]
-    C -->|no| D["¿Cambia seguido?"]
-    D -->|sí| R4["Refactorizar"]
-    D -->|no| E["¿SO soportado?"]
-    E -->|no| R5["Replataformar"]
-    E -->|sí| R6["Rehospedar"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TB
-    A["¿Se usa?"] -->|no| R1["Retirar"]
-    A -->|sí| B["¿Depende de algo local?"]
-    B -->|sí| R2["Retener"]
-    B -->|no| C["¿Hay SaaS equivalente?"]
-    C -->|sí| R3["Recomprar"]
-    C -->|no| D["¿Cambia seguido?"]
-    D -->|sí| R4["Refactorizar"]
-    D -->|no| E["¿SO soportado?"]
-    E -->|no| R5["Replataformar"]
-    E -->|sí| R6["Rehospedar"]
-```
-
-```python
-from dataclasses import dataclass
-
-@dataclass
-class Aplicacion:
-    nombre: str
-    se_usa: bool
-    tiene_saas_equivalente: bool
-    cambia_seguido: bool
-    depende_de_hardware_local: bool
-    sistema_operativo_soportado: bool
-
-def decidir(app: Aplicacion) -> str:
-    # Orden de las preguntas: de la más barata a la más cara.
-    if not app.se_usa:
-        return "Retirar (retire)"
-    if app.depende_de_hardware_local:
-        return "Retener (retain): revisar en 12 meses"
-    if app.tiene_saas_equivalente:
-        return "Recomprar (repurchase): reemplazar por SaaS"
-    if app.cambia_seguido:
-        return "Refactorizar (refactor): rediseñar para la nube"
-    if not app.sistema_operativo_soportado:
-        return "Replataformar (replatform): cambiar la base, no el código"
-    return "Rehospedar (rehost): mover tal cual"
-
-inventario = [
-    Aplicacion("reportes-2015", False, False, False, False, True),
-    Aplicacion("impresora-etiquetas", True, False, False, True, True),
-    Aplicacion("correo-interno", True, True, False, False, True),
-    Aplicacion("api-rutas", True, False, True, False, True),
-    Aplicacion("facturacion", True, False, False, False, False),
-    Aplicacion("intranet", True, False, False, False, True),
-]
-
-for app in inventario:
-    print(f"{app.nombre:<20} -> {decidir(app)}")
-```
-
-```bash
-cd academia-labs/cloud/migracion
-python3 siete_r.py
-```
-
-```text
-reportes-2015        -> Retirar (retire)
-impresora-etiquetas  -> Retener (retain): revisar en 12 meses
-correo-interno       -> Recomprar (repurchase): reemplazar por SaaS
-api-rutas            -> Refactorizar (refactor): rediseñar para la nube
-facturacion          -> Replataformar (replatform): cambiar la base, no el código
-intranet             -> Rehospedar (rehost): mover tal cual
-```
-
-</details>
-
-### Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Usa Terraform con el proveedor AWS. La VPN real necesita un equipo o software VPN del lado local (por ejemplo, strongSwan); puedes practicar el plan y el diseño de rutas sin él.
+Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/well-architected. Ten a mano el diagrama de la arquitectura del proyecto integrador.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    B["Bodega 192.168.10.0/24<br/>servidor de impresión"] -->|"túnel 1 y túnel 2 (IPsec)"| V["VGW"]
-    V --> P["VPC 10.20.0.0/16<br/>API RutaFlow"]
-    P -. "solo 192.168.10.50/32" .-> B
+    A["Arquitectura RutaFlow"] --> P["6 pilares<br/>preguntas sí/no"]
+    P --> H["riesgos altos"]
+    P --> M["riesgos medios"]
+    H --> X["plan: resolver primero"]
+    M --> Y["backlog con fecha"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+
+```python
+# Revisión ligera de Well-Architected: cada pilar con preguntas de sí/no y su riesgo.
+REVISION = {
+    "Excelencia operativa": {"runbooks versionados": True, "despliegues automatizados": True},
+    "Seguridad": {"MFA en todas las cuentas": True, "cifrado en reposo": True, "mínimo privilegio revisado": False},
+    "Confiabilidad": {"multi-AZ en la base": False, "respaldos restaurados en prueba": True},
+    "Eficiencia de rendimiento": {"pruebas de carga recientes": False, "caché frente a la base": True},
+    "Optimización de costos": {"etiquetas de costo": True, "presupuestos con alerta": True},
+    "Sostenibilidad": {"apagado nocturno de entornos de prueba": False, "instancias Graviton evaluadas": True},
+}
+ALTO_RIESGO = {"multi-AZ en la base", "mínimo privilegio revisado"}
+
+for pilar, preguntas in REVISION.items():
+    cumplidas = sum(preguntas.values())
+    faltan = [p for p, ok in preguntas.items() if not ok]
+    marca = "OK " if not faltan else "!! "
+    detalle = "" if not faltan else " · falta: " + ", ".join(
+        f"{p}{' (riesgo alto)' if p in ALTO_RIESGO else ''}" for p in faltan)
+    print(f"{marca}{pilar}: {cumplidas}/{len(preguntas)}{detalle}")
+
+altos = [p for preguntas in REVISION.values() for p, ok in preguntas.items() if not ok and p in ALTO_RIESGO]
+print(f"Riesgos altos a resolver primero: {len(altos)}")
+```
+
+```bash
+cd academia-labs/cloud/well-architected
+python3 revision_wa.py
+```
+
+```text
+OK Excelencia operativa: 2/2
+!! Seguridad: 2/3 · falta: mínimo privilegio revisado (riesgo alto)
+!! Confiabilidad: 1/2 · falta: multi-AZ en la base (riesgo alto)
+!! Eficiencia de rendimiento: 1/2 · falta: pruebas de carga recientes
+OK Optimización de costos: 2/2
+!! Sostenibilidad: 1/2 · falta: apagado nocturno de entornos de prueba
+Riesgos altos a resolver primero: 2
+```
+
+</details>
+
+### Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Python 3.10 o superior. Crea academia-labs/cloud/residencia. En un proyecto real, genera el plan con terraform show -json plan.out > plan.json; aquí usarás un plan de ejemplo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    P["terraform plan -json"] --> R["residencia.py"]
+    R --> C{"¿datos=personales<br/>fuera de regiones permitidas?"}
+    C -->|sí| B["BLOQUEADO: CI falla"]
+    C -->|no| A["apply"]
 ```
 
 </details>
@@ -669,51 +310,90 @@ flowchart LR
 #### Código y verificación
 ```mermaid
 flowchart LR
-    B["Bodega 192.168.10.0/24<br/>servidor de impresión"] -->|"túnel 1 y túnel 2 (IPsec)"| V["VGW"]
-    V --> P["VPC 10.20.0.0/16<br/>API RutaFlow"]
-    P -. "solo 192.168.10.50/32" .-> B
+    P["terraform plan -json"] --> R["residencia.py"]
+    R --> C{"¿datos=personales<br/>fuera de regiones permitidas?"}
+    C -->|sí| B["BLOQUEADO: CI falla"]
+    C -->|no| A["apply"]
 ```
 
-```hcl
-resource "aws_vpn_gateway" "vgw" {
-  vpc_id = aws_vpc.principal.id # VPC 10.20.0.0/16
-}
+```python
+import json
+import sys
 
-resource "aws_customer_gateway" "bodega" {
-  bgp_asn    = 65010
-  ip_address = "203.0.113.20" # IP pública del equipo VPN de la bodega
-  type       = "ipsec.1"
-}
+# Regla de residencia: los datos personales de clientes de Colombia solo pueden vivir en estas regiones.
+REGIONES_PERMITIDAS = {"us-east-1", "sa-east-1"}  # acordadas con el área legal
+ETIQUETA = "datos"  # valor "personales" marca recursos con datos personales
 
-resource "aws_vpn_connection" "bodega" {
-  vpn_gateway_id      = aws_vpn_gateway.vgw.id
-  customer_gateway_id = aws_customer_gateway.bodega.id
-  type                = "ipsec.1"
-  static_routes_only  = true
-}
+def revisar(plan: dict) -> list[str]:
+    hallazgos = []
+    for recurso in plan["resource_changes"]:
+        despues = recurso["change"]["after"] or {}
+        etiquetas = despues.get("tags_all") or {}
+        if etiquetas.get(ETIQUETA) != "personales":
+            continue
+        region = despues.get("region", plan["region"])
+        if region not in REGIONES_PERMITIDAS:
+            hallazgos.append(f"{recurso['address']}: datos personales en {region}")
+    return hallazgos
 
-# Solo el servidor de impresión, no toda la red de la bodega.
-resource "aws_vpn_connection_route" "impresion" {
-  vpn_connection_id      = aws_vpn_connection.bodega.id
-  destination_cidr_block = "192.168.10.50/32"
-}
+plan = json.load(open(sys.argv[1]))
+hallazgos = revisar(plan)
+for h in hallazgos:
+    print("BLOQUEADO", h)
+print(f"{len(hallazgos)} problema(s) de residencia")
+sys.exit(1 if hallazgos else 0)
+```
 
-resource "aws_route" "hacia_impresion" {
-  route_table_id         = aws_route_table.privada.id
-  destination_cidr_block = "192.168.10.50/32"
-  gateway_id             = aws_vpn_gateway.vgw.id
+```json
+{
+  "region": "us-east-1",
+  "resource_changes": [
+    {"address": "aws_s3_bucket.fotos", "change": {"after": {"tags_all": {"datos": "personales"}}}},
+    {"address": "aws_s3_bucket.respaldo_eu", "change": {"after": {"region": "eu-west-1", "tags_all": {"datos": "personales"}}}},
+    {"address": "aws_s3_bucket.logs_eu", "change": {"after": {"region": "eu-west-1", "tags_all": {"datos": "tecnicos"}}}}
+  ]
 }
 ```
 
 ```bash
-terraform -chdir=infra plan
-# después del apply, descarga la configuración de los dos túneles para el equipo local:
-aws ec2 describe-vpn-connections --query "VpnConnections[0].VgwTelemetry[].[OutsideIpAddress,Status]" --output table
+cd academia-labs/cloud/residencia
+python3 residencia.py plan.json; echo "salida: $?"
 ```
 
 ```text
-terraform plan: «Plan: 5 to add» (VGW, CGW, conexión VPN, ruta de la VPN y ruta de la tabla).
-describe-vpn-connections muestra dos filas, una por túnel, con estado UP cuando el equipo local está configurado.
+BLOQUEADO aws_s3_bucket.respaldo_eu: datos personales en eu-west-1
+1 problema(s) de residencia
+salida: 1
 ```
+
+</details>
+
+### Nube de evolución continua y vigilancia de retiros
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar nube de evolución continua y vigilancia de retiros.
+
+</details>
+
+### Método de estudio y proyecto de ampliación
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
 
 </details>

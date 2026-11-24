@@ -1,2481 +1,1961 @@
-# Módulo 7: Requisitos, diseño, arquitectura y mantenimiento
+# Módulo 7: Ciencias de la Computación: mapa de especializaciones
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64 (Ubuntu 24.04), Node.js 22.23.5 y Git 2.43.0. La línea de referencia del curso es Python 3.14 (`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/modulo-7` (tu `~/labs/modulo-7`). El TypeScript del Tema 3 se ejecutó con Node.js 22.23.5, que ya quita los tipos sin compilar; con Node.js 24 funciona igual. El programa C# del Tema 5 **no se ejecutó**: el equipo no tenía el SDK de .NET. Su comportamiento se describe y se comprueba con un programa Python equivalente que sí se ejecutó.
+**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64, con el módulo `sqlite3` de
+la biblioteca estándar (SQLite 3.53.1). No se instaló ningún paquete externo. Todas las salidas son literales de esa
+ejecución, en la carpeta de práctica `/home/estudiante/labs/especializaciones` (tu `~/labs/especializaciones`). Los
+valores aleatorios usan una semilla fija, así que deben coincidir con los tuyos. Los comandos para Windows no se
+ejecutaron.
 
 ## Apertura del módulo
 
+#### Objetivos del módulo
 Al terminar este módulo podrás:
-- convertir una necesidad vaga en requisitos y criterios de aceptación que un programa comprueba;
-- justificar una decisión de arquitectura con un escenario de calidad medible;
-- separar una regla de negocio de la base de datos con un puerto y dos adaptadores;
-- refactorizar con una prueba caracterizadora que demuestre que nada cambió;
-- registrar decisiones en ADR y priorizar la deuda técnica con números;
-- trabajar con un agente de IA contra una especificación y comprobar su alcance y cobertura.
+- reconocer seis grandes áreas de las ciencias de la computación y el problema central que resuelve cada una;
+- ejecutar un experimento pequeño por área y explicar qué muestra su salida;
+- distinguir usar una herramienta de comprender el fundamento que la hace funcionar;
+- identificar qué matemáticas y qué módulos previos exige cada especialización antes de profundizar;
+- elegir una especialización para estudiar después, con evidencia de tus propios experimentos.
 
-**Esquema del módulo:** Tema 1, requisitos; Tema 2, arquitectura; Tema 3, diseño modular y refactorización; Tema 4,
-decisiones y deuda; Tema 5, igualdad e inmutabilidad en records de C#; Tema 6, especificación para agentes de IA;
-Tema 7, evaluación de skills de agente; Proyecto 7.
+#### Esquema del módulo
+1. Sistemas, arquitectura y sistemas operativos.
+2. Algoritmos, autómatas, lenguajes y compiladores.
+3. Bases de datos, almacenes analíticos y minería de datos.
+4. Inteligencia artificial, aprendizaje automático y visión.
+5. Gráficos y cómputo científico.
+6. Redes, seguridad, web e ingeniería profesional.
+7. Proyecto 11: portafolio de orientación.
 
-**Qué necesitas saber antes:** algoritmo, caso de prueba, excepción y `assert` (Módulo 1, Tema 1); funciones y
-módulos (Módulo 1, Tema 4); clase, objeto y método (Módulo 1, Tema 6); composición, clase abstracta y polimorfismo
-(Módulo 1, Tema 7); SQLite desde Python y restricciones (Módulo 4); prueba unitaria, doble de prueba, prueba de
-regresión, commit, pull request y revisión de código (Módulo 5).
+#### Qué necesitas saber antes
+Los Módulos 0, 1 y 2 completos: procesos, funciones, clases, listas, diccionarios, colas, árboles y complejidad. El
+Módulo 3 para redes y HTTP, el Módulo 4 para SQL con SQLite y el Módulo 5 para depurar con evidencia. Cada
+término nuevo se define en el tema donde aparece por primera vez.
 
+Este módulo es un **mapa**, no un curso de cada área. Un experimento de veinte líneas te muestra la idea central de
+una especialización; dominarla exige meses de estudio. Ese límite se repite en cada tema a propósito.
 
 ## Aprende construyendo
 
-### Tema 1: Requisitos, stakeholders y criterios verificables · Avanzado · 50 min
+Crea la carpeta de práctica una sola vez y trabaja dentro de ella en los seis temas:
+
+```text
+$ mkdir -p ~/labs/especializaciones
+$ cd ~/labs/especializaciones
+$ python3 --version
+Python 3.13.18
+```
+
+### Tema 1: Sistemas, arquitectura y sistemas operativos · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- identificar a los stakeholders de una funcionalidad y anotar quién pidió cada requisito;
-- distinguir un requisito funcional de uno no funcional y reescribir uno vago con una medida;
-- redactar una historia de usuario con criterios de aceptación «dado, cuando, entonces»;
-- comprobar con un programa que cada criterio está escrito bien y que el código lo cumple.
+- simular el reparto de la CPU con Round Robin y calcular el tiempo de retorno de cada proceso;
+- contar los cambios de contexto y explicar por qué un quantum pequeño los multiplica;
+- ejecutar a mano el ciclo de instrucción de una CPU de juguete con registros y contador de programa;
+- reconocer qué roles trabajan en sistemas y qué estudian antes de especializarse.
 
-**Conceptos clave:** stakeholder, requisito funcional, requisito no funcional, historia de usuario, criterio de aceptación, trazabilidad
-
-Este tema usa lo que ya conoces: **caso de prueba**, **excepción** y **assert** tienen su ficha en el Módulo 1, Tema 1.
-Aquí no se redefinen.
+**Conceptos clave:** planificador de procesos, Round Robin, quantum, cambio de contexto, tiempo de retorno, conjunto de instrucciones, registro del procesador, contador de programa, ciclo de instrucción
 
 #### El problema
-La coordinadora de RutaFlow escribe en el chat: «confirmar una entrega debe ser rápido y seguro». El conductor
-entiende «un botón». El cliente entiende «que nadie reciba mi paquete por mí». Auditoría entiende «que quede registro».
-Nadie puede probar si el sistema cumple, porque «rápido» y «seguro» no tienen medida. ¿Cómo conviertes esa frase en
-algo que un programa comprueba?
+El dispositivo que lleva cada mensajero de RutaFlow tiene **una sola CPU**. Al mismo tiempo debe leer el GPS,
+sincronizar entregas con el servidor y comprimir las fotos de las firmas. Si la compresión ocupa la CPU un minuto
+entero, el mapa se congela. ¿Cómo reparte el sistema operativo una CPU entre varios procesos sin que ninguno se
+quede esperando para siempre? ¿Y qué hace la CPU, por dentro, con cada instrucción?
+
+Este tema usa lo que ya conoces: **CPU**, **sistema operativo** y **proceso** tienen su ficha en el Módulo 0, Tema 1;
+**cola** y **deque**, en el Módulo 2, Tema 2. Aquí no se redefinen.
 
 #### Glosario del tema
 
-**stakeholder**
-- **Definición técnica:** persona o grupo que afecta al sistema o se ve afectado por él, y cuyas necesidades originan requisitos.
-- **En palabras sencillas:** cada persona a la que le importa cómo funciona la confirmación de entregas.
-- **Dónde se rompe la comparación:** no es solo quien usa la pantalla: auditoría nunca la abre y aun así impone reglas.
-- **Ejemplo:** en `revisar_requisitos.py`, cada requisito «después» lleva su stakeholder: conductor, cliente o auditoría.
-- **Error típico:** escribir requisitos sin dueño; la salida «antes» marca R2 con `nadie lo pidió`.
+**planificador de procesos**
+- **Definición técnica:** parte del sistema operativo que decide qué proceso listo usa la CPU a continuación y durante cuánto tiempo.
+- **En palabras sencillas:** el turnero de un banco que dice a quién atiende la única ventanilla.
+- **Dónde se rompe la comparación:** el planificador puede interrumpir a quien está siendo atendido y mandarlo al final de la fila.
+- **Ejemplo:** en `planificador.py`, el bucle `while procesos:` hace de planificador: saca uno, lo atiende y decide si vuelve.
+- **Error típico:** creer que los procesos corren «a la vez» en una sola CPU; se turnan tan rápido que lo parece.
 
-**requisito funcional**
-- **Definición técnica:** enunciado de un comportamiento que el sistema debe ofrecer: una entrada, una acción y un resultado observable.
-- **En palabras sencillas:** algo que el sistema **hace**: confirmar, rechazar, guardar.
-- **Dónde se rompe la comparación:** «hacer» incluye negarse: rechazar un PIN corto también es un comportamiento exigido.
-- **Ejemplo:** «el conductor confirma la entrega con el PIN de 6 dígitos del destinatario» → la salida dice `[funcional]`.
-- **Error típico:** dejar el dato sin forma: «con el PIN» no dice cuántos dígitos ni qué pasa si está mal.
+**Round Robin**
+- **Definición técnica:** política de planificación que atiende la cola en orden de llegada y da a cada proceso un tiempo máximo fijo antes de pasar al siguiente.
+- **En palabras sencillas:** una ronda: cada uno tiene un turno corto y, si no terminó, vuelve al final.
+- **Dónde se rompe la comparación:** en una ronda de juego todos tienen el mismo turno; aquí quien termina antes cede el resto de su tiempo.
+- **Ejemplo:** con turnos de 2 unidades, `gps` usa 2, `sync` usa 2, `fotos` usa 2 y vuelve `gps`.
+- **Error típico:** pensar que Round Robin termina antes todos los trabajos; reparte mejor, pero no reduce el trabajo total.
 
-**requisito no funcional**
-- **Definición técnica:** restricción sobre **cómo** se comporta el sistema (tiempo de respuesta, seguridad, disponibilidad), expresada con una medida.
-- **En palabras sencillas:** qué tan bien lo hace: qué tan rápido, qué tan protegido, cuántas veces falla.
-- **Dónde se rompe la comparación:** «bien» no sirve hasta tener número; «rápido» es una opinión, «menos de 2 segundos» es un requisito.
-- **Ejemplo:** «el 95 % de las confirmaciones responde en menos de 2 segundos» → `[no funcional] ... verificable`.
-- **Error típico:** usar adjetivos sin medida: la salida «antes» marca `adjetivo sin medida`.
+**quantum**
+- **Definición técnica:** duración máxima que el planificador concede a un proceso en cada turno de CPU antes de expulsarlo.
+- **En palabras sencillas:** cuántos minutos te deja hablar el moderador antes de dar la palabra al siguiente.
+- **Dónde se rompe la comparación:** un sistema real mide el quantum en milisegundos y lo ajusta según la carga.
+- **Ejemplo:** `quantum = 2` en la línea 9 de `planificador.py`.
+- **Error típico:** escoger un quantum diminuto: la CPU pasa más tiempo cambiando de proceso que trabajando.
 
-**historia de usuario**
-- **Definición técnica:** descripción breve de una necesidad con la forma «como *rol*, quiero *acción*, para *beneficio*», que agrupa criterios de aceptación.
-- **En palabras sencillas:** la necesidad contada desde quien la tiene, en una sola frase.
-- **Dónde se rompe la comparación:** la historia no es el contrato: sin criterios, cada persona la entiende a su manera.
-- **Ejemplo:** «Como conductor, quiero confirmar la entrega con el PIN del destinatario, para dejar evidencia de que llegó a la persona correcta».
-- **Error típico:** escribir la solución técnica («quiero un endpoint POST») en lugar de la necesidad.
+**cambio de contexto**
+- **Definición técnica:** operación del sistema operativo que guarda el estado de un proceso (registros, contador de programa) y carga el de otro.
+- **En palabras sencillas:** marcar la página del libro que lees, cerrarlo y abrir otro donde lo dejaste.
+- **Dónde se rompe la comparación:** cambiar de libro no cuesta nada; un cambio de contexto gasta tiempo de CPU que nadie aprovecha.
+- **Ejemplo:** la salida de `planificador.py` cuenta `cambios de contexto: 6`.
+- **Error típico:** ignorar su costo al comparar políticas; en la simulación cuesta cero, en un sistema real no.
 
-**criterio de aceptación**
-- **Definición técnica:** condición verificable que la historia debe cumplir para darse por terminada; se escribe como «dado *contexto*, cuando *acción*, entonces *resultado*».
-- **En palabras sencillas:** un ejemplo concreto con la respuesta correcta, acordado antes de programar.
-- **Dónde se rompe la comparación:** se parece a un caso de prueba, pero lo escribe y lo entiende alguien que no programa.
-- **Ejemplo:** `C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con ValueError y el estado no cambia.`
-- **Error típico:** escribirlo sin «dado/cuando/entonces»; `verificar_criterios.py` responde `falta dado/cuando/entonces`.
+**tiempo de retorno**
+- **Definición técnica:** tiempo transcurrido desde que un proceso llega a la cola hasta que termina; en inglés, *turnaround time*.
+- **En palabras sencillas:** cuánto esperaste desde que pediste el trámite hasta que te lo entregaron completo.
+- **Dónde se rompe la comparación:** no es lo mismo que el tiempo de respuesta, que mide cuánto tardas en ser atendido la primera vez.
+- **Ejemplo:** `sync` llega en `t=0` y termina en `t=9`; su tiempo de retorno es 9.
+- **Error típico:** sumar solo el tiempo de CPU del proceso (3) y olvidar el tiempo que pasó esperando en la cola.
 
-**trazabilidad**
-- **Definición técnica:** capacidad de seguir cada requisito hasta el código que lo implementa y la prueba que lo comprueba, y de vuelta.
-- **En palabras sencillas:** poder señalar, para cada criterio, la línea que lo cumple y la prueba que lo demuestra.
-- **Dónde se rompe la comparación:** no es un archivo aparte: vive en nombres y comentarios compartidos (`C1`, `C2`, `C3`).
-- **Ejemplo:** el comentario `# C2: PIN de 6 dígitos` en `entregas.py` y la línea `C2 ok` de `prueba_criterios.py`.
-- **Error típico:** cambiar un criterio sin buscar su prueba: la prueba sigue verde comprobando una regla vieja.
+**conjunto de instrucciones**
+- **Definición técnica:** lista de operaciones que una CPU sabe ejecutar, con su formato; define la arquitectura que ve el software (*ISA*, como x86-64 o ARM).
+- **En palabras sencillas:** el vocabulario completo que entiende la CPU; nada fuera de él se puede pedir.
+- **Dónde se rompe la comparación:** un idioma acepta palabras nuevas; una CPU rechaza cualquier código que no esté en su conjunto.
+- **Ejemplo:** la CPU de juguete de `maquina.py` solo entiende `CARGAR`, `SUMAR`, `MULTIPLICAR` y `PARAR`.
+- **Error típico:** copiar un programa compilado para ARM a una máquina x86-64 y esperar que corra sin recompilar.
+
+**registro del procesador**
+- **Definición técnica:** celda de memoria dentro de la CPU, muy pequeña y muy rápida, donde se guardan los valores que la instrucción actual usa.
+- **En palabras sencillas:** la mano del cajero: lo que tiene en la mano lo usa ya; lo demás está en el cajón.
+- **Dónde se rompe la comparación:** una CPU real tiene decenas de registros, no dos, y cada uno tiene un tamaño fijo en bits.
+- **Ejemplo:** `registros = {"A": 0, "B": 0}` en la línea 10 de `maquina.py`.
+- **Error típico:** confundirlo con el registro de eventos (`logging`) del Módulo 5: comparten nombre y nada más.
+
+**contador de programa**
+- **Definición técnica:** registro especial que guarda la dirección de la próxima instrucción que la CPU va a buscar.
+- **En palabras sencillas:** el dedo que señala en qué renglón de la receta vas.
+- **Dónde se rompe la comparación:** un salto (`if`, bucle) cambia el contador a otro renglón; el dedo no siempre baja de a uno.
+- **Ejemplo:** `pc = 0` en la línea 11 y `pc += 1` en la línea 15 de `maquina.py`.
+- **Error típico:** olvidar avanzarlo: la CPU ejecutaría la misma instrucción para siempre.
+
+**ciclo de instrucción**
+- **Definición técnica:** secuencia que la CPU repite sin parar: buscar la instrucción que indica el contador, decodificarla y ejecutarla.
+- **En palabras sencillas:** leer el renglón, entender qué pide y hacerlo; luego el siguiente renglón.
+- **Dónde se rompe la comparación:** las CPU modernas solapan varias instrucciones a la vez (*pipeline*); el orden se respeta solo en el resultado.
+- **Ejemplo:** las líneas 13 a 26 de `maquina.py` son un ciclo de instrucción completo.
+- **Error típico:** creer que una línea de Python es una instrucción de CPU; una sola línea puede costar cientos.
 
 #### ► CÓMO FUNCIONA
-Un requisito nace de un stakeholder, no de quien programa. Se escribe primero en palabras y luego se le pone medida.
-La historia de usuario agrupa la necesidad; los criterios de aceptación la vuelven comprobable. Cada criterio se
-vuelve una prueba, y la prueba deja evidencia.
+Un proceso pasa por tres estados. **Listo** significa que espera en la cola; **ejecutando**, que tiene la CPU;
+**terminado**, que ya no necesita nada. El planificador saca el primero de la cola y le da como máximo un quantum.
+Si el proceso no terminó, vuelve al final de la cola. Cada vez que la CPU pasa a otro proceso, hay un cambio de contexto.
+
+Dentro de la CPU ocurre algo parecido a otra escala. El contador de programa dice qué instrucción sigue. La CPU la
+busca, la decodifica, la ejecuta sobre sus registros y avanza el contador. Ese ciclo se repite miles de millones de
+veces por segundo.
+
+| Nivel | Qué se reparte | Quién decide | Unidad de trabajo |
+|---|---|---|---|
+| Sistema operativo | Tiempo de CPU entre procesos | Planificador | Quantum |
+| Procesador | Registros y unidades de cálculo | Ciclo de instrucción | Instrucción |
 
 ```mermaid
-flowchart LR
-    ST["stakeholder<br/>conductor, cliente, auditoría"] --> NEED["necesidad en palabras"]
-    NEED --> REQ["requisito con medida<br/>funcional o no funcional"]
-    REQ --> HIST["historia de usuario"]
-    HIST --> CRIT["criterios C1, C2, C3<br/>dado / cuando / entonces"]
-    CRIT --> CODE["código con # C1, # C2"]
-    CRIT --> TEST["prueba por criterio"]
-    TEST --> EV["evidencia: C1 ok, C2 ok, C3 ok"]
+stateDiagram-v2
+    [*] --> Listo: llega a la cola
+    Listo --> Ejecutando: el planificador lo elige
+    Ejecutando --> Listo: se agotó el quantum y le falta trabajo
+    Ejecutando --> Terminado: restante llega a 0
+    Terminado --> [*]
 ```
-
-La regla práctica: si dos personas pueden discutir si el sistema cumple, el requisito todavía no está terminado.
 
 #### Problema resuelto 1.1
-Revisa los requisitos de la confirmación de entregas. Marca de qué tipo es cada uno, quién lo pidió y si se puede verificar.
+Tres procesos del dispositivo llegan juntos: `gps` necesita 5 unidades de CPU, `sync` 3 y `fotos` 4. Simula Round
+Robin con quantum 2 e informa el tiempo de retorno de cada uno y los cambios de contexto.
 
 **Razonamiento:**
-1. Un requisito sin stakeholder no tiene a quién preguntarle qué significa.
-2. Un adjetivo de calidad («rápido», «seguro») sin número no se puede medir.
-3. Se reescribe cada frase vaga con una medida concreta y un dueño.
+1. La cola de listos es una `deque`: sacar por la izquierda y meter por la derecha cuesta O(1) (Módulo 2, Tema 2).
+2. En cada turno el proceso usa `min(quantum, restante)`: nunca más de lo que le falta.
+3. Un reloj acumula lo usado; cuando un proceso llega a 0, su tiempo de retorno es el reloj en ese momento.
+4. Hay cambio de contexto cuando el proceso que entra no es el mismo que acaba de salir.
 
 ```python
-# revisar_requisitos.py — clasifica requisitos y marca los que no se pueden verificar
-import re
+# planificador.py — reparte la CPU de un dispositivo de RutaFlow con Round Robin
+from collections import deque
 
-VAGOS = ("rápido", "seguro", "fácil", "estable", "cómodo")
-CALIDADES = ("segundos", "%", "disponible", "cifrad", "intentos")
+procesos = deque([
+    {"id": "gps", "restante": 5},
+    {"id": "sync", "restante": 3},
+    {"id": "fotos", "restante": 4},
+])
+quantum = 2
+reloj = 0
+cambios = 0
+anterior = None
+fin = {}
 
+while procesos:
+    proceso = procesos.popleft()
+    if anterior is not None and anterior != proceso["id"]:
+        cambios += 1                       # la CPU pasa a otro proceso
+    anterior = proceso["id"]
+    usado = min(quantum, proceso["restante"])
+    reloj += usado
+    proceso["restante"] -= usado
+    print(f"t={reloj:2}  {proceso['id']:<5} usa {usado}, resta {proceso['restante']}")
+    if proceso["restante"] > 0:            # solo vuelve a la cola si le falta trabajo
+        procesos.append(proceso)
+    else:
+        fin[proceso["id"]] = reloj
 
-def revisar(stakeholder, requisito):
-    texto = requisito.lower()
-    tipo = "no funcional" if any(c in texto for c in CALIDADES + VAGOS) else "funcional"
-    problemas = []
-    if not stakeholder:
-        problemas.append("nadie lo pidió")
-    if any(v in texto for v in VAGOS) and not re.search(r"\d", texto):
-        problemas.append("adjetivo sin medida")
-    return tipo, "; ".join(problemas) or "verificable"
-
-
-antes = [
-    ("coordinadora", "El conductor confirma la entrega con el PIN del destinatario."),
-    ("", "Confirmar una entrega debe ser rápido y seguro."),
-]
-despues = [
-    ("conductor", "El conductor confirma la entrega con el PIN de 6 dígitos del destinatario."),
-    ("cliente", "El 95 % de las confirmaciones responde en menos de 2 segundos."),
-    ("auditoría", "Tras 3 intentos con PIN errado, el envío se bloquea 15 minutos."),
-]
-for titulo, lista in (("ANTES", antes), ("DESPUÉS", despues)):
-    print(titulo)
-    for numero, (stakeholder, requisito) in enumerate(lista, start=1):
-        tipo, veredicto = revisar(stakeholder, requisito)
-        print(f"  R{numero} [{tipo}] pedido por {stakeholder or '?'}: {veredicto}")
+print("tiempo de retorno:", fin)
+print("cambios de contexto:", cambios)
 ```
 
 ```text
-$ python3 revisar_requisitos.py
-ANTES
-  R1 [funcional] pedido por coordinadora: verificable
-  R2 [no funcional] pedido por ?: nadie lo pidió; adjetivo sin medida
-DESPUÉS
-  R1 [funcional] pedido por conductor: verificable
-  R2 [no funcional] pedido por cliente: verificable
-  R3 [no funcional] pedido por auditoría: verificable
+$ python3 planificador.py
+t= 2  gps   usa 2, resta 3
+t= 4  sync  usa 2, resta 1
+t= 6  fotos usa 2, resta 2
+t= 8  gps   usa 2, resta 1
+t= 9  sync  usa 1, resta 0
+t=11  fotos usa 2, resta 0
+t=12  gps   usa 1, resta 0
+tiempo de retorno: {'sync': 9, 'fotos': 11, 'gps': 12}
+cambios de contexto: 6
 ```
 
 **Explicación por partes.**
-- Líneas 4–5: palabras que delatan un requisito no funcional; `VAGOS` son las que no traen medida por sí solas.
-- Línea 10: si el texto habla de calidad, se clasifica como no funcional; si no, como funcional.
-- Líneas 12–15: dos problemas posibles: nadie lo pidió, o hay un adjetivo sin ningún número.
-- Líneas 19–22: la versión «antes»; R2 junta dos defectos y la salida muestra ambos.
-- Líneas 23–27: la versión «después»; la frase vaga se volvió dos requisitos medibles, cada uno con dueño.
+- Líneas 4–8: la cola de listos, en orden de llegada. Cada proceso es un diccionario con lo que le falta.
+- Líneas 16–19: el planificador saca el primero y cuenta un cambio si la CPU pasa a otro proceso.
+- Línea 20: `min` evita que `gps`, con 1 unidad pendiente, gaste un quantum completo.
+- Líneas 24–27: si falta trabajo, vuelve al final de la cola; si no, se anota su tiempo de retorno.
+- La salida confirma la ronda: `sync` termina en `t=9` aunque solo necesitaba 3 unidades de CPU. Esperó 6.
 
-> **Error común.** Creer que el verificador prueba que el requisito es **bueno**. Solo detecta señales de vaguedad. El
-> R1 de «antes» sale `verificable` aunque no dice cuántos dígitos tiene el PIN: eso lo encuentra una persona.
+> **Error común.** Crear la cola con corchetes, `procesos = [...]`, en vez de `deque([...])`. El programa se detiene
+> en la línea 16 con `AttributeError: 'list' object has no attribute 'popleft'`. El mensaje dice que una lista no
+> tiene ese método. Usa `deque`, o `pop(0)` sabiendo que en una lista cuesta O(n).
 
-> **Buena práctica.** Cuando un stakeholder diga «rápido», pregunta «¿cuánto, para qué porcentaje de casos y medido
-> dónde?». La respuesta es el requisito; el adjetivo era solo la intención.
+> **Rendimiento.** Con quantum 2 hubo 6 cambios de contexto; con quantum 10 (Ejercicio verificable 1) hay 2. Un
+> quantum pequeño mejora la sensación de respuesta y aumenta el tiempo perdido en cambios.
 
 #### Problema resuelto 1.2
-Escribe la historia de usuario del conductor con tres criterios de aceptación. Comprueba la redacción y luego que el
-código cumple cada criterio.
+Construye una CPU de juguete con dos registros que calcule el costo de un envío: 3 kg a 4200 por kg más un recargo
+de 3000. Muestra el estado de los registros después de cada instrucción.
 
 **Razonamiento:**
-1. Historia: «Como conductor, quiero confirmar la entrega con el PIN del destinatario, para dejar evidencia de que llegó a la persona correcta».
-2. Cada criterio necesita las tres palabras: dado (contexto), cuando (acción), entonces (resultado).
-3. Cada criterio lleva un identificador (`C1`, `C2`, `C3`) que se repite en el código y en la prueba: eso es trazabilidad.
-
-Primero, el borrador que llegó y la versión corregida:
-
-```markdown
-- Confirmar una entrega debe ser seguro.
-- Dado un PIN correcto, cuando se confirma, entonces el envío queda entregado.
-```
-
-```markdown
-- C1: Dado un envío "pendiente" y un PIN de 6 dígitos correcto, cuando se confirma, entonces queda "entregado".
-- C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con ValueError y el estado no cambia.
-- C3: Dado un comando ya procesado, cuando se reenvía, entonces se devuelve el resultado anterior sin confirmar de nuevo.
-```
-
-El verificador de redacción:
+1. El programa es una lista de instrucciones; cada una es una tupla `(operación, destino, origen)`.
+2. El contador de programa empieza en 0 y avanza de a uno; `PARAR` rompe el ciclo.
+3. Cada vuelta del `while` es un ciclo de instrucción: buscar, decodificar con `if/elif` y ejecutar.
 
 ```python
-# verificar_criterios.py — comprueba que cada criterio sea verificable
-import re
-import sys
-from pathlib import Path
+# maquina.py — una CPU de juguete: dos registros, un contador de programa y cuatro instrucciones
+programa = [
+    ("CARGAR", "A", 4200),        # tarifa por kg
+    ("CARGAR", "B", 3),           # kilos del envío
+    ("MULTIPLICAR", "A", "B"),    # A = A * B
+    ("CARGAR", "B", 3000),        # recargo urgente
+    ("SUMAR", "A", "B"),          # A = A + B
+    ("PARAR", None, None),
+]
+registros = {"A": 0, "B": 0}
+pc = 0                            # contador de programa: índice de la siguiente instrucción
 
-VAGOS = ("rápido", "rapido", "lento", "seguro", "fácil", "facil", "cómodo", "comodo", "estable")
-archivo = sys.argv[1] if len(sys.argv) > 1 else "criterios.md"
-lineas = [l.strip() for l in Path(archivo).read_text(encoding="utf-8").splitlines() if l.strip()]
-fallos = []
-for numero, linea in enumerate(lineas, 1):
-    texto = linea.lower()
-    if not all(palabra in texto for palabra in ("dado", "cuando", "entonces")):
-        fallos.append(f"criterio {numero}: falta dado/cuando/entonces")
-    elif any(vago in texto for vago in VAGOS) and not re.search(r"\d", linea):
-        fallos.append(f"criterio {numero}: adjetivo sin medida numérica")
-print(f"criterios: {len(lineas)}")
-print(f"verificables: {len(lineas) - len(fallos)}")
-if not any("6 dígitos" in l for l in lineas):
-    fallos.append("falta la regla del PIN de 6 dígitos")
-for fallo in fallos:
-    print("fallo:", fallo)
-sys.exit(1 if fallos else 0)
+while True:
+    operacion, destino, origen = programa[pc]     # 1. buscar
+    pc += 1
+    if operacion == "CARGAR":                     # 2. decodificar y 3. ejecutar
+        registros[destino] = origen
+    elif operacion == "SUMAR":
+        registros[destino] = registros[destino] + registros[origen]
+    elif operacion == "MULTIPLICAR":
+        registros[destino] = registros[destino] * registros[origen]
+    elif operacion == "PARAR":
+        break
+    else:
+        raise ValueError(f"instrucción desconocida: {operacion}")
+    print(f"pc={pc}  {operacion:<11}  A={registros['A']:>5}  B={registros['B']:>5}")
+
+print("total del envío:", registros["A"])
 ```
 
 ```text
-$ python3 verificar_criterios.py criterios_antes.md; echo "salida: $?"
-criterios: 2
-verificables: 1
-fallo: criterio 1: falta dado/cuando/entonces
-fallo: falta la regla del PIN de 6 dígitos
-salida: 1
-```
-
-```text
-$ python3 verificar_criterios.py; echo "salida: $?"
-criterios: 3
-verificables: 3
-salida: 0
-```
-
-Después, el código y una prueba por criterio:
-
-```python
-# entregas.py — regla de confirmación de entregas de RutaFlow
-def confirmar_entrega(envio, pin, comando_id, procesados):
-    if comando_id in procesados:                       # C3: el reintento no repite
-        return procesados[comando_id]
-    if len(pin) != 6 or not pin.isdigit():             # C2: PIN de 6 dígitos
-        raise ValueError("el PIN debe tener 6 dígitos")
-    if pin != envio["pin"]:
-        raise ValueError("PIN incorrecto")
-    resultado = {**envio, "estado": "entregado"}       # C1: queda entregado
-    procesados[comando_id] = resultado
-    return resultado
-```
-
-```python
-# prueba_criterios.py — una prueba por criterio de aceptación
-from entregas import confirmar_entrega
-
-envio = {"guia": "RF-4471", "estado": "pendiente", "pin": "482913"}
-
-# C1
-procesados = {}
-assert confirmar_entrega(envio, "482913", "cmd-1", procesados)["estado"] == "entregado"
-print("C1 ok: PIN correcto deja el envío entregado")
-
-# C2
-try:
-    confirmar_entrega(envio, "4829", "cmd-2", {})
-    print("C2 FALLA: debía rechazar el PIN corto")
-except ValueError as error:
-    assert envio["estado"] == "pendiente"
-    print("C2 ok:", error, "| estado sigue", envio["estado"])
-
-# C3
-primero = confirmar_entrega(envio, "482913", "cmd-3", procesados)
-segundo = confirmar_entrega(envio, "000000", "cmd-3", procesados)
-assert segundo is primero and len(procesados) == 2
-print("C3 ok: el reintento devuelve el mismo resultado; confirmaciones:", len(procesados))
-```
-
-```text
-$ python3 prueba_criterios.py
-C1 ok: PIN correcto deja el envío entregado
-C2 ok: el PIN debe tener 6 dígitos | estado sigue pendiente
-C3 ok: el reintento devuelve el mismo resultado; confirmaciones: 2
+$ python3 maquina.py
+pc=1  CARGAR       A= 4200  B=    0
+pc=2  CARGAR       A= 4200  B=    3
+pc=3  MULTIPLICAR  A=12600  B=    3
+pc=4  CARGAR       A=12600  B= 3000
+pc=5  SUMAR        A=15600  B= 3000
+total del envío: 15600
 ```
 
 **Explicación por partes.**
-- `verificar_criterios.py`, líneas 10–15: revisa cada línea; primero la forma (dado/cuando/entonces), luego los adjetivos sin número.
-- Líneas 16–17: los verificables son los criterios sin fallo propio. En el borrador, el segundo sí lo era.
-- Líneas 18–19: una regla del caso: el PIN de 6 dígitos debe aparecer en algún criterio.
-- Línea 22: `sys.exit(1)` deja código de salida 1 si hay fallos; por eso la primera ejecución muestra `salida: 1`.
-- `entregas.py`, líneas 3, 5 y 9: los comentarios `# C1`, `# C2`, `# C3` apuntan al criterio que cumple cada línea.
-- `prueba_criterios.py`, líneas 6, 11 y 19: un bloque por criterio; si un `assert` falla, sabes qué criterio se rompió.
-- Líneas 20–22: el reintento con el mismo `cmd-3` devuelve el **mismo** objeto y no agrega una tercera confirmación.
+- Líneas 2–9: el programa. Es el «código máquina» de esta CPU: solo usa operaciones de su conjunto de instrucciones.
+- Línea 14: **buscar**. El contador de programa elige la tupla; la asignación múltiple la separa en tres nombres.
+- Línea 15: el contador avanza antes de ejecutar, como en una CPU real.
+- Líneas 16–25: **decodificar y ejecutar**. Una operación fuera del conjunto lanza `ValueError`.
+- La traza muestra que `B` se reutiliza: primero guarda los kilos y después el recargo. Los registros son pocos y se reciclan.
 
-Si ejecutas el verificador en una carpeta sin `criterios.md`, la última línea del error es esta:
+> **Error común.** Agregar `("RESTAR", "A", "B")` al programa sin enseñarle a la CPU esa operación. La ejecución
+> termina con `ValueError: instrucción desconocida: RESTAR`. Es lo mismo que pasa al correr código de otra arquitectura.
 
-```text
-$ python3 verificar_criterios.py
-FileNotFoundError: [Errno 2] No such file or directory: 'criterios.md'
-```
-
-> **Error común.** Ejecutar el verificador desde otra carpeta. Python termina con
-> `FileNotFoundError: [Errno 2] No such file or directory: 'criterios.md'`. Lee el final: el archivo que faltó es `criterios.md`, buscado en la carpeta
-> actual. Comprueba con `pwd` y `ls` antes de culpar al programa.
-
-> **Prevenir errores.** Escribe los criterios **antes** del código y numéralos. Un criterio sin número no se puede
-> citar en una prueba, y uno sin prueba es una promesa que nadie comprueba.
+> **Buena práctica.** Cuando estudies sistemas, simula antes de medir. Una simulación de 30 líneas te deja cambiar el
+> quantum y ver el efecto; después lo compruebas en Linux con herramientas como `top` (Módulo 8).
 
 #### Checkpoint 1.1
-¿Por qué «la confirmación debe ser segura» no es un criterio de aceptación, aunque todos estén de acuerdo con ella?
+En la salida de `planificador.py`, ¿cuánto tiempo esperó `fotos` en la cola, sin contar el tiempo que usó la CPU?
 
-Respuesta: porque no dice qué situación revisar ni qué resultado esperar. «Tras 3 intentos con PIN errado, el envío se bloquea 15 minutos» sí se puede comprobar.
+Respuesta: 7 unidades. Su tiempo de retorno es 11 y necesitaba 4 de CPU: `11 - 4 = 7`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/requisitos` y entra con `cd ~/labs/modulo-7/requisitos`.
+#### Paso 1 · Simula el planificador
+En `~/labs/especializaciones`, escribe `planificador.py` y ejecútalo con `python3 planificador.py`. Compara tu salida
+con la del Problema resuelto 1.1 línea por línea.
 
-#### Paso 2 · Lista stakeholders y requisitos
-Escribe `revisar_requisitos.py` y ejecútalo. Agrega un requisito tuyo del cliente sin medida y comprueba que sale `adjetivo sin medida`.
+#### Paso 2 · Cambia el quantum
+Cambia la línea 9 a `quantum = 1` y después a `quantum = 10`. Anota en `evidencia-tema1.txt` el tiempo de retorno de
+`sync` y los cambios de contexto de cada versión.
 
-#### Paso 3 · Escribe historia y criterios
-Crea `criterios_antes.md` y `criterios.md` como en el Problema resuelto 1.2. Ejecuta el verificador con cada uno y anota el código de salida.
+#### Paso 3 · Ejecuta la CPU de juguete
+Escribe `maquina.py` y ejecútalo. Antes de cada línea de la traza, predice en papel los valores de `A` y `B`.
 
-#### Paso 4 · Conecta criterios y código
-Escribe `entregas.py` y `prueba_criterios.py`. Cambia la línea 5 de `entregas.py` para aceptar 4 dígitos y observa qué criterio falla.
+#### Paso 4 · Provoca el error
+Agrega una instrucción `RESTAR` al programa sin cambiar el ciclo. Lee el `ValueError` y luego agrega la rama que falta.
 
 #### Resumen
-- Un **stakeholder** es quien origina o sufre un requisito; todo requisito tiene dueño.
-- Un **requisito funcional** dice qué hace el sistema; uno **no funcional** dice qué tan bien, con un número.
-- Una **historia de usuario** cuenta la necesidad como «como, quiero, para».
-- Un **criterio de aceptación** usa «dado, cuando, entonces» y se comprueba con un programa.
-- La **trazabilidad** une criterio, código y prueba con el mismo identificador.
+- El **planificador de procesos** decide qué proceso usa la única CPU y por cuánto tiempo.
+- **Round Robin** atiende en orden de llegada con un **quantum** fijo; quien no termina vuelve al final de la cola.
+- Cada **cambio de contexto** guarda el estado de un proceso y carga otro; cuesta tiempo real.
+- El **tiempo de retorno** incluye la espera en la cola, no solo el tiempo de CPU.
+- Una CPU ejecuta solo su **conjunto de instrucciones**, sobre unos pocos **registros del procesador**.
+- El **contador de programa** señala la próxima instrucción; el **ciclo de instrucción** busca, decodifica y ejecuta.
 
 #### Ejercicio verificable 1
-Básico. Clasifica: «el sistema guarda la foto de la firma» y «la foto pesa menos de 500 KB».
+Básico. Cambia `quantum = 2` por `quantum = 10` en `planificador.py`. Predice la salida antes de ejecutar.
 
-Respuesta esperada: la primera es funcional (algo que el sistema hace); la segunda es no funcional (una restricción con medida).
+Respuesta esperada:
+
+```text
+t= 5  gps   usa 5, resta 0
+t= 8  sync  usa 3, resta 0
+t=12  fotos usa 4, resta 0
+tiempo de retorno: {'gps': 5, 'sync': 8, 'fotos': 12}
+cambios de contexto: 2
+```
+
+Con un quantum mayor que todo trabajo, Round Robin se comporta como «primero en llegar, primero en ser atendido».
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `criterios.md` el criterio C4 para el bloqueo tras 3 intentos fallidos y ejecuta el verificador.
+Intermedio. Agrega a `maquina.py` la operación `RESTAR` y aplica un descuento de 1000 después del recargo.
 
-Respuesta esperada: `C4: Dado un envío con 3 intentos fallidos, cuando se confirma con un PIN correcto, entonces se rechaza durante 15 minutos.` La salida muestra `criterios: 4`, `verificables: 4` y `salida: 0`.
+Respuesta esperada: una rama `elif operacion == "RESTAR":` con
+`registros[destino] = registros[destino] - registros[origen]`, y en el programa `("CARGAR", "B", 1000)` seguido de
+`("RESTAR", "A", "B")` antes de `PARAR`. Las dos últimas líneas de la traza son `pc=7  RESTAR       A=14600  B= 1000`
+y `total del envío: 14600`.
 
 #### Ejercicio verificable 3
-Reto. Implementa C4 en `entregas.py` y agrega su bloque en `prueba_criterios.py`, sin romper C1 a C3.
+Reto. Agrega al planificador el **tiempo de respuesta**: el reloj en el momento en que cada proceso recibe la CPU
+por primera vez. Compara quantum 2 y quantum 10.
 
-Respuesta esperada: un contador de intentos por guía que lanza `ValueError("envío bloqueado")` al cuarto intento. La salida muestra `C1 ok`, `C2 ok`, `C3 ok` y `C4 ok`.
+Respuesta esperada: guarda el reloj antes de sumar `usado`, solo si el proceso aún no tiene respuesta. Con quantum 2:
+`{'gps': 0, 'sync': 2, 'fotos': 4}`. Con quantum 10: `{'gps': 0, 'sync': 5, 'fotos': 8}`. Round Robin responde
+antes a todos; a cambio, el tiempo de retorno promedio sube de 8.33 (quantum 10) a 10.67 (quantum 2).
 
 #### En el trabajo
-En un equipo, la historia llega como ticket y los criterios se acuerdan en el refinamiento, antes de estimar. Los
-criterios numerados se vuelven pruebas automáticas que corren en CI (Módulo 5). Cuando producto cambia una regla, la
-búsqueda de `C2` en el repositorio muestra al instante qué código y qué pruebas hay que tocar.
+Sistemas es la especialización que está debajo de todas las demás. Los roles típicos son **ingeniero de sistemas
+operativos y kernel**, **ingeniero de sistemas embebidos y firmware**, **ingeniero de rendimiento** y
+**arquitecto de procesadores**. Trabajan en fabricantes de chips y dispositivos (Intel, AMD, ARM, NVIDIA, Qualcomm,
+Apple, Samsung), en equipos de sistemas operativos (Microsoft, Google con Android, Red Hat, Canonical) y en la
+nube (AWS, Azure). Para llegar ahí necesitas C, arquitectura de computadores y el Módulo 8 de este curso. En
+RutaFlow, este conocimiento decide si el dispositivo del mensajero agota la batería en cuatro horas o en doce.
 
 </details>
 
-### Tema 2: Arquitectura guiada por atributos de calidad · Avanzado · 50 min
+### Tema 2: Algoritmos, autómatas, lenguajes y compiladores · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- describir la arquitectura de RutaFlow como componentes, dependencias y límites, en un diagrama C4;
-- escribir un escenario de calidad con sus seis partes y medir su respuesta;
-- explicar el trade-off de una decisión: qué ganas y qué pagas;
-- automatizar una regla de arquitectura con una fitness function que falle en CI.
+- construir un autómata finito que acepta o rechaza textos según un formato;
+- separar un texto en tokens con un analizador léxico escrito a mano;
+- construir un árbol de sintaxis a partir de una gramática y evaluarlo respetando la precedencia;
+- describir las fases de un compilador y qué hace cada una.
 
-**Conceptos clave:** arquitectura, componente, dependencia, atributo de calidad, escenario de calidad, trade-off, modelo C4, fitness function
-
-Este tema usa **requisito no funcional** y **criterio de aceptación** (Tema 1 de este módulo), **módulo** (Módulo 1,
-Tema 4) y la restricción `UNIQUE` de SQLite (Módulo 4, Tema 3).
+**Conceptos clave:** autómata finito, lenguaje formal, compilador, analizador léxico, token, gramática, analizador sintáctico, árbol de sintaxis
 
 #### El problema
-El conductor de RutaFlow confirma una entrega en una zona con mala señal. La app no recibe respuesta y reintenta.
-El servidor recibe **dos veces** el mismo comando. Si guarda dos confirmaciones, el reporte de auditoría queda mal y
-el cliente recibe dos avisos. ¿Qué parte del sistema debe impedirlo, y cómo demuestras que lo impide?
+Los operadores de RutaFlow escriben guías a mano y a veces se equivocan: `RF-20A8` o `RF-12345`. Además, el área
+comercial quiere escribir tarifas como texto, por ejemplo `4200 * 2.5 + 3000`, y que el sistema las calcule. ¿Cómo
+decide un programa si un texto tiene la forma correcta? ¿Cómo entiende que la multiplicación va antes que la suma?
+
+Este tema usa lo que ya conoces: **algoritmo** (Módulo 1, Tema 1), `__name__` (Módulo 1, Tema 4), **recursión**
+(Módulo 2, Tema 4), **árbol** (Módulo 2, Tema 5) y `sys.argv` (Módulo 0, Tema 4).
 
 #### Glosario del tema
 
-**arquitectura**
-- **Definición técnica:** conjunto de decisiones estructurales de un sistema (sus partes, sus responsabilidades y cómo se comunican) que son costosas de cambiar después.
-- **En palabras sencillas:** los planos del edificio: dónde van los muros de carga, no de qué color se pintan.
-- **Dónde se rompe la comparación:** un edificio no cambia de planos cada mes; el software sí evoluciona, y la arquitectura debe permitirlo.
-- **Ejemplo:** decidir que la regla de confirmación no habla directo con SQLite, sino con un repositorio (`despues/dominio.py`).
-- **Error típico:** llamar arquitectura a un diagrama bonito que nadie puede comprobar contra el código.
+**autómata finito**
+- **Definición técnica:** modelo de cómputo con un número finito de estados, un estado inicial, estados de aceptación y una regla que, según el estado actual y el símbolo leído, decide el estado siguiente.
+- **En palabras sencillas:** un torniquete con memoria mínima: solo recuerda en qué paso va, no todo lo que pasó.
+- **Dónde se rompe la comparación:** un torniquete gira sin fin; un autómata termina al acabarse el texto y entonces dice «acepto» o «rechazo».
+- **Ejemplo:** `es_guia` en `automata.py` pasa por `INICIO`, `VIO_R`, `VIO_F` y `DIGITOS`.
+- **Error típico:** querer reconocer paréntesis bien cerrados con un autómata finito; no puede contar sin límite.
 
-**componente y dependencia**
-- **Definición técnica:** un componente es una parte del sistema con una responsabilidad y una interfaz; una dependencia existe cuando un componente necesita a otro para funcionar (lo importa o lo llama).
-- **En palabras sencillas:** los componentes son las piezas; las dependencias son las flechas «yo necesito a ese».
-- **Dónde se rompe la comparación:** la flecha tiene dirección: si el dominio importa `sqlite3`, cambiar la base obliga a tocar el dominio.
-- **Ejemplo:** `antes/dominio.py importa: ['sqlite3']` (dependencia hacia la infraestructura); `despues/dominio.py importa: nada`.
-- **Error típico:** dibujar flechas en ambos sentidos «por si acaso»; dos componentes que se necesitan mutuamente ya son uno solo.
+**lenguaje formal**
+- **Definición técnica:** conjunto de cadenas de símbolos que cumplen unas reglas precisas; las reglas las da un autómata o una gramática.
+- **En palabras sencillas:** la lista de todos los textos «válidos», definida por reglas y no por ejemplos.
+- **Dónde se rompe la comparación:** un idioma humano tolera errores y ambigüedad; un lenguaje formal acepta o rechaza sin término medio.
+- **Ejemplo:** el lenguaje de las guías contiene `RF-2048` y `RF-0000`, y no contiene `RF-204` ni `rf-2048`.
+- **Error típico:** definir el formato con ejemplos sueltos («algo como RF-1234») en vez de una regla verificable.
 
-**atributo de calidad**
-- **Definición técnica:** propiedad medible del sistema que los stakeholders valoran, como disponibilidad, rendimiento, seguridad, mantenibilidad o facilidad de prueba.
-- **En palabras sencillas:** las «-idades» que hacen que el sistema sea bueno, más allá de que funcione.
-- **Dónde se rompe la comparación:** no todos pesan igual en cada sistema; mejorar uno casi siempre empeora otro.
-- **Ejemplo:** en el problema de este tema, el atributo es la **integridad** de los datos frente a reintentos.
-- **Error típico:** querer todos al máximo; sin prioridad, el atributo que gana es el que defiende la persona más ruidosa.
+**compilador**
+- **Definición técnica:** programa que traduce código fuente de un lenguaje a otro, normalmente a instrucciones de máquina, pasando por análisis léxico, sintáctico y semántico, optimización y generación de código.
+- **En palabras sencillas:** un traductor que primero entiende la frase completa y después la reescribe en el idioma de la CPU.
+- **Dónde se rompe la comparación:** un traductor humano adivina la intención; un compilador rechaza el texto si no cumple la gramática.
+- **Ejemplo:** `calculadora.py` hace las dos primeras fases; en vez de generar código, evalúa el árbol directamente.
+- **Error típico:** creer que Python no tiene fases de compilación; las tiene y por eso un `SyntaxError` aparece antes de ejecutar nada.
 
-**escenario de calidad**
-- **Definición técnica:** enunciado de seis partes (fuente, estímulo, artefacto, entorno, respuesta y medida) que vuelve verificable un atributo de calidad.
-- **En palabras sencillas:** una historia corta de «qué pasa cuando algo sale mal» con un número para saber si se cumplió.
-- **Dónde se rompe la comparación:** a diferencia de una historia de usuario, aquí el protagonista suele ser un fallo, no una persona.
-- **Ejemplo:** `escenario.txt` y su comprobación `campos del escenario: 6/6`.
-- **Error típico:** omitir la medida; sin ella, el escenario vuelve a ser un deseo como «debe ser confiable».
+**analizador léxico**
+- **Definición técnica:** fase que recorre el texto carácter por carácter y lo agrupa en tokens, descartando espacios y comentarios; también se llama *lexer* o tokenizador.
+- **En palabras sencillas:** quien separa una frase en palabras antes de que alguien la lea.
+- **Dónde se rompe la comparación:** separar palabras es fácil; aquí `2.5` es un solo token aunque tenga tres caracteres.
+- **Ejemplo:** `tokenizar("4200 * 2.5")` devuelve `[('NUM', 4200.0), ('OP', '*'), ('NUM', 2.5)]`.
+- **Error típico:** dejar pasar caracteres desconocidos en silencio; el error aparece después, más lejos de su causa.
 
-**trade-off**
-- **Definición técnica:** compromiso entre atributos de calidad: la decisión que mejora uno tiene un costo medible en otro.
-- **En palabras sencillas:** no hay almuerzo gratis; cada ventaja se paga con algo.
-- **Dónde se rompe la comparación:** a veces el costo es tan pequeño que no importa; igual se nombra, para decidir con datos.
-- **Ejemplo:** `UNIQUE` deja `1` fila en vez de `2`, pero SQLite crea un índice extra: `sqlite_autoindex_confirmacion_1`.
-- **Error típico:** presentar una decisión solo con sus ventajas; quien la revise después no sabrá qué se aceptó perder.
+**token**
+- **Definición técnica:** unidad mínima con significado que produce el analizador léxico: un par formado por su categoría y su valor.
+- **En palabras sencillas:** una ficha con etiqueta: «esto es un número y vale 4200».
+- **Dónde se rompe la comparación:** dos fichas iguales pueden tener papeles distintos según dónde aparezcan; eso lo decide la gramática.
+- **Ejemplo:** `('OP', '+')` es un token de categoría operador.
+- **Error típico:** guardar los números como texto (`'4200'`) en el token y olvidar convertirlos antes de operar.
 
-**modelo C4**
-- **Definición técnica:** forma de documentar la arquitectura en cuatro niveles de zoom: contexto, contenedores, componentes y código.
-- **En palabras sencillas:** un mapa con zoom: primero el país, luego la ciudad, luego el barrio.
-- **Dónde se rompe la comparación:** «contenedor» en C4 es algo que se ejecuta o guarda datos (una app, una base), no un contenedor Docker.
-- **Ejemplo:** el diagrama de contenedores de «Cómo funciona»: app del conductor, API, base de datos y servicio de SMS.
-- **Error típico:** mezclar niveles en un solo dibujo: personas, tablas y clases juntas no explican nada.
+**gramática**
+- **Definición técnica:** conjunto de reglas de producción que describen cómo se combinan los tokens en estructuras válidas; las gramáticas libres de contexto permiten anidar sin límite.
+- **En palabras sencillas:** las reglas de construcción de frases: «una suma son términos unidos por más».
+- **Dónde se rompe la comparación:** la gramática de un idioma tiene excepciones; una gramática formal no admite ninguna.
+- **Ejemplo:** `termino -> factor ('*' factor)*` dice que un término es uno o más factores unidos por `*`.
+- **Error típico:** poner suma y multiplicación en la misma regla: entonces `2 + 3 * 4` daría 20 en vez de 14.
 
-**fitness function**
-- **Definición técnica:** prueba automática que comprueba que el sistema conserva una propiedad de arquitectura, como una regla de dependencias o un tiempo máximo.
-- **En palabras sencillas:** un guardia que revisa en cada cambio que nadie rompió una regla de los planos.
-- **Dónde se rompe la comparación:** no prueba que el negocio funcione; prueba la forma del sistema.
-- **Ejemplo:** `fitness_dependencias.py antes` termina con `salida: 1`; con `despues`, con `salida: 0`.
-- **Error típico:** escribir la regla en un documento y no en código: el primer cambio apurado la rompe sin que nadie lo note.
+**analizador sintáctico**
+- **Definición técnica:** fase que recibe los tokens, comprueba que siguen la gramática y construye su estructura; en inglés, *parser*.
+- **En palabras sencillas:** quien revisa que las palabras formen una frase bien armada y dibuja cómo se agrupan.
+- **Dónde se rompe la comparación:** una persona entiende una frase mal armada; el analizador se detiene en el primer token inesperado.
+- **Ejemplo:** la clase `Analizador` tiene un método por regla de la gramática: `expr`, `termino` y `factor`.
+- **Error típico:** analizar con trucos de texto (`split("+")`); falla en cuanto aparecen paréntesis.
+
+**árbol de sintaxis**
+- **Definición técnica:** árbol cuyos nodos internos son operaciones y cuyas hojas son valores; representa la estructura del programa sin paréntesis ni espacios.
+- **En palabras sencillas:** el esquema de la cuenta: qué se calcula primero queda más abajo.
+- **Dónde se rompe la comparación:** un esquema dibujado se lee de arriba abajo; el árbol se evalúa de las hojas hacia la raíz.
+- **Ejemplo:** `('+', ('*', 4200.0, 2.5), 3000.0)`: la multiplicación es hija de la suma, así que va primero.
+- **Error típico:** evaluar el texto de izquierda a derecha sin construir el árbol y perder la precedencia.
 
 #### ► CÓMO FUNCIONA
-Primero se eligen los atributos de calidad que más importan. Cada uno se escribe como escenario con medida. Después se
-comparan alternativas por su trade-off, se decide y se deja una fitness function que vigile la decisión.
+Un compilador trabaja por fases, como una línea de producción. El **analizador léxico** convierte caracteres en
+tokens. El **analizador sintáctico** comprueba la gramática y construye el árbol. Después vienen el análisis de
+tipos, la optimización y la generación de código. Este tema construye las dos primeras fases y evalúa el árbol.
+
+Hay dos herramientas teóricas detrás. Un **autómata finito** basta para reconocer formatos planos, como una guía o
+un correo. Una **gramática** hace falta cuando hay anidamiento, como paréntesis dentro de paréntesis.
 
 ```mermaid
 flowchart LR
-    Q["atributo de calidad<br/>integridad ante reintentos"] --> E["escenario<br/>fuente … medida"]
-    E --> A1["alternativa A<br/>sin restricción"]
-    E --> A2["alternativa B<br/>UNIQUE(command_id)"]
-    A1 --> T["trade-off medido<br/>filas e índices"]
-    A2 --> T
-    T --> D["decisión"] --> F["fitness function<br/>en cada cambio"]
+    T["texto: 4200 * 2.5 + 3000"] --> L["analizador léxico"]
+    L --> K["tokens: NUM OP NUM OP NUM"]
+    K --> P["analizador sintáctico"]
+    P --> A["árbol: + con hijo * a la izquierda"]
+    A --> E["evaluar: 13500.0"]
+    L -. "carácter desconocido" .-> X["ValueError"]
+    P -. "token inesperado" .-> X
 ```
-
-El nivel de contenedores del modelo C4 para la confirmación muestra dónde vive cada decisión:
-
-```mermaid
-flowchart LR
-    C["Conductor"] --> APP["App del conductor<br/>móvil"]
-    APP -->|"HTTPS, reintenta"| API["API de RutaFlow<br/>Python"]
-    API --> DB[("Base de datos<br/>UNIQUE(command_id)")]
-    API --> SMS["Servicio de SMS<br/>externo"]
-```
-
-Dentro de la API, las dependencias apuntan hacia el dominio. El dominio no conoce la base de datos: la recibe.
 
 #### Problema resuelto 2.1
-Escribe el escenario de calidad del reintento y mide qué pasa con y sin la restricción `UNIQUE(command_id)`.
+Escribe un autómata que acepte solo guías con el formato `RF-` seguido de exactamente cuatro dígitos.
 
 **Razonamiento:**
-1. Fuente y estímulo: la red del conductor reenvía el mismo comando.
-2. Medida: cero confirmaciones duplicadas. Se cuenta con `SELECT COUNT(*)`.
-3. Se miden dos alternativas en una base en memoria; también se lista qué índices creó SQLite, para ver el costo.
-
-```text
-Fuente: red inestable del conductor
-Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
-Artefacto: confirmar_entrega() + repositorio
-Entorno: operación normal con conexión intermitente
-Respuesta: la segunda llamada devuelve el resultado ya guardado, sin confirmar de nuevo
-Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
-```
+1. Los estados son los pasos del formato: aún no vi nada, vi `R`, vi `F`, ya estoy en los dígitos.
+2. Cada símbolo válido para el estado actual avanza; cualquier otro rechaza de inmediato.
+3. Al acabar el texto se acepta solo si estás en `DIGITOS` con exactamente cuatro.
 
 ```python
-# escenario_unique.py — valida el escenario y mide su respuesta en SQLite
-import sqlite3
-from pathlib import Path
-
-CAMPOS = ("Fuente:", "Estímulo:", "Artefacto:", "Entorno:", "Respuesta:", "Medida:")
-texto = Path("escenario.txt").read_text(encoding="utf-8")
-faltan = [campo for campo in CAMPOS if campo not in texto]
-print(f"campos del escenario: {len(CAMPOS) - len(faltan)}/{len(CAMPOS)}")
-if faltan:
-    print("faltan:", faltan)
-    raise SystemExit(1)
-
-
-def medir(con_restriccion):
-    conexion = sqlite3.connect(":memory:")
-    sufijo = " UNIQUE" if con_restriccion else ""
-    conexion.execute(f"CREATE TABLE confirmacion(id INTEGER PRIMARY KEY, command_id TEXT{sufijo})")
-    for _ in range(2):  # el mismo comando llega dos veces
-        try:
-            conexion.execute("INSERT INTO confirmacion(command_id) VALUES ('cmd-1')")
-        except sqlite3.IntegrityError as error:
-            print("  segundo intento rechazado:", error)
-    filas = conexion.execute("SELECT COUNT(*) FROM confirmacion").fetchone()[0]
-    indices = [fila[1] for fila in conexion.execute("PRAGMA index_list(confirmacion)")]
-    return filas, indices
+# automata.py — autómata finito que reconoce guías de RutaFlow con el formato RF-####
+def es_guia(texto: str) -> bool:
+    estado = "INICIO"
+    digitos = 0
+    for simbolo in texto:
+        if estado == "INICIO" and simbolo == "R":
+            estado = "VIO_R"
+        elif estado == "VIO_R" and simbolo == "F":
+            estado = "VIO_F"
+        elif estado == "VIO_F" and simbolo == "-":
+            estado = "DIGITOS"
+        elif estado == "DIGITOS" and simbolo.isdigit():
+            digitos += 1
+        else:
+            return False                  # símbolo inválido para el estado actual
+    return estado == "DIGITOS" and digitos == 4
 
 
-print("ANTES (sin restricción):", medir(False))
-print("DESPUÉS (UNIQUE):", medir(True))
+for valor in ["RF-2048", "RF-20A8", "RF-12345", "RF-", "rf-2048"]:
+    print(f"{valor:<9} {es_guia(valor)}")
 ```
 
 ```text
-$ python3 escenario_unique.py
-campos del escenario: 6/6
-ANTES (sin restricción): (2, [])
-  segundo intento rechazado: UNIQUE constraint failed: confirmacion.command_id
-DESPUÉS (UNIQUE): (1, ['sqlite_autoindex_confirmacion_1'])
+$ python3 automata.py
+RF-2048   True
+RF-20A8   False
+RF-12345  False
+RF-       False
+rf-2048   False
 ```
 
 **Explicación por partes.**
-- Líneas 5–11: si al escenario le falta alguna de las seis partes, el programa se detiene con código 1.
-- Línea 17: la tabla se crea con o sin `UNIQUE` según el parámetro.
-- Líneas 18–22: el mismo `cmd-1` se inserta dos veces; con `UNIQUE`, SQLite rechaza el segundo con `IntegrityError`.
-- Línea 24: `PRAGMA index_list` muestra los índices; el automático es el precio de la restricción.
-- Salida: «antes» deja `2` filas; «después» deja `1` y un índice. Ese es el trade-off, medido.
+- Línea 3: el estado inicial. El autómata solo recuerda dos cosas: su estado y cuántos dígitos vio.
+- Líneas 6–13: cada `elif` es una transición: estado actual más símbolo leído da el estado siguiente.
+- Línea 15: cualquier combinación sin transición rechaza; por eso `RF-20A8` muere en la `A`.
+- Línea 16: el estado final decide. `RF-` termina en `DIGITOS` con 0 dígitos y `RF-12345` con 5: ambos se rechazan.
+- `rf-2048` se rechaza porque el autómata distingue mayúsculas: `"r" == "R"` es falso.
 
-> **Error común.** Confiar en que la app «no reintenta». Los reintentos los hacen también la red, el sistema operativo
-> y las librerías. Sin la restricción, la base acepta el duplicado en silencio: `(2, [])`.
-
-> **Ingeniería de software.** La restricción vive en la base de datos, no solo en el código. Si mañana otro servicio
-> escribe en la misma tabla, la regla lo protege también.
+> **Buena práctica.** Escribe primero la tabla de transiciones (estado, símbolo, siguiente) y después el código. La
+> tabla se revisa en papel con el equipo; el código solo la copia.
 
 #### Problema resuelto 2.2
-Convierte la regla «el dominio no importa infraestructura» en una fitness function y aplícala a dos versiones del dominio.
+Construye una calculadora de tarifas que acepte `+`, `*`, paréntesis y números con decimales, respetando que la
+multiplicación va antes que la suma.
 
 **Razonamiento:**
-1. La regla se puede comprobar sin ejecutar el dominio: basta leer sus `import`.
-2. El módulo `ast` de Python convierte el archivo en un árbol y permite recorrer sus instrucciones.
-3. Si aparece un módulo prohibido, el programa termina con código 1 para que CI lo marque en rojo.
+1. Gramática con un nivel por precedencia: `expr` suma términos, `termino` multiplica factores, `factor` es un número o una `expr` entre paréntesis.
+2. El analizador léxico agrupa dígitos y punto en un solo token `NUM`.
+3. El analizador sintáctico tiene un método por regla; `factor` llama a `expr` para los paréntesis: es recursión.
+4. `evaluar` recorre el árbol: una hoja devuelve su número, un nodo opera los resultados de sus hijos.
 
 ```python
-# antes/dominio.py — la regla de negocio abre la base de datos ella misma
-import sqlite3
+# calculadora.py — analizador léxico y sintáctico para expresiones de tarifa
+def tokenizar(texto):
+    tokens = []
+    i = 0
+    while i < len(texto):
+        simbolo = texto[i]
+        if simbolo == " ":
+            i += 1
+        elif simbolo.isdigit():
+            inicio = i
+            while i < len(texto) and (texto[i].isdigit() or texto[i] == "."):
+                i += 1
+            tokens.append(("NUM", float(texto[inicio:i])))
+        elif simbolo in "+*()":
+            tokens.append(("OP", simbolo))
+            i += 1
+        else:
+            raise ValueError(f"carácter inesperado {simbolo!r} en la posición {i}")
+    return tokens
 
 
-def confirmar_entrega(guia, pin):
-    if len(pin) != 6:
-        raise ValueError("el PIN debe tener 6 dígitos")
-    conexion = sqlite3.connect("rutaflow.db")
-    conexion.execute("UPDATE envio SET estado = 'entregado' WHERE guia = ?", (guia,))
-```
+class Analizador:
+    """Gramática: expr -> termino ('+' termino)* ; termino -> factor ('*' factor)* ;
+    factor -> NUM | '(' expr ')'"""
 
-```python
-# despues/dominio.py — la regla solo conoce un repositorio que recibe de afuera
-def confirmar_entrega(guia, pin, repositorio):
-    if len(pin) != 6:
-        raise ValueError("el PIN debe tener 6 dígitos")
-    repositorio.marcar_entregado(guia)
-```
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.pos = 0
 
-```python
-# despues/repositorio_sqlite.py — la infraestructura sí puede usar sqlite3
-import sqlite3
+    def mirar(self):
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else ("FIN", None)
+
+    def consumir(self, esperado):
+        tipo, valor = self.mirar()
+        if valor != esperado:
+            raise ValueError(f"se esperaba {esperado!r} y llegó {valor!r}")
+        self.pos += 1
+
+    def expr(self):
+        arbol = self.termino()
+        while self.mirar() == ("OP", "+"):
+            self.consumir("+")
+            arbol = ("+", arbol, self.termino())
+        return arbol
+
+    def termino(self):
+        arbol = self.factor()
+        while self.mirar() == ("OP", "*"):
+            self.consumir("*")
+            arbol = ("*", arbol, self.factor())
+        return arbol
+
+    def factor(self):
+        tipo, valor = self.mirar()
+        if tipo == "NUM":
+            self.pos += 1
+            return valor
+        self.consumir("(")
+        arbol = self.expr()
+        self.consumir(")")
+        return arbol
 
 
-class RepositorioSQLite:
-    def __init__(self, ruta):
-        self.conexion = sqlite3.connect(ruta)
+def evaluar(arbol):
+    if isinstance(arbol, float):
+        return arbol
+    operador, izquierda, derecha = arbol
+    if operador == "+":
+        return evaluar(izquierda) + evaluar(derecha)
+    return evaluar(izquierda) * evaluar(derecha)
 
-    def marcar_entregado(self, guia):
-        self.conexion.execute("UPDATE envio SET estado = 'entregado' WHERE guia = ?", (guia,))
-```
 
-```python
-# fitness_dependencias.py — regla de arquitectura: el dominio no importa infraestructura
-import ast
-import sys
-from pathlib import Path
-
-PROHIBIDOS = {"sqlite3", "http", "urllib", "requests", "boto3"}
-carpeta = Path(sys.argv[1])
-arbol = ast.parse((carpeta / "dominio.py").read_text(encoding="utf-8"))
-importados = set()
-for nodo in ast.walk(arbol):
-    if isinstance(nodo, ast.Import):
-        importados |= {alias.name.split(".")[0] for alias in nodo.names}
-    elif isinstance(nodo, ast.ImportFrom) and nodo.module:
-        importados.add(nodo.module.split(".")[0])
-violaciones = sorted(importados & PROHIBIDOS)
-print(f"{carpeta}/dominio.py importa: {sorted(importados) or 'nada'}")
-print("violaciones:", violaciones or "ninguna")
-sys.exit(1 if violaciones else 0)
+if __name__ == "__main__":
+    for texto in ["4200 * 2.5 + 3000", "4200 * (2.5 + 1)"]:
+        tokens = tokenizar(texto)
+        arbol = Analizador(tokens).expr()
+        print("texto: ", texto)
+        print("tokens:", tokens)
+        print("árbol: ", arbol)
+        print("valor: ", evaluar(arbol))
 ```
 
 ```text
-$ python3 fitness_dependencias.py antes; echo "salida: $?"
-antes/dominio.py importa: ['sqlite3']
-violaciones: ['sqlite3']
-salida: 1
-```
-
-```text
-$ python3 fitness_dependencias.py despues; echo "salida: $?"
-despues/dominio.py importa: nada
-violaciones: ninguna
-salida: 0
+$ python3 calculadora.py
+texto:  4200 * 2.5 + 3000
+tokens: [('NUM', 4200.0), ('OP', '*'), ('NUM', 2.5), ('OP', '+'), ('NUM', 3000.0)]
+árbol:  ('+', ('*', 4200.0, 2.5), 3000.0)
+valor:  13500.0
+texto:  4200 * (2.5 + 1)
+tokens: [('NUM', 4200.0), ('OP', '*'), ('OP', '('), ('NUM', 2.5), ('OP', '+'), ('NUM', 1.0), ('OP', ')')]
+árbol:  ('*', 4200.0, ('+', 2.5, 1.0))
+valor:  14700.0
 ```
 
 **Explicación por partes.**
-- Línea 6: la lista de módulos de infraestructura que el dominio no puede importar.
-- Línea 8: `ast.parse` lee el archivo como árbol de sintaxis; no lo ejecuta.
-- Líneas 10–14: recoge los nombres de `import x` y de `from x import y`.
-- Línea 15: la intersección de conjuntos deja solo los prohibidos que sí se importaron.
-- Línea 18: el código de salida es lo que lee CI; `1` bloquea el cambio.
+- Líneas 2–19: el analizador léxico. Las líneas 9–13 consumen todos los dígitos y puntos seguidos y los convierten con `float`.
+- Líneas 30–37: `mirar` muestra el token actual sin avanzar; `consumir` exige uno concreto o lanza `ValueError`.
+- Líneas 39–51: `expr` y `termino` son la gramática hecha código. Como `expr` llama a `termino`, la multiplicación queda más abajo en el árbol.
+- Líneas 53–61: `factor` acepta un número o abre un paréntesis y vuelve a empezar en `expr`.
+- Líneas 64–70: `evaluar` es recursivo. Las hojas son `float`; los nodos son tuplas `(operador, izquierda, derecha)`.
+- En la segunda expresión el paréntesis cambia el árbol: la suma queda dentro de la multiplicación y el valor sube a `14700.0`.
 
-Si olvidas el argumento con la carpeta, la última línea del error es esta:
+Para probar otras entradas sin editar el archivo, este programa recibe la expresión como argumento:
 
-```text
-$ python3 fitness_dependencias.py
-IndexError: list index out of range
+```python
+# revisar.py — analiza la expresión que recibe como argumento del comando
+import sys
+
+from calculadora import Analizador, evaluar, tokenizar
+
+arbol = Analizador(tokenizar(sys.argv[1])).expr()
+print("árbol:", arbol)
+print("valor:", evaluar(arbol))
 ```
 
-> **Error común.** Ejecutar `python3 fitness_dependencias.py` sin carpeta termina con `IndexError: list index out of range`. La lista
-> `sys.argv` solo tiene el nombre del programa; la posición `1` no existe. Pasa la carpeta: `antes` o `despues`.
+```text
+$ python3 revisar.py "2 + 3 * 4"
+árbol: ('+', 2.0, ('*', 3.0, 4.0))
+valor: 14.0
+```
 
-> **Buena práctica.** Toda regla de arquitectura que se pueda comprobar con un programa se comprueba con un programa.
-> Lo que queda en un documento se cumple mientras alguien se acuerde.
+> **Error común.** Escribir la multiplicación con `x`. El analizador léxico se detiene en el primer carácter que no
+> conoce:
+>
+> ```text
+> $ python3 revisar.py "4200 x 2.5"
+> Traceback (most recent call last):
+>   File "/home/estudiante/labs/especializaciones/revisar.py", line 6, in <module>
+>     arbol = Analizador(tokenizar(sys.argv[1])).expr()
+>                        ~~~~~~~~~^^^^^^^^^^^^^
+>   File "/home/estudiante/labs/especializaciones/calculadora.py", line 18, in tokenizar
+>     raise ValueError(f"carácter inesperado {simbolo!r} en la posición {i}")
+> ValueError: carácter inesperado 'x' en la posición 5
+> ```
+>
+> La última línea dice qué carácter y en qué posición (contando desde 0). Escribe `*`.
+
+> **Error común.** Olvidar cerrar un paréntesis. Con `python3 revisar.py "4200 * (2.5 + 1"` el traceback atraviesa
+> `expr`, `termino`, `factor` y `consumir`, y termina en `ValueError: se esperaba ')' y llegó None`. `None` significa
+> que el texto se acabó antes de tiempo.
 
 #### Checkpoint 2.1
-En el escenario de este tema, ¿qué parte cambia si la medida pasa de «cero duplicados» a «máximo 1 duplicado por cada 10 000 confirmaciones»?
+¿Qué árbol construye `calculadora.py` para `(1 + 2) * 3` y cuánto vale?
 
-Respuesta: solo la medida. Fuente, estímulo, artefacto, entorno y respuesta siguen iguales. Con una medida más laxa, quizás ya no hace falta la restricción, y cambia el trade-off.
+Respuesta: `('*', ('+', 1.0, 2.0), 3.0)` y vale `9.0`. El paréntesis hace que la suma sea un `factor` y quede como
+hija de la multiplicación.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/arquitectura` con las subcarpetas `antes` y `despues`.
+#### Paso 1 · Dibuja y programa el autómata
+Dibuja en papel los cuatro estados de `automata.py` con flechas etiquetadas. Luego escribe el archivo y ejecútalo.
 
-#### Paso 2 · Escribe y mide el escenario
-Crea `escenario.txt` y `escenario_unique.py`. Borra la línea `Medida:` y comprueba que sale `faltan: ['Medida:']`.
+#### Paso 2 · Separa en tokens
+Escribe `calculadora.py`. En una terminal interactiva (`python3`), importa `tokenizar` y pruébalo con `"12.5*(3+1)"`.
 
-#### Paso 3 · Dibuja el C4
-Copia el diagrama de contenedores y agrega un contenedor «Panel de auditoría» que lee la base de datos.
+#### Paso 3 · Construye el árbol
+Ejecuta `python3 calculadora.py` y dibuja a mano los dos árboles de la salida, con la raíz arriba.
 
-#### Paso 4 · Automatiza la regla
-Escribe los dos `dominio.py`, el repositorio y `fitness_dependencias.py`. Ejecuta la función con ambas carpetas y anota los códigos de salida.
+#### Paso 4 · Provoca los dos errores
+Escribe `revisar.py` y ejecútalo con `"4200 x 2.5"` y con `"4200 * (2.5 + 1"`. Señala qué fase falló en cada caso.
 
 #### Resumen
-- La **arquitectura** son las decisiones estructurales costosas de cambiar, no el dibujo.
-- **Componentes** y **dependencias** se leen en el código: una dependencia es un `import` o una llamada.
-- Un **atributo de calidad** se vuelve verificable con un **escenario de calidad** de seis partes.
-- Todo **trade-off** se nombra y, si se puede, se mide: aquí, una fila menos a cambio de un índice más.
-- El **modelo C4** documenta con niveles de zoom; el de contenedores muestra dónde vive cada decisión.
-- Una **fitness function** vigila en cada cambio que la arquitectura siga cumpliendo sus reglas.
+- Un **autómata finito** reconoce un **lenguaje formal** plano con un número fijo de estados.
+- Un **compilador** traduce por fases: léxica, sintáctica, semántica, optimización y generación de código.
+- El **analizador léxico** convierte caracteres en **tokens** con categoría y valor.
+- La **gramática** define cómo se combinan los tokens; un nivel por precedencia ordena las operaciones.
+- El **analizador sintáctico** sigue la gramática y construye el **árbol de sintaxis**.
+- Evaluar el árbol de las hojas a la raíz respeta la precedencia sin reglas extra.
 
 #### Ejercicio verificable 1
-Básico. Ordena estas palabras en las seis partes del escenario: «base de datos caída», «API», «operación nocturna», «responder 503 con reintento», «monitor», «en menos de 1 s».
+Básico. Predice qué devuelve `es_guia` para `"RF-0000"`, `"RF-204"` y `""` (texto vacío).
 
-Respuesta esperada: fuente: monitor; estímulo: base de datos caída; artefacto: API; entorno: operación nocturna; respuesta: responder 503 con reintento; medida: en menos de 1 s.
+Respuesta esperada: `True`, `False` y `False`. El texto vacío no entra al bucle y el estado queda en `INICIO`, que no
+es de aceptación.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega la línea `from http import client` al final de `despues/dominio.py` y ejecuta la fitness function.
+Intermedio. Sin ejecutar, escribe el árbol y el valor de `python3 revisar.py "2 + 3 * 4"`. Luego compruébalo.
 
-Respuesta esperada: `despues/dominio.py importa: ['http']`, `violaciones: ['http']` y `salida: 1`.
+Respuesta esperada: `árbol: ('+', 2.0, ('*', 3.0, 4.0))` y `valor: 14.0`. La multiplicación queda como hija derecha
+de la suma porque `termino` la resuelve antes de que `expr` vea el `+`.
 
 #### Ejercicio verificable 3
-Reto. Amplía la fitness function para que también revise que `repositorio_sqlite.py` no importe `dominio`.
+Reto. Agrega la resta. Debe tener la misma precedencia que la suma y asociar a la izquierda: `10 - 2 - 3` vale 5.
 
-Respuesta esperada: una segunda lectura con `ast` sobre ese archivo y una regla `PROHIBIDOS_INFRA = {"dominio"}`. Con los archivos del tema, la salida sigue siendo `0`.
+Respuesta esperada: agrega `-` a los símbolos del analizador léxico. En `expr`, repite el bucle mientras el token
+sea `("OP", "+")` o `("OP", "-")`, y usa ese operador en el nodo. En `evaluar`, agrega la rama de la resta. La salida es
+`árbol: ('-', ('-', 10.0, 2.0), 3.0)` y `valor: 5.0`.
 
 #### En el trabajo
-Los equipos escriben sus escenarios de calidad en el documento de arquitectura y los revisan cuando cambia el tráfico
-o el negocio. Las fitness functions corren en el pipeline junto a las pruebas: herramientas como import-linter
-(Python) o ArchUnit (Java) automatizan reglas de dependencias como la de este tema.
+Esta especialización tiene dos caras. La teórica (autómatas, computabilidad, complejidad) vive en universidades y
+centros de investigación. La aplicada construye compiladores, intérpretes y herramientas de desarrollo. Los roles
+son **ingeniero de compiladores**, **ingeniero de herramientas de lenguaje** (editores, linters, formateadores) e
+**investigador en algoritmos**. Trabajan en equipos de lenguajes y compiladores (LLVM en Apple y Google, Microsoft
+con TypeScript y C#, JetBrains con Kotlin, Oracle con Java) y en fabricantes de chips que necesitan compiladores
+propios (NVIDIA, Intel). Todo sistema que valida formatos o lee configuraciones usa estas ideas, incluido RutaFlow.
 
 </details>
 
-### Tema 3: Diseño modular, principios, patrones y refactoring · Avanzado · 60 min
+### Tema 3: Bases de datos, almacenes analíticos y minería de datos · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- reconocer baja cohesión y alto acoplamiento en una función real y medirlos por sus `import`;
-- definir una interfaz con `Protocol` e invertir la dependencia entre la regla y la base de datos;
-- aplicar los patrones Repository y Adapter, y decir cuándo sobran;
-- refactorizar con una prueba caracterizadora que demuestre que el comportamiento no cambió.
+- distinguir un sistema transaccional de un almacén analítico por el tipo de pregunta que responde;
+- resumir datos por grupos con funciones de agregación y `GROUP BY`;
+- proteger la calidad del dato con una restricción `CHECK` y leer el error que produce;
+- calcular soporte y confianza de una regla de asociación e interpretar si aporta algo.
 
-**Conceptos clave:** cohesión, acoplamiento, interfaz, principios SOLID, inversión de dependencias, patrón de diseño, Repository, Adapter, refactorización, prueba caracterizadora
-
-Ya los conoces y no se repiten: **módulo** (Módulo 1, Tema 4); **composición**, **clase abstracta** y **polimorfismo**
-(Módulo 1, Tema 7); **doble de prueba** (Módulo 5, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
-El catálogo completo de patrones está en el Módulo 13, y la técnica completa de refactorización en el Módulo 14.
+**Conceptos clave:** sistema transaccional, almacén analítico, función de agregación, GROUP BY, restricción CHECK, minería de datos, regla de asociación, soporte, confianza
 
 #### El problema
-La función `confirmar` de RutaFlow valida el PIN, abre SQLite, guarda y manda el SMS, todo junto. Producto pide
-avisar por correo en vez de SMS. Pruebas pide verificar la regla del PIN sin crear una base de datos. Las dos cosas
-obligan a tocar la misma función, que además ya funciona. ¿Cómo la reorganizas sin romper nada?
+La gerente de operaciones de RutaFlow no quiere ver cada entrega: quiere saber **qué zona tarda más** y **por qué**.
+Además, sospecha que la lluvia retrasa las entregas del sur, pero no tiene más que una corazonada. ¿Cómo convierte
+una base de datos miles de filas en una respuesta por zona? ¿Cómo se pone a prueba una sospecha con datos?
+
+Este tema usa lo que ya conoces: tablas, `SELECT`, `INSERT` y consultas con parámetros `?` en SQLite (Módulo 4), y
+**hipótesis** y **evidencia** (Módulo 5, Tema 1; Módulo 0, Tema 5).
 
 #### Glosario del tema
 
-**cohesión**
-- **Definición técnica:** grado en que los elementos de un módulo o función contribuyen a una sola responsabilidad.
-- **En palabras sencillas:** qué tan relacionadas están las cosas que viven juntas.
-- **Dónde se rompe la comparación:** alta cohesión no es «una línea por función»: es una sola **razón para cambiar**.
-- **Ejemplo:** `antes/entregas.py` mezcla PIN, SQL y SMS (baja); `despues/dominio.py` solo tiene la regla y sus contratos (alta).
-- **Error típico:** partir una función en trozos por tamaño, no por responsabilidad: quedan piezas que siempre cambian juntas.
+**sistema transaccional**
+- **Definición técnica:** base de datos diseñada para muchas escrituras y lecturas pequeñas y concurrentes, con garantías de consistencia por operación; se le llama OLTP (*online transaction processing*).
+- **En palabras sencillas:** la caja registradora: anota cada venta al instante y sin errores.
+- **Dónde se rompe la comparación:** una caja no responde «¿cuánto vendimos por zona este año?»; un sistema transaccional puede, pero lento.
+- **Ejemplo:** la tabla de RutaFlow donde cada mensajero marca «entregado» al llegar.
+- **Error típico:** lanzar reportes pesados contra la base transaccional en hora pico y frenar las entregas.
 
-**acoplamiento**
-- **Definición técnica:** grado en que un módulo depende de los detalles internos de otro; a más acoplamiento, más cambios en cadena.
-- **En palabras sencillas:** cuántos hilos te atan a otras piezas; si una se mueve, tú te mueves.
-- **Dónde se rompe la comparación:** algo de acoplamiento es inevitable; el problema es depender de detalles que cambian.
-- **Ejemplo:** `antes/entregas.py importa ['sqlite3']`; `despues/dominio.py importa ['typing']`, nada de infraestructura.
-- **Error típico:** creer que separar en archivos reduce el acoplamiento; si el archivo nuevo importa al viejo, siguen atados.
+**almacén analítico**
+- **Definición técnica:** base de datos optimizada para leer y agregar grandes volúmenes históricos, alimentada por copias periódicas de los sistemas transaccionales; se le llama OLAP o *data warehouse*.
+- **En palabras sencillas:** el archivo del contador: no atiende clientes, pero responde preguntas sobre todo el año.
+- **Dónde se rompe la comparación:** el archivo es estático; un almacén se recarga cada hora o cada noche y sus datos llegan con retraso.
+- **Ejemplo:** una tabla con todas las entregas de 2026 que solo se consulta para reportes por zona y mes.
+- **Error típico:** esperar que el almacén muestre la entrega de hace un minuto; refleja la última carga.
 
-**interfaz**
-- **Definición técnica:** conjunto de operaciones (nombres, parámetros y resultado) que un componente ofrece, sin decir cómo las implementa; en Python se declara con `typing.Protocol`.
-- **En palabras sencillas:** el enchufe: dice qué forma tiene la conexión, no qué aparato hay detrás.
-- **Dónde se rompe la comparación:** `Protocol` no se revisa al ejecutar; un objeto sin el método falla recién al llamarlo.
-- **Ejemplo:** `class RepositorioEntregas(Protocol): def marcar_entregado(self, guia: str) -> None: ...`.
-- **Error típico:** pasar un objeto equivocado: `AttributeError: 'RepositorioMemoria' object has no attribute 'enviar'`.
+**función de agregación**
+- **Definición técnica:** función de SQL que recibe muchas filas y devuelve un solo valor: `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`.
+- **En palabras sencillas:** resumir una columna entera en un número.
+- **Dónde se rompe la comparación:** `COUNT(*)` cuenta filas, pero `AVG(columna)` ignora las filas con `NULL` en esa columna.
+- **Ejemplo:** `ROUND(AVG(minutos), 1)` da el promedio de minutos con un decimal.
+- **Error típico:** mezclar una agregación con una columna sin agrupar: el resultado de esa columna queda sin sentido.
 
-**principios SOLID**
-- **Definición técnica:** cinco guías de diseño orientado a objetos: responsabilidad única, abierto/cerrado, sustitución de Liskov, segregación de interfaces e inversión de dependencias.
-- **En palabras sencillas:** cinco preguntas para revisar si una clase será fácil de cambiar mañana.
-- **Dónde se rompe la comparación:** son guías, no leyes; aplicarlas donde nada cambia agrega capas sin beneficio.
-- **Ejemplo:** responsabilidad única: el dominio cambia si cambia la regla del PIN; `adaptadores.py`, si cambia la base o el canal.
-- **Error típico:** crear una interfaz por cada clase «por SOLID», aunque solo exista una implementación posible.
+**GROUP BY**
+- **Definición técnica:** cláusula de SQL que parte las filas en grupos con el mismo valor en las columnas indicadas y aplica las funciones de agregación a cada grupo.
+- **En palabras sencillas:** hacer montones por zona y resumir cada montón por separado.
+- **Dónde se rompe la comparación:** los montones no tienen orden; si quieres un orden fijo, agrega `ORDER BY`.
+- **Ejemplo:** `GROUP BY zona` produce una fila para `centro`, otra para `norte` y otra para `sur`.
+- **Error típico:** filtrar grupos con `WHERE COUNT(*) >= 2`; el filtro de grupos se escribe con `HAVING`.
 
-**inversión de dependencias**
-- **Definición técnica:** principio por el que los módulos de alto nivel (reglas) no dependen de los de bajo nivel (infraestructura); ambos dependen de una abstracción que define el de alto nivel.
-- **En palabras sencillas:** la regla dice «necesito algo que guarde»; quien la usa le entrega el que quiera.
-- **Dónde se rompe la comparación:** se invierte la dirección del `import`, no la del flujo: los datos siguen yendo hacia SQLite.
-- **Ejemplo:** `confirmar_entrega(guia, pin, repositorio, aviso)` recibe sus dependencias como parámetros.
-- **Error típico:** olvidar pasar una: `TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'`.
+**restricción CHECK**
+- **Definición técnica:** regla declarada en la tabla que la base de datos evalúa en cada `INSERT` o `UPDATE`; si es falsa, rechaza la operación.
+- **En palabras sencillas:** un portero en la puerta de la tabla que no deja entrar datos imposibles.
+- **Dónde se rompe la comparación:** el portero solo revisa lo que le dijiste; un dato posible pero falso (`minutos = 30` cuando fueron 90) entra igual.
+- **Ejemplo:** `minutos INTEGER NOT NULL CHECK (minutos > 0)`.
+- **Error típico:** validar solo en el programa; otro programa o una consulta manual inserta el dato imposible.
 
-**patrón de diseño**
-- **Definición técnica:** solución con nombre a un problema de diseño que se repite, descrita por su intención, su estructura y sus consecuencias.
-- **En palabras sencillas:** una receta conocida con nombre propio, para no reinventarla y para hablar rápido con el equipo.
-- **Dónde se rompe la comparación:** la receta no se copia igual siempre; se adapta, y a veces la solución simple es mejor.
-- **Ejemplo:** decir «aquí usamos un Repository» explica en tres palabras lo que hace `RepositorioSQLite`.
-- **Error típico:** elegir el patrón antes de tener el problema; el código se llena de piezas que nadie necesita.
+**minería de datos**
+- **Definición técnica:** proceso de descubrir patrones útiles y no evidentes en grandes volúmenes de datos con métodos estadísticos y algorítmicos: reglas de asociación, agrupamiento, detección de anomalías.
+- **En palabras sencillas:** buscar regularidades en el historial que nadie había visto a simple vista.
+- **Dónde se rompe la comparación:** a diferencia de minar oro, aquí siempre «encuentras» algo; la mitad puede ser casualidad.
+- **Ejemplo:** descubrir en el historial que las entregas del sur con lluvia se retrasan más que el promedio.
+- **Error típico:** tratar un patrón como causa; la minería muestra asociaciones, no explica por qué ocurren.
 
-**Repository**
-- **Definición técnica:** patrón que ofrece al dominio una interfaz tipo colección para guardar y recuperar objetos, ocultando el mecanismo de almacenamiento.
-- **En palabras sencillas:** un archivador: le pides guardar o buscar, y no te importa si es papel, SQLite o la nube.
-- **Dónde se rompe la comparación:** no es un envoltorio de cada consulta SQL; sus métodos hablan el idioma del negocio (`marcar_entregado`).
-- **Ejemplo:** `RepositorioSQLite` y `RepositorioMemoria` cumplen el mismo `RepositorioEntregas`.
-- **Error típico:** exponer métodos como `ejecutar_sql(consulta)`: el dominio vuelve a saber de SQL.
+**regla de asociación**
+- **Definición técnica:** implicación del tipo «si A, entonces B» extraída de los datos, acompañada de medidas que dicen con qué frecuencia y fiabilidad se cumple.
+- **En palabras sencillas:** «cuando pasa esto, suele pasar aquello», con números que dicen qué tan seguido.
+- **Dónde se rompe la comparación:** «suele pasar» en lenguaje común es vago; aquí se mide con soporte y confianza.
+- **Ejemplo:** «si es zona sur con lluvia, entonces hay retraso».
+- **Error típico:** aceptar una regla con confianza alta sin compararla con lo que pasa en general.
 
-**Adapter**
-- **Definición técnica:** patrón que convierte la interfaz de una pieza concreta (SQLite, un proveedor de SMS) en la interfaz que espera el cliente.
-- **En palabras sencillas:** el adaptador de viaje: el enchufe del hotel es distinto, pero tu cargador funciona.
-- **Dónde se rompe la comparación:** aquí el «enchufe» lo define tu dominio, no el fabricante.
-- **Ejemplo:** `AvisoConsola` adapta `print` al contrato `Aviso`; mañana `AvisoCorreo` adaptará un servidor de correo.
-- **Error típico:** meter reglas de negocio en el adaptador (por ejemplo, validar el PIN en `RepositorioSQLite`).
+**soporte**
+- **Definición técnica:** fracción de todas las filas que cumplen a la vez la condición y la consecuencia de la regla.
+- **En palabras sencillas:** qué tan común es el caso completo en todo el historial.
+- **Dónde se rompe la comparación:** un soporte bajo no hace falsa la regla; solo dice que hay pocos casos para creerle.
+- **Ejemplo:** 3 de 10 entregas fueron «sur, lluvia y retraso»: soporte `0.30`.
+- **Error típico:** sacar conclusiones de una regla que se cumplió dos veces en diez mil filas.
 
-**refactorización**
-- **Definición técnica:** cambio en la estructura interna del código que no altera su comportamiento observable, hecho en pasos pequeños y verificados.
-- **En palabras sencillas:** ordenar el cuarto sin botar nada: todo sigue ahí, pero ahora encuentras las cosas.
-- **Dónde se rompe la comparación:** si cambia lo que el programa responde, ya no es refactorización: es un cambio funcional.
-- **Ejemplo:** `despues/entregas.py` conserva la firma `confirmar(ruta_db, guia, pin)`; `diff antes.txt despues.txt` no muestra diferencias.
-- **Error típico:** mezclar en el mismo commit la refactorización y la funcionalidad nueva; si algo falla, no sabes cuál de las dos fue.
-
-**prueba caracterizadora**
-- **Definición técnica:** prueba que registra el comportamiento actual de un código, correcto o no, para detectar cualquier cambio durante una refactorización.
-- **En palabras sencillas:** una foto del «antes» para compararla con el «después».
-- **Dónde se rompe la comparación:** no dice si el comportamiento es bueno; solo si cambió.
-- **Ejemplo:** `caracterizar.py` imprime las respuestas y el contenido de la base para tres casos; la salida se guarda en `antes.txt`.
-- **Error típico:** «corregir» de paso lo que la foto muestra raro; primero se refactoriza igual, después se corrige con su propia prueba.
+**confianza**
+- **Definición técnica:** fracción de las filas que cumplen la condición que también cumplen la consecuencia; estima P(B | A).
+- **En palabras sencillas:** cuando se da la condición, qué tan seguido se da el resultado.
+- **Dónde se rompe la comparación:** «confianza» aquí es una proporción, no una certeza ni un intervalo estadístico.
+- **Ejemplo:** de 4 entregas del sur con lluvia, 3 se retrasaron: confianza `0.75`.
+- **Error típico:** dividir entre todas las filas en vez de entre las que cumplen la condición; eso es el soporte.
 
 #### ► CÓMO FUNCIONA
-Se empieza con una foto del comportamiento actual. Luego se separan las responsabilidades: la regla va al dominio con
-sus interfaces; SQLite y el aviso van a adaptadores. La función vieja queda como fachada con la misma firma. Al
-final se repite la foto: si es idéntica, la refactorización es segura.
+Los datos viven primero en el sistema transaccional, que registra cada entrega. Cada noche, un proceso copia esos
+datos al almacén analítico. Allí se responden preguntas agregadas con `GROUP BY`. La minería de datos va un paso más
+allá: no responde una pregunta que traes, sino que busca reglas que no habías formulado.
+
+Una regla solo vale si supera a la referencia. Si el 40 % de todas las entregas se retrasa, una regla con confianza
+del 40 % no aporta nada. Por eso se divide la confianza entre la tasa general: ese cociente se llama **elevación**.
 
 ```mermaid
 flowchart LR
-    S["olor: confirmar() hace todo"] --> C["prueba caracterizadora<br/>antes.txt"]
-    C --> R["refactor pequeño<br/>dominio + adaptadores"]
-    R --> D{"diff antes.txt despues.txt"}
-    D -->|"sin diferencias"| OK["commit de refactor"]
-    D -->|"hay diferencias"| R
-```
-
-Después de la refactorización, las dependencias apuntan hacia el dominio:
-
-```mermaid
-flowchart RL
-    SQL["RepositorioSQLite<br/>adaptadores.py"] -.->|"cumple"| RP["RepositorioEntregas<br/>Protocol"]
-    MEM["RepositorioMemoria"] -.->|"cumple"| RP
-    CON["AvisoConsola"] -.->|"cumple"| AV["Aviso<br/>Protocol"]
-    RP --- DOM["confirmar_entrega<br/>dominio.py"]
-    AV --- DOM
+    O["sistema transaccional: una fila por entrega"] -->|"carga nocturna"| W["almacén analítico"]
+    W --> G["GROUP BY zona: promedio y máximo"]
+    W --> M["minería: busca reglas si A entonces B"]
+    M --> S["soporte y confianza"]
+    S --> D{"¿confianza mayor que la tasa general?"}
+    D -->|"sí"| H["hipótesis para comprobar"]
+    D -->|"no"| R["descartar la regla"]
 ```
 
 #### Problema resuelto 3.1
-Toma una foto del comportamiento de la función actual antes de tocarla.
+Calcula, por zona, cuántas entregas hubo, el promedio y el máximo de minutos. Después comprueba que la tabla rechaza
+un tiempo negativo.
 
 **Razonamiento:**
-1. La función devuelve un texto, imprime un SMS y escribe en la base: la foto debe capturar las tres cosas.
-2. Se prueban tres casos: PIN válido, PIN con letra y PIN corto.
-3. Se usa una base temporal para que la foto no dependa de datos viejos.
+1. La tabla declara la regla de negocio: los minutos son enteros positivos. La base de datos la hará cumplir.
+2. `GROUP BY zona` arma un grupo por zona; `COUNT`, `AVG` y `MAX` resumen cada grupo.
+3. Para demostrar la restricción, el programa intenta insertar `-5` al final y debe fallar.
 
 ```python
-# antes/entregas.py — una sola función valida, guarda y avisa
+# entregas.py — tiempos de entrega de RutaFlow agregados por zona con SQLite
 import sqlite3
 
+db = sqlite3.connect(":memory:")
+db.execute("""CREATE TABLE entrega (
+    zona TEXT NOT NULL,
+    minutos INTEGER NOT NULL CHECK (minutos > 0)
+)""")
+db.executemany("INSERT INTO entrega VALUES (?, ?)",
+               [("norte", 31), ("norte", 25), ("sur", 48), ("sur", 52), ("centro", 19)])
 
-def confirmar(ruta_db, guia, pin):
-    if len(pin) != 6 or not pin.isdigit():
-        return "error: PIN inválido"
-    conexion = sqlite3.connect(ruta_db)
-    conexion.execute("CREATE TABLE IF NOT EXISTS envio(guia TEXT PRIMARY KEY, estado TEXT)")
-    conexion.execute("INSERT OR REPLACE INTO envio VALUES (?, 'entregado')", (guia,))
-    conexion.commit()
-    print(f"SMS al cliente: su envío {guia} fue entregado")
-    return "ok"
-```
+consulta = """SELECT zona, COUNT(*), ROUND(AVG(minutos), 1), MAX(minutos)
+              FROM entrega GROUP BY zona ORDER BY zona"""
+for zona, total, promedio, maximo in db.execute(consulta):
+    print(f"{zona:<7} envíos={total}  promedio={promedio}  máximo={maximo}")
 
-```python
-# caracterizar.py — registra lo que hace hoy confirmar(), sin juzgar si está bien
-import sqlite3
-import sys
-import tempfile
-from pathlib import Path
-
-sys.path.insert(0, sys.argv[1])          # carpeta con la versión a caracterizar
-from entregas import confirmar
-
-CASOS = [("RF-1", "123456"), ("RF-2", "12a456"), ("RF-3", "1234")]
-with tempfile.TemporaryDirectory() as carpeta:
-    ruta = str(Path(carpeta) / "rutaflow.db")
-    for guia, pin in CASOS:
-        print(f"{guia} {pin} -> {confirmar(ruta, guia, pin)}")
-    filas = sqlite3.connect(ruta).execute("SELECT guia, estado FROM envio").fetchall()
-    print("en la base:", filas)
+db.execute("INSERT INTO entrega VALUES (?, ?)", ("sur", -5))   # dato imposible
 ```
 
 ```text
-$ python3 caracterizar.py antes | tee antes.txt
-SMS al cliente: su envío RF-1 fue entregado
-RF-1 123456 -> ok
-RF-2 12a456 -> error: PIN inválido
-RF-3 1234 -> error: PIN inválido
-en la base: [('RF-1', 'entregado')]
+$ python3 entregas.py
+centro  envíos=1  promedio=19.0  máximo=19
+norte   envíos=2  promedio=28.0  máximo=31
+sur     envíos=2  promedio=50.0  máximo=52
+Traceback (most recent call last):
+  File "/home/estudiante/labs/especializaciones/entregas.py", line 17, in <module>
+    db.execute("INSERT INTO entrega VALUES (?, ?)", ("sur", -5))   # dato imposible
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: CHECK constraint failed: minutos > 0
 ```
 
 **Explicación por partes.**
-- `antes/entregas.py`, línea 2: el `import sqlite3` ata la regla a una base concreta (acoplamiento).
-- Líneas 6–7, 8–11 y 12: tres responsabilidades en una función: validar, guardar y avisar (baja cohesión).
-- `caracterizar.py`, línea 7: la carpeta se recibe como argumento; así la misma foto sirve para «antes» y «después».
-- Líneas 11–12: `tempfile.TemporaryDirectory` crea una carpeta que se borra sola al terminar.
-- Líneas 15–16: la foto incluye lo que quedó guardado, no solo lo que se imprimió.
-- `tee antes.txt` muestra la salida y además la guarda en un archivo para compararla después.
+- Línea 4: `":memory:"` crea una base de datos temporal en la RAM; desaparece al terminar el programa.
+- Líneas 5–8: la tabla declara `NOT NULL` y `CHECK (minutos > 0)`. La regla vive en el esquema, no en el código.
+- Líneas 12–13: una consulta de agregación. Cada fila del resultado es un grupo, no una entrega.
+- Línea 15: las cuatro columnas del `SELECT` llegan como tupla y se desempaquetan en el `for`.
+- Línea 17: el `INSERT` con `-5` viola la restricción y SQLite lo rechaza con `IntegrityError`.
 
-> **Buena práctica.** Guarda la foto en un archivo antes de cambiar una sola línea. Si la tomas a mitad de la
-> refactorización, ya no es el «antes».
+> **Error común.** Insertar un dato imposible y no leer el mensaje. La última línea dice
+> `sqlite3.IntegrityError: CHECK constraint failed: minutos > 0`: qué tipo de error es (`IntegrityError`) y qué regla
+> se violó. No se corrige quitando la restricción, sino corrigiendo el dato o el programa que lo produjo.
+
+> **Buena práctica.** Declara en la tabla las reglas que nunca deben romperse (`NOT NULL`, `CHECK`, `UNIQUE`). El
+> programa puede tener un error; la base de datos las sigue haciendo cumplir para todos los programas.
 
 #### Problema resuelto 3.2
-Separa la regla de la infraestructura con interfaces, repositorios y adaptadores. Conserva la firma pública y demuestra que nada cambió.
+Con un historial de diez entregas, comprueba si «zona sur con lluvia» se asocia con retraso más que el promedio.
 
 **Razonamiento:**
-1. La regla (PIN válido → guardar → avisar) va a `dominio.py`, que define lo que necesita con dos `Protocol`.
-2. SQLite y la consola van a `adaptadores.py`; también un repositorio y un aviso en memoria, para probar sin base.
-3. `entregas.py` conserva `confirmar(ruta_db, guia, pin)` y solo conecta las piezas.
-4. Se toma la foto otra vez y se compara con `diff`.
+1. Filtra las filas que cumplen la condición; de ellas, las que además cumplen la consecuencia.
+2. Soporte: casos completos entre todas las filas. Confianza: casos completos entre los que cumplen la condición.
+3. Calcula la tasa general de retraso y compárala con la confianza: ese cociente es la elevación.
 
 ```python
-# despues/dominio.py — la regla de negocio y sus contratos; no conoce SQLite ni SMS
-from typing import Protocol
+# mineria.py — busca una regla «si llueve en el sur, entonces hay retraso» en el historial
+historial = [
+    {"zona": "sur", "lluvia": True, "retraso": True},
+    {"zona": "sur", "lluvia": True, "retraso": True},
+    {"zona": "sur", "lluvia": True, "retraso": False},
+    {"zona": "sur", "lluvia": False, "retraso": False},
+    {"zona": "norte", "lluvia": True, "retraso": False},
+    {"zona": "norte", "lluvia": False, "retraso": False},
+    {"zona": "norte", "lluvia": False, "retraso": True},
+    {"zona": "centro", "lluvia": True, "retraso": False},
+    {"zona": "centro", "lluvia": False, "retraso": False},
+    {"zona": "sur", "lluvia": True, "retraso": True},
+]
 
 
-class RepositorioEntregas(Protocol):
-    def marcar_entregado(self, guia: str) -> None: ...
+def evaluar_regla(filas, condicion, consecuencia):
+    cumplen_si = [f for f in filas if condicion(f)]
+    cumplen_ambas = [f for f in cumplen_si if consecuencia(f)]
+    soporte = len(cumplen_ambas) / len(filas)
+    confianza = len(cumplen_ambas) / len(cumplen_si)
+    base = len([f for f in filas if consecuencia(f)]) / len(filas)
+    return soporte, confianza, base
 
 
-class Aviso(Protocol):
-    def enviar(self, mensaje: str) -> None: ...
+def llueve_en_sur(fila):
+    return fila["zona"] == "sur" and fila["lluvia"]
 
 
-def pin_valido(pin: str) -> bool:
-    return len(pin) == 6 and pin.isdigit()
+def hubo_retraso(fila):
+    return fila["retraso"]
 
 
-def confirmar_entrega(guia: str, pin: str, repositorio: RepositorioEntregas, aviso: Aviso) -> str:
-    if not pin_valido(pin):
-        return "error: PIN inválido"
-    repositorio.marcar_entregado(guia)
-    aviso.enviar(f"SMS al cliente: su envío {guia} fue entregado")
-    return "ok"
-```
-
-```python
-# despues/adaptadores.py — implementaciones concretas de los contratos del dominio
-import sqlite3
-
-
-class RepositorioSQLite:
-    def __init__(self, ruta_db: str):
-        self.ruta_db = ruta_db
-
-    def marcar_entregado(self, guia: str) -> None:
-        with sqlite3.connect(self.ruta_db) as conexion:
-            conexion.execute("CREATE TABLE IF NOT EXISTS envio(guia TEXT PRIMARY KEY, estado TEXT)")
-            conexion.execute("INSERT OR REPLACE INTO envio VALUES (?, 'entregado')", (guia,))
-
-
-class RepositorioMemoria:
-    def __init__(self):
-        self.estados = {}
-
-    def marcar_entregado(self, guia: str) -> None:
-        self.estados[guia] = "entregado"
-
-
-class AvisoConsola:
-    def enviar(self, mensaje: str) -> None:
-        print(mensaje)
-
-
-class AvisoMemoria:
-    def __init__(self):
-        self.enviados = []
-
-    def enviar(self, mensaje: str) -> None:
-        self.enviados.append(mensaje)
-```
-
-```python
-# despues/entregas.py — misma firma de antes; ahora solo conecta las piezas
-from adaptadores import AvisoConsola, RepositorioSQLite
-from dominio import confirmar_entrega
-
-
-def confirmar(ruta_db, guia, pin):
-    return confirmar_entrega(guia, pin, RepositorioSQLite(ruta_db), AvisoConsola())
+soporte, confianza, base = evaluar_regla(historial, llueve_en_sur, hubo_retraso)
+print(f"soporte={soporte:.2f}  confianza={confianza:.2f}  retraso en general={base:.2f}")
+print(f"la regla multiplica la probabilidad de retraso por {confianza / base:.2f}")
 ```
 
 ```text
-$ python3 caracterizar.py despues > despues.txt; diff antes.txt despues.txt; echo "diff: $?"
-diff: 0
-```
-
-`diff` no imprime nada y termina con `0`: las dos fotos son idénticas. Ahora la regla se prueba sin SQLite:
-
-```python
-# prueba_dominio.py — prueba la regla sin SQLite ni consola
-import sys
-
-sys.path.insert(0, "despues")
-from adaptadores import AvisoMemoria, RepositorioMemoria
-from dominio import confirmar_entrega
-
-repositorio, aviso = RepositorioMemoria(), AvisoMemoria()
-print(confirmar_entrega("RF-9", "654321", repositorio, aviso))
-print(confirmar_entrega("RF-8", "65432", repositorio, aviso))
-print("guardado:", repositorio.estados)
-print("avisos:", aviso.enviados)
-```
-
-```text
-$ python3 prueba_dominio.py
-ok
-error: PIN inválido
-guardado: {'RF-9': 'entregado'}
-avisos: ['SMS al cliente: su envío RF-9 fue entregado']
-```
-
-Y el acoplamiento se ve en los `import` de cada archivo:
-
-```python
-# acoplamiento.py — lista de qué módulos importa cada archivo
-import ast
-import sys
-from pathlib import Path
-
-for ruta in sys.argv[1:]:
-    arbol = ast.parse(Path(ruta).read_text(encoding="utf-8"))
-    nombres = sorted({a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
-                     | {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom)})
-    funciones = [n.name for n in arbol.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))]
-    print(f"{ruta:<24} importa {nombres}  define {funciones}")
-```
-
-```text
-$ python3 acoplamiento.py antes/entregas.py despues/dominio.py despues/adaptadores.py despues/entregas.py
-antes/entregas.py        importa ['sqlite3']  define ['confirmar']
-despues/dominio.py       importa ['typing']  define ['RepositorioEntregas', 'Aviso', 'pin_valido', 'confirmar_entrega']
-despues/adaptadores.py   importa ['sqlite3']  define ['RepositorioSQLite', 'RepositorioMemoria', 'AvisoConsola', 'AvisoMemoria']
-despues/entregas.py      importa ['adaptadores', 'dominio']  define ['confirmar']
+$ python3 mineria.py
+soporte=0.30  confianza=0.75  retraso en general=0.40
+la regla multiplica la probabilidad de retraso por 1.88
 ```
 
 **Explicación por partes.**
-- `dominio.py`, líneas 5–10: dos interfaces. Dicen **qué** necesita la regla, no **cómo** se hace.
-- Línea 17: la función recibe repositorio y aviso como parámetros: eso es la inversión de dependencias.
-- `adaptadores.py`, líneas 5–12: el adaptador SQLite; `with` confirma la transacción al salir del bloque.
-- Líneas 15–20 y 28–33: dobles de prueba en memoria que cumplen las mismas interfaces.
-- `entregas.py`, línea 7: la fachada arma las piezas reales; quien la llamaba antes no nota el cambio.
-- `acoplamiento.py`: solo `adaptadores.py` importa `sqlite3`; el dominio quedó libre de infraestructura.
+- Líneas 2–13: el historial. Cada diccionario es una entrega; en la práctica vendría del almacén con una consulta.
+- Línea 16: `evaluar_regla` recibe la condición y la consecuencia como funciones. Así sirve para cualquier regla.
+- Líneas 17–18: dos comprensiones de lista filtran primero por la condición y después por la consecuencia.
+- Líneas 19–21: soporte, confianza y tasa general, cada una con su denominador distinto.
+- Línea 35: la elevación es 1.88. La regla casi duplica la tasa de retraso: merece una hipótesis y más datos.
 
-Si llamas la regla sin uno de sus colaboradores:
+> **Error común.** Evaluar una regla cuya condición no se cumple en ninguna fila, por ejemplo con la zona `"oriente"`.
+> La línea 20 divide entre una lista vacía y el programa termina con `ZeroDivisionError: division by zero`. Antes
+> de dividir, comprueba que `cumplen_si` tenga filas.
 
-```python
-# error_sin_aviso.py — olvidar inyectar una dependencia
-import sys
-
-sys.path.insert(0, "despues")
-from adaptadores import RepositorioMemoria
-from dominio import confirmar_entrega
-
-print(confirmar_entrega("RF-9", "654321", RepositorioMemoria()))
-```
-
-```text
-$ python3 error_sin_aviso.py
-TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'
-```
-
-> **Error común.** Olvidar inyectar una dependencia produce `TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'`. El mensaje dice qué parámetro
-> faltó; pasa un objeto que cumpla `Aviso`, como `AvisoMemoria()`.
-
-> **Error común.** Aplicar Repository y Adapter a todo. Si un script de 20 líneas solo escribirá siempre en un
-> archivo, la interfaz extra solo agrega lectura. Usa estos patrones en los límites que cambian o que pruebas aparte.
-
-> **Prevenir errores.** Separa en dos commits: primero la refactorización con `diff` vacío; después el cambio
-> funcional (por ejemplo, `AvisoCorreo`) con su propia prueba.
+> **Prevenir errores.** Con diez filas, una regla es solo una pista. Antes de cambiar rutas, repite el cálculo con
+> meses de historial y anota el número de casos junto a cada porcentaje.
 
 #### Checkpoint 3.1
-Producto pide avisar por correo. ¿Qué archivos tocas en la versión «después» y cuáles no?
+En `mineria.py`, ¿por qué la confianza (0.75) y el soporte (0.30) son distintos si cuentan los mismos tres casos?
 
-Respuesta: agregas una clase `AvisoCorreo` en `adaptadores.py` y la usas en `entregas.py`. `dominio.py` no cambia: depende de `Aviso`, no de un canal concreto.
+Respuesta: porque dividen entre cosas distintas. El soporte divide entre las 10 filas; la confianza, entre las 4 filas
+del sur con lluvia: `3 / 10 = 0.30` y `3 / 4 = 0.75`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/diseno` con las subcarpetas `antes`, `despues` y `ts`.
+#### Paso 1 · Agrega por zona
+Escribe `entregas.py` y ejecútalo. Comprueba a mano el promedio del sur: `(48 + 52) / 2 = 50.0`.
 
-#### Paso 2 · Toma la foto
-Escribe `antes/entregas.py` y `caracterizar.py`. Ejecuta `python3 caracterizar.py antes | tee antes.txt`.
+#### Paso 2 · Viola la restricción
+Lee la última línea del traceback. Cambia `-5` por `0` y confirma que también se rechaza: `0 > 0` es falso.
 
-#### Paso 3 · Refactoriza en pasos pequeños
-Escribe `dominio.py`, luego `adaptadores.py`, luego la fachada `entregas.py`. Tras cada archivo, compara la foto con `diff`.
+#### Paso 3 · Mide una regla
+Escribe `mineria.py` y ejecútalo. Cuenta tú las filas del sur con lluvia en las líneas 3–12 y compara con la salida.
 
-#### Paso 4 · Prueba sin infraestructura
-Ejecuta `prueba_dominio.py` y `acoplamiento.py`. Comprueba que solo `adaptadores.py` importa `sqlite3`.
-
-#### Paso 5 · El mismo puerto en TypeScript
-El mismo diseño se escribe en TypeScript con un puerto `DeliveryRepository`. En `ts/` crea `confirm-delivery.ts`:
-
-```typescript
-export type DeliveryCommand = Readonly<{
-  commandId: string;
-  shipmentId: string;
-  occurredAt: string;
-  recipientPin: string;
-}>;
-
-export interface DeliveryRepository {
-  findCommandResult(commandId: string): Promise<DeliveryResult | null>;
-  confirm(command: DeliveryCommand): Promise<DeliveryResult>;
-}
-
-export type DeliveryResult = Readonly<{ shipmentId: string; status: 'delivered' }>;
-
-export async function confirmDelivery(
-  command: DeliveryCommand,
-  repository: DeliveryRepository,
-): Promise<DeliveryResult> {
-  if (!command.commandId || !command.shipmentId) throw new TypeError('command identifiers are required');
-  if (!/^\d{6}$/.test(command.recipientPin)) throw new TypeError('recipientPin must contain six digits');
-
-  const previousResult = await repository.findCommandResult(command.commandId);
-  if (previousResult) return previousResult;
-
-  // Una implementación SQL debe insertar commandId y cambiar el envío en una
-  // única transacción con restricción UNIQUE(command_id).
-  return repository.confirm(command);
-}
-```
-
-Agrega un segundo adaptador, en memoria, sin tocar `confirmDelivery`:
-
-```typescript
-// main.ts — segundo adaptador del puerto, en memoria, sin tocar confirmDelivery
-import { confirmDelivery } from './confirm-delivery.ts';
-import type { DeliveryCommand, DeliveryRepository, DeliveryResult } from './confirm-delivery.ts';
-
-class InMemoryDeliveryRepository implements DeliveryRepository {
-  results = new Map<string, DeliveryResult>();
-
-  async findCommandResult(commandId: string): Promise<DeliveryResult | null> {
-    return this.results.get(commandId) ?? null;
-  }
-
-  async confirm(command: DeliveryCommand): Promise<DeliveryResult> {
-    const result: DeliveryResult = { shipmentId: command.shipmentId, status: 'delivered' };
-    this.results.set(command.commandId, result);
-    return result;
-  }
-}
-
-const repository = new InMemoryDeliveryRepository();
-const command = { commandId: 'cmd-1', shipmentId: 'RF-4471', occurredAt: '2026-11-24T10:00:00Z', recipientPin: '482913' };
-console.log(await confirmDelivery(command, repository));
-console.log(await confirmDelivery(command, repository));
-console.log('confirmaciones guardadas:', repository.results.size);
-try {
-  await confirmDelivery({ ...command, commandId: 'cmd-2', recipientPin: '4829' }, repository);
-} catch (error) {
-  console.log(`${(error as Error).name}: ${(error as Error).message}`);
-}
-```
-
-Ejecútalo con Node.js. En la versión comprobada (22.23.5), `node` quita los tipos sin compilar:
-
-```text
-$ node main.ts; echo "salida: $?"
-{ shipmentId: 'RF-4471', status: 'delivered' }
-{ shipmentId: 'RF-4471', status: 'delivered' }
-confirmaciones guardadas: 1
-TypeError: recipientPin must contain six digits
-salida: 0
-```
-
-La segunda llamada con `cmd-1` devuelve el resultado guardado y no agrega otra confirmación (línea 22). El PIN corto
-se rechaza con `TypeError` (línea 25). Comprueba el puerto con Python:
-
-```python
-# verificar_puerto.py — el puerto tiene dos métodos y ninguna palabra de infraestructura
-import re
-from pathlib import Path
-
-fuente = Path("confirm-delivery.ts").read_text(encoding="utf-8")
-bloque = re.search(r"export interface DeliveryRepository \{(.*?)\n\}", fuente, re.S)
-if not bloque:
-    raise SystemExit("no se encontró DeliveryRepository")
-cuerpo = bloque.group(1)
-metodos = re.findall(r"^\s{2}(\w+)\(", cuerpo, re.M)
-infra = re.findall(r"(?i)\b(sqlite|sql|http|fetch|dynamodb|aws)\b", cuerpo)
-print("métodos:", ", ".join(metodos))
-print("métodos esperados:", len(metodos) == 2)
-print("referencias de infraestructura:", len(infra))
-```
-
-```text
-$ python3 verificar_puerto.py
-métodos: findCommandResult, confirm
-métodos esperados: True
-referencias de infraestructura: 0
-```
+#### Paso 4 · Busca una regla que no sirva
+Cambia `"sur"` por `"norte"` en `llueve_en_sur` y anota en `evidencia-tema3.txt` qué pasa con la elevación.
 
 #### Resumen
-- **Cohesión** alta: cada módulo tiene una razón para cambiar; **acoplamiento** bajo: depende de pocos detalles ajenos.
-- Una **interfaz** (`Protocol`) declara qué se necesita; la **inversión de dependencias** hace que la regla la reciba de afuera.
-- Los **principios SOLID** guían el diseño; se aplican donde hay cambio real.
-- Un **patrón de diseño** es una solución con nombre: **Repository** oculta el almacenamiento y **Adapter** traduce piezas concretas.
-- Una **refactorización** cambia la estructura sin cambiar el comportamiento; la **prueba caracterizadora** lo demuestra.
+- Un **sistema transaccional** registra cada operación; un **almacén analítico** responde preguntas sobre el historial.
+- Una **función de agregación** resume muchas filas en un valor; **GROUP BY** la aplica a cada grupo.
+- Una **restricción CHECK** hace que la base de datos rechace datos imposibles con `IntegrityError`.
+- La **minería de datos** busca patrones que no habías preguntado, como una **regla de asociación**.
+- El **soporte** mide qué tan común es el caso completo; la **confianza**, qué tan seguido se cumple la consecuencia.
+- Una regla solo aporta si su confianza supera la tasa general; ese cociente es la elevación.
 
 #### Ejercicio verificable 1
-Básico. En `antes/entregas.py`, señala las líneas de cada responsabilidad.
+Básico. Agrega la entrega `("centro", 23)` al `executemany` de `entregas.py`. Predice la fila de `centro`.
 
-Respuesta esperada: validar el PIN, líneas 6–7; guardar en SQLite, líneas 8–11; avisar al cliente, línea 12.
+Respuesta esperada: `centro  envíos=2  promedio=21.0  máximo=23`. Las filas de `norte` y `sur` no cambian.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega `AvisoCorreo` en `adaptadores.py` que imprima `Correo: ...` y úsalo en un script con `RepositorioMemoria`.
+Intermedio. Modifica la consulta para mostrar solo las zonas con al menos dos entregas, sin tocar los datos originales.
 
-Respuesta esperada: `Correo: SMS al cliente: su envío RF-9 fue entregado` y `ok`. `dominio.py` no se modificó.
+Respuesta esperada: `GROUP BY zona HAVING COUNT(*) >= 2 ORDER BY zona`. Solo salen `norte` y `sur`; `centro` tiene una
+entrega. `HAVING` filtra grupos después de agregar; `WHERE` filtra filas antes.
 
 #### Ejercicio verificable 3
-Reto. Cambia en `dominio.py` el texto `"error: PIN inválido"` por `"PIN inválido"` y repite la foto.
+Reto. Evalúa la regla «zona norte con lluvia, entonces retraso» y explica el resultado. Después, haz que
+`evaluar_regla` devuelva `None` cuando ninguna fila cumpla la condición, en vez de fallar.
 
-Respuesta esperada: `diff` muestra dos líneas cambiadas (RF-2 y RF-3) y termina con `diff: 1`. Ya no es refactorización: es un cambio de comportamiento que necesita su propio criterio.
+Respuesta esperada: la salida es `soporte=0.00  confianza=0.00  retraso en general=0.40`. La única entrega del norte
+con lluvia llegó a tiempo: no hay evidencia de esa regla. Para el caso vacío, agrega `if not cumplen_si: return None`
+después de la línea 17 y comprueba el `None` antes de imprimir.
 
 #### En el trabajo
-Este patrón se llama arquitectura hexagonal o de puertos y adaptadores, y es común en backends de Java, Node.js y
-Python. En sistemas heredados sin pruebas, la prueba caracterizadora es el primer paso de cualquier cambio: primero se
-fija lo que hace hoy y después se mejora. Los equipos lo revisan en el pull request mirando que el `diff` del commit de
-refactor no toque pruebas.
+Los datos son una de las especialidades con más vacantes. Los roles son **administrador de bases de datos (DBA)**,
+**ingeniero de datos** (mueve datos del sistema transaccional al almacén), **analista de datos** (escribe las
+consultas y los tableros) y **científico de datos** (minería y modelos). Trabajan con almacenes como Snowflake,
+Google BigQuery, Amazon Redshift y Databricks, y con motores como PostgreSQL, Oracle y SQL Server. Los contratan
+bancos, comercio electrónico (Mercado Libre, Rappi), logística y telecomunicaciones. Para profundizar necesitas
+SQL avanzado (Módulo 4) y estadística: probabilidad condicional, muestreo y pruebas de hipótesis.
 
 </details>
 
-### Tema 4: Decisiones, documentación, deuda y evolución · Avanzado · 50 min
+### Tema 4: Inteligencia artificial, aprendizaje automático y visión · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- registrar una decisión de arquitectura en un ADR con contexto, decisión, consecuencias y estado;
-- comprobar con un programa que un ADR está completo;
-- priorizar la deuda técnica por su costo y su interés, con números;
-- evolucionar una función sin romper a quien la usa, con un aviso de deprecación.
+- separar datos de entrenamiento y de prueba y explicar por qué se evalúa solo con los de prueba;
+- construir una línea base y medir con el error absoluto medio si un modelo la supera;
+- ajustar a mano una regresión lineal por mínimos cuadrados;
+- aplicar una convolución a una imagen pequeña para detectar un borde.
 
-**Conceptos clave:** decisión de arquitectura, ADR, deuda técnica, interés de la deuda, cambio compatible, deprecación
-
-Este tema usa **trade-off** y **escenario de calidad** (Tema 2), **refactorización** (Tema 3), y **commit** y
-**pull request** (Módulo 5, Temas 3 y 4).
+**Conceptos clave:** inteligencia artificial, aprendizaje automático, modelo, datos de entrenamiento, datos de prueba, línea base, error absoluto medio, regresión lineal, mínimos cuadrados, sobreajuste, visión por computador, convolución
 
 #### El problema
-Una desarrolladora nueva llega a RutaFlow y pregunta: «¿por qué los eventos de envío están en DynamoDB y no en
-PostgreSQL como todo lo demás?». Nadie recuerda la razón: quien decidió ya no está. Además, la lista de «cosas que
-arreglar algún día» tiene 40 entradas sin orden. ¿Cómo dejas memoria de las decisiones y cómo eliges qué deuda pagar primero?
+Los clientes de RutaFlow preguntan «¿a qué hora llega mi paquete?». Hoy el sistema responde siempre «en unos 28
+minutos». Alguien propone usar «inteligencia artificial». Antes de comprar nada, ¿cómo sabes si un modelo predice
+mejor que esa respuesta fija? Y para la foto de la firma: ¿cómo encuentra un programa dónde empieza la etiqueta?
+
+Este tema usa lo que ya conoces: listas y comprensiones de lista (Módulo 2, Tema 1), **funciones** (Módulo 1, Tema 4)
+y **punto flotante** (Módulo 1, Tema 5). La función `zip(a, b)` recorre dos listas a la vez, en pares.
 
 #### Glosario del tema
 
-**decisión de arquitectura**
-- **Definición técnica:** elección que afecta la estructura o los atributos de calidad del sistema y que sería costosa de revertir.
-- **En palabras sencillas:** una elección que, si sale mal, cuesta semanas deshacer.
-- **Dónde se rompe la comparación:** no toda elección técnica lo es; el nombre de una variable se cambia en un minuto.
-- **Ejemplo:** guardar `ShipmentEvents` en DynamoDB con clave `shipment_id` y orden `occurred_at`.
-- **Error típico:** tomarla en una reunión y no escribirla; seis meses después parece un capricho.
+**inteligencia artificial y aprendizaje automático**
+- **Definición técnica:** la inteligencia artificial (IA) estudia programas que realizan tareas que asociamos con inteligencia. El aprendizaje automático (*machine learning*) es la rama que ajusta parámetros a partir de datos, en vez de programar las reglas a mano.
+- **En palabras sencillas:** en lugar de escribir la regla «cada km suma 2.33 minutos», le das ejemplos y el programa calcula ese número.
+- **Dónde se rompe la comparación:** el programa no «entiende» las entregas; solo encuentra los números que mejor encajan con los ejemplos.
+- **Ejemplo:** `modelo.py` calcula `a` y `b` a partir de cinco entregas pasadas.
+- **Error típico:** llamar «IA» a cualquier `if`; si nada se ajusta con datos, no es aprendizaje automático.
 
-**ADR**
-- **Definición técnica:** *Architecture Decision Record*: documento corto y numerado que registra una decisión con su contexto, la decisión, sus consecuencias y su estado.
-- **En palabras sencillas:** el acta de una decisión: por qué, qué se eligió y qué se aceptó perder.
-- **Dónde se rompe la comparación:** un acta no se edita; un ADR tampoco: si la decisión cambia, se escribe uno nuevo que lo reemplaza.
-- **Ejemplo:** `docs/adr/0001-shipment-events-dynamodb.md` → `secciones 3/3`, `estado: aceptado`.
-- **Error típico:** omitir las consecuencias negativas; el borrador sale con `falta: ## Consecuencias`.
+**modelo**
+- **Definición técnica:** función matemática con parámetros ajustables que recibe datos de entrada (variables explicativas) y produce una predicción.
+- **En palabras sencillas:** una fórmula con perillas; entrenar es girar las perillas hasta que la fórmula acierte en los ejemplos.
+- **Dónde se rompe la comparación:** una perilla se gira a mano; los parámetros se calculan con un método, aquí con una fórmula cerrada.
+- **Ejemplo:** `minutos = 17.29 + 2.33·km`, donde `a = 17.29` y `b = 2.33` son los parámetros.
+- **Error típico:** usar el modelo fuera del rango de los datos (200 km) y creer la predicción igual.
 
-**deuda técnica**
-- **Definición técnica:** costo futuro de trabajo adicional que se acumula al elegir hoy una solución más rápida o menos limpia que la adecuada.
-- **En palabras sencillas:** un préstamo: ganas tiempo hoy y lo pagas después, con intereses.
-- **Dónde se rompe la comparación:** a veces la deuda no se paga nunca porque el código se borra; entonces era la decisión correcta.
-- **Ejemplo:** `confirmar() mezcla regla, SQLite y SMS` (la versión «antes» del Tema 3).
-- **Error típico:** llamar deuda a todo lo que no te gusta; sin costo estimado, la lista no sirve para decidir.
+**datos de entrenamiento y datos de prueba**
+- **Definición técnica:** partición del conjunto de datos. Los de entrenamiento ajustan los parámetros. Los de prueba, nunca vistos durante el ajuste, estiman el error con datos nuevos.
+- **En palabras sencillas:** estudias con unos ejercicios y te evalúan con otros distintos.
+- **Dónde se rompe la comparación:** en un examen el profesor elige preguntas nuevas; aquí tú separas los datos y debes resistir la tentación de mirar los de prueba.
+- **Ejemplo:** `km_entreno` y `min_entreno` tienen 5 entregas; `km_prueba` y `min_prueba`, 2.
+- **Error típico:** medir el error con los mismos datos de entrenamiento: sale optimista.
 
-**interés de la deuda**
-- **Definición técnica:** costo recurrente que la deuda impone mientras no se paga, como horas extra por semana en cambios, fallos o esperas.
-- **En palabras sencillas:** lo que te cobra cada semana no haber arreglado el problema.
-- **Dónde se rompe la comparación:** el interés no es fijo: crece si esa parte del código se toca más seguido.
-- **Ejemplo:** el índice faltante cuesta 1 h arreglarlo y 1.5 h por semana no hacerlo: se recupera en `0.7 sem`.
-- **Error típico:** priorizar por lo que más molesta; la salida «después» muestra que lo molesto (nombres mezclados) tarda `20.0 sem` en pagarse.
+**línea base**
+- **Definición técnica:** predictor trivial que sirve de referencia mínima; un modelo solo se justifica si la supera en datos de prueba.
+- **En palabras sencillas:** la respuesta perezosa: «siempre 28 minutos». Si tu modelo no la gana, sobra.
+- **Dónde se rompe la comparación:** la respuesta perezosa a veces es muy buena; superarla por poco puede no valer el costo del modelo.
+- **Ejemplo:** `promedio = 28.0`, el promedio de las entregas de entrenamiento.
+- **Error típico:** presentar el error de un modelo sin el de la línea base; sin referencia, el número no dice nada.
 
-**cambio compatible**
-- **Definición técnica:** modificación de una interfaz pública tras la cual el código que ya la usaba sigue funcionando sin cambios.
-- **En palabras sencillas:** mejorar la herramienta sin obligar a nadie a cambiar cómo la usa.
-- **Dónde se rompe la comparación:** compatible no es idéntico: la función puede hacer más, pero lo viejo debe seguir igual.
-- **Ejemplo:** `calcular_tarifa(peso_kg, urgente=False)`: las llamadas viejas con solo el peso siguen dando `10500.0`.
-- **Error típico:** agregar un parámetro obligatorio: `TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'`.
+**error absoluto medio**
+- **Definición técnica:** promedio de las diferencias absolutas entre valores reales y predichos, MAE = Σ|real − predicho| / n; se mide en las unidades del dato.
+- **En palabras sencillas:** en promedio, por cuántos minutos se equivoca la predicción.
+- **Dónde se rompe la comparación:** un promedio esconde los casos extremos; un MAE de 2 puede incluir un error de 30 minutos.
+- **Ejemplo:** la línea base tiene `MAE=4.00`: se equivoca por 4 minutos en promedio.
+- **Error típico:** olvidar el valor absoluto: errores de +4 y −4 se cancelan y el promedio da 0.
 
-**deprecación**
-- **Definición técnica:** marca formal de que una interfaz será retirada en una versión futura; sigue funcionando, pero avisa y señala la alternativa.
-- **En palabras sencillas:** el aviso de «este puente se cierra en marzo; use el nuevo».
-- **Dónde se rompe la comparación:** Python oculta `DeprecationWarning` salvo en el programa principal y en las pruebas; quien no mira la salida no lo ve.
-- **Ejemplo:** `tarifa()` emite `DeprecationWarning: tarifa() se retirará en la versión 3; usa calcular_tarifa()`.
-- **Error típico:** borrar la función vieja sin aviso previo; el código de otros equipos se rompe el día del despliegue.
+**regresión lineal**
+- **Definición técnica:** modelo que predice un valor numérico como combinación lineal de las entradas: y = a + b·x en el caso de una variable.
+- **En palabras sencillas:** la recta que mejor pasa entre los puntos de un gráfico.
+- **Dónde se rompe la comparación:** «mejor» no es a ojo: lo define el criterio de mínimos cuadrados.
+- **Ejemplo:** con `b = 2.33`, cada kilómetro extra suma unos 2.33 minutos.
+- **Error típico:** usar una recta cuando la relación es curva; el error crece en los extremos.
+
+**mínimos cuadrados**
+- **Definición técnica:** método que elige los parámetros que minimizan la suma de los cuadrados de los errores; para una recta da b = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)² y a = ȳ − b·x̄.
+- **En palabras sencillas:** de todas las rectas posibles, la que menos se aleja de los puntos, castigando más los errores grandes.
+- **Dónde se rompe la comparación:** elevar al cuadrado hace que un solo dato raro tire de la recta con mucha fuerza.
+- **Ejemplo:** las líneas 18–23 de `modelo.py` aplican esa fórmula paso a paso.
+- **Error típico:** aplicarla cuando todos los `x` son iguales: el denominador es cero.
+
+**sobreajuste**
+- **Definición técnica:** situación en que un modelo se ajusta tanto a los datos de entrenamiento, incluido su ruido, que su error en datos nuevos es mucho mayor; en inglés, *overfitting*.
+- **En palabras sencillas:** memorizar las respuestas del taller en vez de aprender el método.
+- **Dónde se rompe la comparación:** un estudiante sabe que memorizó; el modelo no, y solo lo delata el error en prueba.
+- **Ejemplo:** la recta tiene MAE 0.21 en entrenamiento y 0.51 en prueba; la diferencia es pequeña, no hay sobreajuste grave.
+- **Error típico:** agregar variables hasta que el error de entrenamiento sea cero y celebrarlo.
+
+**visión por computador**
+- **Definición técnica:** área que extrae información de imágenes y video; una imagen digital es una matriz de números (píxeles) que el programa transforma.
+- **En palabras sencillas:** enseñar al programa a «ver» tratando la foto como una tabla de números.
+- **Dónde se rompe la comparación:** tú ves una etiqueta; el programa ve números y solo detecta cambios entre ellos.
+- **Ejemplo:** en `vision.py`, `0` es negro y `9` es blanco; la etiqueta blanca empieza en la columna 3.
+- **Error típico:** olvidar que la fila 0 está arriba, al revés del eje y de un gráfico matemático.
+
+**convolución**
+- **Definición técnica:** operación que desliza un filtro pequeño sobre la imagen y, en cada posición, suma los productos entre el filtro y los píxeles que cubre.
+- **En palabras sencillas:** pasar una lupa con una regla de cálculo por toda la foto y anotar un número en cada lugar.
+- **Dónde se rompe la comparación:** la lupa no cambia la foto; la convolución produce una imagen nueva, más pequeña que la original.
+- **Ejemplo:** el filtro `[-1, 1]` calcula «píxel derecho menos píxel izquierdo»; da 9 justo en el borde.
+- **Error típico:** quedarse con el valor máximo y olvidar que un borde de blanco a negro da un número negativo.
 
 #### ► CÓMO FUNCIONA
-Cada decisión importante se escribe como ADR al tomarla. Se implementa, se mide y, si llega evidencia nueva, se
-revisa con un ADR que reemplaza al anterior. La deuda se anota con costo e interés y se paga en orden de
-recuperación. Los cambios públicos pasan por una etapa de deprecación antes de retirar lo viejo.
+Todo proyecto de aprendizaje automático sigue el mismo orden. Separa los datos en entrenamiento y prueba. Construye
+una línea base. Ajusta el modelo **solo** con los datos de entrenamiento. Mide el error de ambos con los datos de
+prueba. Si el modelo no gana con claridad, te quedas con la línea base.
+
+La visión por computador usa la misma idea con otros datos. Una imagen es una matriz de números. Un filtro de
+convolución resalta un patrón; las redes neuronales profundas aprenden miles de filtros en vez de escribirlos a mano.
 
 ```mermaid
 flowchart LR
-    DEC["decisión"] --> ADR["ADR 0001<br/>contexto · decisión · consecuencias"]
-    ADR --> IMPL["implementación"] --> MET["métricas"]
-    MET --> EV{"¿evidencia nueva?"}
-    EV -->|"no"| KEEP["se mantiene"]
-    EV -->|"sí"| ADR2["ADR 0002<br/>reemplaza a 0001"]
-    IMPL --> DEBT["deuda anotada<br/>costo + interés"]
-    DEBT --> PAY["pagar por semanas<br/>de recuperación"]
+    D["7 entregas: km y minutos"] --> S["separar"]
+    S --> E["entrenamiento: 5"]
+    S --> P["prueba: 2"]
+    E --> B["línea base: promedio"]
+    E --> R["regresión: mínimos cuadrados"]
+    B --> M["MAE en prueba"]
+    R --> M
+    P --> M
+    M --> C{"¿el modelo gana con claridad?"}
 ```
 
 #### Problema resuelto 4.1
-Escribe el ADR de los eventos de envío y comprueba con un programa que está completo.
+Con cinco entregas de entrenamiento (km y minutos), compara la línea base «siempre el promedio» con una regresión
+lineal. Mide ambas con dos entregas de prueba.
 
 **Razonamiento:**
-1. Contexto: los datos que obligaron a decidir (volumen, forma de consulta), no opiniones.
-2. Decisión: qué se elige y qué se descarta, en una o dos frases.
-3. Consecuencias: una positiva, una negativa y la condición para revisar la decisión.
-4. Estado: propuesto, aceptado, reemplazado u obsoleto.
-
-```markdown
-# ADR 0001: Guardar ShipmentEvents en DynamoDB
-
-## Contexto
-Cada envío produce entre 5 y 12 eventos de seguimiento y se consultan siempre por guía.
-
-## Decisión
-Usaremos DynamoDB con clave de partición `shipment_id` y clave de orden `occurred_at`.
-```
-
-```markdown
-# ADR 0001: Guardar ShipmentEvents en DynamoDB
-
-Estado: aceptado · Fecha: 2026-11-24
-
-## Contexto
-Cada envío produce entre 5 y 12 eventos de seguimiento y se consultan siempre por guía.
-En temporada alta llegan 300 eventos por segundo y nunca se hacen uniones con otras tablas.
-
-## Decisión
-Usaremos DynamoDB con clave de partición `shipment_id` y clave de orden `occurred_at`.
-Descartamos PostgreSQL para esta tabla: daría uniones que no necesitamos y exige dimensionar el servidor.
-
-## Consecuencias
-- Positiva: leer el historial de una guía es una sola consulta por clave.
-- Negativa: un reporte «eventos por ciudad» necesita otra tabla o un índice secundario.
-- Revisión: si aparecen 3 o más consultas que no usan `shipment_id`, se reabre esta decisión.
-```
+1. La línea base no usa los kilómetros: predice siempre el promedio de entrenamiento.
+2. La regresión calcula la pendiente `b` y el intercepto `a` con las fórmulas de mínimos cuadrados.
+3. Ambas se evalúan con el MAE sobre las entregas de prueba, que ninguna vio al ajustarse.
 
 ```python
-# verificar_adr.py — un ADR completo tiene estado y las tres secciones
-import re
-import sys
-from pathlib import Path
+# modelo.py — línea base contra regresión lineal para predecir minutos de entrega
+km_entreno = [2, 3, 4, 6, 8]
+min_entreno = [22, 24, 27, 31, 36]
+km_prueba = [3.5, 7]
+min_prueba = [25, 33]
 
-SECCIONES = ("## Contexto", "## Decisión", "## Consecuencias")
-ruta = Path(sys.argv[1])
-texto = ruta.read_text(encoding="utf-8")
-faltan = [s for s in SECCIONES if s not in texto]
-estado = re.search(r"^Estado: (propuesto|aceptado|reemplazado|obsoleto)", texto, re.M)
-print(f"{ruta.name}: secciones {len(SECCIONES) - len(faltan)}/{len(SECCIONES)}")
-print("estado:", estado.group(1) if estado else "FALTA")
-for seccion in faltan:
-    print("falta:", seccion)
-sys.exit(1 if faltan or not estado else 0)
+
+def mae(reales, predichos):
+    errores = [abs(r - p) for r, p in zip(reales, predichos)]
+    return sum(errores) / len(errores)
+
+
+# 1. Línea base: predecir siempre el promedio del entrenamiento.
+promedio = sum(min_entreno) / len(min_entreno)
+base = [promedio for _ in km_prueba]
+
+# 2. Regresión lineal por mínimos cuadrados: minutos ≈ a + b · km.
+media_x = sum(km_entreno) / len(km_entreno)
+media_y = promedio
+numerador = sum([(x - media_x) * (y - media_y) for x, y in zip(km_entreno, min_entreno)])
+denominador = sum([(x - media_x) ** 2 for x in km_entreno])
+b = numerador / denominador
+a = media_y - b * media_x
+lineal = [a + b * x for x in km_prueba]
+
+print(f"línea base: predice {promedio:.1f} min siempre   MAE={mae(min_prueba, base):.2f}")
+print(f"regresión:  minutos = {a:.2f} + {b:.2f}·km       MAE={mae(min_prueba, lineal):.2f}")
+for km, real, pred in zip(km_prueba, min_prueba, lineal):
+    print(f"  {km} km → real {real}, predicho {pred:.1f}")
 ```
 
 ```text
-$ python3 verificar_adr.py docs/adr/0001-borrador.md; echo "salida: $?"
-0001-borrador.md: secciones 2/3
-estado: FALTA
-falta: ## Consecuencias
-salida: 1
-```
-
-```text
-$ python3 verificar_adr.py docs/adr/0001-shipment-events-dynamodb.md; echo "salida: $?"
-0001-shipment-events-dynamodb.md: secciones 3/3
-estado: aceptado
-salida: 0
+$ python3 modelo.py
+línea base: predice 28.0 min siempre   MAE=4.00
+regresión:  minutos = 17.29 + 2.33·km       MAE=0.51
+  3.5 km → real 25, predicho 25.4
+  7 km → real 33, predicho 33.6
 ```
 
 **Explicación por partes.**
-- Línea 6: las tres secciones obligatorias, con su título exacto en Markdown.
-- Línea 9: lista las que no aparecen en el texto.
-- Línea 10: el estado debe ser una de cuatro palabras, al inicio de una línea; `re.M` hace que `^` marque cada línea.
-- Línea 15: falta una sección **o** el estado → código 1.
-- El ADR completo nombra lo que se pierde («reportes por ciudad necesitan otra tabla»): ese es el trade-off escrito.
+- Líneas 2–5: los datos ya separados. Las dos entregas de prueba no se usan hasta la línea 26.
+- Líneas 8–10: `mae` empareja reales y predichos con `zip` y promedia las diferencias absolutas.
+- Líneas 14–15: la línea base repite el promedio, `28.0`, una vez por cada entrega de prueba.
+- Líneas 18–21: medias, numerador y denominador de mínimos cuadrados, término por término.
+- Líneas 22–23: la pendiente y el intercepto. `b = 2.33` minutos por km; `a = 17.29` minutos fijos de cargue.
+- La regresión baja el MAE de 4.00 a 0.51 en datos nuevos. Aquí el modelo sí se justifica.
 
-> **Error común.** Escribir el título con otra forma, como `## Consecuencia` o `## consecuencias`. El verificador
-> busca el texto exacto y responde `falta: ## Consecuencias`. Usa una plantilla de ADR y no la edites a mano.
+> **Error común.** Entrenar con entregas que tienen todas la misma distancia, por ejemplo `km_entreno = [5, 5, 5, 5, 5]`.
+> El denominador de la línea 21 da cero y el programa termina con `ZeroDivisionError: float division by zero` en la
+> línea 22. Sin variación en `x` no hay recta que ajustar: necesitas datos más variados, no otra fórmula.
 
-> **Buena práctica.** Guarda los ADR junto al código, en `docs/adr/`, y agrégalos en el mismo pull request que
-> implementa la decisión. Así la revisión discute la razón y el código a la vez.
+> **Prevenir errores.** Separa los datos de prueba antes de mirar nada y no los toques hasta el final. Si ajustas el
+> modelo mirando el error de prueba, ese error deja de medir lo que pasará con datos nuevos.
 
 #### Problema resuelto 4.2
-Prioriza la deuda técnica de RutaFlow y evoluciona la función de tarifas sin romper a quien la usa.
+Una foto de la etiqueta llega en escala de grises, con un poco de ruido. Encuentra en cada fila la columna donde
+empieza la etiqueta blanca.
 
 **Razonamiento:**
-1. Cada deuda lleva dos números: horas para arreglarla y horas que cuesta por semana.
-2. Semanas de recuperación = costo ÷ interés. Se paga primero lo que se recupera antes.
-3. Para la tarifa, el parámetro nuevo lleva valor por defecto, y la función vieja avisa antes de desaparecer.
+1. Un borde es un cambio brusco entre píxeles vecinos: de 0 a 9.
+2. El filtro `[-1, 1]` calcula «derecho menos izquierdo»; es grande y positivo en un borde de negro a blanco.
+3. En cada fila, la posición del valor máximo marca el borde, aunque haya ruido pequeño.
 
 ```python
-# deuda.py — registro de deuda técnica priorizado por cuánto tarda en pagarse
-DEUDA = [
-    # (descripción, horas para arreglarla, horas que cuesta cada semana sin arreglar)
-    ("confirmar() mezcla regla, SQLite y SMS", 6, 3.0),
-    ("pruebas lentas: 4 min por ejecución", 16, 2.0),
-    ("nombres en inglés y español mezclados", 10, 0.5),
-    ("sin índice en envio.guia", 1, 1.5),
+# vision.py — detecta el borde de una etiqueta blanca en una foto en escala de grises
+imagen = [                      # 0 = negro, 9 = blanco; la etiqueta empieza en la columna 3
+    [0, 0, 0, 9, 9, 9],
+    [0, 0, 0, 9, 9, 9],
+    [0, 1, 0, 9, 8, 9],
+    [0, 0, 0, 9, 9, 9],
 ]
+filtro = [-1, 1]                # resta cada píxel de su vecino derecho
 
-print("ANTES: orden en que se anotó")
-for descripcion, costo, interes in DEUDA:
-    print(f"  {descripcion}")
 
-print("DESPUÉS: orden por semanas para recuperar la inversión")
-for descripcion, costo, interes in sorted(DEUDA, key=lambda d: d[1] / d[2]):
-    print(f"  {costo / interes:5.1f} sem  {descripcion} ({costo} h, {interes} h/sem)")
+def convolucion_horizontal(img, k):
+    salida = []
+    for fila in img:
+        nueva = []
+        for c in range(len(fila) - len(k) + 1):
+            ventana = fila[c:c + len(k)]
+            nueva.append(sum([v * p for v, p in zip(ventana, k)]))
+        salida.append(nueva)
+    return salida
+
+
+bordes = convolucion_horizontal(imagen, filtro)
+for fila in bordes:
+    print(" ".join([f"{v:2}" for v in fila]))
+for numero, fila in enumerate(bordes):
+    c = fila.index(max(fila))
+    print(f"fila {numero}: borde entre las columnas {c} y {c + 1}")
 ```
 
 ```text
-$ python3 deuda.py
-ANTES: orden en que se anotó
-  confirmar() mezcla regla, SQLite y SMS
-  pruebas lentas: 4 min por ejecución
-  nombres en inglés y español mezclados
-  sin índice en envio.guia
-DESPUÉS: orden por semanas para recuperar la inversión
-    0.7 sem  sin índice en envio.guia (1 h, 1.5 h/sem)
-    2.0 sem  confirmar() mezcla regla, SQLite y SMS (6 h, 3.0 h/sem)
-    8.0 sem  pruebas lentas: 4 min por ejecución (16 h, 2.0 h/sem)
-   20.0 sem  nombres en inglés y español mezclados (10 h, 0.5 h/sem)
-```
-
-Primero, la versión 2 **incompatible**:
-
-```python
-# tarifas_rota.py — versión 2 incompatible: el parámetro nuevo es obligatorio
-def calcular_tarifa(peso_kg, urgente):
-    base = 4200 * peso_kg
-    return base + 3000 if urgente else base
-
-
-print("llamada de la versión 1:", calcular_tarifa(2.5))
-```
-
-```text
-$ python3 tarifas_rota.py
-TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'
-```
-
-Ahora la versión 2 compatible, con deprecación de la versión 1:
-
-```python
-# tarifas.py — versión 2: agrega el recargo sin romper a quien usa la versión 1
-import warnings
-
-
-def calcular_tarifa(peso_kg, urgente=False):
-    """Versión 2. El parámetro nuevo tiene valor por defecto: las llamadas viejas siguen sirviendo."""
-    base = 4200 * peso_kg
-    return base + 3000 if urgente else base
-
-
-def tarifa(peso_kg):
-    """Versión 1. Se conserva un tiempo y avisa que será retirada."""
-    warnings.warn("tarifa() se retirará en la versión 3; usa calcular_tarifa()", DeprecationWarning, stacklevel=2)
-    return calcular_tarifa(peso_kg)
-
-
-print("v1:", tarifa(2.5))
-print("v2:", calcular_tarifa(2.5))
-print("v2 urgente:", calcular_tarifa(2.5, urgente=True))
-```
-
-```text
-$ python3 tarifas.py
-/home/estudiante/labs/modulo-7/adr/tarifas.py:17: DeprecationWarning: tarifa() se retirará en la versión 3; usa calcular_tarifa()
-  print("v1:", tarifa(2.5))
-v1: 10500.0
-v2: 10500.0
-v2 urgente: 13500.0
+$ python3 vision.py
+ 0  0  9  0  0
+ 0  0  9  0  0
+ 1 -1  9 -1  1
+ 0  0  9  0  0
+fila 0: borde entre las columnas 2 y 3
+fila 1: borde entre las columnas 2 y 3
+fila 2: borde entre las columnas 2 y 3
+fila 3: borde entre las columnas 2 y 3
 ```
 
 **Explicación por partes.**
-- `deuda.py`, línea 15: `sorted` con `key` ordena por costo ÷ interés; la deuda más barata de recuperar va primero.
-- `tarifas_rota.py`, línea 2: `urgente` no tiene valor por defecto, así que toda llamada vieja falla.
-- `tarifas.py`, línea 5: `urgente=False` hace opcional el parámetro nuevo; la llamada de la línea 18 da lo mismo que antes.
-- Línea 13: `warnings.warn` con `DeprecationWarning`; `stacklevel=2` señala la línea de **quien llamó** (la 17), no la de `tarifa`.
-- La advertencia sale por la salida de errores y aparece antes del `print` porque se emite mientras se calcula `tarifa(2.5)`.
+- Líneas 2–7: la imagen. La fila 2 tiene ruido: un `1` en la zona negra y un `8` en la blanca.
+- Línea 15: hay `6 - 2 + 1 = 5` posiciones donde cabe el filtro; por eso cada fila de salida tiene 5 números.
+- Líneas 16–17: la ventana toma dos píxeles y la suma de productos aplica el filtro.
+- Líneas 25–27: `enumerate` da el número de fila; `index(max(fila))` encuentra la posición del mayor valor.
+- La salida marca el borde entre las columnas 2 y 3 en las cuatro filas. El ruido produce valores de 1 y −1, mucho menores que 9.
 
-> **Error común.** Agregar un parámetro obligatorio a una función pública: `TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'`. El mensaje nombra el
-> parámetro que falta. Dale un valor por defecto que conserve el comportamiento anterior.
-
-> **Prevenir errores.** Ejecuta las pruebas con `python3 -W error::DeprecationWarning -m unittest`. Así cualquier uso
-> de una función deprecada falla en CI antes de que la retiren.
+> **Buena práctica.** Antes de usar una red neuronal para un problema de imágenes, prueba un filtro simple como
+> este. Si un borde basta para encontrar la etiqueta, el sistema será más barato, rápido y fácil de explicar.
 
 #### Checkpoint 4.1
-Dentro de un año, RutaFlow necesita reportes por ciudad todos los días. ¿Editas el ADR 0001?
+¿Qué predice la regresión de `modelo.py` para una entrega de 10 km? ¿Por qué debes desconfiar un poco de ese número?
 
-Respuesta: no. Escribes un ADR 0002 con el contexto nuevo y la decisión nueva, y cambias el estado del 0001 a `reemplazado`. El 0001 queda como historia de por qué se decidió así en su momento.
+Respuesta: unos 40.57 minutos (`17.29 + 2.33 × 10`, con los valores sin redondear). Hay que desconfiar porque 10 km
+está fuera del rango de entrenamiento (2 a 8 km): el modelo nunca vio una entrega así.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/adr/docs/adr` y entra en `~/labs/modulo-7/adr`.
+#### Paso 1 · Mide la línea base
+Escribe solo las líneas 1–15 de `modelo.py` y agrega un `print` del MAE de la línea base. Debe dar `4.0`.
 
-#### Paso 2 · Escribe y verifica el ADR
-Crea el borrador y el ADR completo. Ejecuta `verificar_adr.py` con ambos y anota los códigos de salida.
+#### Paso 2 · Ajusta la recta
+Completa el archivo y ejecútalo. Comprueba a mano la media de los km de entrenamiento: `(2 + 3 + 4 + 6 + 8) / 5 = 4.6`.
 
-#### Paso 3 · Registra tu deuda
-Escribe `deuda.py` con cuatro deudas de tu propio proyecto, cada una con costo e interés, y ejecútalo.
+#### Paso 3 · Compara entrenamiento y prueba
+Calcula el MAE de la regresión sobre los datos de entrenamiento y anótalo en `evidencia-tema4.txt` junto al de prueba.
 
-#### Paso 4 · Evoluciona sin romper
-Ejecuta `tarifas_rota.py` para ver el fallo y luego `tarifas.py`. Repite con `python3 -W error::DeprecationWarning tarifas.py` y observa que el aviso se vuelve error.
+#### Paso 4 · Detecta el borde
+Escribe `vision.py` y ejecútalo. Cambia el `8` de la fila 2 por `2` y observa si el borde sigue en su lugar.
 
 #### Resumen
-- Una **decisión de arquitectura** es costosa de revertir; por eso se escribe.
-- Un **ADR** tiene contexto, decisión, consecuencias y estado; no se edita, se reemplaza.
-- La **deuda técnica** es trabajo futuro aceptado hoy; su **interés** es lo que cuesta cada semana sin pagarla.
-- Se paga primero la deuda con menos semanas de recuperación (costo ÷ interés).
-- Un **cambio compatible** no rompe a quien ya usaba la interfaz; la **deprecación** avisa antes de retirar lo viejo.
+- La **inteligencia artificial** busca comportamiento inteligente; el **aprendizaje automático** lo obtiene ajustando un **modelo** con datos.
+- Los **datos de entrenamiento** ajustan los parámetros; los **datos de prueba** estiman el error con casos nuevos.
+- Toda comparación empieza con una **línea base**; el **error absoluto medio** dice por cuánto se equivoca cada una.
+- La **regresión lineal** ajusta una recta y los **mínimos cuadrados** dan sus parámetros con una fórmula cerrada.
+- El **sobreajuste** se detecta cuando el error de prueba es mucho mayor que el de entrenamiento.
+- La **visión por computador** trata la imagen como matriz; una **convolución** con un filtro resalta bordes.
 
 #### Ejercicio verificable 1
-Básico. Quita la línea `Estado:` del ADR completo y ejecuta el verificador.
+Básico. Agrega al final de `modelo.py` la predicción para 10 km con dos decimales.
 
-Respuesta esperada: `secciones 3/3`, `estado: FALTA` y `salida: 1`.
+Respuesta esperada: `print(f"{a + b * 10:.2f}")` muestra `40.57`.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `deuda.py` la deuda «sin respaldo de la base», con 4 h de costo y 4.0 h por semana de interés. ¿En qué posición queda?
+Intermedio. Calcula el MAE de la regresión y de la línea base sobre los **datos de entrenamiento**. ¿Qué indican?
 
-Respuesta esperada: `1.0 sem`, en segundo lugar, después del índice (`0.7 sem`) y antes de `confirmar()` (`2.0 sem`).
+Respuesta esperada: regresión `0.21` y línea base `4.40` (redondeados a dos decimales). La regresión se equivoca más
+en prueba (0.51) que en entrenamiento (0.21), como es normal. La diferencia es pequeña: no hay sobreajuste grave.
 
 #### Ejercicio verificable 3
-Reto. Escribe el ADR 0002 que reemplaza al 0001 por la necesidad de reportes por ciudad, y cambia el estado del 0001.
+Reto. Cambia el filtro de `vision.py` a `[1, -1]` y ejecuta. Explica por qué la detección falla y corrígela.
 
-Respuesta esperada: el 0002 pasa el verificador con `estado: aceptado` y su contexto cita al 0001; el 0001 pasa con `estado: reemplazado`.
+Respuesta esperada: la columna del borde vale `-9` y `max` elige otra posición; la fila 0 dice «entre las columnas 0 y
+1». Corrige buscando el mayor **valor absoluto**: `c = [abs(v) for v in fila].index(max([abs(v) for v in fila]))`. Así
+el borde vuelve a estar entre las columnas 2 y 3, sin importar su dirección.
 
 #### En el trabajo
-Muchos equipos guardan sus ADR en el repositorio y los revisan en el mismo pull request que el código. La deuda se
-registra en el gestor de tareas con una etiqueta propia y se reserva un porcentaje fijo de cada iteración para
-pagarla. En librerías y APIs públicas, la deprecación dura al menos una versión mayor y se anuncia en el CHANGELOG.
+Los roles son **ingeniero de aprendizaje automático** (lleva modelos a producción), **científico de datos**
+(experimenta y mide), **ingeniero de visión por computador** e **investigador en IA**. Las empresas de modelos
+grandes (Google DeepMind, OpenAI, Anthropic, Meta) investigan; casi todas las demás aplican: logística (estimación de
+llegada en Uber, Rappi o DHL), bancos (fraude), salud (imágenes médicas) y manufactura (inspección visual). Para
+profundizar necesitas álgebra lineal, cálculo, probabilidad y estadística, en ese orden. El hábito profesional más
+valioso es el de este tema: medir contra una línea base antes de prometer nada.
 
 </details>
 
-### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda · Avanzado · 45 min
+### Tema 5: Gráficos y cómputo científico · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- explicar qué compara la igualdad por valor de un record y en qué se diferencia de la identidad;
-- crear una copia con `with` en C# y con `dataclasses.replace` en Python;
-- demostrar que una lista dentro de un objeto «inmutable» se puede modificar y se comparte entre copias;
-- lograr inmutabilidad profunda con tipos inmutables (`tuple`, `IReadOnlyList`/`ImmutableList`).
+- rotar puntos con una matriz de rotación y comprobar que las distancias se conservan;
+- convertir grados a radianes y explicar por qué las funciones trigonométricas los exigen;
+- rasterizar puntos en una cuadrícula de texto, como hace una pantalla con sus píxeles;
+- aproximar una integral con la regla del trapecio y medir cómo baja el error de discretización.
 
-**Conceptos clave:** record, igualdad por valor, identidad, expresión `with`, dataclass congelada, inmutabilidad superficial, inmutabilidad profunda
-
-Este tema usa **clase** y **objeto** (Módulo 1, Tema 6) y **cambio compatible** (Tema 4 de este módulo). Es una
-comparación de diseño, no un curso de C#: el ejemplo C# se explica y se comprueba con su equivalente en Python.
+**Conceptos clave:** gráficos por computador, transformación geométrica, matriz de rotación, radián, rasterización, cómputo científico, método numérico, regla del trapecio, error de discretización
 
 #### El problema
-RutaFlow guarda el historial de estados de cada envío en un objeto `Registro` que el equipo creía inmutable. Para
-crear la versión 8 copian la 7 y le agregan «asignado». Al rato, la versión 7 también dice «asignado»: el historial
-de auditoría cambió sin que nadie lo tocara. ¿Por qué una copia de un objeto «inmutable» modifica el original?
+El mapa de RutaFlow debe girar cuando el mensajero gira, para que «adelante» siempre apunte hacia arriba. Si el giro
+deforma el mapa, las distancias mentirían. Además, el camión solo reporta su **velocidad** cada minuto, y finanzas
+necesita la **distancia** recorrida para pagar el combustible. ¿Cómo se gira un dibujo sin deformarlo? ¿Cómo se
+calcula una distancia si solo conoces velocidades sueltas?
+
+Este tema usa lo que ya conoces: **punto flotante y error de redondeo** (Módulo 1, Tema 5) y funciones que reciben
+otras funciones como argumento (Tema 3 de este módulo).
 
 #### Glosario del tema
 
-**record**
-- **Definición técnica:** en C#, tipo declarado con `record` para el que el compilador genera igualdad por valor, `ToString`, deconstrucción y copia con `with`; en la forma posicional, sus propiedades son de solo inicialización.
-- **En palabras sencillas:** una clase pensada para guardar datos, con la comparación y la copia ya hechas.
-- **Dónde se rompe la comparación:** «solo inicialización» protege la propiedad, no el objeto al que apunta: la lista sigue siendo modificable.
-- **Ejemplo:** `public record Registro(int Id, List<string> Estados);` en `Program.cs`.
-- **Error típico:** asignar después de crear (`copia.Id = 9`): el compilador lo rechaza porque la propiedad es de solo inicialización.
+**gráficos por computador**
+- **Definición técnica:** área que genera y manipula imágenes con modelos geométricos: transforma coordenadas, proyecta escenas 3D en 2D y calcula el color de cada píxel.
+- **En palabras sencillas:** enseñar al computador a dibujar a partir de números.
+- **Dónde se rompe la comparación:** un dibujante ve el dibujo; el programa solo maneja coordenadas hasta el último paso, cuando pinta píxeles.
+- **Ejemplo:** girar el mapa del mensajero 90° y volver a dibujarlo.
+- **Error típico:** pensar que los gráficos son solo diseño visual; su núcleo es álgebra lineal.
 
-**igualdad por valor**
-- **Definición técnica:** criterio por el que dos objetos son iguales si todos sus campos son iguales, aunque sean objetos distintos en memoria.
-- **En palabras sencillas:** dos billetes de 10 000 valen lo mismo aunque sean papeles distintos.
-- **Dónde se rompe la comparación:** compara los campos con su propia igualdad; dos listas iguales en contenido dan `True` en Python, pero en C# `List<T>` compara referencias.
-- **Ejemplo:** `Registro(4, ["a"]) == Registro(4, ["a"])` → `igualdad por valor: True`.
-- **Error típico:** usar el objeto como clave de diccionario con un campo mutable: `TypeError: unhashable type: 'list'`.
+**transformación geométrica**
+- **Definición técnica:** función que asigna a cada punto del plano o del espacio un punto nuevo; las básicas son traslación, rotación y escala.
+- **En palabras sencillas:** mover, girar o agrandar un dibujo aplicando la misma regla a todos sus puntos.
+- **Dónde se rompe la comparación:** mover una hoja de papel no la cambia; una escala sí cambia las distancias.
+- **Ejemplo:** `rotar(punto, 90)` es una transformación geométrica.
+- **Error típico:** aplicar la transformación a unos puntos y no a otros: el dibujo se rompe.
 
-**identidad**
-- **Definición técnica:** propiedad de ser el mismo objeto en memoria; en Python se compara con `is`, en C# con `ReferenceEquals`.
-- **En palabras sencillas:** no «iguales», sino **el mismo**: tu billete, no uno igual.
-- **Dónde se rompe la comparación:** dos objetos pueden ser iguales por valor y distintos en identidad, como en la salida.
-- **Ejemplo:** `Registro(4, ["a"]) is Registro(4, ["a"])` → `misma identidad: False`; `original.estados is copia.estados` → `True`.
-- **Error típico:** comparar con `is` cuando quieres saber si los datos coinciden; usa `==`.
+**matriz de rotación**
+- **Definición técnica:** matriz 2×2 que gira un punto un ángulo θ alrededor del origen: x' = x·cos θ − y·sin θ, y' = x·sin θ + y·cos θ.
+- **En palabras sencillas:** la receta fija para girar cualquier punto: dos multiplicaciones y una suma por coordenada.
+- **Dónde se rompe la comparación:** gira alrededor del origen `(0, 0)`, no alrededor del centro del dibujo; para eso hay que trasladar antes.
+- **Ejemplo:** con θ = 90°, el punto `(2, 0)` pasa a `(0, 2)`.
+- **Error típico:** cambiar un signo de la fórmula: el dibujo gira al revés o se refleja como en un espejo.
 
-**expresión `with`**
-- **Definición técnica:** en C#, `original with { Id = 8 }` crea un record nuevo copiando los campos del original y reemplazando los indicados; es una copia **superficial**.
-- **En palabras sencillas:** fotocopiar una ficha y cambiarle un dato a la copia.
-- **Dónde se rompe la comparación:** en una fotocopia, la lista impresa es otra hoja; aquí la copia apunta a **la misma** lista.
-- **Ejemplo:** en Python, el equivalente es `replace(original, id=8)` (línea 12 de `registro_antes.py`).
-- **Error típico:** modificar la lista de la copia creyendo que el original queda intacto: `original.estados: ['creado', 'asignado']`.
+**radián**
+- **Definición técnica:** unidad de ángulo en la que una vuelta completa mide 2π; se convierte con radianes = grados · π / 180.
+- **En palabras sencillas:** otra forma de medir ángulos, la que usan `math.cos` y `math.sin`.
+- **Dónde se rompe la comparación:** los grados son cómodos para las personas; los radianes, para las fórmulas.
+- **Ejemplo:** 90° son π/2 ≈ 1.5708 radianes.
+- **Error típico:** pasar grados directamente: `cos(90)` da `-0.448…`, no `0`.
 
-**dataclass congelada**
-- **Definición técnica:** clase de Python decorada con `@dataclass(frozen=True)`; genera `__init__`, `__eq__` y `__hash__`, y prohíbe reasignar sus campos.
-- **En palabras sencillas:** el equivalente de Python a un record: datos con comparación y sin reasignación.
-- **Dónde se rompe la comparación:** «congelada» solo impide `objeto.campo = ...`; no congela lo que hay dentro del campo.
-- **Ejemplo:** `@dataclass(frozen=True) class Registro:` en `registro_antes.py`, líneas 5–8.
-- **Error típico:** intentar reasignar un campo: `dataclasses.FrozenInstanceError: cannot assign to field 'id'`.
+**rasterización**
+- **Definición técnica:** conversión de figuras geométricas con coordenadas reales en una cuadrícula de píxeles con coordenadas enteras.
+- **En palabras sencillas:** pasar un dibujo perfecto a una hoja cuadriculada, pintando las casillas más cercanas.
+- **Dónde se rompe la comparación:** en la hoja cuadriculada eliges tú; aquí `round` decide, y dos puntos cercanos pueden caer en la misma casilla.
+- **Ejemplo:** `rasterizar` convierte `(2.0, 1.0)` en la fila 1, columna 5 de una rejilla de 7×5.
+- **Error típico:** olvidar que la fila 0 de la pantalla está arriba: el dibujo sale de cabeza.
 
-**inmutabilidad superficial**
-- **Definición técnica:** garantía de que los campos de un objeto no se pueden reasignar, sin garantía sobre el estado interno de los objetos a los que apuntan.
-- **En palabras sencillas:** la caja está sellada, pero dentro hay una bolsa abierta.
-- **Dónde se rompe la comparación:** desde fuera parece todo protegido; el cambio entra por la referencia compartida.
-- **Ejemplo:** `copia.estados.append("asignado")` funciona aunque `Registro` sea congelado.
-- **Error típico:** documentar un tipo como «inmutable» solo porque es record o `frozen`.
+**cómputo científico**
+- **Definición técnica:** área que resuelve con computador problemas matemáticos de la ciencia y la ingeniería (integrales, ecuaciones diferenciales, sistemas lineales) cuando no hay solución exacta práctica.
+- **En palabras sencillas:** usar el computador como calculadora gigante para problemas que a mano no terminarías.
+- **Dónde se rompe la comparación:** una calculadora da la respuesta exacta; aquí casi siempre obtienes una aproximación con un error que debes medir.
+- **Ejemplo:** estimar la distancia recorrida a partir de la velocidad del camión.
+- **Error típico:** reportar todos los decimales de una aproximación como si fueran exactos.
 
-**inmutabilidad profunda**
-- **Definición técnica:** garantía de que ni el objeto ni nada alcanzable desde él puede cambiar; se logra usando solo tipos inmutables en todos sus campos.
-- **En palabras sencillas:** sellada la caja y sellado todo lo que hay dentro.
-- **Dónde se rompe la comparación:** cuesta más: cada cambio crea objetos nuevos en lugar de modificar los existentes.
-- **Ejemplo:** con `estados: tuple`, la versión 7 conserva `('creado',)` y la 8 tiene `('creado', 'asignado')`.
-- **Error típico:** cambiar `list` por `tuple` pero seguir aceptando una lista en el constructor sin convertirla.
+**método numérico**
+- **Definición técnica:** algoritmo que aproxima la solución de un problema matemático con operaciones aritméticas finitas, junto con una forma de estimar su error.
+- **En palabras sencillas:** una receta para acercarte tanto como quieras a una respuesta que no puedes calcular exacta.
+- **Dónde se rompe la comparación:** «tanto como quieras» tiene límite: con pasos demasiado pequeños aparece el error de redondeo.
+- **Ejemplo:** la regla del trapecio es un método numérico para integrales.
+- **Error típico:** usar un método sin comprobarlo antes en un caso cuya respuesta exacta conoces.
+
+**regla del trapecio**
+- **Definición técnica:** método que aproxima la integral de f entre a y b dividiendo el intervalo en n tramos de ancho h y sumando el área de un trapecio en cada tramo.
+- **En palabras sencillas:** medir el área bajo una curva cortándola en franjas y tratando cada franja como un trapecio.
+- **Dónde se rompe la comparación:** un trapecio tiene lados rectos; la curva no, y esa diferencia es el error.
+- **Ejemplo:** con `n=8` franjas, la distancia estimada es `1.171875` km.
+- **Error típico:** olvidar dividir entre 2 los extremos `f(a)` y `f(b)`: cada uno pertenece a un solo trapecio.
+
+**error de discretización**
+- **Definición técnica:** diferencia entre la solución exacta de un problema continuo y la de su versión dividida en pasos finitos; en el trapecio es proporcional a h².
+- **En palabras sencillas:** lo que pierdes por mirar la curva en puntos sueltos en vez de completa.
+- **Dónde se rompe la comparación:** no es un error de programación: aparece aunque el código sea perfecto.
+- **Ejemplo:** al duplicar `n`, el error de la salida se divide aproximadamente entre 4.
+- **Error típico:** confundirlo con el error de redondeo del punto flotante, que es mucho más pequeño aquí.
 
 #### ► CÓMO FUNCIONA
-Copiar un record copia sus **campos**. Si un campo es un número, la copia tiene su propio número. Si el campo es una
-lista, la copia guarda la **misma referencia**: las dos versiones apuntan a una sola lista. Para que no se compartan
-cambios, la lista debe ser de un tipo que no se pueda modificar.
+Un programa de gráficos trabaja en dos mundos. En el **mundo geométrico**, los puntos tienen coordenadas reales y
+se transforman con fórmulas exactas. En el **mundo de la pantalla**, solo hay píxeles en filas y columnas enteras.
+La rasterización es el puente entre los dos.
+
+El cómputo científico tiene un puente parecido. El problema real es continuo: la velocidad cambia en cada instante.
+El computador solo maneja pasos finitos. Un método numérico cruza ese puente y te dice cuánto error cometes.
 
 ```mermaid
-flowchart LR
-    O["original<br/>Id = 7"] -->|"Estados"| L["List: creado, asignado"]
-    C["copia = original with { Id = 8 }<br/>Id = 8"] -->|"Estados"| L
-    O2["original (tupla)<br/>id = 7"] --> T1["('creado',)"]
-    C2["copia.con_estado('asignado')<br/>id = 8"] --> T2["('creado', 'asignado')"]
+flowchart TB
+    subgraph G["gráficos"]
+        P["puntos reales"] --> R["rotación: cos y sin"] --> Q["puntos rotados"] --> X["rasterización: round"] --> PX["píxeles"]
+    end
+    subgraph C["cómputo científico"]
+        V["velocidad continua"] --> T["n tramos de ancho h"] --> A["suma de trapecios"] --> E["distancia con error proporcional a h²"]
+    end
 ```
 
 #### Problema resuelto 5.1
-Muestra en C# que la copia con `with` comparte la lista, y comprueba lo mismo en Python con una dataclass congelada.
+Gira 90° una ruta de tres paradas, comprueba que la longitud de cada tramo no cambia y dibuja la ruta antes y
+después en una rejilla de texto.
 
 **Razonamiento:**
-1. Se crea un registro con `Id = 7` y una lista, y una copia con `Id = 8`.
-2. Se agrega un estado a la lista de la copia y se revisa la del original.
-3. Se comparan dos registros iguales por valor y por identidad.
-
-El programa C# y su proyecto:
-
-```xml
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>
-```
-
-```csharp
-using System;
-using System.Collections.Generic;
-
-var original = new Registro(7, new List<string> { "creado" });
-var copia = original with { Id = 8 };
-copia.Estados.Add("asignado");
-if (original.Id != 7 || copia.Id != 8) throw new Exception("Copia escalar incorrecta");
-if (original.Estados.Count != 2) throw new Exception("Se esperaba referencia compartida");
-Console.WriteLine("IDs independientes; lista compartida");
-var a = new Punto(4, 5);
-var b = new Punto(4, 5);
-if (a != b) throw new Exception("Se esperaba igualdad por valor");
-Console.WriteLine("Records con valores iguales comparan igual");
-public record Registro(int Id, List<string> Estados);
-public record Punto(int X, int Y);
-```
-
-Con el SDK de .NET 10 se ejecuta con `dotnet run --project Records.csproj`. Si las tres comprobaciones se cumplen, el
-programa escribe dos líneas: «IDs independientes; lista compartida» y «Records con valores iguales comparan igual». Si
-alguna falla, termina con la excepción de esa línea. Este programa no se ejecutó en esta edición (ver el entorno).
-
-El mismo experimento en Python, ejecutado:
+1. Convertir grados a radianes y aplicar la matriz de rotación a cada punto.
+2. Medir cada tramo con `math.dist` antes y después; una rotación no debe cambiar ninguna distancia.
+3. Rasterizar: redondear cada coordenada y llevarla a fila y columna, con el origen en el centro de la rejilla.
 
 ```python
-# registro_antes.py — copia con dataclasses.replace y una lista compartida
-from dataclasses import dataclass, replace
+# transformar.py — rota las paradas de una ruta y comprueba que las distancias se conservan
+from math import cos, dist, pi, sin
 
 
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: list
+def rotar(punto, grados):
+    radianes = grados * pi / 180
+    x, y = punto
+    return (x * cos(radianes) - y * sin(radianes),
+            x * sin(radianes) + y * cos(radianes))
 
 
-original = Registro(7, ["creado"])
-copia = replace(original, id=8)          # como `original with { Id = 8 }` en C#
-copia.estados.append("asignado")
+def rasterizar(puntos, ancho=7, alto=5):
+    """Dibuja cada punto en la celda entera más cercana de una cuadrícula de texto."""
+    rejilla = [["." for _ in range(ancho)] for _ in range(alto)]
+    for i, (x, y) in enumerate(puntos):
+        columna = round(x) + ancho // 2
+        fila = alto // 2 - round(y)          # en pantalla, la fila 0 está arriba
+        rejilla[fila][columna] = str(i)
+    return "\n".join(["".join(f) for f in rejilla])
 
-print("ids:", original.id, copia.id)
-print("original.estados:", original.estados)
-print("misma lista:", original.estados is copia.estados)
-print("igualdad por valor:", Registro(4, ["a"]) == Registro(4, ["a"]))
-print("misma identidad:", Registro(4, ["a"]) is Registro(4, ["a"]))
+
+ruta = [(0.0, 0.0), (2.0, 0.0), (2.0, 1.0)]   # salida, parada 1, entrega
+rotada = [rotar(p, 90) for p in ruta]
+
+for antes, despues in zip(ruta, rotada):
+    print(antes, "→", (round(despues[0], 6), round(despues[1], 6)))
+for i in range(len(ruta) - 1):
+    print(f"tramo {i}-{i + 1}: antes {dist(ruta[i], ruta[i + 1]):.6f}  "
+          f"después {dist(rotada[i], rotada[i + 1]):.6f}")
+print(rasterizar(ruta))
+print()
+print(rasterizar(rotada))
+print("x de la parada 1 sin redondear:", rotada[1][0])
 ```
 
 ```text
-$ python3 registro_antes.py
-ids: 7 8
-original.estados: ['creado', 'asignado']
-misma lista: True
-igualdad por valor: True
-misma identidad: False
+$ python3 transformar.py
+(0.0, 0.0) → (0.0, 0.0)
+(2.0, 0.0) → (0.0, 2.0)
+(2.0, 1.0) → (-1.0, 2.0)
+tramo 0-1: antes 2.000000  después 2.000000
+tramo 1-2: antes 1.000000  después 1.000000
+.......
+.....2.
+...0.1.
+.......
+.......
+
+..21...
+.......
+...0...
+.......
+.......
+x de la parada 1 sin redondear: 1.2246467991473532e-16
 ```
 
 **Explicación por partes.**
-- `Program.cs`, línea 5: `with` copia los campos y cambia solo `Id`.
-- Línea 6: se agrega a la lista **de la copia**; la línea 8 comprueba que el original también tiene 2 estados.
-- Líneas 10–12: dos `Punto` creados por separado son iguales con `!=`/`==`, porque el record compara por valor.
-- `registro_antes.py`, línea 12: `replace` hace en Python lo mismo que `with`.
-- Línea 17: `is` confirma que las dos versiones apuntan a la **misma** lista.
-- Líneas 18–19: iguales por valor (`True`), distintas en identidad (`False`).
+- Línea 6: la conversión a radianes. Sin ella, `cos` y `sin` interpretan 90 como 90 radianes.
+- Líneas 8–9: la matriz de rotación escrita como dos expresiones, una por coordenada.
+- Líneas 16–17: la rasterización. `ancho // 2` centra el origen; la resta en la fila invierte el eje vertical.
+- Líneas 27–29: `dist` mide cada tramo. Antes y después dan `2.000000` y `1.000000`: la rotación conserva distancias.
+- En la rejilla, el número es el índice de la parada: `0` es la salida y no se mueve, porque está en el origen.
+- Línea 33: `cos(π/2)` no da 0 exacto sino `6.1e-17`; multiplicado por 2 da `1.2246467991473532e-16`. Es error de redondeo.
 
-> **Error común.** Creer que `frozen=True` congela todo. Solo impide reasignar campos; reasignar uno termina con
-> `dataclasses.FrozenInstanceError: cannot assign to field 'id'`, pero `copia.estados.append(...)` funciona sin aviso.
+> **Error común.** Pasar el ángulo como texto, por ejemplo `rotar((2.0, 0.0), "90")` cuando el valor viene de un
+> formulario. La línea 6 falla con `TypeError: can't multiply sequence by non-int of type 'float'`. Python intenta
+> repetir el texto `"90"` 3.14 veces. Convierte primero con `float(...)` (Módulo 1, Tema 2).
 
-```python
-# error_asignar.py — frozen=True impide reasignar un campo
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Registro:
-    id: int
-
-
-registro = Registro(7)
-registro.id = 8
-```
-
-```text
-$ python3 error_asignar.py
-dataclasses.FrozenInstanceError: cannot assign to field 'id'
-```
+> **Prevenir errores.** Redondea solo al mostrar, nunca al guardar. Si guardas `round(x, 6)` después de cada giro, el
+> error se acumula; si guardas el valor completo, solo se redondea lo que ves.
 
 #### Problema resuelto 5.2
-Corrige el registro para que cada versión tenga su propio historial y sirva como clave de diccionario.
+La velocidad del camión durante un tramo de 10 minutos es v(t) = 0.01·t + 0.002·t² km por minuto. Aproxima la
+distancia con la regla del trapecio para varios `n` y compara con la integral exacta.
 
 **Razonamiento:**
-1. Una `tuple` no se puede modificar: agregar un estado obliga a crear una tupla nueva.
-2. Un método `con_estado` devuelve un registro nuevo; el original nunca cambia.
-3. Si todos los campos son inmutables, Python puede calcular el `hash` y el objeto sirve como clave.
+1. La distancia es el área bajo la curva de velocidad entre 0 y 10 minutos.
+2. La integral exacta, calculada a mano, es 0.005·t² + 0.002·t³/3 evaluada en 10: 1.166667 km.
+3. Con la regla del trapecio, duplica `n` varias veces y observa cómo cambia el error.
 
 ```python
-# registro_despues.py — una tupla hace la inmutabilidad profunda
-from dataclasses import dataclass, replace
+# trapecio.py — distancia recorrida a partir de la velocidad, con la regla del trapecio
+def velocidad(t):
+    """Velocidad del camión en km por minuto: acelera durante los 10 minutos del tramo."""
+    return 0.01 * t + 0.002 * t ** 2
 
 
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: tuple
+def trapecio(f, a, b, n):
+    h = (b - a) / n
+    suma = (f(a) + f(b)) / 2
+    for i in range(1, n):
+        suma += f(a + i * h)
+    return h * suma
 
-    def con_estado(self, estado):
-        return replace(self, estados=self.estados + (estado,))
 
-
-original = Registro(7, ("creado",))
-copia = replace(original, id=8).con_estado("asignado")
-
-print("ids:", original.id, copia.id)
-print("original.estados:", original.estados)
-print("copia.estados:", copia.estados)
-indice = {original: "versión 1"}
-print("sirve como clave:", indice[Registro(7, ("creado",))])
+exacta = 0.005 * 10 ** 2 + 0.002 * 10 ** 3 / 3     # integral calculada a mano
+for n in [2, 4, 8, 16, 32]:
+    aprox = trapecio(velocidad, 0, 10, n)
+    print(f"n={n:2}  distancia={aprox:.6f} km  error={abs(aprox - exacta):.6f}")
+print(f"exacta     {exacta:.6f} km")
 ```
 
 ```text
-$ python3 registro_despues.py
-ids: 7 8
-original.estados: ('creado',)
-copia.estados: ('creado', 'asignado')
-sirve como clave: versión 1
+$ python3 trapecio.py
+n= 2  distancia=1.250000 km  error=0.083333
+n= 4  distancia=1.187500 km  error=0.020833
+n= 8  distancia=1.171875 km  error=0.005208
+n=16  distancia=1.167969 km  error=0.001302
+n=32  distancia=1.166992 km  error=0.000326
+exacta     1.166667 km
 ```
 
 **Explicación por partes.**
-- Línea 8: el campo es `tuple`, no `list`.
-- Líneas 10–11: `self.estados + (estado,)` crea una tupla nueva; la coma hace que `(estado,)` sea una tupla de un elemento.
-- Línea 15: copia con otro `id` y luego con un estado más; el original queda `('creado',)`.
-- Líneas 20–21: un registro **igual** (no el mismo) encuentra la entrada: igualdad por valor más `hash`.
+- Líneas 2–4: la velocidad como función de Python; `trapecio` la recibe como argumento.
+- Línea 8: `h` es el ancho de cada franja.
+- Línea 9: los extremos cuentan la mitad, porque cada uno pertenece a un solo trapecio.
+- Líneas 10–11: los puntos interiores cuentan completos, porque cada uno es lado de dos trapecios.
+- Línea 15: el valor exacto permite medir el error; sin él solo verías que los números se estabilizan.
+- La columna de error baja de `0.083333` a `0.020833`: cada vez que `n` se duplica, se divide entre 4. Eso es «error proporcional a h²».
 
-Con la versión de lista, usar el registro como clave falla:
-
-```python
-# error_clave.py — un registro con lista no puede ser clave de diccionario
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: list
-
-
-indice = {Registro(7, ["creado"]): "versión 1"}
-```
-
-```text
-$ python3 error_clave.py
-TypeError: unhashable type: 'list'
-```
-
-> **Error común.** Usar como clave un objeto con un campo lista produce `TypeError: unhashable type: 'list'`. Una clave debe ser
-> inmutable en profundidad; cambia la lista por una tupla.
-
-> **Buena práctica.** En C#, declara la colección como `IReadOnlyList<string>` y guarda una `ImmutableList<string>`
-> (de `System.Collections.Immutable`); así el tipo dice la verdad sobre lo que se puede modificar.
-
-> **Rendimiento.** La inmutabilidad profunda copia en cada cambio. Con historiales de pocos estados, como aquí, el
-> costo no importa; con miles de elementos se usan colecciones inmutables que comparten estructura.
+> **Buena práctica.** Valida todo método numérico con un caso cuya respuesta exacta conoces, como aquí. Cuando lo
+> uses con datos reales sin fórmula, compara dos valores de `n` para estimar el error.
 
 #### Checkpoint 5.1
-En `registro_antes.py`, ¿qué imprimiría `original == copia` después del `append`?
+Si la tendencia se mantiene, ¿qué error esperas con `n=64`?
 
-Respuesta: `False`, porque los `id` son distintos (7 y 8). Las listas sí son iguales: son la misma.
+Respuesta: unos `0.000081`, la cuarta parte de `0.000326`. Al ejecutarlo, la distancia es `1.166748` y el error, `0.000081`.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/records` y entra en ella.
+#### Paso 1 · Rota y mide
+Escribe `transformar.py` y ejecútalo. Comprueba con papel cuadriculado que la parada 2 pasa de `(2, 1)` a `(-1, 2)`.
 
-#### Paso 2 · Reproduce el problema en Python
-Escribe `registro_antes.py`, ejecútalo y confirma `misma lista: True`.
+#### Paso 2 · Rompe la conversión
+Borra `* pi / 180` en la línea 6 y ejecuta. Anota en `evidencia-tema5.txt` qué pasa con las coordenadas y con las distancias.
 
-#### Paso 3 · Corrígelo
-Escribe `registro_despues.py` y comprueba que el original conserva `('creado',)`.
+#### Paso 3 · Integra
+Escribe `trapecio.py` y ejecútalo. Divide cada error entre el siguiente y comprueba que el cociente es cercano a 4.
 
-#### Paso 4 · Compara con C#
-Si tienes el SDK de .NET 10 (`dotnet --version`), crea `Records.csproj` y `Program.cs` y ejecuta `dotnet run --project Records.csproj`. Compara lo que ves con la descripción del Problema resuelto 5.1.
+#### Paso 4 · Rompe los extremos
+Cambia la línea 9 por `suma = f(a) + f(b)` y ejecuta. El error ahora solo se divide entre 2 al duplicar `n`:
+el método perdió su precisión de orden h².
 
 #### Resumen
-- Un **record** de C# y una **dataclass congelada** de Python guardan datos con igualdad y copia generadas.
-- La **igualdad por valor** compara campos; la **identidad** pregunta si es el mismo objeto.
-- La **expresión `with`** (y `replace`) hace una copia superficial: las referencias se comparten.
-- La **inmutabilidad superficial** impide reasignar campos; la **inmutabilidad profunda** exige que todo lo alcanzable sea inmutable.
-- Un objeto usable como clave necesita igualdad por valor y campos inmutables.
+- Los **gráficos por computador** son geometría primero y píxeles al final.
+- Una **transformación geométrica** aplica la misma regla a todos los puntos; la **matriz de rotación** gira sin deformar.
+- `cos` y `sin` trabajan en **radianes**: radianes = grados · π / 180.
+- La **rasterización** pasa coordenadas reales a píxeles enteros con la fila 0 arriba.
+- El **cómputo científico** resuelve problemas continuos con un **método numérico** y mide su error.
+- La **regla del trapecio** aproxima una integral; su **error de discretización** se divide entre 4 al duplicar `n`.
 
 #### Ejercicio verificable 1
-Básico. En Python, ¿qué imprime `(1, [2]) == (1, [2])` y qué imprime `(1, [2]) is (1, [2])`?
+Básico. Ejecuta `print(rotar((2.0, 0.0), 180))` al final de `transformar.py`. Explica el número muy pequeño de la salida.
 
-Respuesta esperada: `True` y `False`. Las tuplas son iguales por valor, pero son dos objetos distintos.
+Respuesta esperada: `(-2.0, 2.4492935982947064e-16)`. La `y` debería ser 0; el valor `2.4e-16` es error de redondeo
+porque `sin(π)` no da exactamente 0 en punto flotante.
 
 #### Ejercicio verificable 2
-Intermedio. En `registro_antes.py`, cambia la línea 12 por `copia = replace(original, id=8, estados=list(original.estados))` y ejecuta.
+Intermedio. Agrega `64` a la lista de `n` en `trapecio.py`. Predice la distancia y el error antes de ejecutar.
 
-Respuesta esperada: `original.estados: ['creado']` y `misma lista: False`. La copia ahora tiene su propia lista, pero sigue siendo modificable.
+Respuesta esperada: `n=64  distancia=1.166748 km  error=0.000081`. El error es la cuarta parte del de `n=32`.
 
 #### Ejercicio verificable 3
-Reto. Agrega a `registro_despues.py` un `__post_init__` que convierta a `tuple` cualquier lista recibida en `estados`.
+Reto. Escribe `escalar(punto, factor)`, que multiplica ambas coordenadas por `factor`. Aplica factor 2 a la ruta y
+mide los tramos. ¿Qué diferencia hay con la rotación?
 
-Respuesta esperada: `object.__setattr__(self, "estados", tuple(self.estados))` dentro de `__post_init__`. `Registro(7, ["creado"])` queda con `('creado',)` y sirve como clave.
+Respuesta esperada: `return (punto[0] * factor, punto[1] * factor)`. Los tramos pasan de `2.0` y `1.0` a `4.0` y `2.0`.
+La escala también es una transformación geométrica, pero no conserva distancias: las multiplica por el factor.
 
 #### En el trabajo
-Records y dataclasses se usan para eventos, mensajes y objetos de valor en el dominio. Un evento de auditoría que
-cambia después de guardado es un fallo grave de cumplimiento. Por eso los equipos revisan en el pull request que los
-tipos «inmutables» no tengan listas ni diccionarios mutables dentro.
+Los roles de gráficos son **programador de motores gráficos**, **programador de shaders**, **desarrollador de
+videojuegos** e **ingeniero de mapas y sistemas de información geográfica**. Trabajan en NVIDIA y AMD, en motores
+como Unity y Unreal (Epic Games), en estudios de videojuegos y en mapas (Google Maps, Mapbox, Esri). El cómputo
+científico tiene roles de **ingeniero de simulación** e **ingeniero de cómputo de alto rendimiento (HPC)** en
+energía, clima, aeroespacial y laboratorios de investigación. Ambas especialidades exigen álgebra lineal, cálculo y
+métodos numéricos antes que cualquier herramienta.
 
 </details>
 
-### Tema 6: Desarrollo guiado por especificación con agentes de IA · Avanzado · 50 min
+### Tema 6: Redes, seguridad, web e ingeniería profesional · Avanzado · 60 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- escribir una especificación corta con contexto, restricciones y criterios numerados;
-- pedir a un agente de IA un cambio contra esa especificación, no contra una conversación;
-- comprobar con un programa que cada criterio tiene prueba y que el cambio no salió de su alcance;
-- devolver a la especificación los casos no previstos que aparecen en la revisión.
+- resumir latencias con percentiles y explicar por qué el promedio esconde la cola lenta;
+- separar evidencia, inferencia y decisión en un hallazgo que no se pueda editar en silencio;
+- sellar un reporte con un hash criptográfico y detectar si alguien lo alteró;
+- seudonimizar datos personales con HMAC antes de compartir un reporte.
 
-**Conceptos clave:** especificación, agente de IA, restricción de alcance, cobertura de criterios
-
-Este tema usa **criterio de aceptación** y **trazabilidad** (Tema 1 de este módulo), **prueba unitaria** (Módulo 5,
-Tema 2), y **pull request**, **revisión de código** e **integración continua** (Módulo 5, Tema 4).
+**Conceptos clave:** latencia, percentil, semilla, reproducibilidad, inferencia, dataclass, dato inmutable, hash criptográfico, HMAC, seudonimización, ética profesional
 
 #### El problema
-Un desarrollador de RutaFlow le pide a un agente de IA: «agrega validación del PIN a confirmar». El agente entrega un
-cambio que valida el PIN, agrega una dependencia nueva y deja un caso sin probar. Todo «parece funcionar». ¿Cómo
-sabes qué pediste exactamente, si el agente lo cumplió y si tocó algo que no debía?
+Varios clientes de RutaFlow se quejan: «la página de seguimiento a veces tarda una eternidad». Un ingeniero propone
+comprar el doble de servidores. Otro dice que el problema es una sola dependencia, la API de mapas. Hay que medir,
+escribir un hallazgo honesto y compartirlo con otro equipo sin exponer teléfonos de clientes. ¿Cómo se hace eso de
+forma que nadie pueda cambiar los números después?
+
+Este tema usa lo que ya conoces: **red**, **cliente y servidor**, **HTTP** y **petición** (Módulo 3, Temas 1 y 2),
+**evidencia** (Módulo 0, Tema 5), **hipótesis** (Módulo 5, Tema 1), **JSON** (Módulo 3, Tema 2) y **función hash**
+(Módulo 2, Tema 6).
 
 #### Glosario del tema
 
-**especificación**
-- **Definición técnica:** documento que fija qué debe hacer un cambio (criterios verificables), en qué contexto y con qué restricciones, y que sirve de fuente de verdad para implementarlo y revisarlo.
-- **En palabras sencillas:** el encargo por escrito, tan claro que dos personas distintas construirían lo mismo.
-- **Dónde se rompe la comparación:** no se escribe una vez y se olvida: cada caso no previsto vuelve a ella como criterio nuevo.
-- **Ejemplo:** `SPEC.md`, con su línea `Contexto:` y los criterios `C1`, `C2` y `C3`.
-- **Error típico:** pedir el cambio en un chat y no guardar el texto; después nadie puede revisar contra qué se hizo.
+**latencia**
+- **Definición técnica:** tiempo entre el envío de una petición y la llegada de su respuesta, medido desde el cliente; incluye red, colas y procesamiento.
+- **En palabras sencillas:** cuánto esperas desde que pides algo hasta que te contestan.
+- **Dónde se rompe la comparación:** no es la velocidad de la conexión: una red rápida con un servidor saturado tiene latencia alta.
+- **Ejemplo:** `610` ms en la lista de `hallazgo.py` es una petición lenta a la API de mapas.
+- **Error típico:** medir la latencia solo desde el servidor y olvidar el tiempo de red que sí sufre el cliente.
 
-**agente de IA**
-- **Definición técnica:** programa basado en un modelo de lenguaje que lee archivos, propone cambios y ejecuta comandos para cumplir una tarea, iterando con lo que observa.
-- **En palabras sencillas:** un asistente que escribe código rápido, pero solo sabe lo que le escribiste y lo que ve en el repositorio.
-- **Dónde se rompe la comparación:** a diferencia de un colega, no recuerda acuerdos de pasillo ni pregunta si algo le parece raro, salvo que se lo pidas.
-- **Ejemplo:** el cambio de este tema: una prueba `test_C3_...` nueva y un `requirements.txt` que nadie pidió.
-- **Error típico:** aceptar el cambio porque «las pruebas pasan», sin revisar qué archivos tocó.
+**percentil**
+- **Definición técnica:** el percentil p de una muestra es el valor por debajo del cual queda el p % de las observaciones; p50 es la mediana y p95 marca la cola lenta.
+- **En palabras sencillas:** «el 95 % de las peticiones tardó esto o menos».
+- **Dónde se rompe la comparación:** hay varias formas de calcularlo; con muestras pequeñas dan valores distintos y conviene decir cuál usaste.
+- **Ejemplo:** `p50=164 ms` y `p95=610 ms`: la petición típica es rápida y la cola es casi cuatro veces más lenta.
+- **Error típico:** reportar solo el promedio; dos peticiones de 700 ms se diluyen entre dieciocho rápidas.
 
-**restricción de alcance**
-- **Definición técnica:** límite explícito de qué partes del sistema puede modificar un cambio, comprobable con la lista de archivos modificados.
-- **En palabras sencillas:** «puedes pintar esta pared y nada más».
-- **Dónde se rompe la comparación:** algunos archivos siempre pueden cambiar con el código, como las pruebas; la regla los nombra.
-- **Ejemplo:** `Contexto: solo se modifica entregas.py; no se agregan dependencias.` → `fuera de alcance: ['requirements.txt']`.
-- **Error típico:** escribir la restricción solo en el mensaje al agente; si no se comprueba, se ignora sin que nadie lo note.
+**semilla**
+- **Definición técnica:** valor inicial de un generador de números pseudoaleatorios; con la misma semilla, el generador produce siempre la misma secuencia.
+- **En palabras sencillas:** el número que hace que el «azar» se repita igual cada vez que ejecutas.
+- **Dónde se rompe la comparación:** una semilla fija sirve para experimentos y pruebas; para contraseñas o claves es un error grave.
+- **Ejemplo:** `random.Random(2026)` en la línea 8 de `hallazgo.py`.
+- **Error típico:** no fijar la semilla en un experimento y no poder reproducir el resultado que se reportó.
 
-**cobertura de criterios**
-- **Definición técnica:** proporción de criterios de la especificación que tienen al menos una prueba que dice verificarlos.
-- **En palabras sencillas:** cuántas promesas de la especificación tienen quién las compruebe.
-- **Dónde se rompe la comparación:** no es la cobertura de líneas del Módulo 5: puedes cubrir el 100 % de líneas y dejar un criterio sin probar.
-- **Ejemplo:** antes, `criterios: 3  cubiertos: 2` y `sin prueba: C3`; después, `cubiertos: 3`.
-- **Error típico:** nombrar la prueba con otro formato (`test_c3`) y que el verificador no la reconozca.
+**reproducibilidad**
+- **Definición técnica:** propiedad de un resultado que otra persona obtiene de nuevo con el mismo código, datos, versiones y semilla.
+- **En palabras sencillas:** que tu compañera ejecute lo mismo y vea exactamente lo mismo.
+- **Dónde se rompe la comparación:** reproducir no es repetir a mano; exige anotar versiones, semillas y origen de los datos.
+- **Ejemplo:** el sello `d32b25280e855610` sale igual en cada ejecución de `hallazgo.py`.
+- **Error típico:** reportar un número que salió una vez y que nadie, ni tú, puede volver a obtener.
+
+**inferencia**
+- **Definición técnica:** conclusión que se razona a partir de la evidencia y que va más allá de ella; debe poder fallar con nueva evidencia.
+- **En palabras sencillas:** lo que crees que significan los datos, escrito aparte de los datos.
+- **Dónde se rompe la comparación:** en la conversación diaria se mezclan dato y opinión; en un hallazgo técnico van en campos distintos.
+- **Ejemplo:** «la latencia alta podría concentrarse en una dependencia» es inferencia; «2 de 20 superaron 500 ms» es evidencia.
+- **Error típico:** escribir la inferencia como si fuera evidencia: «la API de mapas es lenta» sin haberla medido aparte.
+
+**dataclass**
+- **Definición técnica:** clase de Python generada por el decorador `@dataclass` del módulo `dataclasses`, que crea `__init__`, `__repr__` y `__eq__` a partir de los atributos declarados con su tipo.
+- **En palabras sencillas:** una clase para guardar datos en la que Python escribe por ti el código repetitivo.
+- **Dónde se rompe la comparación:** las anotaciones de tipo (`evidencia: str`) no se comprueban al ejecutar; documentan, no validan.
+- **Ejemplo:** `class Hallazgo` con tres campos de texto en las líneas 17–21.
+- **Error típico:** olvidar la anotación de tipo: sin `: str`, el atributo no se convierte en campo.
+
+**dato inmutable**
+- **Definición técnica:** objeto cuyo estado no puede cambiar después de crearse; en una dataclass se obtiene con `frozen=True`, que hace fallar toda asignación a sus campos.
+- **En palabras sencillas:** un acta firmada: si hay que corregir, se escribe otra acta, no se tacha la vieja.
+- **Dónde se rompe la comparación:** la inmutabilidad es superficial: si un campo guarda una lista, la lista sí se puede modificar.
+- **Ejemplo:** `@dataclass(frozen=True)` en la línea 17 de `hallazgo.py`.
+- **Error típico:** creer que inmutable protege el archivo guardado; solo protege el objeto en memoria. Para el archivo existe el sello.
+
+**hash criptográfico**
+- **Definición técnica:** función hash diseñada para que sea inviable encontrar dos entradas con el mismo resultado o deducir la entrada desde el resultado; SHA-256 produce 256 bits.
+- **En palabras sencillas:** una huella digital del texto: cualquier cambio, por mínimo que sea, da otra huella.
+- **Dónde se rompe la comparación:** a diferencia del `hash()` de Python (Módulo 2, Tema 6), SHA-256 da el mismo resultado en toda máquina y ejecución.
+- **Ejemplo:** cambiar `610` por `210` en el reporte cambia el sello de `44017978fe1ad6ce` a `66d025ba01c3029c`.
+- **Error típico:** usar un hash sin clave para ocultar datos con pocos valores posibles, como teléfonos: se prueban todos.
+
+**HMAC**
+- **Definición técnica:** código de autenticación de mensajes que combina una función hash con una clave secreta; solo quien tiene la clave puede calcularlo o verificarlo.
+- **En palabras sencillas:** una huella digital con sello privado: sin la clave, nadie puede fabricar la misma huella.
+- **Dónde se rompe la comparación:** si la clave se filtra, el sello deja de proteger; la clave vale tanto como los datos.
+- **Ejemplo:** `hmac.new(CLAVE, dato.encode("utf-8"), hashlib.sha256)` en la línea 15 de `seudonimo.py`.
+- **Error típico:** escribir la clave real dentro del código y subirla al repositorio.
+
+**seudonimización**
+- **Definición técnica:** reemplazo de un identificador personal por un seudónimo estable que no revela la identidad sin información adicional guardada aparte.
+- **En palabras sencillas:** cambiar el teléfono del cliente por un código que solo tu equipo puede relacionar con él.
+- **Dónde se rompe la comparación:** no es anonimizar: con la clave se puede volver a enlazar, así que la ley la sigue tratando como dato personal.
+- **Ejemplo:** `+57 300 555 0101` se publica como `5a5959bec9` en las dos quejas de ese cliente.
+- **Error típico:** seudonimizar el teléfono y dejar el nombre o la dirección en otra columna.
+
+**ética profesional**
+- **Definición técnica:** conjunto de deberes del ingeniero con usuarios, colegas y sociedad: honestidad en los resultados, protección de datos, competencia y responsabilidad por las consecuencias; los recogen códigos como el de ACM.
+- **En palabras sencillas:** no inventar números, no exponer a las personas y decir lo que no sabes.
+- **Dónde se rompe la comparación:** no es solo seguir la ley: algo legal puede seguir siendo engañoso o dañino.
+- **Ejemplo:** recomendar «añadir trazas antes de comprar servidores» en vez de pedir presupuesto sin evidencia.
+- **Error típico:** borrar los datos que contradicen la conclusión que el jefe esperaba.
 
 #### ► CÓMO FUNCIONA
-La especificación es la fuente de verdad. El agente recibe la especificación, no una idea suelta. Su cambio pasa
-por dos comprobaciones automáticas (alcance y cobertura), por las pruebas y por una revisión humana. Si la revisión
-encuentra un caso no previsto, se agrega como criterio y el ciclo se repite.
+Un hallazgo profesional tiene tres partes separadas. La **evidencia** son mediciones reproducibles. La **inferencia**
+es lo que crees que significan. La **decisión** es lo que propones hacer y debe ser coherente con ambas.
+
+Después, el hallazgo se protege. Un objeto inmutable evita cambios accidentales en memoria. Un sello SHA-256 detecta
+cambios en el texto guardado. Antes de compartir, los datos personales se reemplazan por seudónimos con HMAC.
 
 ```mermaid
 flowchart LR
-    SPEC["SPEC.md<br/>contexto + C1, C2, C3"] --> AGENT["agente de IA"]
-    AGENT --> CHG["cambio + pruebas"]
-    CHG --> ALC{"¿dentro del alcance?"}
-    ALC -->|"no"| AGENT
-    ALC -->|"sí"| COB{"¿todos los criterios<br/>con prueba?"}
-    COB -->|"no"| AGENT
-    COB -->|"sí"| REV["revisión humana + CI"]
-    REV -->|"caso no previsto"| SPEC
-    REV -->|"aprobado"| MAIN["rama principal"]
+    M["mediciones con semilla"] --> P["p50 y p95"]
+    P --> H["Hallazgo inmutable: evidencia, inferencia, decisión"]
+    H --> J["JSON ordenado"]
+    J --> S["sello SHA-256"]
+    Q["quejas con teléfonos"] --> N["seudónimo HMAC"]
+    N --> R["reporte compartible"]
+    R --> S2["sello del reporte"]
+    S2 -. "recalcular y comparar" .-> V{"¿coincide?"}
 ```
 
 #### Problema resuelto 6.1
-Escribe la especificación de la confirmación y comprueba qué criterios tienen prueba en la versión actual.
+Simula 20 latencias de la página de seguimiento, con dos peticiones lentas a la API de mapas. Calcula p50 y p95,
+registra el hallazgo como dato inmutable y séllalo.
 
 **Razonamiento:**
-1. Cada criterio lleva un identificador `C<n>:` al inicio de la línea.
-2. Cada prueba lleva el identificador en su nombre: `test_C1_...`.
-3. Un programa compara los dos conjuntos: lo que falta y lo que sobra.
-
-```markdown
-# Confirmar entrega
-Contexto: solo se modifica entregas.py; no se agregan dependencias.
-C1: Dado un PIN de 6 dígitos, cuando se confirma, entonces el estado es "delivered".
-C2: Dado un PIN con menos o más de 6 dígitos, cuando se confirma, entonces se lanza ValueError y el estado no cambia.
-C3: Dado un PIN con letras, cuando se confirma, entonces se lanza ValueError.
-```
+1. Semilla fija para que la muestra sea reproducible; las dos peticiones lentas se agregan explícitamente.
+2. Percentil por rango más cercano: ordenar y tomar la posición `ceil(p · n) - 1`.
+3. `Hallazgo` congelado con tres campos; el sello se calcula sobre su JSON con claves ordenadas.
 
 ```python
-def confirmar(envio: dict, pin: str) -> dict:
-    """Devuelve una copia del envío confirmado; no muta el original."""
-    if len(pin) != 6 or not pin.isdigit():
-        raise ValueError("recipientPin debe tener exactamente 6 dígitos")
-    return {**envio, "estado": "delivered"}
-```
+# hallazgo.py — mide latencias simuladas y registra un hallazgo que no se puede editar en silencio
+import hashlib
+import json
+import math
+import random
+from dataclasses import asdict, dataclass
 
-```python
-import unittest
-from entregas import confirmar
-
-
-class ConfirmarEntrega(unittest.TestCase):
-    def test_C1_pin_valido_confirma(self):
-        self.assertEqual(confirmar({"estado": "pending"}, "123456")["estado"], "delivered")
-
-    def test_C2_pin_corto_rechaza_sin_cambiar(self):
-        envio = {"estado": "pending"}
-        with self.assertRaises(ValueError):
-            confirmar(envio, "1234")
-        self.assertEqual(envio["estado"], "pending")
+generador = random.Random(2026)                    # semilla fija: misma muestra en cada ejecución
+latencias = [round(generador.uniform(80, 220)) for _ in range(18)]
+latencias += [610, 740]                            # dos peticiones lentas a la API de mapas
+ordenadas = sorted(latencias)
+p50 = ordenadas[len(ordenadas) // 2]
+p95 = ordenadas[math.ceil(0.95 * len(ordenadas)) - 1]
+lentas = len([ms for ms in latencias if ms > 500])
 
 
-if __name__ == "__main__":
-    unittest.main()
-```
+@dataclass(frozen=True)
+class Hallazgo:
+    evidencia: str
+    inferencia: str
+    decision: str
 
-```python
-# verificar_cobertura.py — cada criterio de SPEC.md tiene al menos una prueba
-import re
-import sys
-from pathlib import Path
 
-# Criterios declarados en la especificación: C1, C2, ...
-criterios = set(re.findall(r"^(C\d+):", Path("SPEC.md").read_text(encoding="utf-8"), re.M))
-# Criterios que alguna prueba dice verificar: test_C1_..., test_C2_...
-cubiertos = set(re.findall(r"def test_(C\d+)_", Path("test_entregas.py").read_text(encoding="utf-8")))
+hallazgo = Hallazgo(
+    evidencia=f"{lentas} de {len(latencias)} peticiones superaron 500 ms; p50={p50} ms, p95={p95} ms",
+    inferencia="la latencia alta podría concentrarse en una dependencia, no en todo el servicio",
+    decision="añadir trazas por dependencia antes de comprar más servidores",
+)
+texto = json.dumps(asdict(hallazgo), ensure_ascii=False, sort_keys=True)
+sello = hashlib.sha256(texto.encode("utf-8")).hexdigest()
 
-print(f"criterios: {len(criterios)}  cubiertos: {len(criterios & cubiertos)}")
-for falta in sorted(criterios - cubiertos):
-    print(f"sin prueba: {falta}")
-for sobra in sorted(cubiertos - criterios):
-    print(f"prueba sin criterio: {sobra}")
-sys.exit(1 if criterios != cubiertos else 0)
+print("muestra:", latencias[:5], "...")
+print(hallazgo.evidencia)
+print("sello SHA-256:", sello[:16])
 ```
 
 ```text
-$ python3 verificar_cobertura.py; echo "salida: $?"
-criterios: 3  cubiertos: 2
-sin prueba: C3
-salida: 1
+$ python3 hallazgo.py
+muestra: [97, 150, 152, 200, 94] ...
+2 de 20 peticiones superaron 500 ms; p50=164 ms, p95=610 ms
+sello SHA-256: d32b25280e855610
 ```
 
 **Explicación por partes.**
-- `verificar_cobertura.py`, línea 7: `^(C\d+):` toma los identificadores al inicio de cada línea de `SPEC.md`.
-- Línea 9: `def test_(C\d+)_` toma el identificador del nombre de cada prueba.
-- Línea 11: `&` es la intersección: criterios que sí tienen prueba.
-- Líneas 12–15: lo que falta (criterio sin prueba) y lo que sobra (prueba sin criterio).
-- Línea 16: si los conjuntos no son iguales, código 1. C3 no tiene prueba aunque el código ya lo cumpla.
+- Línea 8: `random.Random(2026)` crea un generador propio con semilla; no depende del estado global de `random`.
+- Líneas 9–10: dieciocho latencias normales entre 80 y 220 ms, más las dos lentas.
+- Líneas 12–13: la mediana y el p95. Con 20 datos, el p95 es el 19.º ordenado: la más rápida de las dos lentas.
+- Líneas 17–21: la dataclass congelada. Los tres campos obligan a escribir la inferencia aparte de la evidencia.
+- Línea 29: `asdict` convierte el hallazgo en diccionario; `sort_keys=True` fija el orden para que el sello sea estable.
+- Línea 30: SHA-256 del texto en UTF-8. Se muestran 16 caracteres; el sello completo tiene 64.
 
-> **Buena práctica.** Pide al agente que nombre cada prueba con el criterio que comprueba. La trazabilidad del Tema 1
-> se vuelve automática.
+Ahora intenta cambiar la decisión después de registrada:
+
+```python
+# congelado.py — intenta cambiar la decisión de un hallazgo ya registrado
+from hallazgo import hallazgo
+
+hallazgo.decision = "comprar más servidores"
+```
+
+```text
+$ python3 congelado.py
+muestra: [97, 150, 152, 200, 94] ...
+2 de 20 peticiones superaron 500 ms; p50=164 ms, p95=610 ms
+sello SHA-256: d32b25280e855610
+Traceback (most recent call last):
+  File "/home/estudiante/labs/especializaciones/congelado.py", line 4, in <module>
+    hallazgo.decision = "comprar más servidores"
+    ^^^^^^^^^^^^^^^^^
+  File "<string>", line 17, in __setattr__
+dataclasses.FrozenInstanceError: cannot assign to field 'decision'
+```
+
+> **Error común.** Intentar «corregir» un hallazgo asignando a un campo. Una dataclass con `frozen=True` responde
+> `dataclasses.FrozenInstanceError: cannot assign to field 'decision'`. No es un fallo que haya que silenciar: si la
+> decisión cambia, crea un hallazgo nuevo y conserva el anterior.
+
+> **Ingeniería de software.** Las tres líneas de salida de `hallazgo.py` salen antes del traceback de `congelado.py`
+> porque importar un módulo ejecuta su código. En un proyecto real protegerías esas líneas con
+> `if __name__ == "__main__":` (Módulo 1, Tema 4).
 
 #### Problema resuelto 6.2
-El agente entrega su cambio. Comprueba su alcance y su cobertura antes de revisarlo.
+Comparte con el equipo de mapas las quejas de clientes sin exponer sus teléfonos. Sella el reporte y demuestra que
+un cambio posterior se detecta.
 
 **Razonamiento:**
-1. `git status --short` lista lo modificado (`M`) y lo nuevo (`??`) desde el último commit.
-2. La especificación permite tocar `entregas.py` y las pruebas; cualquier otro archivo está fuera de alcance.
-3. Si está fuera de alcance, se rechaza esa parte y se vuelve a comprobar.
-
-La prueba que agregó el agente:
+1. Reemplazar cada teléfono por un HMAC truncado: el mismo cliente recibe siempre el mismo seudónimo.
+2. La clave del HMAC vive fuera del reporte; quien recibe el reporte no puede revertir el seudónimo.
+3. Sellar el reporte, simular una alteración y recalcular el sello.
 
 ```python
-import unittest
-from entregas import confirmar
+# seudonimo.py — comparte quejas sin datos personales y detecta si alguien altera el reporte
+import hashlib
+import hmac
+import json
+
+CLAVE = b"clave-de-ejemplo-que-vive-fuera-del-reporte"
+quejas = [
+    {"cliente": "+57 300 555 0101", "guia": "RF-2048", "minutos": 610},
+    {"cliente": "+57 300 555 0101", "guia": "RF-2051", "minutos": 740},
+    {"cliente": "+57 311 555 0199", "guia": "RF-2060", "minutos": 95},
+]
 
 
-class ConfirmarEntrega(unittest.TestCase):
-    def test_C1_pin_valido_confirma(self):
-        self.assertEqual(confirmar({"estado": "pending"}, "123456")["estado"], "delivered")
-
-    def test_C2_pin_corto_rechaza_sin_cambiar(self):
-        envio = {"estado": "pending"}
-        with self.assertRaises(ValueError):
-            confirmar(envio, "1234")
-        self.assertEqual(envio["estado"], "pending")
-
-    def test_C3_pin_con_letras_rechaza(self):
-        with self.assertRaises(ValueError):
-            confirmar({"estado": "pending"}, "12a456")
+def seudonimo(dato):
+    return hmac.new(CLAVE, dato.encode("utf-8"), hashlib.sha256).hexdigest()[:10]
 
 
-if __name__ == "__main__":
-    unittest.main()
-```
+def sellar(filas):
+    texto = json.dumps(filas, sort_keys=True)
+    return hashlib.sha256(texto.encode("utf-8")).hexdigest()[:16]
 
-Lo que cambió en el repositorio:
 
-```text
-$ git status --short
- M test_entregas.py
-?? requirements.txt
-```
+publicas = [{"cliente": seudonimo(q["cliente"]), "guia": q["guia"], "minutos": q["minutos"]}
+            for q in quejas]
+for fila in publicas:
+    print(fila)
+sello = sellar(publicas)
+print("sello original:   ", sello)
 
-```python
-# verificar_alcance.py — el cambio solo toca los archivos que permite SPEC.md
-import re
-import subprocess
-import sys
-from pathlib import Path
-
-contexto = re.search(r"^Contexto: solo se modifica (.+?);", Path("SPEC.md").read_text(encoding="utf-8"), re.M)
-permitidos = {nombre.strip() for nombre in contexto.group(1).split(",")}
-permitidos |= {"test_entregas.py"}  # las pruebas siempre pueden crecer
-salida = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-cambiados = {linea[3:] for linea in salida.stdout.splitlines()}  # modificados y nuevos
-print("cambiados:", sorted(cambiados))
-fuera = sorted(cambiados - permitidos)
-print("fuera de alcance:", fuera or "ninguno")
-sys.exit(1 if fuera else 0)
+publicas[0]["minutos"] = 210                      # alguien «mejora» un dato sin avisar
+print("sello recalculado:", sellar(publicas), "coincide:", sellar(publicas) == sello)
 ```
 
 ```text
-$ python3 verificar_alcance.py; echo "salida: $?"
-cambiados: ['requirements.txt', 'test_entregas.py']
-fuera de alcance: ['requirements.txt']
-salida: 1
-```
-
-Se descarta el archivo que nadie pidió y se repiten las comprobaciones:
-
-```text
-$ rm requirements.txt && python3 verificar_alcance.py; echo "salida: $?"
-cambiados: ['test_entregas.py']
-fuera de alcance: ninguno
-salida: 0
-```
-
-```text
-$ python3 verificar_cobertura.py; echo "salida: $?"
-criterios: 3  cubiertos: 3
-salida: 0
-```
-
-```text
-$ python3 -m unittest -v
-test_C1_pin_valido_confirma (test_entregas.ConfirmarEntrega.test_C1_pin_valido_confirma) ... ok
-test_C2_pin_corto_rechaza_sin_cambiar (test_entregas.ConfirmarEntrega.test_C2_pin_corto_rechaza_sin_cambiar) ... ok
-test_C3_pin_con_letras_rechaza (test_entregas.ConfirmarEntrega.test_C3_pin_con_letras_rechaza) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 0.000s
-
-OK
+$ python3 seudonimo.py
+{'cliente': '5a5959bec9', 'guia': 'RF-2048', 'minutos': 610}
+{'cliente': '5a5959bec9', 'guia': 'RF-2051', 'minutos': 740}
+{'cliente': 'c850705378', 'guia': 'RF-2060', 'minutos': 95}
+sello original:    44017978fe1ad6ce
+sello recalculado: 66d025ba01c3029c coincide: False
 ```
 
 **Explicación por partes.**
-- `verificar_alcance.py`, línea 7: lee de `SPEC.md` la lista de archivos permitidos, entre «solo se modifica» y el punto y coma.
-- Línea 9: las pruebas siempre se pueden tocar; la regla lo dice en el código, no en la memoria de alguien.
-- Líneas 10–11: `git status --porcelain` da una línea por archivo; desde la posición 3 está el nombre.
-- Línea 13: la resta de conjuntos deja solo los archivos no permitidos.
-- `unittest -v` muestra cada prueba con su nombre: la evidencia nombra los criterios.
+- Línea 6: la clave de ejemplo. En producción vendría de un gestor de secretos, nunca del código.
+- Líneas 14–15: el seudónimo. Las dos quejas del mismo teléfono reciben `5a5959bec9`; así el equipo ve que es un cliente recurrente.
+- Líneas 18–20: el sello serializa con `sort_keys=True` y aplica SHA-256.
+- Líneas 23–24: el reporte público solo lleva seudónimo, guía y minutos: minimiza los datos.
+- Línea 30: alguien cambia 610 por 210 «para que se vea mejor». El sello recalculado ya no coincide.
 
-Si ejecutas el verificador en una carpeta que no es un repositorio Git, la última línea del error es esta:
+> **Error común.** Seudonimizar con un hash sin clave: `hashlib.sha256(telefono.encode()).hexdigest()`. Los teléfonos
+> de un país son pocos millones; un atacante calcula el hash de todos y recupera cada número. Usa HMAC con clave secreta.
 
-```text
-$ python3 verificar_alcance.py
-subprocess.CalledProcessError: Command '['git', 'status', '--porcelain']' returned non-zero exit status 128.
-```
-
-> **Error común.** Ejecutar `verificar_alcance.py` fuera del repositorio produce `subprocess.CalledProcessError: Command '['git', 'status', '--porcelain']' returned non-zero exit status 128.`. El código 128
-> es la respuesta de `git` cuando no encuentra un repositorio. Entra en la carpeta del proyecto y repite.
-
-> **Prevenir errores.** Ejecuta las dos comprobaciones en CI en cada pull request, también en los que abre un agente.
-> Lo que se revisa a ojo se revisa bien un día y mal al siguiente.
+> **Buena práctica.** Publica el sello por un canal distinto al del reporte, por ejemplo en el ticket. Si alguien
+> cambia el archivo y el sello en el mismo lugar, el sello no protege nada.
 
 #### Checkpoint 6.1
-Si el agente renombra la prueba a `test_c3_pin_con_letras`, ¿qué responde `verificar_cobertura.py`?
+Con 20 latencias, ¿por qué el p95 es 610 ms y no 740 ms? ¿Qué pasaría con el promedio si quitas las dos lentas?
 
-Respuesta: `cubiertos: 2` y `sin prueba: C3`, con salida 1. La expresión busca `C` mayúscula; la prueba existe, pero perdió su trazabilidad.
+Respuesta: `ceil(0.95 × 20) - 1 = 18`, y la posición 18 (la 19.ª) de la lista ordenada es `610`; `740` es la 20.ª. Sin
+las dos lentas, el promedio baja de 205.5 a 153.3 ms, apenas un 25 %. El p95 baja de 610 a 200 ms: el percentil
+delata la cola y el promedio la diluye.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara el repositorio
-Crea `~/labs/modulo-7/spec`, escribe `SPEC.md`, `entregas.py`, `test_entregas.py`, los dos verificadores y un `.gitignore` con `__pycache__/`. Haz `git init` y un primer commit.
+#### Paso 1 · Mide y registra
+Escribe `hallazgo.py` y ejecútalo dos veces. Comprueba que el sello `d32b25280e855610` aparece igual en ambas.
 
-#### Paso 2 · Mide la cobertura inicial
-Ejecuta `verificar_cobertura.py` y confirma `sin prueba: C3`.
+#### Paso 2 · Intenta editar
+Escribe `congelado.py`, ejecútalo y copia la última línea del traceback en `evidencia-tema6.txt`.
 
-#### Paso 3 · Pide el cambio
-Entrega `SPEC.md` completo a tu agente de IA y pídele: «agrega las pruebas que faltan para cumplir la especificación». Si no usas un agente, escribe tú la prueba `test_C3_...`.
+#### Paso 3 · Seudonimiza y sella
+Escribe `seudonimo.py` y ejecútalo. Confirma que las dos quejas del mismo teléfono tienen el mismo seudónimo.
 
-#### Paso 4 · Comprueba alcance y cobertura
-Ejecuta `git status --short`, `verificar_alcance.py`, `verificar_cobertura.py` y `python3 -m unittest -v`. Descarta lo que esté fuera de alcance y repite.
+#### Paso 4 · Cambia la clave
+Cambia una letra de `CLAVE` y ejecuta. Anota qué cambia en la salida y qué no.
 
 #### Resumen
-- Una **especificación** escrita es la fuente de verdad del cambio, para quien lo hace y para quien lo revisa.
-- Un **agente de IA** cumple lo que está escrito y ve en el repositorio; lo demás lo adivina.
-- La **restricción de alcance** se comprueba con la lista de archivos que cambiaron.
-- La **cobertura de criterios** exige al menos una prueba por criterio, unidas por el identificador.
-- Los casos no previstos vuelven a la especificación como criterios nuevos.
+- La **latencia** se resume con **percentiles**: p50 para lo típico y p95 para la cola lenta.
+- Una **semilla** fija hace reproducible un experimento con números aleatorios; la **reproducibilidad** exige además versiones y datos.
+- Un hallazgo separa evidencia, **inferencia** y decisión, cada una en su campo.
+- Una **dataclass** con `frozen=True` crea un **dato inmutable**; corregir es crear un hallazgo nuevo.
+- Un **hash criptográfico** como SHA-256 sella el texto: cualquier cambio da otro sello.
+- La **seudonimización** con **HMAC** protege identidades; la clave se guarda aparte.
+- La **ética profesional** exige no inventar, no exponer y decir lo que no sabes.
 
 #### Ejercicio verificable 1
-Básico. Después del Problema resuelto 6.2, agrega a `SPEC.md` el criterio `C4: Dado un PIN vacío, cuando se confirma, entonces se lanza ValueError.` y ejecuta `verificar_cobertura.py`.
+Básico. Cambia la semilla de `hallazgo.py` a `7` y ejecuta. ¿Qué cambia y qué se mantiene?
 
-Respuesta esperada: `criterios: 4  cubiertos: 3`, `sin prueba: C4` y `salida: 1`.
+Respuesta esperada: la muestra cambia a `[125, 101, 171, 90, 155] ...`, el p50 a `139 ms` y el sello a
+`9d1adf608094be59`. Se mantienen `2 de 20 peticiones superaron 500 ms` y `p95=610 ms`, porque dependen de las dos
+latencias lentas agregadas a mano.
 
 #### Ejercicio verificable 2
-Intermedio. Crea un archivo `notas.txt` en el repositorio y ejecuta `verificar_alcance.py`.
+Intermedio. Calcula el seudónimo de `+57 300 555 0101` con la clave `b"otra-clave"` y con SHA-256 sin clave. ¿Cuál
+podría revertir un atacante que no conoce ninguna clave?
 
-Respuesta esperada: `fuera de alcance: ['notas.txt']` y `salida: 1`.
+Respuesta esperada: con `b"otra-clave"` da `f8c55fb008`; con `hashlib.sha256(...)` sin clave, `1ccc7c9dc6`. El de
+SHA-256 sin clave se revierte probando todos los teléfonos posibles; el HMAC no, mientras la clave siga secreta.
 
 #### Ejercicio verificable 3
-Reto. Ejecuta esta línea en la carpeta del repositorio:
+Reto. Escribe `verificar(filas, sello_esperado)` en `seudonimo.py`, que devuelva `True` solo si el reporte no cambió.
+Úsala antes y después de la alteración de la línea 30.
 
-```text
-$ python3 -c 'from entregas import confirmar; print(confirmar({"estado": "pending"}, "12345²"))'
-{'estado': 'delivered'}
-```
-
-El PIN `12345²` termina en un superíndice, no en un dígito, y aun así se confirmó. Agrega el criterio, la prueba y la corrección.
-
-Respuesta esperada: `C5: Dado un PIN con caracteres que no son 0-9, cuando se confirma, entonces se lanza ValueError.` La corrección cambia `pin.isdigit()` por `pin.isascii() and pin.isdigit()`; `test_C5_...` pasa y la cobertura queda `5/5` si también cubriste C4.
+Respuesta esperada: `return sellar(filas) == sello_esperado`. Antes de la línea 30 devuelve `True`; después, `False`.
+Para comparar sellos en un sistema real, usa `hmac.compare_digest`, que tarda lo mismo aunque los textos difieran
+pronto y no da pistas por el tiempo.
 
 #### En el trabajo
-Los equipos que trabajan con agentes guardan las especificaciones en el repositorio, junto al código. El agente abre
-un pull request como cualquier persona, y CI ejecuta las mismas comprobaciones de alcance, cobertura y pruebas. La
-revisión humana se concentra en lo que una máquina no ve: si la especificación pedía lo correcto.
+Redes y seguridad tienen roles muy demandados: **ingeniero de redes**, **ingeniero de confiabilidad (SRE)**,
+**analista de seguridad (SOC)**, **pentester**, **ingeniero de seguridad de aplicaciones** y **oficial de
+protección de datos**. Trabajan en Cisco, Cloudflare, Akamai, en la nube (AWS, Azure, Google Cloud), en empresas
+de seguridad (CrowdStrike, Palo Alto Networks) y en los equipos internos de bancos y telecomunicaciones. La web y la
+ingeniería profesional atraviesan todas las especialidades: cualquier rol del mapa escribe hallazgos, mide latencias
+y maneja datos personales. Para profundizar, vuelve a los Módulos 3, 6 y 10.
 
 </details>
 
-### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Avanzado · 45 min
+### Proyecto 11: portafolio de orientación
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Objetivos
-Al terminar este tema podrás:
-- validar que una skill está bien formada y no contiene datos personales;
-- detectar skills duplicadas midiendo el parecido de sus descripciones con el índice de Jaccard;
-- decidir con una prueba A/B si una skill mejora el resultado frente a no usarla;
-- leer el veredicto de un evaluador de tres niveles y corregir lo que marca.
-
-**Conceptos clave:** skill de agente, cabecera YAML, datos personales, índice de Jaccard, prueba A/B
-
-Este tema usa **agente de IA** y **especificación** (Tema 6 de este módulo), y **pull request** (Módulo 5, Tema 4).
-
-#### El problema
-El equipo de RutaFlow tiene una carpeta `skills/` con instrucciones reutilizables para su agente de IA. Cada persona
-agregó las suyas. Hay dos que hacen casi lo mismo, una tiene el correo y la cédula de un revisor, y nadie sabe si
-alguna mejora algo. ¿Cómo decides cuáles se quedan antes de que el agente las use en todos los pull requests?
-
-#### Glosario del tema
-
-**skill de agente**
-- **Definición técnica:** paquete de instrucciones reutilizables (una carpeta con un `SKILL.md`) que un agente de IA carga cuando su descripción coincide con la tarea.
-- **En palabras sencillas:** una receta guardada que el agente saca del cajón cuando la necesita.
-- **Dónde se rompe la comparación:** el agente elige la receta por su descripción; si dos descripciones se parecen, puede sacar la equivocada.
-- **Ejemplo:** `skills/generar-changelog/SKILL.md`, con nombre, descripción y tres pasos.
-- **Error típico:** escribir una descripción genérica («ayuda con PRs»); el agente no sabe cuándo usarla.
-
-**cabecera YAML**
-- **Definición técnica:** bloque entre dos líneas `---` al inicio de un archivo Markdown, con pares `clave: valor` (formato YAML) que describen el archivo.
-- **En palabras sencillas:** la etiqueta de la receta: cómo se llama y para qué sirve.
-- **Dónde se rompe la comparación:** este evaluador lee solo pares simples `clave: valor`; un YAML con listas o varias líneas necesita un lector completo.
-- **Ejemplo:** `name: revisar-pr` y `description: Revisa un pull request de RutaFlow ...`.
-- **Error típico:** olvidar las líneas `---`; el evaluador responde `sin cabecera YAML`.
-
-**datos personales**
-- **Definición técnica:** información que identifica o hace identificable a una persona, como correo, número de documento o teléfono (en inglés, *PII*).
-- **En palabras sencillas:** cualquier dato que diga quién es alguien.
-- **Dónde se rompe la comparación:** una expresión regular encuentra formas típicas, no todos los casos; la revisión humana sigue siendo necesaria.
-- **Ejemplo:** `soporte@rutaflow.co` y `1020304050` en `resumir-pr` → `contiene datos personales`.
-- **Error típico:** dejar datos reales «de ejemplo» en una skill; el agente los copia en textos que verá mucha gente.
-
-**índice de Jaccard**
-- **Definición técnica:** medida de parecido entre dos conjuntos: tamaño de la intersección dividido por tamaño de la unión; va de 0 (nada en común) a 1 (iguales).
-- **En palabras sencillas:** de todas las palabras que usan las dos descripciones, qué parte comparten.
-- **Dónde se rompe la comparación:** compara palabras, no significado: «revisar» y «auditar» cuentan como distintas.
-- **Ejemplo:** las descripciones de `resumir-pr` y `revisar-pr` comparten casi todo → `se parecen 91%`.
-- **Error típico:** dividir sin revisar que la unión no esté vacía; dos descripciones vacías darían división por cero.
-
-**prueba A/B**
-- **Definición técnica:** experimento que ejecuta las mismas tareas con dos variantes (A sin la skill, B con ella) y compara una métrica de éxito.
-- **En palabras sencillas:** probar con y sin la receta, en las mismas condiciones, y contar cuántas veces sale bien.
-- **Dónde se rompe la comparación:** con 10 tareas, una diferencia pequeña puede ser azar; el Módulo 9 explica cuánta evidencia hace falta.
-- **Ejemplo:** `éxito 40% sin la skill -> 80% con ella (aporta)`.
-- **Error típico:** medir con tareas distintas en cada variante; la diferencia ya no se puede atribuir a la skill.
-
-#### ► CÓMO FUNCIONA
-Cada skill pasa por tres niveles en orden. El primero revisa forma y seguridad. El segundo busca duplicados contra
-las demás. El tercero mide si mejora el resultado. Una falla en el nivel 1 o un duplicado bloquea la publicación.
-
-```mermaid
-flowchart LR
-    S["skills/*/SKILL.md"] --> N1{"Nivel 1<br/>¿bien formada y sin datos personales?"}
-    N1 -->|no| X["corregir antes de seguir"]
-    N1 -->|sí| N2{"Nivel 2<br/>¿Jaccard ≥ 0,6 con otra?"}
-    N2 -->|sí| M["fusionar o separar"]
-    N2 -->|no| N3{"Nivel 3<br/>¿A/B mejora ≥ 20 puntos?"}
-    N3 -->|sí| P["publicar"]
-    N3 -->|no| R["reescribir o descartar"]
-```
-
-#### Problema resuelto 7.1
-Evalúa las tres skills del equipo y los resultados de la prueba A/B de `generar-changelog`.
-
-**Razonamiento:**
-1. Nivel 1: el nombre coincide con la carpeta, la descripción tiene entre 20 y 1024 caracteres y no hay datos personales.
-2. Nivel 2: para cada par, el índice de Jaccard de sus descripciones; desde 0,6 se marca.
-3. Nivel 3: tasa de éxito con y sin la skill en las mismas 10 tareas.
-
-```markdown
----
-name: resumir-pr
-description: Revisa un pull request de RutaFlow buscando errores de lógica y pruebas faltantes en el diff.
----
-1. Lee el diff.
-2. Resume los cambios. Contacto del equipo: soporte@rutaflow.co, cédula del revisor 1020304050.
-```
-
-```markdown
----
-name: revisar-pr
-description: Revisa un pull request de RutaFlow buscando errores de lógica y pruebas faltantes en el diff del cambio.
----
-1. Lee el diff completo.
-2. Marca cada error de lógica con archivo y línea.
-3. Lista las pruebas que faltan para los casos nuevos.
-```
-
-```markdown
----
-name: generar-changelog
-description: Redacta la entrada del CHANGELOG a partir de los commits fusionados desde la última versión publicada.
----
-1. Lista los commits desde la última etiqueta.
-2. Agrúpalos en Agregado, Cambiado y Corregido.
-3. Escribe una línea por cambio, en pasado y sin jerga interna.
-```
-
-```json
-{
-  "skill": "generar-changelog",
-  "tareas": 10,
-  "sin_skill": [1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
-  "con_skill": [1, 1, 1, 1, 0, 1, 1, 1, 1, 0]
-}
-```
-
-```python
-"""Evalúa skills de agentes en tres niveles.
-
-Nivel 1: ¿está bien formada y es segura?  Nivel 2: ¿ya existe otra igual?
-Nivel 3: ¿mejora el resultado frente a no usarla (prueba A/B)?
-"""
-import json
-import re
-import sys
-from pathlib import Path
-
-PII = re.compile(r"[\w.-]+@[\w-]+\.\w+|\b\d{8,10}\b")  # correos y números tipo cédula
-UMBRAL_DUPLICADO = 0.6   # parecido de descripciones a partir del cual se revisa a mano
-MEJORA_MINIMA = 0.2      # la skill debe subir la tasa de éxito al menos 20 puntos
-
-
-def leer(ruta: Path) -> dict:
-    texto = ruta.read_text(encoding="utf-8")
-    cabecera = re.match(r"---\n(.*?)\n---\n(.*)", texto, re.S)
-    if not cabecera:
-        return {"nombre": ruta.parent.name, "descripcion": "", "error": "sin cabecera YAML", "cuerpo": texto}
-    campos = dict(re.findall(r"^(\w+):\s*(.+)$", cabecera.group(1), re.M))
-    return {"nombre": campos.get("name", ""), "descripcion": campos.get("description", ""),
-            "cuerpo": cabecera.group(2), "carpeta": ruta.parent.name}
-
-
-def nivel1(skill: dict) -> list[str]:
-    problemas = []
-    if "error" in skill:
-        return [skill["error"]]
-    if skill["nombre"] != skill["carpeta"]:
-        problemas.append("el nombre no coincide con la carpeta")
-    if not 20 <= len(skill["descripcion"]) <= 1024:
-        problemas.append("la descripción debe tener entre 20 y 1024 caracteres")
-    if PII.search(skill["cuerpo"]):
-        problemas.append("contiene datos personales")
-    return problemas
-
-
-def palabras(texto: str) -> set[str]:
-    return {p for p in re.findall(r"\w+", texto.lower()) if len(p) > 3}
-
-
-def parecido(a: str, b: str) -> float:
-    pa, pb = palabras(a), palabras(b)
-    return len(pa & pb) / len(pa | pb) if pa | pb else 0.0  # índice de Jaccard
-
-
-def nivel2(skills: list[dict]) -> list[str]:
-    avisos = []
-    for i, a in enumerate(skills):
-        for b in skills[i + 1:]:
-            valor = parecido(a["descripcion"], b["descripcion"])
-            if valor >= UMBRAL_DUPLICADO:
-                avisos.append(f"{a['nombre']} y {b['nombre']} se parecen {valor:.0%}")
-    return avisos
-
-
-def nivel3(ruta: Path) -> str:
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
-    sin = sum(datos["sin_skill"]) / datos["tareas"]
-    con = sum(datos["con_skill"]) / datos["tareas"]
-    veredicto = "aporta" if con - sin >= MEJORA_MINIMA else "no aporta lo suficiente"
-    return f"{datos['skill']}: éxito {sin:.0%} sin la skill -> {con:.0%} con ella ({veredicto})"
-
-
-skills = [leer(p) for p in sorted(Path("skills").glob("*/SKILL.md"))]
-fallas = 0
-print("Nivel 1 · validación")
-for skill in skills:
-    problemas = nivel1(skill)
-    fallas += bool(problemas)
-    print(f"  {skill['nombre']:<18} {'ok' if not problemas else '; '.join(problemas)}")
-print("Nivel 2 · duplicados")
-duplicados = nivel2(skills)
-for aviso in duplicados or ["sin duplicados"]:
-    print(f"  {aviso}")
-print("Nivel 3 · prueba A/B")
-print(f"  {nivel3(Path('resultados-ab.json'))}")
-sys.exit(1 if fallas or duplicados else 0)
-```
-
-```text
-$ python3 evaluar_skill.py; echo "salida: $?"
-Nivel 1 · validación
-  generar-changelog  ok
-  resumir-pr         contiene datos personales
-  revisar-pr         ok
-Nivel 2 · duplicados
-  resumir-pr y revisar-pr se parecen 91%
-Nivel 3 · prueba A/B
-  generar-changelog: éxito 40% sin la skill -> 80% con ella (aporta)
-salida: 1
-```
-
-**Explicación por partes.**
-- Línea 11: la expresión busca correos (`algo@dominio.ext`) y números de 8 a 10 cifras, como una cédula.
-- Líneas 18–21: separa la cabecera del cuerpo y lee sus pares `clave: valor`.
-- Líneas 39–40: las palabras de más de 3 letras, en minúscula, sin repetir.
-- Línea 45: el índice de Jaccard; si las dos descripciones están vacías, devuelve `0.0` en lugar de dividir por cero.
-- Líneas 50–54: compara cada par una sola vez (`skills[i + 1:]`).
-- Líneas 60–62: tasas de éxito y veredicto según la mejora mínima.
-- Línea 79: cualquier falla del nivel 1 o un duplicado dejan código de salida 1.
-
-> **Ingeniería de software.** El evaluador es una fitness function (Tema 2) para skills: corre en CI y bloquea el
-> pull request que agrega una skill duplicada o con datos personales.
-
-#### Problema resuelto 7.2
-Corrige lo que marcó el evaluador y vuelve a ejecutarlo.
-
-**Razonamiento:**
-1. `resumir-pr` tiene datos personales **y** duplica a `revisar-pr`, que es más completa.
-2. Se fusiona: se conserva `revisar-pr` y `resumir-pr` sale de `skills/`, sin borrarla, a una carpeta aparte.
-3. Se repite la evaluación completa.
-
-```text
-$ mkdir -p descartadas && mv skills/resumir-pr descartadas/ && python3 evaluar_skill.py; echo "salida: $?"
-Nivel 1 · validación
-  generar-changelog  ok
-  revisar-pr         ok
-Nivel 2 · duplicados
-  sin duplicados
-Nivel 3 · prueba A/B
-  generar-changelog: éxito 40% sin la skill -> 80% con ella (aporta)
-salida: 0
-```
-
-**Explicación por partes.**
-- `mv skills/resumir-pr descartadas/`: la carpeta sale del patrón `skills/*/SKILL.md` y el evaluador ya no la ve.
-- El nivel 1 queda en `ok` para las dos skills restantes; el nivel 2 responde `sin duplicados`.
-- El nivel 3 no cambia: la prueba A/B es de `generar-changelog`, que sigue aportando.
-
-Si el archivo de resultados tiene `"tareas": 0`, la última línea del error es esta:
-
-```text
-$ python3 evaluar_skill.py
-ZeroDivisionError: division by zero
-```
-
-> **Error común.** Un experimento sin tareas termina con `ZeroDivisionError: division by zero` en la línea 60. No hay tasa de éxito
-> sin tareas: corre el experimento antes de evaluar, o valida que `tareas` sea mayor que cero.
-
-> **Buena práctica.** Guarda los resultados A/B en el repositorio junto a la skill. Si alguien cambia la skill, se
-> repite la prueba y se compara con el número anterior.
-
-#### Checkpoint 7.1
-Si `revisar-pr` tuviera la descripción «Revisa pruebas del pedido» y otra skill «Revisa pruebas del envío», ¿las marca el nivel 2?
-
-Respuesta: no. Las palabras de más de 3 letras son {revisa, pruebas, pedido} y {revisa, pruebas, envío}: comparten 2 de 4, índice 0,5, por debajo de 0,6.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/evaluar-skills` con `skills/generar-changelog`, `skills/resumir-pr` y `skills/revisar-pr`, cada una con su `SKILL.md`.
-
-#### Paso 2 · Agrega los resultados A/B
-Crea `resultados-ab.json` con las 10 tareas de cada variante.
-
-#### Paso 3 · Evalúa
-Escribe `evaluar_skill.py` y ejecútalo. Anota cada problema que marca y su nivel.
-
-#### Paso 4 · Corrige y repite
-Mueve `resumir-pr` a `descartadas/` y repite hasta obtener `salida: 0`.
-
-#### Resumen
-- Una **skill de agente** es una carpeta con un `SKILL.md`; el agente la elige por su descripción.
-- La **cabecera YAML** entre `---` da nombre y descripción; sin ella la skill no pasa el nivel 1.
-- Los **datos personales** no van en una skill; una expresión regular encuentra los casos típicos.
-- El **índice de Jaccard** mide cuántas palabras comparten dos descripciones; desde 0,6 se revisa a mano.
-- Una **prueba A/B** con las mismas tareas decide si la skill mejora el resultado.
-
-#### Ejercicio verificable 1
-Básico. Crea `skills/notas/SKILL.md` con una sola línea, `1. Toma notas.`, sin cabecera, y ejecuta el evaluador.
-
-Respuesta esperada: en el nivel 1, la línea de `notas` dice `sin cabecera YAML`, y el programa termina con `salida: 1`.
-
-#### Ejercicio verificable 2
-Intermedio. Cambia `con_skill` a `[1, 0, 1, 0, 0, 1, 0, 1, 1, 0]` y ejecuta.
-
-Respuesta esperada: `generar-changelog: éxito 40% sin la skill -> 50% con ella (no aporta lo suficiente)`. La mejora es de 10 puntos, menos que los 20 exigidos.
-
-#### Ejercicio verificable 3
-Reto. Amplía el nivel 1 para que también marque números de teléfono celular colombianos de 10 cifras que empiezan por 3.
-
-Respuesta esperada: la expresión actual ya los encuentra, porque `\b\d{8,10}\b` incluye 10 cifras. Para distinguirlos agrega una regla propia, `\b3\d{9}\b`, con el mensaje «contiene un teléfono».
-
-#### En el trabajo
-Los equipos que usan agentes mantienen sus skills como código: en un repositorio, con revisión y con evaluación
-automática en CI. Una skill con datos personales es un incidente de privacidad, aunque nadie la haya usado todavía.
-Antes de publicar una skill para toda la organización, se exige evidencia A/B, igual que con cualquier cambio que
-promete mejorar un resultado.
-
-</details>
-
-### Proyecto 7: inventario modular con especificación, ADR y plan de mantenimiento
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-El proyecto aplica los temas al inventario que vienes construyendo desde el Módulo 4. No hay técnicas nuevas: cada
-entregable remite al tema donde se explicó y se comprueba con uno de los programas de este módulo.
-
-#### Autoevaluación del módulo
-1. ¿Qué vuelve verificable a un requisito?
-   Respuesta: tener un dueño, un contexto, una acción y un resultado con medida, escritos como «dado, cuando, entonces» (Tema 1).
-2. ¿Por qué una arquitectura depende de atributos de calidad?
-   Respuesta: porque las alternativas se diferencian en qué atributo mejoran y cuál empeoran; sin escenarios medibles no hay forma de elegir (Tema 2).
-3. ¿Cuándo un patrón mejora el diseño y cuándo añade complejidad accidental?
-   Respuesta: mejora en los límites que cambian o que se prueban aparte, como el almacenamiento; sobra cuando existe una sola implementación posible y nada que aislar (Tema 3).
+El proyecto convierte los seis experimentos en una decisión. No hay técnicas nuevas: cada entregable remite al tema
+donde se explicó. El objetivo es elegir qué especialización estudiar después, con evidencia propia y no por moda.
 
 </details>
 
@@ -2483,14 +1963,14 @@ entregable remite al tema donde se explicó y se comprueba con uno de los progra
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Entregables
-1. **Especificación.** Una historia de usuario del inventario con al menos tres criterios `C<n>` que pasen `verificar_criterios.py` (Tema 1).
-2. **Arquitectura.** Un diagrama C4 de contenedores, un escenario de calidad de seis partes y una fitness function de dependencias en CI (Tema 2).
-3. **Diseño.** El caso de uso «retirar stock» separado de la persistencia con un puerto y dos adaptadores, SQLite y memoria, con prueba caracterizadora y `diff` vacío (Tema 3).
-4. **Decisiones.** Dos ADR que pasen `verificar_adr.py`, un registro de deuda priorizado y una función pública evolucionada con deprecación (Tema 4).
-5. **Cambio con agente.** Un cambio pedido contra la especificación, con `verificar_alcance.py` y `verificar_cobertura.py` en verde (Tema 6).
+1. **Seis experimentos.** Los programas de los Temas 1 a 6 en `~/labs/especializaciones`, cada uno con su archivo `evidencia-temaN.txt`.
+2. **Una variación propia por tema.** Un cambio que no esté en los ejercicios, con la salida antes y después.
+3. **Mapa de prerrequisitos.** Una tabla con una fila por especialización: matemáticas que exige, módulos de este curso que la preparan y un rol de «En el trabajo».
+4. **Dos respuestas escritas.** ¿Qué diferencia existe entre usar una herramienta y comprender su fundamento? ¿Qué especializaciones requieren matemáticas adicionales antes de profundizar? Usa un experimento como ejemplo en cada respuesta.
+5. **Hallazgo de elección.** Un `Hallazgo` como el del Tema 6: evidencia (qué experimento disfrutaste y entendiste mejor), inferencia y decisión (qué estudiarás los próximos tres meses), con su sello SHA-256.
 
 #### Criterio de terminado
-Un clon limpio del repositorio pasa las pruebas, la fitness function y los verificadores de criterios, ADR, alcance
-y cobertura, sin pasos manuales adicionales.
+Otra persona clona tu carpeta, ejecuta los seis programas con `python3` y obtiene las mismas salidas que tus archivos
+de evidencia, incluido el sello del hallazgo de elección.
 
 </details>

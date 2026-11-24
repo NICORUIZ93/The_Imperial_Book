@@ -30,10 +30,10 @@ flowchart LR
 | 8 | Aplicación | [El DOM y eventos del navegador](/curso/javascript/8) |
 | 9 | Integración | [Testing y calidad de código](/curso/javascript/9) |
 | 10 | Integración | [Patrones avanzados y rendimiento](/curso/javascript/10) |
-| 11 | Experto | [TypeScript esencial para devs de JavaScript](/curso/javascript/11) |
-| 12 | Experto | [Proyecto integrador: SPA sin framework](/curso/javascript/12) |
-| 13 | Experto | [JavaScript en producción: seguridad, memoria y compatibilidad](/curso/javascript/13) |
-| 14 | Experto | [JavaScript Master: TypeScript, WASM y cómputo emergente](/curso/javascript/14) |
+| 11 | Experto | [TypeScript esencial para devs de JavaScript](/curso/typescript/0) |
+| 12 | Experto | [Proyecto integrador: SPA sin framework](/curso/javascript/11) |
+| 13 | Experto | [JavaScript en producción: seguridad, memoria y compatibilidad](/curso/javascript/12) |
+| 14 | Experto | [JavaScript Master: TypeScript, WASM y cómputo emergente](/curso/javascript/13) |
 
 ## Aprende construyendo
 

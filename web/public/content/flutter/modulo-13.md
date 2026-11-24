@@ -472,3 +472,208 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
 
 </details>
+
+### Tema 5: reportes de fallos con Crashlytics y Sentry · Avanzado · 35 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar, distinguirás excepción fatal, error recuperable y evento esperado. Prerrequisitos: try/catch, stack traces y configuración de una app Flutter. Crea un proyecto nuevo con flutter create error_reporting_lab y lib/observability/error_reporting.dart. Para subir eventos…
+
+#### ► LA ANALOGÍA
+Crashlytics y Sentry reciben reportes y ayudan a agruparlos; no arreglan la causa. `recordFlutterFatalError` cubre errores del framework según la configuración de Firebase; `PlatformDispatcher.instance.onError` atiende errores asíncronos no manejados. Mantén la diferencia entre informar y manejar una excepción.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Fatal[Error fatal] --> SDK[Crashlytics o Sentry]
+  Recoverable[Error recuperable] --> SDK
+  SDK --> Group[Evento agrupado para investigar]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+import 'dart:ui';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
+
+import 'firebase_options.dart'; // generado por flutterfire configure
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
+}
+```
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) => options.dsn = const String.fromEnvironment('SENTRY_DSN'),
+    appRunner: () => runApp(const MyApp()),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: FilledButton(
+              onPressed: () => throw StateError('Error de prueba para Sentry'),
+              child: const Text('Provocar error de prueba'),
+            ),
+          ),
+        ),
+      );
+}
+```
+
+```bash
+flutter analyze
+flutter test
+```
+
+```mermaid
+flowchart LR
+  Fatal[Error fatal] --> SDK[Crashlytics o Sentry]
+  Recoverable[Error recuperable] --> SDK
+  SDK --> Group[Evento agrupado para investigar]
+```
+
+</details>
+
+### Tema 6: analítica con privacidad y consentimiento · Avanzado · 35 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar, podrás describir el propósito de cada evento, retrasar captura hasta obtener la elección requerida y respetar una revocación. Prerrequisitos: futures, preferencias del usuario y eventos nombrados. Crea un proyecto nuevo con flutter create consent_lab y agrega lib/an…
+
+#### ► CÓMO FUNCIONA
+```mermaid
+stateDiagram-v2
+  [*] --> SinEleccion
+  SinEleccion --> Activo: acepta
+  Activo --> Desactivado: revoca
+  SinEleccion --> Desactivado: rechaza
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+abstract interface class AnalyticsSwitch {
+  Future<void> setCollectionEnabled(bool enabled);
+}
+
+class AnalyticsConsent {
+  AnalyticsConsent(this._analytics);
+  final AnalyticsSwitch _analytics;
+
+  Future<void> update({required bool accepted}) =>
+      _analytics.setCollectionEnabled(accepted);
+}
+```
+
+```bash
+flutter test test/analytics/analytics_consent_test.dart
+```
+
+```mermaid
+stateDiagram-v2
+  [*] --> SinEleccion
+  SinEleccion --> Activo: acepta
+  Activo --> Desactivado: revoca
+  SinEleccion --> Desactivado: rechaza
+```
+
+</details>
+
+### Tema 7: monitoreo de rendimiento en una versión publicada · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar, definirás señales de arranque, frames y red que sirven para detectar regresiones sin guardar datos innecesarios. Prerrequisitos: modo profile, frame timing y trazas de red. Crea un proyecto nuevo con flutter create performance_monitor_lab; agrega lib/observability/f…
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  Profile[Modo profile] --> Timings[UI y raster]
+  Timings --> Summary[Resumen p90 y peor frame]
+  Summary --> Review[Compara releases]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```dart
+import 'package:flutter/widgets.dart';
+
+class FrameMetrics {
+  static void start() {
+    WidgetsBinding.instance.addTimingsCallback((frames) {
+      for (final frame in frames) {
+        final buildMs = frame.buildDuration.inMilliseconds;
+        final rasterMs = frame.rasterDuration.inMilliseconds;
+        debugPrint('frame build=${buildMs}ms raster=${rasterMs}ms');
+      }
+    });
+  }
+}
+```
+
+```dart
+import 'package:firebase_performance/firebase_performance.dart';
+
+Future<void> measureQuote(Future<void> Function() loadQuote) async {
+  final trace = FirebasePerformance.instance.newTrace('route_quote');
+  await trace.start();
+  try {
+    await loadQuote();
+    trace.incrementMetric('success', 1);
+  } finally {
+    await trace.stop();
+  }
+}
+```
+
+```bash
+flutter run --profile
+```
+
+```mermaid
+flowchart LR
+  Profile[Modo profile] --> Timings[UI y raster]
+  Timings --> Summary[Resumen p90 y peor frame]
+  Summary --> Review[Compara releases]
+```
+
+</details>

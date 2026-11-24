@@ -1,30 +1,23 @@
-# Módulo 9: Testing en Android
+# Módulo 9: Performance, Material 3 y accesibilidad
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Las pruebas tienen su propia carpeta y su propio tipo de dependencia: `app/src/test` (pruebas locales en la JVM, `testImplementation`, se ejecutan con `./gradlew :app:testDebugUnitTest`) y `app/src/androidTest` (pruebas instrumentadas en el emulador, `androidTestImplementation`, se ejecutan con `./gradlew :app:connectedDebugAndroidTest`). Nada de lo que está en `app/src/main` se ejecuta como prueba: allí `org.junit` ni siquiera está en el classpath. Comprueba que `app/build.gradle.kts` tiene, dentro de `dependencies { }`:
+> **Antes de empezar este módulo.** El Tema 3 importa `androidx.compose.material.icons`; añade `implementation(libs.androidx.compose.material.icons.core)` (catálogo del Módulo 0, versión fijada por el BOM de Compose) dentro de `dependencies { }` y pulsa **Sync Now**.
 >
-> ```kotlin
-> testImplementation(libs.junit)                         // ya lo trae la plantilla
-> testImplementation(libs.kotlinx.coroutines.test)       // catálogo del Módulo 0 (o la línea del Módulo 0, Tema 6)
-> androidTestImplementation(platform(libs.androidx.compose.bom))   // ya lo trae la plantilla
-> androidTestImplementation(libs.androidx.ui.test.junit4)          // ya lo trae la plantilla
-> debugImplementation(libs.androidx.ui.test.manifest)              // ya lo trae la plantilla
-> ```
->
-> Los nombres de las líneas «de la plantilla» pueden variar ligeramente según tu versión de Android Studio; si falta alguna, añádela con el nombre que aparezca en tu `gradle/libs.versions.toml`.
->
-> **Los scripts `python3` de este módulo son modelos, no pruebas de tu app.** La evidencia real son las pruebas Kotlin de cada tema ejecutadas con Gradle y su informe en `app/build/reports/tests/`.
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En particular, la «medición» de Baseline Profiles con Python es solo un modelo del concepto: la generación real de un perfil con el plugin `androidx.baselineprofile` y su medición con Macrobenchmark están en el Módulo 18; hasta entonces no presentes la cifra del script como resultado de tu app.
 
 
-### Tema 1: Testing de ViewModels con fakes y runTest · Avanzado · 45 min
+### Tema 1: Detectar y corregir recomposición innecesaria · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás testear un ViewModel con un repositorio fake, explicando por qué es más rápido y confiable que probar contra la API real.
+Al finalizar podrás identificar por qué una lambda recreada en cada recomposición rompe la skippability de un composable y corregirlo con una referencia de método estable, y aplicar un MaterialTheme 3 completo (colores, tipografía, formas) que esos composables heredan automáticam…
+
+#### ► LA IDEA EN UNA FRASE
+**Al finalizar podrás identificar por qué una lambda recreada en cada recomposición rompe la skippability de un composable y corregirlo con una referencia de método estable, y aplicar un MaterialTheme 3 completo (colores, tipografía, formas) que esos composables heredan automáticamente en vez de valores hardcodeados.**
 
 </details>
 
@@ -33,227 +26,161 @@ Al finalizar podrás testear un ViewModel con un repositorio fake, explicando po
 
 #### Código y verificación
 ```
-┌── Test contra API real ────────────────────┐
-│ lento, depende de red, puede fallar por razones  │
-│ AJENAS a la lógica bajo prueba (servidor caído)     │
+┌── Boton(onClick = { viewModel.accion() }) ──┐
+│ NUEVA lambda en cada recomposición del padre     │
+│ Compose NO puede confirmar igualdad → recompone     │
 └─────────────────────────────────────────┘
-┌── Test con TareaRepositoryFake ────────────┐
-│ milisegundos, determinista, solo falla si la        │
-│ LÓGICA del ViewModel tiene un bug real                 │
+┌── Boton(onClick = viewModel::accion) ───────┐
+│ referencia de método ESTABLE                      │
+│ Compose confirma igualdad → PUEDE saltarse (skip)   │
 └─────────────────────────────────────────┘
 ```
 
 ```bash
+# Crea el MaterialTheme 3 de la app y los dos botones comparados; el script python3 más abajo
+# confirma en ejecución real la diferencia de identidad entre lambdas
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/test/kotlin/com/academia/android
+mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/Theme.kt`:
 
 ```kotlin
 package com.academia.android
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-// Fake del TareaRepository del Módulo 6; Tarea es la @Entity de Room de ese módulo
-class TareaRepositoryFake(datosIniciales: List<Tarea>) : TareaRepository {
-    override val tareas = MutableStateFlow(datosIniciales)
-    override suspend fun sincronizar() {
-        // fake en memoria: no hay ninguna API real que sincronizar
-    }
+// MaterialTheme 3 completo: una única fuente de verdad para colores, tipografía y formas
+private val EsquemaDeColorAcademia = lightColorScheme(
+    primary = Color(0xFF3DDC84),
+    onPrimary = Color.White,
+    secondary = Color(0xFF00695C),
+)
+
+private val TipografiaAcademia = Typography(
+    bodyLarge = TextStyle(fontWeight = FontWeight.Normal, fontSize = 16.sp),
+    titleLarge = TextStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp),
+)
+
+private val FormasAcademia = Shapes(
+    small = RoundedCornerShape(4.dp),
+    medium = RoundedCornerShape(12.dp),
+)
+
+@Composable
+fun AcademiaAndroidTheme(contenido: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = EsquemaDeColorAcademia,
+        typography = TipografiaAcademia,
+        shapes = FormasAcademia,
+        content = contenido,
+    )
 }
-
-@OptIn(ExperimentalCoroutinesApi::class)
-class TareasViewModelTest {
-    // viewModelScope usa Dispatchers.Main, que no existe en la JVM de las pruebas locales
-    @Before fun usarMainDePrueba() = Dispatchers.setMain(UnconfinedTestDispatcher())
-    @After fun restaurarMain() = Dispatchers.resetMain()
-
-    @Test
-    fun cargaTareasCorrectamente() = runTest {
-        val repo = TareaRepositoryFake(listOf(Tarea(id = "1", titulo = "Comprar leche", completada = false)))
-        // adapta el repositorio del Módulo 6 a la FuenteDeTareas que espera el ViewModel del Módulo 4
-        val fuente = object : FuenteDeTareas {
-            override suspend fun obtenerTareas() = repo.tareas.first().map { it.titulo }
-        }
-        val viewModel = TareasViewModelConEstado(fuente)
-        viewModel.cargar()
-        assertEquals(EstadoUI.Exito(listOf("Comprar leche")), viewModel.estado.value)
-    }
-}
 ```
 
-```bash
-./gradlew :app:testDebugUnitTest --tests "com.academia.android.TareasViewModelTest"
-```
-
-Crea el archivo `test_viewmodel_fake.py`:
-
-```python
-import time
-import unittest
-
-class TareaRepositorioFake:
-    def __init__(self, datos):
-        self.datos = datos
-    def obtener_tareas(self):
-        return self.datos  # instantáneo, sin latencia de red
-
-class TareaRepositorioRealSimulado:
-    def obtener_tareas(self):
-        time.sleep(0.3)  # simula latencia de red real
-        return ["Comprar leche"]
-
-class ViewModel:
-    def __init__(self, repo):
-        self.repo = repo
-        self.estado = None
-    def cargar(self):
-        self.estado = ("Exito", self.repo.obtener_tareas())
-
-class TestViewModelConFake(unittest.TestCase):
-    def test_carga_tareas_correctamente(self):
-        inicio = time.time()
-        vm = ViewModel(TareaRepositorioFake(["Comprar leche"]))
-        vm.cargar()
-        duracion = time.time() - inicio
-        self.assertEqual(vm.estado, ("Exito", ["Comprar leche"]))
-        self.assertLess(duracion, 0.05, "el test con fake debe ser prácticamente instantáneo")
-
-if __name__ == "__main__":
-    unittest.main()
-```
-
-```bash
-python3 -m unittest test_viewmodel_fake.py -v
-```
-
-</details>
-
-### Tema 2: Compose UI Testing · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás escribir un test de Compose UI que verifique lo que efectivamente se renderiza, no solo el estado interno de un ViewModel.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── Test de ViewModel ──────────────────────┐
-│ viewModel.estado.value == Exito(datos correctos) │
-│ (verifica SOLO el estado interno)                    │
-└─────────────────────────────────────────┘
-┌── Test de Compose UI ─────────────────────┐
-│ onNodeWithText("Comprar leche").assertIsDisplayed() │
-│ (verifica lo que el USUARIO efectivamente ve)         │
-└─────────────────────────────────────────┘
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/androidTest/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/androidTest/kotlin/com/academia/android/TarjetaTareaUiTest.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/BotonesComparados.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import org.junit.Rule
-import org.junit.Test
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 
-class TarjetaTareaUiTest {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+@Composable
+fun BotonInestable(viewModel: TareasViewModelConEstado) {
+    AcademiaAndroidTheme {
+        Button(onClick = { viewModel.cargar() }) { Text("Cargar") } // nueva lambda cada recomposición
+    }
+}
 
-    @Test
-    fun muestraElTituloDeLaTarea() {
-        composeTestRule.setContent { TarjetaTarea(titulo = "Comprar leche", completada = false) }
-        composeTestRule.onNodeWithText("Comprar leche").assertIsDisplayed()
+@Composable
+fun BotonEstable(viewModel: TareasViewModelConEstado) {
+    AcademiaAndroidTheme {
+        Button(onClick = viewModel::cargar) { Text("Cargar") } // referencia estable
     }
 }
 ```
 
 ```bash
-./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.TarjetaTareaUiTest"
+./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
 python3 -c "
-def renderizar_tarjeta_correcta(titulo, completada):
-    return {'texto_mostrado': titulo, 'tachado': completada}
+class ViewModel:
+    def cargar(self):
+        return 'cargando'
 
-def renderizar_tarjeta_con_bug(titulo, completada):
-    return {'texto_mostrado': titulo, 'tachado': not completada}  # bug: condición invertida
+vm = ViewModel()
 
-def estado_del_viewmodel_es_correcto(completada_real):
-    return completada_real == True  # el ViewModel calculó bien 'completada = True'
+lambda_1 = lambda: vm.cargar()
+lambda_2 = lambda: vm.cargar()
+print('dos lambdas nuevas, misma lógica, ¿son la MISMA referencia?:', lambda_1 is lambda_2)
 
-def ui_muestra_correctamente(render, completada_real):
-    return render['tachado'] == completada_real
-
-completada_real = True
-
-print('estado del ViewModel correcto:', estado_del_viewmodel_es_correcto(completada_real))
-
-render_correcto = renderizar_tarjeta_correcta('Comprar leche', completada_real)
-print('con render correcto, UI coincide con el estado:', ui_muestra_correctamente(render_correcto, completada_real))
-
-render_con_bug = renderizar_tarjeta_con_bug('Comprar leche', completada_real)
-print('con render CON BUG, UI coincide con el estado:', ui_muestra_correctamente(render_con_bug, completada_real))
+referencia_1 = vm.cargar
+referencia_2 = vm.cargar
+print('dos referencias al mismo método bound, ¿son iguales por valor?:', referencia_1 == referencia_2)
 "
 ```
 
 </details>
 
-### Tema 3: Testing end-to-end con Activity real, y fakes vs mocks · Avanzado · 45 min
+### Tema 2: Baseline Profiles y ciclo de efectos · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás explicar qué cubre un test end-to-end que lanza la Activity real de la app (en vez de un único composable aislado) que ni un test de ViewModel ni uno de Compose UI del Tema 2 cubren, y decidir entre un fake y un mock.
+Al finalizar podrás explicar cómo un Baseline Profile acelera el arranque de la app, y elegir el efecto correcto (SideEffect, DisposableEffect, rememberUpdatedState) según la necesidad de sincronización.
 
 #### ► LA ANALOGÍA
-**Conceptos clave:** validación de flujos completos de usuario lanzando la Activity real, código Kotlin ordinario frente a proxies generados.
+**Conceptos clave:** precompilación de rutas críticas, sincronización entre el mundo de Compose y el imperativo.
 
-`createAndroidComposeRule<ComponentActivity>()` —a diferencia de `createComposeRule()` del Tema 2, que monta un único composable aislado con `setContent`— lanza la Activity real de la app con su `NavHost` y todas sus pantallas activas, permitiendo que un mismo test navegue de una pantalla a otra exactamente como lo haría un usuario real, usando los mismos finders de Compose (`onNodeWithTag`, `onNodeWithText`) ya vistos en el Tema 2, ahora contra la app completa en vez de un composable suelto. Esta app es 100% Jetpack Compose, sin ninguna View clásica ni layout XML, por lo que Espresso (diseñado para localizar Views por `R.id`) no tiene ningún nodo que encontrar aquí; `ComposeTestRule` es la única herramienta que puede recorrer el árbol semántico de Compose, tanto para un composable aislado (Tema 2) como para la app completa (este Tema). Preferir un fake (código Kotlin ordinario) sobre un mock (un proxy generado dinámicamente por Mockito) es apropiado cuando se quiere una implementación reutilizable con comportamiento consistente; un mock es más conveniente para verificar interacciones puntuales muy específicas.
+Un Baseline Profile precompila ahead-of-time (AOT) las rutas de código más usadas al inicio de la app, en vez de interpretarlas o compilarlas just-in-time (JIT) en el primer uso real, reduciendo el arranque percibido y el "jank" inicial. `SideEffect` ejecuta un bloque en cada recomposición exitosa, para sincronizar estado hacia un sistema externo no consciente de Compose; `DisposableEffect` ejecuta limpieza cuando el composable sale de composición; `rememberUpdatedState` captura la referencia más reciente de un valor dentro de un efecto de larga duración sin reiniciarlo, resolviendo closures obsoletos.
 
-**Analogía:** un test de Compose UI aislado (Tema 2) es como inspeccionar una única pieza recién fabricada; un test end-to-end con la Activity real es como un inspector de calidad que recorre el proceso completo de fabricación de principio a fin, verificando el producto final tal como llega al cliente. Un fake es como un modelo de práctica funcional reutilizable en múltiples ejercicios; un mock es una simulación puntual configurada para verificar un único gesto específico.
+**Analogía:** un Baseline Profile es como precalentar un horno antes de que lleguen los primeros clientes, en vez de esperar a que el primer pedido dispare el calentamiento desde frío; `DisposableEffect` es como apagar las luces y cerrar la puerta al final del turno, ejecutado automáticamente sin que el empleado deba recordarlo.
 
 **Diagrama:**
 
 ```
-┌── Test de ViewModel ──────────────────────────┐  verifica la lógica de estado aislada
-├── Test de Compose UI, Tema 2 (setContent) ─────┤  verifica un único composable aislado
-└── Test E2E, createAndroidComposeRule (Activity)─┘  verifica el flujo COMPLETO, múltiples pantallas
-
-┌── Fake (código Kotlin ordinario) ──┐  reutilizable, comportamiento consistente
-└── Mock (proxy generado, Mockito) ──┘  verificación puntual de interacciones específicas
+┌── Sin Baseline Profile ────────────────────┐
+│ interpretación/JIT en el PRIMER uso → arranque LENTO │
+└─────────────────────────────────────────┘
+┌── Con Baseline Profile ────────────────────┐
+│ rutas críticas precompiladas AOT → arranque RÁPIDO   │
+└─────────────────────────────────────────┘
 ```
 
-#### ► REGLA PRÁCTICA
-Prefiere un fake por defecto: es código Kotlin reutilizable con comportamiento consistente entre tests. Recurre a un mock solo cuando lo que quieres verificar es una interacción puntual muy específica (que se llamó un método exacto, con esos argumentos exactos, esa cantidad de veces) y no el comportamiento general del colaborador.
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Objetivo observable
+Al finalizar podrás explicar cómo un Baseline Profile acelera el arranque de la app, y elegir el efecto correcto (`SideEffect`, `DisposableEffect`, `rememberUpdatedState`) según la necesidad de sincronización.
+
+**Conocimiento previo:** Tema 1 de este módulo; ciclo de vida (Módulo 1).
+
+</details>
+
+### Tema 3: Accesibilidad e interop con Views · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás agregar contentDescription a elementos interactivos sin texto visible, y decidir cuándo usar AndroidView/ComposeView para interoperabilidad.
 
 </details>
 
@@ -262,78 +189,60 @@ Prefiere un fake por defecto: es código Kotlin reutilizable con comportamiento 
 
 #### Código y verificación
 ```
-┌── Test de ViewModel ──────────────────────────┐  verifica la lógica de estado aislada
-├── Test de Compose UI, Tema 2 (setContent) ─────┤  verifica un único composable aislado
-└── Test E2E, createAndroidComposeRule (Activity)─┘  verifica el flujo COMPLETO, múltiples pantallas
-
-┌── Fake (código Kotlin ordinario) ──┐  reutilizable, comportamiento consistente
-└── Mock (proxy generado, Mockito) ──┘  verificación puntual de interacciones específicas
+┌── AndroidView ─────────────────────────────┐
+│ embebe una View CLÁSICA dentro de Compose        │
+└─────────────────────────────────────────┘
+┌── ComposeView ─────────────────────────────┐
+│ embebe Compose dentro de una jerarquía de Views     │
+│ clásica (típico en migraciones progresivas)              │
+└─────────────────────────────────────────┘
 ```
 
 ```bash
-# Este test instrumentado lanza la Activity real y navega la app completa con finders de Compose
+# Este script python3 audita programáticamente qué íconos carecen de contentDescription
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/androidTest/kotlin/com/academia/android
+mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/androidTest/kotlin/com/academia/android/FlujoCrearTareaTest.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/IconoAccesible.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
-import org.junit.Rule
-import org.junit.Test
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
 
-class FlujoCrearTareaTest {
-    @get:Rule
-    val compose = createAndroidComposeRule<MainActivity>() // lanza la MainActivity de la app, no un composable aislado
-
-    @Test
-    fun creaUnaTareaYLaVeEnLaLista() {
-        compose.onNodeWithTag("boton_agregar").performClick()
-        compose.onNodeWithTag("campo_titulo").performTextInput("Nueva tarea")
-        compose.onNodeWithTag("boton_guardar").performClick()
-        compose.onNodeWithText("Nueva tarea").assertExists()
-    }
+@Composable
+fun IconoEliminarTarea() {
+    Icon(Icons.Default.Delete, contentDescription = "Eliminar tarea") // sin esto, TalkBack no puede describir el ícono
 }
 ```
 
 ```bash
-./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.FlujoCrearTareaTest"
+./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
 python3 -c "
-class TareaRepositoryFake:  # código ordinario, reutilizable entre tests
-    def __init__(self):
-        self.tareas_guardadas = []
-    def guardar(self, titulo):
-        self.tareas_guardadas.append(titulo)
-        return True
+iconos_de_la_pantalla = [
+    {'nombre': 'Delete', 'accion': 'eliminar tarea', 'content_description': 'Eliminar tarea'},
+    {'nombre': 'Edit', 'accion': 'editar tarea', 'content_description': None},  # falta
+    {'nombre': 'Share', 'accion': 'compartir tarea', 'content_description': 'Compartir tarea'},
+    {'nombre': 'MoreVert', 'accion': 'decorativo, sin acción propia', 'content_description': None},  # OK: decorativo
+]
 
-class MockConVerificacionDeLlamadas:  # equivalente simplificado a un mock de Mockito
-    def __init__(self):
-        self.llamadas = []
-    def guardar(self, titulo):
-        self.llamadas.append(('guardar', titulo))
-        return True
-    def fue_llamado_exactamente_una_vez_con(self, metodo, argumento):
-        return self.llamadas.count((metodo, argumento)) == 1
+def auditar_accesibilidad(iconos):
+    problemas = []
+    for icono in iconos:
+        es_decorativo = 'decorativo' in icono['accion']
+        if icono['content_description'] is None and not es_decorativo:
+            problemas.append(icono['nombre'])
+    return problemas
 
-# uso típico de un FAKE: comportamiento reutilizable, se verifica el estado resultante
-fake = TareaRepositoryFake()
-fake.guardar('Nueva tarea')
-print('fake, estado resultante reutilizable:', fake.tareas_guardadas)
-
-# uso típico de un MOCK: verificación puntual de que una interacción específica ocurrió
-mock = MockConVerificacionDeLlamadas()
-mock.guardar('Nueva tarea')
-print('mock, verificación puntual de la llamada:', mock.fue_llamado_exactamente_una_vez_con('guardar', 'Nueva tarea'))
+problemas = auditar_accesibilidad(iconos_de_la_pantalla)
+print('íconos interactivos SIN contentDescription (requieren corrección):', problemas)
 "
 ```
 

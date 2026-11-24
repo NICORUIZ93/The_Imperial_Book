@@ -44,7 +44,7 @@ flowchart LR
 | 10 | Experto | [Seguridad en Node](/curso/node/10) |
 | 11 | Experto | [Despliegue y contenedores](/curso/node/11) |
 | 12 | Experto | [Proyecto integrador: API productiva](/curso/node/12) |
-| 13 | Experto | [TypeScript, contratos e integraciones confiables](/curso/node/13) |
+| 13 | Experto | [TypeScript, contratos e integraciones confiables](/curso/typescript/1) |
 
 ## Aprende construyendo
 

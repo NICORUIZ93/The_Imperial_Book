@@ -1,0 +1,168 @@
+{
+ "schemaVersion": 1,
+ "stackId": "typescript",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 7,
+   "topics": [
+    {
+     "title": "Tipos básicos, interfaces y type aliases",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-tipos-basicos-interfaces-y-type-aliases"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Narrowing y union types",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-narrowing-y-union-types"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "tsconfig esencial y modo strict",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-tsconfig-esencial-y-modo-strict"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Generics",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-generics"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Decoradores estándar de TypeScript 5",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-decoradores-estandar-de-typescript-5"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Comprueba lo construido",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "comprueba-lo-construido"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Tipos estáticos dentro, datos desconocidos en la frontera",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-tipos-estaticos-dentro-datos-desconocidos-en-la-frontera"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Un contrato HTTP es comportamiento, no solo documentación",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "OpenAPI como contrato ejecutable",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-openapi-como-contrato-ejecutable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Reintentar sin duplicar el efecto",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-reintentar-sin-duplicar-el-efecto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Webhooks verificables y recuperación por reconciliación",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto: API contractual con efectos recuperables",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "proyecto-api-contractual-con-efectos-recuperables"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

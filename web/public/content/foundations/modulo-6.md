@@ -1,858 +1,886 @@
-# Módulo 6: Seguridad, privacidad y modelado de amenazas
+# Módulo 6: Matemáticas discretas, lógica y probabilidad para software
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 (enlazado con OpenSSL 3.5.9 y SQLite 3.53.1),
-la herramienta de línea de órdenes OpenSSL 3.0.13 y Git 2.43.0 en Linux x86_64, sin paquetes externos de Python.
-Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/seguridad`
-(tu `~/labs/seguridad`). Varias salidas **cambian en cada ejecución a propósito**: los textos cifrados, las claves
-RSA, las sales aleatorias y los tiempos medidos. Lo que debe coincidir es la forma y el veredicto (`OK`, `RECHAZADO`,
-`Verified OK`). Los commits del Tema 3 se hicieron con autor y fecha fijos. Los comandos para Windows y macOS no se
+**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64 y Hypothesis 6.170.17,
+instalado en un entorno virtual. Todas las salidas se obtuvieron ejecutando el código mostrado ese día, en la carpeta
+de práctica `/home/estudiante/labs/discretas` (tu `~/labs/discretas`). Los resultados exactos (conteos, fracciones,
+tablas de verdad y simulaciones con semilla) deben coincidir con los tuyos. Los **milisegundos** del Tema 4 cambian en
+cada máquina y en cada ejecución: lo que se mantiene es la proporción entre ellos. Los comandos para Windows no se
 ejecutaron.
 
-**Regla de laboratorio.** Todos los ataques de este módulo se ejecutan contra código y datos que tú creas en tu
-equipo: una base SQLite en memoria, un servidor en `127.0.0.1` y correos escritos como texto. Nunca pruebes una de
-estas técnicas contra un sistema que no es tuyo o sin autorización escrita: además de dañino, es un delito.
+Las matemáticas de este módulo no son una colección de fórmulas para memorizar. Son un lenguaje para decir exactamente
+qué debe ocurrir, detectar contradicciones, justificar algoritmos y distinguir una mejora real de una coincidencia.
+Cada idea llega en tres formas: en español, en símbolos y en un programa de Python que la calcula o la comprueba.
 
 #### Objetivos del módulo
 Al terminar este módulo podrás:
-- construir un registro de amenazas con STRIDE y priorizarlo por riesgo residual;
-- guardar contraseñas con sal y derivación lenta, y autorizar cada acción por rol y por recurso;
-- distinguir cifrado simétrico, cifrado asimétrico, firma y HMAC, y verificar un certificado TLS de verdad;
-- encontrar un secreto en el historial de Git y bloquearlo con un escáner que falla en CI;
-- demostrar una inyección SQL en un laboratorio propio y corregirla con consultas parametrizadas;
-- aplicar minimización, redacción y retención a datos personales;
-- analizar un correo sospechoso con código y responder con un runbook.
+- escribir reglas de negocio como proposiciones y especificaciones, y encontrar contraejemplos de forma automática;
+- operar con conjuntos, clasificar relaciones y demostrar por inducción una propiedad de un algoritmo;
+- contar casos con reglas de conteo, permutaciones y combinaciones sin tener que listarlos;
+- modelar dependencias como un grafo dirigido, detectar ciclos y obtener un orden topológico;
+- calcular probabilidades exactas, condicionales y esperanzas, y comprobarlas con una simulación reproducible;
+- medir con percentiles y comunicar una conclusión sin falsear su precisión.
 
 #### Esquema del módulo
-1. Activos, amenazas, riesgos y límites de confianza.
-2. Identidad, contraseñas, sesiones y autorización.
-3. Criptografía aplicada, TLS, claves y secretos.
-4. Validación, vulnerabilidades web, privacidad y respuesta.
-5. Ingeniería social, phishing y respuesta.
-6. Proyecto 6: inventario endurecido.
+1. Lógica para especificar antes de programar.
+2. Conjuntos, relaciones, funciones e inducción.
+3. Conteo, grafos y estructuras conectadas.
+4. Probabilidad y evidencia para decisiones técnicas.
+5. Proyecto 9: cuaderno de propiedades, grafos y evidencia.
 
-#### Qué necesitas saber antes
-- Terminal, rutas, **código de salida**, **entrada estándar** y **tubería** (Módulo 0, Temas 3 a 5).
-- Funciones, **excepción** y `assert` (Módulo 1, Temas 1 y 4); diccionarios y conjuntos (Módulo 2, Tema 1); **codificación** y **UTF-8** (Módulo 1, Tema 5).
-- **Función hash** y tabla hash (Módulo 2, Tema 6).
-- **Cliente y servidor**, **URL**, **DNS**, **puerto**, **HTTP**, **cabecera**, **JSON**, **HTML** y **JavaScript** (Módulo 3, Temas 1 a 3).
-- SQL y SQLite desde Python (Módulo 4, Temas 1 y 2).
-- **Registro** con `logging`, **Git**, **commit** e **integración continua** (Módulo 5, Temas 1, 3 y 4).
+**Qué necesitas saber antes:** caso de prueba, `assert` y excepción (Módulo 1, Tema 1); condiciones y bucles
+(Módulo 1, Tema 3); funciones (Módulo 1, Tema 4); clases (Módulo 1, Tema 6); listas, diccionarios y conjuntos de
+Python (Módulo 2, Tema 1); precondición, postcondición e invariante de ciclo (Módulo 2, Tema 3); complejidad,
+recursión y caso base (Módulo 2, Tema 4); grafos, lista de adyacencia y DFS (Módulo 2, Tema 7); entorno virtual
+(Módulo 5, Tema 2).
 
-Comprueba tu entorno antes de empezar:
+#### Cómo leer las fórmulas de este módulo
+Las fórmulas son abreviaturas de frases. Cada símbolo se explica la primera vez que aparece. Esta tabla los reúne para
+que vuelvas a ella cuando lo necesites.
 
-```text
-$ python3 --version
-Python 3.13.18
-$ openssl version
-OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)
-$ git --version
-git version 2.43.0
-```
+| Símbolo | Se lee | En Python | Tema |
+|---|---|---|---|
+| ¬p | «no p» | `not p` | 1 |
+| p ∧ q | «p y q» | `p and q` | 1 |
+| p ∨ q | «p o q» (o las dos) | `p or q` | 1 |
+| p → q | «si p, entonces q» | `(not p) or q` | 1 |
+| p ↔ q | «p si y solo si q» | `p == q` (con booleanos) | 1 |
+| ∀x | «para todo x» | `all(...)` | 1 |
+| ∃x | «existe al menos un x» | `any(...)` | 1 |
+| x ∈ A | «x pertenece a A» | `x in A` | 2 |
+| A ⊆ B | «A es subconjunto de B» | `A <= B` | 2 |
+| A ∪ B, A ∩ B, A − B | unión, intersección, diferencia | `A \| B`, `A & B`, `A - B` | 2 |
+| A × B | producto cartesiano | `itertools.product(A, B)` | 2 |
+| \|A\| | cardinal: cuántos elementos tiene A | `len(A)` | 2 |
+| Σ | suma de varios términos | `sum(...)` | 2 |
+| n! | factorial de n | `math.factorial(n)` | 3 |
+| C(n, k) | combinaciones de n en k | `math.comb(n, k)` | 3 |
+| P(A) | probabilidad del evento A | `Fraction(casos_A, casos_total)` | 4 |
+| P(A \| B) | probabilidad de A dado B | `p_ambos / p_b` | 4 |
+| E[X] | esperanza (valor esperado) de X | `sum(x * p for x, p in ...)` | 4 |
 
 
 ## Aprende construyendo
 
-### Tema 1: Activos, amenazas, riesgos y límites de confianza · Avanzado · 60 min
+
+### Tema 1: Lógica para especificar antes de programar · Avanzado · 70 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- nombrar los activos de RutaFlow y escribir para cada uno una amenaza concreta con STRIDE;
-- calcular el riesgo como impacto por probabilidad y el riesgo residual después de un control;
-- marcar los límites de confianza de un diagrama y revisar con código qué flujos los cruzan sin protección;
-- validar un registro de riesgos y leer el mensaje con el que el validador lo rechaza.
+- traducir una regla escrita en español a proposiciones unidas por conectivos, en símbolos y en Python;
+- construir la tabla de verdad de una fórmula y decidir si dos fórmulas son equivalentes;
+- escribir la precondición, la postcondición y el invariante de una operación como implicaciones verificables;
+- encontrar un contraejemplo revisando todos los casos de un dominio pequeño y con Hypothesis.
 
-**Conceptos clave:** activo, amenaza, vulnerabilidad, riesgo, control, riesgo residual, modelado de amenazas, STRIDE, límite de confianza
+**Conceptos clave:** proposición, conectivo lógico, tabla de verdad, implicación, equivalencia lógica, cuantificador, contraejemplo, invariante, prueba basada en propiedades
 
 #### El problema
-El equipo de RutaFlow tiene diez ideas de seguridad y tiempo para tres. Alguien quiere cifrar todo; otra persona
-quiere comprar un antivirus. Nadie sabe qué proteger primero ni por qué. ¿Cómo conviertes una lista de miedos en
-una lista ordenada de trabajo, con dueño y con un número que la justifique?
+La bodega de RutaFlow tiene una regla escrita en un correo: «no se puede retirar más de lo que hay». Dos personas la
+programan. Una revisa que haya stock; la otra, que el stock alcance para el pedido. Las dos dicen «funciona» porque
+probaron un par de casos. ¿Cómo escribes la regla para que una máquina decida quién tiene razón, y cómo encuentras el
+caso exacto que la rompe?
 
-Este tema usa lo que ya conoces: **JSON** (Módulo 3, Tema 2) para guardar el registro, y diccionarios y conjuntos
-(Módulo 2, Tema 1) para validarlo. Aquí no se redefinen.
+Este tema usa lo que ya conoces: **precondición** y **postcondición** tienen su ficha en el Módulo 2, Tema 3;
+**assert** y **caso de prueba**, en el Módulo 1, Tema 1. Aquí no se redefinen.
 
 #### Glosario del tema
 
-**activo**
-- **Definición técnica:** cualquier cosa con valor para la organización que puede sufrir daño: datos, servicios, credenciales, equipos o reputación.
-- **En palabras sencillas:** lo que te dolería perder, que te robaran o que alguien cambiara sin permiso.
-- **Dónde se rompe la comparación:** un activo digital se puede copiar sin que desaparezca; el robo de un dato no deja el estante vacío.
-- **Ejemplo:** en `amenazas.json`, el activo de `I-01` es `"PIN del destinatario"` y el de `D-01` es `"API de confirmación"`.
-- **Error típico:** listar solo servidores y olvidar activos intangibles como la sesión de un conductor o el historial de confirmaciones.
+**proposición**
+- **Definición técnica:** enunciado que, en un contexto dado, es verdadero o falso, sin ambigüedad. Su valor de verdad se representa con `True` o `False`.
+- **En palabras sencillas:** una frase a la que puedes contestar «es cierto» o «no es cierto».
+- **Dónde se rompe la comparación:** «el stock está bajo» suena a proposición, pero no lo es hasta que defines «bajo»; `stock < 10` sí lo es.
+- **Ejemplo:** \(p\): «la cantidad pedida no supera el stock». En Python, `cantidad <= stock` produce `True` o `False`.
+- **Error típico:** tratar una pregunta o una orden («¿hay stock?», «retira 3») como proposición: no tienen valor de verdad.
 
-**amenaza**
-- **Definición técnica:** evento o acción, intencional o accidental, que puede dañar un activo; se describe con actor, acción y efecto.
-- **En palabras sencillas:** lo malo que podría pasarle a lo que te importa, contado como una frase con sujeto y verbo.
-- **Dónde se rompe la comparación:** una amenaza no es un atacante; un operador cansado que marca mal un envío también es una amenaza.
-- **Ejemplo:** `T-01`: «operador marca entregado un envío que nunca salió».
-- **Error típico:** escribir amenazas vagas como «hackeo» o «virus», que no dicen qué activo ni qué daño.
+**conectivo lógico**
+- **Definición técnica:** operador que forma una proposición compuesta a partir de otras: negación \(\neg p\), conjunción \(p \land q\) y disyunción \(p \lor q\). En Python son `not`, `and` y `or`.
+- **En palabras sencillas:** las palabras «no», «y» y «o» del español, pero con un significado fijo que no depende del tono.
+- **Dónde se rompe la comparación:** el «o» lógico es inclusivo: \(p \lor q\) es verdadera también cuando las dos lo son. En español, «café o té» suele excluir una opción.
+- **Ejemplo:** `stock > 0 and cantidad <= stock` une dos proposiciones con «y».
+- **Error típico:** escribir `estado == "creado" or "asignado"`. Python lo lee como `(estado == "creado") or "asignado"` y devuelve `'asignado'`, que cuenta como verdadero siempre.
 
-**vulnerabilidad**
-- **Definición técnica:** debilidad en el diseño, el código o la operación que permite que una amenaza se materialice.
-- **En palabras sencillas:** la puerta mal cerrada por donde entra el problema.
-- **Dónde se rompe la comparación:** una puerta se ve; una vulnerabilidad de software suele estar escondida hasta que alguien la busca.
-- **Ejemplo:** el flujo `F6` de `limites.py` va de Internet a la base de datos `sin autenticación`: esa es la vulnerabilidad.
-- **Error típico:** confundir la vulnerabilidad (la falta de autenticación) con la amenaza (el robo de datos que permite).
+**tabla de verdad**
+- **Definición técnica:** tabla que lista todas las combinaciones de valores de las proposiciones simples y el valor de la fórmula en cada una. Con \(n\) proposiciones tiene \(2^n\) filas.
+- **En palabras sencillas:** probar la fórmula con todas las entradas posibles, sin saltarte ninguna.
+- **Dónde se rompe la comparación:** solo es práctica con pocas proposiciones: con 30 tendría más de mil millones de filas.
+- **Ejemplo:** con \(p\) y \(q\) hay \(2^2 = 4\) filas: verdadero-verdadero, verdadero-falso, falso-verdadero y falso-falso.
+- **Error típico:** escribir las filas a mano y olvidar una; `itertools.product([True, False], repeat=2)` las genera todas.
 
-**riesgo**
-- **Definición técnica:** medida de cuánto preocupa una amenaza; en este módulo se calcula como impacto (1–5) por probabilidad (1–5).
-- **En palabras sencillas:** qué tan grave sería y qué tan seguido podría pasar, juntos en un solo número.
-- **Dónde se rompe la comparación:** la escala 1–5 es un juicio del equipo, no una medición física; sirve para ordenar, no para predecir pérdidas exactas.
-- **Ejemplo:** `S-02` tiene impacto 4 y probabilidad 5; `riesgos.py` imprime `riesgo 20`.
-- **Error típico:** sumar impacto y probabilidad: un riesgo 5+1 quedaría igual que uno 3+3, aunque el primero casi nunca ocurre.
+**implicación**
+- **Definición técnica:** conectivo \(p \to q\), «si \(p\), entonces \(q\)». Es falsa solo cuando \(p\) es verdadera y \(q\) es falsa; equivale a \(\neg p \lor q\). \(p\) se llama antecedente y \(q\), consecuente.
+- **En palabras sencillas:** una promesa: «si llueve, llevo paraguas». Solo la rompes si llueve y no lo llevas.
+- **Dónde se rompe la comparación:** en español, «si» sugiere causa. En lógica no: cuando \(p\) es falsa, \(p \to q\) es verdadera, pase lo que pase con \(q\).
+- **Ejemplo:** «si el retiro se acepta, el stock nuevo es mayor o igual que 0» se escribe `(not aceptado) or stock_nuevo >= 0`.
+- **Error típico:** confundirla con su recíproca \(q \to p\). La tabla de verdad del Problema resuelto 1.1 muestra que no dicen lo mismo.
 
-**control**
-- **Definición técnica:** medida técnica, organizativa o física que reduce la probabilidad o el impacto de una amenaza.
-- **En palabras sencillas:** el candado, la alarma o la regla que pones para que lo malo pase menos o duela menos.
-- **Dónde se rompe la comparación:** un candado se compra una vez; un control de software se rompe con un cambio de código si nadie lo prueba.
-- **Ejemplo:** el control de `D-01` es `"límite de tasa por conductor"`, con efectividad estimada de `0.8`.
-- **Error típico:** declarar un control que nadie implementó; el registro debe apuntar a código o configuración que exista.
+**equivalencia lógica**
+- **Definición técnica:** dos fórmulas son lógicamente equivalentes (\(\equiv\)) si tienen el mismo valor de verdad en todas las filas de su tabla.
+- **En palabras sencillas:** dos maneras distintas de decir exactamente lo mismo.
+- **Dónde se rompe la comparación:** coincidir en algunas filas no basta; una sola fila distinta las hace diferentes.
+- **Ejemplo:** la ley de De Morgan \(\neg(p \land q) \equiv \neg p \lor \neg q\) y la contrapositiva \(p \to q \equiv \neg q \to \neg p\).
+- **Error típico:** negar `a and b` como `not a and not b`. Lo correcto, por De Morgan, es `not a or not b`.
 
-**riesgo residual**
-- **Definición técnica:** riesgo que queda después de aplicar el control: riesgo × (1 − efectividad).
-- **En palabras sencillas:** lo que sigue preocupando aunque ya pusiste el candado.
-- **Dónde se rompe la comparación:** la efectividad es una estimación; si el control falla, el residual real vuelve a ser el riesgo completo.
-- **Ejemplo:** `S-02` baja de `riesgo 20` a `residual 12` con un control de efectividad `0.4`.
-- **Error típico:** ordenar por riesgo inicial; `D-01` tiene riesgo 12 pero residual 2, y no debe ir antes que `T-01`.
+**cuantificador**
+- **Definición técnica:** símbolo que indica para cuántos elementos de un dominio vale una propiedad: el universal \(\forall x\) («para todo \(x\)») y el existencial \(\exists x\) («existe al menos un \(x\)»). En Python se evalúan con `all` y `any`.
+- **En palabras sencillas:** «todos cumplen» frente a «al menos uno cumple».
+- **Dónde se rompe la comparación:** `all` y `any` recorren una colección finita; un \(\forall\) sobre todos los enteros no se puede revisar caso por caso.
+- **Ejemplo:** \(\forall s \in \{0, 1, \dots, 5\}: s \ge 0\) se escribe `all(s >= 0 for s in range(6))` y da `True`.
+- **Error típico:** olvidar que `all([])` devuelve `True`. Si la lista llegó vacía por un error, la comprobación «pasa» sin revisar nada.
 
-**modelado de amenazas**
-- **Definición técnica:** proceso sistemático que dibuja el sistema, enumera amenazas por cada elemento y flujo, y decide un tratamiento para cada una.
-- **En palabras sencillas:** sentarse con el plano de la casa y preguntar «¿por dónde podría entrar alguien y qué haríamos?».
-- **Dónde se rompe la comparación:** el plano de software cambia cada semana; el modelo se repite con cada cambio grande.
-- **Ejemplo:** el diagrama de este tema más `amenazas.json` y `flujos.json` son el modelo de amenazas de RutaFlow.
-- **Error típico:** hacerlo una vez al final del proyecto, cuando cambiar el diseño ya es caro.
+**contraejemplo**
+- **Definición técnica:** elemento del dominio para el que la propiedad es falsa. Uno solo basta para refutar un \(\forall\).
+- **En palabras sencillas:** el caso concreto que demuestra que «siempre» era falso.
+- **Dónde se rompe la comparación:** no encontrar contraejemplos no demuestra la propiedad; quizá buscaste donde no estaban.
+- **Ejemplo:** `stock=1, cantidad=2` refuta «todo retiro deja stock ≥ 0» en la versión con defecto de `retirar`.
+- **Error típico:** descartarlo como «caso raro». Con miles de pedidos al día, los casos raros ocurren todos los días.
 
-**STRIDE**
-- **Definición técnica:** lista de seis categorías de amenaza: suplantación (*Spoofing*), manipulación (*Tampering*), repudio (*Repudiation*), divulgación de información (*Information disclosure*), denegación de servicio (*Denial of service*) y elevación de privilegios (*Elevation of privilege*).
-- **En palabras sencillas:** seis preguntas para no olvidar ningún tipo de problema: ¿quién finge?, ¿qué se altera?, ¿quién niega?, ¿qué se filtra?, ¿qué se cae?, ¿quién sube de rango?
-- **Dónde se rompe la comparación:** una misma amenaza puede caer en dos categorías; STRIDE ayuda a pensar, no a clasificar sin ambigüedad.
-- **Ejemplo:** `riesgos.py` termina con `por STRIDE: Denial of service=1, …, Spoofing=2, Tampering=1`.
-- **Error típico:** escribir la categoría con otra ortografía; `"Spoffing"` hace que el validador rechace el registro.
+**invariante**
+- **Definición técnica:** propiedad del estado de un sistema que se cumple antes y después de cada operación válida. Generaliza el invariante de ciclo del Módulo 2, Tema 3, de un bucle a todo el sistema.
+- **En palabras sencillas:** una regla que nunca se rompe, haga lo que haga el programa.
+- **Dónde se rompe la comparación:** dentro de una operación puede romperse un instante; lo que se exige es que vuelva a cumplirse al terminar.
+- **Ejemplo:** «para todo producto, stock ≥ 0»: \(\forall x \in \text{Productos}: \text{stock}(x) \ge 0\).
+- **Error típico:** comprobarlo solo al crear el objeto y no después de cada operación que lo modifica.
 
-**límite de confianza**
-- **Definición técnica:** frontera en un diagrama donde los datos pasan entre zonas con distinto nivel de confianza; todo flujo que la cruza debe autenticarse y validarse.
-- **En palabras sencillas:** la portería del edificio: lo que viene de la calle se revisa antes de subir.
-- **Dónde se rompe la comparación:** en software no hay paredes; el límite existe solo si el código lo hace cumplir en cada petición.
-- **Ejemplo:** `limites.py` imprime `F1 usuario -> API: cruza Internet/DMZ — OK`.
-- **Error típico:** confiar en algo porque «viene de dentro de la red»; un servicio interno comprometido cruza el mismo límite.
+**prueba basada en propiedades**
+- **Definición técnica:** prueba que afirma una propiedad para todas las entradas de un tipo y deja que una herramienta genere cientos de entradas buscando un contraejemplo. Si lo encuentra, lo reduce al más simple (*shrinking*). En Python la herramienta habitual es Hypothesis.
+- **En palabras sencillas:** en vez de inventar tú cinco casos, describes la regla y una máquina intenta romperla.
+- **Dónde se rompe la comparación:** genera muchos casos, no todos. Que pase es evidencia fuerte, no una demostración.
+- **Ejemplo:** `@given(stock=st.integers(min_value=0), cantidad=st.integers(min_value=1))` genera parejas de enteros con esos límites.
+- **Error típico:** escribir una propiedad que repite el código probado (`assert retirar(s, c) == retirar(s, c)`): nunca falla y no prueba nada.
 
 #### ► CÓMO FUNCIONA
-Primero dibujas el sistema como un **diagrama de flujo de datos**: quién habla con quién y por qué canal. Después
-marcas las **zonas** (Internet, DMZ, Aplicación, Datos) y los **límites de confianza** entre ellas. La DMZ es la zona
-intermedia donde vive lo que Internet puede tocar, como la API.
+Especificar es escribir la regla de forma que no admita dos lecturas. Lo haces en tres pasos.
 
-Con el dibujo listo, recorres cada flujo y cada elemento con las seis preguntas de **STRIDE**. Cada respuesta se
-vuelve una fila: activo, amenaza, impacto, probabilidad, control, efectividad, dueño y tratamiento. Los tratamientos
-posibles son cuatro: **mitigar** (poner un control), **aceptar**, **transferir** (por ejemplo, a un seguro) o
-**evitar** (quitar la funcionalidad).
+**Paso 1: separa las proposiciones.** «No se puede retirar más de lo que hay» contiene dos ideas que se pueden
+comprobar: \(a\): «el retiro se acepta» y \(c\): «la cantidad no supera el stock», es decir, \(\text{cantidad} \le \text{stock}\).
 
-| Columna | Qué es | Qué haces con ella |
-|---|---|---|
-| `impacto`, `probabilidad` | Juicio de 1 a 5 | Los multiplicas para obtener el riesgo |
-| `efectividad` | Fracción de 0 a 1 | Calculas el riesgo residual |
-| `propietario` | Equipo responsable | Sabes a quién pedir el control |
-| `tratamiento` | mitigar, aceptar, transferir, evitar | Decides qué hacer con cada fila |
+**Paso 2: únelas con conectivos.** La regla dice que se acepta exactamente cuando alcanza. Eso es un «si y solo si»:
+
+\[ a \leftrightarrow c \]
+
+Se lee «\(a\) si y solo si \(c\)». El símbolo \(\leftrightarrow\) significa \((a \to c) \land (c \to a)\): cada una implica
+a la otra. Con booleanos, en Python es `a == c`. La implicación \(p \to q\) es la pieza central. Su tabla:
+
+| p | q | p → q | Por qué |
+|---|---|---|---|
+| V | V | V | Llovió y llevaste paraguas: cumpliste |
+| V | F | F | Llovió y no lo llevaste: rompiste la promesa |
+| F | V | V | No llovió: la promesa no se puso a prueba |
+| F | F | V | No llovió: tampoco se puso a prueba |
+
+Las dos últimas filas sorprenden. Una promesa sobre la lluvia no se rompe en un día seco.
+
+**Paso 3: cuantifica.** Una especificación habla de **todas** las entradas válidas. Con \(s\) para el stock, \(k\) para
+la cantidad y \(s'\) («ese prima») para el stock después del retiro:
+
+\[ \forall s \ge 0,\ \forall k \ge 1:\quad a \to s' \ge 0 \]
+
+Se lee: «para todo stock \(s\) mayor o igual que 0 y toda cantidad \(k\) mayor o igual que 1, si el retiro se acepta,
+el stock nuevo no es negativo». La coma separa los cuantificadores; los dos puntos significan «se cumple que».
+
+La forma general de una especificación es: **precondición → postcondición**, y el **invariante** se conserva antes y
+después. En texto plano, para `retirar` y para el cambio de estado de un envío:
+
+```text
+Pre: cantidad > 0 y producto existe
+Transición: stock_nuevo = stock_anterior - cantidad
+Post: retiro aceptado implica stock_nuevo >= 0
+Invariante global: para todo producto, stock >= 0
+```
+
+Para refutar un \(\forall\) basta un contraejemplo. Por eso la negación de «para todo» es «existe uno que no»:
+
+\[ \neg\,\forall x: P(x) \;\equiv\; \exists x: \neg P(x) \]
+
+Tienes dos formas de buscar ese \(x\). Si el dominio es pequeño, lo recorres entero con `all` y `any`. Si es enorme,
+como todos los enteros, dejas que Hypothesis genere ejemplos y reduzca el fallo al caso mínimo.
 
 ```mermaid
 flowchart LR
-    U["usuario<br/>Internet"] -->|"HTTPS"| A["API<br/>DMZ"]
-    O["operador<br/>Internet"] -->|"HTTPS + MFA"| A
-    A -->|"gRPC"| D["dominio<br/>Aplicación"]
-    D -->|"SQL parametrizado"| B["base de datos<br/>Datos"]
-    D -->|"AMQP + HMAC"| Q["cola<br/>Aplicación"]
-    A -. "límite Internet/DMZ" .-> U
-    A -. "límite DMZ/Aplicación" .-> D
-    D -. "límite Aplicación/Datos" .-> B
+    PRE["entrada cumple precondición"] --> OP["operación"] --> POST["postcondición"]
+    INV["invariante"] -. "antes y después" .-> PRE
+    INV -. "debe conservarse" .-> POST
+    POST -->|"falla en un caso"| CE["contraejemplo"]
 ```
-
-Las etiquetas de las flechas son protocolos. **gRPC** y **AMQP** son protocolos de comunicación entre servicios, y
-**MFA** (autenticación multifactor) es pedir una segunda prueba además de la contraseña. No necesitas dominarlos
-aquí: basta con saber que cada flecha es un canal que alguien podría atacar.
 
 #### Problema resuelto 1.1
-Convierte las amenazas de RutaFlow en un registro validado y ordenado por riesgo residual.
+Construye con Python la tabla de verdad de los conectivos y de la implicación. Luego decide tres preguntas: ¿\(p \to q\)
+equivale a su recíproca \(q \to p\)? ¿Y a su contrapositiva \(\neg q \to \neg p\)? ¿Se cumple De Morgan?
 
 **Razonamiento:**
-1. Guardar cada amenaza como un objeto JSON con las ocho columnas de la tabla anterior.
-2. Validar antes de calcular: categoría STRIDE conocida, escalas en rango, dueño presente y tratamiento válido.
-3. Si hay errores, terminar con código de salida distinto de cero y un mensaje que los liste todos.
-4. Calcular riesgo y residual, ordenar de mayor a menor residual y contar por categoría.
-
-Crea `~/labs/seguridad/tema1/amenazas.json`:
-
-```json
-[
-  {"id": "S-01", "stride": "Spoofing", "activo": "sesión del conductor", "escenario": "robo de token para confirmar entregas ajenas", "impacto": 4, "probabilidad": 3, "control": "sesiones con expiración y revocación", "efectividad": 0.7, "propietario": "identidad", "tratamiento": "mitigar"},
-  {"id": "T-01", "stride": "Tampering", "activo": "estado del envío", "escenario": "operador marca entregado un envío que nunca salió", "impacto": 5, "probabilidad": 3, "control": "ALLOWED_TRANSITIONS", "efectividad": 0.6, "propietario": "dominio", "tratamiento": "mitigar"},
-  {"id": "R-01", "stride": "Repudiation", "activo": "historial de confirmaciones", "escenario": "conductor niega haber confirmado una entrega", "impacto": 2, "probabilidad": 4, "control": "audit log encadenado", "efectividad": 0.5, "propietario": "operaciones", "tratamiento": "mitigar"},
-  {"id": "I-01", "stride": "Information disclosure", "activo": "PIN del destinatario", "escenario": "lectura del PIN en la cola o en logs", "impacto": 4, "probabilidad": 2, "control": "HMAC, TLS y redacción de logs", "efectividad": 0.75, "propietario": "plataforma", "tratamiento": "mitigar"},
-  {"id": "D-01", "stride": "Denial of service", "activo": "API de confirmación", "escenario": "ráfaga de confirmaciones falsas agota el servicio", "impacto": 3, "probabilidad": 4, "control": "límite de tasa por conductor", "efectividad": 0.8, "propietario": "plataforma", "tratamiento": "mitigar"},
-  {"id": "E-01", "stride": "Elevation of privilege", "activo": "panel de operadores", "escenario": "conductor accede a funciones de administración", "impacto": 5, "probabilidad": 2, "control": "autorización por rol y recurso", "efectividad": 0.8, "propietario": "identidad", "tratamiento": "mitigar"},
-  {"id": "S-02", "stride": "Spoofing", "activo": "correo de soporte", "escenario": "correo con nombre visible de RutaFlow desde dominio parecido", "impacto": 4, "probabilidad": 5, "control": "DMARC y formación", "efectividad": 0.4, "propietario": "seguridad", "tratamiento": "mitigar"},
-  {"id": "I-02", "stride": "Information disclosure", "activo": "exportación de clientes", "escenario": "log con teléfonos y direcciones completas", "impacto": 4, "probabilidad": 4, "control": "redacción y retención de 30 días", "efectividad": 0.6, "propietario": "datos", "tratamiento": "mitigar"}
-]
-```
-
-Y el programa que lo valida y lo ordena:
+1. Python no tiene operador de implicación; lo defines como función con su equivalencia \(\neg p \lor q\).
+2. `itertools.product([True, False], repeat=2)` genera las \(2^2 = 4\) filas sin olvidar ninguna.
+3. Dos fórmulas son equivalentes si coinciden en **todas** las filas: eso es un `all(...)` sobre las cuatro.
 
 ```python
-# riesgos.py — valida y prioriza el registro de amenazas de RutaFlow
-import json
-import sys
-from pathlib import Path
+# tabla_verdad.py — tablas de verdad de los conectivos y de la implicación
+from itertools import product
 
-STRIDE = {"Spoofing", "Tampering", "Repudiation", "Information disclosure", "Denial of service", "Elevation of privilege"}
-TRATAMIENTOS = {"mitigar", "aceptar", "transferir", "evitar"}
 
-amenazas = json.loads(Path("amenazas.json").read_text(encoding="utf-8"))
-errores = []
-for a in amenazas:
-    if a["stride"] not in STRIDE:
-        errores.append(f"{a['id']} STRIDE desconocido: {a['stride']}")
-    for campo in ("impacto", "probabilidad"):
-        if not 1 <= a[campo] <= 5:
-            errores.append(f"{a['id']} {campo} fuera de rango (1-5): {a[campo]}")
-    if not 0 <= a["efectividad"] <= 1:
-        errores.append(f"{a['id']} efectividad fuera de rango (0-1): {a['efectividad']}")
-    if not a.get("propietario"):
-        errores.append(f"{a['id']} sin propietario")
-    if a["tratamiento"] not in TRATAMIENTOS:
-        errores.append(f"{a['id']} tratamiento inválido: {a['tratamiento']}")
-if errores:
-    sys.exit("fallo: " + "; ".join(errores))
+def implica(p, q):
+    return (not p) or q
 
-for a in amenazas:
-    a["riesgo"] = a["impacto"] * a["probabilidad"]
-    a["residual"] = round(a["riesgo"] * (1 - a["efectividad"]))
 
-amenazas.sort(key=lambda a: a["residual"], reverse=True)
-print(f"amenazas: {len(amenazas)}")
-for a in amenazas:
-    print(f"{a['id']} {a['stride']}: riesgo {a['riesgo']} residual {a['residual']} — {a['tratamiento']} — {a['propietario']}")
-print(f"prioridad: {amenazas[0]['id']} (residual {amenazas[0]['residual']})")
-conteo = {}
-for a in amenazas:
-    conteo[a["stride"]] = conteo.get(a["stride"], 0) + 1
-print("por STRIDE: " + ", ".join(f"{k}={v}" for k, v in sorted(conteo.items())))
+casos = list(product([True, False], repeat=2))
+print("p     q     | no p   p y q  p o q  p→q")
+for p, q in casos:
+    fila = [not p, p and q, p or q, implica(p, q)]
+    print(f"{p!s:5} {q!s:5} | " + "  ".join(f"{v!s:5}" for v in fila))
+
+print("p→q equivale a q→p:", all(implica(p, q) == implica(q, p) for p, q in casos))
+print("p→q equivale a no q → no p:", all(implica(p, q) == implica(not q, not p) for p, q in casos))
+print("no (p y q) equivale a (no p) o (no q):", all((not (p and q)) == ((not p) or (not q)) for p, q in casos))
 ```
 
 ```text
-$ python3 riesgos.py
-amenazas: 8
-S-02 Spoofing: riesgo 20 residual 12 — mitigar — seguridad
-T-01 Tampering: riesgo 15 residual 6 — mitigar — dominio
-I-02 Information disclosure: riesgo 16 residual 6 — mitigar — datos
-S-01 Spoofing: riesgo 12 residual 4 — mitigar — identidad
-R-01 Repudiation: riesgo 8 residual 4 — mitigar — operaciones
-I-01 Information disclosure: riesgo 8 residual 2 — mitigar — plataforma
-D-01 Denial of service: riesgo 12 residual 2 — mitigar — plataforma
-E-01 Elevation of privilege: riesgo 10 residual 2 — mitigar — identidad
-prioridad: S-02 (residual 12)
-por STRIDE: Denial of service=1, Elevation of privilege=1, Information disclosure=2, Repudiation=1, Spoofing=2, Tampering=1
+$ python3 tabla_verdad.py
+p     q     | no p   p y q  p o q  p→q
+True  True  | False  True   True   True
+True  False | False  False  True   False
+False True  | True   False  True   True
+False False | True   False  False  True
+p→q equivale a q→p: False
+p→q equivale a no q → no p: True
+no (p y q) equivale a (no p) o (no q): True
 ```
 
 **Explicación por partes.**
-- Líneas 6–7: dos **conjuntos** con los valores permitidos; comprobar pertenencia con `in` es directo.
-- Líneas 11–22: el bucle acumula **todos** los errores en una lista antes de decidir. Así ves los problemas juntos.
-- Línea 24: `sys.exit` con un texto lo imprime y termina con código de salida 1.
-- Líneas 27–28: el riesgo es la multiplicación; el residual aplica la efectividad y redondea al entero más cercano.
-- Línea 30: `sort` con `reverse=True` deja arriba el residual mayor; entre empates conserva el orden del archivo.
-- Salida: `S-02` encabeza la lista. Tiene el control más débil (`0.4`) sobre un riesgo alto (`20`).
+- Líneas 5–6: `implica` traduce \(p \to q \equiv \neg p \lor q\). Solo devuelve `False` cuando `p` es `True` y `q` es `False`.
+- Línea 9: `product` combina `[True, False]` consigo misma; `list` guarda las cuatro filas para reutilizarlas.
+- Líneas 12–13: cada fila calcula cuatro columnas. En `{p!s:5}`, `!s` convierte el valor en texto y `:5` lo rellena hasta 5 caracteres.
+- En la salida, la columna `p→q` solo tiene `False` en la fila `True False`: la promesa rota.
+- Línea 15: la recíproca da `False`; en la fila `False True`, \(p \to q\) es verdadera y \(q \to p\) es falsa.
+- Líneas 16–17: la contrapositiva y De Morgan coinciden en las cuatro filas: son equivalencias.
 
-> **Error común.** Poner un valor fuera de escala o dejar el dueño vacío. Con `"impacto": 7` y
-> `"propietario": ""`, el programa termina así:
->
-> ```text
-> fallo: T-09 impacto fuera de rango (1-5): 7; T-09 sin propietario
-> ```
->
-> Lee el mensaje por partes separadas con `;`: cada una nombra la fila (`T-09`), el campo y el valor recibido.
+> **Error común.** Escribir la implicación con una flecha, como en matemáticas: `print(p -> q)`. Python se detiene con
+> `SyntaxError: invalid syntax` y marca `->` con `^^`. Python no tiene operador de implicación; escribe `(not p) or q`.
 
-> **Buena práctica.** Cada fila tiene un **dueño** con nombre de equipo, no «todos». Una fila sin dueño es una fila
-> que nadie va a cerrar.
+> **Buena práctica.** Cuando una condición tenga más de dos conectivos, comprueba tu simplificación con una tabla de
+> verdad generada por código antes de cambiar el `if`. Diez líneas de Python evitan un error que nadie ve en revisión.
 
 #### Problema resuelto 1.2
-Revisa los flujos del diagrama y marca los que cruzan un límite de confianza sin autenticación, sin cifrado o
-saltando zonas.
-
-**Razonamiento:**
-1. Asignar una zona a cada elemento y un nivel numérico a cada zona (Internet 0, DMZ 1, Aplicación 2, Datos 3).
-2. Un flujo dentro de una misma zona no cruza límites.
-3. Un flujo que cruza debe ir autenticado y cifrado, y no debe saltarse zonas: de Internet no se llega a Datos.
-
-Crea `flujos.json` en la misma carpeta:
-
-```json
-[
-  {"id": "F1", "origen": "usuario", "destino": "API", "protocolo": "HTTPS", "autenticado": true, "cifrado": true},
-  {"id": "F2", "origen": "operador", "destino": "API", "protocolo": "HTTPS + MFA", "autenticado": true, "cifrado": true},
-  {"id": "F3", "origen": "API", "destino": "dominio", "protocolo": "gRPC", "autenticado": true, "cifrado": true},
-  {"id": "F4", "origen": "dominio", "destino": "base de datos", "protocolo": "SQL parametrizado", "autenticado": true, "cifrado": false},
-  {"id": "F5", "origen": "dominio", "destino": "cola", "protocolo": "AMQP + HMAC", "autenticado": true, "cifrado": true},
-  {"id": "F6", "origen": "conductor", "destino": "base de datos", "protocolo": "SQL", "autenticado": false, "cifrado": false}
-]
-```
+Esta es la versión de `retirar` que «funciona» según quien la escribió. Comprueba la especificación \(a \leftrightarrow c\)
+y \(a \to s' \ge 0\): primero en todos los casos de un dominio pequeño y después con Hypothesis.
 
 ```python
-# limites.py — revisa los flujos que cruzan un límite de confianza
-import json
-from pathlib import Path
+# inventario.py — retiro de cajas (versión con defecto)
+from dataclasses import dataclass
 
-ZONAS = {
-    "usuario": "Internet", "operador": "Internet", "conductor": "Internet",
-    "API": "DMZ", "dominio": "Aplicación", "cola": "Aplicación", "base de datos": "Datos",
-}
-NIVEL = {"Internet": 0, "DMZ": 1, "Aplicación": 2, "Datos": 3}
 
-flujos = json.loads(Path("flujos.json").read_text(encoding="utf-8"))
-hallazgos = 0
-for f in flujos:
-    z_origen, z_destino = ZONAS[f["origen"]], ZONAS[f["destino"]]
-    if z_origen == z_destino:
-        print(f"{f['id']} {f['origen']} -> {f['destino']}: misma zona ({z_origen})")
-        continue
-    problemas = []
-    if abs(NIVEL[z_origen] - NIVEL[z_destino]) > 1:
-        problemas.append(f"salta de {z_origen} a {z_destino}")
-    if not f["autenticado"]:
-        problemas.append("sin autenticación")
-    if not f["cifrado"]:
-        problemas.append("sin cifrado")
-    estado = "OK" if not problemas else "REVISAR: " + ", ".join(problemas)
-    print(f"{f['id']} {f['origen']} -> {f['destino']}: cruza {z_origen}/{z_destino} — {estado}")
-    hallazgos += bool(problemas)
-print(f"flujos: {len(flujos)}, con hallazgos: {hallazgos}")
+@dataclass(frozen=True)
+class Resultado:
+    aceptado: bool
+    stock: int
+
+
+def retirar(stock: int, cantidad: int) -> Resultado:
+    if stock > 0:
+        return Resultado(True, stock - cantidad)
+    return Resultado(False, stock)
+```
+
+**Razonamiento:**
+1. La especificación tiene dos partes; cada una es una proposición que la función `cumple` evalúa.
+2. Dominio pequeño: stock de 0 a 5 y cantidad de 1 a 5. Son \(6 \cdot 5 = 30\) casos; se revisan todos con `all` y `any`.
+3. Dominio enorme: todos los enteros válidos. Ahí Hypothesis genera ejemplos y reduce el fallo al más simple.
+4. Si aparece un contraejemplo, se corrige la función y se ejecutan las dos comprobaciones otra vez.
+
+```python
+# para_todo.py — comprueba la especificación en TODOS los casos de un dominio pequeño
+from inventario import retirar
+
+
+def cumple(stock, cantidad):
+    r = retirar(stock, cantidad)
+    post_1 = (not r.aceptado) or r.stock >= 0          # aceptado → stock nuevo ≥ 0
+    post_2 = r.aceptado == (cantidad <= stock)          # aceptado ↔ cantidad ≤ stock
+    return post_1 and post_2
+
+
+dominio = [(s, c) for s in range(0, 6) for c in range(1, 6)]
+contraejemplos = [(s, c) for s, c in dominio if not cumple(s, c)]
+print("casos revisados:", len(dominio))
+print("¿se cumple para todo caso?", all(cumple(s, c) for s, c in dominio))
+print("¿existe un contraejemplo?", any(not cumple(s, c) for s, c in dominio))
+print("primeros contraejemplos:", contraejemplos[:3])
 ```
 
 ```text
-$ python3 limites.py
-F1 usuario -> API: cruza Internet/DMZ — OK
-F2 operador -> API: cruza Internet/DMZ — OK
-F3 API -> dominio: cruza DMZ/Aplicación — OK
-F4 dominio -> base de datos: cruza Aplicación/Datos — REVISAR: sin cifrado
-F5 dominio -> cola: misma zona (Aplicación)
-F6 conductor -> base de datos: cruza Internet/Datos — REVISAR: salta de Internet a Datos, sin autenticación, sin cifrado
-flujos: 6, con hallazgos: 2
+$ python3 para_todo.py
+casos revisados: 30
+¿se cumple para todo caso? False
+¿existe un contraejemplo? True
+primeros contraejemplos: [(1, 2), (1, 3), (1, 4)]
+```
+
+Ahora la prueba basada en propiedades. Ejecútala dentro del entorno virtual donde instalaste Hypothesis:
+
+```python
+# prueba_propiedades.py — Hypothesis busca un contraejemplo por ti
+from hypothesis import given, strategies as st
+
+from inventario import retirar
+
+
+@given(stock=st.integers(min_value=0), cantidad=st.integers(min_value=1))
+def test_retirar_preserva_stock_no_negativo(stock, cantidad):
+    resultado = retirar(stock, cantidad)
+    assert resultado.stock >= 0
+    assert resultado.aceptado == (cantidad <= stock)
+
+
+if __name__ == "__main__":
+    test_retirar_preserva_stock_no_negativo()
+    print("propiedad cumplida en todos los ejemplos generados")
+```
+
+```text
+$ python prueba_propiedades.py
+Traceback (most recent call last):
+  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 15, in <module>
+    test_retirar_preserva_stock_no_negativo()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 8, in test_retirar_preserva_stock_no_negativo
+    def test_retirar_preserva_stock_no_negativo(stock, cantidad):
+                   ^^^
+  File "/home/estudiante/labs/discretas/.venv/lib/python3.13/site-packages/hypothesis/core.py", line 2334, in wrapped_test
+    raise the_error_hypothesis_found
+  File "/home/estudiante/labs/discretas/logica/prueba_propiedades.py", line 10, in test_retirar_preserva_stock_no_negativo
+    assert resultado.stock >= 0
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError
+Failing test case: test_retirar_preserva_stock_no_negativo(
+    stock=1,
+    cantidad=2,
+)
+```
+
+Hypothesis encontró `stock=1, cantidad=2`: hay stock, así que la versión con defecto acepta, y deja el stock en \(-1\).
+La corrección cambia la condición de la línea 12 por la proposición \(c\) de la especificación:
+
+```python
+# inventario.py — retiro de cajas (corregido)
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Resultado:
+    aceptado: bool
+    stock: int
+
+
+def retirar(stock: int, cantidad: int) -> Resultado:
+    if cantidad <= stock:  # acepta solo si el stock alcanza
+        return Resultado(True, stock - cantidad)
+    return Resultado(False, stock)
+```
+
+```text
+$ python3 para_todo.py
+casos revisados: 30
+¿se cumple para todo caso? True
+¿existe un contraejemplo? False
+primeros contraejemplos: []
+```
+
+```text
+$ python prueba_propiedades.py
+propiedad cumplida en todos los ejemplos generados
 ```
 
 **Explicación por partes.**
-- Líneas 5–9: un diccionario lleva cada elemento a su zona y otro lleva cada zona a su nivel.
-- Líneas 15–17: si origen y destino están en la misma zona, el flujo no cruza límites y se salta con `continue`.
-- Líneas 19–20: una diferencia de nivel mayor que 1 significa que el flujo se salta una zona entera.
-- Líneas 21–24: cada propiedad faltante se agrega como problema con un texto que se entiende sin leer el código.
-- Línea 27: `bool(problemas)` vale `True` (que suma 1) si la lista tiene algo.
-- Salida: `F4` cruza a Datos sin cifrado y `F6` comete las tres faltas. Ambos van al registro de amenazas.
+- `inventario.py`, líneas 5–8: `@dataclass(frozen=True)` escribe por ti el `__init__` de la clase (Módulo 1, Tema 6) y prohíbe cambiar sus atributos después.
+- `inventario.py`, línea 12: la versión con defecto pregunta \(s > 0\) («hay stock»); la especificación pide \(k \le s\) («alcanza»).
+- `para_todo.py`, línea 7: \(a \to s' \ge 0\) escrita como \(\neg a \lor s' \ge 0\).
+- `para_todo.py`, línea 8: \(a \leftrightarrow c\) escrita como `==` entre dos booleanos.
+- `para_todo.py`, líneas 15–16: `all` es \(\forall\) y `any` es \(\exists\). Una es la negación de la otra: si no todos cumplen, existe uno que no.
+- `prueba_propiedades.py`, línea 7: `st.integers(min_value=0)` describe el dominio; la precondición queda dentro de la estrategia.
+- `prueba_propiedades.py`, línea 15: al llamar la función decorada, Hypothesis ejecuta unas 100 entradas distintas.
+- En la salida con defecto, `Failing test case` muestra el contraejemplo ya reducido. Hypothesis lo guarda en la carpeta `.hypothesis` y lo prueba primero en la siguiente ejecución.
 
-> **Error común.** Agregar un elemento nuevo al diagrama y olvidarlo en `ZONAS`. Con un flujo hacia `"reportes"`,
-> el programa se detiene en la línea 14 con:
->
-> ```text
-> KeyError: 'reportes'
-> ```
->
-> El diccionario no tiene esa clave. La corrección es decidir la zona de `reportes` y agregarla a `ZONAS`.
+> **Error común.** Ejecutar la prueba con el Python del sistema y no con el del entorno virtual. El programa termina con
+> `ModuleNotFoundError: No module named 'hypothesis'` en la línea 2. Activa el entorno con `source .venv/bin/activate`
+> y ejecuta `python prueba_propiedades.py`.
 
-> **Prevenir errores.** Revisa el diagrama cada vez que alguien agrega un servicio. Un elemento sin zona es un
-> elemento del que nadie decidió cuánto confiar.
+> **Prevenir errores.** Imprime siempre cuántos casos revisaste, como la línea 14 de `para_todo.py`. Si ves
+> `casos revisados: 0`, sabes que `all` dio `True` sobre una lista vacía y la comprobación no vale nada.
 
 #### Checkpoint 1.1
-Una amenaza tiene impacto 3, probabilidad 4 y un control con efectividad `0.5`. ¿Cuál es su riesgo y su residual?
-¿Va antes o después de `T-01` en la salida de `riesgos.py`?
+La regla es «si un envío está entregado, entonces tiene firma». Un envío está pendiente y no tiene firma. ¿Ese envío
+rompe la regla?
 
-Respuesta: riesgo `12` y residual `6` (12 × 0.5). Empata con `T-01`; como el orden se conserva entre empates, va
-donde esté en el archivo: si la agregas al final, sale después de `I-02`.
+Respuesta: no. El antecedente «está entregado» es falso, y una implicación con antecedente falso es verdadera. La regla
+solo se rompe con un envío entregado sin firma.
+
+#### Checkpoint 1.2
+Escribe la negación de «todo retiro aceptado deja stock mayor o igual que 0».
+
+Respuesta: «existe un retiro aceptado que deja stock menor que 0». La negación de \(\forall\) es \(\exists\) con la
+propiedad negada, y \(\neg(a \to s' \ge 0) \equiv a \land s' < 0\). El caso `stock=1, cantidad=2` es un ejemplo.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Prepara la carpeta
-Crea `~/labs/seguridad/tema1` y entra con `cd ~/labs/seguridad/tema1`. Escribe `amenazas.json` y `riesgos.py`.
+#### Paso 1 · Prepara la carpeta y el entorno virtual
+Crea `~/labs/discretas/logica` y, dentro de `~/labs/discretas`, el entorno virtual como en el Módulo 5, Tema 2:
+`python3 -m venv .venv`, `source .venv/bin/activate` y `python -m pip install hypothesis`. Comprueba la instalación con
+`python -c "import hypothesis; print(hypothesis.__version__)"`: debe mostrar `6.170.17` o una versión posterior. En
+Windows la activación es `.venv\Scripts\activate`.
 
-#### Paso 2 · Calcula y ordena
-Ejecuta `python3 riesgos.py`. La primera línea debe decir `amenazas: 8` y la prioridad debe ser
-`S-02 (residual 12)`.
+#### Paso 2 · Genera tablas de verdad
+Entra en `logica`, escribe `tabla_verdad.py` y ejecútalo. La salida debe coincidir con la del Problema resuelto 1.1.
+Agrega una columna para \(p \leftrightarrow q\) (`p == q`) y comprueba que solo es `True` en las filas `True True` y
+`False False`.
 
-#### Paso 3 · Rompe el registro a propósito
-Copia `amenazas.json` a una carpeta `malo/` y cambia una fila a `"impacto": 7` y `"propietario": ""`. Entra en `malo/`
-y ejecuta `python3 ../riesgos.py; echo $?`. Debes ver el mensaje `fallo: …` y el código `1`.
+#### Paso 3 · Encuentra el contraejemplo y corrige
+Escribe `inventario.py` con el defecto, `para_todo.py` y `prueba_propiedades.py`. Ejecuta los dos programas y confirma
+el contraejemplo `stock=1, cantidad=2`. Corrige la línea 12 y ejecútalos otra vez hasta ver los dos mensajes de éxito.
 
-#### Paso 4 · Revisa los límites
-Escribe `flujos.json` y `limites.py`, ejecútalo y confirma `flujos: 6, con hallazgos: 2`. Para cada hallazgo, agrega
-una fila a `amenazas.json` con su categoría STRIDE.
+#### Paso 4 · Especifica `transition()`
+Los envíos de RutaFlow cambian de estado con `transition`. Su especificación en texto plano es esta:
+
+```text
+Pre: current es un ShipmentStatus válido; requested es un ShipmentStatus válido
+Transición: si requested ∈ ALLOWED_TRANSITIONS[current], devuelve requested; si no, lanza ValueError
+Post: transition(current, requested) == requested implica requested ∈ ALLOWED_TRANSITIONS[current]
+Invariante: ningún envío llega a DELIVERED sin haber pasado por ASSIGNED y OUT_FOR_DELIVERY en orden
+```
+
+Escribe `domain.py`, que usarás también en los Temas 2 y 3:
+
+```python
+# domain.py — estados de un envío de RutaFlow y transiciones permitidas
+from enum import Enum
+
+
+class ShipmentStatus(str, Enum):
+    CREATED = "created"
+    ASSIGNED = "assigned"
+    OUT_FOR_DELIVERY = "out_for_delivery"
+    DELIVERED = "delivered"
+
+
+ALLOWED_TRANSITIONS = {
+    ShipmentStatus.CREATED: {ShipmentStatus.ASSIGNED},
+    ShipmentStatus.ASSIGNED: {ShipmentStatus.OUT_FOR_DELIVERY},
+    ShipmentStatus.OUT_FOR_DELIVERY: {ShipmentStatus.DELIVERED},
+    ShipmentStatus.DELIVERED: set(),
+}
+
+
+def transition(current: ShipmentStatus, requested: ShipmentStatus) -> ShipmentStatus:
+    if requested not in ALLOWED_TRANSITIONS[current]:
+        raise ValueError(f"invalid shipment transition: {current.value} -> {requested.value}")
+    return requested
+```
+
+Con solo 4 estados hay \(4 \cdot 4 = 16\) pares (actual, pedido). Son pocos: puedes comprobar la postcondición en
+**todos**, como un \(\forall\) exacto y no una muestra. Escribe `transiciones.py`:
+
+```python
+# transiciones.py — verifica la postcondición de transition() en los 16 pares posibles
+from itertools import product
+
+from domain import ALLOWED_TRANSITIONS, ShipmentStatus, transition
+
+aceptadas, rechazadas = [], []
+for actual, pedido in product(ShipmentStatus, repeat=2):
+    try:
+        transition(actual, pedido)
+        aceptadas.append((actual.value, pedido.value))
+    except ValueError:
+        rechazadas.append((actual.value, pedido.value))
+
+# Post: aceptada → pedido ∈ ALLOWED_TRANSITIONS[actual]
+post = all(ShipmentStatus(b) in ALLOWED_TRANSITIONS[ShipmentStatus(a)] for a, b in aceptadas)
+print("pares revisados:", len(aceptadas) + len(rechazadas))
+print("aceptadas:", aceptadas)
+print("rechazadas:", len(rechazadas))
+print("postcondición para todo par:", post)
+try:
+    transition(ShipmentStatus.CREATED, ShipmentStatus.DELIVERED)
+except ValueError as error:
+    print("ejemplo de rechazo:", error)
+```
+
+```text
+$ python3 transiciones.py
+pares revisados: 16
+aceptadas: [('created', 'assigned'), ('assigned', 'out_for_delivery'), ('out_for_delivery', 'delivered')]
+rechazadas: 13
+postcondición para todo par: True
+ejemplo de rechazo: invalid shipment transition: created -> delivered
+```
+
+La línea 7 recorre los 16 pares; la 15 evalúa la implicación «aceptada → permitida» sobre los aceptados. El
+invariante de la última línea de la especificación se demuestra en el Tema 3, recorriendo los caminos del grafo.
 
 #### Resumen
-- Un **activo** es lo que vale; una **amenaza** es lo que puede dañarlo; una **vulnerabilidad** es la debilidad que lo permite.
-- El **riesgo** se calcula como impacto × probabilidad; el **riesgo residual** aplica la efectividad del **control**.
-- Se prioriza por residual, no por riesgo inicial: un control fuerte puede bajar mucho una amenaza grave.
-- **STRIDE** da seis preguntas para no olvidar ninguna categoría de amenaza.
-- Un **límite de confianza** separa zonas; todo flujo que lo cruza se autentica, se cifra y no salta zonas.
-- El **modelado de amenazas** se repite con cada cambio de diseño y deja un registro con dueño y tratamiento.
+- Una **proposición** es verdadera o falsa; los **conectivos lógicos** `not`, `and`, `or` forman proposiciones compuestas.
+- Una **tabla de verdad** revisa las \(2^n\) combinaciones; dos fórmulas son **lógicamente equivalentes** si coinciden en todas.
+- La **implicación** \(p \to q\) solo es falsa con \(p\) verdadera y \(q\) falsa; no equivale a su recíproca.
+- Los **cuantificadores** \(\forall\) y \(\exists\) se evalúan con `all` y `any` en dominios finitos.
+- Un **contraejemplo** refuta un \(\forall\); no encontrarlo no demuestra nada.
+- Un **invariante** se conserva antes y después de cada operación; la especificación es precondición → postcondición.
+- La **prueba basada en propiedades** (Hypothesis) busca contraejemplos en dominios enormes y los reduce al caso mínimo.
 
 #### Ejercicio verificable 1
-Básico. Cambia la efectividad del control de `S-02` de `0.4` a `0.8` y ejecuta de nuevo `riesgos.py`. ¿Qué amenaza
-queda como prioridad?
+Básico. Agrega a `tabla_verdad.py` una columna con \(\neg p \lor q\) y compárala con la columna `p→q`. Antes de
+ejecutar, predice los cuatro valores.
 
-Respuesta esperada: `S-02` baja a `residual 4` y la última línea antes del conteo dice `prioridad: T-01 (residual 6)`.
-`T-01` gana el empate con `I-02` porque aparece antes en el archivo.
+Respuesta esperada: `True`, `False`, `True`, `True`, en el orden de las filas del programa. Es idéntica a `p→q` porque
+\(p \to q \equiv \neg p \lor q\).
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `limites.py` una regla: todo flujo que **entra** a la zona `Datos` debe usar un protocolo que
-contenga la palabra `parametrizado`. ¿Qué flujos marca?
+Intermedio. La regla es «un envío urgente se despacha antes de las 10 o se cancela». Escríbela con \(u\) (urgente),
+\(d\) (despachado antes de las 10) y \(c\) (cancelado). Escribe su negación y compruébala con una tabla de 8 filas.
 
-Respuesta esperada: solo la línea de `F6` cambia y termina en `sin cifrado, protocolo "SQL"`; `F4` ya usa
-`SQL parametrizado`. El total sigue en `con hallazgos: 2`. La regla va justo antes de la línea `estado = …`:
-`if z_destino == "Datos" and "parametrizado" not in f["protocolo"]:` seguida de
-`problemas.append(f'protocolo "{f['protocolo']}"')`.
+Respuesta esperada: la regla es \(u \to (d \lor c)\). Su negación es \(u \land \neg d \land \neg c\): un envío urgente
+que ni se despachó a tiempo ni se canceló. Con `product([True, False], repeat=3)`, la expresión
+`all((not implica(u, d or c)) == (u and not d and not c) for u, d, c in filas)` devuelve `True`.
 
 #### Ejercicio verificable 3
-Reto. Agrega al final de `amenazas.json` la fila del hallazgo `F6`: id `I-03`, categoría `Information disclosure`,
-activo `"base de datos"`, escenario `"conductor lee la base sin autenticación"`, impacto 5, probabilidad 3, control
-`"acceso a datos solo desde dominio"` con efectividad `0.9`, dueño `"plataforma"` y tratamiento `"mitigar"`.
-Predice su riesgo, su residual y su posición antes de ejecutar.
+Reto. Agrega a `prueba_propiedades.py` una segunda prueba con dos propiedades: «si se acepta, stock nuevo más cantidad
+es el stock anterior» y «si se rechaza, el stock no cambia». Ejecútala con la versión con defecto. ¿Encuentra el fallo?
 
-Respuesta esperada: la penúltima línea de la lista es `I-03 Information disclosure: riesgo 15 residual 1 — mitigar — plataforma`
-y el conteo pasa a `Information disclosure=3`. En papel, 15 × 0.1 da 1.5, pero `1 - 0.9` vale `0.09999999999999998`
-en punto flotante y `round` recibe `1.4999999999999996`: el resultado es `1`. Es el error de redondeo del Módulo 1, Tema 5.
+Respuesta esperada: las aserciones son `assert (not r.aceptado) or r.stock + cantidad == stock` y
+`assert r.aceptado or r.stock == stock`. Con la versión con defecto, la prueba **pasa**: las dos propiedades se
+cumplen aunque el stock quede negativo. La lección: cada propiedad vigila una parte de la regla; ninguna sola basta.
 
 #### En el trabajo
-En una empresa, el registro de riesgos vive en una hoja compartida o en un sistema de tickets, y se revisa en cada
-cambio de arquitectura. Un auditor no pregunta «¿son seguros?», sino «muéstrame el registro, quién es dueño de cada
-fila y qué evidencia tiene cada control». El diagrama con límites de confianza es lo primero que pide un equipo de
-seguridad antes de aprobar una integración nueva.
+En un equipo, la especificación aparece como criterios de aceptación de un ticket. Escritos como implicaciones («si
+el pago se rechaza, el pedido queda pendiente»), se convierten en pruebas sin discusión. Las pruebas basadas en
+propiedades son comunes en sistemas de pagos, inventarios y lectores de formatos. Los invariantes también viven en la
+base de datos, como la restricción `CHECK (stock >= 0)` del Módulo 4.
 
 </details>
 
-### Tema 2: Identidad, contraseñas, sesiones y autorización · Avanzado · 75 min
+### Tema 2: Conjuntos, relaciones, funciones e inducción · Avanzado · 75 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- distinguir autenticación de autorización y decir cuál falló en cada rechazo;
-- guardar contraseñas con sal y una función de derivación lenta, nunca en claro ni con un hash rápido;
-- emitir sesiones que expiran y se revocan, y bloquear una cuenta tras intentos fallidos;
-- autorizar por rol y por recurso, y dejar un registro de auditoría que delate alteraciones.
+- operar con conjuntos (pertenencia, subconjunto, unión, intersección, diferencia y producto cartesiano) en símbolos y en Python;
+- decidir si una relación es reflexiva, simétrica, antisimétrica o transitiva, y si es un orden parcial o una equivalencia;
+- reconocer cuándo una relación es una función matemática;
+- demostrar por inducción una propiedad de un algoritmo recursivo y escribir sus supuestos.
 
-**Conceptos clave:** identidad, autenticación, autorización, hash criptográfico, sal, función de derivación de claves, sesión, control de acceso por roles, autorización por objeto, registro de auditoría
+**Conceptos clave:** subconjunto, operaciones de conjuntos, producto cartesiano, relación, propiedades de una relación, orden parcial, relación de equivalencia, función matemática, inducción matemática
 
 #### El problema
-Un conductor de RutaFlow confirma entregas desde el celular. Hoy cualquiera que conozca un número de guía puede
-confirmarla, y las contraseñas están en una tabla en texto plano. Si esa tabla se filtra, todas las cuentas caen a
-la vez. ¿Cómo compruebas quién es cada persona, qué puede hacer y sobre qué envío, sin guardar su contraseña?
+En RutaFlow aparecen tres discusiones a la vez. Permisos decide «a ojo» si un rol puede hacer una tarea. Un ticket
+dice que `ALLOWED_TRANSITIONS` «es un orden» y otro, que «es como una equivalencia». Y la función recursiva `suma`
+pasó cinco pruebas: ¿funciona para **toda** lista? Necesitas un lenguaje para decidir las tres cosas con certeza.
 
-Este tema usa lo que ya conoces: **función hash** (Módulo 2, Tema 6), **excepción** (Módulo 1, Tema 1) y
-**JSON** (Módulo 3, Tema 2). Aquí no se redefinen.
+El **conjunto** de Python tiene su ficha en el Módulo 2, Tema 1; **recursión** y **caso base**, en el Módulo 2,
+Tema 4. Aquí se usa la notación matemática de los conjuntos, que se explica en «Cómo funciona».
 
 #### Glosario del tema
 
-**identidad**
-- **Definición técnica:** conjunto de atributos que distingue a un sujeto (persona o programa) dentro de un sistema; se representa con un identificador único.
-- **En palabras sencillas:** quién eres para el sistema: tu nombre de usuario y lo que va pegado a él.
-- **Dónde se rompe la comparación:** una persona puede tener varias identidades (conductor y administrador) y un programa también tiene identidad.
-- **Ejemplo:** en `acceso.py`, `"c-891"` es la identidad de un conductor y `"a-01"` la de un administrador.
-- **Error típico:** usar el correo como identificador inmutable; cuando el usuario lo cambia, se rompen sus permisos y su historial.
+**subconjunto**
+- **Definición técnica:** \(A \subseteq B\) si todo elemento de \(A\) también pertenece a \(B\): \(\forall x: x \in A \to x \in B\). En Python, `A <= B`.
+- **En palabras sencillas:** \(A\) cabe completo dentro de \(B\); no le sobra nada por fuera.
+- **Dónde se rompe la comparación:** todo conjunto es subconjunto de sí mismo, y el conjunto vacío \(\varnothing\) es subconjunto de cualquiera.
+- **Ejemplo:** `{"leer", "editar"} <= {"leer", "editar", "exportar"}` da `True`.
+- **Error típico:** usar `<` (subconjunto propio, que exige \(A \ne B\)) y negar permiso a quien tiene exactamente los requeridos.
 
-**autenticación**
-- **Definición técnica:** proceso que verifica que un sujeto es quien dice ser, comprobando algo que sabe, tiene o es.
-- **En palabras sencillas:** mostrar la cédula en la portería: demuestras que eres tú.
-- **Dónde se rompe la comparación:** la cédula se revisa una vez; en software la prueba se repite en cada petición con una sesión.
-- **Ejemplo:** `login("c-891", "pin-4471")` devuelve un token; con una clave incorrecta lanza `PermissionError: credenciales inválidas`.
-- **Error típico:** responder «usuario no existe» y «clave incorrecta» por separado: el atacante aprende qué usuarios existen.
+**operaciones de conjuntos (∪, ∩, −)**
+- **Definición técnica:** la unión \(A \cup B\) reúne los elementos que están en \(A\) o en \(B\); la intersección \(A \cap B\), los que están en ambos; la diferencia \(A - B\), los de \(A\) que no están en \(B\). En Python: `|`, `&` y `-`.
+- **En palabras sencillas:** juntar todo, quedarte con lo común y ver lo que sobra.
+- **Dónde se rompe la comparación:** la diferencia no es simétrica: \(A - B\) y \(B - A\) casi nunca coinciden.
+- **Ejemplo:** `{"leer", "editar"} - {"leer"}` da `{'editar'}`: el permiso que le falta al auditor.
+- **Error típico:** crear un conjunto vacío con `{}`. Eso es un diccionario, y `vacio.add("leer")` falla con `AttributeError: 'dict' object has no attribute 'add'`. Usa `set()`.
 
-**autorización**
-- **Definición técnica:** decisión de si un sujeto ya autenticado puede ejecutar una acción sobre un recurso concreto.
-- **En palabras sencillas:** ya entraste al edificio; ahora, ¿tu llave abre esta oficina?
-- **Dónde se rompe la comparación:** la llave abre o no; el software puede decidir con reglas que dependen de la hora, el rol o el dueño del recurso.
-- **Ejemplo:** `exportar(token_891)` responde `rol conductor no autorizado a exportar` aunque la sesión sea válida.
-- **Error típico:** comprobar la autorización solo en la interfaz (ocultar un botón) y no en el servidor.
+**producto cartesiano**
+- **Definición técnica:** \(A \times B = \{(a, b) : a \in A,\ b \in B\}\), el conjunto de todos los pares ordenados con primer elemento en \(A\) y segundo en \(B\). Tiene \(\lvert A \rvert \cdot \lvert B \rvert\) elementos.
+- **En palabras sencillas:** todas las combinaciones de «una cosa de cada lista», como las casillas de una tabla de filas por columnas.
+- **Dónde se rompe la comparación:** en un par el orden importa: \((a, b)\) y \((b, a)\) son pares distintos.
+- **Ejemplo:** 2 roles × 3 acciones dan \(2 \cdot 3 = 6\) pares; `itertools.product(roles, acciones)` los genera.
+- **Error típico:** confundirlo con la unión: \(\{1, 2\} \cup \{3\}\) tiene 3 elementos, pero \(\{1, 2\} \times \{3\}\) tiene 2 pares.
 
-**hash criptográfico**
-- **Definición técnica:** función hash diseñada para que sea inviable invertirla o encontrar dos entradas con la misma salida; SHA-256 produce 32 bytes.
-- **En palabras sencillas:** una huella digital del dato: siempre igual para el mismo dato, imposible de usar para reconstruirlo.
-- **Dónde se rompe la comparación:** la función hash del Módulo 2 busca velocidad y reparto; esta busca que nadie pueda fabricar colisiones.
-- **Ejemplo:** `hash_demo.py` muestra `52d89bdfa6d0a8ca` para `pin-4471` y `3faae6950f6382e5` para `pin-4472`: un carácter cambia toda la huella.
-- **Error típico:** guardar contraseñas con SHA-256 sin más; es tan rápido que un atacante prueba miles de millones de claves por segundo.
+**relación**
+- **Definición técnica:** una relación binaria \(R\) sobre un conjunto \(S\) es un subconjunto de \(S \times S\). Se escribe \(a \mathrel{R} b\) cuando \((a, b) \in R\).
+- **En palabras sencillas:** una lista de parejas «conectadas» según alguna regla.
+- **Dónde se rompe la comparación:** la relación no dice por qué dos elementos se conectan; solo registra que lo están.
+- **Ejemplo:** las transiciones de RutaFlow forman \(R\) con 3 pares de los 16 posibles, como `("created", "assigned")`.
+- **Error típico:** olvidar la dirección: \((\text{created}, \text{assigned}) \in R\) no implica \((\text{assigned}, \text{created}) \in R\).
 
-**sal**
-- **Definición técnica:** valor aleatorio, único por usuario, que se combina con la contraseña antes de derivarla y se guarda junto al resultado.
-- **En palabras sencillas:** un ingrediente distinto para cada persona, para que dos claves iguales no den el mismo plato.
-- **Dónde se rompe la comparación:** la sal no es secreta; se guarda en claro. Su trabajo es impedir tablas precalculadas, no esconder nada.
-- **Ejemplo:** `pin-4471` con sal A da `34e47c8a48aceeb1` y con sal B da `c2e3787de97ccbdc`.
-- **Error típico:** usar la misma sal fija para todos; entonces dos usuarios con la misma clave vuelven a tener el mismo hash.
+**propiedades de una relación**
+- **Definición técnica:** \(R\) es **reflexiva** si \(\forall a: a \mathrel{R} a\); **simétrica** si \(a \mathrel{R} b \to b \mathrel{R} a\); **antisimétrica** si \((a \mathrel{R} b \land b \mathrel{R} a) \to a = b\); **transitiva** si \((a \mathrel{R} b \land b \mathrel{R} c) \to a \mathrel{R} c\).
+- **En palabras sencillas:** cuatro preguntas: ¿cada uno se conecta consigo mismo? ¿la conexión va en los dos sentidos? ¿nunca hay ida y vuelta entre distintos? ¿se puede encadenar?
+- **Dónde se rompe la comparación:** antisimétrica no es «lo contrario» de simétrica. Una relación vacía es las dos cosas a la vez.
+- **Ejemplo:** \(R\) es antisimétrica pero no transitiva: hay created → assigned → out_for_delivery, pero no created → out_for_delivery.
+- **Error típico:** revisar la transitividad con un solo encadenamiento; hay que revisar todos los pares \((a, b)\), \((b, c)\).
 
-**función de derivación de claves**
-- **Definición técnica:** función deliberadamente lenta (PBKDF2, scrypt, Argon2) que transforma una contraseña y una sal en una clave; el costo se ajusta con iteraciones o memoria.
-- **En palabras sencillas:** una licuadora que tarda a propósito: a ti te cuesta un instante, al atacante le cuesta años probar millones.
-- **Dónde se rompe la comparación:** la lentitud no salva una contraseña débil como `123456`; solo encarece cada intento.
-- **Ejemplo:** en `hash_demo.py`, 1 iteración tarda `0.0000 s` y 600 000 tardan `0.0993 s` en el equipo de prueba.
-- **Error típico:** pasarle texto en vez de bytes: `TypeError: a bytes-like object is required, not 'str'`. Se corrige con `.encode()`.
+**orden parcial**
+- **Definición técnica:** relación reflexiva, antisimétrica y transitiva. Se suele escribir \(a \preceq b\): «\(a\) va antes que \(b\) o es igual».
+- **En palabras sencillas:** una forma consistente de decir «esto va antes que aquello», sin vueltas atrás.
+- **Dónde se rompe la comparación:** «parcial» significa que puede haber pares que no se comparan. \(\{\text{leer}\}\) y \(\{\text{editar}\}\) no son subconjunto uno del otro.
+- **Ejemplo:** «puede llegar a», el cierre de las transiciones de RutaFlow, es un orden parcial.
+- **Error típico:** llamar orden a la relación de un solo paso \(R\): sin su cierre no es reflexiva ni transitiva.
 
-**sesión**
-- **Definición técnica:** estado guardado en el servidor que asocia un token aleatorio a una identidad autenticada, con fecha de expiración y posibilidad de revocarse.
-- **En palabras sencillas:** la manilla de un evento: la muestras en cada puerta en vez de enseñar la cédula otra vez.
-- **Dónde se rompe la comparación:** una manilla se corta y se acabó; un token se puede copiar, por eso expira y se puede invalidar desde el servidor.
-- **Ejemplo:** tras cambiar `expira` al pasado, `confirmar` responde `sesión vencida`; tras borrarla, `sesión inválida o revocada`.
-- **Error típico:** generar tokens con `random` o con datos predecibles (usuario + hora); se usa `secrets.token_urlsafe`.
+**relación de equivalencia**
+- **Definición técnica:** relación reflexiva, simétrica y transitiva. Divide el conjunto en **clases de equivalencia**: grupos cuyos elementos se relacionan todos entre sí.
+- **En palabras sencillas:** «es del mismo grupo que».
+- **Dónde se rompe la comparación:** en una equivalencia todo va en los dos sentidos; un flujo de estados que avanza nunca lo cumple.
+- **Ejemplo:** «tiene el mismo estado que» entre envíos; o «da el mismo resto al dividir entre 7» entre números.
+- **Error típico:** tratar como equivalencia una relación no transitiva, como «está a menos de 1 km de»: A cerca de B y B cerca de C no implica A cerca de C.
 
-**control de acceso por roles**
-- **Definición técnica:** modelo de autorización (RBAC) donde los permisos se asignan a roles y los usuarios reciben roles.
-- **En palabras sencillas:** los permisos van con el cargo, no con la persona: «todos los conductores pueden confirmar».
-- **Dónde se rompe la comparación:** el rol dice qué tipo de acción, pero no sobre cuál recurso; para eso falta la autorización por objeto.
-- **Ejemplo:** `exportar` exige `rol == "admin"` en la línea 66 de `acceso.py`.
-- **Error típico:** dar el rol de administrador «temporalmente» para desbloquear a alguien y no quitarlo nunca.
+**función matemática**
+- **Definición técnica:** relación \(f \subseteq A \times B\) en la que cada \(a \in A\) se relaciona con **exactamente un** \(b \in B\). Se escribe \(f: A \to B\) y \(f(a) = b\).
+- **En palabras sencillas:** una máquina que, para cada entrada válida, da una y solo una salida.
+- **Dónde se rompe la comparación:** una función de Python puede dar resultados distintos con la misma entrada, por ejemplo si lee la hora; una función matemática, nunca.
+- **Ejemplo:** \(R\) no es función de \(S\) en \(S\): `delivered` no tiene sucesor. Sin `delivered` en el dominio, sí lo sería.
+- **Error típico:** creer que dos entradas no pueden dar la misma salida. Eso sí se permite; lo prohibido es una entrada con dos salidas.
 
-**autorización por objeto**
-- **Definición técnica:** comprobación de que el sujeto tiene relación con el recurso específico que pide; su ausencia se llama IDOR (referencia directa insegura a objetos).
-- **En palabras sencillas:** ser conductor no basta; tiene que ser **tu** envío.
-- **Dónde se rompe la comparación:** en un edificio las oficinas ajenas están cerradas; en una API basta cambiar un número en la URL para pedir otra.
-- **Ejemplo:** `confirmar(token_999, "RF-4471")` responde `c-999 no está asignado a RF-4471`.
-- **Error típico:** comprobar solo el rol y confiar en que el cliente envía únicamente sus propios ids.
-
-**registro de auditoría**
-- **Definición técnica:** registro de solo agregar que guarda quién hizo qué, sobre qué recurso y cuándo; si se encadena con hashes, cualquier alteración o borrado se detecta.
-- **En palabras sencillas:** el libro de minutas con páginas numeradas y firmadas: arrancar una se nota.
-- **Dónde se rompe la comparación:** quien tiene acceso al archivo puede reescribirlo entero y recalcular la cadena; por eso el último sello se guarda en otro lugar.
-- **Ejemplo:** `auditoria.py` imprime `tras borrar el evento 2: válida=False (corte en 3: prev no coincide)`.
-- **Error típico:** registrar solo los éxitos; los intentos denegados son la mejor pista de un ataque.
+**inducción matemática**
+- **Definición técnica:** método para demostrar \(\forall n \ge 0: P(n)\). Se prueba el **caso base** \(P(0)\) y el **paso inductivo**: para todo \(n\), si \(P(n)\) es verdadera, entonces \(P(n+1)\) también. La suposición \(P(n)\) se llama **hipótesis inductiva**.
+- **En palabras sencillas:** una fila de fichas de dominó: si cae la primera y cada una tumba a la siguiente, caen todas.
+- **Dónde se rompe la comparación:** la fila de dominó es finita; la inducción cubre infinitos valores de \(n\) sin probarlos uno a uno.
+- **Ejemplo:** \(1 + 2 + \dots + n = \frac{n(n+1)}{2}\) para todo \(n \ge 0\).
+- **Error típico:** probar solo el paso inductivo y olvidar el caso base. Sin la primera ficha, nada cae.
 
 #### ► CÓMO FUNCIONA
-Cada petición pasa por tres preguntas, en este orden. ¿Quién eres? (autenticación). ¿Tu rol puede hacer esto?
-(autorización por rol). ¿Este recurso es tuyo? (autorización por objeto). Toda respuesta, positiva o negativa,
-deja una línea en el registro de auditoría.
+**Notación de conjuntos.** Un conjunto se escribe entre llaves: \(A = \{\text{leer}, \text{editar}\}\). \(x \in A\) se
+lee «\(x\) pertenece a \(A\)» y \(x \notin A\), «no pertenece». \(\lvert A \rvert\) es el **cardinal**: cuántos
+elementos tiene, como `len(A)`. \(\varnothing\) es el conjunto vacío. Los elementos no se repiten ni tienen orden.
 
-La contraseña nunca se guarda. Al registrarte, el servidor genera una sal, deriva la clave y guarda sal y resultado.
-Al iniciar sesión, repite la derivación con la sal guardada y compara con `hmac.compare_digest`, que tarda lo mismo
-acierte o falle. Así el tiempo de respuesta no revela cuántos bytes coincidían.
+**De conjuntos a relaciones.** Con los estados \(S\) de un envío, \(S \times S\) tiene \(4 \cdot 4 = 16\) pares. Una
+relación elige algunos: \(R\) elige 3. Para saber si \(R\) es un orden o una equivalencia, revisas sus cuatro
+propiedades con `all`, igual que un \(\forall\) del Tema 1.
 
-| Rechazo | Pregunta que falló | Código HTTP habitual |
-|---|---|---|
-| `credenciales inválidas` | Autenticación | 401 |
-| `sesión vencida`, `sesión inválida o revocada` | Autenticación (sesión) | 401 |
-| `rol conductor no autorizado a exportar` | Autorización por rol | 403 |
-| `c-999 no está asignado a RF-4471` | Autorización por objeto | 403 |
+**Del paso a la alcanzabilidad.** \(R\) habla de un solo paso. «Puede llegar a, en cero o más pasos» se obtiene con
+el **cierre reflexivo y transitivo** \(R^*\): agregas cada par \((a, a)\) y, mientras haya cadenas
+\((a, b), (b, c)\) sin su atajo \((a, c)\), lo agregas. Cuando no aparece ningún par nuevo, terminaste.
+
+**Inducción, paso a paso.** El símbolo \(\sum_{i=1}^{n} i\) se lee «suma de \(i\), desde \(i = 1\) hasta \(n\)»:
+\(1 + 2 + \dots + n\). La \(i\) es la variable que cambia; el 1 de abajo y la \(n\) de arriba son los límites. Se
+quiere demostrar:
+
+\[ P(n):\quad \sum_{i=1}^{n} i = \frac{n(n+1)}{2} \]
+
+- **Caso base** \(n = 0\): la suma no tiene términos y vale 0; la fórmula da \(\frac{0 \cdot 1}{2} = 0\). Coinciden.
+- **Hipótesis inductiva:** supones \(P(n)\) verdadera para un \(n\) cualquiera.
+- **Paso inductivo:** la suma hasta \(n+1\) es la suma hasta \(n\) más el término \(n+1\). Usas la hipótesis y sacas factor común \((n+1)\):
+
+\[ \sum_{i=1}^{n+1} i = \frac{n(n+1)}{2} + (n+1) = \frac{n(n+1) + 2(n+1)}{2} = \frac{(n+1)(n+2)}{2} \]
+
+El resultado es la fórmula con \(n+1\) en lugar de \(n\): eso es \(P(n+1)\). Caso base más paso dan \(P(n)\) para todo
+\(n\). La misma técnica demuestra que un algoritmo recursivo es correcto: el caso base del código es el caso base de la
+demostración, y la llamada recursiva es la hipótesis inductiva.
 
 ```mermaid
-flowchart LR
-    CRED["credencial"] --> LOGIN["login + derivación"]
-    LOGIN -->|"válida"| SES["sesión con expiración"]
-    LOGIN -->|"inválida"| DENY1["rechazo genérico + bloqueo"]
-    SES -->|"acción"| ROL["rol permitido"]
-    ROL -->|"sí"| OBJ["recurso asignado"]
-    ROL -->|"no"| DENY2["403 por rol"]
-    OBJ -->|"sí"| OK["permiso"]
-    OBJ -->|"no"| DENY3["403 por objeto"]
-    OK --> AUD["registro de auditoría encadenado"]
-    DENY2 --> AUD
-    DENY3 --> AUD
+flowchart TD
+    R["R = leer, editar"] --> CHECK{"R ⊆ A"}
+    A["A = leer, editar, exportar"] --> CHECK
+    CHECK -->|"sí"| AUTH["autorizado"]
+    CHECK -->|"no: falta un permiso"| DENY["no autorizado"]
+    BASE["caso base P(0)"] --> STEP["P(n) implica P(n+1)"] --> ALL["P(n) para todo natural"]
 ```
 
 #### Problema resuelto 2.1
-Muestra con números por qué un hash rápido no sirve para contraseñas y qué aportan la sal y las iteraciones.
+Una tarea requiere los permisos `leer` y `editar`. Decide con conjuntos si la coordinadora y el auditor pueden hacerla,
+qué le falta al auditor y cuántas combinaciones rol-acción existen.
 
 **Razonamiento:**
-1. Comparar el SHA-256 de dos claves casi iguales y repetir una: misma entrada, misma huella.
-2. Derivar la misma clave con dos sales fijas para ver que el resultado cambia.
-3. Medir el tiempo de 1 iteración frente a 600 000 con `perf_counter` (Módulo 2, Tema 2).
+1. «Puede hacer la tarea» es \(\text{requeridos} \subseteq \text{asignados}\): todo permiso requerido está asignado.
+2. «Qué le falta» es la diferencia \(\text{requeridos} - \text{asignados}\).
+3. Las combinaciones rol-acción son el producto cartesiano; su tamaño es \(\lvert \text{roles} \rvert \cdot \lvert \text{acciones} \rvert\).
 
 ```python
-# hash_demo.py — hash, sal y derivación de claves con la biblioteca estándar
-import hashlib
-import time
+# permisos.py — conjuntos para decidir si una persona puede hacer una tarea
+from itertools import product
 
-print("sha256 pin-4471:", hashlib.sha256(b"pin-4471").hexdigest()[:16])
-print("sha256 pin-4472:", hashlib.sha256(b"pin-4472").hexdigest()[:16])
-print("sha256 pin-4471:", hashlib.sha256(b"pin-4471").hexdigest()[:16])
+requeridos = {"leer", "editar"}
+coordinadora = {"leer", "editar", "exportar"}
+auditor = {"leer"}
 
-sal_a = bytes.fromhex("a1" * 16)
-sal_b = bytes.fromhex("b2" * 16)
-for nombre, sal in [("sal A", sal_a), ("sal B", sal_b)]:
-    derivado = hashlib.pbkdf2_hmac("sha256", b"pin-4471", sal, 600_000)
-    print(f"pbkdf2 con {nombre}:", derivado.hex()[:16])
+print("'exportar' ∈ coordinadora:", "exportar" in coordinadora)
+print("requeridos ⊆ coordinadora:", requeridos <= coordinadora)
+print("requeridos ⊆ auditor:", requeridos <= auditor)
+print("faltan al auditor (requeridos − auditor):", sorted(requeridos - auditor))
+print("coordinadora ∪ auditor:", sorted(coordinadora | auditor))
+print("coordinadora ∩ auditor:", sorted(coordinadora & auditor))
 
-for iteraciones in (1, 600_000):
-    inicio = time.perf_counter()
-    hashlib.pbkdf2_hmac("sha256", b"pin-4471", sal_a, iteraciones)
-    print(f"{iteraciones:>7} iteraciones: {time.perf_counter() - inicio:.4f} s")
+roles = ["auditor", "coordinadora"]
+acciones = ["editar", "exportar", "leer"]
+pares = list(product(roles, acciones))
+print("roles × acciones tiene", len(pares), "pares; el primero es", pares[0])
 ```
 
 ```text
-$ python3 hash_demo.py
-sha256 pin-4471: 52d89bdfa6d0a8ca
-sha256 pin-4472: 3faae6950f6382e5
-sha256 pin-4471: 52d89bdfa6d0a8ca
-pbkdf2 con sal A: 34e47c8a48aceeb1
-pbkdf2 con sal B: c2e3787de97ccbdc
-      1 iteraciones: 0.0000 s
- 600000 iteraciones: 0.0993 s
+$ python3 permisos.py
+'exportar' ∈ coordinadora: True
+requeridos ⊆ coordinadora: True
+requeridos ⊆ auditor: False
+faltan al auditor (requeridos − auditor): ['editar']
+coordinadora ∪ auditor: ['editar', 'exportar', 'leer']
+coordinadora ∩ auditor: ['leer']
+roles × acciones tiene 6 pares; el primero es ('auditor', 'editar')
 ```
 
 **Explicación por partes.**
-- Líneas 5–7: se muestran solo los primeros 16 caracteres hexadecimales. La línea 7 repite la 5 y da lo mismo.
-- Líneas 9–10: dos sales fijas, solo para que la salida sea reproducible. En producción salen de `secrets`.
-- Líneas 11–13: `pbkdf2_hmac` recibe el algoritmo, la clave en bytes (`b"…"`), la sal y las iteraciones.
-- Líneas 15–18: el tiempo crece con las iteraciones. Tus segundos serán otros; la proporción se mantiene.
+- Líneas 4–6: tres conjuntos de Python escritos con llaves; el orden en que escribes los elementos no importa.
+- Línea 8: `in` es \(\in\). Línea 9: `<=` es \(\subseteq\); la coordinadora tiene los dos permisos requeridos.
+- Líneas 10–11: el auditor no cumple \(\subseteq\), y la diferencia dice exactamente por qué: le falta `editar`.
+- Líneas 11–13: `sorted` convierte el conjunto en lista ordenada, para que la salida sea siempre igual.
+- Líneas 15–18: `product` genera los \(2 \cdot 3 = 6\) pares; el primero es `('auditor', 'editar')`.
 
-> **Error común.** Pasar la contraseña como texto. `hashlib.pbkdf2_hmac('sha256', 'pin-4471', sal, 1000)` termina con
-> `TypeError: a bytes-like object is required, not 'str'`. Las funciones criptográficas trabajan con bytes: convierte
-> con `password.encode()`, que usa UTF-8 (Módulo 1, Tema 5).
+> **Error común.** Crear el conjunto de permisos vacío con `permisos = {}` y luego `permisos.add("leer")`. El programa
+> se detiene con `AttributeError: 'dict' object has no attribute 'add'`: `{}` es un diccionario. Escribe `set()`.
 
 #### Problema resuelto 2.2
-Implementa registro, inicio de sesión, sesiones y autorización para conductores y administradores, y prueba cada
-camino negativo.
+Decide si la relación de transiciones \(R\) es un orden parcial o una equivalencia. Haz lo mismo con «puede llegar a»
+(\(R^*\)) y responde si \(R\) es una función de \(S\) en \(S\). Usa `domain.py` del Tema 1, Paso 4.
+
+```mermaid
+flowchart LR
+    C["created"] -->|R| A["assigned"] -->|R| O["out_for_delivery"] -->|R| D["delivered"]
+    C -. "R*: atajo agregado" .-> O
+```
 
 **Razonamiento:**
-1. Registrar guarda rol, sal aleatoria y clave derivada; nunca la contraseña.
-2. El login compara en tiempo constante, cuenta fallos y bloquea 30 segundos al tercero.
-3. Cada acción llama primero a `sesion_activa`, luego revisa el rol y por último el recurso.
-4. Probar a propósito: otro conductor, token inventado, rol equivocado, bloqueo, expiración y revocación.
+1. \(S\) son los 4 estados y \(R\), los pares de `ALLOWED_TRANSITIONS`.
+2. Cada propiedad es un \(\forall\) sobre pares; se escribe con `all`.
+3. El cierre agrega pares hasta que no aparezca ninguno nuevo; luego se revisan sus propiedades.
+4. Para ser función, cada estado debe tener exactamente un sucesor.
 
 ```python
-# acceso.py — contraseñas derivadas, sesiones y autorización de RutaFlow
-import hashlib
-import hmac
-import secrets
-import time
+# relacion.py — propiedades de la relación de transiciones de RutaFlow
+from domain import ALLOWED_TRANSITIONS, ShipmentStatus
 
-ITERACIONES = 600_000
-ASIGNACIONES = {"c-891": {"RF-4471", "RF-4472"}, "c-999": {"RF-5000"}}
-USUARIOS = {}
-SESIONES = {}
-INTENTOS = {}
-BLOQUEOS = {}
+S = [estado.value for estado in ShipmentStatus]
+R = {(a.value, b.value) for a, destinos in ALLOWED_TRANSITIONS.items() for b in destinos}
 
 
-def registrar(usuario, password, rol):
-    salt = secrets.token_bytes(16)
-    USUARIOS[usuario] = {
-        "rol": rol,
-        "salt": salt,
-        "hash": hashlib.pbkdf2_hmac("sha256", password.encode(), salt, ITERACIONES),
+def propiedades(rel):
+    return {
+        "reflexiva": all((a, a) in rel for a in S),
+        "simétrica": all((b, a) in rel for (a, b) in rel),
+        "antisimétrica": all((b, a) not in rel for (a, b) in rel if a != b),
+        "transitiva": all((a, d) in rel for (a, b) in rel for (c, d) in rel if b == c),
     }
 
 
-def login(usuario, password):
-    ahora = time.time()
-    if BLOQUEOS.get(usuario, 0) > ahora:
-        raise PermissionError("cuenta bloqueada temporalmente")
-    registro = USUARIOS.get(usuario)
-    if registro is None:
-        raise PermissionError("credenciales inválidas")
-    calculado = hashlib.pbkdf2_hmac("sha256", password.encode(), registro["salt"], ITERACIONES)
-    if not hmac.compare_digest(calculado, registro["hash"]):
-        INTENTOS[usuario] = INTENTOS.get(usuario, 0) + 1
-        if INTENTOS[usuario] >= 3:
-            BLOQUEOS[usuario] = ahora + 30
-            INTENTOS[usuario] = 0
-            raise PermissionError("cuenta bloqueada temporalmente")
-        raise PermissionError("credenciales inválidas")
-    INTENTOS[usuario] = 0
-    token = secrets.token_urlsafe(16)
-    SESIONES[token] = {"usuario": usuario, "expira": ahora + 900}
-    return token
+def cierre_reflexivo_transitivo(rel):
+    cierre = set(rel) | {(a, a) for a in S}
+    while True:
+        nuevos = {(a, d) for (a, b) in cierre for (c, d) in cierre if b == c} - cierre
+        if not nuevos:
+            return cierre
+        cierre |= nuevos
 
 
-def sesion_activa(token):
-    sesion = SESIONES.get(token)
-    if sesion is None:
-        raise PermissionError("sesión inválida o revocada")
-    if sesion["expira"] < time.time():
-        SESIONES.pop(token)
-        raise PermissionError("sesión vencida")
-    return sesion["usuario"]
-
-
-def confirmar(token, envio_id):
-    usuario = sesion_activa(token)
-    if USUARIOS[usuario]["rol"] != "conductor":
-        raise PermissionError(f"rol {USUARIOS[usuario]['rol']} no puede confirmar entregas")
-    if envio_id not in ASIGNACIONES.get(usuario, set()):
-        raise PermissionError(f"{usuario} no está asignado a {envio_id}")
-    return f"{usuario} confirmó {envio_id}"
-
-
-def exportar(token):
-    usuario = sesion_activa(token)
-    if USUARIOS[usuario]["rol"] != "admin":
-        raise PermissionError(f"rol {USUARIOS[usuario]['rol']} no autorizado a exportar")
-    return sum(len(v) for v in ASIGNACIONES.values())
-
-
-registrar("c-891", "pin-4471", "conductor")
-registrar("c-999", "pin-5000", "conductor")
-registrar("a-01", "clave-admin", "admin")
-print(f"salts distintos: {USUARIOS['c-891']['salt'] != USUARIOS['c-999']['salt']}")
-
-token_891 = login("c-891", "pin-4471")
-token_999 = login("c-999", "pin-5000")
-token_admin = login("a-01", "clave-admin")
-print(confirmar(token_891, "RF-4471"))
-try:
-    print(f"otro conductor: {confirmar(token_999, 'RF-4471')}")
-except PermissionError as error:
-    print(f"otro conductor: denegado: {error}")
-try:
-    confirmar("token-inventado", "RF-4471")
-except PermissionError as error:
-    print(f"anónimo: denegado: {error}")
-print(f"admin exporta: {exportar(token_admin)} envíos")
-try:
-    exportar(token_891)
-except PermissionError as error:
-    print(f"conductor exporta: denegado: {error}")
-for _ in range(3):
-    try:
-        login("c-999", "incorrecta")
-    except PermissionError:
-        pass
-try:
-    login("c-999", "pin-5000")
-except PermissionError as error:
-    print(f"tras 3 fallos: {error}")
-SESIONES[token_891]["expira"] = time.time() - 1
-try:
-    confirmar(token_891, "RF-4471")
-except PermissionError as error:
-    print(f"sesión vencida: denegado: {error}")
-SESIONES.pop(token_admin)
-try:
-    exportar(token_admin)
-except PermissionError as error:
-    print(f"sesión revocada: denegado: {error}")
+print("R tiene", len(R), "pares de", len(S) * len(S), "posibles en S × S")
+print("R:", propiedades(R))
+alcanza = cierre_reflexivo_transitivo(R)
+print("«puede llegar a» tiene", len(alcanza), "pares")
+p = propiedades(alcanza)
+print("«puede llegar a»:", p)
+print("¿orden parcial?", p["reflexiva"] and p["antisimétrica"] and p["transitiva"])
+print("¿equivalencia?", p["reflexiva"] and p["simétrica"] and p["transitiva"])
+print("¿R es función de S en S?", all(sum(1 for (x, _) in R if x == a) == 1 for a in S))
 ```
 
 ```text
-$ python3 acceso.py
-salts distintos: True
-c-891 confirmó RF-4471
-otro conductor: denegado: c-999 no está asignado a RF-4471
-anónimo: denegado: sesión inválida o revocada
-admin exporta: 3 envíos
-conductor exporta: denegado: rol conductor no autorizado a exportar
-tras 3 fallos: cuenta bloqueada temporalmente
-sesión vencida: denegado: sesión vencida
-sesión revocada: denegado: sesión inválida o revocada
+$ python3 relacion.py
+R tiene 3 pares de 16 posibles en S × S
+R: {'reflexiva': False, 'simétrica': False, 'antisimétrica': True, 'transitiva': False}
+«puede llegar a» tiene 10 pares
+«puede llegar a»: {'reflexiva': True, 'simétrica': False, 'antisimétrica': True, 'transitiva': True}
+¿orden parcial? True
+¿equivalencia? False
+¿R es función de S en S? False
 ```
 
 **Explicación por partes.**
-- Líneas 15–21: `secrets.token_bytes(16)` da 16 bytes aleatorios de calidad criptográfica para la sal.
-- Líneas 29–30 y 38: usuario inexistente y clave errada dan el **mismo** mensaje, `credenciales inválidas`.
-- Línea 32: `hmac.compare_digest` compara sin cortar en el primer byte distinto.
-- Líneas 33–37: el tercer fallo fija `BLOQUEOS` 30 segundos en el futuro; la línea 26 lo hace cumplir.
-- Líneas 40–41: el token es aleatorio y la sesión vence en 900 segundos (15 minutos).
-- Líneas 49–51: una sesión vencida se borra al detectarla.
-- Líneas 57–60: primero el rol, después la asignación del envío. Las dos comprobaciones viven en el servidor.
-- Líneas 102 y 107: el programa simula el paso del tiempo y la revocación para probar los dos rechazos.
+- Línea 5: comprensión de conjunto que convierte el diccionario en pares \((a, b)\), con el texto de cada estado.
+- Líneas 10–13: cada propiedad del glosario, escrita con `all`. La implicación de la antisimetría vive en el `if a != b`.
+- Línea 18: `|` une \(R\) con los pares reflexivos \((a, a)\).
+- Líneas 19–23: `nuevos` son los atajos \((a, d)\) que faltan. Cuando el conjunto queda vacío, el cierre está completo.
+- Salida: \(R\) solo es antisimétrica; \(R^*\) tiene 10 pares (4 reflexivos, 3 de un paso, 2 de dos pasos y 1 de tres) y es un orden parcial.
+- Línea 34: cuenta los sucesores de cada estado; `delivered` tiene 0, así que \(R\) no es función.
 
-> **Error común.** Comparar el hash guardado con `==` y mezclar tipos. Además de no ser de tiempo constante, si uno
-> de los valores es texto `hmac.compare_digest(b'abc', 'abc')` lanza
-> `TypeError: a bytes-like object is required, not 'str'`. Guarda y compara siempre bytes con bytes.
+> **Error común.** Revisar la transitividad solo con `R` y concluir «no es un orden». El ticket hablaba de «poder
+> llegar», que es \(R^*\). Antes de afirmar una propiedad, escribe sobre qué relación exacta la afirmas.
 
-> **Buena práctica.** Los mensajes de rechazo hacia el usuario son genéricos; el detalle va al registro de
-> auditoría. El atacante no debe saber si falló el usuario o la clave.
+> **Buena práctica.** Cuando un ticket diga «esto es un orden» o «esto es equivalente», pídele la relación exacta y
+> compruébala con las cuatro propiedades. Una discusión de media hora se vuelve una ejecución de un segundo.
 
 #### Problema resuelto 2.3
-Deja un registro de auditoría que detecte si alguien cambia o borra un evento.
+Demuestra por inducción que la función recursiva `suma` devuelve la suma de los elementos de cualquier lista de
+enteros. Escribe los supuestos y compara la demostración con comprobar casos.
 
 **Razonamiento:**
-1. Cada evento guarda el sello del anterior en `prev`; el primero apunta a 64 ceros.
-2. El sello es el SHA-256 del evento serializado siempre igual: JSON con claves ordenadas y sin espacios.
-3. Verificar es recorrer la cadena y recalcular cada sello.
+1. \(P(k)\): «para toda lista de longitud \(k\), `suma` devuelve la suma de sus elementos».
+2. Caso base \(k = 0\): la lista vacía; las líneas 3–4 devuelven 0, que es la suma de ningún número.
+3. Paso inductivo: una lista de longitud \(k + 1\) tiene un primer elemento y un resto `valores[1:]` de longitud \(k\).
+   Por la hipótesis inductiva, `suma(valores[1:])` es correcta; la línea 5 le suma el primero. Resultado correcto.
+4. Supuestos: los elementos son enteros, y la lista es corta, porque cada llamada ocupa un lugar en la pila de Python.
+5. Comprobar 501 casos da evidencia; la inducción cubre todos.
 
 ```python
-# auditoria.py — registro de auditoría encadenado con SHA-256
-import hashlib
-import json
-
-CERO = "0" * 64
-
-
-def canonico(datos):
-    return json.dumps(datos, sort_keys=True, separators=(",", ":")).encode()
+# induccion.py — comprueba casos de dos propiedades que se demuestran por inducción
+def suma(valores: list[int]) -> int:
+    if not valores:                 # caso base
+        return 0
+    return valores[0] + suma(valores[1:])
 
 
-def sello(evento):
-    payload = {k: evento[k] for k in ("seq", "ts", "actor", "accion", "recurso", "prev")}
-    return hashlib.sha256(canonico(payload)).hexdigest()
+def gauss(n: int) -> int:
+    return n * (n + 1) // 2
 
 
-def encadenar(eventos):
-    prev = CERO
-    for evento in eventos:
-        evento["prev"] = prev
-        evento["hash"] = sello(evento)
-        prev = evento["hash"]
-    return eventos
+for n in range(0, 6):
+    lista = list(range(1, n + 1))
+    print(f"n={n}  suma={suma(lista):2}  gauss={gauss(n):2}  sum={sum(lista):2}")
 
-
-def verificar(eventos):
-    prev = CERO
-    for evento in eventos:
-        if evento["prev"] != prev:
-            return False, f"corte en {evento['seq']}: prev no coincide"
-        if evento["hash"] != sello(evento):
-            return False, f"corte en {evento['seq']}: contenido alterado"
-        prev = evento["hash"]
-    return True, "sin cortes"
-
-
-base = [
-    {"seq": 1, "ts": "2026-10-30T10:00:00Z", "actor": "c-891", "accion": "confirmar", "recurso": "RF-4471"},
-    {"seq": 2, "ts": "2026-10-30T10:01:10Z", "actor": "c-999", "accion": "intento_denegado", "recurso": "RF-4471"},
-    {"seq": 3, "ts": "2026-10-30T10:02:30Z", "actor": "a-01", "accion": "exportar", "recurso": "clientes"},
-]
-eventos = encadenar([dict(e) for e in base])
-
-
-def estado(eventos):
-    valida, detalle = verificar(eventos)
-    return f"válida={valida} ({detalle})"
-
-
-print(f"eventos: {len(eventos)}")
-print(f"cadena inicial: {estado(eventos)}")
-
-alterados = [dict(e) for e in eventos]
-alterados[1]["accion"] = "confirmar"
-print(f"tras alterar el evento 2: {estado(alterados)}")
-
-borrados = [dict(e) for e in eventos if e["seq"] != 2]
-print(f"tras borrar el evento 2: {estado(borrados)}")
-
-recompuestos = encadenar([dict(e) for e in alterados])
-print(f"atacante que recalcula toda la cadena: {estado(recompuestos)}")
+casos = range(0, 501)
+print("¿coinciden para n de 0 a 500?", all(suma(list(range(1, n + 1))) == gauss(n) for n in casos))
 ```
 
 ```text
-$ python3 auditoria.py
-eventos: 3
-cadena inicial: válida=True (sin cortes)
-tras alterar el evento 2: válida=False (corte en 2: contenido alterado)
-tras borrar el evento 2: válida=False (corte en 3: prev no coincide)
-atacante que recalcula toda la cadena: válida=True (sin cortes)
+$ python3 induccion.py
+n=0  suma= 0  gauss= 0  sum= 0
+n=1  suma= 1  gauss= 1  sum= 1
+n=2  suma= 3  gauss= 3  sum= 3
+n=3  suma= 6  gauss= 6  sum= 6
+n=4  suma=10  gauss=10  sum=10
+n=5  suma=15  gauss=15  sum=15
+¿coinciden para n de 0 a 500? True
 ```
 
 **Explicación por partes.**
-- Líneas 8–9: `sort_keys=True` y `separators` producen siempre los mismos bytes para el mismo diccionario.
-- Líneas 12–14: el sello cubre todos los campos, incluido `prev`; así cada evento queda atado al anterior.
-- Líneas 29–32: dos fallas distintas: un enlace roto (borrado) o un contenido que no coincide (alteración).
-- Líneas 60–61: la última línea es la lección incómoda. Quien puede reescribir todo recalcula la cadena y pasa.
-- Por eso se guarda el último sello fuera del sistema, o se firma con una clave que el atacante no tiene (Ejercicio 3).
+- Líneas 3–4: el caso base del código es el caso base de la demostración.
+- Línea 5: `valores[1:]` es la lista sin su primer elemento; la llamada recursiva es la hipótesis inductiva en acción.
+- Líneas 8–9: `gauss` aplica \(\frac{n(n+1)}{2}\); `//` es la división entera y aquí es exacta, porque \(n(n+1)\) siempre es par.
+- Líneas 12–14: para \(n\) de 0 a 5, la recursión, la fórmula y `sum` de Python coinciden.
+- Líneas 16–17: 501 casos coinciden. Es evidencia, no demostración: la demostración es la del razonamiento.
 
-> **Prevenir errores.** Registra también los intentos denegados, como el evento 2. Una racha de
-> `intento_denegado` sobre el mismo envío es la señal temprana de un abuso.
+> **Error común.** Olvidar el supuesto de tamaño. `suma(list(range(5000)))` termina con
+> `RecursionError: maximum recursion depth exceeded`. La demostración es correcta para enteros matemáticos; el programa
+> real tiene un límite de unas 1000 llamadas anidadas. Por eso los supuestos se escriben junto a la demostración.
+
+> **Ingeniería de software.** `valores[1:]` copia la lista en cada llamada, así que `suma` hace \(O(n^2)\) copias en
+> total (Módulo 2, Tema 4). La demostración prueba que el resultado es correcto, no que sea eficiente; son preguntas distintas.
 
 #### Checkpoint 2.1
-Un conductor con sesión válida pide `confirmar(token, "RF-5000")` y recibe un rechazo. ¿Falló la autenticación o
-la autorización? ¿Qué código HTTP corresponde?
+Entre los envíos de un día, la relación «tiene el mismo estado que». ¿Es un orden parcial o una equivalencia?
 
-Respuesta: la autorización por objeto. La sesión es válida y el rol es correcto, pero el envío no está asignado a
-ese conductor. Corresponde un 403, no un 401.
+Respuesta: una equivalencia. Es reflexiva (cada envío tiene su mismo estado), simétrica y transitiva. No es
+antisimétrica: dos envíos distintos pendientes se relacionan en los dos sentidos. Sus clases son los cuatro estados.
+
+#### Checkpoint 2.2
+¿Cuál es la diferencia entre probar muchos casos y demostrar una propiedad?
+
+Respuesta: probar casos revisa una cantidad finita, como los 501 de `induccion.py`; un caso no revisado puede fallar.
+Una demostración, como la inducción, justifica la propiedad para **todo** \(n\) a partir del caso base y el paso.
 
 </details>
 
@@ -860,1589 +888,883 @@ ese conductor. Corresponde un 403, no un 401.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/seguridad/tema2` y entra en ella. Escribe `hash_demo.py` y ejecútalo dos veces: las huellas SHA-256
-y PBKDF2 deben repetirse; los tiempos, no.
+Crea `~/labs/discretas/conjuntos`, entra y copia ahí `domain.py` del Tema 1. Escribe `permisos.py` y comprueba que la
+salida coincide con la del Problema resuelto 2.1.
 
-#### Paso 2 · Acceso con pruebas negativas
-Escribe `acceso.py` y ejecútalo. Debes ver nueve líneas; siete empiezan con un caso y terminan en un rechazo
-explicado. Si alguna dice que el acceso se concedió cuando no debía, revisa el orden de las comprobaciones.
+#### Paso 2 · Clasifica la relación
+Escribe `relacion.py` y ejecútalo. Dibuja en papel los 4 estados y las 3 flechas de \(R\). Luego agrega, en otro
+color, los 7 pares que el cierre suma, y cuenta: deben ser 10 en total.
 
-#### Paso 3 · Mide el costo
-Cambia `ITERACIONES` a `1_000` y ejecuta `time python3 acceso.py`. Vuelve a `600_000` y repite. Anota los dos
-tiempos: ese es el costo que también paga un atacante por cada clave que prueba.
+#### Paso 3 · Demuestra y comprueba
+Escribe `induccion.py` y ejecútalo. En un archivo `demostracion.txt`, escribe con tus palabras el caso base, la
+hipótesis inductiva y el paso inductivo de `suma`, y una línea con los supuestos.
 
-#### Paso 4 · Audita
-Escribe `auditoria.py` y confirma las cinco líneas de salida. Explica con tus palabras por qué la última dice
-`válida=True`.
+#### Paso 4 · Rompe un supuesto
+En el intérprete, ejecuta `from induccion import suma` y luego `suma(list(range(5000)))`. Confirma que la última línea
+es `RecursionError: maximum recursion depth exceeded` y anótala en `demostracion.txt` como supuesto comprobado.
 
 #### Resumen
-- La **identidad** dice quién eres; la **autenticación** lo comprueba; la **autorización** decide qué puedes hacer.
-- Las contraseñas se guardan como **función de derivación de claves** con **sal** única, nunca en claro ni con un **hash criptográfico** rápido.
-- La comparación se hace con `hmac.compare_digest`, en tiempo constante y con bytes en ambos lados.
-- Una **sesión** usa un token aleatorio, expira y se puede revocar desde el servidor.
-- El **control de acceso por roles** no basta: la **autorización por objeto** comprueba que el recurso es tuyo.
-- Un **registro de auditoría** encadenado detecta alteraciones y borrados, si el último sello se guarda aparte.
+- Un **subconjunto** \(A \subseteq B\) cabe dentro de \(B\); en Python, `A <= B`.
+- Las **operaciones de conjuntos** \(\cup\), \(\cap\), \(-\) se escriben `|`, `&`, `-`; el vacío es `set()`, no `{}`.
+- El **producto cartesiano** \(A \times B\) tiene \(\lvert A \rvert \cdot \lvert B \rvert\) pares ordenados.
+- Una **relación** es un subconjunto de \(S \times S\); sus **propiedades** se revisan con `all`.
+- Un **orden parcial** es reflexivo, antisimétrico y transitivo; una **relación de equivalencia**, reflexiva, simétrica y transitiva.
+- Una **función matemática** asigna a cada entrada exactamente una salida.
+- La **inducción matemática** demuestra \(P(n)\) para todo \(n\) con un caso base y un paso inductivo; los supuestos del programa se escriben aparte.
 
 #### Ejercicio verificable 1
-Básico. En `acceso.py`, ¿qué imprime `login("c-404", "x")` y por qué ese mensaje es el correcto?
+Básico. Con \(A = \{\text{leer}, \text{editar}, \text{exportar}\}\) y \(B = \{\text{leer}, \text{borrar}\}\), calcula a
+mano \(A \cup B\), \(A \cap B\), \(A - B\), \(B - A\) y \(\lvert A \times B \rvert\). Comprueba con Python.
 
-Respuesta esperada: lanza `PermissionError: credenciales inválidas`, el mismo texto que una clave errada (líneas 29–30).
-Si dijera «usuario no existe», un atacante podría enumerar qué identidades son reales.
+Respuesta esperada: \(A \cup B = \{\text{borrar}, \text{editar}, \text{exportar}, \text{leer}\}\);
+\(A \cap B = \{\text{leer}\}\); \(A - B = \{\text{editar}, \text{exportar}\}\); \(B - A = \{\text{borrar}\}\);
+\(\lvert A \times B \rvert = 3 \cdot 2 = 6\).
 
 #### Ejercicio verificable 2
-Intermedio. El curso pide scrypt. Reemplaza las dos llamadas a `pbkdf2_hmac` de `acceso.py` por
-`hashlib.scrypt(password.encode(), salt=…, n=2**14, r=8, p=1)` y compara la salida con la original.
+Intermedio. Sobre \(S = \{0, 1, \dots, 13\}\), define \(a \mathrel{E} b\) si `a % 7 == b % 7`. Adapta `propiedades`
+de `relacion.py` para revisarla. ¿Es equivalencia? ¿Cuántos pares tiene y cuántas clases?
 
-Respuesta esperada: las nueve líneas son idénticas (se comprobó con `diff`). Cambia el algoritmo, no el
-comportamiento. scrypt además exige memoria (`n` y `r`), lo que encarece los ataques con tarjetas gráficas.
+Respuesta esperada: es reflexiva, simétrica y transitiva: una equivalencia. Tiene 28 pares (cada resto agrupa 2
+números y da \(2 \cdot 2 = 4\) pares; \(7 \cdot 4 = 28\)) y 7 clases, una por resto: \(\{0, 7\}, \{1, 8\}, \dots, \{6, 13\}\).
 
 #### Ejercicio verificable 3
-Reto. Haz que el atacante del final de `auditoria.py` falle: sella con HMAC-SHA256 y una clave del servidor en vez
-de SHA-256 solo. Luego simula a un atacante que recalcula la cadena con una clave adivinada.
+Reto. Demuestra por inducción que \(\sum_{i=1}^{n} (2i - 1) = n^2\): la suma de los primeros \(n\) impares es \(n^2\).
+Comprueba después los casos de 0 a 100 con `all`.
 
-Respuesta esperada: en `sello` usa `hmac.new(CLAVE, canonico(payload), hashlib.sha256).hexdigest()`. Las cinco
-líneas originales no cambian (quien recompone con `encadenar` usa la clave verdadera), y el atacante con
-`b"adivinada"` obtiene `atacante sin la clave: válida=False (corte en 1: contenido alterado)`.
+Respuesta esperada: caso base \(n = 0\): \(0 = 0^2\). Paso: suponiendo \(\sum_{i=1}^{n} (2i - 1) = n^2\), se suma el
+término \(2(n+1) - 1 = 2n + 1\) y queda \(n^2 + 2n + 1 = (n+1)^2\). La expresión
+`all(sum(2 * i - 1 for i in range(1, n + 1)) == n * n for n in range(101))` devuelve `True`.
 
 #### En el trabajo
-Ningún equipo serio escribe su propio sistema de inicio de sesión desde cero: usa un proveedor de identidad o un
-framework probado. Lo que sí escribe en cada servicio son las comprobaciones de autorización por objeto, y ahí
-nace una de las fallas más reportadas en APIs: cambiar `/envios/4471` por `/envios/4472` y ver datos ajenos. El
-registro de auditoría es lo que pide un cliente o un regulador cuando pregunta «¿quién vio estos datos?».
+Los sistemas de permisos (RBAC) son conjuntos: un rol es un conjunto de permisos y autorizar es comprobar \(\subseteq\).
+Los flujos de estado de pedidos, pagos o tickets son relaciones, y el cierre dice qué estados se pueden alcanzar. Las
+demostraciones por inducción aparecen al revisar algoritmos recursivos y migraciones por lotes: «si el lote \(n\) deja
+la tabla consistente, el lote \(n + 1\) también».
 
 </details>
 
-### Tema 3: Criptografía aplicada, TLS, claves y secretos · Avanzado · 90 min
+### Tema 3: Conteo, grafos y estructuras conectadas · Avanzado · 70 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- elegir entre cifrado simétrico, cifrado asimétrico, firma digital y HMAC según lo que necesitas proteger;
-- firmar un comando con HMAC y rechazar manipulación, repetición y claves desconocidas;
-- verificar el certificado TLS de un servidor local, incluido el nombre de host, y leer por qué falla;
-- demostrar que borrar un secreto no lo borra del historial de Git y detectarlo con un escáner que falla en CI.
+- contar casos con la regla del producto y la regla de la suma, sin listarlos;
+- distinguir permutaciones de combinaciones y calcularlas con fórmulas y con `math`;
+- tratar `ALLOWED_TRANSITIONS` como un grafo dirigido, detectar ciclos y enumerar caminos;
+- obtener un orden topológico con `graphlib` y leer el `CycleError` cuando existe un ciclo.
 
-**Conceptos clave:** cifrado simétrico, cifrado asimétrico, clave criptográfica, firma digital, HMAC, nonce, ataque de repetición, TLS, certificado, autoridad de certificación, secreto, rotación de claves
+**Conceptos clave:** regla del producto, regla de la suma, factorial, permutación, combinación, grafo dirigido, ciclo, grafo acíclico dirigido, orden topológico
 
 #### El problema
-La app del conductor envía a RutaFlow el comando «entregué RF-4471, el PIN del destinatario es 837201». Ese mensaje
-viaja por redes que no controlas, pasa por una cola y lo procesa otro servicio. Alguien podría leer el PIN, cambiarlo
-o reenviar el mismo comando mañana. Y la clave para protegerlo, ¿dónde se guarda sin que termine en GitHub?
+RutaFlow quiere tres respuestas. ¿Cuántos números de guía distintos admite el formato `RF-dddd`? ¿Por qué no se
+prueban todas las rutas posibles para 20 paradas y se elige la mejor? Y el equipo de arquitectura sospecha que un
+cambio creó una dependencia circular entre capas del código. Contar a mano y revisar flechas a ojo no escala.
 
-Este tema usa lo que ya conoces: **hash criptográfico** y `hmac.compare_digest` (Tema 2 de este módulo),
-**cliente y servidor**, **puerto** y **DNS** (Módulo 3, Tema 1), **Git** y **commit** (Módulo 5, Tema 3) y
-**código de salida** (Módulo 0, Tema 4). Aquí no se redefinen.
+**Grafo**, **vértice**, **arista**, **lista de adyacencia** y **DFS** tienen su ficha en el Módulo 2, Tema 7;
+**relación** y **producto cartesiano**, en el Tema 2 de este módulo. Aquí no se redefinen.
 
 #### Glosario del tema
 
-**cifrado simétrico**
-- **Definición técnica:** algoritmo que cifra y descifra con la **misma** clave secreta; AES es el estándar actual.
-- **En palabras sencillas:** un candado con una sola llave que abre y cierra; quien la tenga puede hacer las dos cosas.
-- **Dónde se rompe la comparación:** con un candado ves que está cerrado; un texto cifrado con la clave equivocada a veces «descifra» basura sin avisar.
-- **Ejemplo:** `openssl enc -aes-256-cbc` convierte `PIN 837201 para RF-4471` en `U2FsdGVkX1+ERM55…` y lo recupera con la misma clave.
-- **Error típico:** creer que cifrar protege contra cambios; sin un MAC o un modo autenticado, alguien puede alterar el texto cifrado.
+**regla del producto**
+- **Definición técnica:** si una tarea se hace en \(k\) pasos sucesivos con \(n_1, n_2, \dots, n_k\) opciones cada uno, y las opciones de un paso no dependen de lo elegido antes, hay \(n_1 \cdot n_2 \cdots n_k\) maneras de hacerla.
+- **En palabras sencillas:** un menú con 3 entradas y 4 platos fuertes da \(3 \cdot 4 = 12\) almuerzos distintos.
+- **Dónde se rompe la comparación:** si lo que eliges en un paso cambia las opciones del siguiente (no repetir), multiplicas números distintos: eso lleva a las permutaciones.
+- **Ejemplo:** una guía `RF-dddd` tiene 4 dígitos con 10 opciones cada uno: \(10 \cdot 10 \cdot 10 \cdot 10 = 10^4 = 10\,000\).
+- **Error típico:** sumar en vez de multiplicar: \(10 + 10 + 10 + 10 = 40\) cuenta dígitos sueltos, no guías.
 
-**cifrado asimétrico**
-- **Definición técnica:** algoritmo con un par de claves: lo cifrado con la clave **pública** solo se descifra con la **privada**; RSA es el ejemplo clásico.
-- **En palabras sencillas:** un buzón: cualquiera mete cartas por la ranura, solo quien tiene la llave las saca.
-- **Dónde se rompe la comparación:** RSA solo cifra mensajes cortos; en la práctica cifra una clave simétrica y esta cifra los datos.
-- **Ejemplo:** con `publica.pem` se cifra `pin.txt` (24 bytes) y sale `pin.rsa` de 256 bytes; descifrar con la pública responde `A private key is needed for this operation`.
-- **Error típico:** enviar o subir la clave privada «para que el otro pueda cifrar»; al otro solo se le da la pública.
+**regla de la suma**
+- **Definición técnica:** si algo se elige de un grupo \(A\) **o** de un grupo \(B\), y los grupos no comparten elementos, hay \(\lvert A \rvert + \lvert B \rvert\) maneras.
+- **En palabras sencillas:** tomas un camino u otro; las opciones de cada camino se suman.
+- **Dónde se rompe la comparación:** si los grupos se solapan, lo común se cuenta dos veces: \(\lvert A \cup B \rvert = \lvert A \rvert + \lvert B \rvert - \lvert A \cap B \rvert\).
+- **Ejemplo:** guías `RF-dddd` o `EX-ddd`: \(10^4 + 10^3 = 11\,000\).
+- **Error típico:** sumar grupos que comparten elementos, como «envíos urgentes» y «envíos de Bogotá».
 
-**clave criptográfica**
-- **Definición técnica:** secuencia de bits secreta (o pública, en el par asimétrico) que parametriza un algoritmo criptográfico; su seguridad depende de su longitud y su aleatoriedad.
-- **En palabras sencillas:** la combinación del candado; el algoritmo es público, la combinación no.
-- **Dónde se rompe la comparación:** una contraseña humana no es una buena clave; se deriva con una función lenta (Tema 2) antes de usarla.
-- **Ejemplo:** `firma.py` lee la clave `k-2026-10` de la variable de entorno `SECRETO_ACTUAL`.
-- **Error típico:** inventar tu propio algoritmo «secreto»; la seguridad debe estar en la clave, no en esconder el método.
+**factorial**
+- **Definición técnica:** \(n! = n \cdot (n-1) \cdots 2 \cdot 1\) para \(n \ge 1\), y \(0! = 1\). Se lee «\(n\) factorial».
+- **En palabras sencillas:** el número de maneras de poner \(n\) cosas distintas en fila.
+- **Dónde se rompe la comparación:** crece más rápido que cualquier potencia fija: \(20!\) ya tiene 19 cifras.
+- **Ejemplo:** \(4! = 4 \cdot 3 \cdot 2 \cdot 1 = 24\); en Python, `math.factorial(4)`.
+- **Error típico:** pedir el factorial de un negativo: `math.factorial(-1)` produce `ValueError: factorial() not defined for negative values`.
 
-**firma digital**
-- **Definición técnica:** valor calculado con la clave privada sobre el hash de un mensaje; cualquiera con la clave pública verifica autoría e integridad.
-- **En palabras sencillas:** un sello personal que todos pueden revisar y nadie más puede imitar.
-- **Dónde se rompe la comparación:** la firma no oculta el contenido; el mensaje firmado se sigue leyendo en claro.
-- **Ejemplo:** `openssl dgst -sha256 -verify` responde `Verified OK` con el PIN original y `Verification failure` con el PIN cambiado.
-- **Error típico:** verificar la firma contra otro archivo que el que se va a usar; se verifica exactamente lo que se procesa.
+**permutación**
+- **Definición técnica:** secuencia ordenada de \(k\) elementos distintos tomados de \(n\). Su número es \(P(n, k) = \frac{n!}{(n-k)!}\); con \(k = n\), \(n!\). En Python: `itertools.permutations` y `math.perm`.
+- **En palabras sencillas:** cuántas filas distintas puedes armar cuando el orden importa.
+- **Dónde se rompe la comparación:** cuenta como distintas «Ana conduce, Beto ayuda» y «Beto conduce, Ana ayuda»; si los papeles no importan, sobra.
+- **Ejemplo:** conductor y ayudante entre 6 mensajeros: \(P(6, 2) = 6 \cdot 5 = 30\).
+- **Error típico:** usar permutaciones cuando el orden no importa: cada grupo se cuenta \(k!\) veces.
 
-**HMAC**
-- **Definición técnica:** código de autenticación de mensajes que combina una clave secreta compartida con una función hash; prueba integridad y origen entre partes que comparten la clave.
-- **En palabras sencillas:** un sello que solo pueden poner y revisar quienes conocen la misma clave.
-- **Dónde se rompe la comparación:** a diferencia de la firma digital, quien verifica también puede fabricar sellos; no sirve ante un tercero.
-- **Ejemplo:** con el PIN cambiado a `999999`, `firma.py` responde `PIN alterado: False — firma inválida`.
-- **Error típico:** calcular `sha256(clave + mensaje)` a mano en vez de `hmac.new`; esa construcción tiene ataques conocidos.
+**combinación**
+- **Definición técnica:** subconjunto de \(k\) elementos tomados de \(n\), sin orden. Su número es \(C(n, k) = \binom{n}{k} = \frac{n!}{k!\,(n-k)!}\), que se lee «\(n\) en \(k\)». En Python: `itertools.combinations` y `math.comb`.
+- **En palabras sencillas:** cuántos grupos distintos puedes formar cuando el orden no importa.
+- **Dónde se rompe la comparación:** \(C(n, k) = P(n, k) / k!\): divides entre las \(k!\) maneras de ordenar el mismo grupo.
+- **Ejemplo:** parejas de turno entre 6 mensajeros: \(C(6, 2) = \frac{30}{2} = 15\).
+- **Error típico:** esperar un error con \(k > n\): `math.comb(3, 5)` devuelve `0` sin avisar, porque no hay grupos de 5 entre 3.
 
-**nonce**
-- **Definición técnica:** valor que se usa una sola vez (*number used once*) dentro de un mensaje o una operación criptográfica.
-- **En palabras sencillas:** el número de un boleto: si llega dos veces, el segundo es una copia.
-- **Dónde se rompe la comparación:** el servidor debe recordar los nonces vistos; si los olvida pronto, la copia vuelve a pasar.
-- **Ejemplo:** `comando.json` trae `"nonce": "n-7f3a"`; la segunda vez, `firma.py` responde `nonce ya utilizado`.
-- **Error típico:** usar un contador que se reinicia con cada despliegue; los nonces viejos vuelven a ser «nuevos».
+**grafo dirigido**
+- **Definición técnica:** grafo cuyas aristas tienen dirección: la arista \((u, v)\) va de \(u\) a \(v\), y no al revés. Es lo mismo que una relación sobre los vértices (Tema 2).
+- **En palabras sencillas:** un mapa de calles de una sola vía.
+- **Dónde se rompe la comparación:** en un mapa siempre puedes dar la vuelta a la manzana; en un grafo dirigido, a veces no hay camino de regreso.
+- **Ejemplo:** `ALLOWED_TRANSITIONS` tiene 4 vértices y 3 aristas: created → assigned → out_for_delivery → delivered.
+- **Error típico:** recorrerlo como si no fuera dirigido y «encontrar» caminos que no existen, como delivered → out_for_delivery.
 
-**ataque de repetición**
-- **Definición técnica:** reenvío de un mensaje legítimo, capturado antes, para que el receptor repita su efecto (*replay*).
-- **En palabras sencillas:** fotocopiar un cheque firmado y cobrarlo otra vez.
-- **Dónde se rompe la comparación:** la firma del mensaje repetido es perfecta; lo que delata la copia es el nonce o la hora.
-- **Ejemplo:** `firma.py` rechaza la copia exacta con `nonce ya utilizado` y un comando de hace una hora con `timestamp fuera de ventana`.
-- **Error típico:** proteger solo la integridad con HMAC y olvidar que un mensaje íntegro puede ser repetido.
+**ciclo**
+- **Definición técnica:** camino \(v_0 \to v_1 \to \dots \to v_k\) con \(k \ge 1\) y \(v_k = v_0\): termina donde empezó.
+- **En palabras sencillas:** una vuelta que regresa al punto de partida.
+- **Dónde se rompe la comparación:** en un grafo de dependencias, la «vuelta» significa que nada puede construirse primero.
+- **Ejemplo:** aplicación → infraestructura → dominio → aplicación.
+- **Error típico:** detectarlo con un solo conjunto `visitados`. En un rombo (A → B, A → C, B → D, C → D), D se ve dos veces y se reporta un ciclo falso.
 
-**TLS**
-- **Definición técnica:** protocolo que cifra y autentica un canal entre cliente y servidor; HTTPS es HTTP sobre TLS.
-- **En palabras sencillas:** un tubo blindado entre tu app y el servidor, con la cédula del servidor revisada al entrar.
-- **Dónde se rompe la comparación:** el tubo protege el tramo, no los extremos; si el servidor guarda el PIN en un log, TLS no lo salva.
-- **Ejemplo:** `tls_cliente.py` imprime `CA correcta, nombre correcto: OK TLSv1.3 — RF-4471 en ruta`.
-- **Error típico:** desactivar la verificación para «que funcione»; el canal sigue cifrado, pero puede ser con un impostor.
+**grafo acíclico dirigido (DAG)**
+- **Definición técnica:** grafo dirigido sin ciclos. En inglés, *directed acyclic graph*, de ahí la sigla DAG.
+- **En palabras sencillas:** un flujo que siempre avanza y nunca vuelve atrás.
+- **Dónde se rompe la comparación:** «sin ciclos» no significa «una sola línea»: un DAG puede ramificarse y volver a juntarse, como el rombo.
+- **Ejemplo:** las transiciones de RutaFlow y las capas dominio → aplicación → infraestructura son DAG.
+- **Error típico:** asumir que un grafo es DAG porque «así se diseñó»; un cambio de una línea puede crear un ciclo.
 
-**certificado**
-- **Definición técnica:** documento X.509 que une una clave pública con nombres (DNS o IP) y está firmado por una autoridad de certificación.
-- **En palabras sencillas:** la cédula del servidor: dice cómo se llama y quién la expidió.
-- **Dónde se rompe la comparación:** la cédula se mira a ojo; el certificado se verifica con criptografía y vence en una fecha exacta.
-- **Ejemplo:** `openssl x509 … -ext subjectAltName` muestra `DNS:localhost, IP Address:127.0.0.1`.
-- **Error típico:** comprobar que el certificado es válido sin comprobar que el nombre coincide con el host al que te conectas.
-
-**autoridad de certificación**
-- **Definición técnica:** entidad (CA) cuya clave privada firma certificados; el cliente confía en una lista de CA raíz y acepta lo que ellas firmen.
-- **En palabras sencillas:** la registraduría que expide las cédulas; si no confías en ella, no confías en sus documentos.
-- **Dónde se rompe la comparación:** cualquiera puede crear una CA propia, como en este laboratorio; vale solo para quien la agregue a su lista.
-- **Ejemplo:** sin cargar `ca.pem`, el cliente responde `unable to get local issuer certificate`.
-- **Error típico:** crear la CA sin la extensión `keyUsage`; Python 3.13 la rechaza con `CA cert does not include key usage extension`.
-
-**secreto**
-- **Definición técnica:** dato cuya divulgación compromete la seguridad: claves, contraseñas de servicio, tokens de API; se entrega al programa por el entorno o un gestor de secretos, nunca en el código.
-- **En palabras sencillas:** la llave maestra; no se deja pegada en la puerta ni en una foto.
-- **Dónde se rompe la comparación:** una llave perdida se cambia con la cerradura; un secreto publicado debe **rotarse**, porque ya se copió.
-- **Ejemplo:** sin la variable de entorno, `firma.py` se niega a arrancar: `fallo: falta SECRETO_ACTUAL en el entorno`.
-- **Error típico:** borrar el `.env` en un commit nuevo y creer que desapareció; `git log -p` lo sigue mostrando.
-
-**rotación de claves**
-- **Definición técnica:** reemplazo programado de una clave por otra nueva, con un identificador (*kid*) que dice cuál se usó en cada mensaje, y un periodo en que conviven ambas.
-- **En palabras sencillas:** cambiar la clave del wifi cada cierto tiempo, avisando cuál es la nueva.
-- **Dónde se rompe la comparación:** al rotar, los mensajes firmados con la clave vieja siguen llegando un rato; hay que aceptarlos sin volverlos eternos.
-- **Ejemplo:** `SECRETOS` guarda `k-2026-10` y `k-2026-09`; un `kid` fuera de esa lista responde `kid desconocido: k-2025-01`.
-- **Error típico:** rotar la clave sin `kid`; el receptor no sabe con cuál verificar y rechaza todo durante el cambio.
+**orden topológico**
+- **Definición técnica:** lista de todos los vértices de un DAG en la que, para cada arista \(u \to v\), \(u\) aparece antes que \(v\). Existe si y solo si el grafo no tiene ciclos. En Python: `graphlib.TopologicalSorter`.
+- **En palabras sencillas:** un orden de trabajo que respeta todas las dependencias: nada se construye antes de lo que necesita.
+- **Dónde se rompe la comparación:** puede haber varios órdenes válidos; la herramienta devuelve uno.
+- **Ejemplo:** `['dominio', 'aplicación', 'infraestructura', 'pruebas']`.
+- **Error típico:** pedir el orden de un grafo con ciclo: `graphlib` lanza `CycleError` y muestra el ciclo.
 
 #### ► CÓMO FUNCIONA
-Cada herramienta resuelve una pregunta distinta. Confundirlas es el error más caro de este tema.
+**Contar sin listar.** Primero preguntas: ¿la tarea se hace por pasos (multiplica) o por caminos alternativos (suma)?
+Después: ¿importa el orden? ¿se puede repetir? Estas dos preguntas eligen la fórmula.
 
-| Necesitas | Herramienta | Quién tiene la clave |
-|---|---|---|
-| Que nadie lea los datos | Cifrado simétrico (AES) | Ambos extremos, la misma |
-| Que cualquiera te envíe algo solo legible para ti | Cifrado asimétrico (RSA) | Tú la privada; todos la pública |
-| Probar a terceros que tú lo escribiste | Firma digital | Tú la privada; todos verifican con la pública |
-| Que dos servicios tuyos detecten cambios | HMAC | Ambos servicios, la misma |
-| Proteger el tramo de red | TLS | El servidor; el cliente confía en la CA |
+| ¿Importa el orden? | ¿Se repite? | Fórmula | Ejemplo |
+|---|---|---|---|
+| Sí | Sí | \(n^k\) | guías de 4 dígitos: \(10^4\) |
+| Sí | No | \(P(n, k) = \frac{n!}{(n-k)!}\) | conductor y ayudante: \(P(6, 2) = 30\) |
+| No | No | \(C(n, k) = \frac{n!}{k!\,(n-k)!}\) | parejas de turno: \(C(6, 2) = 15\) |
 
-Para el comando de confirmación, RutaFlow combina tres capas. TLS protege el tramo. HMAC con `kid` prueba que el
-comando salió de un servicio con la clave y no cambió. La ventana de tiempo y el nonce impiden repetirlo.
+Para ordenar \(n\) paradas hay \(n!\) rutas. Con 20 paradas son más de \(2 \times 10^{18}\): aunque revisaras mil
+millones por segundo, tardarías más de 70 años. Por eso RutaFlow usa una heurística como el vecino más cercano.
+
+**Detectar ciclos con DFS.** `tiene_ciclo` recorre el grafo en profundidad y marca cada vértice en uno de tres estados:
+
+1. **No visitado:** todavía no lo tocas.
+2. **Activo:** estás dentro de él; su recorrido no ha terminado. Está en el conjunto `activos`.
+3. **Terminado:** ya revisaste todo lo que alcanza. Está en `visitados`.
+
+Si desde un vértice activo llegas a otro vértice **activo**, encontraste una arista que regresa al camino actual: un
+ciclo. Llegar a un vértice **terminado** no es ciclo: solo es otro camino hacia algo ya revisado, como D en el rombo.
+
+**Orden topológico.** Si no hay ciclos, siempre existe un vértice sin dependencias pendientes. Lo sacas, lo pones en la
+lista y repites. Si en algún momento todos los que quedan esperan a otro, hay un ciclo.
 
 ```mermaid
 flowchart LR
-    MSG["comando + timestamp + nonce"] --> CAN["JSON canónico"]
-    CAN --> MAC["HMAC-SHA256 con kid"]
-    MAC --> SOBRE["sobre firmado"]
-    SOBRE --> VER["verificar firma"]
-    VER -->|"válida"| VENT["ventana de 300 s"]
-    VENT -->|"vigente"| NONCE["nonce no visto"]
-    NONCE -->|"nuevo"| OK["aceptar"]
-    VER -->|"inválida"| REJ["rechazar"]
-    VENT -->|"vieja"| REJ
-    NONCE -->|"repetido"| REJ
-    TLS["TLS: CA + nombre de host"] -.->|"protege el tramo"| SOBRE
-    SEC["llavero con rotación"] -.->|"entrega la clave del kid"| MAC
+    DOMAIN["dominio"] --> APP["aplicación"] --> INFRA["infraestructura"]
+    DOMAIN --> TESTS["pruebas"]
+    APP --> TESTS
+    A["A"] --> B["B"] --> C["C"] --> A
 ```
 
 #### Problema resuelto 3.1
-Cifra el PIN con una clave simétrica y con un par de claves RSA, y firma el archivo. Observa qué cambia en cada
-ejecución y qué responde OpenSSL cuando algo no cuadra.
+Cuenta los números de guía posibles, las rutas de 4 paradas, las parejas y los equipos ordenados de mensajeros.
+Compara la fórmula con la lista completa que genera `itertools`, y mira cómo crece \(n!\).
 
 **Razonamiento:**
-1. AES con una frase de paso: OpenSSL deriva la clave con PBKDF2 (`-pbkdf2`) y agrega una sal aleatoria.
-2. Cifrar dos veces lo mismo debe dar textos distintos; descifrar con otra clave debe fallar.
-3. RSA: generar el par, cifrar con la pública, descifrar con la privada.
-4. Firmar con la privada, verificar con la pública, y verificar contra un archivo alterado.
+1. Guía: 4 pasos con 10 opciones, el orden importa y se repite: \(10^4\). Agregar el formato `EX-ddd` es regla de la suma.
+2. Rutas: ordenar 4 paradas distintas es \(4!\).
+3. Parejas sin papel: \(C(6, 2)\). Conductor y ayudante: \(P(6, 2)\).
+4. Listar con `itertools` solo sirve para comprobar números pequeños; para 20 paradas solo se puede calcular.
 
-Ejecuta en `~/labs/seguridad/tema3/cripto`:
+```python
+# conteo.py — contar sin listar y comprobar listando
+from itertools import combinations, permutations, product
+from math import comb, factorial, perm
+
+digitos = range(10)
+guias = list(product(digitos, repeat=4))
+print("guías RF-dddd:", len(guias), "=", 10**4)
+print("guías RF- o EX-ddd:", 10**4 + 10**3)
+
+paradas = ["A", "B", "C", "D"]
+ordenes = list(permutations(paradas))
+print("órdenes de 4 paradas:", len(ordenes), "= 4! =", factorial(4))
+print("los tres primeros:", ["".join(o) for o in ordenes[:3]])
+
+mensajeros = ["Ana", "Beto", "Caro", "Dani", "Eva", "Fede"]
+parejas = list(combinations(mensajeros, 2))
+print("parejas de 6 mensajeros:", len(parejas), "= C(6,2) =", comb(6, 2))
+print("conductor y ayudante:", len(list(permutations(mensajeros, 2))), "= P(6,2) =", perm(6, 2))
+
+for n in (5, 10, 15, 20):
+    print(f"{n} paradas → {factorial(n):,} órdenes posibles")
+```
 
 ```text
-$ printf 'PIN 837201 para RF-4471\n' > pin.txt
-$ openssl enc -aes-256-cbc -pbkdf2 -in pin.txt -out pin.enc -pass pass:clave-de-laboratorio
-$ base64 pin.enc
-U2FsdGVkX1+ERM55vt66sPA1iIx6Xjjx1qspkZFBUw1gbAKWN9o6h4+z/YAkg1Fb
-$ openssl enc -aes-256-cbc -pbkdf2 -in pin.txt -pass pass:clave-de-laboratorio | base64
-U2FsdGVkX18Raern+VUOYut+T/REcKv2DRunOo0KxsYOUZ3PEo44vvCUpETTh4oM
-$ openssl enc -d -aes-256-cbc -pbkdf2 -in pin.enc -pass pass:clave-de-laboratorio
-PIN 837201 para RF-4471
-$ openssl enc -d -aes-256-cbc -pbkdf2 -in pin.enc -pass pass:otra-clave -out /dev/null
-bad decrypt
-40A7376A827F0000:error:1C800064:Provider routines:ossl_cipher_unpadblock:bad decrypt:../providers/implementations/ciphers/ciphercommon_block.c:124:
+$ python3 conteo.py
+guías RF-dddd: 10000 = 10000
+guías RF- o EX-ddd: 11000
+órdenes de 4 paradas: 24 = 4! = 24
+los tres primeros: ['ABCD', 'ABDC', 'ACBD']
+parejas de 6 mensajeros: 15 = C(6,2) = 15
+conductor y ayudante: 30 = P(6,2) = 30
+5 paradas → 120 órdenes posibles
+10 paradas → 3,628,800 órdenes posibles
+15 paradas → 1,307,674,368,000 órdenes posibles
+20 paradas → 2,432,902,008,176,640,000 órdenes posibles
 ```
 
 **Explicación por partes.**
-- Los dos textos cifrados empiezan con `U2FsdGVkX1`, que es `Salted__` en base64: OpenSSL guarda la sal al inicio.
-- Después de esos caracteres son distintos: la sal aleatoria cambia la clave efectiva en cada ejecución.
-- Con `otra-clave`, el relleno final no cuadra y OpenSSL termina con `bad decrypt` y código de salida 1.
-- La segunda línea del error trae una dirección hexadecimal que cambia en cada equipo; lo que importa es `bad decrypt`.
+- Línea 6: `product(digitos, repeat=4)` genera las 10 000 guías como tuplas; `len` comprueba la regla del producto.
+- Línea 8: regla de la suma: los dos formatos no comparten guías, así que se suman.
+- Líneas 11–13: `permutations` genera las 24 filas; `ABCD` y `ABDC` difieren solo en el orden de las dos últimas.
+- Líneas 16–18: las 30 permutaciones de 2 son exactamente el doble de las 15 combinaciones: \(C(6, 2) = P(6, 2) / 2!\).
+- Líneas 20–21: `{factorial(n):,}` separa los miles con comas. De 10 a 20 paradas, las rutas pasan de 3 millones a 2 trillones.
 
-```text
-$ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -quiet -out privada.pem
-$ openssl pkey -in privada.pem -pubout -out publica.pem
-$ head -1 publica.pem
------BEGIN PUBLIC KEY-----
-$ openssl pkeyutl -encrypt -pubin -inkey publica.pem -pkeyopt rsa_padding_mode:oaep -in pin.txt -out pin.rsa
-$ wc -c pin.txt pin.rsa
- 24 pin.txt
-256 pin.rsa
-280 total
-$ openssl pkeyutl -decrypt -inkey privada.pem -pkeyopt rsa_padding_mode:oaep -in pin.rsa
-PIN 837201 para RF-4471
-$ openssl dgst -sha256 -sign privada.pem -out pin.sig pin.txt
-$ openssl dgst -sha256 -verify publica.pem -signature pin.sig pin.txt
-Verified OK
-$ printf 'PIN 999999 para RF-4471\n' > pin_alterado.txt
-$ openssl dgst -sha256 -verify publica.pem -signature pin.sig pin_alterado.txt
-40E78C9F3D7F0000:error:02000068:rsa routines:ossl_rsa_verify:bad signature:../crypto/rsa/rsa_sign.c:430:
-40E78C9F3D7F0000:error:1C880004:Provider routines:rsa_verify:RSA lib:../providers/implementations/signature/rsa_sig.c:774:
-Verification failure
-$ openssl pkeyutl -decrypt -inkey publica.pem -pubin -pkeyopt rsa_padding_mode:oaep -in pin.rsa
-A private key is needed for this operation
-pkeyutl: Error initializing context
-```
-
-- `-quiet` evita los puntos de progreso de `genpkey`. La clave privada nunca sale de `privada.pem`.
-- `rsa_padding_mode:oaep` elige el relleno moderno de RSA; el viejo (PKCS#1 v1.5) tiene ataques conocidos.
-- `pin.rsa` mide 256 bytes, el tamaño de la clave de 2048 bits, aunque el mensaje tenga 24.
-- La verificación con el archivo alterado termina en `Verification failure`; la firma no corresponde a ese contenido.
-- La última orden demuestra el buzón: con la clave pública no se puede descifrar.
-
-> **Error común.** Leer `bad decrypt` como «archivo dañado». Casi siempre significa clave o frase de paso
-> equivocada, o un algoritmo distinto al usado al cifrar (por ejemplo, olvidar `-pbkdf2` en un lado). Revisa que
-> las dos órdenes usen exactamente las mismas opciones.
+> **Error común.** Pasar a `factorial` un número calculado que resultó negativo, por ejemplo `factorial(paradas - 5)`
+> con 3 paradas. El programa se detiene con `ValueError: factorial() not defined for negative values`. Valida la
+> precondición \(n \ge 0\) antes de calcular.
 
 #### Problema resuelto 3.2
-Firma el comando de confirmación con HMAC y rechaza manipulación, repetición, mensajes viejos y claves
-desconocidas. La clave actual llega por variable de entorno.
+Comprueba que `ALLOWED_TRANSITIONS` es un DAG y demuestra el invariante del Tema 1: «ningún envío llega a delivered sin
+pasar por assigned y out_for_delivery». Después detecta el ciclo que crea un cambio en las capas del código y obtén el
+orden de construcción.
 
 **Razonamiento:**
-1. Serializar el comando de forma canónica para que emisor y receptor firmen los mismos bytes.
-2. Verificar en orden: `kid` conocido, firma, ventana de 300 segundos y nonce no visto.
-3. Fijar `AHORA` para que la salida sea reproducible; en producción se usa `time.time()`.
+1. Convierte el diccionario de estados en una lista de adyacencia con texto: \(\{\text{estado}: \{\text{destinos}\}\}\).
+2. `tiene_ciclo` (DFS con `activos` y `visitados`) responde si es DAG.
+3. En un DAG finito, los caminos entre dos vértices son finitos: puedes listarlos todos. Si todos pasan por assigned y out_for_delivery, el invariante está demostrado.
+4. Para las capas, la flecha \(u \to v\) significa «\(v\) depende de \(u\)»: \(u\) se construye antes.
 
-Crea `comando.json` en `~/labs/seguridad/tema3`:
+```python
+# grafo.py — ciclos y caminos en grafos dirigidos
+from domain import ALLOWED_TRANSITIONS
 
-```json
-{
-  "shipmentId": "RF-4471",
-  "recipientPin": "837201",
-  "timestamp": 1793414990,
-  "nonce": "n-7f3a"
+
+def tiene_ciclo(grafo: dict[str, set[str]]) -> bool:
+    visitados, activos = set(), set()
+
+    def visitar(nodo: str) -> bool:
+        if nodo in activos:
+            return True
+        if nodo in visitados:
+            return False
+        activos.add(nodo)
+        for vecino in grafo.get(nodo, set()):
+            if visitar(vecino):
+                return True
+        activos.remove(nodo)
+        visitados.add(nodo)
+        return False
+
+    return any(visitar(n) for n in grafo)
+
+
+def caminos(grafo, origen, destino):
+    if origen == destino:
+        return [[destino]]
+    return [[origen] + resto for vecino in sorted(grafo.get(origen, set()))
+            for resto in caminos(grafo, vecino, destino)]
+
+
+estados = {a.value: {b.value for b in destinos} for a, destinos in ALLOWED_TRANSITIONS.items()}
+print("estados:", len(estados), "aristas:", sum(len(v) for v in estados.values()))
+print("¿ciclo en transiciones?", tiene_ciclo(estados))
+print("caminos created → delivered:", caminos(estados, "created", "delivered"))
+
+capas = {
+    "dominio": {"aplicación", "pruebas"},
+    "aplicación": {"infraestructura", "pruebas"},
+    "infraestructura": set(),
+    "pruebas": set(),
 }
-```
-
-```python
-# firma.py — firma HMAC del comando de confirmación con ventana y nonce
-import hashlib
-import hmac
-import json
-import os
-import sys
-from pathlib import Path
-
-SECRETOS = {"k-2026-10": os.environ.get("SECRETO_ACTUAL", ""), "k-2026-09": "clave-anterior-de-laboratorio"}
-VENTANA = 300
-AHORA = 1793415000
-
-if not SECRETOS["k-2026-10"]:
-    sys.exit("fallo: falta SECRETO_ACTUAL en el entorno")
-
-
-def canonico(datos):
-    return json.dumps(datos, sort_keys=True, separators=(",", ":")).encode()
-
-
-def firmar(comando, kid):
-    return hmac.new(SECRETOS[kid].encode(), canonico(comando), hashlib.sha256).hexdigest()
-
-
-def verificar(sobre, vistos, ahora=AHORA):
-    comando = sobre["comando"]
-    if sobre["kid"] not in SECRETOS:
-        return False, f"kid desconocido: {sobre['kid']}"
-    if not hmac.compare_digest(sobre["firma"], firmar(comando, sobre["kid"])):
-        return False, "firma inválida"
-    if abs(ahora - comando["timestamp"]) > VENTANA:
-        return False, "timestamp fuera de ventana"
-    if comando["nonce"] in vistos:
-        return False, "nonce ya utilizado"
-    vistos.add(comando["nonce"])
-    return True, "aceptado"
-
-
-def resultado(par):
-    return f"{par[0]} — {par[1]}"
-
-
-comando = json.loads(Path("comando.json").read_text(encoding="utf-8"))
-sobre = {"comando": comando, "kid": "k-2026-10", "firma": firmar(comando, "k-2026-10")}
-vistos = set()
-print(f"kid: {sobre['kid']}")
-print(f"comando canónico: {canonico(comando).decode()}")
-print(f"válido: {resultado(verificar(sobre, vistos))}")
-
-alterado = {"comando": {**comando, "recipientPin": "999999"}, "kid": sobre["kid"], "firma": sobre["firma"]}
-print(f"PIN alterado: {resultado(verificar(alterado, vistos))}")
-
-repetido = {"comando": dict(comando), "kid": sobre["kid"], "firma": sobre["firma"]}
-print(f"replay del mismo nonce: {resultado(verificar(repetido, vistos))}")
-
-viejo = {"comando": {**comando, "timestamp": comando["timestamp"] - 3600, "nonce": "n-viejo"}, "kid": sobre["kid"]}
-viejo["firma"] = firmar(viejo["comando"], sobre["kid"])
-print(f"timestamp viejo: {resultado(verificar(viejo, vistos))}")
-
-ajeno = {"comando": {**comando, "nonce": "n-ajeno"}, "kid": "k-2025-01", "firma": "0" * 64}
-print(f"kid desconocido: {resultado(verificar(ajeno, vistos))}")
+print("¿ciclo en capas?", tiene_ciclo(capas))
+capas["infraestructura"].add("dominio")
+print("tras infraestructura → dominio:", tiene_ciclo(capas))
 ```
 
 ```text
-$ python3 firma.py
-fallo: falta SECRETO_ACTUAL en el entorno
-$ export SECRETO_ACTUAL='clave-actual-de-laboratorio'
-$ python3 firma.py
-kid: k-2026-10
-comando canónico: {"nonce":"n-7f3a","recipientPin":"837201","shipmentId":"RF-4471","timestamp":1793414990}
-válido: True — aceptado
-PIN alterado: False — firma inválida
-replay del mismo nonce: False — nonce ya utilizado
-timestamp viejo: False — timestamp fuera de ventana
-kid desconocido: False — kid desconocido: k-2025-01
+$ python3 grafo.py
+estados: 4 aristas: 3
+¿ciclo en transiciones? False
+caminos created → delivered: [['created', 'assigned', 'out_for_delivery', 'delivered']]
+¿ciclo en capas? False
+tras infraestructura → dominio: True
 ```
 
-**Explicación por partes.**
-- Línea 9: el llavero. La clave actual sale del entorno; la anterior queda para mensajes firmados antes de rotar.
-- Líneas 13–14: sin la variable, el programa se niega a arrancar. Fallar ruidoso es mejor que firmar con una clave vacía.
-- Líneas 17–18 y 21–22: JSON canónico y HMAC-SHA256 con la clave del `kid`.
-- Líneas 27–28: un `kid` fuera del llavero se rechaza antes de calcular nada.
-- Línea 29: la comparación es de tiempo constante, como en el Tema 2.
-- Líneas 31–35: la ventana descarta mensajes viejos y el conjunto `vistos` descarta repetidos.
-- Salida: el PIN alterado conserva la firma vieja, que ya no corresponde; por eso `firma inválida`.
-
-> **Error común.** Ejecutar el programa en una terminal nueva sin la variable. La salida es
-> `fallo: falta SECRETO_ACTUAL en el entorno` con código 1. `export` vale solo para la terminal donde lo escribiste.
-
-> **Buena práctica.** El valor real del secreto vive en un gestor de secretos o en la configuración del servidor.
-> El repositorio solo lleva un `.env.example` con el **nombre** de la variable y un valor de ejemplo inofensivo.
-
-#### Problema resuelto 3.3
-Levanta un servidor TLS en tu equipo con una CA propia y comprueba qué hace un cliente que verifica de verdad.
-
-**Razonamiento:**
-1. Crear una CA de laboratorio con `basicConstraints` y `keyUsage`, y un certificado de servidor para `localhost`.
-2. Servir TLS en `127.0.0.1` con un puerto libre que elige el sistema operativo (puerto `0`).
-3. Probar tres clientes: sin confiar en la CA, con la CA y el nombre correcto, y con la CA y otro nombre.
-
-Crea `tls_cliente.py` en `~/labs/seguridad/tema3/tls`:
+Hay un único camino de created a delivered y pasa por los dos estados intermedios, en orden: el invariante se cumple
+para todo envío. Ahora el orden de construcción con la biblioteca estándar, antes y después del cambio que crea el ciclo:
 
 ```python
-# tls_cliente.py — servidor TLS local y tres clientes que verifican (o no) su certificado
-import socket
-import ssl
-import threading
+# orden.py — orden topológico con la biblioteca estándar
+from graphlib import TopologicalSorter
 
-servidor_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-servidor_ctx.load_cert_chain("servidor.pem", "servidor.key")
-escucha = socket.create_server(("127.0.0.1", 0))
-puerto = escucha.getsockname()[1]
-
-
-def atender():
-    while True:
-        conexion, _ = escucha.accept()
-        try:
-            with servidor_ctx.wrap_socket(conexion, server_side=True) as tls:
-                tls.sendall(b"RF-4471 en ruta")
-        except (ssl.SSLError, OSError):
-            pass
-
-
-threading.Thread(target=atender, daemon=True).start()
-
-
-def probar(nombre, ctx, host):
-    try:
-        with socket.create_connection(("127.0.0.1", puerto)) as crudo:
-            with ctx.wrap_socket(crudo, server_hostname=host) as tls:
-                print(f"{nombre}: OK {tls.version()} — {tls.recv(100).decode()}")
-    except ssl.SSLCertVerificationError as error:
-        print(f"{nombre}: RECHAZADO — {error.verify_message}")
-
-
-sin_ca = ssl.create_default_context()
-con_ca = ssl.create_default_context(cafile="ca.pem")
-probar("sin confiar en la CA", sin_ca, "localhost")
-probar("CA correcta, nombre correcto", con_ca, "localhost")
-probar("CA correcta, otro nombre", con_ca, "api.rutaflow.co")
-```
-
-Genera los certificados y ejecuta (la orden `<(…)` necesita Bash):
-
-```text
-$ openssl req -x509 -newkey rsa:2048 -nodes -keyout ca.key -out ca.pem -days 30 -subj "/CN=CA de laboratorio RutaFlow" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,keyCertSign,cRLSign" 2>/dev/null
-$ openssl req -newkey rsa:2048 -nodes -keyout servidor.key -out servidor.csr -subj "/CN=localhost" 2>/dev/null
-$ openssl x509 -req -in servidor.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out servidor.pem -days 30 -extfile <(printf 'subjectAltName=DNS:localhost,IP:127.0.0.1')
-Certificate request self-signature ok
-subject=CN = localhost
-$ openssl x509 -in servidor.pem -noout -subject -issuer -ext subjectAltName
-subject=CN = localhost
-issuer=CN = CA de laboratorio RutaFlow
-X509v3 Subject Alternative Name: 
-    DNS:localhost, IP Address:127.0.0.1
-$ openssl verify -CAfile ca.pem servidor.pem
-servidor.pem: OK
-$ python3 tls_cliente.py
-sin confiar en la CA: RECHAZADO — unable to get local issuer certificate
-CA correcta, nombre correcto: OK TLSv1.3 — RF-4471 en ruta
-CA correcta, otro nombre: RECHAZADO — Hostname mismatch, certificate is not valid for 'api.rutaflow.co'.
-```
-
-**Explicación por partes.**
-- `openssl verify` responde `servidor.pem: OK`: la firma de la CA cuadra. Eso aún no dice nada del nombre.
-- Líneas 6–9: el servidor carga su certificado y su clave privada; el puerto `0` pide uno libre.
-- Líneas 12–19: el hilo atiende conexiones; si un cliente aborta el saludo TLS, la excepción se ignora.
-- Línea 28: `server_hostname` es el nombre que el cliente **espera**; Python lo compara con el certificado.
-- Línea 34: el contexto por defecto confía en las CA del sistema, no en la tuya: `unable to get local issuer certificate`.
-- Línea 35: con `cafile="ca.pem"` la cadena se acepta. Con otro nombre, `Hostname mismatch`.
-
-> **Error común.** Crear la CA sin extensiones (`openssl req -x509 … -subj "/CN=…"` a secas). Python 3.13 activa
-> verificación estricta y los dos clientes que cargan esa CA responden `CA cert does not include key usage extension`. Agrega
-> `-addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,keyCertSign,cRLSign"`.
-
-> **Prevenir errores.** Nunca «arregles» un error de certificado con `ssl.CERT_NONE`. Python incluso lo impide si
-> `check_hostname` sigue activo: `ValueError: Cannot set verify_mode to CERT_NONE when check_hostname is enabled.`
-> La corrección es darle al cliente la CA correcta, no apagar la verificación.
-
-#### Problema resuelto 3.4
-Demuestra que un secreto borrado sigue en el historial de Git y escribe un escáner que falle cuando lo encuentra.
-
-**Razonamiento:**
-1. Hacer un commit con `.env`, borrarlo en un segundo commit y buscarlo con `git log -p`.
-2. El escáner lee texto por la entrada estándar, busca patrones de secreto y termina con código 1 si encuentra algo.
-3. Ese código de salida es lo que hace fallar un paso de CI (Módulo 5, Tema 4).
-
-```python
-# escanear.py — busca secretos en un texto (archivo o historial de Git) leído por la entrada estándar
-import re
-import sys
-
-PATRONES = {
-    "asignación de secreto": re.compile(r"(?i)\b(secret|secreto|password|clave|api_key|token)\w*\s*[=:]\s*['\"]?([^\s'\"]{12,})"),
-    "clave privada PEM": re.compile(r"-----BEGIN (?:RSA |EC )?PRIVATE KEY-----"),
+# cada clave depende de los elementos de su conjunto
+depende_de = {
+    "aplicación": {"dominio"},
+    "infraestructura": {"aplicación"},
+    "pruebas": {"dominio", "aplicación"},
 }
+print("orden de construcción:", list(TopologicalSorter(depende_de).static_order()))
 
-hallazgos = 0
-for numero, linea in enumerate(sys.stdin, start=1):
-    for nombre, patron in PATRONES.items():
-        coincidencia = patron.search(linea)
-        if coincidencia:
-            valor = coincidencia.group(coincidencia.lastindex or 0)
-            visible = valor[:4] + "…" if coincidencia.lastindex else "(bloque PEM)"
-            print(f"línea {numero}: {nombre}: {visible}")
-            hallazgos += 1
-print(f"hallazgos: {hallazgos}")
-sys.exit(1 if hallazgos else 0)
-```
-
-Ejecuta en `~/labs/seguridad/tema3/repo`. Para que tus hashes coincidan con los del libro, fija antes autor y fecha:
-
-```bash
-export GIT_AUTHOR_NAME=Estudiante GIT_AUTHOR_EMAIL=estudiante@example.com
-export GIT_COMMITTER_NAME=Estudiante GIT_COMMITTER_EMAIL=estudiante@example.com
-export GIT_AUTHOR_DATE=2026-11-24T10:00:00-05:00 GIT_COMMITTER_DATE=2026-11-24T10:00:00-05:00
+depende_de["dominio"] = {"infraestructura"}
+print(list(TopologicalSorter(depende_de).static_order()))
 ```
 
 ```text
-$ git init -q -b main
-$ printf 'SECRETO_ACTUAL=clave-actual-de-laboratorio\n' > .env
-$ printf 'print("RutaFlow")\n' > app.py
-$ git add .env app.py
-$ git commit -q -m "Configura la aplicación"
-$ git rm -q .env
-$ git commit -q -m "Quita el archivo de secretos"
-$ ls -a
-.
-..
-.git
-app.py
-$ git log --oneline
-60c425c Quita el archivo de secretos
-1ba9584 Configura la aplicación
-$ git log -p --all -- .env | grep SECRETO
--SECRETO_ACTUAL=clave-actual-de-laboratorio
-+SECRETO_ACTUAL=clave-actual-de-laboratorio
-$ git log -p --all | python3 ../escanear.py; echo "código de salida: $?"
-línea 13: asignación de secreto: clav…
-línea 27: asignación de secreto: clav…
-hallazgos: 2
-código de salida: 1
-$ python3 ../escanear.py < app.py; echo "código de salida: $?"
-hallazgos: 0
-código de salida: 0
+$ python3 orden.py
+orden de construcción: ['dominio', 'aplicación', 'infraestructura', 'pruebas']
+Traceback (most recent call last):
+  File "/home/estudiante/labs/discretas/grafos/orden.py", line 13, in <module>
+    print(list(TopologicalSorter(depende_de).static_order()))
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/graphlib.py", line 244, in static_order
+    self.prepare()
+    ~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/graphlib.py", line 106, in prepare
+    raise CycleError(f"nodes are in a cycle", cycle)
+graphlib.CycleError: ('nodes are in a cycle', ['aplicación', 'infraestructura', 'dominio', 'aplicación'])
 ```
 
 **Explicación por partes.**
-- `ls -a` ya no muestra `.env`, pero `git log -p` lo enseña dos veces: cuando se agregó (`+`) y cuando se borró (`-`).
-- Línea 6: busca un nombre que parezca de secreto seguido de `=` o `:` y un valor de al menos 12 caracteres.
-- Línea 7: detecta el encabezado de una clave privada en formato PEM.
-- Línea 16: muestra solo los primeros 4 caracteres; un escáner no debe volver a filtrar el secreto en su propio log.
-- Línea 20: el código de salida `1` hace fallar el paso de CI que lo ejecute.
+- `grafo.py`, líneas 9–10: llegar a un vértice **activo** es volver al camino actual: ciclo.
+- `grafo.py`, líneas 11–12: llegar a uno **terminado** no es ciclo; se descarta sin repetir trabajo.
+- `grafo.py`, líneas 17–18: al terminar un vértice, sale de `activos` y entra en `visitados`.
+- `grafo.py`, líneas 24–28: `caminos` es recursiva. Su caso base es llegar al destino; termina porque el grafo no tiene ciclos.
+- `grafo.py`, línea 43: una sola arista nueva, infraestructura → dominio, convierte el DAG en un grafo con ciclo.
+- `orden.py`, líneas 5–9: `TopologicalSorter` recibe «quién depende de quién», en sentido contrario a las flechas del diagrama.
+- `orden.py`, línea 13: con el ciclo no existe orden topológico; la excepción nombra el ciclo completo.
 
-> **Error común.** Creer que `git rm` o un `git commit --amend` posterior borran el secreto del remoto. Si ya
-> hiciste `push`, otros pueden tenerlo clonado. El orden correcto es: **rotar** el secreto primero, luego limpiar el
-> historial con herramientas como `git filter-repo`, y avisar al equipo.
+> **Error común.** Pedir un orden topológico sin revisar ciclos. El programa termina con
+> `graphlib.CycleError: ('nodes are in a cycle', ['aplicación', 'infraestructura', 'dominio', 'aplicación'])`. Lee la
+> lista de izquierda a derecha: cada elemento depende del anterior, y el último repite el primero.
+
+> **Prevenir errores.** Agrega `tiene_ciclo` (o `TopologicalSorter(...).prepare()`) como prueba automática del grafo de
+> dependencias. Así el ciclo aparece en la integración continua, no meses después en una compilación que nadie entiende.
 
 #### Checkpoint 3.1
-El servicio de facturación debe demostrar a un cliente externo que una factura salió de RutaFlow. ¿Usas HMAC o firma
-digital? ¿Por qué?
+Si RutaFlow agrega un quinto estado, `cancelled`, ¿cuántos pares (actual, pedido) debe revisar `transiciones.py`?
 
-Respuesta: firma digital. Con HMAC el cliente necesitaría la clave compartida, y entonces él también podría fabricar
-facturas. Con la firma, RutaFlow guarda la privada y el cliente verifica con la pública.
+Respuesta: \(5 \cdot 5 = 25\). Es el producto cartesiano \(S \times S\) con \(\lvert S \rvert = 5\), por la regla del producto.
+
+#### Checkpoint 3.2
+¿Cómo ayuda un grafo a detectar un ciclo de dependencias?
+
+Respuesta: cada módulo es un vértice y cada dependencia, una arista dirigida. Un ciclo de dependencias es un ciclo del
+grafo, y un DFS lo encuentra cuando llega a un vértice que sigue activo en el camino actual.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Cifra y firma con OpenSSL
-Crea `~/labs/seguridad/tema3/cripto`, entra y repite las órdenes del Problema resuelto 3.1. Confirma que tus textos
-cifrados son distintos de los del libro y que los veredictos (`bad decrypt`, `Verified OK`, `Verification failure`)
-son los mismos.
+#### Paso 1 · Prepara la carpeta
+Crea `~/labs/discretas/grafos`, entra y copia ahí `domain.py` del Tema 1.
 
-#### Paso 2 · Firma el comando
-En `~/labs/seguridad/tema3`, escribe `comando.json` y `firma.py`. Ejecútalo sin la variable, luego con
-`export SECRETO_ACTUAL='clave-actual-de-laboratorio'`, y compara con las siete líneas esperadas.
+#### Paso 2 · Cuenta y comprueba
+Escribe `conteo.py` y ejecútalo. Antes de cada línea de la salida, escribe en papel tu predicción con la fórmula de
+la tabla de «Cómo funciona».
 
-#### Paso 3 · Verifica TLS
-Crea la carpeta `tls`, genera la CA y el certificado del servidor, y ejecuta `python3 tls_cliente.py`. Debes ver un
-`OK TLSv1.3` y dos `RECHAZADO`.
+#### Paso 3 · Detecta el ciclo
+Escribe `grafo.py` y ejecútalo. Luego agrega `estados["delivered"].add("created")` antes de la línea 33 y vuelve a
+ejecutarlo: `¿ciclo en transiciones?` debe pasar a `True`. Quita esa línea al terminar.
 
-#### Paso 4 · Encuentra el secreto
-Crea la carpeta `repo`, repite la secuencia de Git y pasa el historial por `escanear.py`. Escribe en un archivo
-`rotacion.txt` los tres pasos que harías si ese repositorio fuera público.
+#### Paso 4 · Ordena la construcción
+Escribe `orden.py` y ejecútalo. Confirma que la primera línea muestra el orden y que la excepción final nombra el ciclo
+`aplicación → infraestructura → dominio → aplicación`.
 
 #### Resumen
-- El **cifrado simétrico** usa una sola **clave criptográfica**; el **cifrado asimétrico** usa un par pública/privada.
-- La **firma digital** prueba autoría ante terceros; el **HMAC** prueba integridad entre quienes comparten la clave.
-- Un **nonce** y una ventana de tiempo frenan el **ataque de repetición**, que una firma sola no detiene.
-- **TLS** protege el canal si el cliente verifica el **certificado**, su **autoridad de certificación** y el nombre de host.
-- Un **secreto** se entrega por el entorno; si se publica, se rota antes de limpiar el historial.
-- La **rotación de claves** usa un `kid` y un periodo en que conviven la clave nueva y la anterior.
+- La **regla del producto** multiplica las opciones de pasos sucesivos; la **regla de la suma** suma caminos sin solapamiento.
+- El **factorial** \(n!\) cuenta las filas de \(n\) elementos; crece tan rápido que probar todas las rutas es imposible.
+- La **permutación** \(P(n, k)\) cuenta con orden; la **combinación** \(C(n, k)\), sin orden: \(C(n, k) = P(n, k) / k!\).
+- Un **grafo dirigido** es una relación con dirección; un **ciclo** vuelve a su punto de partida.
+- Un **grafo acíclico dirigido** no tiene ciclos; en él los caminos son finitos y se pueden enumerar.
+- El DFS detecta un ciclo al llegar a un vértice activo; llegar a uno terminado no es ciclo.
+- Un **orden topológico** existe solo en un DAG; `graphlib` lanza `CycleError` si hay ciclo.
 
 #### Ejercicio verificable 1
-Básico. Ejecuta `python3 escanear.py < cripto/privada.pem; echo $?` desde `~/labs/seguridad/tema3`. ¿Qué imprime?
+Básico. Los casilleros de una bodega se nombran con 2 letras (26 opciones cada una) y 3 dígitos. ¿Cuántos nombres
+distintos hay? Comprueba con Python.
 
-Respuesta esperada: `línea 1: clave privada PEM: (bloque PEM)`, `hallazgos: 1` y el código `1`. El patrón de la
-línea 7 reconoce el encabezado `-----BEGIN PRIVATE KEY-----` que escribe `genpkey`.
+Respuesta esperada: \(26^2 \cdot 10^3 = 676\,000\), por la regla del producto. En Python, `26**2 * 10**3` da `676000`.
 
 #### Ejercicio verificable 2
-Intermedio. En `firma.py`, firma un comando nuevo con `kid` `k-2026-09` (la clave anterior) y nonce `n-rotacion`.
-¿Se acepta? ¿Qué cambiarías el día que esa clave deba dejar de valer?
+Intermedio. De 8 paradas pendientes, un mensajero lleva 3 en la primera ronda. ¿Cuántos grupos de 3 hay? ¿Y cuántas
+maneras de elegir 3 y además ordenarlas?
 
-Respuesta esperada: se acepta (`True — aceptado`), porque `k-2026-09` sigue en `SECRETOS`. Para retirarla, se borra
-del diccionario; desde entonces, cualquier sobre con ese `kid` responde `kid desconocido: k-2026-09`.
+Respuesta esperada: grupos: \(C(8, 3) = 56\). Grupos ordenados: \(P(8, 3) = 8 \cdot 7 \cdot 6 = 336\). Se cumple
+\(336 = 56 \cdot 3!\). `math.comb(8, 3)` y `math.perm(8, 3)` lo confirman.
 
 #### Ejercicio verificable 3
-Reto. Agrega a `tls_cliente.py` un cuarto cliente que se conecte por IP: `probar("CA correcta, por IP", con_ca, "127.0.0.1")`.
-Predice el resultado antes de ejecutar.
+Reto. Escribe `ciclo_ingenuo(grafo)`, un DFS con un solo conjunto `visitados` que devuelve `True` al llegar a un vértice
+ya visitado. Ejecútalo con el rombo `{"A": {"B", "C"}, "B": {"D"}, "C": {"D"}, "D": set()}` y compáralo con `tiene_ciclo`.
 
-Respuesta esperada: `CA correcta, por IP: OK TLSv1.3 — RF-4471 en ruta`. El certificado incluye `IP Address:127.0.0.1`
-en su `subjectAltName`; si generas el certificado solo con `DNS:localhost`, la respuesta pasa a
-`RECHAZADO — IP address mismatch, certificate is not valid for '127.0.0.1'.`
+Respuesta esperada: `ciclo_ingenuo` devuelve `True` y `tiene_ciclo` devuelve `False`. El rombo no tiene ciclos: D se
+alcanza por dos caminos, pero ninguno vuelve atrás. Sin el estado «activo», la función confunde «ya lo vi» con «estoy dentro».
 
 #### En el trabajo
-En una empresa no se escriben algoritmos criptográficos: se eligen bibliotecas auditadas y se configuran bien.
-Los incidentes reales vienen de lo que rodea a la criptografía: claves en repositorios, verificación TLS
-desactivada «temporalmente» y claves que nadie rota en años. Los equipos usan escáneres de secretos en cada pull
-request y gestores de secretos con rotación automática; tu `escanear.py` es la versión mínima de esa práctica.
+Los gestores de paquetes (`pip`, `npm`, Maven), los sistemas de compilación y los orquestadores de tareas como Airflow
+modelan dependencias como DAG y ejecutan en orden topológico. Cuando reportan una «dependencia circular», es un
+`CycleError` como el de este tema. El conteo aparece al dimensionar: cuántos casos de prueba requiere una
+combinación de opciones, o cuántos identificadores admite un formato antes de agotarse.
 
 </details>
 
-### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta · Avanzado · 90 min
+### Tema 4: Probabilidad y evidencia para decisiones técnicas · Avanzado · 80 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### Objetivos
 Al terminar este tema podrás:
-- validar una entrada no confiable en el servidor y explicar por qué la validación sola no basta;
-- provocar una inyección SQL en una base SQLite propia y corregirla con una consulta parametrizada;
-- codificar la misma salida para HTML, atributo, JavaScript y URL, y reconocer un XSS;
-- aplicar minimización, redacción y retención a datos personales, y medir el alcance de un incidente.
+- calcular probabilidades exactas contando casos de un espacio muestral, y comprobarlas con una simulación con semilla;
+- aplicar la independencia, la probabilidad condicional y la esperanza a datos de entregas;
+- medir la distribución de tiempos de `nearest_neighbor_route` con mediana y percentil 95 en varios tamaños;
+- distinguir correlación de causalidad y reconocer el sesgo de selección antes de concluir.
 
-**Conceptos clave:** validación de entrada, inyección SQL, consulta parametrizada, XSS, codificación de salida, dato personal, privacidad, minimización de datos, redacción de datos, retención de datos, incidente de seguridad
+**Conceptos clave:** espacio muestral, evento, probabilidad, independencia, probabilidad condicional, esperanza, percentil, semilla, sesgo de selección, correlación
 
 #### El problema
-Al entregar un paquete, el conductor escribe una nota libre: «dejado con el portero». Esa nota se guarda en la base,
-se muestra en el panel del operador, viaja en una URL de búsqueda y queda en el log. En cada uno de esos lugares, un
-texto malicioso puede convertirse en código. Y si la nota trae un teléfono, ya es un dato personal. ¿Cómo tratas
-una entrada que no controlas en cada sitio por donde pasa?
+En RutaFlow cada envío se entrega en el primer intento 9 de cada 10 veces. ¿Qué tan probable es que una ruta de 3
+envíos salga perfecta? Además, alguien propone «contratar más mensajeros porque los días con más pedidos hay más
+retrasos», y otro afirma que la ruta «tarda 0.2 ms» tras medirla una vez. Necesitas números que separen evidencia de
+intuición.
 
-Este tema usa lo que ya conoces: SQL y SQLite desde Python (Módulo 4, Temas 1 y 2), **HTML**, **formulario**,
-**JavaScript** y **validación** del navegador (Módulo 3, Tema 3), **URL** (Módulo 3, Tema 1), **registro**
-(Módulo 5, Tema 1) y **límite de confianza** (Tema 1 de este módulo). Aquí no se redefinen.
+**Complejidad** \(O(n^2)\) y **`perf_counter`** tienen su ficha en el Módulo 2, Temas 4 y 2. **Conjunto**,
+**subconjunto** e **intersección** vienen del Tema 2 de este módulo; **producto cartesiano** y **regla del producto**,
+de los Temas 2 y 3.
 
 #### Glosario del tema
 
-**validación de entrada**
-- **Definición técnica:** comprobación en el servidor de que un dato recibido cumple el dominio esperado (tipo, longitud, formato, caracteres) antes de usarlo.
-- **En palabras sencillas:** el control de calidad en la puerta de la bodega: lo que no cumple, no entra.
-- **Dónde se rompe la comparación:** la validación del navegador (Módulo 3) se salta con `curl`; solo cuenta la que hace el servidor.
-- **Ejemplo:** `validar.py` responde `'<img src=x onerror=alert(1)>': rechazada — contiene etiquetas`.
-- **Error típico:** usar la validación como única defensa; una nota válida como `O'Brien` todavía rompe una consulta concatenada.
+**espacio muestral**
+- **Definición técnica:** conjunto \(\Omega\) («omega») de todos los resultados posibles de un experimento aleatorio, es decir, de un proceso cuyo resultado no se conoce de antemano.
+- **En palabras sencillas:** la lista completa de lo que puede pasar.
+- **Dónde se rompe la comparación:** en la vida real casi nunca puedes listarlo entero; por eso se simula o se mide.
+- **Ejemplo:** lanzar dos dados: \(\Omega = \{1, \dots, 6\} \times \{1, \dots, 6\}\), con \(\lvert \Omega \rvert = 36\) pares.
+- **Error típico:** contar (1, 6) y (6, 1) como un solo resultado; entonces los resultados ya no son igual de probables.
 
-**inyección SQL**
-- **Definición técnica:** vulnerabilidad en la que un dato del usuario se concatena en una sentencia SQL y el motor lo interpreta como parte de la sentencia.
-- **En palabras sencillas:** le dictas una carta a alguien y el remitente cuela una orden dentro de su nombre.
-- **Dónde se rompe la comparación:** en la carta el escribano dudaría; el motor SQL ejecuta sin preguntar todo lo que sea sintaxis válida.
-- **Ejemplo:** con `dejado' OR '1'='1`, la consulta concatenada devuelve `2 filas` en vez de 0.
-- **Error típico:** «escapar» comillas a mano con `replace`; siempre aparece un caso que se escapa del escape.
+**evento**
+- **Definición técnica:** subconjunto \(A \subseteq \Omega\) de resultados. Se dice que \(A\) ocurre si el resultado obtenido pertenece a \(A\).
+- **En palabras sencillas:** una pregunta de sí o no sobre el resultado, como «¿los dados suman 7?».
+- **Dónde se rompe la comparación:** un evento no es un resultado: «suma 7» agrupa 6 resultados distintos.
+- **Ejemplo:** \(A = \{(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)\}\), con \(\lvert A \rvert = 6\).
+- **Error típico:** escribir un evento que no es subconjunto de \(\Omega\), como «suma 13» con dos dados: es el vacío y su probabilidad es 0.
 
-**consulta parametrizada**
-- **Definición técnica:** sentencia SQL con marcadores (`?`) cuyos valores se envían aparte; el motor nunca los interpreta como SQL.
-- **En palabras sencillas:** un formulario con casillas: lo que escribas en la casilla «nombre» nunca se lee como instrucción.
-- **Dónde se rompe la comparación:** los marcadores sirven para valores, no para nombres de tabla o columna; esos se eligen de una lista fija.
-- **Ejemplo:** con el mismo texto malicioso, la parametrizada responde `parametrizada: 0 filas`.
-- **Error típico:** pasar un texto suelto en vez de una tupla: `sqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement uses 1, and there are 21 supplied.`
+**probabilidad**
+- **Definición técnica:** función \(P\) que asigna a cada evento un número entre 0 y 1, con \(P(\Omega) = 1\) y \(P(A \cup B) = P(A) + P(B)\) si \(A \cap B = \varnothing\). Si todos los resultados son igual de probables, \(P(A) = \frac{\lvert A \rvert}{\lvert \Omega \rvert}\).
+- **En palabras sencillas:** la fracción de las veces que algo ocurriría si repitieras el experimento muchísimas veces.
+- **Dónde se rompe la comparación:** «casos favorables entre casos posibles» solo vale si los resultados son igual de probables. Ganar la lotería tiene dos resultados y no vale 1/2.
+- **Ejemplo:** \(P(\text{suma } 7) = \frac{6}{36} = \frac{1}{6}\). Y el complemento: \(P(\text{no } A) = 1 - P(A)\).
+- **Error típico:** calcular con decimales y comparar: `0.1 + 0.2 == 0.3` da `False`. `Fraction` da resultados exactos.
 
-**XSS**
-- **Definición técnica:** *cross-site scripting*: vulnerabilidad en la que un dato del usuario se inserta en una página sin codificar y el navegador lo ejecuta como JavaScript.
-- **En palabras sencillas:** alguien deja una nota que, al leerla en pantalla, se convierte en un programa que actúa con tu sesión.
-- **Dónde se rompe la comparación:** la nota se ve inofensiva en la base de datos; el daño ocurre en el navegador de otra persona.
-- **Ejemplo:** `salida.py` muestra `sin codificar: <p>"><script>alert("RF")</script></p>`: el navegador ejecutaría ese `script`.
-- **Error típico:** filtrar solo la palabra `script`; `<img onerror=…>` ejecuta código sin esa palabra.
+**independencia**
+- **Definición técnica:** los eventos \(A\) y \(B\) son independientes si \(P(A \cap B) = P(A) \cdot P(B)\).
+- **En palabras sencillas:** saber que ocurrió uno no cambia la probabilidad del otro.
+- **Dónde se rompe la comparación:** independiente no es «sin relación visible», ni lo mismo que disjunto. Dos eventos disjuntos con probabilidad positiva nunca son independientes.
+- **Ejemplo:** 3 envíos independientes con \(P = \frac{9}{10}\) cada uno: \(\left(\frac{9}{10}\right)^3 = \frac{729}{1000}\).
+- **Error típico:** multiplicar probabilidades de eventos dependientes, como lluvia y retraso.
 
-**codificación de salida**
-- **Definición técnica:** transformación de un dato al escribirlo en un contexto (HTML, atributo, JavaScript, URL) para que se lea como dato y no como sintaxis de ese contexto.
-- **En palabras sencillas:** traducir la nota al idioma del lugar donde la pegas, para que nadie la confunda con una orden.
-- **Dónde se rompe la comparación:** no es la codificación de caracteres del Módulo 1 (UTF-8); aquí se cambian símbolos como `<` por `&lt;`.
-- **Ejemplo:** `html.escape` produce `&lt;script&gt;` y `quote` produce `%3Cscript%3E` para la misma nota.
-- **Error típico:** usar la codificación de un contexto en otro; `html.escape` no protege dentro de un bloque `<script>`.
+**probabilidad condicional**
+- **Definición técnica:** \(P(A \mid B) = \frac{P(A \cap B)}{P(B)}\), con \(P(B) > 0\). Se lee «probabilidad de \(A\) dado \(B\)».
+- **En palabras sencillas:** la probabilidad recalculada sabiendo que \(B\) ocurrió: miras solo los casos donde pasó \(B\).
+- **Dónde se rompe la comparación:** el orden importa: \(P(A \mid B)\) y \(P(B \mid A)\) casi nunca son iguales.
+- **Ejemplo:** \(P(\text{retraso} \mid \text{lluvia}) = \frac{60}{200} = \frac{3}{10}\).
+- **Error típico:** invertirla. \(P(\text{lluvia} \mid \text{retraso}) = \frac{60}{140} = \frac{3}{7}\) responde otra pregunta.
 
-**dato personal**
-- **Definición técnica:** información vinculada o vinculable a una persona natural identificada o identificable: nombre, cédula, teléfono, dirección, correo.
-- **En palabras sencillas:** cualquier dato con el que se puede saber de quién se trata.
-- **Dónde se rompe la comparación:** un dato suelto parece inofensivo; varios juntos (barrio, hora y edificio) identifican a alguien.
-- **Ejemplo:** en `privacidad.py`, `cedula`, `fecha_nacimiento` y `telefono` son datos personales del formulario.
-- **Error típico:** creer que un teléfono escrito dentro de una nota libre «no cuenta»: sigue siendo un dato personal.
+**esperanza**
+- **Definición técnica:** para una variable aleatoria \(X\) (un número que depende del resultado), \(E[X] = \sum_x x \cdot P(X = x)\): el promedio de sus valores, cada uno pesado por su probabilidad.
+- **En palabras sencillas:** el promedio que verías a la larga si repitieras el experimento muchas veces.
+- **Dónde se rompe la comparación:** puede no ser un valor posible: se esperan 0.3 fallos por ruta, aunque nunca falla «0.3 envíos».
+- **Ejemplo:** con 3 envíos y \(P(\text{fallo}) = \frac{1}{10}\), \(E[\text{fallos}] = 3 \cdot \frac{1}{10} = \frac{3}{10}\).
+- **Error típico:** resumir datos de cola larga solo con la media; unos pocos valores enormes la arrastran hacia arriba.
 
-**privacidad**
-- **Definición técnica:** derecho de las personas a controlar qué datos suyos se recogen, para qué se usan, quién los ve y cuánto tiempo se guardan; en Colombia lo regula la Ley 1581 de 2012.
-- **En palabras sencillas:** que tu información se use solo para lo que aceptaste y nada más.
-- **Dónde se rompe la comparación:** seguridad y privacidad no son lo mismo: un sistema seguro puede violar la privacidad si recoge datos que no necesita.
-- **Ejemplo:** `privacidad.py` aplica tres decisiones de privacidad: descartar campos, redactar logs y borrar lo vencido.
-- **Error típico:** pedir permiso «para todo» en un texto largo; el uso debe tener un fin concreto.
+**percentil**
+- **Definición técnica:** el percentil \(q\) es un valor que deja por debajo aproximadamente el \(q\,\%\) de los datos. El percentil 50 (p50) es la mediana. `statistics.quantiles(datos, n=100)` devuelve los 99 cortes del p1 al p99.
+- **En palabras sencillas:** «el 95 % de las peticiones tardó menos que esto».
+- **Dónde se rompe la comparación:** con pocos datos es una estimación muy inestable; el p95 de 20 mediciones depende de una o dos.
+- **Ejemplo:** `quantiles(latencias, n=100)[94]` es el p95: el índice 94 porque la lista empieza en el p1 con índice 0.
+- **Error típico:** usar el índice 95, que es el p96.
 
-**minimización de datos**
-- **Definición técnica:** principio de recoger y conservar solo los datos estrictamente necesarios para la finalidad declarada.
-- **En palabras sencillas:** no guardes lo que no vas a usar; lo que no tienes, no se te puede filtrar.
-- **Dónde se rompe la comparación:** la nota libre puede traer datos que nunca pediste; minimizar también es limpiar lo que llega sin querer.
-- **Ejemplo:** `privacidad.py` imprime `descartados: ['cedula', 'fecha_nacimiento', 'telefono']`.
-- **Error típico:** guardar «por si acaso» la cédula para un servicio que solo necesita la ciudad.
+**semilla**
+- **Definición técnica:** valor inicial de un generador de números pseudoaleatorios; con la misma semilla produce la misma secuencia. En Python, `random.seed(2026)`.
+- **En palabras sencillas:** el número de una receta: misma semilla, mismos «dados».
+- **Dónde se rompe la comparación:** los números no son aleatorios de verdad; no sirven para contraseñas ni tokens (para eso, `secrets`, Módulo 6).
+- **Ejemplo:** `latencias.py` muestra el mismo `p95` en cada ejecución porque fija la semilla en la línea 5.
+- **Error típico:** no fijarla y luego no poder repetir el resultado raro que viste una vez.
 
-**redacción de datos**
-- **Definición técnica:** reemplazo de un dato sensible por una versión parcial o un marcador antes de escribirlo en un log, un reporte o una pantalla.
-- **En palabras sencillas:** tachar con marcador negro lo que el lector no necesita ver.
-- **Dónde se rompe la comparación:** un tachón en papel no se quita; un dato redactado mal (solo los dos últimos dígitos) puede reconstruirse.
-- **Ejemplo:** `log: entrega RF-4471: llamar al 310******* antes de subir`.
-- **Error típico:** redactar con una expresión regular que no cubre todos los formatos; `+57 310 456 7890` se escapa del patrón de este tema.
+**sesgo de selección**
+- **Definición técnica:** error sistemático que aparece cuando la **muestra** (los datos que mides) no representa a la **población** (todos los casos que te interesan) por la forma en que se eligió.
+- **En palabras sencillas:** preguntar por la calidad del servicio solo a los clientes que volvieron a comprar.
+- **Dónde se rompe la comparación:** no desaparece midiendo más: mil mediciones sesgadas siguen sesgadas.
+- **Ejemplo:** medir la ruta solo con 50 paradas y concluir que «tarda 0.2 ms» para cualquier ruta.
+- **Error típico:** medir solo de noche, con el servidor libre, y prometer esos tiempos en hora pico.
 
-**retención de datos**
-- **Definición técnica:** periodo máximo durante el cual se conserva un dato; al vencer, se borra o se anonimiza de forma verificable.
-- **En palabras sencillas:** la fecha de vencimiento del dato.
-- **Dónde se rompe la comparación:** un producto vencido se ve; un dato vencido sigue igual de útil para un atacante.
-- **Ejemplo:** con 30 días al 2026-11-24, `privacidad.py` conserva `2 de 3` registros.
-- **Error típico:** borrar de la base y olvidar las copias de seguridad y los logs, donde el dato sigue vivo.
-
-**incidente de seguridad**
-- **Definición técnica:** evento que compromete o pudo comprometer la confidencialidad, integridad o disponibilidad de un activo, y que exige respuesta documentada.
-- **En palabras sencillas:** algo salió mal con datos o sistemas y hay que actuar, medir y explicar.
-- **Dónde se rompe la comparación:** no todo incidente es un ataque; un log que guarda teléfonos completos por error también lo es.
-- **Ejemplo:** `incidente.py` mide `líneas con teléfono completo: 3 de 4` y `personas distintas expuestas: 2`.
-- **Error típico:** corregir el código y no medir el alcance: sin saber cuántas personas y qué fechas, no hay respuesta posible.
+**correlación**
+- **Definición técnica:** el coeficiente de Pearson \(r\), entre \(-1\) y \(1\), mide qué tan bien una recta describe la relación entre dos variables. En Python, `statistics.correlation(x, y)`.
+- **En palabras sencillas:** si una variable sube, ¿la otra tiende a subir (\(r\) cerca de 1), a bajar (cerca de −1) o ninguna (cerca de 0)?
+- **Dónde se rompe la comparación:** correlación no implica causalidad: las dos pueden depender de una tercera variable.
+- **Ejemplo:** pedidos y retraso tienen \(r = 0.94\), pero dentro de un mismo nivel de tráfico \(r = 0.09\).
+- **Error típico:** calcularla con una lista constante: `StatisticsError: at least one of the inputs is constant`.
 
 #### ► CÓMO FUNCIONA
-La nota cruza el límite de confianza en cuanto llega al servidor. Desde ahí se aplican defensas en capas, cada una
-en su lugar. **Validar** al entrar reduce lo que llega. **Parametrizar** al consultar separa estructura y dato.
-**Codificar** al mostrar adapta el dato a cada contexto. **Minimizar, redactar y retener** al registrar protege a las
-personas cuyos datos aparecen.
+Hay tres caminos hacia un número, del más exacto al más realista:
 
-| Lugar | Riesgo | Defensa | Función en Python |
-|---|---|---|---|
-| Entrada | Datos fuera de dominio | Validación de entrada | Tu función `validar` |
-| Base de datos | Inyección SQL | Consulta parametrizada | `db.execute(sql, (valor,))` |
-| HTML | XSS | Codificación de salida | `html.escape` |
-| JavaScript | XSS | Codificación de salida | `json.dumps` + `<` como `<` |
-| URL | Parámetros rotos o inyectados | Codificación de salida | `urllib.parse.quote` |
-| Log | Exposición de datos personales | Redacción y retención | `re.sub`, comparación de fechas |
+1. **Contar:** si puedes listar \(\Omega\) y los resultados son igual de probables, \(P(A) = \lvert A \rvert / \lvert \Omega \rvert\).
+2. **Simular:** si contar es difícil, repites el experimento con un generador con semilla y mides la frecuencia.
+3. **Medir:** con datos reales, la probabilidad se estima con frecuencias de una muestra, que puede estar sesgada.
+
+**Reglas que usarás.** Para eventos independientes, «y» multiplica: \(P(A \cap B) = P(A) \cdot P(B)\). Para «al menos
+uno», usa el complemento: \(P(\text{al menos un fallo}) = 1 - P(\text{ningún fallo})\). La barra vertical \(\mid\) se lee
+«dado»: \(P(R \mid L)\) es la probabilidad de \(R\) mirando solo los casos con \(L\).
+
+Para 3 envíos independientes, cada uno con \(P(\text{entrega}) = \frac{9}{10}\):
+
+\[ P(\text{los 3 entregados}) = \frac{9}{10} \cdot \frac{9}{10} \cdot \frac{9}{10} = \frac{729}{1000} = 0.729 \]
+
+**Medir tiempos.** Una distribución de tiempos casi nunca es simétrica: la mayoría son rápidos y unos pocos, muy
+lentos (cola larga). La media se va hacia la cola; la mediana (p50) describe el caso típico y el p95, el peor caso
+frecuente. Una conclusión honesta dice tamaño de muestra, condiciones y dispersión, no solo un número.
 
 ```mermaid
-flowchart TD
-    IN["nota del conductor<br/>entrada no confiable"] --> VAL{"validar dominio<br/>1-200, sin etiquetas"}
-    VAL -->|"válida"| DB["consulta parametrizada<br/>estructura separada del dato"]
-    VAL -->|"inválida"| REJ["rechazar con motivo"]
-    DB --> OUT{"codificar según contexto"}
-    OUT --> H["texto HTML<br/>html.escape"]
-    OUT --> A["atributo<br/>quote=True"]
-    OUT --> J["JavaScript<br/>json.dumps"]
-    OUT --> U["URL<br/>urllib.parse.quote"]
-    DB --> LOG["log"]
-    LOG --> RED["redactar datos personales<br/>+ retención"]
-    RED -.-> INC["si algo falló:<br/>medir alcance del incidente"]
+flowchart LR
+    POP["población"] --> DESIGN["diseño de muestreo"] --> SAMPLE["muestra"] --> STAT["estadístico"]
+    STAT --> CONCLUSION["conclusión con incertidumbre"]
+    BIAS["sesgo de selección"] -. "no desaparece aumentando n" .-> SAMPLE
 ```
 
 #### Problema resuelto 4.1
-Valida la nota del conductor: no vacía, máximo 200 caracteres y sin etiquetas.
+Calcula la probabilidad exacta de que dos dados sumen 7. Luego, para una ruta de 3 envíos independientes con
+probabilidad \(\frac{9}{10}\) de entrega cada uno, calcula: que salga perfecta, que tenga al menos un fallo y cuántos
+fallos se esperan. Compara con una simulación de 100 000 rutas.
 
 **Razonamiento:**
-1. Cada regla devuelve un motivo distinto, para que el conductor sepa qué corregir.
-2. `strip()` quita espacios: una nota de solo espacios cuenta como vacía.
-3. Probar con un caso válido y uno por cada regla.
+1. \(\Omega\) de dos dados es el producto cartesiano de \(\{1, \dots, 6\}\) consigo mismo; el evento se filtra con una condición.
+2. Cada ruta es una tupla de 3 booleanos: \(2^3 = 8\) resultados. No son igual de probables, así que se multiplica la probabilidad de cada envío.
+3. \(E[\text{fallos}] = \sum (\text{fallos de la ruta}) \cdot P(\text{ruta})\) sobre las 8 rutas.
+4. `Fraction` mantiene las fracciones exactas; la simulación con semilla da una frecuencia cercana y repetible.
 
 ```python
-# validar.py — valida la nota del conductor antes de guardarla
-def validar(nota):
-    if not nota.strip():
-        return "vacía"
-    if len(nota) > 200:
-        return "supera 200 caracteres"
-    if "<" in nota or ">" in nota:
-        return "contiene etiquetas"
-    return None
+# probabilidad.py — probabilidad exacta contando casos y comprobación por simulación
+import random
+from fractions import Fraction
+from itertools import product
 
+# 1. Dos dados: espacio muestral y un evento
+omega = list(product(range(1, 7), repeat=2))
+suma_siete = [r for r in omega if r[0] + r[1] == 7]
+print("|Ω| =", len(omega), " |A| =", len(suma_siete), " P(A) =", Fraction(len(suma_siete), len(omega)))
 
-casos = [
-    "dejado con el portero",
-    "<img src=x onerror=alert(1)>",
-    "a" * 201,
-    "   ",
-]
-for nota in casos:
-    error = validar(nota)
-    etiqueta = nota if len(nota) <= 30 else nota[:27] + "..."
-    print(f"{etiqueta!r}: {'válida' if error is None else 'rechazada — ' + error}")
+# 2. Ruta de 3 envíos; cada uno se entrega con probabilidad 9/10, de forma independiente
+p_ok = Fraction(9, 10)
+prob = {True: p_ok, False: 1 - p_ok}
+rutas = list(product([True, False], repeat=3))
+p_todos = sum(prob[a] * prob[b] * prob[c] for a, b, c in rutas if a and b and c)
+esperanza = sum((prob[a] * prob[b] * prob[c]) * [a, b, c].count(False) for a, b, c in rutas)
+print("resultados posibles:", len(rutas))
+print("P(los 3 entregados) =", p_todos, "=", float(p_todos))
+print("P(al menos un fallo) =", 1 - p_todos)
+print("E[fallos por ruta] =", esperanza)
+
+# 3. Simulación con semilla: la frecuencia se acerca a la probabilidad
+random.seed(2026)
+n = 100_000
+exitos = sum(all(random.random() < 0.9 for _ in range(3)) for _ in range(n))
+print("frecuencia simulada:", exitos / n)
 ```
 
 ```text
-$ python3 validar.py
-'dejado con el portero': válida
-'<img src=x onerror=alert(1)>': rechazada — contiene etiquetas
-'aaaaaaaaaaaaaaaaaaaaaaaaaaa...': rechazada — supera 200 caracteres
-'   ': rechazada — vacía
+$ python3 probabilidad.py
+|Ω| = 36  |A| = 6  P(A) = 1/6
+resultados posibles: 8
+P(los 3 entregados) = 729/1000 = 0.729
+P(al menos un fallo) = 271/1000
+E[fallos por ruta] = 3/10
+frecuencia simulada: 0.7313
 ```
 
 **Explicación por partes.**
-- Líneas 3–8: tres reglas en orden; la primera que falla devuelve su motivo.
-- Línea 9: `None` significa «sin errores» (Módulo 2, Tema 1).
-- Línea 20: las notas largas se recortan al mostrarlas para que la salida sea legible.
-- La validación reduce la superficie, pero no reemplaza las defensas de los dos problemas siguientes.
+- Línea 7: `product(range(1, 7), repeat=2)` construye los 36 pares de \(\Omega\).
+- Línea 9: `Fraction(6, 36)` se simplifica sola a `1/6`.
+- Línea 13: `prob[True]` es \(\frac{9}{10}\) y `prob[False]`, su complemento \(\frac{1}{10}\).
+- Línea 15: solo la ruta (True, True, True) cumple `a and b and c`; su probabilidad es el producto, por independencia.
+- Línea 16: cada ruta aporta su número de fallos (`count(False)`) por su probabilidad; la suma es \(E[X] = \frac{3}{10}\).
+- Líneas 23–25: con la semilla 2026, 73 130 de 100 000 rutas simuladas salieron perfectas: 0.7313, cerca de 0.729.
+
+> **Error común.** Calcular con decimales y comparar con `==`. `0.1 + 0.2 == 0.3` da `False` por el error de redondeo
+> del punto flotante (Módulo 1, Tema 5). Con `Fraction(1, 10) + Fraction(2, 10) == Fraction(3, 10)` obtienes `True`.
+
+> **Buena práctica.** Cuando puedas, calcula el valor exacto **y** simula. Si la simulación se aleja mucho del cálculo,
+> uno de los dos tiene un error. Es la misma idea de la prueba basada en propiedades: dos caminos que deben coincidir.
 
 #### Problema resuelto 4.2
-En una base SQLite en memoria, compara la consulta concatenada con la parametrizada usando dos textos maliciosos.
-Es un laboratorio: la base y los datos son tuyos y desaparecen al terminar el programa.
+El registro del trimestre tiene 1000 entregas clasificadas por clima y resultado. Calcula \(P(R \mid L)\) (retraso dado
+lluvia) y decide si lluvia y retraso son independientes. Después revisa la propuesta: «más pedidos causan más retrasos».
 
 **Razonamiento:**
-1. Crear la tabla `notas` con dos filas, insertadas ya con parámetros.
-2. Para cada texto, ejecutar las dos versiones de la misma búsqueda y contar las filas.
-3. Incluir un texto normal como control: las dos versiones deben coincidir con él.
+1. Cada probabilidad es una frecuencia: casos del evento entre 1000.
+2. \(P(R \mid L) = P(R \cap L) / P(L)\): mira solo las 200 entregas con lluvia.
+3. Independencia: comparar \(P(R \cap L)\) con \(P(R) \cdot P(L)\).
+4. Para la propuesta, calcula la correlación entre pedidos y retraso, y luego dentro de un nivel fijo de tráfico.
 
 ```python
-# inyeccion.py — laboratorio local: consulta concatenada frente a consulta parametrizada
-import sqlite3
+# condicional.py — probabilidad condicional e independencia con un registro histórico
+from fractions import Fraction
 
-db = sqlite3.connect(":memory:")
-db.execute("CREATE TABLE notas (id INTEGER PRIMARY KEY, texto TEXT)")
-db.executemany("INSERT INTO notas (texto) VALUES (?)", [("dejado con el portero",), ("entregado en recepción",)])
+# 1000 entregas del último trimestre, contadas por clima y resultado
+conteo = {
+    ("lluvia", "retraso"): 60, ("lluvia", "a tiempo"): 140,
+    ("seco", "retraso"): 80, ("seco", "a tiempo"): 720,
+}
+total = sum(conteo.values())
 
-payloads = [
-    "dejado con el portero",
-    "dejado' OR '1'='1",
-    "x' UNION SELECT 99, 'dato filtrado' --",
-]
-for payload in payloads:
-    parametrizada = db.execute("SELECT id, texto FROM notas WHERE texto = ?", (payload,)).fetchall()
-    concatenada = db.execute(f"SELECT id, texto FROM notas WHERE texto = '{payload}'").fetchall()
-    print(f"payload: {payload}")
-    print(f"  parametrizada: {len(parametrizada)} filas")
-    print(f"  concatenada:   {len(concatenada)} filas -> {concatenada}")
+
+def p(condicion):
+    return Fraction(sum(v for k, v in conteo.items() if condicion(k)), total)
+
+
+p_lluvia = p(lambda k: k[0] == "lluvia")
+p_retraso = p(lambda k: k[1] == "retraso")
+p_ambos = p(lambda k: k == ("lluvia", "retraso"))
+print("P(L) =", p_lluvia, " P(R) =", p_retraso, " P(R ∩ L) =", p_ambos)
+print("P(R | L) =", p_ambos / p_lluvia)
+print("P(R | no L) =", p(lambda k: k == ("seco", "retraso")) / (1 - p_lluvia))
+print("P(R) · P(L) =", p_retraso * p_lluvia)
+print("¿independientes?", p_ambos == p_retraso * p_lluvia)
 ```
 
 ```text
-$ python3 inyeccion.py
-payload: dejado con el portero
-  parametrizada: 1 filas
-  concatenada:   1 filas -> [(1, 'dejado con el portero')]
-payload: dejado' OR '1'='1
-  parametrizada: 0 filas
-  concatenada:   2 filas -> [(1, 'dejado con el portero'), (2, 'entregado en recepción')]
-payload: x' UNION SELECT 99, 'dato filtrado' --
-  parametrizada: 0 filas
-  concatenada:   1 filas -> [(99, 'dato filtrado')]
+$ python3 condicional.py
+P(L) = 1/5  P(R) = 7/50  P(R ∩ L) = 3/50
+P(R | L) = 3/10
+P(R | no L) = 1/10
+P(R) · P(L) = 7/250
+¿independientes? False
+```
+
+Con lluvia, el retraso es 3 veces más probable (\(\frac{3}{10}\) frente a \(\frac{1}{10}\)). \(P(R \cap L) = \frac{3}{50}\)
+no es \(P(R) \cdot P(L) = \frac{7}{250}\): no son independientes. Ahora la propuesta de los pedidos, con datos simulados
+en los que el tráfico causa las dos cosas:
+
+```python
+# correlacion.py — dos variables correlacionadas por una causa común
+import random
+from statistics import correlation
+
+random.seed(7)
+trafico, pedidos, retraso = [], [], []
+for _ in range(500):
+    t = random.uniform(0, 10)                        # congestión de la ciudad, de 0 a 10
+    trafico.append(t)
+    pedidos.append(20 + 3 * t + random.gauss(0, 2))  # la hora pico trae más pedidos
+    retraso.append(5 + 4 * t + random.gauss(0, 3))   # y también más minutos de retraso
+
+print("correlación pedidos–retraso:", round(correlation(pedidos, retraso), 2))
+franja = [i for i, t in enumerate(trafico) if 4 <= t < 5]
+print("en la franja de tráfico 4–5:", len(franja), "observaciones,",
+      "correlación", round(correlation([pedidos[i] for i in franja], [retraso[i] for i in franja]), 2))
+```
+
+```text
+$ python3 correlacion.py
+correlación pedidos–retraso: 0.94
+en la franja de tráfico 4–5: 44 observaciones, correlación 0.09
 ```
 
 **Explicación por partes.**
-- Línea 4: `":memory:"` crea una base que vive solo mientras corre el programa.
-- Línea 14: el `?` recibe el valor por la tupla `(payload,)`. El motor busca ese texto literal y no encuentra nada.
-- Línea 15: la cadena f pega el texto dentro de la sentencia. La comilla del atacante cierra la cadena SQL.
-- Segundo caso: la sentencia queda `WHERE texto = 'dejado' OR '1'='1'`, verdadera para todas las filas.
-- Tercer caso: `UNION SELECT` agrega una fila inventada por el atacante, y `--` comenta el resto de la sentencia.
+- `condicional.py`, líneas 12–13: `p` recibe una condición y suma los conteos de las claves que la cumplen.
+- `condicional.py`, líneas 16–18: `lambda k: ...` crea una función sin nombre de una línea (Módulo 2, Tema 8); `k` es la clave (clima, resultado).
+- `condicional.py`, línea 20: dividir dos `Fraction` aplica la fórmula de la probabilidad condicional sin redondeo.
+- `correlacion.py`, líneas 8–11: el tráfico `t` sube los pedidos y el retraso; los pedidos **no** aparecen en la fórmula del retraso.
+- `correlacion.py`, línea 13: aun así, la correlación es 0.94.
+- `correlacion.py`, líneas 14–16: al fijar el tráfico entre 4 y 5, la correlación cae a 0.09: la relación venía del tráfico.
 
-> **Error común.** Concatenar un texto legítimo con apóstrofo. Con la nota `portero's` en la línea 15, el programa
-> termina con `sqlite3.OperationalError: near "s": syntax error`. No es mala suerte: es la misma vulnerabilidad,
-> descubierta por un usuario honesto.
-
-> **Buena práctica.** Toda sentencia con un valor variable usa `?`, sin excepciones, aunque el valor «venga de
-> dentro». Así la regla se revisa con una búsqueda: `grep -n 'execute(f"' *.py` debe dar cero resultados.
+> **Error común.** Calcular la correlación de una variable que no cambia, por ejemplo los pedidos de días con cupo fijo.
+> `statistics.correlation` se detiene con `StatisticsError: at least one of the inputs is constant`: sin variación no
+> hay nada que relacionar.
 
 #### Problema resuelto 4.3
-Muestra la misma nota maliciosa en cuatro contextos y codifícala para cada uno.
+El equipo afirma que la ruta «tarda 0.2 ms». Primero compara media, mediana y p95 de una muestra de latencias con cola
+larga. Después mide la distribución real de `nearest_neighbor_route` con 50, 100, 200 y 400 paradas.
 
 **Razonamiento:**
-1. Partir de una nota que cierra un atributo (`">`) y abre un `script`.
-2. Para HTML y atributos, `html.escape` cambia `<`, `>`, `&` y comillas por entidades.
-3. Dentro de `<script>`, el dato va como literal JSON, y `<` se escribe `<` para que `</script>` no cierre el bloque.
-4. En una URL, `quote` con `safe=''` codifica también `/`.
+1. Con una muestra de cola larga, la media y la mediana se separan; el p95 muestra la cola.
+2. Una sola medición no tiene dispersión. Se repite 30 veces cada tamaño y se reportan p50, p95 y máximo.
+3. Medir varios tamaños evita el sesgo de selección de probar solo el caso pequeño.
+4. La heurística es \(O(n^2)\) (Módulo 2, Tema 4): al duplicar \(n\), el tiempo debería multiplicarse por cerca de 4.
 
 ```python
-# salida.py — la misma nota, codificada según el contexto donde se muestra
-import html
-import json
-from urllib.parse import quote
+# latencias.py — media, mediana y percentil 95 de una muestra con cola larga
+import random
+from statistics import mean, median, quantiles
 
-nota = '"><script>alert("RF")</script>'
-
-print("sin codificar:", f"<p>{nota}</p>")
-print("texto HTML:   ", f"<p>{html.escape(nota)}</p>")
-print("atributo:     ", f'<input value="{html.escape(nota, quote=True)}">')
-print("JavaScript:   ", f"<script>const nota = {json.dumps(nota).replace('<', '\\u003c')};</script>")
-print("URL:          ", f"/buscar?nota={quote(nota, safe='')}")
+random.seed(2026)  # misma muestra en cada ejecución
+# latencias simuladas en ms, con cola larga a la derecha
+latencias = [random.lognormvariate(4.6, 0.4) for _ in range(100)]
+p50 = median(latencias)
+p95 = quantiles(latencias, n=100)[94]
+print({"n": len(latencias), "media": round(mean(latencias), 1), "p50": round(p50, 1), "p95": round(p95, 1)})
+print("mínimo:", round(min(latencias), 1), " máximo:", round(max(latencias), 1))
+print("por encima de p95:", sum(x > p95 for x in latencias), "de", len(latencias))
 ```
 
 ```text
-$ python3 salida.py
-sin codificar: <p>"><script>alert("RF")</script></p>
-texto HTML:    <p>&quot;&gt;&lt;script&gt;alert(&quot;RF&quot;)&lt;/script&gt;</p>
-atributo:      <input value="&quot;&gt;&lt;script&gt;alert(&quot;RF&quot;)&lt;/script&gt;">
-JavaScript:    <script>const nota = "\">\u003cscript>alert(\"RF\")\u003c/script>";</script>
-URL:           /buscar?nota=%22%3E%3Cscript%3Ealert%28%22RF%22%29%3C%2Fscript%3E
+$ python3 latencias.py
+{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}
+mínimo: 38.8  máximo: 270.8
+por encima de p95: 5 de 100
 ```
+
+La media (109.4) supera a la mediana (98.0) porque la cola larga la arrastra. Exactamente 5 de 100 valores superan el
+p95. Ahora la heurística de rutas, en su propio `domain.py` dentro de `probabilidad`:
+
+```python
+# domain.py — heurística de ruta de RutaFlow
+from dataclasses import dataclass
+from math import hypot
+
+
+@dataclass(frozen=True)
+class Stop:
+    shipment_id: str
+    latitude: float
+    longitude: float
+
+
+def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> list[Stop]:
+    """Heurística educativa O(n²); no afirma encontrar la ruta óptima."""
+    remaining = stops.copy()
+    ordered = []
+    position = origin
+    while remaining:
+        selected = min(remaining, key=lambda stop: hypot(
+            stop.latitude - position[0], stop.longitude - position[1]))
+        ordered.append(selected)
+        remaining.remove(selected)
+        position = (selected.latitude, selected.longitude)
+    return ordered
+```
+
+```python
+# medir.py — distribución de tiempos de nearest_neighbor_route por tamaño de entrada
+import time
+from statistics import median, quantiles
+
+from domain import Stop, nearest_neighbor_route
+
+for tamano in (50, 100, 200, 400):
+    paradas = [Stop(f"RF-{i}", i % 7, i % 5) for i in range(tamano)]
+    tiempos_ms = []
+    for _ in range(30):
+        inicio = time.perf_counter()
+        nearest_neighbor_route((0, 0), paradas)
+        tiempos_ms.append((time.perf_counter() - inicio) * 1000)
+    p50 = median(tiempos_ms)
+    p95 = quantiles(tiempos_ms, n=100)[94]
+    print(f"n={tamano:3}  p50={p50:7.2f} ms  p95={p95:7.2f} ms  máx={max(tiempos_ms):7.2f} ms")
+```
+
+```text
+$ python3 medir.py
+n= 50  p50=   0.20 ms  p95=   0.24 ms  máx=   0.25 ms
+n=100  p50=   0.77 ms  p95=   0.92 ms  máx=   0.95 ms
+n=200  p50=   3.14 ms  p95=   3.73 ms  máx=   3.83 ms
+n=400  p50=  12.40 ms  p95=  18.51 ms  máx=  20.43 ms
+```
+
+Tus milisegundos serán otros. Lo estable es la proporción: al duplicar las paradas, el p50 se multiplica por cerca de 4
+(0.20 → 0.77 → 3.14 → 12.40), como predice \(O(n^2)\).
 
 **Explicación por partes.**
-- Línea 8: la versión sin codificar inserta un `script` real en la página: eso es un XSS.
-- Líneas 9–10: en HTML el navegador muestra `"><script>…` como texto, sin ejecutarlo.
-- Línea 11: `json.dumps` pone comillas y escapa las internas; el reemplazo de `<` evita cerrar el bloque `script`.
-- Línea 12: `%22`, `%3E`, `%3C` son las comillas y los signos codificados para URL.
+- `latencias.py`, línea 5: la semilla hace que la muestra sea idéntica en cada ejecución.
+- `latencias.py`, línea 7: `lognormvariate` produce valores positivos con cola larga a la derecha, como las latencias reales.
+- `latencias.py`, línea 9: índice 94 de los 99 cortes: el p95.
+- `domain.py`, líneas 18–23: en cada vuelta, `min` revisa todas las paradas restantes; \(n\) vueltas de hasta \(n\) revisiones dan \(O(n^2)\).
+- `medir.py`, líneas 10–13: 30 repeticiones por tamaño, con `perf_counter` (Módulo 2, Tema 2), convertidas a milisegundos.
+- `medir.py`, líneas 14–16: p50, p95 y máximo resumen la distribución; el máximo muestra el peor caso observado.
 
-> **Error común.** Construir el HTML con una cadena f sin codificar. La primera línea de la salida es lo que
-> llegaría al navegador: un `<script>` ejecutable. Los motores de plantillas modernos codifican por defecto; la falla
-> aparece cuando alguien desactiva esa protección para «mostrar formato».
+> **Error común.** Calcular un percentil con una sola medición. `quantiles([12.5], n=100)[94]` devuelve `12.5` sin
+> ningún aviso: un «p95» que no significa nada. Con la lista vacía, en cambio, falla con
+> `StatisticsError: must have at least one data point`. Reporta siempre el tamaño de la muestra junto al percentil.
 
-#### Problema resuelto 4.4
-Aplica minimización, redacción y retención a un envío, y mide el alcance de un log viejo que guardó teléfonos.
-
-**Razonamiento:**
-1. Minimizar: quedarse solo con los campos que la entrega necesita.
-2. Redactar: dejar los tres primeros dígitos del celular y ocultar correos antes de escribir el log.
-3. Retener: conservar solo registros de los últimos 30 días contados desde una fecha fija.
-4. Ante el log viejo: contar líneas, personas y fechas afectadas antes de decidir la respuesta.
-
-```python
-# privacidad.py — minimizar, redactar y retener datos personales de RutaFlow
-import re
-from datetime import date, timedelta
-
-HOY = date(2026, 11, 24)
-RETENCION = timedelta(days=30)
-CAMPOS_NECESARIOS = {"guia", "ciudad", "nota"}
-
-formulario = {
-    "guia": "RF-4471", "ciudad": "Bogotá", "nota": "llamar al 3104567890 antes de subir",
-    "cedula": "1020304050", "fecha_nacimiento": "1994-03-02", "telefono": "3104567890",
-}
-registro = {k: v for k, v in formulario.items() if k in CAMPOS_NECESARIOS}
-print("descartados:", sorted(set(formulario) - set(registro)))
-
-TELEFONO = re.compile(r"\b3\d{9}\b")
-CORREO = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b")
-
-
-def redactar(texto):
-    texto = TELEFONO.sub(lambda m: m.group()[:3] + "*******", texto)
-    return CORREO.sub("[correo]", texto)
-
-
-print("log:", redactar(f"entrega {registro['guia']}: {registro['nota']}"))
-print("log:", redactar("cliente ana.p@correo.example pidió factura"))
-
-logs = [
-    (date(2026, 10, 1), "entrega RF-4102"),
-    (date(2026, 10, 30), "entrega RF-4388"),
-    (date(2026, 11, 20), "entrega RF-4471"),
-]
-vigentes = [(d, t) for d, t in logs if HOY - d <= RETENCION]
-print(f"retención 30 días: se conservan {len(vigentes)} de {len(logs)}:", [t for _, t in vigentes])
-```
-
-```text
-$ python3 privacidad.py
-descartados: ['cedula', 'fecha_nacimiento', 'telefono']
-log: entrega RF-4471: llamar al 310******* antes de subir
-log: cliente [correo] pidió factura
-retención 30 días: se conservan 2 de 3: ['entrega RF-4388', 'entrega RF-4471']
-```
-
-```python
-# incidente.py — mide el alcance de un log que guardó teléfonos completos
-import re
-
-TELEFONO = re.compile(r"\b3\d{9}\b")
-log_viejo = [
-    "2026-11-20 entrega RF-4471: llamar al 3104567890",
-    "2026-11-20 entrega RF-4472: dejado con el portero",
-    "2026-11-21 entrega RF-4480: timbre dañado, 3157778899",
-    "2026-11-21 entrega RF-4481: llamar al 3104567890 otra vez",
-]
-afectadas = [linea for linea in log_viejo if TELEFONO.search(linea)]
-telefonos = {t for linea in afectadas for t in TELEFONO.findall(linea)}
-print(f"líneas con teléfono completo: {len(afectadas)} de {len(log_viejo)}")
-print(f"personas distintas expuestas: {len(telefonos)}")
-print("fechas afectadas:", sorted({linea[:10] for linea in afectadas}))
-```
-
-```text
-$ python3 incidente.py
-líneas con teléfono completo: 3 de 4
-personas distintas expuestas: 2
-fechas afectadas: ['2026-11-20', '2026-11-21']
-```
-
-**Explicación por partes.**
-- `privacidad.py`, línea 13: la comprensión de diccionario conserva solo las claves de `CAMPOS_NECESARIOS`.
-- Línea 16: un celular colombiano de este ejemplo es `3` seguido de 9 dígitos; `\b` exige que no esté pegado a otros dígitos.
-- Línea 21: la función dentro de `sub` recibe cada coincidencia y devuelve su versión redactada.
-- Línea 33: `HOY - d` es un `timedelta`; los registros de más de 30 días quedan fuera.
-- `incidente.py`, líneas 11–12: las líneas afectadas y el **conjunto** de teléfonos distintos; el repetido cuenta una vez.
-- Esas tres cifras (líneas, personas, fechas) son la base del informe del incidente.
-
-> **Prevenir errores.** Redacta en el punto donde se escribe el log, no en cada llamada. Un formateador o filtro de
-> `logging` que redacta siempre evita que un desarrollador nuevo olvide hacerlo.
+> **Rendimiento.** Reporta el p95 junto al p50. Un usuario que hace 20 peticiones por sesión tiene una probabilidad de
+> \(1 - 0.95^{20} \approx 0.64\) de sufrir al menos una petición más lenta que el p95.
 
 #### Checkpoint 4.1
-Una nota pasa `validar` y se guarda con consulta parametrizada. ¿Ya puedes mostrarla en el panel sin más?
+Si cada envío se entrega con probabilidad 0.9, de forma independiente, ¿cuál es la probabilidad de al menos un fallo
+en una ruta de 10 envíos?
 
-Respuesta: no. Validar y parametrizar protegen la entrada y la base; al mostrarla hay que codificar para el contexto
-del panel (HTML, atributo, JavaScript o URL). Cada defensa protege un lugar distinto.
+Respuesta: \(1 - 0.9^{10} \approx 0.651\). Es más probable tener al menos un fallo que no tenerlo. Se usa el complemento
+porque «ningún fallo» es un solo caso fácil de calcular.
+
+#### Checkpoint 4.2
+¿Por qué correlación no implica causalidad?
+
+Respuesta: porque dos variables pueden moverse juntas porque ambas dependen de una tercera. En `correlacion.py`, pedidos
+y retraso tienen \(r = 0.94\), pero el tráfico causa los dos; con el tráfico fijo, la correlación cae a 0.09.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Paso 1 · Valida
-Crea `~/labs/seguridad/tema4`, escribe `validar.py` y confirma las cuatro líneas de salida. Agrega un quinto caso con
-la nota `O'Brien recibió` y comprueba que es válida.
+#### Paso 1 · Prepara la carpeta
+Crea `~/labs/discretas/probabilidad` y entra. Todos los programas de este tema usan solo la biblioteca estándar.
 
-#### Paso 2 · Inyecta en tu laboratorio
-Escribe `inyeccion.py` y ejecútalo. Confirma que la columna concatenada devuelve `2 filas` y `1 filas` en los casos
-maliciosos, y que la parametrizada devuelve `0 filas`.
+#### Paso 2 · Cuenta y simula
+Escribe `probabilidad.py` y ejecútalo; las fracciones deben coincidir exactamente. Cambia la semilla a 1 y ejecuta otra
+vez: la frecuencia simulada cambia un poco, pero sigue cerca de 0.729.
 
-#### Paso 3 · Codifica
-Escribe `salida.py`. Copia la línea `texto HTML` a un archivo `nota.html`, ábrelo en el navegador y comprueba que ves
-el texto y no una alerta.
+#### Paso 3 · Condiciona y busca la causa común
+Escribe `condicional.py` y `correlacion.py` y ejecútalos. Agrega a `condicional.py` el cálculo de
+\(P(L \mid R)\) y confirma que da `3/7`, distinto de \(P(R \mid L)\).
 
-#### Paso 4 · Protege los datos personales
-Escribe `privacidad.py` e `incidente.py`. En un archivo `incidente.txt`, anota las cifras del alcance y una acción
-para cada una: borrar o redactar las líneas, revisar copias y avisar a quien corresponda.
+#### Paso 4 · Mide con percentiles
+Escribe `latencias.py`, `domain.py` y `medir.py`, y ejecuta `medir.py` dos veces. Anota cuánto cambian tus p95 entre
+ejecuciones: esa variación es parte de la evidencia y va en el informe.
 
 #### Resumen
-- La **validación de entrada** se hace en el servidor y reduce lo que llega, pero no es la única defensa.
-- La **inyección SQL** nace de concatenar; la **consulta parametrizada** la elimina separando sentencia y valor.
-- El **XSS** ejecuta código en el navegador de otra persona; la **codificación de salida** depende del contexto.
-- Un **dato personal** identifica a alguien; la **privacidad** decide qué se recoge, para qué y por cuánto tiempo.
-- **Minimización de datos**, **redacción de datos** y **retención de datos** reducen lo que un error o un ataque puede exponer.
-- Un **incidente de seguridad** se mide (líneas, personas, fechas) antes de responder.
+- El **espacio muestral** \(\Omega\) reúne todos los resultados; un **evento** es un subconjunto de \(\Omega\).
+- Con resultados igual de probables, la **probabilidad** es \(\lvert A \rvert / \lvert \Omega \rvert\); `Fraction` la calcula exacta.
+- Con **independencia**, «y» multiplica; para «al menos uno», usa el complemento.
+- La **probabilidad condicional** \(P(A \mid B)\) mira solo los casos de \(B\) y no es igual a \(P(B \mid A)\).
+- La **esperanza** es el promedio pesado por probabilidad; puede no ser un valor posible.
+- Un **percentil** describe la cola mejor que la media; la **semilla** hace reproducible una simulación.
+- El **sesgo de selección** no se corrige con más datos, y la **correlación** no prueba causalidad.
 
 #### Ejercicio verificable 1
-Básico. Agrega a `payloads` el texto `x' OR 1=1 --` y predice las dos líneas de filas antes de ejecutar.
+Básico. Con dos dados, calcula \(P(\text{suma} \ge 10)\) contando casos. Comprueba con `probabilidad.py`.
 
-Respuesta esperada: `parametrizada: 0 filas` y `concatenada:   2 filas -> [(1, 'dejado con el portero'), (2, 'entregado en recepción')]`.
-`OR 1=1` es siempre verdadero y `--` comenta la comilla que sobraba.
+Respuesta esperada: los casos son (4, 6), (5, 5), (6, 4), (5, 6), (6, 5) y (6, 6): 6 de 36. \(P = \frac{6}{36} = \frac{1}{6}\),
+y `Fraction(6, 36)` muestra `1/6`.
 
 #### Ejercicio verificable 2
-Intermedio. Pasa por `redactar` el texto `llamar al 3104567890 o al +57 310 456 7890`. ¿Qué sale y qué harías?
+Intermedio. Con la tabla de `condicional.py`, calcula \(P(L \mid R)\): la probabilidad de que haya llovido sabiendo
+que la entrega se retrasó. Explica por qué no es \(\frac{3}{10}\).
 
-Respuesta esperada: `llamar al 310******* o al +57 310 456 7890`. El segundo formato tiene espacios y prefijo, y el
-patrón de la línea 16 no lo reconoce. Hay que ampliar el patrón y, mejor aún, minimizar: no copiar la nota libre al log.
+Respuesta esperada: \(P(L \mid R) = \frac{60}{140} = \frac{3}{7} \approx 0.43\). Mira las 140 entregas retrasadas, no las
+200 con lluvia. \(P(R \mid L) = \frac{3}{10}\) responde otra pregunta: cuántas de las entregas con lluvia se retrasaron.
 
 #### Ejercicio verificable 3
-Reto. En `incidente.py`, aplica `redactar` (cópiala de `privacidad.py`) a cada línea de `log_viejo` y vuelve a medir.
-¿Qué cifras salen?
+Reto. Cambia `medir.py` para repetir 100 veces cada tamaño y para imprimir, al final, el cociente
+`p50(400) / p50(200)`. Ejecútalo dos veces y escribe una conclusión de dos líneas con tamaño de muestra y dispersión.
 
-Respuesta esperada: `líneas con teléfono completo: 0 de 4`, `personas distintas expuestas: 0` y `fechas afectadas: []`.
-Esa segunda medición es la evidencia de que la contención funcionó; se guarda junto al informe del incidente.
+Respuesta esperada: el cociente queda cerca de 4, por lo general entre 3.5 y 4.5, por la complejidad \(O(n^2)\). Una
+conclusión válida dice, por ejemplo: «con 100 repeticiones por tamaño en esta máquina, el p50 con 400 paradas fue
+unas 4 veces el de 200; el p95 varió entre ejecuciones». No promete tiempos fijos para otra máquina.
 
 #### En el trabajo
-La inyección SQL y el XSS siguen en las listas de fallas más frecuentes de aplicaciones web, como el OWASP Top 10.
-En un equipo, las defensas se vuelven reglas automáticas: un linter que prohíbe SQL concatenado, plantillas que
-codifican por defecto y filtros de log que redactan. Las leyes de protección de datos exigen además saber qué datos
-personales guardas, para qué y hasta cuándo, y poder responder con cifras cuando algo sale mal.
+Los equipos de operaciones definen objetivos con percentiles («p95 menor que 300 ms»), no con promedios. Las pruebas
+A/B de producto son probabilidad condicional y control de sesgos: si solo miras a quienes completaron la compra,
+concluyes cualquier cosa. Antes de aprobar «contratar más mensajeros», una analista pregunta qué otra variable podría
+explicar la correlación.
 
 </details>
 
-### Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo · Avanzado · 75 min
+### Proyecto 9: cuaderno de propiedades, grafos y evidencia
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### Objetivos
-Al terminar este tema podrás:
-- comparar el remitente visible de un correo con sus cabeceras reales y con el destino de sus enlaces;
-- distinguir un dominio parecido, un homógrafo y un punycode del dominio legítimo por su dominio registrable;
-- interpretar los resultados de SPF, DKIM y DMARC de la cabecera `Authentication-Results`;
-- seguir un runbook de respuesta y medir una campaña de concienciación sin sacar conclusiones de muestras pequeñas.
-
-**Conceptos clave:** ingeniería social, phishing, cabeceras de correo, suplantación de remitente, dominio parecido, homógrafo, punycode, dominio registrable, SPF, DKIM, DMARC, runbook
-
-#### El problema
-Una coordinadora de RutaFlow recibe a las 7:58 un correo de «Soporte RutaFlow»: su cuenta será suspendida en 24
-horas si no verifica sus datos en el enlace `rutaflow.co`. El logo es el correcto y el tono también. Mirarlo no
-basta: el correo se ve igual que uno real. ¿Qué datos del correo, que el lector normal no ve, delatan el engaño?
-
-Este tema usa lo que ya conoces: **URL** y **DNS** (Módulo 3, Tema 1), **cabecera** y **HTML** (Módulo 3, Temas 2 y
-3), **punto de código** y **UTF-8** (Módulo 1, Tema 5), **sesión** (Tema 2 de este módulo), **firma digital**
-(Tema 3) e **incidente de seguridad** (Tema 4). Aquí no se redefinen.
-
-#### Glosario del tema
-
-**ingeniería social**
-- **Definición técnica:** manipulación psicológica que lleva a una persona a revelar información o ejecutar una acción que favorece al atacante.
-- **En palabras sencillas:** engañar a la persona en vez de romper el sistema.
-- **Dónde se rompe la comparación:** no es un descuido del usuario; los mensajes se diseñan para personas atentas y explotan urgencia, autoridad y miedo.
-- **Ejemplo:** el correo `typosquat` combina urgencia y miedo: `analizar.py` detecta `urgente, suspendida, 24 horas, verifique`.
-- **Error típico:** responder a un incidente culpando a quien hizo clic; así nadie vuelve a reportar.
-
-**phishing**
-- **Definición técnica:** ataque de ingeniería social por mensajes (correo, SMS, chat) que suplantan a una entidad para robar credenciales, dinero o instalar programas.
-- **En palabras sencillas:** un anzuelo con forma de mensaje oficial.
-- **Dónde se rompe la comparación:** el pescador lanza a ciegas; el phishing dirigido usa nombres, cargos y proyectos reales de la víctima.
-- **Ejemplo:** el enlace `https://rutaflow.co@rutaf1ow.co/login` lleva a una página de inicio de sesión falsa.
-- **Error típico:** creer que el candado del navegador prueba que el sitio es legítimo; el atacante también tiene HTTPS.
-
-**cabeceras de correo**
-- **Definición técnica:** líneas `Nombre: valor` al inicio del mensaje: `From` (autor visible), `Return-Path` (dirección de rebote del sobre), `Reply-To` (a dónde va la respuesta) y las de autenticación.
-- **En palabras sencillas:** el sobre y los sellos de la carta, que tu programa de correo casi nunca te muestra.
-- **Dónde se rompe la comparación:** el remitente de un sobre se puede escribir a mano; casi todas estas cabeceras también, salvo las que añade tu propio servidor.
-- **Ejemplo:** `Return-Path mailer.example no coincide con From rutaf1ow.co`.
-- **Error típico:** fiarse del nombre visible (`Soporte RutaFlow`), que el atacante escribe libremente.
-
-**suplantación de remitente**
-- **Definición técnica:** envío de un correo cuyo `From` muestra un dominio que el remitente real no controla (*spoofing*).
-- **En palabras sencillas:** firmar una carta con el nombre de otra persona.
-- **Dónde se rompe la comparación:** a diferencia de una firma falsa, el dominio se puede comprobar con SPF, DKIM y DMARC.
-- **Ejemplo:** el correo `suplantado` dice `From: soporte@rutaflow.co` pero `DKIM firmado por: mailer.example`.
-- **Error típico:** creer que si el `From` es exacto el correo es legítimo; sin DMARC con política estricta, cualquiera lo escribe.
-
-**dominio parecido**
-- **Definición técnica:** dominio registrado por un atacante que imita uno legítimo con una letra cambiada, añadida o un subdominio engañoso (*typosquatting*).
-- **En palabras sencillas:** un letrero que dice «RutaF1ow» con un uno en vez de la ele.
-- **Dónde se rompe la comparación:** a simple vista no se nota; para el DNS son dominios totalmente distintos.
-- **Ejemplo:** `pagos.rutaflow.co.evil.example` tiene `registrable=evil.example`.
-- **Error típico:** revisar solo el comienzo de la URL; lo que manda es el final del nombre de host.
-
-**homógrafo**
-- **Definición técnica:** carácter de otro alfabeto visualmente idéntico a uno latino, como la `о` cirílica (U+043E) frente a la `o` latina.
-- **En palabras sencillas:** una letra disfrazada de otra.
-- **Dónde se rompe la comparación:** se ven iguales en pantalla, pero son puntos de código distintos (Módulo 1, Tema 5).
-- **Ejemplo:** `urls.py` marca `https://rutaflоw.co/datos` con `el host tiene caracteres no ASCII (homógrafo)`.
-- **Error típico:** comparar dominios «a ojo» o copiándolos de la pantalla.
-
-**punycode**
-- **Definición técnica:** codificación ASCII de nombres de dominio con caracteres no ASCII; empieza con `xn--`.
-- **En palabras sencillas:** la forma en que el DNS escribe un dominio con tildes o letras de otros alfabetos.
-- **Dónde se rompe la comparación:** muchos navegadores muestran la versión decodificada, que puede parecer el dominio real.
-- **Ejemplo:** `xn--rutflow-4fg.co` se decodifica como `rutаflow.co`, con una `а` cirílica.
-- **Error típico:** bloquear todo `xn--`; hay dominios legítimos con tildes. Lo correcto es compararlos con la lista permitida.
-
-**dominio registrable**
-- **Definición técnica:** la parte del nombre de host que alguien registra ante un registrador; se obtiene con la lista pública de sufijos (*Public Suffix List*).
-- **En palabras sencillas:** el nombre del dueño de la casa, sin el número del apartamento.
-- **Dónde se rompe la comparación:** no siempre son las dos últimas etiquetas: en `rutaflow.com.co` el sufijo es `com.co` y el registrable tiene tres.
-- **Ejemplo:** `pagos.rutaflow.co` da `registrable=rutaflow.co` y pasa la lista blanca.
-- **Error típico:** tomar las dos últimas etiquetas siempre: `registrable("api.rutaflow.com.co")` devuelve `com.co`.
-
-**SPF**
-- **Definición técnica:** registro DNS del dominio que lista qué servidores pueden enviar correo en su nombre; se comprueba contra el dominio del `Return-Path`.
-- **En palabras sencillas:** la lista de mensajeros autorizados de la empresa.
-- **Dónde se rompe la comparación:** valida el sobre, no el `From` visible; un atacante puede pasar SPF con su propio dominio.
-- **Ejemplo:** el correo `suplantado` tiene `spf=fail smtp.mailfrom=mailer.example`.
-- **Error típico:** leer `spf=pass` como «correo legítimo» sin mirar de qué dominio.
-
-**DKIM**
-- **Definición técnica:** firma digital que el servidor emisor agrega al correo; la clave pública se publica en el DNS del dominio firmante (`header.d`).
-- **En palabras sencillas:** el sello del remitente pegado al mensaje, que cualquiera puede comprobar.
-- **Dónde se rompe la comparación:** prueba quién firmó, no quién aparece en el `From`; un atacante firma con su propio dominio.
-- **Ejemplo:** en `suplantado`, `dkim=pass` pero `DKIM firmado por: mailer.example; alineado: False`.
-- **Error típico:** quedarse con `dkim=pass` sin comprobar que `header.d` coincide con el dominio del `From`.
-
-**DMARC**
-- **Definición técnica:** política DNS que exige que SPF o DKIM pasen **alineados** con el dominio del `From`, e indica qué hacer si no: `none`, `quarantine` o `reject`.
-- **En palabras sencillas:** la regla de la empresa: «si el sello no es nuestro, bota la carta» (o apártala).
-- **Dónde se rompe la comparación:** con `p=none` solo se informa; el correo falso llega igual.
-- **Ejemplo:** `autenticacion.py` imprime `dmarc=fail política=quarantine` y `decisión: cuarentena`.
-- **Error típico:** publicar DMARC con `p=none` y no subir nunca a `quarantine` o `reject`.
-
-**runbook**
-- **Definición técnica:** procedimiento escrito, paso a paso, para responder a un tipo de incidente; dice quién actúa, en qué orden y qué evidencia guarda.
-- **En palabras sencillas:** la receta para el día malo, escrita el día tranquilo.
-- **Dónde se rompe la comparación:** una receta se sigue igual siempre; el runbook se ajusta después de cada incidente real.
-- **Ejemplo:** cuando `analizar.py` imprime `SOSPECHOSO`, el runbook de este tema ordena reportar, buscar a otros destinatarios y revocar sesiones.
-- **Error típico:** escribirlo durante el incidente, con prisa y sin saber quién tiene permiso para revocar sesiones.
-
-#### ► CÓMO FUNCIONA
-Un correo sospechoso se analiza en tres capas, de lo que el lector no ve a lo que sí ve.
-
-1. **Autenticación:** la cabecera `Authentication-Results` dice si SPF, DKIM y DMARC pasaron y con qué dominios.
-2. **Identidad:** el dominio del `From` se compara con `Return-Path` y `Reply-To`.
-3. **Enlaces:** el destino real de cada enlace se compara con el texto que muestra y con la lista de dominios permitidos.
-
-La urgencia y el miedo son señales humanas, no técnicas; también se cuentan. Si hay señales, el correo no se
-«arregla»: se activa el runbook.
-
-| Señal | Dónde se ve | Qué significa |
-|---|---|---|
-| `dmarc=fail` | `Authentication-Results` | El `From` no está respaldado por su dominio |
-| `Return-Path` distinto del `From` | Cabeceras | El rebote va a otro dominio |
-| Texto del enlace ≠ destino | HTML del cuerpo | Te muestran un sitio y te llevan a otro |
-| `@` dentro del host | URL | Lo que va antes de `@` es usuario, no destino |
-| `xn--` o caracteres no ASCII | Host | Posible homógrafo |
-
-```mermaid
-flowchart TD
-    C["correo recibido"] --> ID["identidad visible<br/>nombre y From"]
-    ID --> AUTH{"¿SPF, DKIM y DMARC<br/>alineados?"}
-    AUTH -->|"dmarc=pass"| OK["entregar"]
-    AUTH -->|"dmarc=fail"| POL{"política DMARC"}
-    POL -->|"p=reject"| REJ["rechazar"]
-    POL -->|"p=quarantine"| Q["cuarentena"]
-    POL -->|"p=none"| WARN["entregar con aviso"]
-    C --> URL["enlaces"]
-    URL --> REG{"¿dominio registrable<br/>en lista blanca?"}
-    REG -->|"no"| ALERT["señal: destino externo"]
-    REG -->|"sí"| TEXT{"¿texto coincide<br/>con destino?"}
-    TEXT -->|"no"| ALERT
-    TEXT -->|"sí"| CLEAN["sin señal"]
-    C --> URG["urgencia"] --> ALERT
-    ALERT --> REP["runbook: reportar y contener sesiones"]
-```
-
-#### Problema resuelto 5.1
-Lee la cabecera `Authentication-Results` de dos correos y decide qué hace DMARC con cada uno.
-
-**Razonamiento:**
-1. Unir la cabecera, que puede venir partida en varias líneas, en una sola.
-2. Extraer `spf`, `dkim` y `dmarc` con una expresión regular, más la política y el dominio que firmó DKIM.
-3. Comparar el firmante con el dominio del `From`: esa es la alineación que exige DMARC.
-
-```python
-# autenticacion.py — interpreta la cabecera Authentication-Results de un correo
-import re
-from email import message_from_string
-
-crudos = {
-    "factura": """From: facturas@rutaflow.co
-Authentication-Results: mx.rutaflow.co; spf=pass smtp.mailfrom=rutaflow.co;
- dkim=pass header.d=rutaflow.co; dmarc=pass (p=reject) header.from=rutaflow.co
-Subject: Factura de octubre
-
-Adjunta la factura.""",
-    "suplantado": """From: soporte@rutaflow.co
-Authentication-Results: mx.rutaflow.co; spf=fail smtp.mailfrom=mailer.example;
- dkim=pass header.d=mailer.example; dmarc=fail (p=quarantine) header.from=rutaflow.co
-Subject: Cambie su clave
-
-Ingrese ya.""",
-}
-
-
-def resultados(cabecera):
-    return dict(re.findall(r"\b(spf|dkim|dmarc)=(\w+)", cabecera))
-
-
-for nombre, crudo in crudos.items():
-    msg = message_from_string(crudo)
-    cabecera = " ".join(msg["Authentication-Results"].split())
-    r = resultados(cabecera)
-    politica = re.search(r"\(p=(\w+)\)", cabecera).group(1)
-    firmante = re.search(r"header\.d=([\w.-]+)", cabecera).group(1)
-    visible = msg["From"].rsplit("@", 1)[-1]
-    print(f"{nombre}: spf={r['spf']} dkim={r['dkim']} dmarc={r['dmarc']} política={politica}")
-    print(f"  From visible: {visible}; DKIM firmado por: {firmante}; alineado: {firmante == visible}")
-    if r["dmarc"] != "pass":
-        print(f"  decisión: {'rechazar' if politica == 'reject' else 'cuarentena' if politica == 'quarantine' else 'entregar con aviso'}")
-```
-
-```text
-$ python3 autenticacion.py
-factura: spf=pass dkim=pass dmarc=pass política=reject
-  From visible: rutaflow.co; DKIM firmado por: rutaflow.co; alineado: True
-suplantado: spf=fail dkim=pass dmarc=fail política=quarantine
-  From visible: rutaflow.co; DKIM firmado por: mailer.example; alineado: False
-  decisión: cuarentena
-```
-
-**Explicación por partes.**
-- Líneas 7–8 y 13–14: una cabecera larga continúa en la línea siguiente si esta empieza con espacio.
-- Línea 22: `findall` con dos grupos devuelve pares; `dict` los convierte en `{"spf": "pass", …}`.
-- Línea 27: `split` y `join` quitan saltos de línea y espacios repetidos.
-- Línea 33: la alineación compara el dominio firmante con el visible. En el suplantado, `dkim=pass` no basta.
-- Líneas 34–35: solo si DMARC falla se aplica la política publicada por el dominio.
-
-> **Error común.** Analizar un correo que no trae `Authentication-Results`, por ejemplo uno reenviado como texto.
-> La línea 27 termina con `AttributeError: 'NoneType' object has no attribute 'split'`: `msg[...]` devuelve `None`
-> si la cabecera no existe. Comprueba antes con `if msg["Authentication-Results"] is None:` y analiza el original.
-
-#### Problema resuelto 5.2
-Revisa tres correos completos: compara cabeceras, enlaces y palabras de urgencia, y marca los sospechosos.
-
-**Razonamiento:**
-1. El módulo `email` separa cabeceras y cuerpo; `HTMLParser` recorre el HTML y guarda cada `href` con su texto.
-2. `urlsplit` separa la URL en partes: lo que va antes de `@` en el host es usuario, no destino.
-3. Cada señal es una línea de alerta; un correo sin alertas se considera limpio, no «seguro».
-
-```python
-# analizar.py — revisa cabeceras, enlaces y urgencia de un correo
-import re
-from email import message_from_string
-from html.parser import HTMLParser
-from urllib.parse import urlsplit
-
-DOMINIOS = {"rutaflow.co"}
-PALABRAS = ["urgente", "suspendida", "24 horas", "verifique", "inmediato"]
-
-
-def dominio(direccion):
-    return direccion.rsplit("@", 1)[-1].strip().lower().rstrip(">")
-
-
-class Enlaces(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.enlaces = []
-        self._href = None
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "a":
-            self._href = dict(attrs).get("href")
-
-    def handle_data(self, data):
-        if self._href is not None:
-            self.enlaces.append((self._href, data.strip()))
-            self._href = None
-
-
-def revisar(crudo):
-    msg = message_from_string(crudo)
-    de = msg["From"] or ""
-    remitente = dominio(de)
-    alertas = []
-
-    return_path = msg.get("Return-Path") or ""
-    if return_path and dominio(return_path) != remitente:
-        alertas.append(f"Return-Path {dominio(return_path)} no coincide con From {remitente}")
-    reply_to = msg.get("Reply-To") or ""
-    if reply_to and dominio(reply_to) != remitente:
-        alertas.append(f"Reply-To {dominio(reply_to)} no coincide con From {remitente}")
-
-    parser = Enlaces()
-    parser.feed(msg.get_payload())
-    for href, texto in parser.enlaces:
-        destino = urlsplit(href)
-        host = (destino.hostname or "").lower()
-        if destino.username:
-            alertas.append(f"URL con userinfo: {href} -> destino real {host}")
-        if host.startswith("xn--"):
-            alertas.append(f"dominio punycode: {host}")
-        raros = [f"{c} (U+{ord(c):04X})" for c in host if ord(c) > 127]
-        if raros:
-            alertas.append(f"homógrafo en el destino: {raros} en {host}")
-        if host and not host.replace(".", "").isdigit() and host not in DOMINIOS:
-            alertas.append(f"destino fuera de la lista blanca: {host}")
-        if destino.scheme != "https":
-            alertas.append(f"enlace sin HTTPS: {href}")
-        visible = urlsplit(texto if "://" in texto else "https://" + texto).hostname or ""
-        if visible and visible != host:
-            alertas.append(f"texto muestra {visible} pero va a {host}")
-
-    texto_total = " ".join([msg["Subject"] or "", msg.get_payload()]).lower()
-    urgencia = [p for p in PALABRAS if p in texto_total]
-    if urgencia:
-        alertas.append(f"urgencia: {', '.join(urgencia)}")
-    return alertas
-
-
-correos = {
-    "legítimo": """From: facturas@rutaflow.co
-Return-Path: <facturas@rutaflow.co>
-Subject: Factura de octubre
-Content-Type: text/html; charset=utf-8
-
-<a href="https://rutaflow.co/f/10">rutaflow.co</a>""",
-    "typosquat": """From: soporte@rutaf1ow.co
-Return-Path: <rebote@mailer.example>
-Reply-To: ayuda@otro.example
-Subject: URGENTE: cuenta suspendida
-Content-Type: text/html; charset=utf-8
-
-Verifique en 24 horas: <a href="https://rutaflow.co@rutaf1ow.co/login">rutaflow.co</a>""",
-    "punycode": """From: seguridad@rutaflow.co
-Subject: Actualice sus datos
-Content-Type: text/html; charset=utf-8
-
-<a href="http://xn--rutflow-4fg.co/datos">rutaflow.co</a>""",
-}
-
-for nombre, crudo in correos.items():
-    alertas = revisar(crudo)
-    print(f"{nombre}: {'SOSPECHOSO' if alertas else 'sin señales'}")
-    for alerta in alertas:
-        print(f"  - {alerta}")
-```
-
-```text
-$ python3 analizar.py
-legítimo: sin señales
-typosquat: SOSPECHOSO
-  - Return-Path mailer.example no coincide con From rutaf1ow.co
-  - Reply-To otro.example no coincide con From rutaf1ow.co
-  - URL con userinfo: https://rutaflow.co@rutaf1ow.co/login -> destino real rutaf1ow.co
-  - destino fuera de la lista blanca: rutaf1ow.co
-  - texto muestra rutaflow.co pero va a rutaf1ow.co
-  - urgencia: urgente, suspendida, 24 horas, verifique
-punycode: SOSPECHOSO
-  - dominio punycode: xn--rutflow-4fg.co
-  - destino fuera de la lista blanca: xn--rutflow-4fg.co
-  - enlace sin HTTPS: http://xn--rutflow-4fg.co/datos
-  - texto muestra rutaflow.co pero va a xn--rutflow-4fg.co
-```
-
-**Explicación por partes.**
-- Líneas 11–12: `dominio` toma lo que va después de la última `@` y quita el `>` de cierre.
-- Líneas 21–27: el analizador recuerda el `href` del último `<a>` y lo empareja con el texto que muestra.
-- Líneas 37–42: `Return-Path` y `Reply-To` deben ser del mismo dominio que el `From`.
-- Líneas 49–50: `destino.username` existe cuando la URL trae `algo@`; el navegador va al host de después.
-- Líneas 51–57: punycode, caracteres no ASCII y dominios fuera de la lista blanca.
-- Líneas 60–62: el texto visible del enlace se interpreta como URL para comparar su host con el destino real.
-- Líneas 64–67: las palabras de urgencia se buscan en asunto y cuerpo, en minúsculas.
-
-> **Buena práctica.** No abras los enlaces sospechosos para «ver qué hay». El análisis se hace sobre el texto del
-> correo, como aquí. Si hace falta visitar el sitio, lo hace el equipo de seguridad en un entorno aislado.
-
-#### Problema resuelto 5.3
-Analiza URLs sueltas, como las que llegan por SMS o chat, y decide por dominio registrable.
-
-**Razonamiento:**
-1. Obtener el host real y su dominio registrable.
-2. Señalar userinfo, IP en vez de nombre, caracteres no ASCII y punycode decodificado.
-3. Aceptar solo si el host o su registrable están en la lista de permitidos.
-
-```python
-# urls.py — revisa a dónde lleva realmente una URL
-import ipaddress
-from urllib.parse import urlsplit
-
-PERMITIDOS = {"rutaflow.co", "pagos.rutaflow.co"}
-
-
-def registrable(host):
-    etiquetas = host.rstrip(".").split(".")
-    return ".".join(etiquetas[-2:]) if len(etiquetas) >= 2 else host
-
-
-def revisar(url):
-    partes = urlsplit(url)
-    host = (partes.hostname or "").lower()
-    notas = [f"host={host}", f"registrable={registrable(host)}"]
-    if partes.username:
-        notas.append(f"userinfo oculta el destino real: {partes.username}@{host}")
-    try:
-        ipaddress.ip_address(host)
-        notas.append("el destino es una IP, no un dominio")
-    except ValueError:
-        pass
-    if any(ord(c) > 127 for c in host):
-        notas.append("el host tiene caracteres no ASCII (homógrafo)")
-    if host.startswith("xn--") or ".xn--" in host:
-        try:
-            notas.append(f"punycode decodifica a {host.encode('ascii').decode('idna')}")
-        except UnicodeError:
-            notas.append("punycode inválido")
-    if partes.scheme != "https":
-        notas.append("sin HTTPS")
-    if host not in PERMITIDOS and registrable(host) not in PERMITIDOS:
-        notas.append("fuera de la lista blanca por dominio registrable")
-    return notas
-
-
-for url in [
-    "https://rutaflow.co@rutaf1ow.co/login",
-    "https://pagos.rutaflow.co.evil.example/login",
-    "https://xn--rutflow-4fg.co/datos",
-    "https://rutaflоw.co/datos",
-    "http://45.12.3.9/login",
-    "https://pagos.rutaflow.co/f/10",
-]:
-    print(url)
-    for nota in revisar(url):
-        print(f"  - {nota}")
-```
-
-```text
-$ python3 urls.py
-https://rutaflow.co@rutaf1ow.co/login
-  - host=rutaf1ow.co
-  - registrable=rutaf1ow.co
-  - userinfo oculta el destino real: rutaflow.co@rutaf1ow.co
-  - fuera de la lista blanca por dominio registrable
-https://pagos.rutaflow.co.evil.example/login
-  - host=pagos.rutaflow.co.evil.example
-  - registrable=evil.example
-  - fuera de la lista blanca por dominio registrable
-https://xn--rutflow-4fg.co/datos
-  - host=xn--rutflow-4fg.co
-  - registrable=xn--rutflow-4fg.co
-  - punycode decodifica a rutаflow.co
-  - fuera de la lista blanca por dominio registrable
-https://rutaflоw.co/datos
-  - host=rutaflоw.co
-  - registrable=rutaflоw.co
-  - el host tiene caracteres no ASCII (homógrafo)
-  - fuera de la lista blanca por dominio registrable
-http://45.12.3.9/login
-  - host=45.12.3.9
-  - registrable=3.9
-  - el destino es una IP, no un dominio
-  - sin HTTPS
-  - fuera de la lista blanca por dominio registrable
-https://pagos.rutaflow.co/f/10
-  - host=pagos.rutaflow.co
-  - registrable=rutaflow.co
-```
-
-**Explicación por partes.**
-- Líneas 8–10: la versión simple del dominio registrable: las dos últimas etiquetas. Sirve para `.co`, no para `.com.co`.
-- Líneas 19–23: `ip_address` lanza `ValueError` si el host no es una IP; ese caso se ignora con `pass`.
-- Líneas 26–30: `decode('idna')` muestra cómo se vería el punycode: `rutаflow.co`, con una letra cirílica.
-- Línea 33: la decisión final usa el registrable; `pagos.rutaflow.co.evil.example` cae porque su dueño es `evil.example`.
-- Salida: la última URL no tiene notas extra: es la única legítima.
-
-> **Error común.** Confiar en «dos últimas etiquetas» con sufijos de dos niveles. `registrable("api.rutaflow.com.co")`
-> devuelve `com.co`, igual que `registrable("rutaflow-pagos.com.co")`: el programa no distingue a la empresa del
-> atacante. En producción se usa la lista pública de sufijos, y para la IP `45.12.3.9` el «registrable» `3.9` no
-> significa nada.
-
-#### Checkpoint 5.1
-Un correo trae `spf=pass smtp.mailfrom=envios-rapidos.example`, `dkim=pass header.d=envios-rapidos.example` y
-`From: pagos@rutaflow.co`. ¿Debería pasar DMARC de `rutaflow.co`?
-
-Respuesta: no. SPF y DKIM pasan, pero para `envios-rapidos.example`, que no está alineado con `rutaflow.co`. DMARC
-exige alineación con el dominio del `From`, así que resulta `dmarc=fail`.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Paso 1 · Lee la autenticación
-Crea `~/labs/seguridad/tema5`, escribe `autenticacion.py` y confirma que el suplantado termina en `decisión: cuarentena`.
-
-#### Paso 2 · Analiza correos
-Escribe `analizar.py` y ejecútalo. Agrega un cuarto correo legítimo de `pagos@rutaflow.co` con un enlace a
-`https://rutaflow.co/pagos` y comprueba que sale `sin señales`.
-
-#### Paso 3 · Analiza URLs
-Escribe `urls.py`. Para cada URL marcada, escribe en `urls.txt` qué señal la delata y si un usuario la habría notado.
-
-#### Paso 4 · Escribe el runbook
-Crea `runbook-phishing.md` con cinco pasos: (1) no hacer clic y reportar el correo con cabeceras completas;
-(2) buscar el mismo asunto o remitente en los buzones de la empresa; (3) si alguien ingresó su clave, revocar sus
-sesiones (Tema 2) y forzar cambio de contraseña; (4) bloquear el dominio en el filtro de correo; (5) registrar el
-incidente con cifras (Tema 4).
-
-#### Resumen
-- La **ingeniería social** ataca a las personas; el **phishing** es su forma más común por mensajes.
-- Las **cabeceras de correo** revelan lo que el nombre visible esconde: `Return-Path`, `Reply-To` y autenticación.
-- La **suplantación de remitente** se detecta con **SPF**, **DKIM** y **DMARC**, mirando siempre la alineación con el `From`.
-- Un **dominio parecido**, un **homógrafo** o un **punycode** imitan el dominio real; se decide por **dominio registrable**.
-- El enlace se juzga por su destino real, no por el texto que muestra.
-- Un **runbook** convierte la sospecha en pasos: reportar, buscar, contener sesiones, bloquear y registrar.
-
-#### Ejercicio verificable 1
-Básico. Pasa a `urls.py` la URL `https://soporte.rutaflow.co/ayuda`. ¿Qué notas imprime?
-
-Respuesta esperada: `host=soporte.rutaflow.co` y `registrable=rutaflow.co`, sin más notas. No está en `PERMITIDOS`,
-pero su registrable sí, así que pasa la lista blanca.
-
-#### Ejercicio verificable 2
-Intermedio. En `autenticacion.py`, agrega un tercer correo igual al suplantado pero con `(p=none)`. ¿Qué decisión
-imprime y qué riesgo deja?
-
-Respuesta esperada: `decisión: entregar con aviso`. Con `p=none` el correo falso llega a la bandeja; la política solo
-sirve para recibir informes. RutaFlow debe subir a `quarantine` y después a `reject`.
-
-#### Ejercicio verificable 3
-Reto. RutaFlow hizo una capacitación. En la simulación previa, 18 de 60 personas hicieron clic; en la posterior, 12 de
-60. ¿Bajó de verdad? Usa el intervalo de Wilson al 95 %, que da el rango plausible de la proporción real:
-
-```python
-# campana.py — ¿bajaron de verdad los clics tras la capacitación?
-from math import sqrt
-
-
-def intervalo_wilson(exitos, total, z=1.96):
-    p = exitos / total
-    centro = (p + z * z / (2 * total)) / (1 + z * z / total)
-    margen = z * sqrt(p * (1 - p) / total + z * z / (4 * total * total)) / (1 + z * z / total)
-    return centro - margen, centro + margen
-
-
-for nombre, clics, total in [("antes", 18, 60), ("después", 12, 60)]:
-    bajo, alto = intervalo_wilson(clics, total)
-    print(f"{nombre}: {clics}/{total} = {clics / total:.0%}, intervalo 95 %: {bajo:.0%} a {alto:.0%}")
-```
-
-Respuesta esperada:
-
-```text
-$ python3 campana.py
-antes: 18/60 = 30%, intervalo 95 %: 20% a 43%
-después: 12/60 = 20%, intervalo 95 %: 12% a 32%
-```
-
-Los intervalos se solapan entre 20 % y 32 %: con 60 personas no puedes afirmar que la capacitación redujo los clics.
-Con las mismas proporciones y 600 personas (180 y 120 clics), los intervalos son 26 % a 34 % y 17 % a 23 % y ya no se
-tocan. Informa la cifra con su intervalo, no solo el porcentaje.
-
-#### En el trabajo
-La mayoría de los incidentes graves empiezan con una credencial robada por phishing. Por eso las empresas publican
-DMARC con `p=reject`, filtran enlaces en el servidor de correo, hacen simulaciones periódicas y miden el
-**porcentaje de reportes**, no solo el de clics. El objetivo no es que nadie haga clic nunca, sino que quien lo haga
-lo reporte en minutos y el runbook contenga el daño.
-
-</details>
-
-### Proyecto 6: inventario endurecido
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-El proyecto aplica los cinco temas al inventario del Módulo 5. No hay técnicas nuevas: cada entregable remite al
-tema donde se explicó. El resultado es un repositorio que alguien de seguridad podría auditar sin pedirte nada más.
+El proyecto une los cuatro temas en un cuaderno reproducible del inventario de RutaFlow: especificaciones lógicas,
+pruebas generativas, análisis de grafos y un experimento probabilístico. No hay técnicas nuevas: cada entrega remite al
+tema donde se explicó. Puede ser una carpeta con programas de Python y un archivo de texto que los explique.
 
 </details>
 
@@ -2450,15 +1772,14 @@ tema donde se explicó. El resultado es un repositorio que alguien de seguridad 
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Entregables
-1. **Modelo de amenazas.** Diagrama de flujo de datos con límites de confianza y `amenazas.json` validado por `riesgos.py`, con dueño y tratamiento en cada fila (Tema 1).
-2. **Credenciales y roles.** Contraseñas con `hashlib.scrypt` y sal única, sesiones con expiración y revocación, y autorización por rol y por objeto (Tema 2).
-3. **Secretos.** Ningún secreto en el código ni en el historial; `.env.example` con nombres de variables y `escanear.py` como paso de CI que falla con código 1 (Tema 3).
-4. **Pruebas de abuso.** Pruebas `pytest` que comprueban que cada acción no autorizada falla: otro usuario, rol equivocado, sesión vencida e inyección SQL (Temas 2 y 4).
-5. **Auditoría y privacidad.** Registro de auditoría encadenado con HMAC y logs redactados con retención definida (Temas 2 y 4).
-6. **Runbook.** Procedimiento de respuesta a incidentes con pasos, responsables y la evidencia que se guarda (Temas 4 y 5).
+1. **Especificación.** Pre, post e invariante de dos operaciones del inventario, en texto plano y en símbolos, con una tabla de verdad de al menos una regla compuesta (Tema 1).
+2. **Contraejemplo automático.** Una prueba con Hypothesis que encontró un defecto real o sembrado, su contraejemplo mínimo y la corrección (Tema 1).
+3. **Demostración.** Una prueba por inducción de una propiedad de una función recursiva del inventario, con sus supuestos escritos y uno de ellos comprobado (Tema 2).
+4. **Grafo.** Las dependencias del inventario como grafo dirigido, con `tiene_ciclo`, un orden topológico y un ejemplo de `CycleError` provocado y explicado (Tema 3).
+5. **Experimento.** Una medición con semilla o repeticiones, en varios tamaños, que reporte n, p50 y p95, y una conclusión que nombre sus límites y posibles sesgos (Tema 4).
 
 #### Criterio de terminado
-Un clon limpio del repositorio pasa `python -m pytest -q` y `git log -p | python3 escanear.py` termina con código 0.
-Cada prueba de abuso se vio fallar antes de agregar el control que la hace pasar.
+Otra persona clona la carpeta, crea un entorno virtual nuevo, instala `hypothesis` y ejecuta cada programa. Obtiene las
+mismas salidas exactas, salvo los tiempos, y puede seguir cada conclusión desde el dato que la respalda.
 
 </details>

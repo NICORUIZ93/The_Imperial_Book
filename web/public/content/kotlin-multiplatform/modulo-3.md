@@ -1,24 +1,25 @@
-# Módulo 3: Arquitectura de un proyecto KMP
+# Módulo 3: Persistencia compartida con SQLDelight
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria — source sets, `expect`/`actual`, targets de Gradle y jerarquías intermedias son la estructura sobre la que se apoya todo el resto del track.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra SQLite real (el motor que SQLDelight envuelve) para que cada afirmación sea comprobable, no solo descrita.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Source sets · Intermedio · 25 min
+### Tema 1: Esquemas SQLDelight y queries tipadas · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás decidir si un archivo Kotlin pertenece a commonMain o a un source set específico de plataforma, y verificar que commonMain nunca importa una API específica de una sola plataforma.
+Al finalizar podrás declarar un esquema .sq con queries tipadas, y explicar por qué SQLDelight detecta un error de SQL en compilación mientras un ORM dinámico lo detectaría recién en tiempo de ejecución.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart TB
-  A[commonMain: código compartido] --> B[androidMain: APIs de Android]
-  A --> C[iosMain: APIs de iOS]
+flowchart LR
+  A[archivo .sq: esquema + queries SQL] --> B[SQLDelight genera código Kotlin tipado]
+  B --> C["database.tareaQueries.selectTodas()"]
+  C --> D["List<Tarea> tipado"]
 ```
 
 </details>
@@ -28,293 +29,267 @@ flowchart TB
 
 #### Código y verificación
 
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/Tarea.kt
-package com.academia.kmp
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp
+cd academia-kmp
+```
 
-data class Tarea(val id: String, val titulo: String, val completada: Boolean)
+```sql
+-- shared/src/commonMain/sqldelight/com/academia/kmp/Tarea.sq
+CREATE TABLE Tarea (
+    id TEXT NOT NULL PRIMARY KEY,
+    titulo TEXT NOT NULL,
+    completada INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+selectTodas:
+SELECT * FROM Tarea;
+
+insertar:
+INSERT INTO Tarea(id, titulo, completada) VALUES (?, ?, ?);
 ```
 
 ```kotlin
-// shared/src/androidMain/kotlin/com/academia/kmp/Plataforma.android.kt
+sqldelight {
+    databases {
+        create("Database") {               // nombre de la clase generada: Database
+            packageName.set("com.academia.kmp")
+        }
+    }
+}
+```
+
+```kotlin
+// shared/src/jvmTest/kotlin/com/academia/kmp/TareaQueriesTest.kt
 package com.academia.kmp
 
-import android.os.Build
+import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-actual fun nombrePlataforma(): String = "Android ${Build.VERSION.SDK_INT}"
+// adapta la columna SQLite INTEGER (0/1) hacia el Boolean que usa el resto del dominio (Módulos 3-4, 9)
+val adaptadorBooleano = object : ColumnAdapter<Boolean, Long> {
+    override fun decode(databaseValue: Long): Boolean = databaseValue == 1L
+    override fun encode(value: Boolean): Long = if (value) 1L else 0L
+}
+
+class TareaQueriesTest {
+
+    private fun crearBaseDeDatosEnMemoria(): Database {
+        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        Database.Schema.create(driver)
+        return Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
+    }
+
+    @Test
+    fun `insertar y selectTodas devuelven la fila insertada`() {
+        val database = crearBaseDeDatosEnMemoria()
+
+        database.tareaQueries.insertar(id = "1", titulo = "Comprar leche", completada = false)
+
+        val filas = database.tareaQueries.selectTodas().executeAsList()
+        assertEquals(listOf(Tarea(id = "1", titulo = "Comprar leche", completada = false)), filas)
+    }
+}
 ```
 
 ```bash
-# crea la estructura de source sets y compila el módulo compartido con Gradle
+# Gradle ejecuta el test real contra SQLite vía JdbcSqliteDriver
+./gradlew :shared:jvmTest --tests "com.academia.kmp.TareaQueriesTest"
+```
+
+</details>
+
+### Tema 2: Drivers por plataforma · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar por qué las queries compartidas en commonMain requieren un driver distinto por plataforma, y confirmar que el mismo conjunto de queries produce el mismo resultado sin importar qué driver las ejecute.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+  A["queries compartidas (commonMain)"] --> B["AndroidSqliteDriver (androidMain)"]
+  A --> C["NativeSqliteDriver (iosMain)"]
+  B --> D[mismo resultado]
+  C --> D
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+  A["queries compartidas (commonMain)"] --> B["AndroidSqliteDriver (androidMain)"]
+  A --> C["NativeSqliteDriver (iosMain)"]
+  B --> D[mismo resultado]
+  C --> D
+```
+
+```bash
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 mkdir -p academia-kmp/shared/src/androidMain/kotlin/com/academia/kmp
 mkdir -p academia-kmp/shared/src/iosMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
-// data class Usuario(val id: String, val nombre: String)         -> vive en: ____Main
-// import android.content.SharedPreferences ...                    -> vive en: ____Main
-// import platform.Foundation.NSUserDefaults ...                   -> vive en: ____Main
-```
-
-</details>
-
-### Tema 2: expect/actual · Intermedio · 25 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás declarar una función expect en commonMain y sus implementaciones actual correspondientes por plataforma, y explicar por qué el compilador exige una actual por cada target configurado.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A["expect fun nombrePlataforma()"] --> B["actual (androidMain): Build.VERSION"]
-  A --> C["actual (iosMain): UIDevice.systemName"]
-  D[compilador] -->|vincula en COMPILACIÓN, no en ejecución| B
-  D --> C
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  A["expect fun nombrePlataforma()"] --> B["actual (androidMain): Build.VERSION"]
-  A --> C["actual (iosMain): UIDevice.systemName"]
-  D[compilador] -->|vincula en COMPILACIÓN, no en ejecución| B
-  D --> C
-```
-
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/Plataforma.kt
+// shared/src/commonMain/kotlin/com/academia/kmp/Driver.kt
 package com.academia.kmp
 
-expect fun nombrePlataforma(): String
-expect fun idUnicoDispositivo(): String
+import app.cash.sqldelight.db.SqlDriver
+
+expect fun crearDriver(): SqlDriver
 ```
 
 ```kotlin
-// shared/src/androidMain/kotlin/com/academia/kmp/Plataforma.android.kt
+// shared/src/androidMain/kotlin/com/academia/kmp/Driver.android.kt
 package com.academia.kmp
 
-actual fun nombrePlataforma(): String = "Android"
-actual fun idUnicoDispositivo(): String = "android-id-simulado"
-```
+import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
-```bash
-# crea la estructura de source sets y compila el módulo compartido con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
-mkdir -p academia-kmp/shared/src/androidMain/kotlin/com/academia/kmp
-cd academia-kmp
-./gradlew :shared:compileKotlinMetadata :shared:compileDebugKotlinAndroid
+actual fun crearDriver(): SqlDriver = AndroidSqliteDriver(Database.Schema, appContext, "app.db")
 ```
 
 ```kotlin
-// commonMain
-____ fun rutaDeAlmacenamiento(): String
-
-// androidMain
-____ fun rutaDeAlmacenamiento(): String = context.filesDir.path
-```
-
-</details>
-
-### Tema 3: Gradle multiplataforma y targets disponibles · Intermedio · 25 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás configurar los targets de compilación de un proyecto KMP, y declarar una dependencia en el bloque sourceSets correcto según si debe estar disponible en todo el código compartido o solo en una plataforma.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-kotlin {
-    androidTarget()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    sourceSets {
-        commonMain.dependencies {
-            implementation("io.ktor:ktor-client-core:3.5.0")
-        }
-    }
-}
-```
-
-```
-┌── kotlin { } ────────────────────────────────────────────┐
-│  androidTarget()  iosX64()  iosArm64()  iosSimulatorArm64() │
-│  sourceSets { commonMain.dependencies { ... } }              │
-└──────────────────────────────────────────────────────┘
-```
-
-```kotlin
-kotlin {
-    androidTarget()
-    iosX64(); iosArm64(); iosSimulatorArm64()
-    sourceSets {
-        commonMain.dependencies {
-            implementation("io.ktor:ktor-client-core:3.5.0")
-        }
-    }
-}
-```
-
-```bash
-# lista los proyectos y confirma que la configuración de Gradle es válida
-mkdir -p academia-kmp
-cd academia-kmp
-./gradlew projects
-```
-
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/ClienteHttp.kt
+// shared/src/iosMain/kotlin/com/academia/kmp/Driver.ios.kt
 package com.academia.kmp
 
-import io.ktor.client.*
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.native.NativeSqliteDriver
 
-fun crearCliente(): HttpClient = HttpClient()
-```
-
-```bash
-# compila el módulo compartido, confirmando que ve la dependencia de commonMain.dependencies
-cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
-```
-
-</details>
-
-### Tema 4: Jerarquía de source sets intermedios · Intermedio · 25 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás usar un source set intermedio (como appleMain) para compartir código entre plataformas similares sin duplicarlo en cada una y sin subirlo hasta commonMain.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TB
-  A[commonMain] --> B[appleMain]
-  A --> C[androidMain]
-  B --> D[iosMain]
-  B --> E[macosMain]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TB
-  A[commonMain] --> B[appleMain]
-  A --> C[androidMain]
-  B --> D[iosMain]
-  B --> E[macosMain]
+actual fun crearDriver(): SqlDriver = NativeSqliteDriver(Database.Schema, "app.db")
 ```
 
 ```kotlin
-// jerarquía intermedia: iosMain y macosMain dependen de appleMain, no directamente de commonMain
-sourceSets {
-    val appleMain by creating { dependsOn(commonMain.get()) }
-    iosMain.get().dependsOn(appleMain)
-    // macosMain.get().dependsOn(appleMain) -- se agregaría igual si el target macOS está habilitado
-}
-```
-
-```bash
-# crea la estructura de source sets y compila el target iOS con Gradle
-mkdir -p academia-kmp/shared/src/{commonMain,appleMain,iosMain,macosMain,androidMain}/kotlin/com/academia/kmp
-cd academia-kmp
-./gradlew :shared:compileKotlinIosX64
-```
-
-```kotlin
-// shared/src/commonMain/kotlin/com/academia/kmp/JerarquiaSourceSets.kt
+// shared/src/jvmTest/kotlin/com/academia/kmp/DriverIndependenciaTest.kt
 package com.academia.kmp
 
-fun puedeVer(jerarquia: Map<String, List<String>>, origen: String, sourceSetBuscado: String): Boolean {
-    val visibles = mutableSetOf(origen)
-    val pendientes = mutableListOf(origen)
-    while (pendientes.isNotEmpty()) {
-        val actual = pendientes.removeAt(pendientes.lastIndex)
-        for (padre in jerarquia[actual].orEmpty()) {
-            if (visibles.add(padre)) pendientes.add(padre)
-        }
-    }
-    return sourceSetBuscado in visibles
-}
-```
-
-```kotlin
-// shared/src/commonTest/kotlin/com/academia/kmp/JerarquiaSourceSetsTest.kt
-package com.academia.kmp
-
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
-class JerarquiaSourceSetsTest {
-    private val jerarquia = mapOf(
-        "commonMain" to emptyList(),
-        "appleMain" to listOf("commonMain"),
-        "iosMain" to listOf("appleMain", "commonMain"),
-        "macosMain" to listOf("appleMain", "commonMain"),
-        "androidMain" to listOf("commonMain"),
-    )
+class DriverIndependenciaTest {
 
-    @Test
-    fun iosMainYMacosMainVenAppleMain() {
-        assertTrue(puedeVer(jerarquia, "iosMain", "appleMain"))
-        assertTrue(puedeVer(jerarquia, "macosMain", "appleMain"))
+    // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1),
+    // visible aquí sin import porque ambos archivos viven en el mismo paquete com.academia.kmp
+    private fun ejecutarQueriesCompartidas(): List<Tarea> {
+        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        Database.Schema.create(driver)
+        val database = Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
+        database.tareaQueries.insertar(id = "1", titulo = "Comprar leche", completada = false)
+        return database.tareaQueries.selectTodas().executeAsList()
     }
 
     @Test
-    fun androidMainNoVeAppleMain() {
-        assertFalse(puedeVer(jerarquia, "androidMain", "appleMain"))
+    fun `mismas queries producen el mismo resultado en instancias de driver distintas`() {
+        val resultadoInstanciaA = ejecutarQueriesCompartidas()
+        val resultadoInstanciaB = ejecutarQueriesCompartidas()
+
+        assertEquals(resultadoInstanciaA, resultadoInstanciaB)
+    }
+}
+```
+
+</details>
+
+### Tema 3: Migraciones de esquema · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás escribir una migración .sqm versionada que agrega una columna sin perder datos existentes, y confirmar contra SQLite real que los datos previos se preservan tras aplicarla.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── esquema v1: Tarea(id, titulo, completada) ──┐
+│  datos existentes del usuario                    │
+└────────────────┬──────────────────────────┘
+                  │ 2.sqm: ALTER TABLE ADD COLUMN prioridad
+                  ▼
+┌── esquema v2: Tarea(id, titulo, completada, prioridad) ──┐
+│  MISMOS datos existentes + columna nueva con default        │
+└────────────────────────────────────────────────────┘
+```
+
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp/migrations
+cd academia-kmp
+```
+
+```sql
+-- shared/src/commonMain/sqldelight/com/academia/kmp/migrations/2.sqm
+ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0;
+```
+
+```kotlin
+// shared/src/jvmTest/kotlin/com/academia/kmp/MigracionTest.kt
+package com.academia.kmp
+
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class MigracionTest {
+
+    @Test
+    fun `migrar de v1 a v2 preserva los datos existentes`() {
+        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+
+        // crea el esquema en versión 1 a mano (sin la columna prioridad)
+        driver.execute(null, "CREATE TABLE Tarea (id TEXT NOT NULL PRIMARY KEY, titulo TEXT NOT NULL, completada INTEGER NOT NULL DEFAULT 0)", 0)
+        driver.execute(null, "INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)", 0)
+        driver.execute(null, "INSERT INTO Tarea VALUES ('2', 'Pagar factura', 0)", 0)
+
+        // aplica las migraciones pendientes de la 1 a la 2 (ejecuta 2.sqm)
+        Database.Schema.migrate(driver, oldVersion = 1, newVersion = 2)
+        // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1)
+        val database = Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
+
+        val filas = database.tareaQueries.selectTodas().executeAsList()
+        assertEquals(
+            listOf(
+                Tarea(id = "1", titulo = "Comprar leche", completada = false, prioridad = 0),
+                Tarea(id = "2", titulo = "Pagar factura", completada = false, prioridad = 0),
+            ),
+            filas,
+        )
     }
 }
 ```
 
 ```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
+# Gradle ejecuta la migración real contra SQLite en memoria
+./gradlew :shared:jvmTest --tests "com.academia.kmp.MigracionTest"
+```
+
+```sql
+ALTER TABLE Tarea ____ COLUMN fechaLimite TEXT;
 ```
 
 </details>
 
-### Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min
+### Tema 4: Transacciones: atomicidad en operaciones multi-tabla · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa un proyecto KMP con al menos dos módulos (shared y feature-envios) y Gradle 8.5 o superior. Crea la carpeta build-logic en la raíz.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TB
-    T["gradle/libs.versions.toml"] --> P["build-logic: rutaflow.kmp.library"]
-    P --> S["shared/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
-    P --> F["feature-envios/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
-    T --> S & F
-```
+Al finalizar podrás agrupar varias escrituras relacionadas en una transacción, y confirmar contra SQLite real que un fallo a mitad de la transacción revierte TODAS las escrituras, no solo la que falló.
 
 </details>
 
@@ -322,85 +297,142 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TB
-    T["gradle/libs.versions.toml"] --> P["build-logic: rutaflow.kmp.library"]
-    P --> S["shared/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
-    P --> F["feature-envios/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
-    T --> S & F
+```
+┌── transacción { insertar tarea; incrementar contador } ──┐
+│  AMBAS escrituras se aplican  ──►  COMMIT (ambas persisten)  │
+│  CUALQUIERA falla            ──►  ROLLBACK (ninguna persiste) │
+└───────────────────────────────────────────────────┘
 ```
 
-```toml
-[versions]
-kotlin = "2.4.21"
-ktor = "3.5.0"
-coroutines = "1.11.0"
-
-[libraries]
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
-[plugins]
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp
+cd academia-kmp
 ```
 
-```kotlin
-plugins { `kotlin-dsl` }
+```sql
+-- shared/src/commonMain/sqldelight/com/academia/kmp/ContadorTareas.sq
+CREATE TABLE ContadorTareas (
+    total INTEGER NOT NULL
+);
 
-dependencies {
-    implementation(libs.kotlin.gradle.plugin) // el plugin necesita el plugin de Kotlin para configurarlo
-}
+INSERT INTO ContadorTareas(total) VALUES (0);
+
+total:
+SELECT total FROM ContadorTareas;
+
+incrementar:
+UPDATE ContadorTareas SET total = total + 1;
 ```
 
 ```kotlin
-dependencyResolutionManagement {
-    repositories { mavenCentral(); gradlePluginPortal() }
-    versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
-}
-```
+// shared/src/commonMain/kotlin/com/academia/kmp/Transacciones.kt
+package com.academia.kmp
 
-```kotlin
-// Plugin precompilado: su id es el nombre del archivo, "rutaflow.kmp.library".
-plugins { id("org.jetbrains.kotlin.multiplatform") }
+class FalloSimuladoException(mensaje: String) : Exception(mensaje)
 
-kotlin {
-    jvm()
-    iosArm64()
-    iosSimulatorArm64() // ningún módulo puede olvidarlo
-    jvmToolchain(25) // JDK 25, la línea del curso (docs/VERSIONES.md)
-    compilerOptions { allWarningsAsErrors.set(true) }
-}
-```
-
-```kotlin
-plugins { id("rutaflow.kmp.library") }
-
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(libs.ktor.client.core)
-        implementation(libs.kotlinx.coroutines.core)
+fun insertarTareaConContador(database: Database, id: String, titulo: String, forzarFallo: Boolean = false) {
+    database.transaction {
+        database.tareaQueries.insertar(id, titulo, false)
+        if (forzarFallo) {
+            throw FalloSimuladoException("fallo simulado a mitad de la transacción")
+        }
+        database.contadorQueries.incrementar()
     }
 }
 ```
 
+```kotlin
+// shared/src/jvmTest/kotlin/com/academia/kmp/TransaccionesTest.kt
+package com.academia.kmp
+
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+
+class TransaccionesTest {
+
+    // adaptadorBooleano: el ColumnAdapter<Boolean, Long> definido en TareaQueriesTest.kt (Tema 1)
+    private fun crearBaseDeDatosEnMemoria(): Database {
+        val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        Database.Schema.create(driver)
+        return Database(driver, Tarea.Adapter(completadaAdapter = adaptadorBooleano))
+    }
+
+    @Test
+    fun `transaccion exitosa aplica ambas escrituras`() {
+        val database = crearBaseDeDatosEnMemoria()
+
+        insertarTareaConContador(database, "1", "Comprar leche")
+
+        assertEquals(1, database.tareaQueries.selectTodas().executeAsList().size)
+        assertEquals(1L, database.contadorQueries.total().executeAsOne())
+    }
+
+    @Test
+    fun `transaccion fallida revierte AMBAS escrituras, no solo la que fallo`() {
+        val database = crearBaseDeDatosEnMemoria()
+        insertarTareaConContador(database, "1", "Comprar leche")
+
+        assertFailsWith<FalloSimuladoException> {
+            insertarTareaConContador(database, "2", "Pagar factura", forzarFallo = true)
+        }
+
+        // la tarea '2' NO quedó guardada: la transacción revirtió la inserción también
+        assertEquals(1, database.tareaQueries.selectTodas().executeAsList().size)
+        assertEquals(1L, database.contadorQueries.total().executeAsOne())
+    }
+}
+```
+
+```bash
+# Gradle ejecuta ambos tests reales contra SQLite en memoria
+./gradlew :shared:jvmTest --tests "com.academia.kmp.TransaccionesTest"
+```
+
 </details>
 
-### Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min
+### Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Continúa el proyecto con el convention plugin. Necesitas Node.js para ejecutar las pruebas de JS y un navegador moderno para Wasm.
+No necesitas dependencias extra: en Android se usa el Android Keystore del sistema y en iOS el Keychain con platform.Security. (La librería androidx.security:security-crypto y su EncryptedSharedPreferences quedaron obsoletas en 2025; no la uses en código nuevo.) Trabajarás en sha…
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** secreto, Android Keystore, AES-GCM, iOS Keychain, `kSecAttrAccessible`, interfaz común, implementación por plataforma.
+
+Una **interfaz común** (`AlmacenSecreto`) dice qué se puede hacer: guardar, leer y borrar un secreto. Cada plataforma lo implementa con su almacén seguro:
+
+| Plataforma | Almacén | Protección |
+|---|---|---|
+| Android | valor cifrado con AES-GCM usando una clave del **Keystore** | la clave nunca sale del hardware seguro |
+| iOS | **Keychain** con `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` | cifrado por el sistema, no viaja a otros dispositivos |
+
+El código común (por ejemplo, el repositorio de sesión) recibe la interfaz por constructor. En las pruebas comunes usas una implementación falsa en memoria.
+
+Los **secretos de la app** (claves de API del servidor) no van en el binario: cualquiera puede extraerlos. Esos se quedan en el servidor.
+
+**Analogía:** la interfaz es la palabra «caja fuerte» en el manual; cada sistema operativo trae su propia marca de caja fuerte. El código común solo pide «guarda esto en la caja fuerte». La analogía falla en que ninguna caja protege un secreto que ya viene impreso en el manual (el binario).
+
+**Límite de uso:** un dispositivo con root o jailbreak puede leer más de lo esperado: el almacén seguro reduce el riesgo, no lo elimina. No guardes en el cliente secretos compartidos entre usuarios.
+
+```mermaid
+flowchart TB
+    C["commonMain: SesionRepository"] --> I["interface AlmacenSecreto"]
+    I --> A["androidMain: AES-GCM + Keystore"]
+    I --> S["iosMain: Keychain"]
+    I --> F["commonTest: AlmacenFalso"]
+```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TB
-    C["commonMain: tarifa()"] --> J["jvm: servidor Ktor"]
-    C --> S["js: cotizador web (@JsExport)"]
-    C --> W["wasmJs: Compose web"]
-    C --> I["ios / android: apps"]
+    C["commonMain: SesionRepository"] --> I["interface AlmacenSecreto"]
+    I --> A["androidMain: AES-GCM + Keystore"]
+    I --> S["iosMain: Keychain"]
+    I --> F["commonTest: AlmacenFalso"]
 ```
 
 </details>
@@ -408,61 +440,7 @@ flowchart TB
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```mermaid
-flowchart TB
-    C["commonMain: tarifa()"] --> J["jvm: servidor Ktor"]
-    C --> S["js: cotizador web (@JsExport)"]
-    C --> W["wasmJs: Compose web"]
-    C --> I["ios / android: apps"]
-```
-
-```kotlin
-pluginManagement { includeBuild("build-logic") }
-dependencyResolutionManagement {
-    repositories { mavenCentral() }
-}
-rootProject.name = "rutaflow"
-include(":shared", ":feature-envios")
-```
-
-```kotlin
-plugins { id("rutaflow.kmp.library") }
-
-kotlin {
-    js { browser(); nodejs(); binaries.library() }
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
-    wasmJs { browser() }
-}
-```
-
-```kotlin
-package co.rutaflow.tarifa
-
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport // nombre estable para JavaScript
-fun tarifaCentavos(kilos: Int, urgente: Boolean): Int {
-    require(kilos > 0) { "peso inválido" }
-    val base = 1_000 + kilos * 120
-    return if (urgente) base * 2 else base
-}
-
-expect fun plataforma(): String
-```
-
-```kotlin
-package co.rutaflow.tarifa
-
-actual fun plataforma(): String = "JVM ${System.getProperty("java.version")}"
-```
-
-```kotlin
-package co.rutaflow.tarifa
-
-actual fun plataforma(): String = "JavaScript"
-```
+#### Objetivo observable
+No necesitas dependencias extra: en Android se usa el Android Keystore del sistema y en iOS el Keychain con `platform.Security`. (La librería `androidx.security:security-crypto` y su EncryptedSharedPreferences quedaron obsoletas en 2025; no la uses en código nuevo.) Trabajarás en `shared/src/{commonMain,androidMain,iosMain}`.
 
 </details>

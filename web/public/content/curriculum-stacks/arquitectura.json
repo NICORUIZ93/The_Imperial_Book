@@ -1,0 +1,357 @@
+{
+ "schemaVersion": 1,
+ "stackId": "arquitectura",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Requisitos, stakeholders y criterios verificables",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-requisitos-stakeholders-y-criterios-verificables"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Arquitectura guiada por atributos de calidad",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-arquitectura-guiada-por-atributos-de-calidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Diseño modular, principios, patrones y refactoring",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-diseno-modular-principios-patrones-y-refactoring"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Decisiones, documentación, deuda y evolución",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-decisiones-documentacion-deuda-y-evolucion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Desarrollo guiado por especificación con agentes de IA",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 7: inventario modular con especificación, ADR y plan de mantenimiento",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "proyecto-7-inventario-modular-con-especificacion-adr-y-plan-de-mantenimiento"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "La red convierte el resultado en una incertidumbre",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-la-red-convierte-el-resultado-en-una-incertidumbre"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Replicación, consistencia y decisiones explícitas",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-replicacion-consistencia-y-decisiones-explicitas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Mensajes que se procesan con efectos exactamente una vez",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-mensajes-que-se-procesan-con-efectos-exactamente-una-vez"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Resiliencia y observabilidad orientadas a objetivos",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-resiliencia-y-observabilidad-orientadas-a-objetivos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-tiempo-coordinacion-y-acuerdo-lamport-eleccion-de-lider-y-commit-en-dos-fases"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 10: inventario distribuido mínimo y observable",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "proyecto-10-inventario-distribuido-minimo-y-observable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 7,
+      "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 8,
+      "fragment": "tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "tema-2-lenguaje-ubicuo-y-contextos-delimitados-el-mismo-envio-no-significa-lo-mismo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "tema-3-agregados-invariantes-y-eventos-de-dominio-donde-vive-la-regla-que-no-se-puede-romper"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ADR y fitness functions: decisiones que el código puede defender",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 1,
+      "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Datos por servicio: propiedad, composición y réplicas",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 2,
+      "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 3,
+      "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Observabilidad distribuida: trazas, correlación y SLO",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 4,
+      "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

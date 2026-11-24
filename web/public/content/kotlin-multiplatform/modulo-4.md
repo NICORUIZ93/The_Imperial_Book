@@ -1,41 +1,115 @@
-# Módulo 4: Lógica de negocio compartida
+# Módulo 4: Compose Multiplatform — UI compartida
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria — modelos de dominio, repositorios con interfaz común, inyección de dependencias con Koin, y modelado explícito de errores son la base de cualquier capa de dominio compartida entre Android e iOS.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria. El modelo reactivo de recomposición se verifica con `runComposeUiTest`, la API de pruebas real de Compose Multiplatform que ejecuta composición y recomposición de verdad sobre JVM/Skiko sin necesitar un emulador, para que la afirmación "solo el estado observable dispara recomposición" sea comprobable, no solo descrita.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Modelos de dominio y casos de uso · Avanzado · 35 min
+### Tema 1: Compose Multiplatform vs Jetpack Compose · Avanzado · 20 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás declarar un modelo de dominio en commonMain y un caso de uso que depende de una interfaz (no de una implementación concreta), y explicar por qué esa dependencia hacia la interfaz permite testear el caso de uso de forma aislada.
+Al finalizar podrás explicar qué significa @Composable en código compartido, qué motor gráfico usa cada plataforma, y por qué una dependencia exclusiva de Android dentro de una función compartida rompe la compilación de iOS.
 
-#### ► LA ANALOGÍA
-**Conceptos clave:** `data class` compartida en `commonMain`, caso de uso dependiente de interfaz (no de implementación).
+#### ► REGLA PRÁCTICA
+Compose Multiplatform es Jetpack Compose extendido: la misma anotación `@Composable` y la misma API declarativa funcionan en `commonMain`, pero el motor de renderizado que dibuja esa UI cambia según la plataforma (nativo en Android, Skia embebido en iOS/desktop). Por eso una dependencia exclusiva de Android dentro de una función compartida no es un error de Compose: es una dependencia de plataforma colada en código que debería compilar para todas.
 
-`data class Tarea(val id: String, val titulo: String, val completada: Boolean)` en `commonMain` representa una entidad central sin ninguna dependencia hacia persistencia, red o UI de ninguna plataforma específica. `class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) { suspend operator fun invoke(): List<Tarea> = repositorio.obtenerTodas().filter { !it.completada } }` encapsula lógica de negocio dependiendo explícitamente de la INTERFAZ `TareaRepository`, no de ninguna implementación concreta — el mismo principio de inversión de dependencias visto para Spring (Módulo 0 del track Spring Boot), aquí manual, sin framework de IoC automático.
+</details>
 
-**Analogía:** un modelo de dominio compartido es una definición única y oficial que todos los departamentos usan exactamente igual, evitando interpretaciones divergentes; un caso de uso que depende de una interfaz es un procedimiento que especifica qué información necesita sin importarle de qué proveedor específico proviene, siempre que cumpla el formato acordado.
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
-  B -.->|implementación real| C[TareaRepositoryImpl]
-  B -.->|implementación fake| D[FakeTareaRepository]
+#### Código y verificación
 ```
+┌── commonMain: @Composable fun PantallaTareas(...) ──┐
+│  MISMA función, MISMA estructura declarativa          │
+└──────────────┬─────────────────────────────┘
+               ├── Android: motor nativo de Compose
+               └── iOS: Skia embebido
+```
+
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+cd academia-kmp
+```
+
+```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/PantallaTareas.kt
+package com.academia.kmp
+
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+
+@Composable
+fun PantallaTareas(tareas: List<Tarea>) {
+    LazyColumn {
+        items(tareas) { tarea -> Text(tarea.titulo) }
+    }
+}
+```
+
+```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/PantallaTareasTest.kt
+package com.academia.kmp
+
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.runComposeUiTest
+import kotlin.test.Test
+
+class PantallaTareasTest {
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `PantallaTareas renderiza un Text por cada tarea de la lista`() = runComposeUiTest {
+        setContent {
+            PantallaTareas(
+                listOf(
+                    Tarea(id = "1", titulo = "Comprar leche", completada = false),
+                    Tarea(id = "2", titulo = "Pagar factura", completada = false),
+                ),
+            )
+        }
+
+        onNodeWithText("Comprar leche").assertExists()
+        onNodeWithText("Pagar factura").assertExists()
+    }
+}
+```
+
+```bash
+# Gradle ejecuta la composición real (misma función compartida) sobre Skiko en JVM
+./gradlew :shared:jvmTest --tests "com.academia.kmp.PantallaTareasTest"
+```
+
+```kotlin
+____
+fun PantallaTareas(tareas: List<Tarea>) {
+    LazyColumn { items(tareas) { tarea -> Text(tarea.titulo) } }
+}
+```
+
+</details>
+
+### Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja · Avanzado · 20 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar por qué mutableStateOf dispara recomposición y una variable plana no, y confirmar con un modelo real que Compose evita recomponer cuando el nuevo valor es idéntico al anterior.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
-  B -.->|implementación real| C[TareaRepositoryImpl]
-  B -.->|implementación fake| D[FakeTareaRepository]
+  A["contador.valor = 1"] --> B{"¿nuevo valor distinto?"}
+  B -->|sí| C[notifica observadores: recomposición]
+  B -->|no, mismo valor| D[no hace nada: optimización]
 ```
 
 </details>
@@ -45,381 +119,136 @@ flowchart LR
 
 #### Código y verificación
 
-```kotlin
-package com.academia.kmp
-
-data class Tarea(val id: String, val titulo: String, val completada: Boolean)
-
-interface TareaRepository {
-    suspend fun obtenerTodas(): List<Tarea>
-    suspend fun guardar(tarea: Tarea)
-}
-
-class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) {
-    suspend operator fun invoke(): List<Tarea> =
-        repositorio.obtenerTodas().filter { !it.completada }
-}
-```
-
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/PantallaContador.kt
 package com.academia.kmp
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.runTest
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
+@Composable
+fun PantallaContador() {
+    var contador by remember { mutableStateOf(0) }
+    Column {
+        Text("Tareas completadas: $contador")
+        Button(onClick = { contador++ }) { Text("Completar tarea") }
+    }
+}
+```
+
+```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/PantallaContadorTest.kt
+package com.academia.kmp
+
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-private val tareaPendiente = Tarea("1", "Comprar leche", completada = false)
+class PantallaContadorTest {
 
-class RepositorioEnMemoria : TareaRepository {
-    override suspend fun obtenerTodas(): List<Tarea> = listOf(tareaPendiente)
-    override suspend fun guardar(tarea: Tarea) = Unit
-}
-
-class RepositorioConLatencia : TareaRepository {
-    override suspend fun obtenerTodas(): List<Tarea> {
-        delay(300) // simula red/DB real
-        return listOf(tareaPendiente)
-    }
-    override suspend fun guardar(tarea: Tarea) = Unit
-}
-
-class DominioTest {
+    @OptIn(ExperimentalTestApi::class)
     @Test
-    fun elCasoDeUsoProduceElMismoResultadoConCualquierImplementacion() = runTest {
-        val resultadoFake = ObtenerTareasPendientesUseCase(RepositorioEnMemoria())()
-        val resultadoConLatencia = ObtenerTareasPendientesUseCase(RepositorioConLatencia())()
-        assertEquals(resultadoFake, resultadoConLatencia)
-        assertEquals(listOf(tareaPendiente), resultadoFake)
+    fun `cada click actualiza el texto en pantalla`() = runComposeUiTest {
+        setContent { PantallaContador() }
+
+        onNodeWithText("Tareas completadas: 0").assertExists()
+        onNodeWithText("Completar tarea").performClick()
+        onNodeWithText("Tareas completadas: 1").assertExists()
+        onNodeWithText("Completar tarea").performClick()
+        onNodeWithText("Tareas completadas: 2").assertExists()
     }
 }
 ```
 
 ```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
+# Gradle ejecuta clicks reales y verifica recomposición sobre Skiko en JVM
+./gradlew :shared:jvmTest --tests "com.academia.kmp.PantallaContadorTest"
 ```
 
 ```kotlin
-class GuardarTareaUseCase(private val repositorio: ____) {
-    suspend operator fun invoke(tarea: Tarea) = repositorio.guardar(tarea)
-}
-```
-
-</details>
-
-### Tema 2: Repositorios con interfaz común · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás definir una interfaz de repositorio en commonMain con al menos dos implementaciones, y explicar por qué esto permite testear la lógica de negocio sin infraestructura real.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── interface TareaRepository ─────────────────────────────┐
-│  suspend fun obtenerTodas(): List<Tarea>                    │
-│  suspend fun guardar(tarea: Tarea)                           │
-└──────┬─────────────────────────────────┬──────────────┘
-       │                                    │
-┌──────▼──────────┐                ┌──────▼──────────┐
-│ TareaRepositoryImpl │                │ FakeTareaRepository │
-│ (api + db reales)    │                │ (en memoria, tests)   │
-└─────────────────┘                └─────────────────┘
-```
-
-```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/OptimizacionIgualdadTest.kt
 package com.academia.kmp
 
-class TareaRepositoryImpl(private val api: Any, private val db: Any) : TareaRepository {
-    override suspend fun obtenerTodas(): List<Tarea> = emptyList() // combinaría api y db reales
-    override suspend fun guardar(tarea: Tarea) { /* persiste en db, sincroniza con api */ }
-}
-
-class FakeTareaRepository(private val datos: MutableList<Tarea> = mutableListOf()) : TareaRepository {
-    override suspend fun obtenerTodas(): List<Tarea> = datos.toList()
-    override suspend fun guardar(tarea: Tarea) { datos.add(tarea) }
-}
-```
-
-```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
-cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlinx.coroutines.test.runTest
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
-class RepositorioTest {
+class OptimizacionIgualdadTest {
+
+    @OptIn(ExperimentalTestApi::class)
     @Test
-    fun fakeGuardaYDevuelveLoGuardado() = runTest {
-        val repo: TareaRepository = FakeTareaRepository()
-        val tarea = Tarea("1", "Comprar leche", completada = false)
-        repo.guardar(tarea)
-        assertEquals(listOf(tarea), repo.obtenerTodas())
-    }
-}
-```
+    fun `asignar el mismo valor no dispara una recomposicion adicional`() = runComposeUiTest {
+        var recomposiciones = 0
+        val contador = mutableStateOf(0)
 
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
+        setContent {
+            recomposiciones++
+            Text("valor: ${contador.value}")
+        }
 
-```kotlin
-class FakeTareaRepository : ____ {
-    private val datos = mutableListOf<Tarea>()
-    override suspend fun obtenerTodas(): List<Tarea> = datos.toList()
-    override suspend fun guardar(tarea: Tarea) { datos.add(tarea) }
-}
-```
+        val recomposicionesIniciales = recomposiciones
+        contador.value = 1
+        waitForIdle()
+        contador.value = 1 // mismo valor: NO debería disparar otra recomposición
+        waitForIdle()
 
-</details>
-
-### Tema 3: Inyección de dependencias multiplataforma con Koin · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás distinguir entre una dependencia single (una única instancia compartida) y una factory (nueva instancia cada vez), y configurar Koin para resolver la cadena completa de dependencias una sola vez para todas las plataformas.
-
-#### ► LA ANALOGÍA
-**Conceptos clave:** `single` (instancia única compartida), `factory` (nueva instancia por solicitud), módulo de Koin en `commonMain`.
-
-`val sharedModule = module { single<TareaRepository> { TareaRepositoryImpl(get(), get()) }; factory { ObtenerTareasPendientesUseCase(get()) } }` configura Koin (un framework de DI ligero, sin generación de código en compilación) para resolver automáticamente la cadena de dependencias: `TareaRepository` se resuelve como una única instancia compartida (`single`), mientras `ObtenerTareasPendientesUseCase` se crea nueva cada vez que se solicita (`factory`). Koin funciona idénticamente en `commonMain` para todas las plataformas, sin un framework de DI distinto por plataforma.
-
-**Analogía:** Koin es un directorio de contactos universal que funciona igual en cualquier oficina de la empresa, resolviendo automáticamente quién debe conectarse con quién según relaciones declaradas una única vez.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
-  A -->|misma instancia siempre| C[segunda solicitud]
-  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
-  D -->|instancia NUEVA| F[segunda solicitud]
-```
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
-  A -->|misma instancia siempre| C[segunda solicitud]
-  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
-  D -->|instancia NUEVA| F[segunda solicitud]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  A["single: TareaRepository"] -->|misma instancia siempre| B[primera solicitud]
-  A -->|misma instancia siempre| C[segunda solicitud]
-  D["factory: ObtenerTareasPendientesUseCase"] -->|instancia NUEVA| E[primera solicitud]
-  D -->|instancia NUEVA| F[segunda solicitud]
-```
-
-```kotlin
-package com.academia.kmp
-
-import org.koin.dsl.module
-
-val sharedModule = module {
-    single<TareaRepository> { FakeTareaRepository() }
-    factory { ObtenerTareasPendientesUseCase(get()) }
-}
-```
-
-```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
-cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
-```
-
-```kotlin
-package com.academia.kmp
-
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.test.KoinTest
-import org.koin.test.inject
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertNotSame
-import kotlin.test.assertSame
-
-class DiModuleTest : KoinTest {
-    @BeforeTest
-    fun iniciarKoin() { startKoin { modules(sharedModule) } }
-
-    @AfterTest
-    fun detenerKoin() { stopKoin() }
-
-    @Test
-    fun singleDevuelveSiempreLaMismaInstancia() {
-        val repo1: TareaRepository by inject()
-        val repo2: TareaRepository by inject()
-        assertSame(repo1, repo2)
-    }
-
-    @Test
-    fun factoryDevuelveUnaInstanciaNuevaEnCadaSolicitud() {
-        val caso1: ObtenerTareasPendientesUseCase by inject()
-        val caso2: ObtenerTareasPendientesUseCase by inject()
-        assertNotSame(caso1, caso2)
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido, arrancando Koin de verdad
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-```kotlin
-val sharedModule = module {
-    ____<TareaRepository> { TareaRepositoryImpl(get(), get()) }
-}
-```
-
-</details>
-
-### Tema 4: Modelado de errores de dominio con un tipo Result explícito · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás modelar el resultado de una operación que puede fallar con un tipo explícito (Exito/Error), y explicar por qué esto obliga al llamador a manejar el caso de error sin depender de excepciones no documentadas en la firma.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── fun guardarTarea(): Resultado<Tarea> ──────────────┐
-│  el tipo de retorno YA declara que puede fallar         │
-└──────┬───────────────────────────────┬──────────┘
-       │                                    │
-┌──────▼──────┐                    ┌──────▼──────┐
-│  Exito(tarea) │                    │ Error(mensaje) │
-└─────────────┘                    └─────────────┘
-   when exhaustivo obliga a manejar AMBOS casos
-```
-
-```kotlin
-package com.academia.kmp
-
-sealed class Resultado<out T> {
-    data class Exito<T>(val datos: T) : Resultado<T>()
-    data class Error(val mensaje: String) : Resultado<Nothing>()
-}
-
-fun guardarTareaSegura(tarea: Tarea, simularFalloRed: Boolean): Resultado<Tarea> {
-    if (simularFalloRed) return Resultado.Error("sin conexión")
-    return Resultado.Exito(tarea)
-}
-
-fun guardarTareaConExcepcion(tarea: Tarea, simularFalloRed: Boolean): Tarea {
-    if (simularFalloRed) throw IllegalStateException("sin conexión")
-    return tarea
-}
-```
-
-```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
-cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-
-private val tarea = Tarea("1", "Comprar leche", completada = false)
-
-fun manejar(resultado: Resultado<Tarea>): String = when (resultado) {
-    is Resultado.Exito -> "guardado: ${resultado.datos.titulo}"
-    is Resultado.Error -> "error manejado explícitamente: ${resultado.mensaje}"
-}
-
-class ResultadoTest {
-    @Test
-    fun elCasoDeExitoSeManejaSinLanzarNada() {
-        assertEquals("guardado: Comprar leche", manejar(guardarTareaSegura(tarea, simularFalloRed = false)))
-    }
-
-    @Test
-    fun elCasoDeErrorSeManejaComoValorNormalNoComoExcepcion() {
-        assertEquals("error manejado explícitamente: sin conexión", manejar(guardarTareaSegura(tarea, simularFalloRed = true)))
-    }
-
-    @Test
-    fun laVersionConExcepcionesPropagaSiNadieLaCaptura() {
-        assertFailsWith<IllegalStateException> {
-            guardarTareaConExcepcion(tarea, simularFalloRed = true)
+        onNodeWithText("valor: 1").assertExists()
+        // solo UNA recomposición adicional pese a DOS asignaciones (una repetida)
+        check(recomposiciones == recomposicionesIniciales + 1) {
+            "se esperaba 1 recomposición adicional, ocurrieron ${recomposiciones - recomposicionesIniciales}"
         }
     }
 }
 ```
 
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-```kotlin
-fun eliminarTarea(id: String): ____<Unit> {
-    if (!existe(id)) return Resultado.Error("tarea no encontrada")
-    return Resultado.Exito(Unit)
-}
-```
-
 </details>
 
-### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global · Avanzado · 35 min
+### Tema 3: Theming y navegación compartidos · Avanzado · 20 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. Prerrequisitos: interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.
+Al finalizar podrás definir un theme compartido y explicar por qué un grafo de navegación declarado una vez en código común evita mantener dos implementaciones de navegación divergentes.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** un único esquema de diseño, grafo de navegación declarado una vez.
+
+`@Composable fun AppTheme(content: @Composable () -> Unit) { MaterialTheme(colorScheme = esquemaColoresCompartido, content = content) }` define un theme (colores, tipografía, formas) una única vez en código compartido, aplicado consistentemente sin importar en qué plataforma se renderice. Librerías de navegación compatibles con KMP (como Voyager) permiten definir el grafo completo de navegación (qué pantallas existen, cómo se conectan, qué parámetros se pasan) una única vez en código compartido, en vez de mantener dos implementaciones de navegación separadas y potencialmente divergentes.
+
+**Analogía:** un theme compartido es un manual de identidad visual corporativa aplicado consistentemente en todas las sucursales de una empresa; un grafo de navegación compartido es un mapa único del recorrido completo de un edificio, válido para cualquier visitante sin importar por cuál entrada haya ingresado.
+
+**Diagrama:**
+
+```
+┌── AppTheme (commonMain): un único esquema de colores ──┐
+│  Android: se renderiza con el motor nativo               │
+│  iOS: se renderiza con Skia                              │
+│  MISMO resultado visual en ambos                          │
+└─────────────────────────────────────────────────┘
+```
 
 </details>
 
@@ -427,33 +256,558 @@ Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj s
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```
+┌── AppTheme (commonMain): un único esquema de colores ──┐
+│  Android: se renderiza con el motor nativo               │
+│  iOS: se renderiza con Skia                              │
+│  MISMO resultado visual en ambos                          │
+└─────────────────────────────────────────────────┘
+```
+
 ```bash
-mkdir reloj-kotlin
-cd reloj-kotlin
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+cd academia-kmp
 ```
 
 ```kotlin
-class Oferta(private val venceEnMs: Long, private val ahoraMs: () -> Long) {
-    fun vencida(): Boolean = ahoraMs() >= venceEnMs
+// shared/src/commonMain/kotlin/com/academia/kmp/AppTheme.kt
+package com.academia.kmp
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+
+val esquemaColoresCompartido = lightColorScheme(
+    primary = Color(0xFF7F52FF),
+    background = Color(0xFF1A1A2E),
+    onBackground = Color(0xFFFFFFFF),
+)
+
+@Composable
+fun AppTheme(content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = esquemaColoresCompartido, content = content)
+}
+```
+
+```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/AppThemeTest.kt
+package com.academia.kmp
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.runComposeUiTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+@Composable
+private fun MuestraColorPrimario() {
+    val color = MaterialTheme.colorScheme.primary
+    Text("color:${color.value}")
 }
 
-fun main() {
-    var reloj = 1_000L
-    val oferta = Oferta(31_000L) { reloj }
-    check(!oferta.vencida())
-    reloj = 30_999L
-    check(!oferta.vencida())
-    reloj = 31_000L
-    check(oferta.vencida()) // El límite también pertenece al contrato.
-    reloj = 31_001L
-    check(oferta.vencida())
-    println("Antes, límite y después: correctos")
+class AppThemeTest {
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun `dos composiciones distintas leen el mismo color primario compartido`() = runComposeUiTest {
+        var colorLeidoUno: ULong? = null
+        var colorLeidoDos: ULong? = null
+
+        setContent {
+            AppTheme { colorLeidoUno = MaterialTheme.colorScheme.primary.value }
+        }
+        val primeraLectura = colorLeidoUno
+
+        setContent {
+            AppTheme { colorLeidoDos = MaterialTheme.colorScheme.primary.value }
+        }
+
+        assertEquals(primeraLectura, colorLeidoDos)
+    }
 }
 ```
 
 ```bash
-kotlinc Vencimiento.kt -include-runtime -d vencimiento.jar
-java -jar vencimiento.jar
+# Gradle compone dos árboles independientes y confirma que ambos leen el mismo color
+./gradlew :shared:jvmTest --tests "com.academia.kmp.AppThemeTest"
+```
+
+```kotlin
+@Composable
+fun AppTheme(content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = ____, content = content)
+}
+```
+
+</details>
+
+### Tema 4: Limitaciones en iOS y otros targets · Avanzado · 20 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás identificar qué tipo de integraciones nativas todavía requieren puentes específicos de plataforma en Compose Multiplatform para iOS, y decidir cuándo usar SwiftUI nativo en vez de UI compartida.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── Android: Compose Multiplatform sobre el motor nativo, estable ────────┐
+├── iOS: Compose Multiplatform sobre Skia embebido, estable desde 1.8.0 ──┤
+│      └─ ciertos casos (push nativo, Apple Pay) requieren SwiftUI ────┘  │
+└── Desktop / Web: targets adicionales con madurez relativa a evaluar ────┘
+```
+
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+cd academia-kmp
+```
+
+```kotlin
+// shared/src/commonMain/kotlin/com/academia/kmp/MapaDecisionUI.kt
+package com.academia.kmp
+
+// documenta el criterio: capacidad exclusiva del sistema -> SwiftUI nativo o expect/actual
+// UI declarativa estándar (listas, texto, botones, formularios) -> Compose Multiplatform compartido
+enum class TipoIntegracion { UI_ESTANDAR, CAPACIDAD_EXCLUSIVA_SISTEMA }
+
+val casosClasificados: Map<String, TipoIntegracion> = mapOf(
+    "Lista de tareas con texto y checkboxes" to TipoIntegracion.UI_ESTANDAR,
+    "Widget de pantalla de inicio en iOS" to TipoIntegracion.CAPACIDAD_EXCLUSIVA_SISTEMA,
+    "Formulario de login con validación" to TipoIntegracion.UI_ESTANDAR,
+    "Integración con Apple Pay" to TipoIntegracion.CAPACIDAD_EXCLUSIVA_SISTEMA,
+    "Pantalla de detalle con theme compartido" to TipoIntegracion.UI_ESTANDAR,
+    "Notificación push nativa personalizada" to TipoIntegracion.CAPACIDAD_EXCLUSIVA_SISTEMA,
+)
+```
+
+```bash
+# Gradle compila el mapa de clasificación en commonMain
+./gradlew :shared:compileKotlinMetadata
+```
+
+```kotlin
+// shared/src/commonTest/kotlin/com/academia/kmp/MapaDecisionUITest.kt
+package com.academia.kmp
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class MapaDecisionUITest {
+
+    @Test
+    fun `exactamente 3 de 6 casos requieren integracion nativa puntual`() {
+        val necesitanPuente = casosClasificados.values.count { it == TipoIntegracion.CAPACIDAD_EXCLUSIVA_SISTEMA }
+
+        assertEquals(6, casosClasificados.size)
+        assertEquals(3, necesitanPuente)
+    }
+}
+```
+
+```bash
+./gradlew :shared:jvmTest --tests "com.academia.kmp.MapaDecisionUITest"
+```
+
+</details>
+
+### Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Compose Multiplatform 1.6 o superior con la dependencia compose.components.resources en commonMain. Crea composeApp/src/commonMain/composeResources/.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** `composeResources`, `values/strings.xml`, calificador de idioma (`values-en`), `Res.string`, `stringResource`, `pluralStringResource`, `painterResource`.
+
+Los recursos comunes viven en `commonMain/composeResources/`:
+
+- `values/strings.xml` con los textos por defecto y `values-en/strings.xml` con los de inglés (el **calificador** del nombre de la carpeta elige el idioma).
+- `<plurals>` para textos que cambian con la cantidad.
+- `drawable/` para imágenes (PNG, JPG, XML vectorial, SVG).
+
+Al compilar, Gradle genera la clase **`Res`** con accesos con tipos: `Res.string.entregar`, `Res.drawable.camion`. En los composables se leen con `stringResource(...)`, `pluralStringResource(...)` y `painterResource(...)`. El idioma se toma del sistema en cada plataforma.
+
+**Analogía:** `composeResources` es la bodega central de etiquetas: cada tienda (plataforma) toma de ahí la etiqueta del idioma de su cliente. La analogía falla en que la bodega se arma al compilar: un recurso nuevo no aparece en `Res` hasta el siguiente build.
+
+**Límite de uso:** no pongas en recursos textos que vienen del servidor. Los nombres de recursos deben ser identificadores válidos de Kotlin (sin guiones).
+
+```mermaid
+flowchart TB
+    R["commonMain/composeResources"] --> V["values/strings.xml (es)"]
+    R --> E["values-en/strings.xml"]
+    R --> D["drawable/camion.xml"]
+    V & E & D -->|"build"| RES["clase Res generada"]
+    RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    R["commonMain/composeResources"] --> V["values/strings.xml (es)"]
+    R --> E["values-en/strings.xml"]
+    R --> D["drawable/camion.xml"]
+    V & E & D -->|"build"| RES["clase Res generada"]
+    RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    R["commonMain/composeResources"] --> V["values/strings.xml (es)"]
+    R --> E["values-en/strings.xml"]
+    R --> D["drawable/camion.xml"]
+    V & E & D -->|"build"| RES["clase Res generada"]
+    RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
+```
+
+```xml
+<resources>
+    <string name="entregar">Entregar</string>
+    <string name="saludo">Hola, %1$s</string>
+    <plurals name="pendientes">
+        <item quantity="one">%1$d entrega pendiente</item>
+        <item quantity="other">%1$d entregas pendientes</item>
+    </plurals>
+</resources>
+```
+
+```xml
+<resources>
+    <string name="entregar">Deliver</string>
+    <string name="saludo">Hi, %1$s</string>
+    <plurals name="pendientes">
+        <item quantity="one">%1$d pending delivery</item>
+        <item quantity="other">%1$d pending deliveries</item>
+    </plurals>
+</resources>
+```
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import rutaflow.composeapp.generated.resources.*
+
+@Composable
+fun Encabezado(conductor: String, pendientes: Int, alEntregar: () -> Unit) {
+    Column {
+        Image(painterResource(Res.drawable.camion), contentDescription = null)
+        Text(stringResource(Res.string.saludo, conductor))
+        Text(pluralStringResource(Res.plurals.pendientes, pendientes, pendientes))
+        Button(onClick = alEntregar) { Text(stringResource(Res.string.entregar)) }
+    }
+}
+```
+
+```bash
+./gradlew :composeApp:generateComposeResClass
+./gradlew :composeApp:run              # escritorio
+./gradlew :composeApp:installDebug     # Android
+```
+
+```text
+Con el sistema en español y 1 pendiente: «Hola, Ana», «1 entrega pendiente», botón «Entregar».
+Con el sistema en inglés y 3 pendientes: «Hi, Ana», «3 pending deliveries», botón «Deliver».
+El mismo resultado en Android, iOS y escritorio.
+```
+
+</details>
+
+### Tema 6: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable). Activa TalkBack en el emulador de Android y VoiceOver en el simulador de iOS (Accessibility Inspector en Xcode).
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TB
+    C["TarjetaEnvio (mergeDescendants)"] --> T["Text: ENV-42 (heading)"]
+    C --> I["Icon: estado (stateDescription)"]
+    C --> B["clickable: onClickLabel 'marcar como entregado'"]
+    C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TB
+    C["TarjetaEnvio (mergeDescendants)"] --> T["Text: ENV-42 (heading)"]
+    C --> I["Icon: estado (stateDescription)"]
+    C --> B["clickable: onClickLabel 'marcar como entregado'"]
+    C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
+```
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaEnvio(codigo: String, entregado: Boolean, alMarcar: () -> Unit) {
+    val estado = if (entregado) "entregado" else "en ruta"
+    Row(
+        Modifier
+            .clickable(onClickLabel = "marcar como entregado", role = Role.Button, onClick = alMarcar)
+            .semantics(mergeDescendants = true) { stateDescription = estado } // una sola lectura
+            .padding(16.dp),
+    ) {
+        Icon(if (entregado) Icons.Default.CheckCircle else Icons.Default.LocalShipping, contentDescription = null) // el estado ya se dice
+        Text(codigo, Modifier.semantics { heading() })
+    }
+}
+```
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.*
+import kotlin.test.Test
+
+class TarjetaEnvioTest {
+    @OptIn(ExperimentalTestApi::class)
+    @Test fun seLeeComoUnaUnidadConEstado() = runComposeUiTest {
+        setContent { TarjetaEnvio("ENV-42", entregado = false) {} }
+        onNode(hasStateDescription("en ruta") and hasClickAction())
+            .assertTextContains("ENV-42")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Role))
+    }
+}
+```
+
+```bash
+./gradlew :composeApp:jvmTest
+./gradlew :composeApp:installDebug   # luego activa TalkBack y toca la tarjeta
+```
+
+```text
+./gradlew :composeApp:jvmTest pasa la prueba seLeeComoUnaUnidadConEstado.
+TalkBack lee: «ENV-42, en ruta, botón. Toca dos veces para marcar como entregado».
+VoiceOver lee una frase equivalente en iOS.
+```
+
+</details>
+
+### Tema 7: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin. Necesitas el target jvm() (escritorio): Hot Reload funciona sobre la JVM. Instala el plugin de Kotlin Multiplatform en IntelliJ IDEA o Android Studio.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    E["Editar TarjetaEnvio.kt"] --> G["Guardar"]
+    G --> C["Compilación incremental"]
+    C --> J["JVM en ejecución: código reemplazado"]
+    J --> R["Recomposición con estado preservado"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    E["Editar TarjetaEnvio.kt"] --> G["Guardar"]
+    G --> C["Compilación incremental"]
+    C --> J["JVM en ejecución: código reemplazado"]
+    J --> R["Recomposición con estado preservado"]
+```
+
+```kotlin
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.hot.reload) // en versiones donde no viene incluido
+}
+
+kotlin {
+    jvm("desktop")
+    // ... targets de Android e iOS
+}
+```
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun FormularioNota() {
+    var nota by remember { mutableStateOf("") } // este estado sobrevive a la recarga
+    Column(Modifier.padding(16.dp)) {             // cambia 16 por 32 y guarda
+        Text("Nota para el cliente")              // cambia el texto y guarda
+        OutlinedTextField(value = nota, onValueChange = { nota = it })
+    }
+}
+```
+
+```bash
+./gradlew :composeApp:hotRunDesktop --auto
+# escribe algo en el campo, cambia el padding o el texto en el código y guarda
+```
+
+```text
+La ventana de escritorio se actualiza uno o dos segundos después de guardar, sin cerrarse.
+El texto escrito en el campo sigue ahí tras cambiar el padding de 16 a 32.
+Al agregar una dependencia nueva en Gradle, la herramienta pide reiniciar.
+```
+
+</details>
+
+### Tema 8: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Compose Multiplatform 1.8 o superior con org.jetbrains.androidx.navigation:navigation-compose en commonMain. Necesitas acceso a AndroidManifest.xml y al Info.plist de la app de iOS.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    participant S as SMS
+    participant P as Android / iOS
+    participant N as NavController (común)
+    participant D as DetalleEnvio
+    S->>P: rutaflow://envio/ENV-42
+    P->>N: navigate(NavUri)
+    N->>D: codigo = ENV-42
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+sequenceDiagram
+    participant S as SMS
+    participant P as Android / iOS
+    participant N as NavController (común)
+    participant D as DetalleEnvio
+    S->>P: rutaflow://envio/ENV-42
+    P->>N: navigate(NavUri)
+    N->>D: codigo = ENV-42
+```
+
+```kotlin
+package co.rutaflow.navegacion
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable object ListaEnvios
+@Serializable data class DetalleEnvio(val codigo: String)
+
+@Composable
+fun RutaFlowNav(nav: NavHostController) {
+    NavHost(nav, startDestination = ListaEnvios) {
+        composable<ListaEnvios> { Text("Lista de envíos") }
+        composable<DetalleEnvio>(
+            deepLinks = listOf(navDeepLink<DetalleEnvio>(basePath = "rutaflow://envio")),
+        ) { entrada ->
+            val codigo = entrada.toRoute<DetalleEnvio>().codigo
+            if (Regex("ENV-\\d+").matches(codigo)) Text("Detalle de $codigo") else Text("Enlace no válido")
+        }
+    }
+}
+```
+
+```xml
+<activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="rutaflow" android:host="envio" />
+    </intent-filter>
+</activity>
+```
+
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array><string>rutaflow</string></array>
+    </dict>
+</array>
+```
+
+```bash
+./gradlew :composeApp:installDebug
+adb shell am start -W -a android.intent.action.VIEW -d "rutaflow://envio/ENV-42"
+xcrun simctl openurl booted "rutaflow://envio/ENV-42"
+```
+
+```text
+`adb shell am start ... rutaflow://envio/ENV-42` abre la app directamente en «Detalle de ENV-42».
+`xcrun simctl openurl booted ...` hace lo mismo en el simulador de iOS.
+`rutaflow://envio/abc` muestra «Enlace no válido».
 ```
 
 </details>

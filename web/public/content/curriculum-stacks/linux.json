@@ -1,0 +1,223 @@
+{
+ "schemaVersion": 1,
+ "stackId": "linux",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 14,
+   "topics": [
+    {
+     "title": "Windows",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "windows"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "macOS",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "macos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Linux (Ubuntu/Debian)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "linux-ubuntu-debian"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sistema de archivos y permisos (chmod/chown)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-1-sistema-de-archivos-y-permisos-chmod-chown"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Procesos, señales y jobs en segundo plano",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-2-procesos-senales-y-jobs-en-segundo-plano"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Pipes, redirección y filtros (grep, awk, sed)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-3-pipes-redireccion-y-filtros-grep-awk-sed"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Variables de entorno y scripts bash robustos (set -euo pipefail)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-4-variables-de-entorno-y-scripts-bash-robustos-set-euo-pipefail"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cron y tareas programadas",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-5-cron-y-tareas-programadas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 9,
+      "fragment": "tema-6-hardening-basico-ssh-sin-contrasena-firewalls-selinux-apparmor"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 10,
+      "fragment": "tema-7-redes-modelo-osi-tcp-ip-dns-y-balanceadores-de-carga"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 11,
+      "fragment": "tema-8-cultura-devops-y-el-ciclo-plan-code-build-test-release-deploy-operate-monitor"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "NGINX y proxies desde cero",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 12,
+      "fragment": "tema-9-nginx-y-proxies-desde-cero"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 13,
+      "fragment": "tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "systemd: servicios, timers y logs con journalctl",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 14,
+      "fragment": "tema-11-systemd-servicios-timers-y-logs-con-journalctl"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Aprovisionar y endurecer: usuario, SSH, firewall y parches",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-aprovisionar-y-endurecer-usuario-ssh-firewall-y-parches"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Despliegue y rollback: systemd, nginx y artefactos versionados",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Respaldos que se restauran: restic, RPO/RTO y simulacro",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

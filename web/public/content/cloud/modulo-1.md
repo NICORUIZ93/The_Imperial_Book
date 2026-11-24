@@ -1,85 +1,25 @@
-# Módulo 1: Fundamentos de Docker y contenedores
+# Módulo 1: Almacenamiento en la nube con S3
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Virtualización vs contenedores · Básico · 25 min
+### Tema 1: Objetos, buckets y su nomenclatura · Intermedio · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás comparar virtualización y contenedores desde cero. Prerrequisitos: Docker; verifica docker --version.
+Al finalizar podrás almacenar un objeto desde cero. Prerrequisitos: Docker y AWS CLI; verifica aws --version.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    subgraph VM["VIRTUALIZACIÓN TRADICIONAL — 3 SO completos, más pesado"]
-        direction TB
-        VA["App A — SO A"]
-        VB["App B — SO B"]
-        VC["App C — SO C"]
-        VH["Hipervisor"]
-        VHW["Hardware físico"]
-        VA --> VH
-        VB --> VH
-        VC --> VH
-        VH --> VHW
-    end
-    subgraph CT["CONTENEDORES — 1 kernel compartido, más ligero"]
-        direction TB
-        CA["App A"]
-        CB["App B"]
-        CC["App C"]
-        CE["Docker Engine"]
-        CK["Kernel del host (Linux)"]
-        CHW["Hardware físico"]
-        CA --> CE
-        CB --> CE
-        CC --> CE
-        CE --> CK
-        CK --> CHW
-    end
-```
-
-#### ► REGLA PRÁCTICA
-Usa contenedores cuando varias apps pueden compartir el mismo kernel Linux del host; usa una VM completa cuando necesitas aislar sistemas operativos distintos entre sí o del host, no solo procesos.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-mkdir ejemplo-contenedores && cd ejemplo-contenedores
-uname -r
-docker run --rm ubuntu:24.04 uname -r
-docker run --rm ubuntu:24.04 sh -c '. /etc/os-release; echo "$PRETTY_NAME"'
-docker run --rm ubuntu:24.04 ps -e
-```
-
-</details>
-
-### Tema 2: Imágenes y capas · Básico · 25 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás construir una imagen desde cero. Prerrequisitos: Docker; verifica docker --version.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    D1["FROM node:20"] --> L1["Capa 1: node:20 base"]
-    D2["RUN npm install"] --> L2["Capa 2: dependencias"]
-    D3["COPY . ."] --> L3["Capa 3: código app"]
-    D4["CMD node app.js"]
-    L1 --> L2 --> L3 --> IMG["Imagen (capas apiladas)"]
-    IMG -->|"docker run"| CNT["Contenedor (instancia en ejecución,\ncon su propio estado)"]
+    B["Bucket: mi-bucket"]
+    B --> K1["hola.txt"] --> O1["objeto A"]
+    B --> K2["fotos/2024/viaje.jpg"] --> O2["objeto B"]
+    B --> K3["fotos/2024/playa.jpg"] --> O3["objeto C"]
+    B --> K4["backups/db.sql"] --> O4["objeto D"]
 ```
 
 </details>
@@ -88,94 +28,72 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```error-output
+An error occurred (NoSuchBucket) when calling the PutObject operation: The specified bucket does not exist
+```
+
+```bash
+# ❌ INCORRECTO: bucket no existe
+aws s3 cp entrega-001.jpg s3://pruebas-entrega-inexistente/envio-4471/entrega-001.jpg
+# NoSuchBucket error
+
+# ✅ CORRECTO: crear bucket primero
+aws s3 mb s3://pruebas-entrega  # make bucket
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+```
+
+```bash
+# 1. Revisar si bucket existe
+aws s3 ls | grep pruebas-entrega
+
+# 2. Si no existe, crearlo
+aws s3 mb s3://pruebas-entrega
+
+# 3. Luego sí, subir
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+```
+
 ```mermaid
-flowchart TD
-    D1["FROM node:20"] --> L1["Capa 1: node:20 base"]
-    D2["RUN npm install"] --> L2["Capa 2: dependencias"]
-    D3["COPY . ."] --> L3["Capa 3: código app"]
-    D4["CMD node app.js"]
-    L1 --> L2 --> L3 --> IMG["Imagen (capas apiladas)"]
-    IMG -->|"docker run"| CNT["Contenedor (instancia en ejecución,\ncon su propio estado)"]
+flowchart LR
+    B["Bucket: mi-bucket"]
+    B --> K1["hola.txt"] --> O1["objeto A"]
+    B --> K2["fotos/2024/viaje.jpg"] --> O2["objeto B"]
+    B --> K3["fotos/2024/playa.jpg"] --> O3["objeto C"]
+    B --> K4["backups/db.sql"] --> O4["objeto D"]
 ```
 
 ```bash
-mkdir -p ejemplo-imagen/src && cd ejemplo-imagen
-printf '#!/bin/sh\necho "Hola desde la imagen ejemplo-imagen:1.0"\n' > src/saludo.sh
-```
-
-Crea el archivo `Dockerfile`:
-
-```dockerfile
-FROM ubuntu:24.04
-WORKDIR /app
-COPY src/saludo.sh .
-CMD ["sh", "saludo.sh"]
-```
-
-```bash
-docker build -t ejemplo-imagen:1.0 .
-docker run --rm ejemplo-imagen:1.0
-docker history ejemplo-imagen:1.0
+mkdir ejemplo-s3 && cd ejemplo-s3
+printf 'entrega 001 firmada\n' > entrega-001.txt
+aws s3 mb s3://pruebas-entrega
+aws s3 cp entrega-001.txt s3://pruebas-entrega/envio-4471/entrega-001.txt
+aws s3 ls s3://pruebas-entrega/envio-4471/
+aws s3 cp s3://pruebas-entrega/envio-4471/entrega-001.txt descargada.txt
+diff entrega-001.txt descargada.txt && echo "contenido idéntico"
 ```
 
 </details>
 
-### Tema 3: Registros de contenedores (Docker Hub) · Básico · 25 min
+### Tema 2: Claves y metadatos · Intermedio · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás publicar una imagen de forma segura. Prerrequisitos: Docker; verifica docker --version.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["Tu máquina\n(construyes)"] -->|"docker push"| B["Docker Hub\nfloci/floci:latest"]
-    B -->|"docker pull"| C["Tu máquina\n(descargas)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    A["Tu máquina\n(construyes)"] -->|"docker push"| B["Docker Hub\nfloci/floci:latest"]
-    B -->|"docker pull"| C["Tu máquina\n(descargas)"]
-```
-
-```bash
-mkdir ejemplo-registry && cd ejemplo-registry
-docker pull ubuntu:24.04
-docker image inspect ubuntu:24.04 --format '{{index .RepoDigests 0}}'
-docker tag ubuntu:24.04 miusuario/base-rutaflow:1.0
-docker images miusuario/base-rutaflow
-```
-
-</details>
-
-### Tema 4: Comandos esenciales de Docker · Básico · 25 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás operar contenedores desde cero. Prerrequisitos: Docker; verifica docker --version.
+Al finalizar podrás subir un objeto con metadatos reales y entender por qué el Content-Type importa. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
-    P["docker pull"] --> IMG["imagen en disco"]
-    IMG --> R["docker run"]
-    R --> C["contenedor corriendo"]
-    C --> PS["docker ps\n(ver si corre)"]
-    C --> LOGS["docker logs\n(ver su salida)"]
-    C --> EXEC["docker exec\n(entrar dentro)"]
-    C --> STOP["docker stop\n(apagarlo)"]
-    STOP --> RM["docker rm\n(eliminarlo)"]
+    O["Objeto con clave &quot;facturas/2024/factura-001.pdf&quot;"]
+    O --> SYS["Metadatos del sistema\n(S3 los gestiona)"]
+    SYS --> S1["Content-Type: application/pdf"]
+    SYS --> S2["Content-Length: 245678"]
+    SYS --> S3E["ETag: &quot;9bd8a...&quot;"]
+    SYS --> S4["Last-Modified: 2026-03-10T14:22:00Z"]
+    O --> CUS["Metadatos personalizados\n(tú los defines)"]
+    CUS --> C1["x-amz-meta-usuario-id: u-4471"]
+    CUS --> C2["x-amz-meta-categoria: factura"]
 ```
 
 </details>
@@ -184,51 +102,71 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    P["docker pull"] --> IMG["imagen en disco"]
-    IMG --> R["docker run"]
-    R --> C["contenedor corriendo"]
-    C --> PS["docker ps\n(ver si corre)"]
-    C --> LOGS["docker logs\n(ver su salida)"]
-    C --> EXEC["docker exec\n(entrar dentro)"]
-    C --> STOP["docker stop\n(apagarlo)"]
-    STOP --> RM["docker rm\n(eliminarlo)"]
+
+```bash
+aws s3 mb s3://pruebas-entrega
+echo "contenido-simulado-de-foto" > entrega-001.jpg
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg \
+  --content-type image/jpeg --metadata conductor=c-891,envioId=4471
+aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg
 ```
 
 ```bash
-mkdir ejemplo-comandos && cd ejemplo-comandos
-docker run -d --name rutaflow-demo ubuntu:24.04 sh -c 'echo "servicio iniciado"; sleep 300'
-docker ps --filter name=rutaflow-demo
-docker logs rutaflow-demo
-docker exec rutaflow-demo cat /etc/os-release
-docker stop rutaflow-demo
-docker ps -a --filter name=rutaflow-demo
-docker rm rutaflow-demo
+aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001-sin-tipo.jpg
+aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001-sin-tipo.jpg
 ```
 
 </details>
 
-### Tema 5: Docker Compose — servicios, redes y volúmenes · Básico · 25 min
+### Tema 3: Versionado y ciclo de vida · Intermedio · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás coordinar servicios desde cero. Prerrequisitos: Docker Compose; verifica docker compose version.
+Al finalizar podrás activar versionado y recuperar una versión reemplazada por error. Prerrequisitos: Tema 2 completo (el bucket pruebas-entrega ya existe).
+
+#### ► LA ANALOGÍA
+Versionar es conservar cada edición con su propio identificador, no sobrescribir la historia.
+
+**Conceptos clave:** versionado, ID de versión, marcador de borrado (delete marker), reglas de ciclo de vida (lifecycle rules).
+
+**Definición.** Por defecto, al subir un objeto bajo una clave ya existente, S3 sobrescribe el contenido anterior sin conservar rastro: la versión previa se pierde de forma irrecuperable. El versionado modifica este comportamiento: una vez activado sobre un bucket, cada subida a una clave existente conserva ambas versiones —la anterior y la nueva—, identificadas cada una por un ID de versión único, en lugar de sobrescribir. El mecanismo permite listar el historial completo de versiones de una clave, recuperar cualquier versión anterior, o restaurar una versión antigua como versión "actual" mediante una nueva subida.
+
+Con el versionado activo, eliminar un objeto tampoco lo elimina físicamente de forma inmediata: S3 inserta un marcador de borrado (*delete marker*) como versión más reciente de esa clave. El objeto deja de aparecer en un listado estándar —el marcador oculta las versiones anteriores en las operaciones habituales—, pero el contenido real permanece almacenado y es recuperable eliminando ese marcador. Este mecanismo añade una capa de protección frente a borrados accidentales, con dos implicaciones directas: el versionado, una vez activado sobre un bucket, no admite desactivación completa —únicamente suspensión—, y un bucket versionado incrementa su consumo de almacenamiento al conservar cada versión histórica.
+
+El ciclo de vida (*lifecycle*) de un objeto se gestiona mediante reglas que S3 aplica automáticamente con el transcurso del tiempo, sin intervención manual. Una regla de ciclo de vida puede, por ejemplo, trasladar objetos con más de 30 días de antigüedad a una capa de almacenamiento de coste reducido para acceso infrecuente, eliminar versiones con más de 90 días de antigüedad, o retirar marcadores de borrado huérfanos. Estas reglas se definen sobre un bucket completo o sobre un prefijo de claves específico —por ejemplo, únicamente `logs/`— y se evalúan de forma asíncrona en segundo plano por el propio servicio.
+
+La combinación de versionado con reglas de ciclo de vida constituye un patrón habitual en producción: el versionado protege frente a sobrescrituras y borrados accidentales, mientras que una regla de ciclo de vida asociada elimina automáticamente versiones que superan cierta antigüedad, acotando el crecimiento del coste de almacenamiento que implicaría conservar indefinidamente cada versión histórica.
+
+**¿Por qué es importante?** El versionado constituye la defensa más simple y efectiva frente al error operativo más frecuente al trabajar con almacenamiento: la sobrescritura o eliminación accidental del archivo equivocado. Todo bucket que almacene datos cuya pérdida resulte inaceptable —copias de seguridad, documentos de usuario, artefactos de código empaquetado— debería, como práctica estándar de la industria, tener el versionado activo desde su creación.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
+        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
+        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
+        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
+    end
+```
+
+v1 y v2 siguen existiendo y son recuperables eliminando el marcador de borrado.
+
+En el proyecto integrador RutaFlow puedes declarar este mismo comportamiento en código, no solo
+ejecutarlo por CLI: escribe en tu propio `template.yaml` el bucket `PruebasEntrega` con
+`VersioningConfiguration: { Status: Enabled }`. Así, cualquier entorno desplegado desde esa
+plantilla nace con el versionado activo que acabás de probar a mano.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    subgraph YML["docker-compose.yml"]
-        Y1["services:"]
-        Y2["floci:"]
-        Y3["image: floci/floci:latest"]
-        Y4["ports: 4566 to 4566"]
-        Y5["persistent volume: ./data to /state"]
+    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
+        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
+        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
+        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
     end
-    YML -->|"docker compose up"| NET["Red compartida compose_default"]
-    NET --> CNT["Contenedor: floci\nPuerto 4566 expuesto\nVolumen ./data ↔ /state"]
 ```
 
 </details>
@@ -239,49 +177,281 @@ flowchart LR
 #### Código y verificación
 ```mermaid
 flowchart LR
-    subgraph YML["docker-compose.yml"]
-        Y1["services:"]
-        Y2["floci:"]
-        Y3["image: floci/floci:latest"]
-        Y4["ports: 4566 to 4566"]
-        Y5["persistent volume: ./data to /state"]
+    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
+        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
+        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
+        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
     end
-    YML -->|"docker compose up"| NET["Red compartida compose_default"]
-    NET --> CNT["Contenedor: floci\nPuerto 4566 expuesto\nVolumen ./data ↔ /state"]
-```
-
-```yaml
-services:
-  escritor:
-    image: ubuntu:24.04
-    command: sh -c 'date -u +%FT%TZ >> /datos/registro.txt && echo "escribí una línea"'
-    volumes:
-      - datos-entregas:/datos
-  lector:
-    image: ubuntu:24.04
-    command: sh -c 'wc -l < /datos/registro.txt'
-    volumes:
-      - datos-entregas:/datos
-    depends_on:
-      escritor:
-        condition: service_completed_successfully
-
-volumes:
-  datos-entregas:
 ```
 
 ```bash
-docker compose run --rm lector
-docker compose run --rm lector
-docker compose down
-docker compose run --rm lector
-docker compose down -v
-docker compose run --rm lector
+aws s3api put-bucket-versioning --bucket pruebas-entrega --versioning-configuration Status=Enabled
+echo "foto-correcta-envio-4471" > correcta.jpg
+aws s3 cp correcta.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+echo "foto-equivocada-de-otro-envio" > equivocada.jpg
+aws s3 cp equivocada.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
+aws s3api list-object-versions --bucket pruebas-entrega --prefix envio-4471/entrega-001.jpg
+```
+
+```bash
+aws s3api get-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg \
+  --version-id <VersionId-de-la-correcta> recuperada.jpg
+cat recuperada.jpg
 ```
 
 </details>
 
-### Laboratorio 1.1 — Comandos esenciales con una imagen de prueba
+### Tema 4: Transición entre capas de almacenamiento · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás configurar y verificar una regla de ciclo de vida real. Prerrequisitos: Tema 3 completo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
+    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
+    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
+```
+
+Crea el archivo `lifecycle.json`:
+
+```json
+{
+  "Rules": [{
+    "ID": "mover-pruebas-entrega-a-infrecuente",
+    "Status": "Enabled",
+    "Filter": { "Prefix": "envio-" },
+    "Transitions": [{ "Days": 30, "StorageClass": "STANDARD_IA" }]
+  }]
+}
+```
+
+```bash
+aws s3api put-bucket-lifecycle-configuration --bucket pruebas-entrega --lifecycle-configuration file://lifecycle.json
+aws s3api get-bucket-lifecycle-configuration --bucket pruebas-entrega
+```
+
+</details>
+
+### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas · Intermedio · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás generar una URL temporal para que un cliente vea su prueba de entrega sin exponer el bucket. Prerrequisitos: Tema 2 completo (objeto envio-4471/entrega-001.jpg existente).
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    A["Política de bucket\n(reglas JSON sobre el bucket completo,\nauditable, flexible)"]
+    B["ACL\n(permisos directos a un objeto/bucket,\nmenos recomendado)"]
+    C["URL pre-firmada\n(acceso temporal, sin credenciales,\nexpira en el tiempo)"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    A["Política de bucket\n(reglas JSON sobre el bucket completo,\nauditable, flexible)"]
+    B["ACL\n(permisos directos a un objeto/bucket,\nmenos recomendado)"]
+    C["URL pre-firmada\n(acceso temporal, sin credenciales,\nexpira en el tiempo)"]
+```
+
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws s3 presign s3://pruebas-entrega/envio-4471/entrega-001.jpg --expires-in 120
+```
+
+</details>
+
+### Antes de escribir código: crea tu propio proyecto
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► CÓMO FUNCIONA
+```mermaid
+sequenceDiagram
+    actor Estudiante
+    participant SDK as "SDK AWS"
+    participant Floci as "Floci :4566"
+    participant S3 as "Servicio S3 local"
+    Estudiante->>SDK: Ejecuta el cliente que escribió
+    SDK->>Floci: ListBuckets + credenciales test
+    Floci->>S3: Enruta la operación
+    S3-->>Floci: Buckets[]
+    Floci-->>SDK: Respuesta compatible con AWS
+    SDK-->>Estudiante: Nombre y fecha de cada bucket
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+mkdir s3-sdk-lab
+cd s3-sdk-lab
+```
+
+```text
+s3-sdk-lab/                 # elige UNA de estas dos estructuras
+├── package.json            # opción JavaScript
+├── s3-list-buckets.js
+├── requirements.txt        # opción Python
+└── s3_list_buckets.py
+```
+
+```mermaid
+sequenceDiagram
+    actor Estudiante
+    participant SDK as "SDK AWS"
+    participant Floci as "Floci :4566"
+    participant S3 as "Servicio S3 local"
+    Estudiante->>SDK: Ejecuta el cliente que escribió
+    SDK->>Floci: ListBuckets + credenciales test
+    Floci->>S3: Enruta la operación
+    S3-->>Floci: Buckets[]
+    Floci-->>SDK: Respuesta compatible con AWS
+    SDK-->>Estudiante: Nombre y fecha de cada bucket
+```
+
+</details>
+
+### Opción A — JavaScript con AWS SDK v3
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+npm init -y
+npm pkg set type=module
+npm install @aws-sdk/client-s3
+```
+
+```js
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+
+const client = new S3Client({
+  region: 'us-east-1',
+  endpoint: 'http://localhost:4566',
+  forcePathStyle: true,
+  credentials: { accessKeyId: 'test', secretAccessKey: 'test' }
+});
+
+try {
+  const result = await client.send(new ListBucketsCommand({}));
+  const buckets = result.Buckets ?? [];
+  if (buckets.length === 0) {
+    console.log('No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket');
+  } else {
+    console.log('Buckets:');
+    for (const bucket of buckets) {
+      console.log(`  - ${bucket.Name} (creado ${bucket.CreationDate?.toISOString()})`);
+    }
+  }
+} catch (error) {
+  console.error('No se pudo consultar S3 local:', error.message);
+  process.exitCode = 1;
+}
+```
+
+```bash
+node s3-list-buckets.js
+```
+
+```text
+No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket
+```
+
+```text
+Buckets:
+  - mi-bucket (creado 2026-07-19T14:20:00.000Z)
+```
+
+</details>
+
+### Opción B — Python con boto3
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```text
+boto3
+```
+
+```python
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+
+client = boto3.client(
+    "s3",
+    region_name="us-east-1",
+    endpoint_url="http://localhost:4566",
+    aws_access_key_id="test",
+    aws_secret_access_key="test",
+)
+
+try:
+    result = client.list_buckets()
+    buckets = result.get("Buckets", [])
+    if not buckets:
+        print("No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket")
+    else:
+        print("Buckets:")
+        for bucket in buckets:
+            print(f"  - {bucket['Name']} (creado {bucket['CreationDate'].isoformat()})")
+except (BotoCoreError, ClientError) as error:
+    raise SystemExit(f"No se pudo consultar S3 local: {error}")
+```
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate          # macOS o Linux
+# En PowerShell de Windows usa: .venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python s3_list_buckets.py
+```
+
+</details>
+
+### Provoca un fallo útil antes de continuar
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -292,11 +462,11 @@ docker compose run --rm lector
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 1.1 — comandos esenciales con una imagen de prueba.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar provoca un fallo útil antes de continuar.
 
 </details>
 
-### Laboratorio 1.2 — Instalar floci-cli y levantar Floci
+### Parte 1 — Operaciones CRUD básicas
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -307,11 +477,11 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 1.2 — instalar floci-cli y levantar floci.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar parte 1 — operaciones crud básicas.
 
 </details>
 
-### Laboratorio 1.3 — Probar la AWS CLI contra Floci
+### Parte 2 — Versionado
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -321,49 +491,7 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```yaml
-services:
-  aws-local:
-    image: floci/floci:2.2.0@sha256:e97cd0c1dc2aa14e7697fb5ef5018404c4d6345169dbd276315f0bed2c7b0520
-    container_name: floci-aws
-    ports:
-      - "${AWS_LOCAL_PORT:-4566}:4566"
-```
-
-```bash
-docker compose up -d aws-local
-# equivalente manual a `eval $(floci env)`:
-export AWS_ENDPOINT_URL=http://localhost:4566
-export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
-```
-
-</details>
-
-### Laboratorio 1.4 — Usar StackPort y Floci UI
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-docker compose up -d aws-local stackport
-```
-
-```bash
-git clone https://github.com/floci-io/floci-ui.git
-cd floci-ui
-docker compose up -d
-docker compose ps
-```
-
-```bash
-aws --endpoint-url=http://localhost:4566 s3 mb s3://mi-primer-bucket-visual
-```
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar parte 2 — versionado.
 
 </details>

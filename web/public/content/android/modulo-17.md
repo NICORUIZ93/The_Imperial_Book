@@ -1,27 +1,49 @@
-# Módulo 17: Compose profesional — layouts, formularios, listas y efectos
+# Módulo 17: Build profesional — variantes, módulos, optimización y CI
 
 ## Aprende construyendo
 
-Este módulo convierte el conocimiento inicial de Compose en una interfaz mantenible.
-Trabajarás sobre RutaFlow y separarás estado, presentación, interacción y efectos. Cada
-tema deja una prueba observable; una captura bonita no sustituye comportamiento correcto.
+Aquí el proyecto deja de ser una sola configuración local y se convierte en un producto
+reproducible. Cada decisión se prueba con Gradle; no se considera profesional una build
+que depende de archivos secretos o pasos manuales en el portátil del autor.
 
 
-### Tema 1: Constraints, Modifier y componentes con slots · Avanzado · 45 min
+### Tema 1: Gradle, version catalogs y resolución de dependencias · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás explicar el ciclo medir–dimensionar–colocar, ordenar modificadores sin resultados accidentales y diseñar un componente por slots. Abre academia-android y crea el paquete com.academia.ui.componentes. Prerrequisitos: Compose básico del Módulo 2.
+Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto. Prerrequisitos: estructura del Módulo 0. Trabaja en gradle/libs.versions.toml.
+
+#### ► LA ANALOGÍA
+Gradle construye un grafo de tareas y otro de dependencias por variante. Una dependencia
+`implementation` no expone su API a consumidores; `api` sí y aumenta acoplamiento. BOM
+alinea una familia compatible. Constraints expresan límites; dependency locking fija lo
+resuelto. Plugins modifican el modelo antes de ejecutar tareas. Si dos módulos piden
+versiones distintas, Gradle elige la mayor por defecto; `failOnVersionConflict()`
+convierte esa divergencia en error, y una constraint puede fijar un límite explícito.
+El catálogo no valida compatibilidad binaria: eso se comprueba con las notas de
+versión y con las pruebas. **Analogía:** el catálogo
+es la lista de compras, el grafo muestra proveedores indirectos y el lockfile conserva
+exactamente el lote aprobado.
+
+```mermaid
+flowchart LR
+    A[:app] --> L[kotlinx-coroutines-core]
+    B[:feature:entregas] --> L
+    L --> V{Versión resuelta}
+    V -->|mayor solicitada| S[1.10.2]
+    V -->|constraint| C[Límite explícito]
+```
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    P[Padre envía constraints] --> M[Hijo mide]
-    M --> T[Elige tamaño permitido]
-    T --> U[Padre coloca]
-    U --> D[Dibujo, semántica e interacción]
+    A[:app] --> L[kotlinx-coroutines-core]
+    B[:feature:entregas] --> L
+    L --> V{Versión resuelta}
+    V -->|mayor solicitada| S[1.10.2]
+    V -->|constraint| C[Límite explícito]
 ```
 
 </details>
@@ -31,66 +53,120 @@ flowchart LR
 
 #### Código y verificación
 
+```toml
+[versions]
+coroutines = "1.10.2"
+
+[libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
+[bundles]
+coroutines = ["kotlinx-coroutines-core"]
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+./gradlew :app:dependencies --configuration debugRuntimeClasspath
+./gradlew :app:dependencyInsight --dependency kotlinx-coroutines-core --configuration debugRuntimeClasspath
+./gradlew :app:test
+```
+
+</details>
+
+### Tema 2: Build types, product flavors y configuración segura · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos correctos. Prerrequisitos: Kotlin DSL y manifest. Edita app/build.gradle.kts.
+
+#### ► LA ANALOGÍA
+Build type expresa depuración/optimización; flavor expresa dimensión de producto o
+entorno. La variante fusiona manifest, recursos y código con prioridades; el source set
+de la variante se superpone a `main` y el build type tiene prioridad sobre el flavor.
+`BuildConfig`
+sirve para valores no secretos; todo incluido en el artefacto puede extraerse.
+`manifestPlaceholders` sustituye valores por variante sin duplicar el manifest, y
+`signingConfigs` lee rutas y claves desde variables de entorno;
+`./gradlew :app:signingReport` confirma qué configuración se aplicó sin imprimir
+secretos. Credenciales
+de firma viven fuera del repositorio y CI las inyecta. **Analogía:** una misma fábrica
+combina mercado y acabado, pero nunca imprime la llave de la bodega sobre el producto.
+
+```mermaid
+flowchart TD
+    M[main] --> D1[demo]
+    M --> P1[prod]
+    D1 --> DD[demoDebug]
+    D1 --> DR[demoRelease]
+    P1 --> PD[prodDebug]
+    P1 --> PR[prodRelease]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart TD
+    M[main] --> D1[demo]
+    M --> P1[prod]
+    D1 --> DD[demoDebug]
+    D1 --> DR[demoRelease]
+    P1 --> PD[prodDebug]
+    P1 --> PR[prodRelease]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart TD
+    M[main] --> D1[demo]
+    M --> P1[prod]
+    D1 --> DD[demoDebug]
+    D1 --> DR[demoRelease]
+    P1 --> PD[prodDebug]
+    P1 --> PR[prodRelease]
+```
+
 ```kotlin
-@Composable
-fun EntregaCard(
-    titulo: String,
-    modifier: Modifier = Modifier,
-    estado: @Composable RowScope.() -> Unit,
-    acciones: @Composable RowScope.() -> Unit,
-) {
-    Card(modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(titulo, style = MaterialTheme.typography.titleMedium)
-            Row(content = estado)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), content = acciones)
-        }
+android {
+    flavorDimensions += "entorno"
+    productFlavors {
+        create("demo") { dimension = "entorno"; applicationIdSuffix = ".demo"; buildConfigField("String", "API_URL", "\"https://demo.invalid\"") }
+        create("prod") { dimension = "entorno"; buildConfigField("String", "API_URL", "\"https://api.invalid\"") }
     }
+    buildFeatures { buildConfig = true }
 }
 ```
 
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+./gradlew :app:assembleDemoDebug :app:assembleProdRelease
+./gradlew :app:processDemoDebugMainManifest
 ./gradlew :app:test
-./gradlew :app:assembleDebug
 ```
 
 </details>
 
-### Tema 2: LazyColumn, grids, claves estables y estado de scroll · Avanzado · 45 min
+### Tema 3: Modularización, convenciones y fronteras de arquitectura · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás renderizar colecciones grandes, preservar identidad al reordenar y medir rendimiento en release. Crea ui/entregas/ListaEntregas.kt; necesitas estado inmutable. Prerrequisitos: colecciones Kotlin y Paging del Módulo 16.
-
-#### ► LA ANALOGÍA
-`LazyColumn` y `LazyVerticalGrid` reciben un DSL. `key` debe ser única y estable; el
-índice no lo es si insertas u ordenas. `contentType` permite reutilizar composiciones
-entre estructuras equivalentes. `rememberLazyListState` conserva posición durante
-recomposición; `rememberSaveable` o ViewModel cubren recreación según el requisito.
-`derivedStateOf` reduce cambios observables y `snapshotFlow` convierte lecturas Compose
-en Flow para telemetría. **Analogía:** una biblioteca trae a la mesa los libros visibles,
-pero cada ejemplar conserva su ISBN aunque cambie de estante.
-
-```mermaid
-flowchart TD
-    A[Colección de entregas] --> B[Viewport y margen]
-    B --> C[Items compuestos]
-    A --> D{Clave estable}
-    D -->|id| E[Estado y animación siguen la entidad]
-    D -->|índice| F[Estado salta al reordenar]
-```
+Al finalizar podrás separar feature, core y data sin ciclos. Prerrequisitos: Hilt, arquitectura por capas y Gradle. Crea feature:entregas y core:model.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
-    A[Colección de entregas] --> B[Viewport y margen]
-    B --> C[Items compuestos]
-    A --> D{Clave estable}
-    D -->|id| E[Estado y animación siguen la entidad]
-    D -->|índice| F[Estado salta al reordenar]
+    APP[:app] --> FEAT[:feature:entregas]
+    FEAT --> MODEL[:core:model]
+    FEAT --> COREUI[:core:ui]
+    DATA[:core:data] --> MODEL
+    FEAT -.->|no permitido| DATA
 ```
 
 </details>
@@ -101,184 +177,50 @@ flowchart TD
 #### Código y verificación
 ```mermaid
 flowchart TD
-    A[Colección de entregas] --> B[Viewport y margen]
-    B --> C[Items compuestos]
-    A --> D{Clave estable}
-    D -->|id| E[Estado y animación siguen la entidad]
-    D -->|índice| F[Estado salta al reordenar]
+    APP[:app] --> FEAT[:feature:entregas]
+    FEAT --> MODEL[:core:model]
+    FEAT --> COREUI[:core:ui]
+    DATA[:core:data] --> MODEL
+    FEAT -.->|no permitido| DATA
 ```
 
 ```kotlin
-@Composable
-fun ListaEntregas(entregas: List<Entrega>, onAbrir: (String) -> Unit) {
-    val estado = rememberLazyListState()
-    val mostrarSubir by remember { derivedStateOf { estado.firstVisibleItemIndex > 5 } }
-    Box {
-        LazyColumn(state = estado) {
-            items(entregas, key = { it.id }, contentType = { "entrega" }) { entrega ->
-                EntregaCard(entrega.titulo, Modifier.animateItem(),
-                    estado = { Text(entrega.estado) },
-                    acciones = { Button({ onAbrir(entrega.id) }) { Text("Abrir") } })
-            }
-        }
-        if (mostrarSubir) Text("Volver arriba", Modifier.align(Alignment.BottomEnd))
-    }
+// feature/entregas/build.gradle.kts
+plugins { id("rutaflow.android.feature") }
+dependencies {
+    implementation(project(":core:model"))
+    implementation(project(":core:ui"))
 }
 ```
 
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:test
-./gradlew :app:assembleRelease
+./gradlew projects
+./gradlew :feature:entregas:test
+./gradlew :app:assembleDebug --scan
 ```
 
 </details>
 
-### Tema 3: Formularios, IME, foco y validación accesible · Avanzado · 45 min
+### Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás modelar valor, error y envío; configurar teclado y foco; y conservar un borrador sin mezclar validación con widgets. Crea ui/entregas/EditarEntrega.kt. Prerrequisitos: state hoisting, ViewModel y SavedStateHandle.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-stateDiagram-v2
-    [*] --> Editando
-    Editando --> Enviando: envío válido
-    Enviando --> Guardado: respuesta aceptada
-    Enviando --> Error: timeout o rechazo
-    Error --> Editando: corregir sin perder texto
-    Guardado --> [*]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-stateDiagram-v2
-    [*] --> Editando
-    Editando --> Enviando: envío válido
-    Enviando --> Guardado: respuesta aceptada
-    Enviando --> Error: timeout o rechazo
-    Error --> Editando: corregir sin perder texto
-    Guardado --> [*]
-```
-
-```kotlin
-data class Formulario(val direccion: String = "", val tocado: Boolean = false) {
-    val error get() = if (tocado && direccion.length < 8) "Escribe una dirección completa" else null
-}
-
-@Composable
-fun CampoDireccion(form: Formulario, onCambio: (String) -> Unit, onSiguiente: () -> Unit) {
-    OutlinedTextField(
-        value = form.direccion, onValueChange = onCambio,
-        label = { Text("Dirección") }, isError = form.error != null,
-        supportingText = { form.error?.let { Text(it) } },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = { onSiguiente() }),
-        modifier = Modifier.fillMaxWidth().semantics { form.error?.let { error(it) } }
-    )
-}
-```
-
-```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:test
-./gradlew :app:connectedDebugAndroidTest
-```
-
-</details>
-
-### Tema 4: Side effects, lifecycle y APIs imperativas · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás elegir LaunchedEffect, DisposableEffect, SideEffect, rememberUpdatedState y produceState. Crea ui/mapa/SeguimientoEffect.kt y usa un fake antes de conectar ubicación real. Prerrequisitos: coroutines, lifecycle y UDF.
-
-#### ► LA ANALOGÍA
-`LaunchedEffect(key)` inicia una coroutine ligada a la presencia del nodo y reinicia al
-cambiar la clave. `DisposableEffect` exige liberar listener. `SideEffect` publica estado
-tras composición exitosa. `rememberUpdatedState` permite que un efecto largo invoque la
-callback reciente sin reiniciarse. `produceState` adapta una fuente a `State`. Las claves
-representan identidad, no valores casuales. Para Flow del ViewModel usa colección
-lifecycle-aware. **Analogía:** un efecto es un contrato de alquiler: registra cuándo
-entras, qué cambio exige mudanza y cómo devuelves las llaves.
-
-```mermaid
-flowchart LR
-    C[Composición] --> L[LaunchedEffect con clave]
-    C --> D[DisposableEffect con clave]
-    L --> X[Coroutine cancelada al salir]
-    D --> Y[onDispose libera el listener]
-    K[Cambio de clave] --> L
-    K --> D
-```
+Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque y automatizar un artefacto trazable. Prerrequisitos: publicación, testing y profiling.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    C[Composición] --> L[LaunchedEffect con clave]
-    C --> D[DisposableEffect con clave]
-    L --> X[Coroutine cancelada al salir]
-    D --> Y[onDispose libera el listener]
-    K[Cambio de clave] --> L
-    K --> D
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Objetivo observable
-Al finalizar podrás elegir `LaunchedEffect`, `DisposableEffect`, `SideEffect`,
-`rememberUpdatedState` y `produceState`. Crea `ui/mapa/SeguimientoEffect.kt` y usa un
-fake antes de conectar ubicación real. **Prerrequisitos:** coroutines, lifecycle y UDF.
-
-</details>
-
-### Tema 5: Gestos, Canvas y componentes personalizados accesibles · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás elegir una abstracción de gesto, dibujar progreso y ofrecer una operación equivalente por semántica. Crea ui/ruta/ProgresoRuta.kt; necesitas coroutines y accesibilidad de los módulos 10 y 14. Prerrequisitos: Canvas, coroutines y semántica.
-
-#### ► LA ANALOGÍA
-Gestos de alto nivel agregan foco, ripple, teclado y semántica. Detectores como
-`detectDragGestures` consumen eventos dentro de `pointerInput`; su key controla reinicio.
-Canvas usa píxeles bajo `DrawScope`, por lo que conviertes `Dp` con density. El estado no
-pertenece al dibujo: recibe progreso normalizado y emite intención. Expón
-`progressBarRangeInfo`, descripción y acciones; respeta tamaño táctil y reduce motion
-cuando la animación no sea esencial. **Analogía:** Canvas pinta el tablero, pero la capa
-semántica escribe instrucciones para lector, teclado y pruebas.
-
-```mermaid
-flowchart LR
-    G[Gesto de puntero] --> E[Progreso normalizado]
-    B[Botón o control estándar] --> E
-    E --> V[Canvas dibuja]
-    E --> S[Semántica anuncia el valor]
-    S --> T[TalkBack y pruebas]
-```
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    G[Gesto de puntero] --> E[Progreso normalizado]
-    B[Botón o control estándar] --> E
-    E --> V[Canvas dibuja]
-    E --> S[Semántica anuncia el valor]
-    S --> T[TalkBack y pruebas]
+    SRC[Código y pruebas] --> R8[R8 y shrinker]
+    R8 --> AAB[AAB firmado]
+    R8 --> MAP[mapping.txt]
+    BP[Baseline Profile] --> AAB
+    AAB --> CHK[Checksum y SBOM]
+    CHK --> PUB[Publicación manual]
+    AAB --> RET[retrace de fallos]
+    MAP --> RET
 ```
 
 </details>
@@ -289,37 +231,146 @@ flowchart LR
 #### Código y verificación
 ```mermaid
 flowchart LR
-    G[Gesto de puntero] --> E[Progreso normalizado]
-    B[Botón o control estándar] --> E
-    E --> V[Canvas dibuja]
-    E --> S[Semántica anuncia el valor]
-    S --> T[TalkBack y pruebas]
+    SRC[Código y pruebas] --> R8[R8 y shrinker]
+    R8 --> AAB[AAB firmado]
+    R8 --> MAP[mapping.txt]
+    BP[Baseline Profile] --> AAB
+    AAB --> CHK[Checksum y SBOM]
+    CHK --> PUB[Publicación manual]
+    AAB --> RET[retrace de fallos]
+    MAP --> RET
 ```
 
 ```kotlin
-@Composable
-fun ProgresoRuta(progreso: Float, onCambio: (Float) -> Unit) {
-    val valor = progreso.coerceIn(0f, 1f)
-    Canvas(
-        Modifier.fillMaxWidth().height(48.dp)
-            .semantics {
-                progressBarRangeInfo = ProgressBarRangeInfo(valor, 0f..1f)
-                setProgress { onCambio(it.coerceIn(0f, 1f)); true }
-            }
-            .pointerInput(Unit) {
-                detectTapGestures { onCambio((it.x / size.width).coerceIn(0f, 1f)) }
-            }
+buildTypes.named("release") {
+    isMinifyEnabled = true
+    isShrinkResources = true
+    proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+}
+```
+
+```bash
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+./gradlew clean
+./gradlew :app:test :app:lintProdRelease :app:bundleProdRelease
+./gradlew :benchmark:connectedCheck
+sha256sum app/build/outputs/bundle/prodRelease/*.aab
+```
+
+</details>
+
+### Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Android Studio con la plantilla Baseline Profile / Macrobenchmark (File > New > New Module). Necesitas un dispositivo real o un emulador con imagen de Android 10+; los resultados de emulador solo sirven para comparar entre sí.
+
+#### ► LA ANALOGÍA
+**Conceptos clave:** Macrobenchmark, arranque en frío, `StartupTimingMetric`, `FrameTimingMetric`, iteraciones, `CompilationMode`, mediana y percentil.
+
+**Macrobenchmark** corre en un módulo de pruebas aparte que controla la app desde fuera:
+
+- `measureRepeated` instala, arranca y repite la acción varias veces (**iteraciones**).
+- `StartupTimingMetric` mide el tiempo hasta el primer fotograma (`timeToInitialDisplayMs`).
+- `FrameTimingMetric` mide cuánto tarda cada fotograma durante una interacción, como el scroll.
+- `CompilationMode.None()` simula la app sin optimizar; `CompilationMode.Partial()` aplica el Baseline Profile.
+
+El resultado muestra mínimo, mediana y máximo. Compara **medianas** entre variantes, no una sola ejecución.
+
+**Analogía:** es cronometrar una carrera diez veces con el mismo corredor, en la pista real, en lugar de una vez en el pasillo. La analogía falla en que el dispositivo también influye: compara siempre en el mismo teléfono.
+
+**Límite de uso:** no midas en builds de depuración. Las cifras de un emulador no representan un teléfono real de gama baja. Microbenchmark (otra librería) es para funciones sueltas; Macrobenchmark es para flujos completos.
+
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
+
+```kotlin
+package co.rutaflow.benchmark
+
+import androidx.benchmark.macro.CompilationMode
+import androidx.benchmark.macro.FrameTimingMetric
+import androidx.benchmark.macro.StartupMode
+import androidx.benchmark.macro.StartupTimingMetric
+import androidx.benchmark.macro.junit4.MacrobenchmarkRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class ArranqueBenchmark {
+    @get:Rule val regla = MacrobenchmarkRule()
+
+    @Test fun arranqueSinPerfil() = arranque(CompilationMode.None())
+    @Test fun arranqueConPerfil() = arranque(CompilationMode.Partial())
+
+    private fun arranque(modo: CompilationMode) = regla.measureRepeated(
+        packageName = "co.rutaflow.conductor",
+        metrics = listOf(StartupTimingMetric()),
+        compilationMode = modo,
+        startupMode = StartupMode.COLD,
+        iterations = 10,
+    ) { startActivityAndWait() }
+
+    @Test fun scrollListaEnvios() = regla.measureRepeated(
+        packageName = "co.rutaflow.conductor",
+        metrics = listOf(FrameTimingMetric()),
+        iterations = 5,
+        setupBlock = { startActivityAndWait() },
     ) {
-        drawLine(Color.Gray, Offset(0f, center.y), Offset(size.width, center.y), 8.dp.toPx())
-        drawCircle(Color.Blue, 12.dp.toPx(), Offset(size.width * valor, center.y))
+        val lista = device.findObject(By.res("lista_envios")) // testTag en Compose
+        lista.setGestureMargin(device.displayWidth / 5)
+        lista.fling(Direction.DOWN)
     }
 }
 ```
 
 ```bash
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-./gradlew :app:test
-./gradlew :app:connectedDebugAndroidTest
+./gradlew :macrobenchmark:connectedBenchmarkAndroidTest
+# resultados en macrobenchmark/build/outputs/connected_android_test_additional_output/
+```
+
+```text
+ArranqueBenchmark_arranqueSinPerfil
+timeToInitialDisplayMs   min 612,   median 655,   max 720
+ArranqueBenchmark_arranqueConPerfil
+timeToInitialDisplayMs   min 431,   median 462,   max 510
+(las cifras dependen del dispositivo; lo que importa es la diferencia entre medianas)
 ```
 
 </details>

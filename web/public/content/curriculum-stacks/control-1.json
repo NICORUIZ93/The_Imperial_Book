@@ -1,1 +1,1426 @@
-{"schemaVersion": 1, "stackId": "control-1", "modules": [{"id": "0", "kind": "current", "title": null, "topicCount": 1, "topics": [{"title": "Cómo está armado cada capítulo", "status": "actual", "current": {"module": "0", "order": 1, "fragment": "tema-1-como-esta-armado-cada-capitulo"}, "sources": [], "courseSources": []}]}, {"id": "1", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "¿Qué es un número complejo?", "status": "actual", "current": {"module": "1", "order": 1, "fragment": "tema-1-que-es-un-numero-complejo"}, "sources": [], "courseSources": []}, {"title": "Operaciones con números complejos: suma, producto y división", "status": "actual", "current": {"module": "1", "order": 2, "fragment": "tema-2-operaciones-con-numeros-complejos-suma-producto-y-division"}, "sources": [], "courseSources": []}, {"title": "Raíces de s²+bs+c", "status": "actual", "current": {"module": "1", "order": 3, "fragment": "tema-3-raices-de-s-bs-c"}, "sources": [], "courseSources": []}, {"title": "Forma polar, fórmula de Euler y evaluación de G(jω)", "status": "actual", "current": {"module": "1", "order": 4, "fragment": "tema-4-forma-polar-formula-de-euler-y-evaluacion-de-g-j"}, "sources": [], "courseSources": []}]}, {"id": "2", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "La idea de la transformada de Laplace: del tiempo al dominio s", "status": "actual", "current": {"module": "2", "order": 1, "fragment": "tema-1-la-idea-de-la-transformada-de-laplace-del-tiempo-al-dominio-s"}, "sources": [], "courseSources": []}, {"title": "La tabla de transformadas de Laplace", "status": "actual", "current": {"module": "2", "order": 2, "fragment": "tema-2-la-tabla-de-transformadas-de-laplace"}, "sources": [], "courseSources": []}, {"title": "Propiedades de la transformada de Laplace", "status": "actual", "current": {"module": "2", "order": 3, "fragment": "tema-3-propiedades-de-la-transformada-de-laplace"}, "sources": [], "courseSources": []}, {"title": "Valor final y valor inicial", "status": "actual", "current": {"module": "2", "order": 4, "fragment": "tema-4-valor-final-y-valor-inicial"}, "sources": [], "courseSources": []}]}, {"id": "3", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Caso 1: polos reales distintos", "status": "actual", "current": {"module": "3", "order": 1, "fragment": "tema-1-caso-1-polos-reales-distintos"}, "sources": [], "courseSources": []}, {"title": "Caso 2: polos repetidos", "status": "actual", "current": {"module": "3", "order": 2, "fragment": "tema-2-caso-2-polos-repetidos"}, "sources": [], "courseSources": []}, {"title": "Caso 3: polos complejos (completar el cuadrado)", "status": "actual", "current": {"module": "3", "order": 3, "fragment": "tema-3-caso-3-polos-complejos-completar-el-cuadrado"}, "sources": [], "courseSources": []}, {"title": "Resolver una ecuación diferencial completa", "status": "actual", "current": {"module": "3", "order": 4, "fragment": "tema-4-resolver-una-ecuacion-diferencial-completa"}, "sources": [], "courseSources": []}]}, {"id": "4", "kind": "current", "title": null, "topicCount": 1, "topics": [{"title": "Qué es la función de transferencia", "status": "actual", "current": {"module": "4", "order": 1, "fragment": "tema-1-que-es-la-funcion-de-transferencia"}, "sources": [], "courseSources": []}]}, {"id": "5", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "¿Qué es un sistema de control?", "status": "actual", "current": {"module": "5", "order": 1, "fragment": "tema-1-que-es-un-sistema-de-control"}, "sources": [], "courseSources": []}, {"title": "Los elementos de un lazo de control", "status": "actual", "current": {"module": "5", "order": 2, "fragment": "tema-2-los-elementos-de-un-lazo-de-control"}, "sources": [], "courseSources": []}, {"title": "Álgebra de bloques", "status": "actual", "current": {"module": "5", "order": 3, "fragment": "tema-3-algebra-de-bloques"}, "sources": [], "courseSources": []}]}, {"id": "6", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Reglas para mover bloques en un diagrama", "status": "actual", "current": {"module": "6", "order": 1, "fragment": "tema-1-reglas-para-mover-bloques-en-un-diagrama"}, "sources": [], "courseSources": []}, {"title": "Grafos de flujo de señal", "status": "actual", "current": {"module": "6", "order": 2, "fragment": "tema-2-grafos-de-flujo-de-senal"}, "sources": [], "courseSources": []}, {"title": "Regla de Mason", "status": "actual", "current": {"module": "6", "order": 3, "fragment": "tema-3-regla-de-mason"}, "sources": [], "courseSources": []}, {"title": "Referencia y perturbación juntas", "status": "actual", "current": {"module": "6", "order": 4, "fragment": "tema-4-referencia-y-perturbacion-juntas"}, "sources": [], "courseSources": []}]}, {"id": "7", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Impedancias de resistencia, bobina y condensador en s", "status": "actual", "current": {"module": "7", "order": 1, "fragment": "tema-1-impedancias-de-resistencia-bobina-y-condensador-en-s"}, "sources": [], "courseSources": []}, {"title": "Circuitos pasivos: divisor de voltaje", "status": "actual", "current": {"module": "7", "order": 2, "fragment": "tema-2-circuitos-pasivos-divisor-de-voltaje"}, "sources": [], "courseSources": []}, {"title": "El op-amp inversor", "status": "actual", "current": {"module": "7", "order": 3, "fragment": "tema-3-el-op-amp-inversor"}, "sources": [], "courseSources": []}]}, {"id": "8", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Mecánico de traslación", "status": "actual", "current": {"module": "8", "order": 1, "fragment": "tema-1-mecanico-de-traslacion"}, "sources": [], "courseSources": []}, {"title": "Mecánico de rotación", "status": "actual", "current": {"module": "8", "order": 2, "fragment": "tema-2-mecanico-de-rotacion"}, "sources": [], "courseSources": []}, {"title": "Motor DC (electromecánico)", "status": "actual", "current": {"module": "8", "order": 3, "fragment": "tema-3-motor-dc-electromecanico"}, "sources": [], "courseSources": []}, {"title": "Sistemas térmicos e hidráulicos", "status": "actual", "current": {"module": "8", "order": 4, "fragment": "tema-4-sistemas-termicos-e-hidraulicos"}, "sources": [], "courseSources": []}, {"title": "Analogías entre sistemas eléctricos, mecánicos y térmicos", "status": "actual", "current": {"module": "8", "order": 5, "fragment": "tema-5-analogias-entre-sistemas-electricos-mecanicos-y-termicos"}, "sources": [], "courseSources": []}]}, {"id": "9", "kind": "current", "title": null, "topicCount": 1, "topics": [{"title": "La idea de la linealización: aproximar con la recta tangente", "status": "actual", "current": {"module": "9", "order": 1, "fragment": "tema-1-la-idea-de-la-linealizacion-aproximar-con-la-recta-tangente"}, "sources": [], "courseSources": []}]}, {"id": "10", "kind": "current", "title": null, "topicCount": 2, "topics": [{"title": "La forma de espacio de estados", "status": "actual", "current": {"module": "10", "order": 1, "fragment": "tema-1-la-forma-de-espacio-de-estados"}, "sources": [], "courseSources": []}, {"title": "De estados a función de transferencia", "status": "actual", "current": {"module": "10", "order": 2, "fragment": "tema-2-de-estados-a-funcion-de-transferencia"}, "sources": [], "courseSources": []}]}, {"id": "11", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Forma estándar de primer orden: K y τ", "status": "actual", "current": {"module": "11", "order": 1, "fragment": "tema-1-forma-estandar-de-primer-orden-k-y"}, "sources": [], "courseSources": []}, {"title": "Respuestas de primer orden al escalón, la rampa y el impulso", "status": "actual", "current": {"module": "11", "order": 2, "fragment": "tema-2-respuestas-de-primer-orden-al-escalon-la-rampa-y-el-impulso"}, "sources": [], "courseSources": []}, {"title": "Retardo o tiempo muerto", "status": "actual", "current": {"module": "11", "order": 3, "fragment": "tema-3-retardo-o-tiempo-muerto"}, "sources": [], "courseSources": []}, {"title": "Identificación desde una gráfica", "status": "actual", "current": {"module": "11", "order": 4, "fragment": "tema-4-identificacion-desde-una-grafica"}, "sources": [], "courseSources": []}]}, {"id": "12", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Forma estándar de segundo orden: K, ωn y ζ", "status": "actual", "current": {"module": "12", "order": 1, "fragment": "tema-1-forma-estandar-de-segundo-orden-k-n-y"}, "sources": [], "courseSources": []}, {"title": "Simulador: mueve ζ y ωn", "status": "actual", "current": {"module": "12", "order": 2, "fragment": "tema-2-simulador-mueve-y-n"}, "sources": [], "courseSources": []}, {"title": "Los cuatro casos según ζ", "status": "actual", "current": {"module": "12", "order": 3, "fragment": "tema-3-los-cuatro-casos-segun"}, "sources": [], "courseSources": []}, {"title": "Fórmulas del caso subamortiguado", "status": "actual", "current": {"module": "12", "order": 4, "fragment": "tema-4-formulas-del-caso-subamortiguado"}, "sources": [], "courseSources": []}, {"title": "De las especificaciones a la función de transferencia", "status": "actual", "current": {"module": "12", "order": 5, "fragment": "tema-5-de-las-especificaciones-a-la-funcion-de-transferencia"}, "sources": [], "courseSources": []}]}, {"id": "13", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Polos dominantes", "status": "actual", "current": {"module": "13", "order": 1, "fragment": "tema-1-polos-dominantes"}, "sources": [], "courseSources": []}, {"title": "Efecto de un cero", "status": "actual", "current": {"module": "13", "order": 2, "fragment": "tema-2-efecto-de-un-cero"}, "sources": [], "courseSources": []}, {"title": "Cero de fase no mínima", "status": "actual", "current": {"module": "13", "order": 3, "fragment": "tema-3-cero-de-fase-no-minima"}, "sources": [], "courseSources": []}]}, {"id": "14", "kind": "current", "title": null, "topicCount": 2, "topics": [{"title": "Fórmula general del error en estado estacionario", "status": "actual", "current": {"module": "14", "order": 1, "fragment": "tema-1-formula-general-del-error-en-estado-estacionario"}, "sources": [], "courseSources": []}, {"title": "Tipo de sistema y constantes", "status": "actual", "current": {"module": "14", "order": 2, "fragment": "tema-2-tipo-de-sistema-y-constantes"}, "sources": [], "courseSources": []}]}, {"id": "15", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Qué es estabilidad", "status": "actual", "current": {"module": "15", "order": 1, "fragment": "tema-1-que-es-estabilidad"}, "sources": [], "courseSources": []}, {"title": "El arreglo de Routh", "status": "actual", "current": {"module": "15", "order": 2, "fragment": "tema-2-el-arreglo-de-routh"}, "sources": [], "courseSources": []}, {"title": "Casos especiales del arreglo de Routh", "status": "actual", "current": {"module": "15", "order": 3, "fragment": "tema-3-casos-especiales-del-arreglo-de-routh"}, "sources": [], "courseSources": []}, {"title": "Rango de K para estabilidad", "status": "actual", "current": {"module": "15", "order": 4, "fragment": "tema-4-rango-de-k-para-estabilidad"}, "sources": [], "courseSources": []}]}, {"id": "16", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Geometría de un polo en el plano s", "status": "actual", "current": {"module": "16", "order": 1, "fragment": "tema-1-geometria-de-un-polo-en-el-plano-s"}, "sources": [], "courseSources": []}, {"title": "Estabilidad según la posición de los polos", "status": "actual", "current": {"module": "16", "order": 2, "fragment": "tema-2-estabilidad-segun-la-posicion-de-los-polos"}, "sources": [], "courseSources": []}, {"title": "La zona de diseño", "status": "actual", "current": {"module": "16", "order": 3, "fragment": "tema-3-la-zona-de-diseno"}, "sources": [], "courseSources": []}]}, {"id": "17", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Las dos condiciones del lugar de las raíces", "status": "actual", "current": {"module": "17", "order": 1, "fragment": "tema-1-las-dos-condiciones-del-lugar-de-las-raices"}, "sources": [], "courseSources": []}, {"title": "Reglas de construcción (con su porqué)", "status": "actual", "current": {"module": "17", "order": 2, "fragment": "tema-2-reglas-de-construccion-con-su-porque"}, "sources": [], "courseSources": []}, {"title": "Elegir K desde el lugar de las raíces", "status": "actual", "current": {"module": "17", "order": 3, "fragment": "tema-3-elegir-k-desde-el-lugar-de-las-raices"}, "sources": [], "courseSources": []}]}, {"id": "18", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "La idea de las acciones P, I y D: presente, pasado y tendencia", "status": "actual", "current": {"module": "18", "order": 1, "fragment": "tema-1-la-idea-de-las-acciones-p-i-y-d-presente-pasado-y-tendencia"}, "sources": [], "courseSources": []}, {"title": "Error en estado estacionario", "status": "actual", "current": {"module": "18", "order": 2, "fragment": "tema-2-error-en-estado-estacionario"}, "sources": [], "courseSources": []}, {"title": "Cada acción, con números", "status": "actual", "current": {"module": "18", "order": 3, "fragment": "tema-3-cada-accion-con-numeros"}, "sources": [], "courseSources": []}, {"title": "Ventajas y desventajas (punto 4 del Parcial 1)", "status": "actual", "current": {"module": "18", "order": 4, "fragment": "tema-4-ventajas-y-desventajas-punto-4-del-parcial-1"}, "sources": [], "courseSources": []}, {"title": "Sintonía de Ziegler-Nichols", "status": "actual", "current": {"module": "18", "order": 5, "fragment": "tema-5-sintonia-de-ziegler-nichols"}, "sources": [], "courseSources": []}]}, {"id": "19", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Diseño de un adelanto", "status": "actual", "current": {"module": "19", "order": 1, "fragment": "tema-1-diseno-de-un-adelanto"}, "sources": [], "courseSources": []}, {"title": "Diseño de un atraso", "status": "actual", "current": {"module": "19", "order": 2, "fragment": "tema-2-diseno-de-un-atraso"}, "sources": [], "courseSources": []}, {"title": "Implementación con op-amps", "status": "actual", "current": {"module": "19", "order": 3, "fragment": "tema-3-implementacion-con-op-amps"}, "sources": [], "courseSources": []}]}, {"id": "20", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Qué es la respuesta en frecuencia", "status": "actual", "current": {"module": "20", "order": 1, "fragment": "tema-1-que-es-la-respuesta-en-frecuencia"}, "sources": [], "courseSources": []}, {"title": "Decibeles y la escala logarítmica", "status": "actual", "current": {"module": "20", "order": 2, "fragment": "tema-2-decibeles-y-la-escala-logaritmica"}, "sources": [], "courseSources": []}, {"title": "Los bloques básicos del diagrama de Bode", "status": "actual", "current": {"module": "20", "order": 3, "fragment": "tema-3-los-bloques-basicos-del-diagrama-de-bode"}, "sources": [], "courseSources": []}, {"title": "Márgenes de estabilidad", "status": "actual", "current": {"module": "20", "order": 4, "fragment": "tema-4-margenes-de-estabilidad"}, "sources": [], "courseSources": []}]}, {"id": "21", "kind": "current", "title": null, "topicCount": 1, "topics": [{"title": "Parcial 1 resuelto paso a paso", "status": "actual", "current": {"module": "21", "order": 1, "fragment": "tema-1-parcial-1-resuelto-paso-a-paso"}, "sources": [], "courseSources": []}]}, {"id": "22", "kind": "current", "title": null, "topicCount": 1, "topics": [{"title": "Simulacro con solución", "status": "actual", "current": {"module": "22", "order": 1, "fragment": "tema-1-simulacro-con-solucion"}, "sources": [], "courseSources": []}]}, {"id": "23", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Del Bode al diagrama polar", "status": "actual", "current": {"module": "23", "order": 1, "fragment": "tema-1-del-bode-al-diagrama-polar"}, "sources": [], "courseSources": []}, {"title": "El criterio Z = N + P", "status": "actual", "current": {"module": "23", "order": 2, "fragment": "tema-2-el-criterio-z-n-p"}, "sources": [], "courseSources": []}, {"title": "Polos en el origen y estabilidad relativa", "status": "actual", "current": {"module": "23", "order": 3, "fragment": "tema-3-polos-en-el-origen-y-estabilidad-relativa"}, "sources": [], "courseSources": []}]}, {"id": "24", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Compensador de adelanto por margen de fase", "status": "actual", "current": {"module": "24", "order": 1, "fragment": "tema-1-compensador-de-adelanto-por-margen-de-fase"}, "sources": [], "courseSources": []}, {"title": "Compensador de atraso por margen de fase", "status": "actual", "current": {"module": "24", "order": 2, "fragment": "tema-2-compensador-de-atraso-por-margen-de-fase"}, "sources": [], "courseSources": []}, {"title": "Atraso-adelanto y sensibilidad", "status": "actual", "current": {"module": "24", "order": 3, "fragment": "tema-3-atraso-adelanto-y-sensibilidad"}, "sources": [], "courseSources": []}]}, {"id": "25", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Controlabilidad", "status": "actual", "current": {"module": "25", "order": 1, "fragment": "tema-1-controlabilidad"}, "sources": [], "courseSources": []}, {"title": "Observabilidad", "status": "actual", "current": {"module": "25", "order": 2, "fragment": "tema-2-observabilidad"}, "sources": [], "courseSources": []}, {"title": "Ubicación de polos por realimentación de estados", "status": "actual", "current": {"module": "25", "order": 3, "fragment": "tema-3-ubicacion-de-polos-por-realimentacion-de-estados"}, "sources": [], "courseSources": []}]}, {"id": "26", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "El observador de orden completo", "status": "actual", "current": {"module": "26", "order": 1, "fragment": "tema-1-el-observador-de-orden-completo"}, "sources": [], "courseSources": []}, {"title": "Elige la velocidad del observador", "status": "actual", "current": {"module": "26", "order": 2, "fragment": "tema-2-elige-la-velocidad-del-observador"}, "sources": [], "courseSources": []}, {"title": "Controlador con observador", "status": "actual", "current": {"module": "26", "order": 3, "fragment": "tema-3-controlador-con-observador"}, "sources": [], "courseSources": []}]}, {"id": "27", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Igualación de modelos", "status": "actual", "current": {"module": "27", "order": 1, "fragment": "tema-1-igualacion-de-modelos"}, "sources": [], "courseSources": []}, {"title": "Ubicación de polos con la ecuación diofántica", "status": "actual", "current": {"module": "27", "order": 2, "fragment": "tema-2-ubicacion-de-polos-con-la-ecuacion-diofantica"}, "sources": [], "courseSources": []}, {"title": "Compensador de dos parámetros", "status": "actual", "current": {"module": "27", "order": 3, "fragment": "tema-3-compensador-de-dos-parametros"}, "sources": [], "courseSources": []}]}, {"id": "28", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Bloque A — frecuencia (puntos 1 a 3)", "status": "actual", "current": {"module": "28", "order": 1, "fragment": "tema-1-bloque-a-frecuencia-puntos-1-a-3"}, "sources": [], "courseSources": []}, {"title": "Bloque B — estado y método algebraico (puntos 4 a 6)", "status": "actual", "current": {"module": "28", "order": 2, "fragment": "tema-2-bloque-b-estado-y-metodo-algebraico-puntos-4-a-6"}, "sources": [], "courseSources": []}, {"title": "Corrige con python-control y planea el repaso", "status": "actual", "current": {"module": "28", "order": 3, "fragment": "tema-3-corrige-con-python-control-y-planea-el-repaso"}, "sources": [], "courseSources": []}]}, {"id": "29", "kind": "current", "title": null, "topicCount": 17, "topics": [{"title": "Matemáticas aplicadas: derivada, integral y modelos", "status": "actual", "current": {"module": "29", "order": 1, "fragment": "tema-1-matematicas-aplicadas-derivada-integral-y-modelos"}, "sources": [], "courseSources": []}, {"title": "Circuitos DC y AC: Kirchhoff, Thévenin y Norton", "status": "actual", "current": {"module": "29", "order": 2, "fragment": "tema-2-circuitos-dc-y-ac-kirchhoff-thevenin-y-norton"}, "sources": [], "courseSources": []}, {"title": "Electrónica analógica: diodos, transistores y amplificadores", "status": "actual", "current": {"module": "29", "order": 3, "fragment": "tema-3-electronica-analogica-diodos-transistores-y-amplificadores"}, "sources": [], "courseSources": []}, {"title": "Electrónica digital: lógica y máquinas de estados", "status": "actual", "current": {"module": "29", "order": 4, "fragment": "tema-4-electronica-digital-logica-y-maquinas-de-estados"}, "sources": [], "courseSources": []}, {"title": "Microcontroladores: GPIO, ADC, PWM e interrupciones", "status": "actual", "current": {"module": "29", "order": 5, "fragment": "tema-5-microcontroladores-gpio-adc-pwm-e-interrupciones"}, "sources": [], "courseSources": []}, {"title": "Comunicaciones: modulación y detección de errores", "status": "actual", "current": {"module": "29", "order": 6, "fragment": "tema-6-comunicaciones-modulacion-y-deteccion-de-errores"}, "sources": [], "courseSources": []}, {"title": "Señales y sistemas: muestreo, Fourier y convolución", "status": "actual", "current": {"module": "29", "order": 7, "fragment": "tema-7-senales-y-sistemas-muestreo-fourier-y-convolucion"}, "sources": [], "courseSources": []}, {"title": "DSP: filtros digitales y compresión", "status": "actual", "current": {"module": "29", "order": 8, "fragment": "tema-8-dsp-filtros-digitales-y-compresion"}, "sources": [], "courseSources": []}, {"title": "Instrumentación: calibración, DAQ e incertidumbre", "status": "actual", "current": {"module": "29", "order": 9, "fragment": "tema-9-instrumentacion-calibracion-daq-e-incertidumbre"}, "sources": [], "courseSources": []}, {"title": "Control automático: realimentación, PID y estabilidad", "status": "actual", "current": {"module": "29", "order": 10, "fragment": "tema-10-control-automatico-realimentacion-pid-y-estabilidad"}, "sources": [], "courseSources": []}, {"title": "Potencia: conversión, eficiencia y disipación", "status": "actual", "current": {"module": "29", "order": 11, "fragment": "tema-11-potencia-conversion-eficiencia-y-disipacion"}, "sources": [], "courseSources": []}, {"title": "PCB: esquemático, ERC, DRC y fabricación", "status": "actual", "current": {"module": "29", "order": 12, "fragment": "tema-12-pcb-esquematico-erc-drc-y-fabricacion"}, "sources": [], "courseSources": []}, {"title": "Sistemas embebidos: RTOS, buses y firmware", "status": "actual", "current": {"module": "29", "order": 13, "fragment": "tema-13-sistemas-embebidos-rtos-buses-y-firmware"}, "sources": [], "courseSources": []}, {"title": "Programación de bajo nivel: C, memoria y depuración", "status": "actual", "current": {"module": "29", "order": 14, "fragment": "tema-14-programacion-de-bajo-nivel-c-memoria-y-depuracion"}, "sources": [], "courseSources": []}, {"title": "Electromagnetismo: Faraday y líneas de transmisión", "status": "actual", "current": {"module": "29", "order": 15, "fragment": "tema-15-electromagnetismo-faraday-y-lineas-de-transmision"}, "sources": [], "courseSources": []}, {"title": "Gestión profesional: requisitos, riesgos y evidencia", "status": "actual", "current": {"module": "29", "order": 16, "fragment": "tema-16-gestion-profesional-requisitos-riesgos-y-evidencia"}, "sources": [], "courseSources": []}, {"title": "PLC y control industrial: ciclo de scan e IEC 61131-3", "status": "actual", "current": {"module": "29", "order": 17, "fragment": "tema-17-plc-y-control-industrial-ciclo-de-scan-e-iec-61131-3"}, "sources": [], "courseSources": []}]}], "books": [], "courses": [], "booksRequiringOcr": []}
+{
+ "schemaVersion": 1,
+ "stackId": "control-1",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 1,
+   "topics": [
+    {
+     "title": "Cómo está armado cada capítulo",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-como-esta-armado-cada-capitulo"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "¿Qué es un número complejo?",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-que-es-un-numero-complejo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Operaciones con números complejos: suma, producto y división",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-operaciones-con-numeros-complejos-suma-producto-y-division"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Raíces de s²+bs+c",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-raices-de-s-bs-c"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Forma polar, fórmula de Euler y evaluación de G(jω)",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-forma-polar-formula-de-euler-y-evaluacion-de-g-j"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "La idea de la transformada de Laplace: del tiempo al dominio s",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-la-idea-de-la-transformada-de-laplace-del-tiempo-al-dominio-s"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "La tabla de transformadas de Laplace",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-la-tabla-de-transformadas-de-laplace"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Propiedades de la transformada de Laplace",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-propiedades-de-la-transformada-de-laplace"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Valor final y valor inicial",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-valor-final-y-valor-inicial"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Caso 1: polos reales distintos",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-caso-1-polos-reales-distintos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Caso 2: polos repetidos",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "tema-2-caso-2-polos-repetidos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Caso 3: polos complejos (completar el cuadrado)",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "tema-3-caso-3-polos-complejos-completar-el-cuadrado"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Resolver una ecuación diferencial completa",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-resolver-una-ecuacion-diferencial-completa"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "kind": "current",
+   "title": null,
+   "topicCount": 1,
+   "topics": [
+    {
+     "title": "Qué es la función de transferencia",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 1,
+      "fragment": "tema-1-que-es-la-funcion-de-transferencia"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "¿Qué es un sistema de control?",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 1,
+      "fragment": "tema-1-que-es-un-sistema-de-control"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Los elementos de un lazo de control",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 2,
+      "fragment": "tema-2-los-elementos-de-un-lazo-de-control"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Álgebra de bloques",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 3,
+      "fragment": "tema-3-algebra-de-bloques"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Reglas para mover bloques en un diagrama",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 1,
+      "fragment": "tema-1-reglas-para-mover-bloques-en-un-diagrama"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Grafos de flujo de señal",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 2,
+      "fragment": "tema-2-grafos-de-flujo-de-senal"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Regla de Mason",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 3,
+      "fragment": "tema-3-regla-de-mason"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Referencia y perturbación juntas",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 4,
+      "fragment": "tema-4-referencia-y-perturbacion-juntas"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Impedancias de resistencia, bobina y condensador en s",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 1,
+      "fragment": "tema-1-impedancias-de-resistencia-bobina-y-condensador-en-s"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Circuitos pasivos: divisor de voltaje",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 2,
+      "fragment": "tema-2-circuitos-pasivos-divisor-de-voltaje"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "El op-amp inversor",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 3,
+      "fragment": "tema-3-el-op-amp-inversor"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "El op-amp no inversor y el regulador de tensión en serie",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 4,
+      "fragment": "tema-4-el-op-amp-no-inversor-y-el-regulador-de-tension-en-serie"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Mecánico de traslación",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 1,
+      "fragment": "tema-1-mecanico-de-traslacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Mecánico de rotación",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 2,
+      "fragment": "tema-2-mecanico-de-rotacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Motor DC (electromecánico)",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 3,
+      "fragment": "tema-3-motor-dc-electromecanico"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sistemas térmicos e hidráulicos",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 4,
+      "fragment": "tema-4-sistemas-termicos-e-hidraulicos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Analogías entre sistemas eléctricos, mecánicos y térmicos",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 5,
+      "fragment": "tema-5-analogias-entre-sistemas-electricos-mecanicos-y-termicos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ejercicio resuelto: circuito RLC con dos fuentes",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 6,
+      "fragment": "tema-6-ejercicio-resuelto-circuito-rlc-con-dos-fuentes"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "kind": "current",
+   "title": null,
+   "topicCount": 1,
+   "topics": [
+    {
+     "title": "La idea de la linealización: aproximar con la recta tangente",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 1,
+      "fragment": "tema-1-la-idea-de-la-linealizacion-aproximar-con-la-recta-tangente"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "kind": "current",
+   "title": null,
+   "topicCount": 2,
+   "topics": [
+    {
+     "title": "La forma de espacio de estados",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 1,
+      "fragment": "tema-1-la-forma-de-espacio-de-estados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "De estados a función de transferencia",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 2,
+      "fragment": "tema-2-de-estados-a-funcion-de-transferencia"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Forma estándar de primer orden: K y τ",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 1,
+      "fragment": "tema-1-forma-estandar-de-primer-orden-k-y"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Respuestas de primer orden al escalón, la rampa y el impulso",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 2,
+      "fragment": "tema-2-respuestas-de-primer-orden-al-escalon-la-rampa-y-el-impulso"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Retardo o tiempo muerto",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 3,
+      "fragment": "tema-3-retardo-o-tiempo-muerto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Identificación desde una gráfica",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 4,
+      "fragment": "tema-4-identificacion-desde-una-grafica"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Forma estándar de segundo orden: K, ωn y ζ",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 1,
+      "fragment": "tema-1-forma-estandar-de-segundo-orden-k-n-y"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Simulador: mueve ζ y ωn",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 2,
+      "fragment": "tema-2-simulador-mueve-y-n"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Los cuatro casos según ζ",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 3,
+      "fragment": "tema-3-los-cuatro-casos-segun"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fórmulas del caso subamortiguado",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 4,
+      "fragment": "tema-4-formulas-del-caso-subamortiguado"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "De las especificaciones a la función de transferencia",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 5,
+      "fragment": "tema-5-de-las-especificaciones-a-la-funcion-de-transferencia"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Polos dominantes",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 1,
+      "fragment": "tema-1-polos-dominantes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Efecto de un cero",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 2,
+      "fragment": "tema-2-efecto-de-un-cero"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cero de fase no mínima",
+     "status": "actual",
+     "current": {
+      "module": "13",
+      "order": 3,
+      "fragment": "tema-3-cero-de-fase-no-minima"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "kind": "current",
+   "title": null,
+   "topicCount": 2,
+   "topics": [
+    {
+     "title": "Fórmula general del error en estado estacionario",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 1,
+      "fragment": "tema-1-formula-general-del-error-en-estado-estacionario"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Tipo de sistema y constantes",
+     "status": "actual",
+     "current": {
+      "module": "14",
+      "order": 2,
+      "fragment": "tema-2-tipo-de-sistema-y-constantes"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "15",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Qué es estabilidad",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 1,
+      "fragment": "tema-1-que-es-estabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "El arreglo de Routh",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 2,
+      "fragment": "tema-2-el-arreglo-de-routh"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Casos especiales del arreglo de Routh",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 3,
+      "fragment": "tema-3-casos-especiales-del-arreglo-de-routh"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rango de K para estabilidad",
+     "status": "actual",
+     "current": {
+      "module": "15",
+      "order": 4,
+      "fragment": "tema-4-rango-de-k-para-estabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "16",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Geometría de un polo en el plano s",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 1,
+      "fragment": "tema-1-geometria-de-un-polo-en-el-plano-s"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estabilidad según la posición de los polos",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 2,
+      "fragment": "tema-2-estabilidad-segun-la-posicion-de-los-polos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "La zona de diseño",
+     "status": "actual",
+     "current": {
+      "module": "16",
+      "order": 3,
+      "fragment": "tema-3-la-zona-de-diseno"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "17",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Las dos condiciones del lugar de las raíces",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 1,
+      "fragment": "tema-1-las-dos-condiciones-del-lugar-de-las-raices"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Reglas de construcción (con su porqué)",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 2,
+      "fragment": "tema-2-reglas-de-construccion-con-su-porque"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Elegir K desde el lugar de las raíces",
+     "status": "actual",
+     "current": {
+      "module": "17",
+      "order": 3,
+      "fragment": "tema-3-elegir-k-desde-el-lugar-de-las-raices"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "18",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "La idea de las acciones P, I y D: presente, pasado y tendencia",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 1,
+      "fragment": "tema-1-la-idea-de-las-acciones-p-i-y-d-presente-pasado-y-tendencia"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Error en estado estacionario",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 2,
+      "fragment": "tema-2-error-en-estado-estacionario"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cada acción, con números",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 3,
+      "fragment": "tema-3-cada-accion-con-numeros"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ventajas y desventajas (punto 4 del Parcial 1)",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 4,
+      "fragment": "tema-4-ventajas-y-desventajas-punto-4-del-parcial-1"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sintonía de Ziegler-Nichols",
+     "status": "actual",
+     "current": {
+      "module": "18",
+      "order": 5,
+      "fragment": "tema-5-sintonia-de-ziegler-nichols"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "19",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Diseño de un adelanto",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 1,
+      "fragment": "tema-1-diseno-de-un-adelanto"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Diseño de un atraso",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 2,
+      "fragment": "tema-2-diseno-de-un-atraso"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Implementación con op-amps",
+     "status": "actual",
+     "current": {
+      "module": "19",
+      "order": 3,
+      "fragment": "tema-3-implementacion-con-op-amps"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "20",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Qué es la respuesta en frecuencia",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 1,
+      "fragment": "tema-1-que-es-la-respuesta-en-frecuencia"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Decibeles y la escala logarítmica",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 2,
+      "fragment": "tema-2-decibeles-y-la-escala-logaritmica"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Los bloques básicos del diagrama de Bode",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 3,
+      "fragment": "tema-3-los-bloques-basicos-del-diagrama-de-bode"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Márgenes de estabilidad",
+     "status": "actual",
+     "current": {
+      "module": "20",
+      "order": 4,
+      "fragment": "tema-4-margenes-de-estabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "21",
+   "kind": "current",
+   "title": null,
+   "topicCount": 1,
+   "topics": [
+    {
+     "title": "Parcial 1 resuelto paso a paso",
+     "status": "actual",
+     "current": {
+      "module": "21",
+      "order": 1,
+      "fragment": "tema-1-parcial-1-resuelto-paso-a-paso"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "22",
+   "kind": "current",
+   "title": null,
+   "topicCount": 1,
+   "topics": [
+    {
+     "title": "Simulacro con solución",
+     "status": "actual",
+     "current": {
+      "module": "22",
+      "order": 1,
+      "fragment": "tema-1-simulacro-con-solucion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "23",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Del Bode al diagrama polar",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 1,
+      "fragment": "tema-1-del-bode-al-diagrama-polar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "El criterio Z = N + P",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 2,
+      "fragment": "tema-2-el-criterio-z-n-p"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Polos en el origen y estabilidad relativa",
+     "status": "actual",
+     "current": {
+      "module": "23",
+      "order": 3,
+      "fragment": "tema-3-polos-en-el-origen-y-estabilidad-relativa"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "24",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Compensador de adelanto por margen de fase",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 1,
+      "fragment": "tema-1-compensador-de-adelanto-por-margen-de-fase"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compensador de atraso por margen de fase",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 2,
+      "fragment": "tema-2-compensador-de-atraso-por-margen-de-fase"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Atraso-adelanto y sensibilidad",
+     "status": "actual",
+     "current": {
+      "module": "24",
+      "order": 3,
+      "fragment": "tema-3-atraso-adelanto-y-sensibilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "25",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Controlabilidad",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 1,
+      "fragment": "tema-1-controlabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Observabilidad",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 2,
+      "fragment": "tema-2-observabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ubicación de polos por realimentación de estados",
+     "status": "actual",
+     "current": {
+      "module": "25",
+      "order": 3,
+      "fragment": "tema-3-ubicacion-de-polos-por-realimentacion-de-estados"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "26",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "El observador de orden completo",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 1,
+      "fragment": "tema-1-el-observador-de-orden-completo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Elige la velocidad del observador",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 2,
+      "fragment": "tema-2-elige-la-velocidad-del-observador"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Controlador con observador",
+     "status": "actual",
+     "current": {
+      "module": "26",
+      "order": 3,
+      "fragment": "tema-3-controlador-con-observador"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "27",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Igualación de modelos",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 1,
+      "fragment": "tema-1-igualacion-de-modelos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ubicación de polos con la ecuación diofántica",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 2,
+      "fragment": "tema-2-ubicacion-de-polos-con-la-ecuacion-diofantica"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compensador de dos parámetros",
+     "status": "actual",
+     "current": {
+      "module": "27",
+      "order": 3,
+      "fragment": "tema-3-compensador-de-dos-parametros"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "28",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Bloque A — frecuencia (puntos 1 a 3)",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 1,
+      "fragment": "tema-1-bloque-a-frecuencia-puntos-1-a-3"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Bloque B — estado y método algebraico (puntos 4 a 6)",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 2,
+      "fragment": "tema-2-bloque-b-estado-y-metodo-algebraico-puntos-4-a-6"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Corrige con python-control y planea el repaso",
+     "status": "actual",
+     "current": {
+      "module": "28",
+      "order": 3,
+      "fragment": "tema-3-corrige-con-python-control-y-planea-el-repaso"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "29",
+   "kind": "current",
+   "title": null,
+   "topicCount": 17,
+   "topics": [
+    {
+     "title": "Matemáticas aplicadas: derivada, integral y modelos",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 1,
+      "fragment": "tema-1-matematicas-aplicadas-derivada-integral-y-modelos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Circuitos DC y AC: Kirchhoff, Thévenin y Norton",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 2,
+      "fragment": "tema-2-circuitos-dc-y-ac-kirchhoff-thevenin-y-norton"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Electrónica analógica: diodos, transistores y amplificadores",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 3,
+      "fragment": "tema-3-electronica-analogica-diodos-transistores-y-amplificadores"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Electrónica digital: lógica y máquinas de estados",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 4,
+      "fragment": "tema-4-electronica-digital-logica-y-maquinas-de-estados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Microcontroladores: GPIO, ADC, PWM e interrupciones",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 5,
+      "fragment": "tema-5-microcontroladores-gpio-adc-pwm-e-interrupciones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Comunicaciones: modulación y detección de errores",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 6,
+      "fragment": "tema-6-comunicaciones-modulacion-y-deteccion-de-errores"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Señales y sistemas: muestreo, Fourier y convolución",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 7,
+      "fragment": "tema-7-senales-y-sistemas-muestreo-fourier-y-convolucion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "DSP: filtros digitales y compresión",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 8,
+      "fragment": "tema-8-dsp-filtros-digitales-y-compresion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Instrumentación: calibración, DAQ e incertidumbre",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 9,
+      "fragment": "tema-9-instrumentacion-calibracion-daq-e-incertidumbre"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Control automático: realimentación, PID y estabilidad",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 10,
+      "fragment": "tema-10-control-automatico-realimentacion-pid-y-estabilidad"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Potencia: conversión, eficiencia y disipación",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 11,
+      "fragment": "tema-11-potencia-conversion-eficiencia-y-disipacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "PCB: esquemático, ERC, DRC y fabricación",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 12,
+      "fragment": "tema-12-pcb-esquematico-erc-drc-y-fabricacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sistemas embebidos: RTOS, buses y firmware",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 13,
+      "fragment": "tema-13-sistemas-embebidos-rtos-buses-y-firmware"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Programación de bajo nivel: C, memoria y depuración",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 14,
+      "fragment": "tema-14-programacion-de-bajo-nivel-c-memoria-y-depuracion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Electromagnetismo: Faraday y líneas de transmisión",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 15,
+      "fragment": "tema-15-electromagnetismo-faraday-y-lineas-de-transmision"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Gestión profesional: requisitos, riesgos y evidencia",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 16,
+      "fragment": "tema-16-gestion-profesional-requisitos-riesgos-y-evidencia"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "PLC y control industrial: ciclo de scan e IEC 61131-3",
+     "status": "actual",
+     "current": {
+      "module": "29",
+      "order": 17,
+      "fragment": "tema-17-plc-y-control-industrial-ciclo-de-scan-e-iec-61131-3"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

@@ -1,1 +1,713 @@
-{"schemaVersion": 1, "stackId": "kotlin-multiplatform", "modules": [{"id": "0", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "Null safety real", "status": "actual", "current": {"module": "0", "order": 1, "fragment": "tema-1-null-safety-real"}, "sources": [], "courseSources": []}, {"title": "data class y funciones de extensión", "status": "actual", "current": {"module": "0", "order": 2, "fragment": "tema-2-data-class-y-funciones-de-extension"}, "sources": [], "courseSources": []}, {"title": "when como expresión", "status": "actual", "current": {"module": "0", "order": 3, "fragment": "tema-3-when-como-expresion"}, "sources": [], "courseSources": []}, {"title": "Destructuring declarations y rangos", "status": "actual", "current": {"module": "0", "order": 4, "fragment": "tema-4-destructuring-declarations-y-rangos"}, "sources": [], "courseSources": []}]}, {"id": "1", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Funciones de orden superior", "status": "actual", "current": {"module": "1", "order": 1, "fragment": "tema-1-funciones-de-orden-superior"}, "sources": [], "courseSources": []}, {"title": "Scope functions", "status": "actual", "current": {"module": "1", "order": 2, "fragment": "tema-2-scope-functions"}, "sources": [], "courseSources": []}, {"title": "Sealed classes y colecciones funcionales", "status": "actual", "current": {"module": "1", "order": 3, "fragment": "tema-3-sealed-classes-y-colecciones-funcionales"}, "sources": [], "courseSources": []}, {"title": "Lambdas con receptor y builders tipo DSL", "status": "actual", "current": {"module": "1", "order": 4, "fragment": "tema-4-lambdas-con-receptor-y-builders-tipo-dsl"}, "sources": [], "courseSources": []}, {"title": "Genéricos en Kotlin: varianza con in y out, restricciones y reified", "status": "actual", "current": {"module": "1", "order": 5, "fragment": "tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"}, "sources": [], "courseSources": []}]}, {"id": "2", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "suspend functions y concurrencia estructurada", "status": "actual", "current": {"module": "2", "order": 1, "fragment": "tema-1-suspend-functions-y-concurrencia-estructurada"}, "sources": [], "courseSources": []}, {"title": "Flow, StateFlow y SharedFlow", "status": "actual", "current": {"module": "2", "order": 2, "fragment": "tema-2-flow-stateflow-y-sharedflow"}, "sources": [], "courseSources": []}, {"title": "Manejo de errores y exclusión mutua", "status": "actual", "current": {"module": "2", "order": 3, "fragment": "tema-3-manejo-de-errores-y-exclusion-mutua"}, "sources": [], "courseSources": []}, {"title": "Dispatchers y withContext: en qué hilo corre tu código", "status": "actual", "current": {"module": "2", "order": 4, "fragment": "tema-4-dispatchers-y-withcontext-en-que-hilo-corre-tu-codigo"}, "sources": [], "courseSources": []}]}, {"id": "3", "kind": "current", "title": null, "topicCount": 6, "topics": [{"title": "Source sets", "status": "actual", "current": {"module": "3", "order": 1, "fragment": "tema-1-source-sets"}, "sources": [], "courseSources": []}, {"title": "expect/actual", "status": "actual", "current": {"module": "3", "order": 2, "fragment": "tema-2-expect-actual"}, "sources": [], "courseSources": []}, {"title": "Gradle multiplataforma y targets disponibles", "status": "actual", "current": {"module": "3", "order": 3, "fragment": "tema-3-gradle-multiplataforma-y-targets-disponibles"}, "sources": [], "courseSources": []}, {"title": "Jerarquía de source sets intermedios", "status": "actual", "current": {"module": "3", "order": 4, "fragment": "tema-4-jerarquia-de-source-sets-intermedios"}, "sources": [], "courseSources": []}, {"title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle", "status": "actual", "current": {"module": "3", "order": 5, "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"}, "sources": [], "courseSources": []}, {"title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común", "status": "actual", "current": {"module": "3", "order": 6, "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"}, "sources": [], "courseSources": []}]}, {"id": "4", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Modelos de dominio y casos de uso", "status": "actual", "current": {"module": "4", "order": 1, "fragment": "tema-1-modelos-de-dominio-y-casos-de-uso"}, "sources": [], "courseSources": []}, {"title": "Repositorios con interfaz común", "status": "actual", "current": {"module": "4", "order": 2, "fragment": "tema-2-repositorios-con-interfaz-comun"}, "sources": [], "courseSources": []}, {"title": "Inyección de dependencias multiplataforma con Koin", "status": "actual", "current": {"module": "4", "order": 3, "fragment": "tema-3-inyeccion-de-dependencias-multiplataforma-con-koin"}, "sources": [], "courseSources": []}, {"title": "Modelado de errores de dominio con un tipo Result explícito", "status": "actual", "current": {"module": "4", "order": 4, "fragment": "tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito"}, "sources": [], "courseSources": []}, {"title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global", "status": "actual", "current": {"module": "4", "order": 5, "fragment": "tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"}, "sources": [], "courseSources": []}]}, {"id": "5", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Ktor Client multiplataforma", "status": "actual", "current": {"module": "5", "order": 1, "fragment": "tema-1-ktor-client-multiplataforma"}, "sources": [], "courseSources": []}, {"title": "Manejo de errores de red con un tipo explícito", "status": "actual", "current": {"module": "5", "order": 2, "fragment": "tema-2-manejo-de-errores-de-red-con-un-tipo-explicito"}, "sources": [], "courseSources": []}, {"title": "Interceptores y autenticación", "status": "actual", "current": {"module": "5", "order": 3, "fragment": "tema-3-interceptores-y-autenticacion"}, "sources": [], "courseSources": []}, {"title": "Reintentos con backoff exponencial", "status": "actual", "current": {"module": "5", "order": 4, "fragment": "tema-4-reintentos-con-backoff-exponencial"}, "sources": [], "courseSources": []}, {"title": "kotlinx.serialization — JSON compartido entre plataformas", "status": "actual", "current": {"module": "5", "order": 5, "fragment": "tema-5-kotlinx-serialization-json-compartido-entre-plataformas"}, "sources": [], "courseSources": []}]}, {"id": "6", "kind": "current", "title": null, "topicCount": 5, "topics": [{"title": "Esquemas SQLDelight y queries tipadas", "status": "actual", "current": {"module": "6", "order": 1, "fragment": "tema-1-esquemas-sqldelight-y-queries-tipadas"}, "sources": [], "courseSources": []}, {"title": "Drivers por plataforma", "status": "actual", "current": {"module": "6", "order": 2, "fragment": "tema-2-drivers-por-plataforma"}, "sources": [], "courseSources": []}, {"title": "Migraciones de esquema", "status": "actual", "current": {"module": "6", "order": 3, "fragment": "tema-3-migraciones-de-esquema"}, "sources": [], "courseSources": []}, {"title": "Transacciones: atomicidad en operaciones multi-tabla", "status": "actual", "current": {"module": "6", "order": 4, "fragment": "tema-4-transacciones-atomicidad-en-operaciones-multi-tabla"}, "sources": [], "courseSources": []}, {"title": "Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común", "status": "actual", "current": {"module": "6", "order": 5, "fragment": "tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"}, "sources": [], "courseSources": []}]}, {"id": "7", "kind": "current", "title": null, "topicCount": 8, "topics": [{"title": "Compose Multiplatform vs Jetpack Compose", "status": "actual", "current": {"module": "7", "order": 1, "fragment": "tema-1-compose-multiplatform-vs-jetpack-compose"}, "sources": [], "courseSources": []}, {"title": "Estado y recomposición — mutableStateOf y por qué la UI se redibuja", "status": "actual", "current": {"module": "7", "order": 2, "fragment": "tema-2-estado-y-recomposicion-mutablestateof-y-por-que-la-ui-se-redibuja"}, "sources": [], "courseSources": []}, {"title": "Theming y navegación compartidos", "status": "actual", "current": {"module": "7", "order": 3, "fragment": "tema-3-theming-y-navegacion-compartidos"}, "sources": [], "courseSources": []}, {"title": "Limitaciones en iOS y otros targets", "status": "actual", "current": {"module": "7", "order": 4, "fragment": "tema-4-limitaciones-en-ios-y-otros-targets"}, "sources": [], "courseSources": []}, {"title": "Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes", "status": "actual", "current": {"module": "7", "order": 5, "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"}, "sources": [], "courseSources": []}, {"title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver", "status": "actual", "current": {"module": "7", "order": 6, "fragment": "tema-6-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"}, "sources": [], "courseSources": []}, {"title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app", "status": "actual", "current": {"module": "7", "order": 7, "fragment": "tema-7-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"}, "sources": [], "courseSources": []}, {"title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace", "status": "actual", "current": {"module": "7", "order": 8, "fragment": "tema-8-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"}, "sources": [], "courseSources": []}]}, {"id": "8", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "El framework generado para iOS", "status": "actual", "current": {"module": "8", "order": 1, "fragment": "tema-1-el-framework-generado-para-ios"}, "sources": [], "courseSources": []}, {"title": "Mapeo de tipos Kotlin ↔ Swift", "status": "actual", "current": {"module": "8", "order": 2, "fragment": "tema-2-mapeo-de-tipos-kotlin-swift"}, "sources": [], "courseSources": []}, {"title": "Coroutines desde Swift, y distribución del framework", "status": "actual", "current": {"module": "8", "order": 3, "fragment": "tema-3-coroutines-desde-swift-y-distribucion-del-framework"}, "sources": [], "courseSources": []}, {"title": "Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose", "status": "actual", "current": {"module": "8", "order": 4, "fragment": "tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"}, "sources": [], "courseSources": []}]}, {"id": "9", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "kotlin.test en commonTest", "status": "actual", "current": {"module": "9", "order": 1, "fragment": "tema-1-kotlin-test-en-commontest"}, "sources": [], "courseSources": []}, {"title": "Fakes en vez de mocks", "status": "actual", "current": {"module": "9", "order": 2, "fragment": "tema-2-fakes-en-vez-de-mocks"}, "sources": [], "courseSources": []}, {"title": "runTest para coroutines", "status": "actual", "current": {"module": "9", "order": 3, "fragment": "tema-3-runtest-para-coroutines"}, "sources": [], "courseSources": []}, {"title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target", "status": "actual", "current": {"module": "9", "order": 4, "fragment": "tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"}, "sources": [], "courseSources": []}]}, {"id": "10", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Pipeline Gradle multiplataforma en CI", "status": "actual", "current": {"module": "10", "order": 1, "fragment": "tema-1-pipeline-gradle-multiplataforma-en-ci"}, "sources": [], "courseSources": []}, {"title": "Fastlane", "status": "actual", "current": {"module": "10", "order": 2, "fragment": "tema-2-fastlane"}, "sources": [], "courseSources": []}, {"title": "Versionado compartido", "status": "actual", "current": {"module": "10", "order": 3, "fragment": "tema-3-versionado-compartido"}, "sources": [], "courseSources": []}]}, {"id": "11", "kind": "current", "title": null, "topicCount": 3, "topics": [{"title": "Arquitectura del proyecto integrador", "status": "actual", "current": {"module": "11", "order": 1, "fragment": "tema-1-arquitectura-del-proyecto-integrador"}, "sources": [], "courseSources": []}, {"title": "Sincronización de datos remotos con caché local", "status": "actual", "current": {"module": "11", "order": 2, "fragment": "tema-2-sincronizacion-de-datos-remotos-con-cache-local"}, "sources": [], "courseSources": []}, {"title": "Cierre del track — la promesa realista de KMP", "status": "actual", "current": {"module": "11", "order": 3, "fragment": "tema-3-cierre-del-track-la-promesa-realista-de-kmp"}, "sources": [], "courseSources": []}]}, {"id": "12", "kind": "current", "title": null, "topicCount": 4, "topics": [{"title": "La mejor frontera compartida es deliberadamente pequeña", "status": "actual", "current": {"module": "12", "order": 1, "fragment": "tema-1-la-mejor-frontera-compartida-es-deliberadamente-pequena"}, "sources": [], "courseSources": []}, {"title": "Garbage collection no cierra sockets ni rompe ciclos externos", "status": "actual", "current": {"module": "12", "order": 2, "fragment": "tema-2-garbage-collection-no-cierra-sockets-ni-rompe-ciclos-externos"}, "sources": [], "courseSources": []}, {"title": "Un artefacto compatible necesita más que el mismo número de versión", "status": "actual", "current": {"module": "12", "order": 3, "fragment": "tema-3-un-artefacto-compatible-necesita-mas-que-el-mismo-numero-de-version"}, "sources": [], "courseSources": []}, {"title": "Un fallo compartido necesita símbolos y contexto de ambas plataformas", "status": "actual", "current": {"module": "12", "order": 4, "fragment": "tema-4-un-fallo-compartido-necesita-simbolos-y-contexto-de-ambas-plataformas"}, "sources": [], "courseSources": []}]}, {"id": "13", "kind": "current", "title": null, "topicCount": 6, "topics": [{"title": "Kotlin/Native", "status": "actual", "current": {"module": "13", "order": 1, "fragment": "tema-1-kotlin-native"}, "sources": [], "courseSources": []}, {"title": "Interop con C", "status": "actual", "current": {"module": "13", "order": 2, "fragment": "tema-2-interop-con-c"}, "sources": [], "courseSources": []}, {"title": "Swift Export", "status": "actual", "current": {"module": "13", "order": 3, "fragment": "tema-3-swift-export"}, "sources": [], "courseSources": []}, {"title": "XCFramework y API pública", "status": "actual", "current": {"module": "13", "order": 4, "fragment": "tema-4-xcframework-y-api-publica"}, "sources": [], "courseSources": []}, {"title": "Publicación en Maven Central", "status": "actual", "current": {"module": "13", "order": 5, "fragment": "tema-5-publicacion-en-maven-central"}, "sources": [], "courseSources": []}, {"title": "Compatibilidad binaria y CI multi-target", "status": "actual", "current": {"module": "13", "order": 6, "fragment": "tema-6-compatibilidad-binaria-y-ci-multi-target"}, "sources": [], "courseSources": []}]}], "books": [], "courses": [], "booksRequiringOcr": []}
+{
+ "schemaVersion": 1,
+ "stackId": "kotlin-multiplatform",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Source sets",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-source-sets"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "expect/actual",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-expect-actual"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Gradle multiplataforma y targets disponibles",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-gradle-multiplataforma-y-targets-disponibles"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Jerarquía de source sets intermedios",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-jerarquia-de-source-sets-intermedios"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Modelos de dominio y casos de uso",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-modelos-de-dominio-y-casos-de-uso"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Repositorios con interfaz común",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-repositorios-con-interfaz-comun"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Inyección de dependencias multiplataforma con Koin",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-inyeccion-de-dependencias-multiplataforma-con-koin"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Modelado de errores de dominio con un tipo Result explícito",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Ktor Client multiplataforma",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-ktor-client-multiplataforma"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Manejo de errores de red con un tipo explícito",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-manejo-de-errores-de-red-con-un-tipo-explicito"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Interceptores y autenticación",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-interceptores-y-autenticacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Reintentos con backoff exponencial",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-reintentos-con-backoff-exponencial"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "kotlinx.serialization — JSON compartido entre plataformas",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "tema-5-kotlinx-serialization-json-compartido-entre-plataformas"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Esquemas SQLDelight y queries tipadas",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-esquemas-sqldelight-y-queries-tipadas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Drivers por plataforma",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "tema-2-drivers-por-plataforma"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Migraciones de esquema",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "tema-3-migraciones-de-esquema"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Transacciones: atomicidad en operaciones multi-tabla",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-transacciones-atomicidad-en-operaciones-multi-tabla"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 5,
+      "fragment": "tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Compose Multiplatform vs Jetpack Compose",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 1,
+      "fragment": "tema-1-compose-multiplatform-vs-jetpack-compose"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estado y recomposición — mutableStateOf y por qué la UI se redibuja",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 2,
+      "fragment": "tema-2-estado-y-recomposicion-mutablestateof-y-por-que-la-ui-se-redibuja"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Theming y navegación compartidos",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 3,
+      "fragment": "tema-3-theming-y-navegacion-compartidos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Limitaciones en iOS y otros targets",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 4,
+      "fragment": "tema-4-limitaciones-en-ios-y-otros-targets"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 5,
+      "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 6,
+      "fragment": "tema-6-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 7,
+      "fragment": "tema-7-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 8,
+      "fragment": "tema-8-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "El framework generado para iOS",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 1,
+      "fragment": "tema-1-el-framework-generado-para-ios"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Mapeo de tipos Kotlin ↔ Swift",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 2,
+      "fragment": "tema-2-mapeo-de-tipos-kotlin-swift"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Coroutines desde Swift, y distribución del framework",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 3,
+      "fragment": "tema-3-coroutines-desde-swift-y-distribucion-del-framework"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 4,
+      "fragment": "tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "kotlin.test en commonTest",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 1,
+      "fragment": "tema-1-kotlin-test-en-commontest"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fakes en vez de mocks",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 2,
+      "fragment": "tema-2-fakes-en-vez-de-mocks"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "runTest para coroutines",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 3,
+      "fragment": "tema-3-runtest-para-coroutines"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 4,
+      "fragment": "tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Pipeline Gradle multiplataforma en CI",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 1,
+      "fragment": "tema-1-pipeline-gradle-multiplataforma-en-ci"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Fastlane",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 2,
+      "fragment": "tema-2-fastlane"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Versionado compartido",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 3,
+      "fragment": "tema-3-versionado-compartido"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "Arquitectura del proyecto integrador",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 1,
+      "fragment": "tema-1-arquitectura-del-proyecto-integrador"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sincronización de datos remotos con caché local",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 2,
+      "fragment": "tema-2-sincronizacion-de-datos-remotos-con-cache-local"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cierre del track — la promesa realista de KMP",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 3,
+      "fragment": "tema-3-cierre-del-track-la-promesa-realista-de-kmp"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "kind": "current",
+   "title": null,
+   "topicCount": 7,
+   "topics": [
+    {
+     "title": "La mejor frontera compartida es deliberadamente pequeña",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 1,
+      "fragment": "tema-1-la-mejor-frontera-compartida-es-deliberadamente-pequena"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Garbage collection no cierra sockets ni rompe ciclos externos",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 2,
+      "fragment": "tema-2-garbage-collection-no-cierra-sockets-ni-rompe-ciclos-externos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Un artefacto compatible necesita más que el mismo número de versión",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 3,
+      "fragment": "tema-3-un-artefacto-compatible-necesita-mas-que-el-mismo-numero-de-version"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Un fallo compartido necesita símbolos y contexto de ambas plataformas",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 4,
+      "fragment": "tema-4-un-fallo-compartido-necesita-simbolos-y-contexto-de-ambas-plataformas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kotlin 2.4 y estado real de cada target",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 5,
+      "fragment": "kotlin-2-4-y-estado-real-de-cada-target"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto: SDK compartido estable y operable",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 6,
+      "fragment": "proyecto-sdk-compartido-estable-y-operable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Método de estudio y proyecto de ampliación",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 7,
+      "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Kotlin/Native",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 1,
+      "fragment": "tema-1-kotlin-native"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Interop con C",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 2,
+      "fragment": "tema-2-interop-con-c"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Swift Export",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 3,
+      "fragment": "tema-3-swift-export"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "XCFramework y API pública",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 4,
+      "fragment": "tema-4-xcframework-y-api-publica"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Publicación en Maven Central",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 5,
+      "fragment": "tema-5-publicacion-en-maven-central"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Compatibilidad binaria y CI multi-target",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 6,
+      "fragment": "tema-6-compatibilidad-binaria-y-ci-multi-target"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

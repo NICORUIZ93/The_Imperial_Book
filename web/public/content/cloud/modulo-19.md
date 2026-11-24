@@ -1,22 +1,58 @@
-# Módulo 19: Analítica de datos con Athena y Glue
+# Módulo 19: IA y servicios especializados: Bedrock, Textract y Transcribe
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Data lake y Glue Catalog · Avanzado · 45 min
+### Tema 1: Bedrock Runtime y respuestas stub deterministas · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a catalogar, sin moverlos, los archivos de ubicación histórica que Firehose (Módulo 17) ya deposita en rutaflow-ubicaciones-historico. Prerrequisitos: Módulo 17 completo.
+Al finalizar vas a usar Bedrock para redactar el texto del SMS de confirmación de entrega (Módulo 10-11), y a comprobar qué parte de eso es realmente verificable en local. Prerrequisitos: Módulos 10 y 11 completos.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```bash
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 --body '{"prompt":"Hola","max_tokens":100}' --cli-binary-format raw-in-base64-out output.json
+```
+
+```bash
+aws bedrock-runtime invoke-model --model-id ... --body '{"prompt":"Hola"}' ...
+# cloud local: MISMA entrada → SIEMPRE la misma salida stub (determinista)
+# AWS real: misma entrada → puede variar entre invocaciones (no determinista)
+```
+
+```bash
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
+  --cli-binary-format raw-in-base64-out salida1.json
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"Redacta un SMS breve confirmando la entrega del envío env-4471","max_tokens":50}' \
+  --cli-binary-format raw-in-base64-out salida2.json
+diff salida1.json salida2.json
+```
+
+</details>
+
+### Tema 2: Textract y Transcribe · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a extraer automáticamente cliente y monto de una factura escaneada (Módulo 13) con Textract, y a transcribir el reporte de voz de un conductor con Transcribe. Prerrequisitos: Módulo 13 completo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart BT
-    A["Data lake (S3, datos crudos, cualquier formato)"] --> B["Glue Catalog (metadatos: esquema, formato, ubicación)"]
-    B --> C["Athena (consulta SQL usando esos metadatos, sin mover los datos)"]
+flowchart LR
+    A["Textract: imagen/PDF escaneado"] --> A1["texto + estructura (tablas, formularios)"]
+    B["Transcribe: audio hablado"] --> B1["texto escrito, buscable y procesable"]
 ```
 
 </details>
@@ -26,109 +62,45 @@ flowchart BT
 
 #### Código y verificación
 ```bash
-aws glue create-database --database-input '{"Name":"tienda"}'
-aws glue create-table --database-name tienda --table-input '{"Name":"pedidos","StorageDescriptor":{...}}'
-```
-
-```mermaid
-flowchart BT
-    A["Data lake (S3, datos crudos, cualquier formato)"] --> B["Glue Catalog (metadatos: esquema, formato, ubicación)"]
-    B --> C["Athena (consulta SQL usando esos metadatos, sin mover los datos)"]
+aws textract analyze-document --document '{"S3Object":{"Bucket":"mi-bucket","Name":"documento.jpg"}}' --feature-types TABLES FORMS
 ```
 
 ```bash
-aws glue create-database --database-input '{"Name":"rutaflow_analytics"}'
-aws glue create-table --database-name rutaflow_analytics --table-input '{
-  "Name":"ubicaciones",
-  "StorageDescriptor":{
-    "Columns":[{"Name":"conductorId","Type":"string"},{"Name":"lat","Type":"double"},{"Name":"lon","Type":"double"}],
-    "Location":"s3://rutaflow-ubicaciones-historico/",
-    "InputFormat":"org.apache.hadoop.mapred.TextInputFormat"
-  }
-}'
-aws athena start-query-execution --query-string "SELECT conductorId, lat, lon FROM rutaflow_analytics.ubicaciones LIMIT 5" \
-  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
+aws transcribe start-transcription-job --transcription-job-name mi-transcripcion --media '{"MediaFileUri":"s3://mi-bucket/audio.mp3"}' --output-bucket-name mi-bucket
+```
+
+```mermaid
+flowchart LR
+    A["Textract: imagen/PDF escaneado"] --> A1["texto + estructura (tablas, formularios)"]
+    B["Transcribe: audio hablado"] --> B1["texto escrito, buscable y procesable"]
+```
+
+```bash
+aws s3 cp factura-escaneada.jpg s3://adjuntos-tareas/facturas/factura-001.jpg
+aws textract analyze-document --document '{"S3Object":{"Bucket":"adjuntos-tareas","Name":"facturas/factura-001.jpg"}}' --feature-types FORMS
+aws transcribe start-transcription-job --transcription-job-name reporte-conductor-c891 \
+  --media '{"MediaFileUri":"s3://adjuntos-tareas/audios/reporte-c891.mp3"}' --output-bucket-name adjuntos-tareas
 ```
 
 </details>
 
-### Tema 2: Glue Crawler y Athena · Avanzado · 45 min
+### Tema 3: Stub vs mock, y qué probar localmente · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a dejar que un Glue Crawler descubra solo el esquema real de rutaflow-ubicaciones-historico, en vez de declararlo a mano como en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a documentar, para los SMS generados (Tema 1) y las facturas extraídas (Tema 2), qué se puede confiar probando en Floci y qué necesita el servicio real de AWS. Prerrequisitos: Temas 1-2 de este módulo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    S3["rutaflow-ubicaciones-historico (S3)"] --> CR["Glue Crawler\n(infiere esquema real)"]
-    CR --> GC["Glue Catalog\n(tabla ubicaciones_historico)"]
-    GC --> AT["Athena\n(consulta SQL)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-aws glue create-crawler --name crawler-pedidos --targets '{"S3Targets":[{"Path":"s3://analytics-bucket/pedidos"}]}' --database-name tienda
-aws glue start-crawler --name crawler-pedidos
-```
-
-```bash
-aws athena start-query-execution --query-string "SELECT cliente, SUM(monto) as total FROM tienda.pedidos GROUP BY cliente ORDER BY total DESC" --result-configuration OutputLocation=s3://analytics-bucket/resultados/
-```
-
-```bash
-aws glue start-crawler --name crawler-pedidos
-# → descubre esquema automáticamente y lo registra en Glue Catalog
-
-aws athena start-query-execution --query-string "SELECT ... FROM tienda.pedidos ..."
-# → consulta SQL directa sobre los archivos en S3, usando ese esquema
-```
-
-```mermaid
-flowchart LR
-    S3["rutaflow-ubicaciones-historico (S3)"] --> CR["Glue Crawler\n(infiere esquema real)"]
-    CR --> GC["Glue Catalog\n(tabla ubicaciones_historico)"]
-    GC --> AT["Athena\n(consulta SQL)"]
-```
-
-```bash
-aws glue create-crawler --name crawler-ubicaciones --role arn:aws:iam::000000000000:role/glue-crawler-role \
-  --targets '{"S3Targets":[{"Path":"s3://rutaflow-ubicaciones-historico/"}]}' --database-name rutaflow_analytics
-aws glue start-crawler --name crawler-ubicaciones
-# El crawler es asíncrono: espera a que vuelva a READY antes de leer la tabla.
-sleep 5
-until [ "$(aws glue get-crawler --name crawler-ubicaciones --query 'Crawler.State' --output text)" = "READY" ]; do
-  echo "crawler en curso…"; sleep 5
-done
-aws glue get-table --database-name rutaflow_analytics --name ubicaciones_historico --query 'Table.StorageDescriptor.Columns'
-```
-
-</details>
-
-### Tema 3: Parquet vs CSV, y partition pruning · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a medir, con bytes escaneados reales, cuánto cuesta de más consultar rutaflow-ubicaciones-historico sin particionar por fecha. Prerrequisitos: Tema 2 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["Sin particiones"] --> A1["Athena escanea TODOS los archivos de la tabla, filtra después"]
-    B["Con particiones + partition pruning"] --> B1["Athena IGNORA por completo las carpetas fuera del filtro, sin leerlas"]
+    A["Stub Bedrock (cloud local)"] --> A1["verifica: estructura de request/response, manejo de errores de API"]
+    B["Bedrock real (AWS)"] --> B1["verifica: calidad del contenido generado, comportamiento ante prompts reales"]
 ```
 
 #### ► REGLA PRÁCTICA
-Si tus consultas casi siempre filtran por una misma columna (como la fecha), particiona la tabla por esa columna: partition pruning hace que Athena ni siquiera lea los archivos fuera del filtro, en vez de escanearlos todos y descartar después.
+Usa el stub local para todo lo que sea estructura de la llamada (request/response, manejo de errores) porque es rápido y repetible; reserva el servicio real de AWS para verificar la calidad del contenido generado, que el stub no puede reproducir.
 
 </details>
 
@@ -138,13 +110,89 @@ Si tus consultas casi siempre filtran por una misma columna (como la fecha), par
 #### Código y verificación
 
 ```bash
-mkdir ejemplo && cd ejemplo && floci start
+# Lo que SÍ confirma el stub de Floci (estructura del contrato):
+aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
+  --body '{"prompt":"test","max_tokens":10}' --cli-binary-format raw-in-base64-out stub.json
+cat stub.json
+```
+
+</details>
+
+### Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Usa Python 3.10 o superior. Crea academia-labs/cloud/gobierno-ia. En un proyecto real, la ficha viene del registro de modelos (SageMaker Model Registry, MLflow) y las métricas de la evaluación.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    M["versión del modelo"] --> F{"¿ficha completa?"}
+    F -->|no| X["BLOQUEADO"]
+    F -->|sí| G{"¿cada grupo cumple su umbral?"}
+    G -->|no| X
+    G -->|sí| P{"¿prompt sin datos personales?"}
+    P -->|no| X
+    P -->|sí| A["APROBADO + registro"]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```mermaid
+flowchart LR
+    M["versión del modelo"] --> F{"¿ficha completa?"}
+    F -->|no| X["BLOQUEADO"]
+    F -->|sí| G{"¿cada grupo cumple su umbral?"}
+    G -->|no| X
+    G -->|sí| P{"¿prompt sin datos personales?"}
+    P -->|no| X
+    P -->|sí| A["APROBADO + registro"]
+```
+
+```python
+import json
+import re
+
+# Ficha del modelo que el equipo quiere publicar (en la vida real viene del registro de modelos).
+ficha = json.loads("""{
+  "nombre": "estimador-tiempo-entrega", "version": "3",
+  "proposito": "estimar minutos de entrega por parada",
+  "datos_entrenamiento": "entregas 2025 anonimizadas",
+  "responsable": "equipo-datos",
+  "metricas": {"error_medio_min": 6.2, "error_medio_min_zona_rural": 14.8},
+  "prompt_sistema": "Responde con minutos. Ejemplo: cliente Ana Pérez, cédula 1020304050."
+}""")
+
+REQUISITOS = ["proposito", "datos_entrenamiento", "responsable"]
+UMBRALES = {"error_medio_min": 8.0, "error_medio_min_zona_rural": 12.0}  # el rural no puede quedar atrás
+PII = re.compile(r"\b\d{8,10}\b")  # números que parecen documentos de identidad
+
+problemas = []
+problemas += [f"falta '{c}' en la ficha" for c in REQUISITOS if not ficha.get(c)]
+problemas += [f"{m} = {ficha['metricas'][m]} supera {u}" for m, u in UMBRALES.items() if ficha["metricas"][m] > u]
+if PII.search(ficha["prompt_sistema"]):
+    problemas.append("el prompt de sistema contiene datos personales")
+
+print(f"{ficha['nombre']} v{ficha['version']}: {'BLOQUEADO' if problemas else 'APROBADO'}")
+for p in problemas:
+    print(" -", p)
 ```
 
 ```bash
-aws athena start-query-execution --query-string "SELECT conductorId FROM rutaflow_analytics.ubicaciones WHERE anio=2026 AND mes=10 AND dia=5" \
-  --result-configuration OutputLocation=s3://rutaflow-ubicaciones-historico/resultados/
-aws athena get-query-execution --query-execution-id <id-de-la-ejecucion-anterior> --query 'QueryExecution.Statistics.DataScannedInBytes'
+cd academia-labs/cloud/gobierno-ia
+python3 puerta_modelo.py
+```
+
+```text
+estimador-tiempo-entrega v3: BLOQUEADO
+ - error_medio_min_zona_rural = 14.8 supera 12.0
+ - el prompt de sistema contiene datos personales
 ```
 
 </details>

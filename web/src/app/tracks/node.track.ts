@@ -177,25 +177,4 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Qué decisiones de arquitectura tomaste y por qué, en vez de copiar un boilerplate?', '¿Qué parte del proyecto te hizo reconsiderar una decisión de diseño anterior?', '¿Qué le falta a esta API para considerarla lista para tráfico real de producción?'],
     ['Express', 'Prisma', 'Docker'],
     'API REST con auth, base de datos real, tests de integración y Dockerfile de producción.'),
-  m(13, 'TypeScript, contratos e integraciones confiables', 'Contratos y resiliencia', 'Experto', '8 h 20 min', '#3c873a',
-    'Evoluciona la API productiva hacia un servicio con tipos estrictos, contratos HTTP verificables y efectos seguros frente a reintentos, caídas y entregas duplicadas.',[
-      'Tipos estáticos dentro, datos desconocidos en la frontera',
-      'Un contrato HTTP es comportamiento, no solo documentación',
-      'OpenAPI como contrato ejecutable',
-      'Reintentar sin duplicar el efecto',
-      'Webhooks verificables y recuperación por reconciliación'
-    ],
-    [
-      'Migra una vertical completa a TypeScript estricto sin any ni casts que oculten validación',
-      'Genera y verifica OpenAPI contra requests y responses reales en CI',
-      'Demuestra que un comando repetido o concurrente produce un único efecto',
-      'Entrega webhooks firmados con outbox y recupera fallos mediante reconciliación',
-    ],
-    [
-      '¿Por qué un tipo TypeScript no valida JSON recibido por red?',
-      '¿Qué cambio compatible puede romper semánticamente a un consumidor?',
-      '¿Por qué exactamente una vez se diseña como efecto y no como promesa del broker?',
-    ],
-    ['TypeScript', 'OpenAPI', 'Zod', 'PostgreSQL', 'Vitest'],
-    'API tipada y contract-first con idempotencia transaccional, outbox, webhooks firmados, pruebas de duplicación y procedimiento de reconciliación.'),
 ];

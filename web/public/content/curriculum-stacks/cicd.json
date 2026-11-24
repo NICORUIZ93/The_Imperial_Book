@@ -1,0 +1,283 @@
+{
+ "schemaVersion": 1,
+ "stackId": "cicd",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 5,
+   "topics": [
+    {
+     "title": "Jobs, steps y matrices de build",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-jobs-steps-y-matrices-de-build"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Caché de dependencias en CI",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-cache-de-dependencias-en-ci"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Artifacts y reportes de cobertura",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-artifacts-y-reportes-de-cobertura"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Pipelines como código (GitHub Actions/GitLab CI)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-pipelines-como-codigo-github-actions-gitlab-ci"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Blue-green deployment",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-blue-green-deployment"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Canary releases",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-canary-releases"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rolling updates",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-rolling-updates"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Feature flags vs branches por entorno",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-feature-flags-vs-branches-por-entorno"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rollback automático por métricas",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-rollback-automatico-por-metricas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Rollback ensayado y compatibilidad del artefacto anterior",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "tema-6-rollback-ensayado-y-compatibilidad-del-artefacto-anterior"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "A/B testing y shadow traffic: medir sin convertir usuarios en cobayas",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 7,
+      "fragment": "tema-7-a-b-testing-y-shadow-traffic-medir-sin-convertir-usuarios-en-cobayas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Mapa de decisión: las siete estrategias de despliegue",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 8,
+      "fragment": "tema-8-mapa-de-decision-las-siete-estrategias-de-despliegue"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 3,
+   "topics": [
+    {
+     "title": "El pipeline completo — de commit a producción verificada",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-el-pipeline-completo-de-commit-a-produccion-verificada"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Uniendo cada módulo del track en un solo flujo",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-uniendo-cada-modulo-del-track-en-un-solo-flujo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Cierre del track — checklist final y reflexión",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-cierre-del-track-checklist-final-y-reflexion"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Postman y Newman — tu primera colección contra una API real",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 1,
+      "fragment": "tema-1-postman-y-newman-tu-primera-coleccion-contra-una-api-real"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Scripts y assertions — pruebas automatizadas sobre datos reales",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 2,
+      "fragment": "tema-2-scripts-y-assertions-pruebas-automatizadas-sobre-datos-reales"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Newman en profundidad — reportes y el contrato del código de salida",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 3,
+      "fragment": "tema-3-newman-en-profundidad-reportes-y-el-contrato-del-codigo-de-salida"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Jenkins — instalación, jobs y el linter real de pipelines declarativos",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-jenkins-instalacion-jobs-y-el-linter-real-de-pipelines-declarativos"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Integración completa — Newman dentro de un pipeline Jenkins",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 5,
+      "fragment": "tema-5-integracion-completa-newman-dentro-de-un-pipeline-jenkins"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Bruno y Postman, evaluar con el mismo contrato",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 6,
+      "fragment": "tema-6-bruno-y-postman-evaluar-con-el-mismo-contrato"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

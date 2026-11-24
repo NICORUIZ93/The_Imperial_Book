@@ -1,0 +1,105 @@
+{
+ "schemaVersion": 1,
+ "stackId": "sql",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Del mundo real al modelo relacional",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-del-mundo-real-al-modelo-relacional"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "SQL para definir, escribir, consultar y relacionar",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-sql-para-definir-escribir-consultar-y-relacionar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Índices, restricciones y planes de consulta",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-indices-restricciones-y-planes-de-consulta"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Transacciones, concurrencia y elección SQL/NoSQL",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-transacciones-concurrencia-y-eleccion-sql-nosql"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "SQL avanzado: subconsultas, vistas, triggers y funciones de ventana",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-sql-avanzado-subconsultas-vistas-triggers-y-funciones-de-ventana"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Procedimientos almacenados, funciones y cursores con PL/pgSQL",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-procedimientos-almacenados-funciones-y-cursores-con-pl-pgsql"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "De SQL a Excel: reportes con tablas y fórmulas vivas",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 4: migrar el inventario JSON a SQLite",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

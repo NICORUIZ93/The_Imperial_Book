@@ -1,47 +1,42 @@
-# Módulo 6: Persistencia local con Room
+# Módulo 6: Inyección de dependencias con Hilt
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Room genera código con KSP y verifica tus consultas al compilar, así que necesita dos plugins además de las bibliotecas. Con el catálogo del Módulo 0 (Tema 3):
+> **Antes de empezar este módulo.** Hilt necesita su plugin de Gradle, KSP para generar código y que el manifiesto use tu clase `Application`. Con el catálogo del Módulo 0 (Tema 3):
 >
 > ```kotlin
 > // build.gradle.kts de la raíz, dentro de plugins { }
-> alias(libs.plugins.ksp) apply false
-> alias(libs.plugins.room) apply false
+> alias(libs.plugins.ksp) apply false   // si no lo añadiste en el Módulo 6
+> alias(libs.plugins.hilt) apply false
 >
 > // app/build.gradle.kts
 > plugins {
 >     // ...los que ya tienes...
 >     alias(libs.plugins.ksp)
->     alias(libs.plugins.room)
-> }
-> android {
->     // ...lo que ya tienes...
-> }
-> room {
->     schemaDirectory("$projectDir/schemas")   // obligatorio con el plugin de Room
+>     alias(libs.plugins.hilt)
 > }
 > dependencies {
 >     // ...las que ya tienes...
->     implementation(libs.androidx.room.runtime)
->     ksp(libs.androidx.room.compiler)
->     androidTestImplementation(libs.androidx.room.testing)
+>     implementation(libs.hilt.android)
+>     ksp(libs.hilt.compiler)
+>     androidTestImplementation(libs.hilt.android.testing)
+>     kspAndroidTest(libs.hilt.compiler)
 > }
 > ```
 >
-> Pulsa **Sync Now**. Desde Room 2.7, `room-ktx` está integrado en `room-runtime` y no hace falta declararlo.
+> En `app/src/main/AndroidManifest.xml`, añade `android:name=".MiApp"` a la etiqueta `<application>`; sin él, Android crea un `Application` genérico y Hilt nunca se inicializa. Pulsa **Sync Now**.
 >
-> **Los scripts `python3` con `sqlite3` de este módulo son modelos del SQL, no pruebas de Room.** Demuestran qué hace la sentencia SQL, pero no que tu `@Entity`, tu DAO o tu `Migration` compilen y se apliquen. La evidencia real es la **Verificación real en Android** de cada tema: la compilación con KSP, el esquema exportado y la app en el emulador.
+> **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
 
 
-### Tema 1: Entities, DAOs y Database · Avanzado · 45 min
+### Tema 1: Configuración básica de Hilt · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás declarar una @Entity, un @Dao y una @Database de Room, y explicar por qué Room verifica las queries en tiempo de compilación.
+Al finalizar podrás anotar una Application y un ViewModel con Hilt, y explicar por qué la inyección de dependencias evita que cada clase conozca cómo construir sus propias dependencias.
 
 </details>
 
@@ -50,97 +45,82 @@ Al finalizar podrás declarar una @Entity, un @Dao y una @Database de Room, y ex
 
 #### Código y verificación
 ```
-┌── @Entity Tarea ────────────────────┐
-│  data class Tarea(id, titulo, completada) │
-└──────────┬───────────────────────┘
-           │ Room genera la tabla SQL real
-           ▼
-┌── @Dao TareaDao ────────────────────┐
-│  @Query("SELECT * FROM Tarea")            │
-│  verificado en COMPILACIÓN, no en runtime    │
-└───────────────────────────────────┘
+┌── SIN inyección de dependencias ─────────────┐
+│ class TareasViewModel {                          │
+│   val repo = TareaRepositoryImpl(Retrofit(...))    │  ← conoce CÓMO construir todo
+│ }                                                     │
+└───────────────────────────────────────────┘
+┌── CON Hilt (@Inject) ────────────────────────┐
+│ class TareasViewModel @Inject constructor(         │
+│   private val repo: TareaRepository)                 │  ← solo declara QUÉ necesita
+│ )                                                      │
+└───────────────────────────────────────────┘
 ```
 
 ```bash
-# Este script python3 (vía sqlite3) es un modelo del esquema SQL equivalente; la prueba real es compilar con Room
+# Este script python3 modela el mismo grafo de dependencias para verificar el principio
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/AppDatabase.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/MiApp.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.room.Dao
-import androidx.room.Database
-import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.PrimaryKey
-import androidx.room.Query
-import androidx.room.RoomDatabase
-import kotlinx.coroutines.flow.Flow
+import android.app.Application
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-@Entity
-data class Tarea(@PrimaryKey val id: String, val titulo: String, val completada: Boolean)
+@HiltAndroidApp
+class MiApp : Application()
 
-@Dao
-interface TareaDao {
-    @Query("SELECT * FROM Tarea")
-    fun observarTodas(): Flow<List<Tarea>>
+@HiltViewModel
+class TareasViewModelInyectado @Inject constructor(
+    private val repo: TareaRepository
+) : ViewModel()
+```
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertar(tarea: Tarea)
-}
-
-@Database(entities = [Tarea::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun tareaDao(): TareaDao
-}
+```bash
+./gradlew :app:compileDebugKotlin
 ```
 
 ```bash
 python3 -c "
-import sqlite3
-# el esquema equivalente que Room generaría a partir de la @Entity Tarea
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY NOT NULL, titulo TEXT NOT NULL, completada INTEGER NOT NULL)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
-filas = con.execute('SELECT * FROM Tarea').fetchall()
-print('esquema válido, filas:', filas)
-con.close()
-"
-```
+class TareaRepository:
+    def obtener(self):
+        return ['Comprar leche', 'Pagar alquiler']
 
-```bash
-./gradlew assembleDebug
-./gradlew test
-```
+class TareasViewModel:
+    def __init__(self, repo):  # recibe la dependencia YA CONSTRUIDA, no la construye
+        self.repo = repo
 
-```bash
-python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-try:
-    con.execute('SELECT columnaInexistente FROM Tarea').fetchall()
-    print('la query se ejecutó sin error (INESPERADO)')
-except sqlite3.OperationalError as e:
-    print('SQLite rechazó la query:', e)
-con.close()
+class ContenedorDeDependencias:
+    def __init__(self):
+        self._instancias = {}
+    def resolver(self, tipo, fabrica):
+        if tipo not in self._instancias:
+            self._instancias[tipo] = fabrica()
+        return self._instancias[tipo]
+
+contenedor = ContenedorDeDependencias()
+repo = contenedor.resolver('TareaRepository', lambda: TareaRepository())
+view_model = TareasViewModel(repo)  # nunca construye TareaRepository() directamente
+print('ViewModel obtuvo sus tareas vía la dependencia inyectada:', view_model.repo.obtener())
 "
 ```
 
 </details>
 
-### Tema 2: Room + Flow reactivo, y migraciones · Avanzado · 45 min
+### Tema 2: @Provides y @Binds · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás explicar por qué un DAO que devuelve Flow mantiene la UI sincronizada automáticamente, y escribir una migración que preserve datos existentes.
+Al finalizar podrás decidir entre @Provides y @Binds según si una dependencia es una clase externa o una interfaz propia con implementación inyectable.
 
 </details>
 
@@ -149,167 +129,234 @@ Al finalizar podrás explicar por qué un DAO que devuelve Flow mantiene la UI s
 
 #### Código y verificación
 ```
-┌── Room table cambia (insert/update/delete) ──┐
-└──────────┬─────────────────────────┘
-           │ Flow emite automáticamente la nueva lista
-           ▼
-┌── StateFlow del ViewModel se actualiza ──────┐
-└──────────┬─────────────────────────┘
-           │
-           ▼
-┌── UI recompone (Módulo 2) ───────────────────┐
+┌── @Provides (clase EXTERNA, sin @Inject propio) ──┐
+│ @Provides fun provideRetrofit(): Retrofit =            │
+│   Retrofit.Builder().baseUrl(URL).build()                │
+└─────────────────────────────────────────┘
+┌── @Binds (interfaz PROPIA, implementación con @Inject) ─┐
+│ @Binds abstract fun bindTareaRepository(                     │
+│   impl: TareaRepositoryImpl): TareaRepository                    │
+└─────────────────────────────────────────────┘
+```
+
+```bash
+# Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
+
+```kotlin
+package com.academia.android
+
+import android.content.Context
+import androidx.room.Room
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+import retrofit2.Retrofit
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides
+    @Singleton
+    fun provideApiService(): ApiService = crearApiService()   // ClienteApi.kt, Módulo 5
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "tareas.db").build()
+
+    @Provides
+    fun provideTareaDao(db: AppDatabase): TareaDao = db.tareaDao()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    abstract fun bindTareaRepository(impl: TareaRepositoryImpl): TareaRepository
+}
+```
+
+```bash
+./gradlew :app:compileDebugKotlin
+```
+
+```bash
+python3 -c "
+class Retrofit:
+    def __init__(self, base_url):
+        self.base_url = base_url
+
+class TareaRepository:  # interfaz/contrato
+    def obtener(self):
+        raise NotImplementedError
+
+class TareaRepositoryImpl(TareaRepository):  # implementación concreta
+    def obtener(self):
+        return ['Comprar leche']
+
+class Modulo:
+    # equivalente a @Provides: describe explícitamente CÓMO construir una clase externa
+    def provide_retrofit(self):
+        return Retrofit(base_url='https://api.miapp.com/')
+
+    # equivalente a @Binds: solo MAPEA la interfaz a la implementación, sin lógica de construcción
+    def bind_tarea_repository(self, impl: TareaRepositoryImpl) -> TareaRepository:
+        return impl
+
+modulo = Modulo()
+retrofit = modulo.provide_retrofit()
+print('Retrofit construido explícitamente con @Provides, base_url:', retrofit.base_url)
+
+repo_concreto = TareaRepositoryImpl()
+repo: TareaRepository = modulo.bind_tarea_repository(repo_concreto)
+print('TareaRepository resuelto vía @Binds:', repo.obtener())
+"
+```
+
+</details>
+
+### Tema 3: Scopes y testing con Hilt · Avanzado · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás elegir el scope correcto para una dependencia según su tiempo de vida necesario, y reemplazar un módulo real por uno de test.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── @Singleton ──────────────────────┐
+│  UNA instancia, vive mientras la app vive │
+└───────────────────────────────┘
+┌── @ViewModelScoped ────────────────┐
+│  UNA instancia por ViewModel,           │
+│  destruida cuando ese ViewModel muere      │
+└───────────────────────────────┘
+┌── @UninstallModules(NetworkModule::class) ─┐
+│  reemplaza el módulo real por uno de test       │
 └───────────────────────────────────────┘
 ```
 
 ```bash
-# Este script python3 (vía sqlite3) modela el SQL de la migración; la prueba real se hace en el emulador
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
+mkdir -p app/src/androidTest/kotlin/com/academia/android
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/Migraciones.kt`:
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/HiltTestRunner.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import android.app.Application
+import android.content.Context
+import androidx.test.runner.AndroidJUnitRunner
+import dagger.hilt.android.testing.HiltTestApplication
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0")
+class HiltTestRunner : AndroidJUnitRunner() {
+    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application =
+        super.newApplication(cl, HiltTestApplication::class.java.name, context)
+}
+```
+
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/TareasFlowTest.kt`:
+
+```kotlin
+package com.academia.android
+
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+@HiltAndroidTest
+@UninstallModules(NetworkModule::class) // desinstala el módulo de producción solo en esta prueba
+class TareasFlowTest {
+    @get:Rule val hiltRule = HiltAndroidRule(this)
+
+    @Module
+    @InstallIn(SingletonComponent::class) // módulo anidado: solo existe para esta clase de prueba
+    object NetworkModuleDePrueba {
+        @Provides
+        @Singleton
+        fun provideApiService(): ApiService = object : ApiService {
+            override suspend fun obtenerTareas() = listOf(TareaDTO("t-1", "Tarea de prueba"))
+        }
+    }
+
+    @Inject lateinit var api: ApiService
+
+    @Before fun inyectar() = hiltRule.inject()
+
+    @Test
+    fun usaElApiServiceDePrueba() = runTest {
+        assertEquals("Tarea de prueba", api.obtenerTareas().single().titulo)
     }
 }
 ```
 
 ```bash
-python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-# versión 1 del esquema, con datos ya existentes del usuario
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
-con.execute(\"INSERT INTO Tarea VALUES ('2', 'Pagar alquiler', 1)\")
-print('antes de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
-
-# la migración real (idéntica a MIGRATION_1_2 en SQL)
-con.execute('ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0')
-print('después de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
-con.close()
-"
-```
-
-```bash
-./gradlew assembleDebug
-./gradlew test
+./gradlew :app:connectedDebugAndroidTest
 ```
 
 ```bash
 python3 -c "
-import sqlite3
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
+class ObjetoCostoso:
+    contador_de_construcciones = 0
+    def __init__(self):
+        ObjetoCostoso.contador_de_construcciones += 1
 
-# la app AHORA espera la columna 'prioridad' (versión 2), pero la migración nunca se aplicó
-try:
-    con.execute('SELECT prioridad FROM Tarea').fetchall()
-    print('INESPERADO: la columna existe sin migración')
-except sqlite3.OperationalError as e:
-    print('Discrepancia de esquema detectada:', e)
-con.close()
+class ContenedorSingleton:
+    def __init__(self):
+        self._instancia = None
+    def obtener(self):
+        if self._instancia is None:
+            self._instancia = ObjetoCostoso()
+        return self._instancia
+
+class ContenedorSinCache:  # equivalente a un scope corto sin reutilización
+    def obtener(self):
+        return ObjetoCostoso()
+
+ObjetoCostoso.contador_de_construcciones = 0
+singleton = ContenedorSingleton()
+for _ in range(5):
+    singleton.obtener()
+print('con @Singleton, construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
+
+ObjetoCostoso.contador_de_construcciones = 0
+sin_cache = ContenedorSinCache()
+for _ in range(5):
+    sin_cache.obtener()
+print('SIN singleton (scope corto), construcciones tras 5 solicitudes:', ObjetoCostoso.contador_de_construcciones)
 "
-```
-
-</details>
-
-### Tema 3: Estrategia offline-first · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás implementar un repositorio donde la UI siempre lee del caché local mientras la red sincroniza en segundo plano.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── UI ──────────────┐
-│  SIEMPRE lee de       │
-└──────────┬─────────┘
-           ▼
-┌── Room (Flow reactivo) ──────┐
-│         ▲                          │
-│         │ Repositorio sincroniza      │
-│         │ en background                 │
-│         ▼                                 │
-└── API remota (Módulo 5) ───────────┘
-```
-
-```bash
-# Este script python3 simula, con sqlite3 real, que la UI sigue funcionando sin red
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/TareaRepository.kt`:
-
-```kotlin
-package com.academia.android
-
-import kotlinx.coroutines.flow.Flow
-
-interface TareaRepository {
-    val tareas: Flow<List<Tarea>> // la UI SIEMPRE lee de aquí
-    suspend fun sincronizar()
-}
-
-class TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService) : TareaRepository {
-    override val tareas: Flow<List<Tarea>> = dao.observarTodas()
-
-    override suspend fun sincronizar() {
-        val remotas = api.obtenerTareas()
-        remotas.forEach { dao.insertar(Tarea(it.id, it.titulo, false)) } // sincroniza en background
-    }
-}
-```
-
-```bash
-python3 -c "
-import sqlite3
-
-con = sqlite3.connect(':memory:')
-con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
-
-def sincronizar_desde_api_simulada(conexion_disponible):
-    if not conexion_disponible:
-        print('sin conexión: la sincronización no ocurre, pero la UI sigue leyendo del caché existente')
-        return
-    con.execute(\"INSERT OR REPLACE INTO Tarea VALUES ('1', 'Comprar leche (actualizado de la API)', 0)\")
-    print('sincronización exitosa: caché actualizado con datos frescos')
-
-def ui_lee_siempre_de_room():
-    return con.execute('SELECT * FROM Tarea').fetchall()
-
-con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche (versión local)', 0)\")
-print('UI muestra (antes de cualquier sincronización):', ui_lee_siempre_de_room())
-
-sincronizar_desde_api_simulada(conexion_disponible=False)  # simula estar sin conexión
-print('UI sigue mostrando (sin conexión, offline-first):', ui_lee_siempre_de_room())
-
-sincronizar_desde_api_simulada(conexion_disponible=True)  # la conexión vuelve
-print('UI muestra (tras sincronizar con éxito):', ui_lee_siempre_de_room())
-con.close()
-"
-```
-
-```bash
-./gradlew assembleDebug
-./gradlew test
 ```
 
 </details>

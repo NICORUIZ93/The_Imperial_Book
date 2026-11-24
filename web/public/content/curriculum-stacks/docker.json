@@ -1,0 +1,297 @@
+{
+ "schemaVersion": 1,
+ "stackId": "docker",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 11,
+   "topics": [
+    {
+     "title": "Dockerfile multi-stage",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-dockerfile-multi-stage"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Capas e invalidación de caché",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-capas-e-invalidacion-de-cache"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Imágenes base distroless/alpine",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-imagenes-base-distroless-alpine"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Volúmenes vs bind mounts",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-volumenes-vs-bind-mounts"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Redes en Docker",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-redes-en-docker"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-registries-docker-hub-aws-ecr-azure-container-registry-harbor"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Operación diaria: inspect, stats, events y respaldo de volúmenes",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-operacion-diaria-inspect-stats-events-y-respaldo-de-volumenes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 9,
+      "fragment": "tema-9-elegir-el-motor-de-contenedores-local-docker-desktop-podman-colima-y-rancher-desktop"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "BuildKit y Buildx: builds más rápidos, secretos seguros y varias arquitecturas",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 10,
+      "fragment": "tema-10-buildkit-y-buildx-builds-mas-rapidos-secretos-seguros-y-varias-arquitecturas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Seguridad de la cadena de contenedores: Docker Scout, Trivy y Falco",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 11,
+      "fragment": "tema-11-seguridad-de-la-cadena-de-contenedores-docker-scout-trivy-y-falco"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 4,
+   "topics": [
+    {
+     "title": "Servicios, dependencias y healthchecks",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-servicios-dependencias-y-healthchecks"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Variables de entorno y .env",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-variables-de-entorno-y-env"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Redes y descubrimiento por nombre de servicio",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-redes-y-descubrimiento-por-nombre-de-servicio"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Perfiles para distintos entornos",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-perfiles-para-distintos-entornos"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 9,
+   "topics": [
+    {
+     "title": "Virtualización vs contenedores",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-virtualizacion-vs-contenedores"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Imágenes y capas",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-imagenes-y-capas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Registros de contenedores (Docker Hub)",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-registros-de-contenedores-docker-hub"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Comandos esenciales de Docker",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-comandos-esenciales-de-docker"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Docker Compose — servicios, redes y volúmenes",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "tema-5-docker-compose-servicios-redes-y-volumenes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Laboratorio 1.1 — Comandos esenciales con una imagen de prueba",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 6,
+      "fragment": "laboratorio-1-1-comandos-esenciales-con-una-imagen-de-prueba"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Laboratorio 1.2 — Instalar floci-cli y levantar Floci",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 7,
+      "fragment": "laboratorio-1-2-instalar-floci-cli-y-levantar-floci"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Laboratorio 1.3 — Probar la AWS CLI contra Floci",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 8,
+      "fragment": "laboratorio-1-3-probar-la-aws-cli-contra-floci"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Laboratorio 1.4 — Usar StackPort y Floci UI",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 9,
+      "fragment": "laboratorio-1-4-usar-stackport-y-floci-ui"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

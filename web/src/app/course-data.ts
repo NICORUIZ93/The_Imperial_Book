@@ -1,20 +1,30 @@
 import { CourseModule, Track, createModule } from './course-module.model';
-import { DEVOPS_MODULES } from './tracks/devops.track';
 import { JAVASCRIPT_MODULES } from './tracks/javascript.track';
 import { NODE_MODULES } from './tracks/node.track';
 import { ANGULAR_MODULES } from './tracks/angular.track';
 import { REACT_MODULES } from './tracks/react.track';
 import { JAVA_MODULES } from './tracks/java.track';
 import { SPRING_BOOT_MODULES } from './tracks/spring-boot.track';
-import { SPRING_MICROSERVICES_MODULES } from './tracks/spring-microservices.track';
-import { NODE_MICROSERVICES_MODULES } from './tracks/node-microservices.track';
 import { KOTLIN_MULTIPLATFORM_MODULES } from './tracks/kotlin-multiplatform.track';
 import { ANDROID_MODULES } from './tracks/android.track';
 import { IOS_MODULES } from './tracks/ios.track';
 import { FLUTTER_MODULES } from './tracks/flutter.track';
 import { FOUNDATIONS_MODULES } from './tracks/foundations.track';
-import { RUTAFLOW_MODULES } from './tracks/rutaflow.track';
 import { CONTROL_1_MODULES } from './tracks/control-1.track';
+import { GIT_MODULES } from './tracks/git.track';
+import { LINUX_MODULES } from './tracks/linux.track';
+import { SQL_MODULES } from './tracks/sql.track';
+import { ARQUITECTURA_MODULES } from './tracks/arquitectura.track';
+import { SEGURIDAD_MODULES } from './tracks/seguridad.track';
+import { TYPESCRIPT_MODULES } from './tracks/typescript.track';
+import { KOTLIN_MODULES } from './tracks/kotlin.track';
+import { DOCKER_MODULES } from './tracks/docker.track';
+import { KUBERNETES_MODULES } from './tracks/kubernetes.track';
+import { CICD_MODULES } from './tracks/cicd.track';
+import { IAC_MODULES } from './tracks/iac.track';
+import { OBSERVABILIDAD_MODULES } from './tracks/observabilidad.track';
+import { MENSAJERIA_MODULES } from './tracks/mensajeria.track';
+import { MICROSERVICIOS_MODULES } from './tracks/microservicios.track';
 
 export type { CourseModule, Track };
 export { createModule };
@@ -69,30 +79,6 @@ export const COURSE_MODULES: CourseModule[] = [
   ),
 
   m(1,
-    'Fundamentos de Docker y contenedores',
-    'Docker y contenedores',
-    'Fundamentos', '2 h', '#475569',
-    'Virtualización vs contenedores, imágenes y capas, y los comandos esenciales de Docker y Docker Compose antes de levantar Floci.',[
-      'Virtualización vs contenedores',
-      'Imágenes y capas',
-      'Registros de contenedores (Docker Hub)',
-      'Comandos esenciales de Docker',
-      'Docker Compose — servicios, redes y volúmenes'
-    ],
-    [
-      'Ejecuta docker pull hello-world y luego docker run hello-world, y explica con tus palabras qué hizo cada comando',
-      'Lista los contenedores activos con docker ps y los detenidos con docker ps -a',
-      'Escribe un docker-compose.yml mínimo con un servicio y levántalo con docker compose up',
-      'Laboratorio 1.1 — Levantar Floci AWS: docker run -p 4566:4566 floci/floci:latest y verifica con curl http://localhost:4566/_localstack/health',
-      'Laboratorio 1.2 — Configurar AWS CLI: aws configure y pruébalo con aws s3 ls --endpoint-url=http://localhost:4566',
-    ],
-    ['¿Qué diferencia hay entre una imagen Docker y un contenedor en ejecución?', '¿Por qué Floci se distribuye como imagen Docker en vez de un instalador tradicional?'],
-    ['Docker', 'Docker Compose'],
-    'Floci AWS corriendo en el puerto 4566, con AWS CLI configurado y verificado contra ese endpoint.',
-    ['aws']
-  ),
-
-  m(2,
     'Almacenamiento en la nube con S3',
     'S3',
     'Aplicación', '2 h 30 min', '#2f6f9f',
@@ -118,7 +104,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(3,
+  m(2,
     'Mensajería asíncrona con SQS',
     'SQS',
     'Aplicación', '2 h 30 min', '#8167a9',
@@ -143,7 +129,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(4,
+  m(3,
     'Bases de datos NoSQL con DynamoDB',
     'DynamoDB',
     'Aplicación', '3 h', '#e85d4a',
@@ -170,7 +156,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(5,
+  m(4,
     'Serverless con Lambda',
     'Lambda',
     'Integración', '3 h', '#e9a23b',
@@ -196,7 +182,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(6,
+  m(5,
     'APIs con API Gateway',
     'API Gateway',
     'Integración', '3 h', '#137c8b',
@@ -221,7 +207,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(7,
+  m(6,
     'Identidad y acceso con IAM',
     'IAM',
     'Integración', '2 h 30 min', '#bd4b72',
@@ -246,7 +232,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(8,
+  m(7,
     'Azure y GCP con Floci',
     'Azure y GCP',
     'Experto', '3 h 30 min', '#4f7a5d',
@@ -269,7 +255,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws', 'azure', 'gcp']
   ),
 
-  m(9,
+  m(8,
     'Proyecto final: Sistema de Gestión de Tareas',
     'Proyecto: tareas',
     'Experto', '6 h', '#bd4b72',
@@ -296,7 +282,7 @@ export const COURSE_MODULES: CourseModule[] = [
 
   // ── Contenido avanzado (continúa después de la ruta base 0-9) ──────────────
 
-  m(10,
+  m(9,
     'Secretos y configuración: Secrets Manager, Key Vault y Secret Manager',
     'Secretos',
     'Fundamentos', '2 h', '#bd4b72',
@@ -318,7 +304,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws', 'azure', 'gcp']
   ),
 
-  m(11,
+  m(10,
     'Mensajería Pub/Sub: SNS, EventBridge y Azure Event Hubs',
     'SNS / EventBridge',
     'Aplicación', '3 h 30 min', '#8167a9',
@@ -339,7 +325,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws', 'azure']
   ),
 
-  m(12,
+  m(11,
     'Observabilidad con CloudWatch: logs, métricas y alarmas',
     'CloudWatch',
     'Aplicación', '2 h 30 min', '#2f6f9f',
@@ -360,7 +346,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(13,
+  m(12,
     'Bases de datos relacionales con RDS (PostgreSQL real)',
     'RDS',
     'Integración', '3 h', '#e85d4a',
@@ -381,7 +367,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(14,
+  m(13,
     'Contenedores: ECR, ECS y comparación con Cloud Run',
     'ECR / ECS',
     'Integración', '4 h', '#137c8b',
@@ -403,7 +389,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(15,
+  m(14,
     'Infraestructura como código con CloudFormation',
     'CloudFormation / IaC',
     'Integración', '3 h', '#bd4b72',
@@ -424,7 +410,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(16,
+  m(15,
     'Orquestación de flujos con Step Functions',
     'Step Functions',
     'Integración', '3 h', '#e9a23b',
@@ -445,7 +431,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(17,
+  m(16,
     'Streaming: Kinesis, MSK (Kafka) y Pub/Sub avanzado',
     'Kinesis / MSK / Kafka',
     'Experto', '4 h', '#8167a9',
@@ -466,7 +452,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws', 'gcp']
   ),
 
-  m(18,
+  m(17,
     'Autenticación de usuarios con Cognito',
     'Cognito / Auth',
     'Experto', '3 h', '#2f6f9f',
@@ -487,7 +473,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(19,
+  m(18,
     'Analítica de datos con Athena y Glue',
     'Athena / BigQuery',
     'Experto', '3 h', '#e85d4a',
@@ -508,7 +494,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(20,
+  m(19,
     'IA y servicios especializados: Bedrock, Textract y Transcribe',
     'Bedrock / IA',
     'Experto', '2 h 30 min', '#137c8b',
@@ -529,7 +515,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(21,
+  m(20,
     'Cómputo elástico con EC2 y Auto Scaling',
     'EC2 y Auto Scaling',
     'Integración', '3 h', '#137c8b',
@@ -547,7 +533,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(22,
+  m(21,
     'Balanceo de carga, CDN y DNS — ELB, CloudFront, Route53 y ACM',
     'ELB, CDN y DNS',
     'Integración', '3 h 30 min', '#2f6f9f',
@@ -565,7 +551,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(23,
+  m(22,
     'Caché en memoria con ElastiCache',
     'ElastiCache',
     'Integración', '2 h 30 min', '#8167a9',
@@ -583,7 +569,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(24,
+  m(23,
     'CI/CD nativo de AWS con CodeBuild y CodeDeploy',
     'CodeBuild y CodeDeploy',
     'Experto', '3 h 30 min', '#e85d4a',
@@ -601,7 +587,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(25,
+  m(24,
     'Gobierno, configuración y continuidad — AWS Config, AppConfig y Backup',
     'Config, AppConfig y Backup',
     'Experto', '3 h', '#4f7a5d',
@@ -626,7 +612,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(26,
+  m(25,
     'Streaming e integración avanzada — Firehose y EventBridge Pipes',
     'Firehose y Pipes',
     'Experto', '2 h 30 min', '#e9a23b',
@@ -644,7 +630,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(27,
+  m(26,
     'APIs GraphQL con AppSync y correo transaccional con SES',
     'AppSync y SES',
     'Experto', '3 h', '#137c8b',
@@ -662,7 +648,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(28,
+  m(27,
     'Bases de datos de grafos y búsqueda — Neptune y OpenSearch',
     'Neptune y OpenSearch',
     'Experto', '3 h', '#bd4b72',
@@ -680,7 +666,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(29,
+  m(28,
     'FinOps y gobierno de cuenta — Cost Explorer, Pricing, BCM Data Exports, Resource Groups Tagging y STS',
     'FinOps y gobierno',
     'Experto', '3 h', '#2f6f9f',
@@ -698,7 +684,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(30,
+  m(29,
     'Transferencia de archivos gestionada con Transfer Family',
     'Transfer Family',
     'Experto', '2 h', '#8167a9',
@@ -716,7 +702,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws']
   ),
 
-  m(31,
+  m(30,
     'Proyecto integrador: API multi-nube con AWS, Azure y GCP',
     'Proyecto multi-nube',
     'Experto', '8 h', '#bd4b72',
@@ -737,7 +723,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'API completa con los mismos endpoints funcionando en AWS local, Azure local y GCP local.',
     ['aws', 'azure', 'gcp']
   ),
-  m(32,
+  m(31,
     'Arquitectura cloud resiliente: redes, landing zones y recuperación',
     'Resiliencia cloud',
     'Experto', '5 h', '#137c8b',
@@ -754,12 +740,12 @@ export const COURSE_MODULES: CourseModule[] = [
     'Dossier de arquitectura con threat model, RTO/RPO, restauración probada, experimento de fallo y runbook.',
     ['aws', 'azure', 'gcp']
   ),
-  m(33, 'Cloud Master: plataforma, seguridad, datos y FinOps', 'Cloud Master', 'Experto', '20 h', '#137c8b',
+  m(32, 'Cloud Master: plataforma, seguridad, datos y FinOps', 'Cloud Master', 'Experto', '20 h', '#137c8b',
     'Integra los 22 temas avanzados del itinerario Cloud en una arquitectura propia desplegable, observable, segura y económicamente gobernada.',['Terraform avanzado y CI/CD cloud', 'Kubernetes administrado, ECS y Service Mesh', 'EC2, VPC, RDS, S3 y DynamoDB avanzados', 'Lambda, API Gateway y observabilidad avanzada', 'Seguridad, auditoría y FinOps', 'Microservicios, Big Data, AI/ML y multi-cloud', 'Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso'],
     ['Construye módulos Terraform con estado remoto', 'Despliega y autoescala un workload', 'Prueba backup y réplica', 'Optimiza cold start', 'Investiga un evento de auditoría', 'Calcula coste por entrega'],
     ['¿Qué complejidad añade multi-cloud?', '¿Cómo demuestra FinOps una mejora sin degradar confiabilidad?'],
     ['Terraform', 'EKS/AKS/GKE', 'OpenTelemetry', 'CloudTrail', 'Bedrock/SageMaker'], 'Arquitectura cloud Master con IaC, plataforma, datos, seguridad, observabilidad, FinOps y DR.', ['aws','azure','gcp']),
-  m(34,
+  m(33,
     'Floci oficial completo: plataforma, servicios y laboratorios',
     'Floci oficial',
     'Experto', '12 h', '#137c8b',
@@ -770,6 +756,28 @@ export const COURSE_MODULES: CourseModule[] = [
     'Portafolio reproducible con los tres emuladores, cuatro laboratorios, prueba automatizada aislada, capturas de floci-ui y matriz de límites.',
     ['aws', 'azure', 'gcp']
   ),
+  m(34, 'DevOps y este curso — del laboratorio a la nube', 'DevOps + Cloud', 'Experto', '2 h', '#475569',
+    'Conecta todo lo aprendido aquí con el track Cloud Local: cómo el mismo pipeline despliega a AWS, Azure o GCP reales.',['De cloud local a un proveedor cloud real', 'Gestión de secretos cloud-native', 'IaC multi-nube', 'Checklist de salida a producción', 'GitOps con ArgoCD y FluxCD', 'Platform Engineering — Internal Developer Platforms (IDPs)', 'FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas'],
+    [
+      'Toma un módulo Terraform escrito contra AWS local y documenta los cambios mínimos para apuntarlo a AWS real',
+      'Compara cómo gestionarías secretos en este pipeline usando Secrets Manager (AWS) en vez de variables de entorno locales',
+      'Construye una checklist de salida a producción propia: observabilidad, rollback, seguridad, costos',
+      'Aplica esa checklist a un proyecto real tuyo (de este curso o de otro track) y documenta qué falta',
+    ],
+    ['¿Qué tan parecido es realmente desplegar en cloud local vs a un proveedor cloud real, según lo que viste en el track Cloud?', '¿Qué ítem de tu checklist de producción consideras más fácil de pasar por alto?'],
+    ['Terraform', 'Kubernetes'],
+    'Documento de checklist de producción aplicado a un proyecto propio.'),
+  m(35, 'Laboratorio DevOps con Floci: ejercicios verificables', 'Laboratorio Floci', 'Experto', '7 h', '#475569',
+    'Practica lo anterior en una nube local: instala y aísla Floci, opera S3 con metadatos, prueba una imagen en la red de Compose y reproduce SQS y S3 con Terraform.',['Floci desde cero: instalar, aislar y verificar', 'S3 y diagnóstico de red: objetos, metadatos y errores', 'Contenedores y CI: una imagen que se prueba contra Floci', 'Terraform, SQS y operación: infraestructura reproducible y ejercicios'],
+    [
+      'Verifica que el endpoint es local antes de operar',
+      'Sube un objeto con metadatos y clasifica un error de bucket',
+      'Ejecuta una prueba de humo dentro de la red de Compose',
+      'Aplica un plan de Terraform con SQS y S3 y destrúyelo',
+    ],
+    ['¿Qué demuestra y qué no demuestra un emulador local?', '¿Por qué localhost falla dentro de un contenedor?', '¿Qué diferencia hay entre un plan válido y un apply exitoso?'],
+    ['Floci', 'AWS CLI', 'Terraform', 'Docker Compose'],
+    'Laboratorio reproducible que crea, verifica y destruye S3, SQS y una prueba en contenedor contra Floci, con diagnóstico de errores.'),
 ];
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
@@ -851,23 +859,37 @@ export const TRACKS: Track[] = [
   // Paleta editorial "lomos de libro": gama cálida (terracota, ámbar, ocre,
   // burdeos, verde bosque, azul tinta) para que cada ruta tenga su color
   // distintivo sin romper la identidad crema+terracota de The Imperial Book.
-  { id: 'rutaflow', name: 'RutaFlow — Proyecto integrador logístico', shortName: 'RutaFlow', tagline: 'Proyecto de referencia full-stack: paquetería, GPS, mapas, Flutter, backend, datos, contabilidad, cloud y DevOps.', color: '#9a3412', icon: 'truck', modules: RUTAFLOW_MODULES },
   { id: 'foundations', name: 'Fundamentos de Ingeniería de Software', shortName: 'Fundamentos', tagline: 'Punto de entrada: computador, terminal y fundamentos de programación.', color: '#b45309', icon: 'book-open', modules: FOUNDATIONS_MODULES },
-  { id: 'cloud', name: 'Cloud Local — AWS, Azure y GCP', shortName: 'Cloud', tagline: 'Servicios cloud reales en local, sin pagar ni crear cuentas.', color: '#3f6212', icon: 'cloud-cog', modules: COURSE_MODULES },
-  { id: 'devops', name: 'DevOps', shortName: 'DevOps', tagline: 'Linux, Docker, CI/CD, Kubernetes e infraestructura como código.', color: '#57534e', icon: 'git-branch', modules: DEVOPS_MODULES },
+  { id: 'cloud', name: 'Cloud Local — AWS, Azure y GCP', shortName: 'Cloud', tagline: 'Servicios cloud reales en local, sin pagar ni crear cuentas, más los laboratorios de la ruta DevOps.', color: '#3f6212', icon: 'cloud-cog', modules: COURSE_MODULES },
   { id: 'javascript', name: 'JavaScript: fundamentos y temas avanzados', shortName: 'JavaScript', tagline: 'El lenguaje base de la web: sintaxis, APIs y conceptos avanzados.', color: '#a16207', icon: 'braces', modules: JAVASCRIPT_MODULES },
   { id: 'node', name: 'Node.js: fundamentos de backend', shortName: 'Node.js', tagline: 'Backend en JavaScript: APIs, bases de datos y operación de servicios.', color: '#4d7c0f', icon: 'server', modules: NODE_MODULES },
   { id: 'angular', name: 'Angular — última versión y migraciones', shortName: 'Angular', tagline: 'Componentes, signals y arquitectura moderna sin NgModules.', color: '#be123c', icon: 'shield', modules: ANGULAR_MODULES },
   { id: 'react', name: 'React: fundamentos y aplicaciones', shortName: 'React', tagline: 'Hooks, estado, datos y frameworks full-stack con React.', color: '#1d6a6a', icon: 'atom', modules: REACT_MODULES },
   { id: 'java', name: 'Java: fundamentos y temas avanzados', shortName: 'Java', tagline: 'POO, colecciones, concurrencia y JVM moderna hasta Java 25 LTS.', color: '#92400e', icon: 'coffee', modules: JAVA_MODULES },
   { id: 'spring-boot', name: 'Spring Boot', shortName: 'Spring Boot', tagline: 'APIs, datos, seguridad, mensajería y microservicios con Spring Boot 4.', color: '#4d7c0f', icon: 'leaf', modules: SPRING_BOOT_MODULES },
-  { id: 'spring-microservices', name: 'Microservicios con Spring Boot', shortName: 'Spring MS', tagline: 'Microservicios Java/Spring: web, datos, testing, caching, resiliencia, seguridad, observabilidad y operación con Spring Boot/Spring Cloud.', color: '#4d7c0f', icon: 'leaf', modules: SPRING_MICROSERVICES_MODULES },
-  { id: 'node-microservices', name: 'Microservicios con Node.js', shortName: 'Node MS', tagline: 'Microservicios Node.js/TypeScript: APIs, datos, mensajería, resiliencia, seguridad, observabilidad y operación con el ecosistema Node.', color: '#3c873a', icon: 'server', modules: NODE_MICROSERVICES_MODULES },
   { id: 'kotlin-multiplatform', name: 'Kotlin Multiplatform', shortName: 'Kotlin MP', tagline: 'Lógica compartida entre Android e iOS con Kotlin.', color: '#7c3aed', icon: 'layers', modules: KOTLIN_MULTIPLATFORM_MODULES },
   { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#15803d', icon: 'smartphone', modules: ANDROID_MODULES },
   { id: 'ios', name: 'iOS con SwiftUI', shortName: 'iOS', tagline: 'Apps iOS nativas con Swift, SwiftUI y concurrencia moderna.', color: '#334155', icon: 'apple', modules: IOS_MODULES },
   { id: 'flutter', name: 'Flutter', shortName: 'Flutter', tagline: 'Una base de código para Android, iOS y web con Dart.', color: '#1e40af', icon: 'wind', modules: FLUTTER_MODULES },
+  { id: 'git', name: 'Git y control de versiones', shortName: 'Git', tagline: 'Historial, ramas, colaboración y recuperación de errores con Git.', color: '#c2410c', icon: 'git-branch', modules: GIT_MODULES },
+  { id: 'linux', name: 'Linux y terminal', shortName: 'Linux', tagline: 'Shell, procesos, permisos, scripts y un servidor propio endurecido.', color: '#44403c', icon: 'terminal', modules: LINUX_MODULES },
+  { id: 'sql', name: 'Bases de datos y SQL', shortName: 'SQL', tagline: 'Modelado, consultas, índices, transacciones y persistencia con PostgreSQL.', color: '#0e7490', icon: 'database', modules: SQL_MODULES },
+  { id: 'arquitectura', name: 'Arquitectura y diseño de sistemas', shortName: 'Arquitectura', tagline: 'Límites, DDD, consistencia, resiliencia y diseño de sistemas distribuidos.', color: '#6d28d9', icon: 'network', modules: ARQUITECTURA_MODULES },
+  { id: 'seguridad', name: 'Seguridad de aplicaciones', shortName: 'Seguridad', tagline: 'Modelado de amenazas, OWASP, identidad, secretos y DevSecOps.', color: '#b91c1c', icon: 'shield-check', modules: SEGURIDAD_MODULES },
+  { id: 'typescript', name: 'TypeScript', shortName: 'TypeScript', tagline: 'Tipos estáticos para JavaScript: contratos, genéricos y configuración del compilador.', color: '#1d4ed8', icon: 'braces', modules: TYPESCRIPT_MODULES },
+  { id: 'kotlin', name: 'Kotlin', shortName: 'Kotlin', tagline: 'El lenguaje de Android y KMP: null safety, funciones, colecciones y coroutines.', color: '#7c3aed', icon: 'layers', modules: KOTLIN_MODULES },
+  { id: 'docker', name: 'Docker y contenedores', shortName: 'Docker', tagline: 'Imágenes, redes, volúmenes, Compose y seguridad de contenedores.', color: '#0369a1', icon: 'container', modules: DOCKER_MODULES },
+  { id: 'kubernetes', name: 'Kubernetes', shortName: 'Kubernetes', tagline: 'Pods, servicios, despliegues, Helm, Ingress y operación del clúster.', color: '#1e3a8a', icon: 'ship', modules: KUBERNETES_MODULES },
+  { id: 'cicd', name: 'CI/CD y entrega continua', shortName: 'CI/CD', tagline: 'Pipelines, estrategias de despliegue, rollback y automatización de pruebas.', color: '#15803d', icon: 'workflow', modules: CICD_MODULES },
+  { id: 'iac', name: 'Infraestructura como código', shortName: 'IaC', tagline: 'Terraform y OpenTofu: infraestructura versionada, revisable y reproducible.', color: '#7e22ce', icon: 'file-code', modules: IAC_MODULES },
+  { id: 'observabilidad', name: 'Observabilidad y SRE', shortName: 'Observabilidad', tagline: 'Métricas, logs, trazas, SLO e incidentes con Prometheus, Grafana y OpenTelemetry.', color: '#b45309', icon: 'gauge', modules: OBSERVABILIDAD_MODULES },
+  { id: 'mensajeria', name: 'Mensajería y eventos', shortName: 'Mensajería', tagline: 'Eventos de dominio, colas, Kafka, outbox, idempotencia y sagas.', color: '#be185d', icon: 'messages', modules: MENSAJERIA_MODULES },
+  { id: 'microservicios', name: 'Microservicios con Spring y Node', shortName: 'Microservicios', tagline: 'Una arquitectura, dos implementaciones: elige la ruta Spring Boot o la ruta Node.js.', color: '#4d7c0f', icon: 'server', modules: MICROSERVICIOS_MODULES },
   { id: 'control-1', name: 'Control 1 — Sistemas de control desde cero', shortName: 'Control 1', tagline: 'Laplace, funciones de transferencia, respuesta temporal, estabilidad, PID y diseño, con cada fórmula demostrada.', color: '#1d4ed8', icon: 'activity', modules: CONTROL_1_MODULES },
 ];
 
 export const findTrack = (trackId: string): Track | undefined => TRACKS.find(t => t.id === trackId);
+
+/** Cursos sin logotipo propio en public/brands: el catálogo muestra su marca tipográfica. */
+export const TRACKS_WITHOUT_LOGO = new Set<string>(['git', 'linux', 'sql', 'arquitectura', 'seguridad', 'typescript', 'kotlin', 'docker', 'kubernetes', 'cicd', 'iac', 'observabilidad', 'mensajeria', 'microservicios']);
+export const trackLogo = (trackId: string): string | null => TRACKS_WITHOUT_LOGO.has(trackId) ? null : `brands/${trackId}.svg`;

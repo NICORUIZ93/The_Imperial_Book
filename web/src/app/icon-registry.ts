@@ -1,5 +1,5 @@
 import {
-  Activity, Apple, Atom, BookOpen, Braces, ChevronDown, ChevronRight, Circle, CircleCheck, CloudCog, Coffee,
+  Activity, Apple, Atom, BookOpen, Braces, Container, Database, FileCode, Gauge, MessagesSquare, ShieldCheck, Ship, Terminal, Workflow, ChevronDown, ChevronRight, Circle, CircleCheck, CloudCog, Coffee,
   Command, GitBranch, Layers, Leaf, LucideIconData, Network, Search, Server, Shield, Smartphone, Truck, Wind, X,
 } from 'lucide-angular';
 
@@ -22,6 +22,15 @@ export const TRACK_ICONS: Record<string, LucideIconData> = {
   'wind': Wind,
   'truck': Truck,
   'activity': Activity,
+  'terminal': Terminal,
+  'database': Database,
+  'shield-check': ShieldCheck,
+  'container': Container,
+  'ship': Ship,
+  'workflow': Workflow,
+  'file-code': FileCode,
+  'gauge': Gauge,
+  'messages': MessagesSquare,
 };
 
 export const SHARED_ICONS = {
@@ -31,7 +40,31 @@ export const SHARED_ICONS = {
 /** Marcas tipográficas compactas y accesibles. Complementan a Lucide con una
  * identidad reconocible sin depender de fuentes de iconos o CDN externos. */
 export const TRACK_MARKS: Record<string, string> = {
-  rutaflow: 'RF', foundations: '</>', cloud: '☁', devops: '∞', javascript: 'JS',
-  node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S', 'spring-microservices': 'Sµ', 'node-microservices': 'Nµ',
-  'kotlin-multiplatform': 'K', android: 'A', ios: '', flutter: 'F', 'control-1': 'Σ',
+  'foundations': '</>',
+  'git': 'git',
+  'linux': '>_',
+  'sql': 'DB',
+  'java': 'J',
+  'javascript': 'JS',
+  'typescript': 'TS',
+  'kotlin': 'Kt',
+  'spring-boot': 'S',
+  'node': '⬢',
+  'angular': 'A',
+  'react': '⚛',
+  'flutter': 'F',
+  'android': 'A',
+  'ios': '',
+  'kotlin-multiplatform': 'K',
+  'arquitectura': '⌗',
+  'seguridad': '🔒',
+  'mensajeria': '✉',
+  'microservicios': 'µ',
+  'docker': 'D',
+  'kubernetes': 'K8s',
+  'cicd': '↻',
+  'iac': 'IaC',
+  'observabilidad': '◔',
+  'cloud': '☁',
+  'control-1': 'Σ',
 };

@@ -1,0 +1,297 @@
+{
+ "schemaVersion": 1,
+ "stackId": "kubernetes",
+ "modules": [
+  {
+   "id": "0",
+   "kind": "current",
+   "title": null,
+   "topicCount": 10,
+   "topics": [
+    {
+     "title": "Pod, ReplicaSet, Deployment",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 1,
+      "fragment": "tema-1-pod-replicaset-deployment"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Service (ClusterIP, NodePort, LoadBalancer)",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 2,
+      "fragment": "tema-2-service-clusterip-nodeport-loadbalancer"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "ConfigMaps y Secrets",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 3,
+      "fragment": "tema-3-configmaps-y-secrets"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "kubectl esencial",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 4,
+      "fragment": "tema-4-kubectl-esencial"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Namespaces",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 5,
+      "fragment": "tema-5-namespaces"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "StatefulSets, DaemonSets, Jobs y CronJobs",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "tema-6-statefulsets-daemonsets-jobs-y-cronjobs"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Persistent Volumes, PVCs y StorageClasses",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 7,
+      "fragment": "tema-7-persistent-volumes-pvcs-y-storageclasses"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Clúster local con Minikube: perfiles, addons e Ingress",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 8,
+      "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 9,
+      "fragment": "tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 10,
+      "fragment": "tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "kind": "current",
+   "title": null,
+   "topicCount": 8,
+   "topics": [
+    {
+     "title": "Helm charts y values",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 1,
+      "fragment": "tema-1-helm-charts-y-values"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ingress Controllers y reglas de enrutamiento",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 2,
+      "fragment": "tema-2-ingress-controllers-y-reglas-de-enrutamiento"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "HorizontalPodAutoscaler",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 3,
+      "fragment": "tema-3-horizontalpodautoscaler"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Probes de liveness y readiness",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 4,
+      "fragment": "tema-4-probes-de-liveness-y-readiness"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "RBAC en Kubernetes",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 5,
+      "fragment": "tema-5-rbac-en-kubernetes"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Service Mesh — Istio, Linkerd, Envoy y mTLS",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 6,
+      "fragment": "tema-6-service-mesh-istio-linkerd-envoy-y-mtls"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Estrategias de despliegue — Recreate vs RollingUpdate",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 7,
+      "fragment": "tema-7-estrategias-de-despliegue-recreate-vs-rollingupdate"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission",
+     "status": "actual",
+     "current": {
+      "module": "1",
+      "order": 8,
+      "fragment": "tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "kind": "current",
+   "title": null,
+   "topicCount": 6,
+   "topics": [
+    {
+     "title": "Docker y Compose avanzados",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 1,
+      "fragment": "tema-1-docker-y-compose-avanzados"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Kubernetes extensible y Helm avanzado",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 2,
+      "fragment": "tema-2-kubernetes-extensible-y-helm-avanzado"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Service Mesh con Istio o Linkerd",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 3,
+      "fragment": "tema-3-service-mesh-con-istio-o-linkerd"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "GitOps con Argo CD y Flux",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-gitops-con-argo-cd-y-flux"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Ansible, inventarios, roles y Vault",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "tema-5-ansible-inventarios-roles-y-vault"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "DevSecOps y métricas DORA",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 6,
+      "fragment": "tema-6-devsecops-y-metricas-dora"
+     },
+     "sources": [],
+     "courseSources": []
+    }
+   ]
+  }
+ ],
+ "books": [],
+ "courses": [],
+ "booksRequiringOcr": 0
+}

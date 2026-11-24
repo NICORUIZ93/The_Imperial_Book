@@ -50,12 +50,13 @@ describe('App', () => {
     const text = harness.routeNativeElement?.textContent ?? '';
     expect(text).toContain('The Imperial Book');
     expect(text).toContain('Academia técnica en español');
-    expect(TRACKS).toHaveLength(16);
-    expect(harness.routeNativeElement?.querySelectorAll('.card').length).toBeGreaterThanOrEqual(16);
+    expect(TRACKS).toHaveLength(27);
+    expect(harness.routeNativeElement?.querySelectorAll('.card').length).toBeGreaterThanOrEqual(27);
     expect(harness.routeNativeElement?.querySelectorAll('.card-icon img').length).toBeGreaterThanOrEqual(12);
     expect(text).toContain('Fundamentos de Ingeniería de Software');
     expect(text).toContain('Cloud Local — AWS, Azure y GCP');
-    expect(text).toContain('RutaFlow — Proyecto integrador logístico');
+    expect(text).toContain('Microservicios con Spring y Node');
+    expect(text).toContain('Cursos en orden para un objetivo');
   });
 
   it('renders a clean educational lesson with progressive topics', async () => {

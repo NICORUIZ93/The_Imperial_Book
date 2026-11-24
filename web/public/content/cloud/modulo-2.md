@@ -1,25 +1,22 @@
-# Módulo 2: Almacenamiento en la nube con S3
+# Módulo 2: Mensajería asíncrona con SQS
 
 
 ## Aprende construyendo
 
 
-### Tema 1: Objetos, buckets y su nomenclatura · Intermedio · 30 min
+### Tema 1: Colas, productores y consumidores · Intermedio · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás almacenar un objeto desde cero. Prerrequisitos: Docker y AWS CLI; verifica aws --version.
+Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    B["Bucket: mi-bucket"]
-    B --> K1["hola.txt"] --> O1["objeto A"]
-    B --> K2["fotos/2024/viaje.jpg"] --> O2["objeto B"]
-    B --> K3["fotos/2024/playa.jpg"] --> O3["objeto C"]
-    B --> K4["backups/db.sql"] --> O4["objeto D"]
+    P["Productor\n(API, servicio)\nNo sabe nada del consumidor,\nno espera respuesta directa"] -->|"envía mensaje"| Q["Cola SQS\n(almacena hasta que se procese)\nPersiste el mensaje de forma duradera"]
+    C["Consumidor\n(Lambda, proceso, etc.)\nNo sabe nada del productor"] -->|"recibe mensaje"| Q
 ```
 
 </details>
@@ -28,145 +25,33 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```error-output
-An error occurred (NoSuchBucket) when calling the PutObject operation: The specified bucket does not exist
-```
 
 ```bash
-# ❌ INCORRECTO: bucket no existe
-aws s3 cp entrega-001.jpg s3://pruebas-entrega-inexistente/envio-4471/entrega-001.jpg
-# NoSuchBucket error
-
-# ✅ CORRECTO: crear bucket primero
-aws s3 mb s3://pruebas-entrega  # make bucket
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-```
-
-```bash
-# 1. Revisar si bucket existe
-aws s3 ls | grep pruebas-entrega
-
-# 2. Si no existe, crearlo
-aws s3 mb s3://pruebas-entrega
-
-# 3. Luego sí, subir
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-```
-
-```mermaid
-flowchart LR
-    B["Bucket: mi-bucket"]
-    B --> K1["hola.txt"] --> O1["objeto A"]
-    B --> K2["fotos/2024/viaje.jpg"] --> O2["objeto B"]
-    B --> K3["fotos/2024/playa.jpg"] --> O3["objeto C"]
-    B --> K4["backups/db.sql"] --> O4["objeto D"]
-```
-
-```bash
-mkdir ejemplo-s3 && cd ejemplo-s3
-printf 'entrega 001 firmada\n' > entrega-001.txt
-aws s3 mb s3://pruebas-entrega
-aws s3 cp entrega-001.txt s3://pruebas-entrega/envio-4471/entrega-001.txt
-aws s3 ls s3://pruebas-entrega/envio-4471/
-aws s3 cp s3://pruebas-entrega/envio-4471/entrega-001.txt descargada.txt
-diff entrega-001.txt descargada.txt && echo "contenido idéntico"
+QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471","accion":"confirmar-entrega"}'
+aws sqs receive-message --queue-url "$QUEUE_URL"
 ```
 
 </details>
 
-### Tema 2: Claves y metadatos · Intermedio · 30 min
+### Tema 2: Ciclo de vida de un mensaje · Intermedio · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás subir un objeto con metadatos reales y entender por qué el Content-Type importa. Prerrequisitos: Módulo 1 (floci start, eval $(floci env)).
+Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente. Prerrequisitos: Tema 1 completo (cola delivery-commands con al menos un mensaje).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart TD
-    O["Objeto con clave &quot;facturas/2024/factura-001.pdf&quot;"]
-    O --> SYS["Metadatos del sistema\n(S3 los gestiona)"]
-    SYS --> S1["Content-Type: application/pdf"]
-    SYS --> S2["Content-Length: 245678"]
-    SYS --> S3E["ETag: &quot;9bd8a...&quot;"]
-    SYS --> S4["Last-Modified: 2026-03-10T14:22:00Z"]
-    O --> CUS["Metadatos personalizados\n(tú los defines)"]
-    CUS --> C1["x-amz-meta-usuario-id: u-4471"]
-    CUS --> C2["x-amz-meta-categoria: factura"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-aws s3 mb s3://pruebas-entrega
-echo "contenido-simulado-de-foto" > entrega-001.jpg
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg \
-  --content-type image/jpeg --metadata conductor=c-891,envioId=4471
-aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg
-```
-
-```bash
-aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001-sin-tipo.jpg
-aws s3api head-object --bucket pruebas-entrega --key envio-4471/entrega-001-sin-tipo.jpg
-```
-
-</details>
-
-### Tema 3: Versionado y ciclo de vida · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás activar versionado y recuperar una versión reemplazada por error. Prerrequisitos: Tema 2 completo (el bucket pruebas-entrega ya existe).
-
-#### ► LA ANALOGÍA
-Versionar es conservar cada edición con su propio identificador, no sobrescribir la historia.
-
-**Conceptos clave:** versionado, ID de versión, marcador de borrado (delete marker), reglas de ciclo de vida (lifecycle rules).
-
-**Definición.** Por defecto, al subir un objeto bajo una clave ya existente, S3 sobrescribe el contenido anterior sin conservar rastro: la versión previa se pierde de forma irrecuperable. El versionado modifica este comportamiento: una vez activado sobre un bucket, cada subida a una clave existente conserva ambas versiones —la anterior y la nueva—, identificadas cada una por un ID de versión único, en lugar de sobrescribir. El mecanismo permite listar el historial completo de versiones de una clave, recuperar cualquier versión anterior, o restaurar una versión antigua como versión "actual" mediante una nueva subida.
-
-Con el versionado activo, eliminar un objeto tampoco lo elimina físicamente de forma inmediata: S3 inserta un marcador de borrado (*delete marker*) como versión más reciente de esa clave. El objeto deja de aparecer en un listado estándar —el marcador oculta las versiones anteriores en las operaciones habituales—, pero el contenido real permanece almacenado y es recuperable eliminando ese marcador. Este mecanismo añade una capa de protección frente a borrados accidentales, con dos implicaciones directas: el versionado, una vez activado sobre un bucket, no admite desactivación completa —únicamente suspensión—, y un bucket versionado incrementa su consumo de almacenamiento al conservar cada versión histórica.
-
-El ciclo de vida (*lifecycle*) de un objeto se gestiona mediante reglas que S3 aplica automáticamente con el transcurso del tiempo, sin intervención manual. Una regla de ciclo de vida puede, por ejemplo, trasladar objetos con más de 30 días de antigüedad a una capa de almacenamiento de coste reducido para acceso infrecuente, eliminar versiones con más de 90 días de antigüedad, o retirar marcadores de borrado huérfanos. Estas reglas se definen sobre un bucket completo o sobre un prefijo de claves específico —por ejemplo, únicamente `logs/`— y se evalúan de forma asíncrona en segundo plano por el propio servicio.
-
-La combinación de versionado con reglas de ciclo de vida constituye un patrón habitual en producción: el versionado protege frente a sobrescrituras y borrados accidentales, mientras que una regla de ciclo de vida asociada elimina automáticamente versiones que superan cierta antigüedad, acotando el crecimiento del coste de almacenamiento que implicaría conservar indefinidamente cada versión histórica.
-
-**¿Por qué es importante?** El versionado constituye la defensa más simple y efectiva frente al error operativo más frecuente al trabajar con almacenamiento: la sobrescritura o eliminación accidental del archivo equivocado. Todo bucket que almacene datos cuya pérdida resulte inaceptable —copias de seguridad, documentos de usuario, artefactos de código empaquetado— debería, como práctica estándar de la industria, tener el versionado activo desde su creación.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
-        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
-        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
-        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
-    end
-```
-
-v1 y v2 siguen existiendo y son recuperables eliminando el marcador de borrado.
-
-En el proyecto integrador RutaFlow puedes declarar este mismo comportamiento en código, no solo
-ejecutarlo por CLI: escribe en tu propio `template.yaml` el bucket `PruebasEntrega` con
-`VersioningConfiguration: { Status: Enabled }`. Así, cualquier entorno desplegado desde esa
-plantilla nace con el versionado activo que acabás de probar a mano.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
-        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
-        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
-        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
-    end
+    SM["send-message"] --> MV["Mensaje en cola, visible"]
+    MV --> RM["receive-message"]
+    RM --> INV["Mensaje invisible durante el visibility timeout\n(el consumidor recibe el ReceiptHandle)"]
+    INV --> DEL["delete-message a tiempo"]
+    INV --> TO["Timeout expira sin borrado"]
+    DEL --> ELIM["Mensaje eliminado definitivamente"]
+    TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
 ```
 
 </details>
@@ -176,105 +61,14 @@ flowchart LR
 
 #### Código y verificación
 ```mermaid
-flowchart LR
-    subgraph K["Clave: informe.pdf — versionado ACTIVO"]
-        S1["Subida 1"] --> V1["versión v1\n(contenido A)"]
-        V1 --> S2["Subida 2"] --> V2["versión v2\n(contenido B)\n← versión actual"]
-        V2 --> BR["Borrado"] --> DM["marcador de borrado\n← versión actual\n(oculta v1 y v2 del listado normal)"]
-    end
-```
-
-```bash
-aws s3api put-bucket-versioning --bucket pruebas-entrega --versioning-configuration Status=Enabled
-echo "foto-correcta-envio-4471" > correcta.jpg
-aws s3 cp correcta.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-echo "foto-equivocada-de-otro-envio" > equivocada.jpg
-aws s3 cp equivocada.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
-aws s3api list-object-versions --bucket pruebas-entrega --prefix envio-4471/entrega-001.jpg
-```
-
-```bash
-aws s3api get-object --bucket pruebas-entrega --key envio-4471/entrega-001.jpg \
-  --version-id <VersionId-de-la-correcta> recuperada.jpg
-cat recuperada.jpg
-```
-
-</details>
-
-### Tema 4: Transición entre capas de almacenamiento · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás configurar y verificar una regla de ciclo de vida real. Prerrequisitos: Tema 3 completo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
-    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    D0["Día 0\nStandard\n(rápido, caro)"] --> D30["Día 30\nAcceso infrecuente\n(más barato, algo más de coste por acceso)"]
-    D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
-```
-
-Crea el archivo `lifecycle.json`:
-
-```json
-{
-  "Rules": [{
-    "ID": "mover-pruebas-entrega-a-infrecuente",
-    "Status": "Enabled",
-    "Filter": { "Prefix": "envio-" },
-    "Transitions": [{ "Days": 30, "StorageClass": "STANDARD_IA" }]
-  }]
-}
-```
-
-```bash
-aws s3api put-bucket-lifecycle-configuration --bucket pruebas-entrega --lifecycle-configuration file://lifecycle.json
-aws s3api get-bucket-lifecycle-configuration --bucket pruebas-entrega
-```
-
-</details>
-
-### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás generar una URL temporal para que un cliente vea su prueba de entrega sin exponer el bucket. Prerrequisitos: Tema 2 completo (objeto envio-4471/entrega-001.jpg existente).
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["Política de bucket\n(reglas JSON sobre el bucket completo,\nauditable, flexible)"]
-    B["ACL\n(permisos directos a un objeto/bucket,\nmenos recomendado)"]
-    C["URL pre-firmada\n(acceso temporal, sin credenciales,\nexpira en el tiempo)"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    A["Política de bucket\n(reglas JSON sobre el bucket completo,\nauditable, flexible)"]
-    B["ACL\n(permisos directos a un objeto/bucket,\nmenos recomendado)"]
-    C["URL pre-firmada\n(acceso temporal, sin credenciales,\nexpira en el tiempo)"]
+flowchart TD
+    SM["send-message"] --> MV["Mensaje en cola, visible"]
+    MV --> RM["receive-message"]
+    RM --> INV["Mensaje invisible durante el visibility timeout\n(el consumidor recibe el ReceiptHandle)"]
+    INV --> DEL["delete-message a tiempo"]
+    INV --> TO["Timeout expira sin borrado"]
+    DEL --> ELIM["Mensaje eliminado definitivamente"]
+    TO --> VIS["Mensaje vuelve a ser visible\n(posible entrega duplicada)"]
 ```
 
 ```bash
@@ -282,29 +76,30 @@ mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
-aws s3 presign s3://pruebas-entrega/envio-4471/entrega-001.jpg --expires-in 120
+QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471"}'
+RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
+aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
+aws sqs receive-message --queue-url "$QUEUE_URL"
 ```
 
 </details>
 
-### Antes de escribir código: crea tu propio proyecto
+### Tema 3: Dead Letter Queues (DLQ) · Intermedio · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin bloquear el resto de la cola. Prerrequisitos: Tema 2 completo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-sequenceDiagram
-    actor Estudiante
-    participant SDK as "SDK AWS"
-    participant Floci as "Floci :4566"
-    participant S3 as "Servicio S3 local"
-    Estudiante->>SDK: Ejecuta el cliente que escribió
-    SDK->>Floci: ListBuckets + credenciales test
-    Floci->>S3: Enruta la operación
-    S3-->>Floci: Buckets[]
-    Floci-->>SDK: Respuesta compatible con AWS
-    SDK-->>Estudiante: Nombre y fecha de cada bucket
+flowchart TD
+    ME["Mensaje enviado"] --> CP["Cola principal"]
+    CP -->|"recibido, falla, vuelve a ser visible\n(se repite hasta maxReceiveCount)"| Q{"¿Se alcanzó maxReceiveCount?"}
+    Q -->|"No — reintento normal"| CP
+    Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
 ```
 
 </details>
@@ -313,39 +108,99 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```bash
-mkdir s3-sdk-lab
-cd s3-sdk-lab
+```mermaid
+flowchart TD
+    ME["Mensaje enviado"] --> CP["Cola principal"]
+    CP -->|"recibido, falla, vuelve a ser visible\n(se repite hasta maxReceiveCount)"| Q{"¿Se alcanzó maxReceiveCount?"}
+    Q -->|"No — reintento normal"| CP
+    Q -->|"Sí"| DLQ["Dead Letter Queue\n(para inspección manual)"]
 ```
 
-```text
-s3-sdk-lab/                 # elige UNA de estas dos estructuras
-├── package.json            # opción JavaScript
-├── s3-list-buckets.js
-├── requirements.txt        # opción Python
-└── s3_list_buckets.py
+```bash
+DLQ_URL=$(aws sqs create-queue --queue-name delivery-commands-dlq --query QueueUrl --output text)
+DLQ_ARN=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+aws sqs set-queue-attributes --queue-url "$QUEUE_URL" --attributes "RedrivePolicy={\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"2\"}"
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-9999","accion":"comando-malformado"}'
 ```
+
+```bash
+aws sqs receive-message --queue-url "$DLQ_URL"
+```
+
+</details>
+
+### Tema 4: Colas FIFO vs Standard · Intermedio · 40 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado. Prerrequisitos: Tema 1 completo.
+
+#### ► LA ANALOGÍA
+FIFO es una fila única con turnos; Standard prioriza velocidad y no promete orden.
+
+**Conceptos clave:** cola Standard, cola FIFO, orden garantizado, deduplicación, `MessageGroupId`, `MessageDeduplicationId`.
+
+Una cola Standard prioriza el rendimiento y la disponibilidad por encima del orden estricto: puede entregar mensajes en un orden distinto al que se enviaron, y como viste en el Tema 2, puede entregar el mismo mensaje más de una vez en casos poco frecuentes. A cambio, ofrece un rendimiento prácticamente ilimitado en cuanto a mensajes por segundo, lo que la hace adecuada para la gran mayoría de los casos de uso donde el orden exacto de procesamiento no es crítico para la corrección del sistema (por ejemplo, procesar imágenes subidas por distintos usuarios: no importa si la imagen del usuario A se procesa antes o después que la del usuario B).
+
+Una cola FIFO (First In, First Out, identificada porque su nombre debe terminar en `.fifo`) garantiza dos propiedades que Standard no garantiza: el orden estricto de entrega dentro de un mismo grupo de mensajes, y una deduplicación automática de mensajes idénticos enviados en una ventana corta de tiempo. Para lograr esto, una cola FIFO introduce dos conceptos nuevos: el `MessageGroupId`, que agrupa mensajes que deben procesarse en orden entre sí (mensajes de grupos distintos sí pueden procesarse en paralelo, sin orden relativo entre ellos), y el `MessageDeduplicationId`, que SQS usa para descartar automáticamente mensajes duplicados enviados dentro de una ventana de deduplicación (por defecto, cinco minutos).
+
+El precio de estas garantías es un límite de rendimiento notablemente menor que el de una cola Standard (aunque las colas FIFO con procesamiento por lotes de alto rendimiento pueden alcanzar cifras mucho más altas que las FIFO clásicas, siguen estando por debajo del rendimiento prácticamente ilimitado de Standard), y la necesidad de pensar explícitamente en cómo agrupar tus mensajes mediante el `MessageGroupId` para no perder el paralelismo que sí necesitas entre grupos independientes.
+
+La decisión entre FIFO y Standard depende enteramente de si tu caso de uso requiere orden estricto o tolera reordenamiento. Ejemplos típicos que sí necesitan FIFO: procesar las transacciones de una misma cuenta bancaria en el orden exacto en que ocurrieron (aplicar un cargo antes que un reembolso importa), o aplicar actualizaciones de estado de un mismo pedido en secuencia (no puedes marcar un pedido como "entregado" antes de procesar el evento de "enviado"). Ejemplos típicos que toleran Standard: procesar notificaciones push independientes a distintos usuarios, o encolar tareas de procesamiento de imágenes sin relación de orden entre sí.
+
+**Analogía:** una cola Standard es como una fila de autoservicio en una tienda con varias cajas abiertas: es rápida y eficiente, pero no hay garantía de que quien llegó primero a la tienda sea necesariamente el primero en pagar si eligió una caja más lenta. Una cola FIFO es como una única fila estricta de un solo carril, donde el orden de llegada se respeta exactamente, a costa de que todo el mundo avanza a la velocidad de una sola caja (o de un carril concreto, si divides la fila en varios `MessageGroupId` independientes).
+
+**¿Por qué es importante?** Elegir el tipo de cola equivocado tiene consecuencias distintas según el error: usar Standard cuando se necesitaba orden estricto puede introducir bugs sutiles y difíciles de reproducir (que dependen del orden de llegada, algo que rara vez se prueba explícitamente); usar FIFO cuando no se necesitaba puede introducir un cuello de botella de rendimiento innecesario. Entender esta disyuntiva desde el diseño inicial evita ambos problemas.
+
+**Regla práctica:** si procesar un mensaje antes que otro del mismo grupo cambiaría el resultado correcto (cargos de una misma cuenta, estados de un mismo pedido), usa FIFO; si los mensajes son independientes entre sí, usa Standard y gana rendimiento prácticamente ilimitado.
+
+**Diagrama:**
 
 ```mermaid
-sequenceDiagram
-    actor Estudiante
-    participant SDK as "SDK AWS"
-    participant Floci as "Floci :4566"
-    participant S3 as "Servicio S3 local"
-    Estudiante->>SDK: Ejecuta el cliente que escribió
-    SDK->>Floci: ListBuckets + credenciales test
-    Floci->>S3: Enruta la operación
-    S3-->>Floci: Buckets[]
-    Floci-->>SDK: Respuesta compatible con AWS
-    SDK-->>Estudiante: Nombre y fecha de cada bucket
+flowchart LR
+    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
+        S1["Msg 3"]
+        S2["Msg 1"]
+        S3["Msg 2"]
+    end
+    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
+        direction LR
+        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
+    end
+    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
+        direction LR
+        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    end
 ```
 
-</details>
+A y B se procesan en paralelo entre sí.
 
-### Opción A — JavaScript con AWS SDK v3
+En el proyecto integrador RutaFlow, la tabla DynamoDB `ShipmentEvents` depende de que los
+eventos `creado → asignado → en camino → entregado` de un mismo envío lleguen en orden — por eso
+una futura cola de eventos de estado de ese mismo sistema debería declararse `.fifo` con
+`MessageGroupId=shipmentId`, no Standard.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+---
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
+        S1["Msg 3"]
+        S2["Msg 1"]
+        S3["Msg 2"]
+    end
+    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
+        direction LR
+        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
+    end
+    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
+        direction LR
+        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    end
+```
 
 </details>
 
@@ -353,105 +208,34 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```bash
-npm init -y
-npm pkg set type=module
-npm install @aws-sdk/client-s3
-```
-
-```js
-import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
-
-const client = new S3Client({
-  region: 'us-east-1',
-  endpoint: 'http://localhost:4566',
-  forcePathStyle: true,
-  credentials: { accessKeyId: 'test', secretAccessKey: 'test' }
-});
-
-try {
-  const result = await client.send(new ListBucketsCommand({}));
-  const buckets = result.Buckets ?? [];
-  if (buckets.length === 0) {
-    console.log('No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket');
-  } else {
-    console.log('Buckets:');
-    for (const bucket of buckets) {
-      console.log(`  - ${bucket.Name} (creado ${bucket.CreationDate?.toISOString()})`);
-    }
-  }
-} catch (error) {
-  console.error('No se pudo consultar S3 local:', error.message);
-  process.exitCode = 1;
-}
+```mermaid
+flowchart LR
+    subgraph STD["Cola Standard — orden no garantizado, posible duplicado"]
+        S1["Msg 3"]
+        S2["Msg 1"]
+        S3["Msg 2"]
+    end
+    subgraph FA["Cola FIFO (grupo A) — orden garantizado dentro del grupo A"]
+        direction LR
+        A1["Msg 1"] --> A2["Msg 2"] --> A3["Msg 3"]
+    end
+    subgraph FB["Cola FIFO (grupo B) — orden garantizado dentro del grupo B"]
+        direction LR
+        B1["Msg 1"] --> B2["Msg 2"] --> B3["Msg 3"]
+    end
 ```
 
 ```bash
-node s3-list-buckets.js
-```
-
-```text
-No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket
-```
-
-```text
-Buckets:
-  - mi-bucket (creado 2026-07-19T14:20:00.000Z)
+FIFO_URL=$(aws sqs create-queue --queue-name shipment-events.fifo --attributes FifoQueue=true --query QueueUrl --output text)
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "asignado" --message-group-id env-4471 --message-deduplication-id d1
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "en-camino" --message-group-id env-4471 --message-deduplication-id d2
+aws sqs send-message --queue-url "$FIFO_URL" --message-body "entregado" --message-group-id env-4471 --message-deduplication-id d3
+aws sqs receive-message --queue-url "$FIFO_URL" --max-number-of-messages 3
 ```
 
 </details>
 
-### Opción B — Python con boto3
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```text
-boto3
-```
-
-```python
-import boto3
-from botocore.exceptions import BotoCoreError, ClientError
-
-client = boto3.client(
-    "s3",
-    region_name="us-east-1",
-    endpoint_url="http://localhost:4566",
-    aws_access_key_id="test",
-    aws_secret_access_key="test",
-)
-
-try:
-    result = client.list_buckets()
-    buckets = result.get("Buckets", [])
-    if not buckets:
-        print("No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket")
-    else:
-        print("Buckets:")
-        for bucket in buckets:
-            print(f"  - {bucket['Name']} (creado {bucket['CreationDate'].isoformat()})")
-except (BotoCoreError, ClientError) as error:
-    raise SystemExit(f"No se pudo consultar S3 local: {error}")
-```
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate          # macOS o Linux
-# En PowerShell de Windows usa: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python s3_list_buckets.py
-```
-
-</details>
-
-### Provoca un fallo útil antes de continuar
+### Laboratorio 3.1 — Ciclo completo con cola Standard y DLQ
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -462,11 +246,11 @@ python s3_list_buckets.py
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar provoca un fallo útil antes de continuar.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.1 — ciclo completo con cola standard y dlq.
 
 </details>
 
-### Parte 1 — Operaciones CRUD básicas
+### Laboratorio 3.2 — Cola FIFO con MessageGroupId
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -477,21 +261,6 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar parte 1 — operaciones crud básicas.
-
-</details>
-
-### Parte 2 — Versionado
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar parte 2 — versionado.
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar laboratorio 3.2 — cola fifo con messagegroupid.
 
 </details>

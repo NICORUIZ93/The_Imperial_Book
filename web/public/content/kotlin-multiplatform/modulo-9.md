@@ -1,78 +1,212 @@
-# Módulo 9: Testing multiplataforma
+# Módulo 9: KMP en producción — fronteras, compatibilidad y observabilidad
+
+La app integradora demuestra que el código común compila y funciona. Un producto multiplataforma añade otra responsabilidad: una decisión en `commonMain` se convierte en API para equipos, compiladores y runtimes diferentes. Este módulo enseña a compartir solo lo estable, mantener la frontera consumible y actualizar Android/iOS sin obligarlos a desplegar simultáneamente.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: kotlin.test en commonTest · Avanzado · 30 min
+### Tema 1: La mejor frontera compartida es deliberadamente pequeña · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar vas a escribir un test en commonTest que verifique ObtenerTareasPendientesUseCase (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar…
+Al finalizar vas a diseñar una facade TaskClient mínima en commonMain que exponga solo lo que Android e iOS necesitan consumir, sin filtrar tipos internos del dominio. Prerrequisitos: Módulo 11 completado.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    Android[androidApp] --> Facade[TaskClient facade minima]
+    IOS[iosApp Swift] --> Facade
+    Facade --> Repo[TareaRepositoryImpl internal]
+    Facade -.nunca expone.-> Ktor[HttpClient interno]
+    Facade -.nunca expone.-> SQL[SQLDelight interno]
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```swift
+final class TaskScreenModel: ObservableObject {
+    private var observation: Cancellable?
+
+    func start(client: SharedTaskClient) {
+        observation = client.observe { [weak self] value, error in
+            guard let self else { return }
+            self.apply(value, error)
+        }
+    }
+
+    deinit { observation?.cancel() }
+}
+```
+
+```text
+Android UI -> adapter Kotlin --\
+                              facade shared -> dominio/repositorios
+iOS SwiftUI -> wrapper Swift --/        |
+                          interfaces de plataforma (clock, secure store)
+cancelación/lifecycle deben cruzar en ambas direcciones
+```
+
+```mermaid
+flowchart LR
+    Android[androidApp] --> Facade[TaskClient facade minima]
+    IOS[iosApp Swift] --> Facade
+    Facade --> Repo[TareaRepositoryImpl internal]
+    Facade -.nunca expone.-> Ktor[HttpClient interno]
+    Facade -.nunca expone.-> SQL[SQLDelight interno]
+```
+
+```kotlin
+public interface TaskClient {
+    public suspend fun task(id: TaskId): TaskResult
+    public fun observeTasks(): Flow<List<TaskSummary>>
+}
+
+public sealed interface TaskResult {
+    public data class Found(val task: Task) : TaskResult
+    public data object NotFound : TaskResult
+    public data object Unauthorized : TaskResult
+    public data class Unavailable(val retryable: Boolean) : TaskResult
+}
+```
+
+```bash
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a implementar un TaskSubscription: AutoCloseable que cancele explícitamente su Job al cerrarse, evitando que una pantalla de iOS retenida indefinidamente siga consumiendo un Flow compartido. Prerrequisitos: Tema 1 de este módulo.
+
+#### ► CÓMO FUNCIONA
+```mermaid
+flowchart LR
+    SwiftVM[Swift ViewModel] -->|retiene| Wrapper[wrapper Kotlin]
+    Wrapper -->|retiene callback| Closure[closure Swift]
+    Closure -->|captura fuerte| SwiftVM
+    Close[subscription.close en deinit] -.rompe el ciclo.-> Wrapper
+```
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```text
+Swift ViewModel -> Kotlin client -> callback closure -> Swift ViewModel
+       ARC                GC                  captura fuerte
+cancel handle + weak capture + lifecycle -> romper ciclo
+GC Kotlin != close(driver/socket/native handle)
+```
+
+```mermaid
+flowchart LR
+    SwiftVM[Swift ViewModel] -->|retiene| Wrapper[wrapper Kotlin]
+    Wrapper -->|retiene callback| Closure[closure Swift]
+    Closure -->|captura fuerte| SwiftVM
+    Close[subscription.close en deinit] -.rompe el ciclo.-> Wrapper
+```
+
+```kotlin
+public class TaskSubscription internal constructor(
+    private val job: Job,
+) : AutoCloseable {
+    override fun close() = job.cancel()
+}
+
+public fun TaskClient.subscribe(
+    scope: CoroutineScope,
+    listener: (List<TaskSummary>) -> Unit,
+): TaskSubscription = TaskSubscription(
+    scope.launch { observeTasks().collect(listener) },
+)
+```
+
+```bash
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Tema 3: Un artefacto compatible necesita más que el mismo número de versión · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a activar la validación binaria del plugin de Kotlin (abiValidation) para que check falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 25 y Gradle 9.7+ para el ejemplo.
 
 #### ► LA ANALOGÍA
-`kotlin.test` ofrece aserciones (`assertEquals`, `assertTrue`) que se compilan contra la implementación de testing de cada target, permitiendo escribir un único test en `commonTest` que corre de forma nativa en ambas plataformas. La analogía es una única inspección de calidad aplicada automáticamente a dos fábricas que siguen el mismo plano.
+La compatibilidad de fuente significa que el consumidor recompila; la binaria, que un binario ya compilado enlaza; la conductual, que obtiene el significado esperado — podés conservar la firma y romper el comportamiento cambiando orden, threading o un valor default. La analogía es mantener el mismo conector físico sin garantizar el mismo voltaje ni protocolo.
 
-**Conceptos clave:** un único test, ejecutado contra ambos targets.
+**Conceptos clave:** source compatibility, binary compatibility, behavioral compatibility, API dump, KLib, ABI, semantic versioning, XCFramework, Maven publication, checksum, schema, migration, serialization y deprecation.
+
+Compatibilidad source significa que el consumidor recompila; binary, que un binario ya compilado enlaza; behavioral, que obtiene significado esperado. Puedes conservar firma y romper comportamiento cambiando orden, threading, valor default o error. Versiona semánticamente, pero documenta también garantías.
+
+La validación binaria del plugin Kotlin genera dumps ABI y hace fallar `check` ante un cambio no aprobado. El soporte para KLib multiplataforma puede depender de versión/estado; úsalo junto a pruebas de compilación reales de consumidores Android y iOS, no como única evidencia.
 
 ```kotlin
-class ObtenerTareasPendientesUseCaseTest {
-    @Test
-    fun filtraSoloPendientes() = runTest {
-        val repoFake = TareaRepositoryFake(listOf(
-            Tarea("1", "A", completada = false),
-            Tarea("2", "B", completada = true),
-        ))
-        val resultado = ObtenerTareasPendientesUseCase(repoFake)()
-        assertEquals(1, resultado.size)
-    }
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation()
 }
 ```
 
-Este test, escrito una única vez en el source set `commonTest` (el equivalente de `commonMain` pero para código de pruebas), se compila y ejecuta contra el target Android y contra el target iOS de forma completamente independiente, confirmando que la lógica del caso de uso `ObtenerTareasPendientesUseCase` (Módulo 4) se comporta de forma idéntica en ambas plataformas sin necesidad de duplicar el esfuerzo de escribir y mantener dos suites de pruebas separadas y potencialmente divergentes, una directa consecuencia de que la lógica bajo prueba en sí vive completamente en `commonMain` sin ningún código específico de plataforma que pudiera comportarse de forma distinta entre ambos targets.
+Revisa el dump como código. Añadir método abstracto a interfaz implementada por apps puede romper; cambiar data class altera `copy/componentN`; exponer dependencia filtra sus tipos. Mantén `internal` por defecto y surface mínima.
 
-Esta capacidad de "escribir una vez, probar en ambas plataformas" es el complemento natural de "escribir una vez, ejecutar en ambas plataformas" (el principio central de KMP estudiado desde el Módulo 3): si la lógica de negocio vive completamente en código compartido, las pruebas de esa lógica también pueden y deben vivir completamente en código compartido, obteniendo automáticamente el mismo beneficio de verificación dual sin trabajo adicional específico por plataforma.
+Datos persisten más que binarios. SQLDelight migrations deben funcionar desde cada versión soportada en ambas plataformas. `kotlinx.serialization` requiere nombres estables (`@SerialName`), defaults para campos añadidos y política ante desconocidos. Quitar/renombrar enum o campo rompe datos cacheados y mensajes en vuelo.
 
-**Analogía:** un test en `commonTest` es como una única inspección de calidad que se aplica automáticamente al producto fabricado en cualquiera de dos fábricas idénticas que siguen exactamente el mismo plano de fabricación, confirmando que ambas fábricas producen resultados consistentes sin necesidad de un inspector distinto y un criterio de evaluación separado para cada fábrica.
+Publicación Maven produce metadata raíz y artefactos por target; Apple suele consumir XCFramework por SwiftPM/CocoaPods/direct integration. Firma artefactos, publica sources/docs, checksums y coordenadas inmutables. Nunca sobrescribas `1.2.0`. Construir Apple exige runner macOS y Xcode compatible; fija matriz.
 
-**¿Por qué es importante?** Un test escrito una única vez en `commonTest` confirma que la lógica compartida se comporta de forma idéntica en ambas plataformas, sin duplicar el esfuerzo de escribir y mantener suites de pruebas separadas por plataforma.
+No exportes todos los transitive dependencies. Decide static/dynamic framework y export explícito: exportar aumenta superficie/tamaño y puede duplicar símbolos. Prueba una app consumidora desde artefacto remoto, no solo composite build local.
 
-**Casos de uso reales:**
-- Verificar `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y confiar en que el resultado es idéntico en Android e iOS.
-- Detectar en CI (Módulo 10) si un cambio en `commonMain` rompe la lógica compartida antes de compilar ambas apps completas.
-- Cubrir reglas de negocio críticas (cálculo de precios, validaciones) con un único test suite mantenido por un solo equipo.
+**Analogía:** mantener el mismo conector físico no garantiza voltaje ni protocolo. ABI conserva encaje; contrato conductual conserva que el dispositivo funcione.
 
-**Transferencia al proyecto integrador «Núcleo móvil compartido»:** Prueba en commonTest las reglas de confirmación con datos válidos, duplicados e incompletos. Ejecuta los targets disponibles y documenta las pruebas nativas adicionales que commonTest no sustituye.
+**¿Por qué es importante?** porque Android/iOS no actualizan juntos y un SDK roto bloquea equipos distintos o falla solo después de instalar una migración antigua.
 
-</details>
+**Casos de uso reales:** nueva función abstracta, data class pública, enum serializado, XCFramework, KLib, Maven metadata, migración desde N-2 y dependencia exportada.
 
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
+**Diagrama:**
 
-#### Objetivo observable
-Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
+```text
+API source -> updateKotlinAbi/checkKotlinAbi -> ABI/KLib
+                          `-> consumer compile Android + Swift
+schemas N-2 -> migraciones -> datos actuales
+tag inmutable -> Maven targets + XCFramework -> apps de prueba -> publicar
+```
 
-</details>
+La configuración de `abiValidation` vive en `shared/build.gradle.kts`, y `./gradlew :shared:checkKotlinAbi` es el comando que la aplica en cada push:
 
-### Tema 2: Fakes en vez de mocks · Avanzado · 30 min
+```mermaid
+flowchart TD
+    Dump[dump ABI aprobado] --> Check[gradlew shared:checkKotlinAbi]
+    NuevaAPI[nueva firma publica] --> Check
+    Check -->|coincide| Pasa[CI verde]
+    Check -->|difiere sin aprobar| Falla[CI falla explicito]
+```
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a reemplazar un mock generado dinámicamente por un TareaRepositoryFake escrito a mano, compatible con cualquier target de Kotlin Multiplatform. Prerrequisitos: Tema 1 de este módulo.
+Tu proyecto RutaFlow ilustra el mismo riesgo sin `abiValidation`: si el `SyncEngine` que creas en `shared/src/commonMain/kotlin/com/academia/kmp/SyncEngine.kt` cambiara el orden de los parámetros de `drain()` sin que ningún check lo detecte, un consumidor Android que todavía no recompiló contra la nueva versión podría enlazar en runtime contra una firma distinta a la que espera. **Cuándo no conviene** activar `abiValidation` desde el primer commit: en un módulo compartido que todavía no tiene ningún consumidor externo publicado (solo se consume por fuente, dentro del mismo build), el dump de API es puro overhead de mantenimiento sin ningún consumidor al que proteger — conviene activarlo recién cuando el artefacto se publica como dependencia binaria real, no antes.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
-flowchart LR
-    CT[commonTest] --> Fake[TareaRepositoryFake Kotlin puro]
-    CT --> Mock[Mock dinamico via bytecode JVM]
-    Fake --> AND[Target Android compila]
-    Fake --> IOS[Target iOS Kotlin Native compila]
-    Mock --> AND
-    Mock --> FAIL[compileKotlinIosArm64 falla]
+flowchart TD
+    Dump[dump ABI aprobado] --> Check[gradlew shared:checkKotlinAbi]
+    NuevaAPI[nueva firma publica] --> Check
+    Check -->|coincide| Pasa[CI verde]
+    Check -->|difiere sin aprobar| Falla[CI falla explicito]
 ```
 
 </details>
@@ -81,159 +215,144 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-
 ```kotlin
-class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
-    override suspend fun obtenerTodas() = datos
+kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation()
 }
+```
+
+```text
+API source -> updateKotlinAbi/checkKotlinAbi -> ABI/KLib
+                          `-> consumer compile Android + Swift
+schemas N-2 -> migraciones -> datos actuales
+tag inmutable -> Maven targets + XCFramework -> apps de prueba -> publicar
+```
+
+```mermaid
+flowchart TD
+    Dump[dump ABI aprobado] --> Check[gradlew shared:checkKotlinAbi]
+    NuevaAPI[nueva firma publica] --> Check
+    Check -->|coincide| Pasa[CI verde]
+    Check -->|difiere sin aprobar| Falla[CI falla explicito]
 ```
 
 ```bash
-./gradlew :shared:allTests
-```
-
-</details>
-
-### Tema 3: runTest para coroutines · Avanzado · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a escribir un test con runTest que verifique una función suspend con delay() interno, corriendo instantáneamente en tiempo real. Prerrequisitos: Tema 2 de este módulo.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant Test as Test runTest
-    participant VD as Dispatcher tiempo virtual
-    Test->>VD: delay 5000 ms simulados
-    VD-->>Test: avanza sin esperar reloj real
-    Test->>Test: assertEquals esperado resultado
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```kotlin
-@Test
-fun pruebaConDelay() = runTest {
-    val resultado = funcionConDelay() // el delay() interno se "salta" en tiempo virtual, el test corre instantáneo
-    assertEquals(esperado, resultado)
-}
-```
-
-```mermaid
-sequenceDiagram
-    participant Test as Test runTest
-    participant VD as Dispatcher tiempo virtual
-    Test->>VD: delay 5000 ms simulados
-    VD-->>Test: avanza sin esperar reloj real
-    Test->>Test: assertEquals esperado resultado
+mkdir -p ejemplo-abi/src/commonMain/kotlin/academia && cd ejemplo-abi
 ```
 
 ```kotlin
-@Test
-fun pruebaConDelay() = runTest {
-    val resultado = funcionConDelay() // el delay() interno se "salta" en tiempo virtual
-    assertEquals(esperado, resultado)
-}
-```
-
-```bash
-./gradlew :shared:allTests
-```
-
-</details>
-
-### Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Usa un proyecto KMP con el plugin org.jetbrains.kotlinx.benchmark y la librería kotlinx-benchmark-runtime. El plugin allopen es necesario para la JVM. Crea el source set de benchmarks en commonMain o en un módulo benchmarks.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    B["@Benchmark en commonMain"] --> J["jvmBenchmark (JMH)"]
-    B --> N["macosArm64Benchmark (Native)"]
-    J & N --> R["ops/s ± error"]
-    R --> D["comparar implementaciones por target"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    B["@Benchmark en commonMain"] --> J["jvmBenchmark (JMH)"]
-    B --> N["macosArm64Benchmark (Native)"]
-    J & N --> R["ops/s ± error"]
-    R --> D["comparar implementaciones por target"]
+rootProject.name = "ejemplo-abi"
 ```
 
 ```kotlin
 plugins {
-    id("rutaflow.kmp.library")
-    id("org.jetbrains.kotlinx.benchmark") version "0.4.14"
-    kotlin("plugin.allopen") version "2.4.21"
+    kotlin("multiplatform") version "2.4.21"
 }
 
-allOpen { annotation("org.openjdk.jmh.annotations.State") }
+repositories {
+    mavenCentral()
+}
 
 kotlin {
-    macosArm64()
-    sourceSets.commonMain.dependencies { implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.14") }
-}
-
-benchmark {
-    targets { register("jvm"); register("macosArm64") }
-    configurations.named("main") { warmups = 3; iterations = 5; iterationTime = 1; iterationTimeUnit = "s" }
+    jvm()
+    @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+    abiValidation()
 }
 ```
 
+</details>
+
+### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar vas a inyectar una interfaz Diagnostics en commonMain y provocar el mismo fallo compartido en ambas apps para confirmar que puede simbolizarse con mapping/dSYM en cada plataforma. Prerrequisitos: Tema 3 de este módulo.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
 ```kotlin
-package co.rutaflow.bench
-
-import kotlinx.benchmark.*
-
-@State(Scope.Benchmark)
-class ParadasBenchmark {
-    private lateinit var codigos: List<String>
-    private lateinit var buscados: List<String>
-
-    @Setup fun preparar() {
-        codigos = List(5_000) { "ENV-$it" }
-        buscados = List(500) { "ENV-${it * 7}" }
-    }
-
-    @Benchmark fun buscarEnLista(): Int = buscados.count { it in codigos }  // O(n) por búsqueda
-
-    @Benchmark fun buscarEnSet(): Int {
-        val conjunto = codigos.toHashSet()                                  // O(1) por búsqueda
-        return buscados.count { it in conjunto }
-    }
+public interface Diagnostics {
+    public fun record(
+        event: DiagnosticEvent,
+        attributes: Map<String, String> = emptyMap(),
+    )
 }
-```
 
-```bash
-./gradlew :shared:jvmBenchmark
-./gradlew :shared:macosArm64Benchmark   # en una Mac con chip Apple
+public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
 ```
 
 ```text
-Benchmark                            Mode  Cnt      Score     Error  Units
-ParadasBenchmark.buscarEnLista      thrpt    5     ~260   ±   10  ops/s
-ParadasBenchmark.buscarEnSet        thrpt    5   ~3 900   ±  120  ops/s
-(las cifras dependen de la máquina; buscarEnSet debe ganar por un orden de magnitud en los dos targets)
+common failure -> Android stack + mapping --\
+               -> iOS stack + dSYM --------> build ID -> causa compartida
+SDK release -> compatibility window -> Android/iOS rollouts independientes
+metrics por sdk/app/OS -> promover | detener | forward fix
 ```
+
+```kotlin
+public interface Diagnostics {
+    public fun record(
+        event: DiagnosticEvent,
+        attributes: Map<String, String> = emptyMap(),
+    )
+}
+
+public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
+```
+
+```bash
+./gradlew :shared:allTests
+```
+
+</details>
+
+### Kotlin 2.4 y estado real de cada target
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar kotlin 2.4 y estado real de cada target.
+
+</details>
+
+### Proyecto: SDK compartido estable y operable
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: sdk compartido estable y operable.
+
+</details>
+
+### Método de estudio y proyecto de ampliación
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Nota de construcción
+Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
 
 </details>

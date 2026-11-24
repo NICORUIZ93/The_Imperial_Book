@@ -1,1 +1,2282 @@
-{"schemaVersion":1,"summary":{"currentTopics":1504,"currentTopicsWithExactBookEvidence":0,"bookCandidates":0,"courseCandidates":0,"courses":0,"provisionalTopics":1504,"booksRequiringOcr":0},"stacks":[{"id":"foundations","asset":"content/curriculum-stacks/foundations.json","hasCurrentTrack":true,"currentTopicCount":88,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":88,"moduleCount":15,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":6},{"id":"1","kind":"current","title":null,"topicCount":7},{"id":"2","kind":"current","title":null,"topicCount":8},{"id":"3","kind":"current","title":null,"topicCount":5},{"id":"4","kind":"current","title":null,"topicCount":7},{"id":"5","kind":"current","title":null,"topicCount":4},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":7},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":4},{"id":"10","kind":"current","title":null,"topicCount":7},{"id":"11","kind":"current","title":null,"topicCount":6},{"id":"12","kind":"current","title":null,"topicCount":5},{"id":"13","kind":"current","title":null,"topicCount":8},{"id":"14","kind":"current","title":null,"topicCount":4}]},{"id":"javascript","asset":"content/curriculum-stacks/javascript.json","hasCurrentTrack":true,"currentTopicCount":92,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":92,"moduleCount":15,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":5},{"id":"1","kind":"current","title":null,"topicCount":6},{"id":"2","kind":"current","title":null,"topicCount":6},{"id":"3","kind":"current","title":null,"topicCount":5},{"id":"4","kind":"current","title":null,"topicCount":5},{"id":"5","kind":"current","title":null,"topicCount":5},{"id":"6","kind":"current","title":null,"topicCount":7},{"id":"7","kind":"current","title":null,"topicCount":8},{"id":"8","kind":"current","title":null,"topicCount":7},{"id":"9","kind":"current","title":null,"topicCount":4},{"id":"10","kind":"current","title":null,"topicCount":5},{"id":"11","kind":"current","title":null,"topicCount":6},{"id":"12","kind":"current","title":null,"topicCount":4},{"id":"13","kind":"current","title":null,"topicCount":4},{"id":"14","kind":"current","title":null,"topicCount":15}]},{"id":"node","asset":"content/curriculum-stacks/node.json","hasCurrentTrack":true,"currentTopicCount":78,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":78,"moduleCount":14,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":4},{"id":"1","kind":"current","title":null,"topicCount":6},{"id":"2","kind":"current","title":null,"topicCount":6},{"id":"3","kind":"current","title":null,"topicCount":7},{"id":"4","kind":"current","title":null,"topicCount":6},{"id":"5","kind":"current","title":null,"topicCount":4},{"id":"6","kind":"current","title":null,"topicCount":6},{"id":"7","kind":"current","title":null,"topicCount":7},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":6},{"id":"10","kind":"current","title":null,"topicCount":6},{"id":"11","kind":"current","title":null,"topicCount":4},{"id":"12","kind":"current","title":null,"topicCount":6},{"id":"13","kind":"current","title":null,"topicCount":5}]},{"id":"angular","asset":"content/curriculum-stacks/angular.json","hasCurrentTrack":true,"currentTopicCount":78,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":78,"moduleCount":17,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":4},{"id":"1","kind":"current","title":null,"topicCount":7},{"id":"2","kind":"current","title":null,"topicCount":6},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":6},{"id":"5","kind":"current","title":null,"topicCount":5},{"id":"6","kind":"current","title":null,"topicCount":4},{"id":"7","kind":"current","title":null,"topicCount":3},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":3},{"id":"10","kind":"current","title":null,"topicCount":4},{"id":"11","kind":"current","title":null,"topicCount":7},{"id":"12","kind":"current","title":null,"topicCount":3},{"id":"13","kind":"current","title":null,"topicCount":3},{"id":"14","kind":"current","title":null,"topicCount":6},{"id":"15","kind":"current","title":null,"topicCount":4},{"id":"16","kind":"current","title":null,"topicCount":4}]},{"id":"react","asset":"content/curriculum-stacks/react.json","hasCurrentTrack":true,"currentTopicCount":64,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":64,"moduleCount":15,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":4},{"id":"1","kind":"current","title":null,"topicCount":6},{"id":"2","kind":"current","title":null,"topicCount":8},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":3},{"id":"5","kind":"current","title":null,"topicCount":3},{"id":"6","kind":"current","title":null,"topicCount":3},{"id":"7","kind":"current","title":null,"topicCount":4},{"id":"8","kind":"current","title":null,"topicCount":3},{"id":"9","kind":"current","title":null,"topicCount":7},{"id":"10","kind":"current","title":null,"topicCount":4},{"id":"11","kind":"current","title":null,"topicCount":3},{"id":"12","kind":"current","title":null,"topicCount":3},{"id":"13","kind":"current","title":null,"topicCount":5},{"id":"14","kind":"current","title":null,"topicCount":4}]},{"id":"java","asset":"content/curriculum-stacks/java.json","hasCurrentTrack":true,"currentTopicCount":120,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":120,"moduleCount":23,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":9},{"id":"1","kind":"current","title":null,"topicCount":6},{"id":"2","kind":"current","title":null,"topicCount":6},{"id":"3","kind":"current","title":null,"topicCount":3},{"id":"4","kind":"current","title":null,"topicCount":4},{"id":"5","kind":"current","title":null,"topicCount":7},{"id":"6","kind":"current","title":null,"topicCount":3},{"id":"7","kind":"current","title":null,"topicCount":3},{"id":"8","kind":"current","title":null,"topicCount":4},{"id":"9","kind":"current","title":null,"topicCount":4},{"id":"10","kind":"current","title":null,"topicCount":3},{"id":"11","kind":"current","title":null,"topicCount":4},{"id":"12","kind":"current","title":null,"topicCount":6},{"id":"13","kind":"current","title":null,"topicCount":3},{"id":"14","kind":"current","title":null,"topicCount":6},{"id":"15","kind":"current","title":null,"topicCount":6},{"id":"16","kind":"current","title":null,"topicCount":8},{"id":"17","kind":"current","title":null,"topicCount":2},{"id":"18","kind":"current","title":null,"topicCount":3},{"id":"19","kind":"current","title":null,"topicCount":9},{"id":"20","kind":"current","title":null,"topicCount":13},{"id":"21","kind":"current","title":null,"topicCount":5},{"id":"22","kind":"current","title":null,"topicCount":3}]},{"id":"spring-boot","asset":"content/curriculum-stacks/spring-boot.json","hasCurrentTrack":true,"currentTopicCount":123,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":123,"moduleCount":21,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":6},{"id":"1","kind":"current","title":null,"topicCount":3},{"id":"2","kind":"current","title":null,"topicCount":8},{"id":"3","kind":"current","title":null,"topicCount":3},{"id":"4","kind":"current","title":null,"topicCount":5},{"id":"5","kind":"current","title":null,"topicCount":5},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":8},{"id":"8","kind":"current","title":null,"topicCount":8},{"id":"9","kind":"current","title":null,"topicCount":4},{"id":"10","kind":"current","title":null,"topicCount":7},{"id":"11","kind":"current","title":null,"topicCount":7},{"id":"12","kind":"current","title":null,"topicCount":2},{"id":"13","kind":"current","title":null,"topicCount":4},{"id":"14","kind":"current","title":null,"topicCount":4},{"id":"15","kind":"current","title":null,"topicCount":9},{"id":"16","kind":"current","title":null,"topicCount":12},{"id":"17","kind":"current","title":null,"topicCount":7},{"id":"18","kind":"current","title":null,"topicCount":3},{"id":"19","kind":"current","title":null,"topicCount":4},{"id":"20","kind":"current","title":null,"topicCount":9}]},{"id":"spring-microservices","asset":"content/curriculum-stacks/spring-microservices.json","hasCurrentTrack":true,"currentTopicCount":24,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":24,"moduleCount":4,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":8},{"id":"1","kind":"current","title":null,"topicCount":7},{"id":"2","kind":"current","title":null,"topicCount":5},{"id":"3","kind":"current","title":null,"topicCount":4}]},{"id":"node-microservices","asset":"content/curriculum-stacks/node-microservices.json","hasCurrentTrack":true,"currentTopicCount":59,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":59,"moduleCount":11,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":7},{"id":"1","kind":"current","title":null,"topicCount":5},{"id":"2","kind":"current","title":null,"topicCount":4},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":4},{"id":"5","kind":"current","title":null,"topicCount":6},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":6},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":7},{"id":"10","kind":"current","title":null,"topicCount":6}]},{"id":"kotlin-multiplatform","asset":"content/curriculum-stacks/kotlin-multiplatform.json","hasCurrentTrack":true,"currentTopicCount":66,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":66,"moduleCount":14,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":4},{"id":"1","kind":"current","title":null,"topicCount":5},{"id":"2","kind":"current","title":null,"topicCount":4},{"id":"3","kind":"current","title":null,"topicCount":6},{"id":"4","kind":"current","title":null,"topicCount":5},{"id":"5","kind":"current","title":null,"topicCount":5},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":8},{"id":"8","kind":"current","title":null,"topicCount":4},{"id":"9","kind":"current","title":null,"topicCount":4},{"id":"10","kind":"current","title":null,"topicCount":3},{"id":"11","kind":"current","title":null,"topicCount":3},{"id":"12","kind":"current","title":null,"topicCount":4},{"id":"13","kind":"current","title":null,"topicCount":6}]},{"id":"android","asset":"content/curriculum-stacks/android.json","hasCurrentTrack":true,"currentTopicCount":83,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":83,"moduleCount":19,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":6},{"id":"1","kind":"current","title":null,"topicCount":3},{"id":"2","kind":"current","title":null,"topicCount":4},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":4},{"id":"5","kind":"current","title":null,"topicCount":3},{"id":"6","kind":"current","title":null,"topicCount":3},{"id":"7","kind":"current","title":null,"topicCount":3},{"id":"8","kind":"current","title":null,"topicCount":3},{"id":"9","kind":"current","title":null,"topicCount":3},{"id":"10","kind":"current","title":null,"topicCount":3},{"id":"11","kind":"current","title":null,"topicCount":3},{"id":"12","kind":"current","title":null,"topicCount":4},{"id":"13","kind":"current","title":null,"topicCount":5},{"id":"14","kind":"current","title":null,"topicCount":6},{"id":"15","kind":"current","title":null,"topicCount":9},{"id":"16","kind":"current","title":null,"topicCount":7},{"id":"17","kind":"current","title":null,"topicCount":5},{"id":"18","kind":"current","title":null,"topicCount":5}]},{"id":"ios","asset":"content/curriculum-stacks/ios.json","hasCurrentTrack":true,"currentTopicCount":69,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":69,"moduleCount":15,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":5},{"id":"1","kind":"current","title":null,"topicCount":3},{"id":"2","kind":"current","title":null,"topicCount":3},{"id":"3","kind":"current","title":null,"topicCount":3},{"id":"4","kind":"current","title":null,"topicCount":6},{"id":"5","kind":"current","title":null,"topicCount":3},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":3},{"id":"8","kind":"current","title":null,"topicCount":3},{"id":"9","kind":"current","title":null,"topicCount":3},{"id":"10","kind":"current","title":null,"topicCount":5},{"id":"11","kind":"current","title":null,"topicCount":3},{"id":"12","kind":"current","title":null,"topicCount":4},{"id":"13","kind":"current","title":null,"topicCount":10},{"id":"14","kind":"current","title":null,"topicCount":10}]},{"id":"flutter","asset":"content/curriculum-stacks/flutter.json","hasCurrentTrack":true,"currentTopicCount":119,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":119,"moduleCount":23,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":7},{"id":"1","kind":"current","title":null,"topicCount":5},{"id":"2","kind":"current","title":null,"topicCount":3},{"id":"3","kind":"current","title":null,"topicCount":3},{"id":"4","kind":"current","title":null,"topicCount":5},{"id":"5","kind":"current","title":null,"topicCount":4},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":6},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":3},{"id":"10","kind":"current","title":null,"topicCount":3},{"id":"11","kind":"current","title":null,"topicCount":5},{"id":"12","kind":"current","title":null,"topicCount":4},{"id":"13","kind":"current","title":null,"topicCount":4},{"id":"14","kind":"current","title":null,"topicCount":6},{"id":"15","kind":"current","title":null,"topicCount":8},{"id":"16","kind":"current","title":null,"topicCount":6},{"id":"17","kind":"current","title":null,"topicCount":6},{"id":"18","kind":"current","title":null,"topicCount":7},{"id":"19","kind":"current","title":null,"topicCount":6},{"id":"20","kind":"current","title":null,"topicCount":6},{"id":"21","kind":"current","title":null,"topicCount":6},{"id":"22","kind":"current","title":null,"topicCount":6}]},{"id":"devops","asset":"content/curriculum-stacks/devops.json","hasCurrentTrack":true,"currentTopicCount":139,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":139,"moduleCount":23,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":11},{"id":"1","kind":"current","title":null,"topicCount":7},{"id":"2","kind":"current","title":null,"topicCount":9},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":5},{"id":"5","kind":"current","title":null,"topicCount":7},{"id":"6","kind":"current","title":null,"topicCount":10},{"id":"7","kind":"current","title":null,"topicCount":8},{"id":"8","kind":"current","title":null,"topicCount":9},{"id":"9","kind":"current","title":null,"topicCount":8},{"id":"10","kind":"current","title":null,"topicCount":4},{"id":"11","kind":"current","title":null,"topicCount":7},{"id":"12","kind":"current","title":null,"topicCount":7},{"id":"13","kind":"current","title":null,"topicCount":3},{"id":"14","kind":"current","title":null,"topicCount":4},{"id":"15","kind":"current","title":null,"topicCount":6},{"id":"16","kind":"current","title":null,"topicCount":6},{"id":"17","kind":"current","title":null,"topicCount":4},{"id":"18","kind":"current","title":null,"topicCount":4},{"id":"19","kind":"current","title":null,"topicCount":4},{"id":"20","kind":"current","title":null,"topicCount":4},{"id":"21","kind":"current","title":null,"topicCount":4},{"id":"22","kind":"current","title":null,"topicCount":4}]},{"id":"cloud","asset":"content/curriculum-stacks/cloud.json","hasCurrentTrack":true,"currentTopicCount":168,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":168,"moduleCount":35,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":8},{"id":"1","kind":"current","title":null,"topicCount":5},{"id":"2","kind":"current","title":null,"topicCount":5},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":6},{"id":"5","kind":"current","title":null,"topicCount":7},{"id":"6","kind":"current","title":null,"topicCount":5},{"id":"7","kind":"current","title":null,"topicCount":5},{"id":"8","kind":"current","title":null,"topicCount":3},{"id":"9","kind":"current","title":null,"topicCount":5},{"id":"10","kind":"current","title":null,"topicCount":3},{"id":"11","kind":"current","title":null,"topicCount":3},{"id":"12","kind":"current","title":null,"topicCount":3},{"id":"13","kind":"current","title":null,"topicCount":3},{"id":"14","kind":"current","title":null,"topicCount":4},{"id":"15","kind":"current","title":null,"topicCount":3},{"id":"16","kind":"current","title":null,"topicCount":4},{"id":"17","kind":"current","title":null,"topicCount":3},{"id":"18","kind":"current","title":null,"topicCount":3},{"id":"19","kind":"current","title":null,"topicCount":3},{"id":"20","kind":"current","title":null,"topicCount":4},{"id":"21","kind":"current","title":null,"topicCount":6},{"id":"22","kind":"current","title":null,"topicCount":6},{"id":"23","kind":"current","title":null,"topicCount":4},{"id":"24","kind":"current","title":null,"topicCount":5},{"id":"25","kind":"current","title":null,"topicCount":6},{"id":"26","kind":"current","title":null,"topicCount":4},{"id":"27","kind":"current","title":null,"topicCount":4},{"id":"28","kind":"current","title":null,"topicCount":5},{"id":"29","kind":"current","title":null,"topicCount":5},{"id":"30","kind":"current","title":null,"topicCount":4},{"id":"31","kind":"current","title":null,"topicCount":6},{"id":"32","kind":"current","title":null,"topicCount":6},{"id":"33","kind":"current","title":null,"topicCount":7},{"id":"34","kind":"current","title":null,"topicCount":11}]},{"id":"rutaflow","asset":"content/curriculum-stacks/rutaflow.json","hasCurrentTrack":true,"currentTopicCount":29,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":29,"moduleCount":8,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":3},{"id":"1","kind":"current","title":null,"topicCount":3},{"id":"2","kind":"current","title":null,"topicCount":4},{"id":"3","kind":"current","title":null,"topicCount":3},{"id":"4","kind":"current","title":null,"topicCount":3},{"id":"5","kind":"current","title":null,"topicCount":5},{"id":"6","kind":"current","title":null,"topicCount":4},{"id":"7","kind":"current","title":null,"topicCount":4}]},{"id":"control-1","asset":"content/curriculum-stacks/control-1.json","hasCurrentTrack":true,"currentTopicCount":105,"exactBookEvidenceTopicCount":0,"bookCandidateCount":0,"courseCandidateCount":0,"topicCount":105,"moduleCount":30,"bookCount":0,"courseCount":0,"booksRequiringOcr":0,"modules":[{"id":"0","kind":"current","title":null,"topicCount":1},{"id":"1","kind":"current","title":null,"topicCount":4},{"id":"2","kind":"current","title":null,"topicCount":4},{"id":"3","kind":"current","title":null,"topicCount":4},{"id":"4","kind":"current","title":null,"topicCount":1},{"id":"5","kind":"current","title":null,"topicCount":3},{"id":"6","kind":"current","title":null,"topicCount":4},{"id":"7","kind":"current","title":null,"topicCount":3},{"id":"8","kind":"current","title":null,"topicCount":5},{"id":"9","kind":"current","title":null,"topicCount":1},{"id":"10","kind":"current","title":null,"topicCount":2},{"id":"11","kind":"current","title":null,"topicCount":4},{"id":"12","kind":"current","title":null,"topicCount":5},{"id":"13","kind":"current","title":null,"topicCount":3},{"id":"14","kind":"current","title":null,"topicCount":2},{"id":"15","kind":"current","title":null,"topicCount":4},{"id":"16","kind":"current","title":null,"topicCount":3},{"id":"17","kind":"current","title":null,"topicCount":3},{"id":"18","kind":"current","title":null,"topicCount":5},{"id":"19","kind":"current","title":null,"topicCount":3},{"id":"20","kind":"current","title":null,"topicCount":4},{"id":"21","kind":"current","title":null,"topicCount":1},{"id":"22","kind":"current","title":null,"topicCount":1},{"id":"23","kind":"current","title":null,"topicCount":3},{"id":"24","kind":"current","title":null,"topicCount":3},{"id":"25","kind":"current","title":null,"topicCount":3},{"id":"26","kind":"current","title":null,"topicCount":3},{"id":"27","kind":"current","title":null,"topicCount":3},{"id":"28","kind":"current","title":null,"topicCount":3},{"id":"29","kind":"current","title":null,"topicCount":17}]}]}
+{
+ "schemaVersion": 1,
+ "summary": {
+  "currentTopics": 1695,
+  "currentTopicsWithExactBookEvidence": 0,
+  "bookCandidates": 0,
+  "courseCandidates": 0,
+  "courses": 0,
+  "provisionalTopics": 1695,
+  "booksRequiringOcr": 0
+ },
+ "stacks": [
+  {
+   "id": "android",
+   "asset": "content/curriculum-stacks/android.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 81,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 81,
+   "moduleCount": 18,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 10
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    }
+   ]
+  },
+  {
+   "id": "angular",
+   "asset": "content/curriculum-stacks/angular.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 81,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 81,
+   "moduleCount": 17,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "arquitectura",
+   "asset": "content/curriculum-stacks/arquitectura.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 28,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 28,
+   "moduleCount": 5,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "cicd",
+   "asset": "content/curriculum-stacks/cicd.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 22,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 22,
+   "moduleCount": 4,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  },
+  {
+   "id": "cloud",
+   "asset": "content/curriculum-stacks/cloud.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 224,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 224,
+   "moduleCount": 36,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 11
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 13
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 15
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "19",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "20",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "21",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "22",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "23",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "24",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "25",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "26",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "27",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "28",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "29",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "30",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "31",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "32",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "33",
+     "kind": "current",
+     "title": null,
+     "topicCount": 11
+    },
+    {
+     "id": "34",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "35",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "control-1",
+   "asset": "content/curriculum-stacks/control-1.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 107,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 107,
+   "moduleCount": 30,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 1
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 1
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 1
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 2
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 2
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "19",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "20",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "21",
+     "kind": "current",
+     "title": null,
+     "topicCount": 1
+    },
+    {
+     "id": "22",
+     "kind": "current",
+     "title": null,
+     "topicCount": 1
+    },
+    {
+     "id": "23",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "24",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "25",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "26",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "27",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "28",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "29",
+     "kind": "current",
+     "title": null,
+     "topicCount": 17
+    }
+   ]
+  },
+  {
+   "id": "docker",
+   "asset": "content/curriculum-stacks/docker.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 24,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 24,
+   "moduleCount": 3,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 11
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    }
+   ]
+  },
+  {
+   "id": "flutter",
+   "asset": "content/curriculum-stacks/flutter.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 106,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 106,
+   "moduleCount": 20,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "19",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  },
+  {
+   "id": "foundations",
+   "asset": "content/curriculum-stacks/foundations.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 73,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 73,
+   "moduleCount": 11,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    }
+   ]
+  },
+  {
+   "id": "git",
+   "asset": "content/curriculum-stacks/git.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 8,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 8,
+   "moduleCount": 1,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    }
+   ]
+  },
+  {
+   "id": "iac",
+   "asset": "content/curriculum-stacks/iac.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 9,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 9,
+   "moduleCount": 1,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    }
+   ]
+  },
+  {
+   "id": "ios",
+   "asset": "content/curriculum-stacks/ios.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 73,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 73,
+   "moduleCount": 15,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 12
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 10
+    }
+   ]
+  },
+  {
+   "id": "java",
+   "asset": "content/curriculum-stacks/java.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 118,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 118,
+   "moduleCount": 23,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 2
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 2
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "19",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "20",
+     "kind": "current",
+     "title": null,
+     "topicCount": 13
+    },
+    {
+     "id": "21",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "22",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    }
+   ]
+  },
+  {
+   "id": "javascript",
+   "asset": "content/curriculum-stacks/javascript.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 96,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 96,
+   "moduleCount": 14,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 15
+    }
+   ]
+  },
+  {
+   "id": "kotlin",
+   "asset": "content/curriculum-stacks/kotlin.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 20,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 20,
+   "moduleCount": 4,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "kotlin-multiplatform",
+   "asset": "content/curriculum-stacks/kotlin-multiplatform.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 56,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 56,
+   "moduleCount": 11,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  },
+  {
+   "id": "kubernetes",
+   "asset": "content/curriculum-stacks/kubernetes.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 24,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 24,
+   "moduleCount": 3,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 10
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  },
+  {
+   "id": "linux",
+   "asset": "content/curriculum-stacks/linux.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 18,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 18,
+   "moduleCount": 2,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 14
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "mensajeria",
+   "asset": "content/curriculum-stacks/mensajeria.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 13,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 13,
+   "moduleCount": 2,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    }
+   ]
+  },
+  {
+   "id": "microservicios",
+   "asset": "content/curriculum-stacks/microservicios.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 202,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 202,
+   "moduleCount": 31,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 13
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 11
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 10
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 10
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "19",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "20",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "21",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "22",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "23",
+     "kind": "current",
+     "title": null,
+     "topicCount": 12
+    },
+    {
+     "id": "24",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "25",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "26",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "27",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "28",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "29",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "30",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "node",
+   "asset": "content/curriculum-stacks/node.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 98,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 98,
+   "moduleCount": 13,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 13
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 14
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 11
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    }
+   ]
+  },
+  {
+   "id": "observabilidad",
+   "asset": "content/curriculum-stacks/observabilidad.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 18,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 18,
+   "moduleCount": 3,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  },
+  {
+   "id": "react",
+   "asset": "content/curriculum-stacks/react.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 69,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 69,
+   "moduleCount": 15,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "seguridad",
+   "asset": "content/curriculum-stacks/seguridad.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 13,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 13,
+   "moduleCount": 2,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    }
+   ]
+  },
+  {
+   "id": "spring-boot",
+   "asset": "content/curriculum-stacks/spring-boot.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 93,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 93,
+   "moduleCount": 19,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "2",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "3",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "4",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "5",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "6",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    },
+    {
+     "id": "7",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    },
+    {
+     "id": "8",
+     "kind": "current",
+     "title": null,
+     "topicCount": 9
+    },
+    {
+     "id": "9",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "10",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "11",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "12",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "13",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    },
+    {
+     "id": "14",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "15",
+     "kind": "current",
+     "title": null,
+     "topicCount": 3
+    },
+    {
+     "id": "16",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "17",
+     "kind": "current",
+     "title": null,
+     "topicCount": 5
+    },
+    {
+     "id": "18",
+     "kind": "current",
+     "title": null,
+     "topicCount": 4
+    }
+   ]
+  },
+  {
+   "id": "sql",
+   "asset": "content/curriculum-stacks/sql.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 8,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 8,
+   "moduleCount": 1,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 8
+    }
+   ]
+  },
+  {
+   "id": "typescript",
+   "asset": "content/curriculum-stacks/typescript.json",
+   "hasCurrentTrack": true,
+   "currentTopicCount": 13,
+   "exactBookEvidenceTopicCount": 0,
+   "bookCandidateCount": 0,
+   "courseCandidateCount": 0,
+   "topicCount": 13,
+   "moduleCount": 2,
+   "bookCount": 0,
+   "courseCount": 0,
+   "booksRequiringOcr": 0,
+   "modules": [
+    {
+     "id": "0",
+     "kind": "current",
+     "title": null,
+     "topicCount": 7
+    },
+    {
+     "id": "1",
+     "kind": "current",
+     "title": null,
+     "topicCount": 6
+    }
+   ]
+  }
+ ]
+}

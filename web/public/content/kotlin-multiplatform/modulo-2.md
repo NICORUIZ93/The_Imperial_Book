@@ -1,27 +1,26 @@
-# Módulo 2: Coroutines y Flow
+# Módulo 2: Networking compartido con Ktor Client
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria — suspend functions, Flow/StateFlow/SharedFlow, manejo de errores con Mutex, y Dispatchers son los cuatro pilares de la concurrencia en Kotlin que vas a reutilizar en Android, iOS y backend compartido.
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, contra un servidor HTTP real —no una simulación— para que cada afirmación sobre networking sea verificable, no solo descrita.
 
 
 ## Aprende construyendo
 
 
-### Tema 1: suspend functions y concurrencia estructurada · Intermedio · 45 min
+### Tema 1: Ktor Client multiplataforma · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás escribir una función suspend que combina dos llamadas asíncronas en paralelo, y explicar por qué cancelar el scope padre cancela automáticamente todas sus coroutines hijas.
+Al finalizar podrás configurar un HttpClient con deserialización JSON automática, y explicar por qué el mismo cliente funciona en Android e iOS sin que el código lo note.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-  A[coroutineScope] --> B["async obtenerUsuario()"]
-  A --> C["async obtenerPedidos()"]
-  B --> D[ambas en paralelo]
+  A["HttpClient (commonMain)"] --> B["motor OkHttp (Android)"]
+  A --> C["motor Darwin (iOS)"]
+  B --> D[misma API, mismo resultado]
   C --> D
-  A -->|cancelado| E[cancela B y C en cascada]
 ```
 
 </details>
@@ -30,78 +29,185 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+
 ```kotlin
-suspend fun cargarPantalla() = coroutineScope {
-    val usuario = async { obtenerUsuario() }
-    val pedidos = async { obtenerPedidos() }
-    PantallaDatos(usuario.await(), pedidos.await())
+package com.academia.kmp
+
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.Serializable
+
+fun crearClienteJson(engine: io.ktor.client.engine.HttpClientEngine): HttpClient =
+    HttpClient(engine) { install(ContentNegotiation) { json() } }
+
+@Serializable
+data class TareaDTO(val id: String, val titulo: String)
+
+suspend fun obtenerTareas(client: HttpClient): List<TareaDTO> =
+    client.get("https://api.miapp.com/tareas").body()
+```
+
+```bash
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+cd academia-kmp
+./gradlew :shared:compileKotlinMetadata
+```
+
+```kotlin
+package com.academia.kmp
+
+import io.ktor.client.engine.mock.*
+import io.ktor.http.*
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class NetworkingTest {
+    @Test
+    fun obtenerTareasDeserializaLaRespuestaJsonReal() = runTest {
+        val mockEngine = MockEngine { request ->
+            assertEquals("https://api.miapp.com/tareas", request.url.toString())
+            respond(
+                content = """[{"id":"1","titulo":"Comprar leche"}]""",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json"),
+            )
+        }
+        val client = crearClienteJson(mockEngine)
+        val tareas = obtenerTareas(client)
+        assertEquals(listOf(TareaDTO("1", "Comprar leche")), tareas)
+    }
 }
 ```
 
+```bash
+# ejecuta el test Kotlin del módulo compartido contra el HttpClient real
+cd academia-kmp
+./gradlew :shared:allTests
+```
+
+```kotlin
+fun crearClienteJson(engine: HttpClientEngine): HttpClient = HttpClient(engine) {
+    install(____) { json() }
+}
+```
+
+</details>
+
+### Tema 2: Manejo de errores de red con un tipo explícito · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás modelar el resultado de una llamada de red como Resultado.Exito/Resultado.Error, y confirmar contra un servidor real apagado que el error se captura sin propagar una excepción sin control.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── obtenerTareasSeguro(): Resultado<List<TareaDTO>> ──┐
+│  servidor responde  -> Resultado.Exito(datos)           │
+│  servidor apagado/timeout -> Resultado.Error(mensaje)   │
+└───────────────────────────────────────────────────┘
+```
+
+```kotlin
+package com.academia.kmp
+
+import io.ktor.client.*
+
+sealed class Resultado<out T> {
+    data class Exito<T>(val datos: T) : Resultado<T>()
+    data class Error(val mensaje: String) : Resultado<Nothing>()
+}
+
+suspend fun obtenerTareasSeguro(client: HttpClient): Resultado<List<TareaDTO>> = try {
+    Resultado.Exito(obtenerTareas(client))
+} catch (e: Exception) {
+    Resultado.Error(e.message ?: "Error de red")
+}
+```
+
+```bash
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+cd academia-kmp
+./gradlew :shared:compileKotlinMetadata
+```
+
+```kotlin
+package com.academia.kmp
+
+import io.ktor.client.engine.mock.*
+import io.ktor.http.*
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+
+class NetworkingSeguroTest {
+    @Test
+    fun conRespuestaExitosaDevuelveResultadoExito() = runTest {
+        val mockEngine = MockEngine {
+            respond(
+                content = """[{"id":"1","titulo":"Comprar leche"}]""",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json"),
+            )
+        }
+        val resultado = obtenerTareasSeguro(crearClienteJson(mockEngine))
+        assertIs<Resultado.Exito<List<TareaDTO>>>(resultado)
+        assertEquals(listOf(TareaDTO("1", "Comprar leche")), resultado.datos)
+    }
+
+    @Test
+    fun conFalloDeConexionDevuelveResultadoErrorSinPropagar() = runTest {
+        val mockEngine = MockEngine { throw java.net.ConnectException("Connection refused") }
+        val resultado = obtenerTareasSeguro(crearClienteJson(mockEngine))
+        assertIs<Resultado.Error>(resultado)
+    }
+}
+```
+
+```bash
+# ejecuta el test Kotlin del módulo compartido, con y sin fallo de red
+cd academia-kmp
+./gradlew :shared:allTests
+```
+
+```kotlin
+suspend fun obtenerPerfilSeguro(): Resultado<Perfil> = try {
+    Resultado.____(obtenerPerfil())
+} catch (e: Exception) {
+    Resultado.____(e.message ?: "Error de red")
+}
+```
+
+</details>
+
+### Tema 3: Interceptores y autenticación · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás configurar un interceptor que agregue un header a cada petición saliente automáticamente, y confirmar contra un servidor real que el header llega en cada llamada sin repetirlo manualmente.
+
+#### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-  A[coroutineScope] --> B["async obtenerUsuario()"]
-  A --> C["async obtenerPedidos()"]
-  B --> D[ambas en paralelo]
-  C --> D
-  A -->|cancelado| E[cancela B y C en cascada]
+  A[llamada 1: GET /tareas] --> B[interceptor agrega Authorization]
+  C[llamada 2: GET /perfil] --> B
+  B --> D[ambas llegan al servidor CON el mismo header, sin repetirlo en el código]
 ```
-
-```kotlin
-package com.academia.kmp
-
-import kotlinx.coroutines.*
-
-suspend fun obtenerUsuario(): String { delay(200); return "Ana" }
-suspend fun obtenerPedidos(): List<String> { delay(200); return listOf("pedido1", "pedido2") }
-
-suspend fun cargarPantalla() = coroutineScope {
-    val usuario = async { obtenerUsuario() }
-    val pedidos = async { obtenerPedidos() }
-    Pair(usuario.await(), pedidos.await()) // ambas corren en PARALELO, no secuencial
-}
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-
-class ConcurrenciaEstructuradaTest {
-    @Test
-    fun ambasLlamadasCorrenEnParaleloNoEnSecuencia() = runTest {
-        val (usuario, pedidos) = cargarPantalla()
-        assertEquals("Ana", usuario)
-        assertEquals(listOf("pedido1", "pedido2"), pedidos)
-        // con tiempo virtual, el tiempo transcurrido es EXACTO: 200ms si corrieron en paralelo
-        assertEquals(200, currentTime)
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido, con tiempo virtual
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-</details>
-
-### Tema 2: Flow, StateFlow y SharedFlow · Intermedio · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás elegir entre Flow, StateFlow y SharedFlow según si tu dato necesita un valor actual siempre consultable o representa un evento puntual de un solo uso.
 
 </details>
 
@@ -109,210 +215,90 @@ Al finalizar podrás elegir entre Flow, StateFlow y SharedFlow según si tu dato
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```
-┌── Flow ────────────┐   ┌── StateFlow ──────────────┐   ┌── SharedFlow ──────────────┐
-│ emite N valores,    │   │ SIEMPRE tiene un valor      │   │ SIN valor inicial,           │
-│ evaluación perezosa  │   │ actual consultable          │   │ eventos de un solo uso       │
-└─────────────────┘   └────────────────────────┘   └────────────────────────┘
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.delay
-
-fun contarHasta(n: Int): Flow<Int> = flow {
-    for (i in 1..n) { delay(10); emit(i) }
-}
-
-sealed class EstadoPantalla { object Cargando : EstadoPantalla(); object Exito : EstadoPantalla() }
-
-class ObservadorDeEstado {
-    val estado = MutableStateFlow<EstadoPantalla>(EstadoPantalla.Cargando)   // siempre tiene valor actual
-    val eventos = MutableSharedFlow<String>()                                // sin valor inicial, un solo uso
-}
-```
-
-```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
-cd academia-kmp
-./gradlew :shared:assemble
+```mermaid
+flowchart LR
+  A[llamada 1: GET /tareas] --> B[interceptor agrega Authorization]
+  C[llamada 2: GET /perfil] --> B
+  B --> D[ambas llegan al servidor CON el mismo header, sin repetirlo en el código]
 ```
 
 ```kotlin
 package com.academia.kmp
 
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.request.*
 
-class FlowTiposTest {
-    @Test
-    fun flowEmiteTodosLosValoresEnOrden() = runTest {
-        assertEquals(listOf(1, 2, 3, 4, 5), contarHasta(5).toList())
-    }
-
-    @Test
-    fun observadorTardioDeStateFlowVeElValorActual() = runTest {
-        val observador = ObservadorDeEstado()
-        observador.estado.value = EstadoPantalla.Exito
-        // un nuevo observador que recién ahora empieza a leer, ve el valor actual de inmediato
-        assertEquals(EstadoPantalla.Exito, observador.estado.first())
-    }
-}
-```
-
-```bash
-# ejecuta el test Kotlin del módulo compartido
-cd academia-kmp
-./gradlew :shared:allTests
-```
-
-```kotlin
-val contadorTareas = MutableStateFlow____Int>(0)
-```
-
-</details>
-
-### Tema 3: Manejo de errores y exclusión mutua · Intermedio · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás capturar errores de una llamada suspend transformándolos en un estado explícito, y usar Mutex para proteger una variable compartida de una condición de carrera real entre coroutines concurrentes.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── SIN Mutex: 100 coroutines leen→esperan→escriben ──┐
-│  todas leen 0 antes de que cualquiera escriba → resultado final: 1 (perdido) │
-└───────────────────────────────────────────────────┘
-┌── CON Mutex: cada coroutine espera su turno ──────┐
-│  lee→escribe de forma exclusiva → resultado final: 100 (correcto)          │
-└───────────────────────────────────────────────────┘
-```
-
-```kotlin
-package com.academia.kmp
-
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.yield
-
-sealed class EstadoUI {
-    object Cargando : EstadoUI()
-    data class Exito(val datos: List<String>) : EstadoUI()
-    data class Error(val mensaje: String) : EstadoUI()
-}
-
-suspend fun cargarUsuarioSeguro(id: String, obtenerUsuario: suspend (String) -> String): EstadoUI {
-    return try {
-        EstadoUI.Exito(listOf(obtenerUsuario(id)))
-    } catch (e: Exception) {
-        EstadoUI.Error(e.message ?: "Error desconocido")
-    }
-}
-
-class ContadorSinProteger {
-    var valor = 0
-        private set
-    suspend fun incrementar() {
-        val leido = valor
-        yield() // cede el control: otra coroutine puede intercalarse justo aquí
-        valor = leido + 1
-    }
-}
-
-class ContadorProtegido {
-    private val mutex = Mutex()
-    var valor = 0
-        private set
-    suspend fun incrementar() {
-        mutex.withLock { // exclusión mutua compatible con suspensión
-            val leido = valor
-            yield()
-            valor = leido + 1
+fun crearClienteAutenticado(engine: HttpClientEngine): HttpClient = HttpClient(engine) {
+    install(Auth) {
+        bearer {
+            loadTokens { BearerTokens("token-abc123", "refresh-xyz") }
         }
     }
 }
+
+suspend fun llamarRuta(client: HttpClient, path: String) = client.get(path)
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
 package com.academia.kmp
 
-import kotlinx.coroutines.launch
+import io.ktor.client.engine.mock.*
+import io.ktor.http.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class ErroresYMutexTest {
+class ClienteAutenticadoTest {
     @Test
-    fun sinProteccionSePierdenIncrementos() = runTest {
-        val contador = ContadorSinProteger()
-        repeat(100) { launch { contador.incrementar() } }
-        // deja que todas las coroutines lanzadas terminen antes de leer el resultado
-        advanceUntilIdle()
-        assertTrue(contador.valor < 100, "esperaba incrementos perdidos, pero valor fue ${contador.valor}")
-    }
+    fun ambasRutasRecibenElHeaderSinQueLlamarRutaLoMencione() = runTest {
+        val headersRecibidos = mutableListOf<String?>()
+        val mockEngine = MockEngine { request ->
+            headersRecibidos.add(request.headers[HttpHeaders.Authorization])
+            respond(content = "ok", status = HttpStatusCode.OK)
+        }
+        val client = crearClienteAutenticado(mockEngine)
 
-    @Test
-    fun conMutexNingunIncrementoSePierde() = runTest {
-        val contador = ContadorProtegido()
-        repeat(100) { launch { contador.incrementar() } }
-        advanceUntilIdle()
-        assertEquals(100, contador.valor)
+        llamarRuta(client, "https://api.miapp.com/tareas")
+        llamarRuta(client, "https://api.miapp.com/perfil")
+
+        assertEquals(listOf("Bearer token-abc123", "Bearer token-abc123"), headersRecibidos)
     }
 }
 ```
 
 ```bash
-# ejecuta el test Kotlin del módulo compartido, verificando la condición de carrera
+# ejecuta el test Kotlin del módulo compartido, inspeccionando las peticiones reales
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
 
 ```kotlin
-class Contador {
-    private val mutex = Mutex()
-    private var valor = 0
-    suspend fun incrementar() {
-        mutex.____ { valor += 1 }
+val client = HttpClient {
+    install(____) {
+        bearer { loadTokens { BearerTokens(token, refreshToken) } }
     }
 }
 ```
 
 </details>
 
-### Tema 4: Dispatchers y withContext: en qué hilo corre tu código · Intermedio · 45 min
+### Tema 4: Reintentos con backoff exponencial · Avanzado · 30 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás elegir el Dispatcher apropiado para una operación (bloqueante de I/O, intensiva en CPU, o de UI), y usar withContext para cambiar de contexto sin bloquear el hilo principal.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A[trabajo bloqueante ejecutado directo] --> B[hilo principal congelado durante el trabajo]
-  C["withContext(Dispatchers.IO)"] --> D[hilo principal libre durante el trabajo]
-  D --> E[withContext devuelve el control a Main al terminar]
-```
+Al finalizar podrás implementar un mecanismo de reintentos con backoff exponencial para peticiones que fallan temporalmente, y confirmar contra un servidor real que se recupera tras varios intentos que el mecanismo efectivamente logra una respuesta exitosa.
 
 </details>
 
@@ -320,77 +306,131 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
+```
+┌─ intento 1 (falla) ─┐espera 0.05s┌─ intento 2 (falla) ─┐espera 0.10s┌─ intento 3 (éxito) ─┐
+└────────────────────┘───────────►└────────────────────┘───────────►└────────────────────┘
+```
 
 ```kotlin
 package com.academia.kmp
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.TimeSource
+import kotlinx.coroutines.delay
 
-fun leerArchivoGrandeBloqueante(): String {
-    // busy-wait multiplataforma (Thread.sleep no existe en commonMain): bloquea el hilo real de verdad
-    val inicio = TimeSource.Monotonic.markNow()
-    while (inicio.elapsedNow() < 300.milliseconds) { /* ocupa el hilo activamente */ }
-    return "contenido leído"
-}
-
-suspend fun leerArchivoSeguro(): String = withContext(Dispatchers.IO) {
-    leerArchivoGrandeBloqueante() // movido explícitamente fuera del hilo principal
+suspend fun <T> conReintentos(maxIntentos: Int = 5, bloque: suspend () -> T): T {
+    var esperaMs = 50L
+    repeat(maxIntentos - 1) {
+        try {
+            return bloque()
+        } catch (e: Exception) {
+            delay(esperaMs)
+            esperaMs *= 2 // backoff exponencial
+        }
+    }
+    return bloque() // último intento, sin capturar (propaga si falla)
 }
 ```
 
 ```bash
-# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
+# compila el módulo compartido de Kotlin Multiplatform con Gradle
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
 cd academia-kmp
-./gradlew :shared:assemble
+./gradlew :shared:compileKotlinMetadata
 ```
 
 ```kotlin
 package com.academia.kmp
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import io.ktor.client.call.*
+import io.ktor.client.engine.mock.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DispatchersTest {
+class ReintentosTest {
     @Test
-    fun bloquearElHiloPrincipalCongelaElTicker() = runBlocking {
-        var marcas = 0
-        val ticker = async { repeat(6) { delay(50); marcas++ } }
-        leerArchivoGrandeBloqueante() // ejecutado DIRECTO en este hilo, sin withContext
-        val marcasDuranteElBloqueo = marcas // se lee ANTES de esperar al ticker
-        ticker.await()
-        // runBlocking usa un solo hilo: mientras el busy-wait lo ocupa, el ticker no puede ni empezar
-        assertEquals(0, marcasDuranteElBloqueo)
-        assertEquals(6, marcas) // al liberar el hilo, el ticker completa sus 6 marcas
-    }
+    fun seRecuperaTrasDosFallosTemporales() = runTest {
+        var intento = 0
+        val mockEngine = MockEngine { _ ->
+            intento++
+            if (intento < 3) respond(content = "", status = HttpStatusCode.ServiceUnavailable)
+            else respond(content = """{"ok":true}""", status = HttpStatusCode.OK)
+        }
+        val client = crearClienteJson(mockEngine)
 
-    @Test
-    fun withContextIoNoBloqueaElLlamador() = runBlocking {
-        var marcas = 0
-        val ticker = async { repeat(6) { delay(50); marcas++ } }
-        val resultado = leerArchivoSeguro() // corre en Dispatchers.IO, en otro hilo
-        ticker.await()
-        assertEquals("contenido leído", resultado)
-        assertEquals(6, marcas) // el ticker completó sus 6 incrementos sin ser bloqueado
+        val resultado = conReintentos {
+            val response = client.get("https://api.miapp.com/tareas")
+            if (response.status != HttpStatusCode.OK) error("fallo con ${response.status}")
+            response.body<String>()
+        }
+
+        assertEquals(3, intento)
+        assertEquals(50L + 100L, currentTime) // esperas de 50ms y 100ms antes del tercer intento exitoso
+        assertEquals("""{"ok":true}""", resultado)
     }
 }
 ```
 
 ```bash
-# ejecuta el test Kotlin del módulo compartido, midiendo el bloqueo real del hilo
+# ejecuta el test Kotlin del módulo compartido, con tiempo virtual para las esperas
 cd academia-kmp
 ./gradlew :shared:allTests
 ```
 
 ```kotlin
-suspend fun obtenerTareasGuardadas(): List<Tarea> = withContext(Dispatchers.____) {
-    consultaBloqueanteDeBaseDeDatos()
+suspend fun <T> conReintentos(maxIntentos: Int, bloque: suspend () -> T): T {
+    var esperaMs = 50L
+    repeat(maxIntentos - 1) {
+        try {
+            return bloque()
+        } catch (e: Exception) {
+            delay(esperaMs)
+            esperaMs ____ 2
+        }
+    }
+    return bloque()
 }
+```
+
+</details>
+
+### Tema 5: kotlinx.serialization — JSON compartido entre plataformas · Avanzado · 30 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás serializar y deserializar modelos entre JSON y objetos Kotlin con kotlinx.serialization en el módulo común, de forma que Android e iOS compartan el mismo mapeo. Prerrequisitos: Temas 1-2 de este módulo (Ktor Client y manejo de errores).
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```kotlin
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+
+@Serializable
+data class Envio(
+    val guia: String,
+    val estado: String,
+    @SerialName("recipient_pin") val pin: String? = null   // mapea nombre JSON distinto
+)
+
+fun main() {
+    val json = """{"guia":"RF-4471","estado":"en ruta","recipient_pin":"837201"}"""
+    val envio = Json.decodeFromString<Envio>(json)          // JSON -> objeto
+    println(envio)
+    val devuelta = Json.encodeToString(envio)               // objeto -> JSON
+    println(devuelta)
+}
+```
+
+```bash
+./gradlew :shared:allTests
 ```
 
 </details>

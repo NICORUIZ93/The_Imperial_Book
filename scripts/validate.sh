@@ -23,6 +23,9 @@ NODE
 echo "== Índice de temas al día"
 python3 scripts/build_web_topic_index.py --check
 
+echo "== Biblioteca de temarios al día"
+python3 scripts/build_curriculum_catalog.py --check
+
 echo "== Recursos enlazados por las lecciones y conteos declarados"
 python3 scripts/audit_lesson_assets.py
 

@@ -1,4 +1,4 @@
-import { ACADEMY_STAGES, TRACK_PREREQUISITES, academyTrackPosition, stageForTrack } from './learning-paths';
+import { ACADEMY_STAGES, LEARNING_ROUTES, TRACK_PREREQUISITES, academyTrackPosition, stageForTrack } from './learning-paths';
 import { TRACKS } from './course-data';
 
 describe('academy learning sequence', () => {
@@ -18,8 +18,14 @@ describe('academy learning sequence', () => {
 
   it('keeps frameworks and distributed systems in explicit stages', () => {
     expect(stageForTrack('angular')?.id).toBe('applications');
-    expect(stageForTrack('spring-microservices')?.id).toBe('systems');
-    expect(stageForTrack('node-microservices')?.id).toBe('systems');
-    expect(stageForTrack('rutaflow')?.id).toBe('capstone');
+    expect(stageForTrack('microservicios')?.id).toBe('systems');
+    expect(stageForTrack('kubernetes')?.id).toBe('platform');
+    expect(stageForTrack('devops')).toBeUndefined();
+  });
+
+  it('builds every route from existing courses', () => {
+    for (const route of LEARNING_ROUTES) {
+      for (const id of route.trackIds) expect(TRACKS.some(track => track.id === id)).toBe(true);
+    }
   });
 });

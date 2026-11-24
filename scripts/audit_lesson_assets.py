@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audita los recursos que las lecciones usan en la app.
 
-  --logos        cada ruta (salvo rutaflow) tiene web/public/brands/<id>.svg
+  --logos        cada curso (salvo los de marca tipográfica) tiene web/public/brands/<id>.svg
   --links        ninguna lección enlaza con rutas relativas que salen de web/public/content
   --images       cada imagen enlazada existe, tiene texto alternativo útil y pesa < 300 KB
   --docs-counts  README.md declara los mismos conteos que topic-index.json
@@ -20,7 +20,10 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "web" / "public"
 CONTENT = PUBLIC / "content"
 INDEX = CONTENT / "topic-index.json"
-TRACKS_WITHOUT_LOGO = {"rutaflow"}  # usa marca tipográfica en el catálogo
+TRACKS_WITHOUT_LOGO = {
+    "git", "linux", "sql", "arquitectura", "seguridad", "typescript", "kotlin", "docker", "kubernetes",
+    "cicd", "iac", "observabilidad", "mensajeria", "microservicios",
+}  # usan marca tipográfica en el catálogo (TRACKS_WITHOUT_LOGO en course-data.ts)
 MAX_IMAGE_BYTES = 300 * 1024
 MIN_ALT_CHARS = 10
 

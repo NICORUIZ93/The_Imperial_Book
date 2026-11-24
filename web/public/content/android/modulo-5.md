@@ -1,44 +1,47 @@
-# Módulo 5: Networking con Retrofit/Ktor
+# Módulo 5: Persistencia local con Room
 
 
 ## Aprende construyendo
 
-> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`:
+> **Antes de empezar este módulo.** Room genera código con KSP y verifica tus consultas al compilar, así que necesita dos plugins además de las bibliotecas. Con el catálogo del Módulo 0 (Tema 3):
 >
 > ```kotlin
+> // build.gradle.kts de la raíz, dentro de plugins { }
+> alias(libs.plugins.ksp) apply false
+> alias(libs.plugins.room) apply false
+>
+> // app/build.gradle.kts
 > plugins {
 >     // ...los que ya tienes...
->     alias(libs.plugins.kotlin.serialization)   // si no lo añadiste en el Módulo 3
+>     alias(libs.plugins.ksp)
+>     alias(libs.plugins.room)
+> }
+> android {
+>     // ...lo que ya tienes...
+> }
+> room {
+>     schemaDirectory("$projectDir/schemas")   // obligatorio con el plugin de Room
 > }
 > dependencies {
 >     // ...las que ya tienes...
->     implementation(libs.retrofit)
->     implementation(libs.retrofit.kotlinx.serialization)
->     implementation(libs.kotlinx.serialization.json)
->     implementation(libs.okhttp.logging)
+>     implementation(libs.androidx.room.runtime)
+>     ksp(libs.androidx.room.compiler)
+>     androidTestImplementation(libs.androidx.room.testing)
 > }
 > ```
 >
-> En el `build.gradle.kts` de la raíz, `alias(libs.plugins.kotlin.serialization) apply false` (si no está). En `app/src/main/AndroidManifest.xml`, antes de `<application>`, declara `<uses-permission android:name="android.permission.INTERNET" />`. Como el servidor de prueba usa `http://` sin TLS y desde Android 9 el tráfico en texto plano está bloqueado por defecto, permítelo **solo en depuración** creando `app/src/debug/AndroidManifest.xml`:
+> Pulsa **Sync Now**. Desde Room 2.7, `room-ktx` está integrado en `room-runtime` y no hace falta declararlo.
 >
-> ```xml
-> <manifest xmlns:android="http://schemas.android.com/apk/res/android">
->     <application android:usesCleartextTraffic="true" />
-> </manifest>
-> ```
->
-> Pulsa **Sync Now**. Sin estas dependencias, `import retrofit2.http.GET` no compila.
->
-> **Los scripts `python3` y `curl` de este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
+> **Los scripts `python3` con `sqlite3` de este módulo son modelos del SQL, no pruebas de Room.** Demuestran qué hace la sentencia SQL, pero no que tu `@Entity`, tu DAO o tu `Migration` compilen y se apliquen. La evidencia real es la **Verificación real en Android** de cada tema: la compilación con KSP, el esquema exportado y la app en el emulador.
 
 
-### Tema 1: Retrofit con coroutines · Intermedio · 45 min
+### Tema 1: Entities, DAOs y Database · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás declarar un endpoint HTTP con Retrofit como una función suspend, y explicar por qué evita el anidamiento de callbacks del Retrofit clásico.
+Al finalizar podrás declarar una @Entity, un @Dao y una @Database de Room, y explicar por qué Room verifica las queries en tiempo de compilación.
 
 </details>
 
@@ -47,111 +50,186 @@ Al finalizar podrás declarar un endpoint HTTP con Retrofit como una función su
 
 #### Código y verificación
 ```
-┌── interface ApiService ────────────────────┐
-│  @GET("tareas")                                 │
-│  suspend fun obtenerTareas(): List<TareaDTO>       │
-└──────────┬─────────────────────────────┘
-           │ Retrofit genera la implementación real
+┌── @Entity Tarea ────────────────────┐
+│  data class Tarea(id, titulo, completada) │
+└──────────┬───────────────────────┘
+           │ Room genera la tabla SQL real
            ▼
-┌── val tareas = apiService.obtenerTareas() ──┐
-│  se lee LINEAL, sin callbacks anidados          │
+┌── @Dao TareaDao ────────────────────┐
+│  @Query("SELECT * FROM Tarea")            │
+│  verificado en COMPILACIÓN, no en runtime    │
+└───────────────────────────────────┘
+```
+
+```bash
+# Este script python3 (vía sqlite3) es un modelo del esquema SQL equivalente; la prueba real es compilar con Room
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/AppDatabase.kt`:
+
+```kotlin
+package com.academia.android
+
+import androidx.room.Dao
+import androidx.room.Database
+import androidx.room.Entity
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.PrimaryKey
+import androidx.room.Query
+import androidx.room.RoomDatabase
+import kotlinx.coroutines.flow.Flow
+
+@Entity
+data class Tarea(@PrimaryKey val id: String, val titulo: String, val completada: Boolean)
+
+@Dao
+interface TareaDao {
+    @Query("SELECT * FROM Tarea")
+    fun observarTodas(): Flow<List<Tarea>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertar(tarea: Tarea)
+}
+
+@Database(entities = [Tarea::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun tareaDao(): TareaDao
+}
+```
+
+```bash
+python3 -c "
+import sqlite3
+# el esquema equivalente que Room generaría a partir de la @Entity Tarea
+con = sqlite3.connect(':memory:')
+con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY NOT NULL, titulo TEXT NOT NULL, completada INTEGER NOT NULL)')
+con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
+filas = con.execute('SELECT * FROM Tarea').fetchall()
+print('esquema válido, filas:', filas)
+con.close()
+"
+```
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+```bash
+python3 -c "
+import sqlite3
+con = sqlite3.connect(':memory:')
+con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
+try:
+    con.execute('SELECT columnaInexistente FROM Tarea').fetchall()
+    print('la query se ejecutó sin error (INESPERADO)')
+except sqlite3.OperationalError as e:
+    print('SQLite rechazó la query:', e)
+con.close()
+"
+```
+
+</details>
+
+### Tema 2: Room + Flow reactivo, y migraciones · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### ► DE QUÉ TRATA
+Al finalizar podrás explicar por qué un DAO que devuelve Flow mantiene la UI sincronizada automáticamente, y escribir una migración que preserve datos existentes.
+
+</details>
+
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
+
+#### Código y verificación
+```
+┌── Room table cambia (insert/update/delete) ──┐
+└──────────┬─────────────────────────┘
+           │ Flow emite automáticamente la nueva lista
+           ▼
+┌── StateFlow del ViewModel se actualiza ──────┐
+└──────────┬─────────────────────────┘
+           │
+           ▼
+┌── UI recompone (Módulo 2) ───────────────────┐
 └───────────────────────────────────────┘
 ```
 
 ```bash
-# Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000
+# Este script python3 (vía sqlite3) modela el SQL de la migración; la prueba real se hace en el emulador
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
 ```
 
-Crea el archivo `servidor_prueba.py`:
-
-```python
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class ManejadorTareas(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/tareas":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps([
-                {"id": "1", "titulo": "Comprar leche"},
-                {"id": "2", "titulo": "Pagar el alquiler"},
-            ]).encode())
-        else:
-            self.send_response(404)
-            self.end_headers()
-    def log_message(self, *args):
-        pass
-
-if __name__ == "__main__":
-    HTTPServer(("localhost", 8000), ManejadorTareas).serve_forever()
-```
-
-```bash
-python3 servidor_prueba.py &
-sleep 1
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/ApiService.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/Migraciones.kt`:
 
 ```kotlin
 package com.academia.android
 
-import kotlinx.serialization.Serializable
-import retrofit2.http.GET
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Serializable
-data class TareaDTO(val id: String, val titulo: String)
-
-interface ApiService {
-    @GET("tareas")
-    suspend fun obtenerTareas(): List<TareaDTO>
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0")
+    }
 }
 ```
 
 ```bash
-./gradlew :app:compileDebugKotlin
+python3 -c "
+import sqlite3
+con = sqlite3.connect(':memory:')
+# versión 1 del esquema, con datos ya existentes del usuario
+con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
+con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
+con.execute(\"INSERT INTO Tarea VALUES ('2', 'Pagar alquiler', 1)\")
+print('antes de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
+
+# la migración real (idéntica a MIGRATION_1_2 en SQL)
+con.execute('ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0')
+print('después de migrar:', con.execute('SELECT * FROM Tarea').fetchall())
+con.close()
+"
 ```
 
 ```bash
-curl -s http://localhost:8000/tareas | python3 -m json.tool
-kill %1 2>/dev/null || true
-```
-
-```kotlin
-package com.academia.android
-
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
-
-// En el emulador, 10.0.2.2 es el localhost de tu ordenador
-fun crearApiService(baseUrl: String = "http://10.0.2.2:8000/"): ApiService =
-    Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
-        .build()
-        .create(ApiService::class.java)
+./gradlew assembleDebug
+./gradlew test
 ```
 
 ```bash
-./gradlew :app:installDebug
-adb logcat -s Red:D
+python3 -c "
+import sqlite3
+con = sqlite3.connect(':memory:')
+con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
+con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche', 0)\")
+
+# la app AHORA espera la columna 'prioridad' (versión 2), pero la migración nunca se aplicó
+try:
+    con.execute('SELECT prioridad FROM Tarea').fetchall()
+    print('INESPERADO: la columna existe sin migración')
+except sqlite3.OperationalError as e:
+    print('Discrepancia de esquema detectada:', e)
+con.close()
+"
 ```
 
 </details>
 
-### Tema 2: Manejo de errores HTTP · Intermedio · 45 min
+### Tema 3: Estrategia offline-first · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás distinguir HttpException de IOException en un ViewModel, dando un mensaje específico y accionable para cada caso.
+Al finalizar podrás implementar un repositorio donde la UI siempre lee del caché local mientras la red sincroniza en segundo plano.
 
 </details>
 
@@ -160,152 +238,78 @@ Al finalizar podrás distinguir HttpException de IOException en un ViewModel, da
 
 #### Código y verificación
 ```
-┌── Petición HTTP ──────────────────────────────────┐
-│  ├─ éxito                    → EstadoUI.Exito(datos)  │
-│  ├─ HttpException (código)    → EstadoUI.Error("Error N")│
-│  └─ IOException (sin conexión) → EstadoUI.Error("Sin conexión")│
-└───────────────────────────────────────────────┘
+┌── UI ──────────────┐
+│  SIEMPRE lee de       │
+└──────────┬─────────┘
+           ▼
+┌── Room (Flow reactivo) ──────┐
+│         ▲                          │
+│         │ Repositorio sincroniza      │
+│         │ en background                 │
+│         ▼                                 │
+└── API remota (Módulo 5) ───────────┘
 ```
 
 ```bash
-# Script en python3 que levanta de nuevo el servidor de prueba con una ruta que falla
+# Este script python3 simula, con sqlite3 real, que la UI sigue funcionando sin red
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-python3 servidor_prueba.py &
-sleep 1
 ```
 
-Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt`:
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareaRepository.kt`:
 
 ```kotlin
 package com.academia.android
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
+import kotlinx.coroutines.flow.Flow
 
-class TareasViewModelConErrores(private val api: ApiService) : ViewModel() {
-    private val _estado = MutableStateFlow<EstadoUI>(EstadoUI.Cargando)
-    val estado = _estado.asStateFlow()
+interface TareaRepository {
+    val tareas: Flow<List<Tarea>> // la UI SIEMPRE lee de aquí
+    suspend fun sincronizar()
+}
 
-    fun cargar() = viewModelScope.launch {
-        _estado.value = try {
-            EstadoUI.Exito(api.obtenerTareas().map { it.titulo })
-        } catch (e: HttpException) {
-            EstadoUI.Error("Error ${e.code()}")
-        } catch (e: IOException) {
-            EstadoUI.Error("Sin conexión")
-        }
+class TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService) : TareaRepository {
+    override val tareas: Flow<List<Tarea>> = dao.observarTodas()
+
+    override suspend fun sincronizar() {
+        val remotas = api.obtenerTareas()
+        remotas.forEach { dao.insertar(Tarea(it.id, it.titulo, false)) } // sincroniza en background
     }
 }
 ```
 
 ```bash
-./gradlew :app:compileDebugKotlin
+python3 -c "
+import sqlite3
+
+con = sqlite3.connect(':memory:')
+con.execute('CREATE TABLE Tarea (id TEXT PRIMARY KEY, titulo TEXT, completada INTEGER)')
+
+def sincronizar_desde_api_simulada(conexion_disponible):
+    if not conexion_disponible:
+        print('sin conexión: la sincronización no ocurre, pero la UI sigue leyendo del caché existente')
+        return
+    con.execute(\"INSERT OR REPLACE INTO Tarea VALUES ('1', 'Comprar leche (actualizado de la API)', 0)\")
+    print('sincronización exitosa: caché actualizado con datos frescos')
+
+def ui_lee_siempre_de_room():
+    return con.execute('SELECT * FROM Tarea').fetchall()
+
+con.execute(\"INSERT INTO Tarea VALUES ('1', 'Comprar leche (versión local)', 0)\")
+print('UI muestra (antes de cualquier sincronización):', ui_lee_siempre_de_room())
+
+sincronizar_desde_api_simulada(conexion_disponible=False)  # simula estar sin conexión
+print('UI sigue mostrando (sin conexión, offline-first):', ui_lee_siempre_de_room())
+
+sincronizar_desde_api_simulada(conexion_disponible=True)  # la conexión vuelve
+print('UI muestra (tras sincronizar con éxito):', ui_lee_siempre_de_room())
+con.close()
+"
 ```
 
 ```bash
-curl -s -o /dev/null -w "código HTTP con servidor activo: %{http_code}\n" http://localhost:8000/tareas
-kill %1 2>/dev/null || true
-sleep 1
-curl -s -o /dev/null -w "código con servidor detenido: %{http_code}\n" --max-time 2 http://localhost:8000/tareas 2>&1 || echo "conexión falló (equivalente a IOException): sin respuesta del servidor"
-```
-
-</details>
-
-### Tema 3: Interceptores de OkHttp · Intermedio · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás configurar interceptores de OkHttp para logging y autenticación, y explicar por qué el orden de registro importa.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```
-┌── addInterceptor(auth) PRIMERO ────────────────┐
-│ request → [agrega header Authorization] → [logging]  │
-│                                     log MUESTRA el header │
-└─────────────────────────────────────────┘
-┌── addInterceptor(logging) PRIMERO ─────────────┐
-│ request → [logging] → [agrega header Authorization]  │
-│         log NO muestra el header (aún no se agregó)      │
-└─────────────────────────────────────────┘
-```
-
-```bash
-# Script en python3 que confirma el comportamiento antes de escribir el Kotlin real
-test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
-mkdir -p app/src/main/kotlin/com/academia/android
-```
-
-Crea el archivo `servidor_prueba_headers.py`:
-
-```python
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class ManejadorHeaders(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps({"authorization_recibido": self.headers.get("Authorization")}).encode())
-    def log_message(self, *args):
-        pass
-
-if __name__ == "__main__":
-    HTTPServer(("localhost", 8001), ManejadorHeaders).serve_forever()
-```
-
-```bash
-python3 servidor_prueba_headers.py &
-sleep 1
-curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
-```
-
-Crea el archivo `app/src/main/kotlin/com/academia/android/ClienteHttpConInterceptores.kt`:
-
-```kotlin
-package com.academia.android
-
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-
-fun crearClienteHttp(token: String): OkHttpClient {
-    val loggingInterceptor = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-    val authInterceptor = okhttp3.Interceptor { chain ->
-        chain.proceed(chain.request().newBuilder().addHeader("Authorization", "Bearer $token").build())
-    }
-    return OkHttpClient.Builder()
-        .addInterceptor(authInterceptor)     // primero: agrega el header
-        .addInterceptor(loggingInterceptor)  // segundo: loguea ya CON el header agregado
-        .build()
-}
-```
-
-```bash
-kill %1 2>/dev/null || true
-./gradlew :app:compileDebugKotlin
-```
-
-```bash
-python3 servidor_prueba_headers.py &
-sleep 1
-echo "--- con header Authorization (como haría authInterceptor) ---"
-curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
-echo "--- sin header Authorization (como sería si el orden estuviera invertido y el logging ocurriera antes) ---"
-curl -s http://localhost:8001/ | python3 -m json.tool
-kill %1 2>/dev/null || true
+./gradlew assembleDebug
+./gradlew test
 ```
 
 </details>
