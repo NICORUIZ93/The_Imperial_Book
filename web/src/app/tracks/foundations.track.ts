@@ -133,7 +133,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Por qué una operación aparentemente simple puede fallar bajo concurrencia?',
       '¿Qué aísla un contenedor y qué comparte necesariamente con el host?',
     ],
-    ['Linux', 'Python', 'Docker', 'SQLite'],
+    ['Linux', 'Java 25', 'Docker', 'H2', 'jcmd'],
     'Inventario contenerizado con usuario no root, almacenamiento persistente, healthcheck, límites, apagado limpio, prueba concurrente y runbook operativo.'),
   m(6, 'Matemáticas discretas, lógica y probabilidad para software', 'Razonamiento cuantitativo', 'Experto', '12 h', '#6d5dfc',
     'Usa lógica, conjuntos, relaciones, combinatoria, grafos y probabilidad para especificar reglas, demostrar propiedades, diseñar pruebas y tomar decisiones técnicas con datos en lugar de intuición.',[
