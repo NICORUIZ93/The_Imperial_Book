@@ -213,21 +213,11 @@ aws dynamodb scan --table-name ShipmentEvents \
   --projection-expression "shipmentId, #s" \
   --expression-attribute-names '{"#s":"sequence"}' > items.json
 
-# Reescribir con tipo correcto (script en Python):
-python3 << 'EOF'
-import json, boto3
-ddb = boto3.client('dynamodb')
-
-for item in json.load(open('items.json'))['Items']:
-    # Fijar: convertir sequence de S a N
-    shipmentId = item['shipmentId']
-    sequence_value = item['sequence'].get('S') or item['sequence'].get('N')
-    
-    ddb.put_item(TableName='ShipmentEvents', Item={
-        'shipmentId': shipmentId,
-        'sequence': {'N': str(sequence_value)}  # Fuerza N
-    })
-EOF
+# Reescribir con el tipo correcto: cada item vuelve con sequence como número (N)
+jq -c '.Items[] | {shipmentId, sequence: {N: (.sequence.S // .sequence.N)}}' items.json |
+while read -r item; do
+  aws dynamodb put-item --table-name ShipmentEvents --item "$item"
+done
 ```
 
 </details>

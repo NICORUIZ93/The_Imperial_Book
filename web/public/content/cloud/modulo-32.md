@@ -338,12 +338,12 @@ aws bedrock-runtime invoke-model --model-id anthropic.claude-sonnet-5 \
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea academia-labs/cloud/amenazas. Los eventos son un ejemplo con la estructura real de CloudTrail; en una cuenta, se exportan desde CloudTrail o se consultan con Athena.
+Necesitas `jq` 1.6 o superior. Crea academia-labs/cloud/amenazas. Los eventos son un ejemplo con la estructura real de CloudTrail; en una cuenta, se exportan desde CloudTrail o se consultan con Athena.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    CT["CloudTrail: eventos"] --> D["detectar.py / GuardDuty"]
+    CT["CloudTrail: eventos"] --> D["detectar.sh / GuardDuty"]
     D --> A1["ALTA: uso de root"]
     D --> A2["ALTA: StopLogging"]
     D --> A3["MEDIA: 3+ AccessDenied"]
@@ -358,7 +358,7 @@ flowchart LR
 #### Código y verificación
 ```mermaid
 flowchart LR
-    CT["CloudTrail: eventos"] --> D["detectar.py / GuardDuty"]
+    CT["CloudTrail: eventos"] --> D["detectar.sh / GuardDuty"]
     D --> A1["ALTA: uso de root"]
     D --> A2["ALTA: StopLogging"]
     D --> A3["MEDIA: 3+ AccessDenied"]
@@ -376,37 +376,33 @@ flowchart LR
 ]
 ```
 
-```python
-import json
-from collections import Counter
+Guarda los eventos en `eventos.json` y crea `detectar.sh`. Cada regla es un filtro de `jq`:
 
-eventos = json.load(open("eventos.json"))
-alertas = []
-
-for e in eventos:
-    quien = e["userIdentity"].get("arn", e["userIdentity"]["type"])
-    # 1) Uso de la cuenta root: casi nunca debería ocurrir.
-    if e["userIdentity"]["type"] == "Root":
-        mfa = e.get("additionalEventData", {}).get("MFAUsed", "?")
-        alertas.append(("ALTA", f"uso de root ({e['eventName']}) desde {e['sourceIPAddress']}, MFA={mfa}"))
-    # 2) Alguien intenta apagar la auditoría.
-    if e["eventName"] in {"StopLogging", "DeleteTrail"}:
-        alertas.append(("ALTA", f"{quien} intentó {e['eventName']}"))
-
-# 3) Muchos AccessDenied de la misma identidad: posible reconocimiento con credenciales robadas.
-denegados = Counter(e["userIdentity"].get("arn") for e in eventos if e.get("errorCode") == "AccessDenied")
-for identidad, total in denegados.items():
-    if total >= 3:
-        alertas.append(("MEDIA", f"{identidad}: {total} accesos denegados seguidos"))
-
-for nivel, texto in alertas:
-    print(f"[{nivel}] {texto}")
-print(f"{len(alertas)} alerta(s) de {len(eventos)} eventos")
+```bash
+#!/usr/bin/env bash
+# detectar.sh — tres reglas de detección sobre eventos de CloudTrail
+jq -r '
+  . as $eventos
+  | [ ( .[]
+        | (.userIdentity.arn // .userIdentity.type) as $quien
+        # 1) Uso de la cuenta root: casi nunca debería ocurrir.
+        | ( select(.userIdentity.type == "Root")
+            | "[ALTA] uso de root (\(.eventName)) desde \(.sourceIPAddress), MFA=\(.additionalEventData.MFAUsed // "?")" ),
+        # 2) Alguien intenta apagar la auditoría.
+          ( select(.eventName == "StopLogging" or .eventName == "DeleteTrail")
+            | "[ALTA] \($quien) intentó \(.eventName)" ) ),
+      # 3) Muchos AccessDenied de la misma identidad: posible reconocimiento con credenciales robadas.
+      ( map(select(.errorCode == "AccessDenied")) | group_by(.userIdentity.arn)[]
+        | select(length >= 3) | "[MEDIA] \(.[0].userIdentity.arn): \(length) accesos denegados seguidos" )
+    ] as $alertas
+  | $alertas[], "\($alertas | length) alerta(s) de \($eventos | length) eventos"
+' eventos.json
 ```
 
 ```bash
 cd academia-labs/cloud/amenazas
-python3 detectar.py
+chmod +x detectar.sh
+./detectar.sh
 ```
 
 ```text

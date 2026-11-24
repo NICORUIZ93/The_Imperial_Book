@@ -199,7 +199,7 @@ docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 apply -
 ```bash
 cat salida-proveedor-a-config.txt
 cat objeto-proveedor-b-config.txt
-docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 output -json | python3 -m json.tool
+docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 output -json | jq .
 ```
 
 </details>
@@ -233,37 +233,43 @@ Al finalizar podrás construir y ejecutar una checklist verificable de salida a 
 ```bash
 mkdir -p academia-devops/src/modulo12/checklist-produccion
 cd academia-devops/src/modulo12/checklist-produccion
-docker pull python:3.12-slim >/dev/null
 mkdir -p proyecto-simulado
 echo '{"level":"info","service":"api"}' > proyecto-simulado/ejemplo.log
 ```
 
-Crea el archivo `verificar-checklist.py`:
+Crea el archivo `verificar-checklist.sh`:
 
-```python
-import os, sys
-
-items = {
-    "observabilidad_logs_estructurados": os.path.exists("proyecto-simulado/ejemplo.log")
-        and open("proyecto-simulado/ejemplo.log").read().strip().startswith("{"),
-    "seguridad_sin_env_versionado": not os.path.exists("proyecto-simulado/.env"),
-    "resiliencia_healthcheck_documentado": os.path.exists("proyecto-simulado/healthcheck.md"),
-    "documentacion_runbook_existe": os.path.exists("proyecto-simulado/runbook.md"),
+```bash
+#!/usr/bin/env bash
+# verificar-checklist.sh — revisa que el proyecto tenga lo mínimo para salir a producción
+p=proyecto-simulado
+cumplidos=0; total=0
+revisar() {   # revisar <nombre> <comando que debe salir con 0>
+  total=$((total + 1))
+  if eval "$2"; then echo "[CUMPLE] $1"; cumplidos=$((cumplidos + 1)); else echo "[NO CUMPLE] $1"; fi
 }
-for nombre, cumplido in items.items():
-    estado = "CUMPLE" if cumplido else "NO CUMPLE"
-    print(f"[{estado}] {nombre}")
-
-total = len(items)
-cumplidos = sum(items.values())
-print(f"\nResumen: {cumplidos}/{total} items cumplidos")
-if cumplidos < total:
-    sys.exit(1)
+revisar observabilidad_logs_estructurados    "head -c1 $p/ejemplo.log 2>/dev/null | grep -q '{'"
+revisar seguridad_sin_env_versionado         "test ! -e $p/.env"
+revisar resiliencia_healthcheck_documentado  "test -f $p/healthcheck.md"
+revisar documentacion_runbook_existe         "test -f $p/runbook.md"
+echo; echo "Resumen: $cumplidos/$total items cumplidos"
+[[ $cumplidos -eq $total ]]
 ```
 
 ```bash
-docker run --rm -v "$(pwd)":/trabajo -w /trabajo python:3.12-slim python3 verificar-checklist.py
+chmod +x verificar-checklist.sh
+./verificar-checklist.sh
 echo "código de salida: $?"
+```
+
+```text
+[CUMPLE] observabilidad_logs_estructurados
+[CUMPLE] seguridad_sin_env_versionado
+[NO CUMPLE] resiliencia_healthcheck_documentado
+[NO CUMPLE] documentacion_runbook_existe
+
+Resumen: 2/4 items cumplidos
+código de salida: 1
 ```
 
 </details>
@@ -369,10 +375,35 @@ if [ -z "$NOMBRE_SERVICIO" ]; then
   echo "Uso: ./crear-servicio.sh <nombre-del-servicio>"
   exit 1
 fi
-mkdir -p "servicios/$NOMBRE_SERVICIO/.github/workflows"
-python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/Dockerfile\"").write_text("FROM node:22-alpine\nWORKDIR /app\nCMD [\"node\", \"-e\", \"console.log('$NOMBRE_SERVICIO activo')\"]\n")"
-python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/.github/workflows/ci.yml\"").write_text("name: CI de $NOMBRE_SERVICIO\non: [pull_request]\njobs:\n  escaneo-seguridad:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo \"escaneo estandar de la plataforma (Modulo 11)\"\n")"
-python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/deployment.yaml\"").write_text("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: $NOMBRE_SERVICIO\nspec:\n  replicas: 2\n  template:\n    spec:\n      containers:\n        - name: $NOMBRE_SERVICIO\n          livenessProbe: { httpGet: { path: /health, port: 3000 } }\n")"
+DIR="servicios/$NOMBRE_SERVICIO"
+mkdir -p "$DIR/.github/workflows"
+cat > "$DIR/Dockerfile" <<FIN
+FROM node:22-alpine
+WORKDIR /app
+CMD ["node", "-e", "console.log('$NOMBRE_SERVICIO activo')"]
+FIN
+cat > "$DIR/.github/workflows/ci.yml" <<FIN
+name: CI de $NOMBRE_SERVICIO
+on: [pull_request]
+jobs:
+  escaneo-seguridad:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "escaneo estandar de la plataforma (Modulo 11)"
+FIN
+cat > "$DIR/deployment.yaml" <<FIN
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $NOMBRE_SERVICIO
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: $NOMBRE_SERVICIO
+          livenessProbe: { httpGet: { path: /health, port: 3000 } }
+FIN
 echo "Servicio '$NOMBRE_SERVICIO' creado con CI, seguridad y healthchecks preconfigurados."
 ```
 

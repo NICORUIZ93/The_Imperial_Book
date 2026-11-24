@@ -322,8 +322,8 @@ cd s3-sdk-lab
 s3-sdk-lab/                 # elige UNA de estas dos estructuras
 ├── package.json            # opción JavaScript
 ├── s3-list-buckets.js
-├── requirements.txt        # opción Python
-└── s3_list_buckets.py
+├── build.gradle.kts        # opción Java
+└── src/main/java/S3ListBuckets.java
 ```
 
 ```mermaid
@@ -401,10 +401,14 @@ Buckets:
 
 </details>
 
-### Opción B — Python con boto3
+### Opción B — Java con AWS SDK v2
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
+
+El SDK v2 de Java se divide en un módulo por servicio; el BOM fija la misma versión para todos. `endpointOverride`
+manda las llamadas a Floci en lugar de a AWS, y `forcePathStyle` pone el bucket en la ruta
+(`localhost:4566/mi-bucket`) porque un emulador local no tiene un subdominio por bucket.
 
 </details>
 
@@ -412,42 +416,70 @@ Buckets:
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```text
-boto3
+Crea `build.gradle.kts`:
+
+```kotlin
+plugins { application }
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation(platform("software.amazon.awssdk:bom:2.55.6"))
+    implementation("software.amazon.awssdk:s3")
+    runtimeOnly("org.slf4j:slf4j-nop:2.0.17")   // silencia el aviso de logging del SDK
+}
+
+application { mainClass = "S3ListBuckets" }
 ```
 
-```python
-import boto3
-from botocore.exceptions import BotoCoreError, ClientError
+Crea `src/main/java/S3ListBuckets.java`:
 
-client = boto3.client(
-    "s3",
-    region_name="us-east-1",
-    endpoint_url="http://localhost:4566",
-    aws_access_key_id="test",
-    aws_secret_access_key="test",
-)
+```java
+import java.net.URI;
+import java.util.List;
 
-try:
-    result = client.list_buckets()
-    buckets = result.get("Buckets", [])
-    if not buckets:
-        print("No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket")
-    else:
-        print("Buckets:")
-        for bucket in buckets:
-            print(f"  - {bucket['Name']} (creado {bucket['CreationDate'].isoformat()})")
-except (BotoCoreError, ClientError) as error:
-    raise SystemExit(f"No se pudo consultar S3 local: {error}")
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+
+public class S3ListBuckets {
+    public static void main(String[] args) {
+        try (S3Client client = S3Client.builder()
+                .region(Region.US_EAST_1)
+                .endpointOverride(URI.create("http://localhost:4566"))
+                .forcePathStyle(true)
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("test", "test")))
+                .build()) {
+            List<Bucket> buckets = client.listBuckets().buckets();
+            if (buckets.isEmpty()) {
+                System.out.println("No hay buckets todavía. Crea uno con: aws s3 mb s3://mi-bucket");
+            } else {
+                System.out.println("Buckets:");
+                for (Bucket bucket : buckets) {
+                    System.out.println("  - " + bucket.name() + " (creado " + bucket.creationDate() + ")");
+                }
+            }
+        } catch (SdkException error) {
+            System.err.println("No se pudo consultar S3 local: " + error.getMessage());
+            System.exit(1);
+        }
+    }
+}
 ```
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate          # macOS o Linux
-# En PowerShell de Windows usa: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python s3_list_buckets.py
+touch settings.gradle.kts          # proyecto de un solo módulo
+gradle wrapper
+./gradlew -q run
 ```
+
+La salida es la misma que la de la opción A. `creationDate()` es un `Instant`, que se imprime en ISO-8601:
+`  - mi-bucket (creado 2026-07-19T14:20:00Z)`.
 
 </details>
 

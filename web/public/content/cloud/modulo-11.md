@@ -33,13 +33,27 @@ AHORA_MS=$(( $(date +%s) * 1000 ))   # CloudWatch Logs espera milisegundos desde
 aws logs put-log-events --log-group-name /mi-app/backend --log-stream-name app-001 --log-events "[{\"timestamp\":$AHORA_MS,\"message\":\"ERROR request_id=abc tarea_id=001 msg=fallo\"}]"
 ```
 
-```python
-import logging
-import uuid
+En la aplicación, el mismo identificador acompaña cada línea de log de la petición (`java CorrelationId.java`):
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-correlation_id = str(uuid.uuid4())
-logging.info(f"correlation_id={correlation_id} accion=procesar_tarea")
+```java
+// CorrelationId.java — un identificador por petición, repetido en cada línea de log
+import java.util.UUID;
+import java.util.logging.*;
+
+public class CorrelationId {
+    public static void main(String[] args) {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s %5$s%n");
+        Logger log = Logger.getLogger("tareas");
+        String correlationId = UUID.randomUUID().toString();
+        log.info("correlation_id=" + correlationId + " accion=procesar_tarea");
+        log.info("correlation_id=" + correlationId + " accion=tarea_guardada");
+    }
+}
+```
+
+```text
+INFO correlation_id=5e4cb908-9175-4b8d-a8b7-089ac5e2e211 accion=procesar_tarea
+INFO correlation_id=5e4cb908-9175-4b8d-a8b7-089ac5e2e211 accion=tarea_guardada
 ```
 
 ```mermaid

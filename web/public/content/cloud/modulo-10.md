@@ -48,7 +48,9 @@ ANALYTICS_Q=$(aws sqs create-queue --queue-name analitica-entregas --query Queue
 # Cada cola debe autorizar al tema a escribir en ella; sin esta política, en AWS real el mensaje no llega.
 permitir_sns() {
   QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$1" --attribute-names QueueArn --query Attributes.QueueArn --output text)
-  python3 -c 'import json,sys; q,t=sys.argv[1:]; p={"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"sns.amazonaws.com"},"Action":"sqs:SendMessage","Resource":q,"Condition":{"ArnEquals":{"aws:SourceArn":t}}}]}; print(json.dumps({"Policy":json.dumps(p)}))' "$QUEUE_ARN" "$TOPIC_ARN" > atributos.json
+  jq -n --arg q "$QUEUE_ARN" --arg t "$TOPIC_ARN" '{Policy: ({Version: "2012-10-17", Statement: [{Effect: "Allow",
+    Principal: {Service: "sns.amazonaws.com"}, Action: "sqs:SendMessage", Resource: $q,
+    Condition: {ArnEquals: {"aws:SourceArn": $t}}}]} | tojson)}' > atributos.json
   aws sqs set-queue-attributes --queue-url "$1" --attributes file://atributos.json
 }
 permitir_sns "$NOTIF_Q"

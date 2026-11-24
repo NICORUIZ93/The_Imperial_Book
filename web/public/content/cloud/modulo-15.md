@@ -116,7 +116,7 @@ Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` deber
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/lotes. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
+Usa JDK 21 o superior (`java Lote.java` compila y ejecuta en un paso). Crea la carpeta academia-labs/cloud/lotes. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -135,46 +135,61 @@ flowchart LR
 
 #### Código y verificación
 
-```python
-import json
-from pathlib import Path
+```java
+// Lote.java — procesa archivos en lotes independientes, con reintentos e idempotencia
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.IntStream;
 
-ENTRADA = [f"guias-{dia:02d}.csv" for dia in range(1, 11)]  # 10 archivos del mes
-TAMANO_LOTE = 4
-INTENTOS = 3
-salida = Path("procesados"); salida.mkdir(exist_ok=True)
-fallos_simulados = {"guias-06.csv": 1}  # falla una vez (por ejemplo, un timeout de red)
+public class Lote {
+    static final List<String> ENTRADA = IntStream.rangeClosed(1, 10)
+            .mapToObj(dia -> "guias-%02d.csv".formatted(dia)).toList();   // 10 archivos del mes
+    static final int TAMANO_LOTE = 4;
+    static final int INTENTOS = 3;
+    static final Path SALIDA = Path.of("procesados");
+    static final Map<String, Integer> FALLOS_SIMULADOS = new HashMap<>(Map.of("guias-06.csv", 1)); // un timeout de red
 
-def procesar(archivo: str) -> None:
-    destino = salida / (archivo + ".ok")
-    if destino.exists():            # idempotente: si ya se hizo, no se repite
-        return
-    if fallos_simulados.get(archivo, 0) > 0:
-        fallos_simulados[archivo] -= 1
-        raise TimeoutError(f"{archivo}: tiempo agotado")
-    destino.write_text(json.dumps({"archivo": archivo, "filas": 1000}))
+    static void procesar(String archivo) throws IOException, TimeoutException {
+        Path destino = SALIDA.resolve(archivo + ".ok");
+        if (Files.exists(destino)) return;                  // idempotente: si ya se hizo, no se repite
+        if (FALLOS_SIMULADOS.getOrDefault(archivo, 0) > 0) {
+            FALLOS_SIMULADOS.merge(archivo, -1, Integer::sum);
+            throw new TimeoutException(archivo + ": tiempo agotado");
+        }
+        Files.writeString(destino, "{\"archivo\":\"" + archivo + "\",\"filas\":1000}");
+    }
 
-# Cada lote es como un trabajo de un array job: independiente y reintentable.
-for n, inicio in enumerate(range(0, len(ENTRADA), TAMANO_LOTE), start=1):
-    lote = ENTRADA[inicio:inicio + TAMANO_LOTE]
-    for intento in range(1, INTENTOS + 1):
-        try:
-            for archivo in lote:
-                procesar(archivo)
-            print(f"lote {n} ({len(lote)} archivos): ok en el intento {intento}")
-            break
-        except TimeoutError as error:
-            print(f"lote {n}: {error}, reintentando")
-    else:
-        print(f"lote {n}: falló {INTENTOS} veces, va a la cola de revisión")
-
-print(f"procesados: {len(list(salida.glob('*.ok')))} de {len(ENTRADA)}")
+    public static void main(String[] args) throws IOException {
+        Files.createDirectories(SALIDA);
+        // Cada lote es como un trabajo de un array job: independiente y reintentable.
+        for (int inicio = 0, n = 1; inicio < ENTRADA.size(); inicio += TAMANO_LOTE, n++) {
+            List<String> lote = ENTRADA.subList(inicio, Math.min(inicio + TAMANO_LOTE, ENTRADA.size()));
+            boolean listo = false;
+            for (int intento = 1; intento <= INTENTOS && !listo; intento++) {
+                try {
+                    for (String archivo : lote) procesar(archivo);
+                    System.out.printf("lote %d (%d archivos): ok en el intento %d%n", n, lote.size(), intento);
+                    listo = true;
+                } catch (TimeoutException error) {
+                    System.out.printf("lote %d: %s, reintentando%n", n, error.getMessage());
+                }
+            }
+            if (!listo) System.out.printf("lote %d: falló %d veces, va a la cola de revisión%n", n, INTENTOS);
+        }
+        try (var archivos = Files.list(SALIDA)) {
+            long hechos = archivos.filter(p -> p.toString().endsWith(".ok")).count();
+            System.out.printf("procesados: %d de %d%n", hechos, ENTRADA.size());
+        }
+    }
+}
 ```
 
 ```bash
 cd academia-labs/cloud/lotes
-python3 lote.py
-python3 lote.py   # segunda vez: idempotente
+java Lote.java
+java Lote.java   # segunda vez: idempotente
 ```
 
 ```text

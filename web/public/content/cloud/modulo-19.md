@@ -124,7 +124,7 @@ cat stub.json
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea academia-labs/cloud/gobierno-ia. En un proyecto real, la ficha viene del registro de modelos (SageMaker Model Registry, MLflow) y las métricas de la evaluación.
+Necesitas `jq` 1.6 o superior. Crea academia-labs/cloud/gobierno-ia. En un proyecto real, la ficha viene del registro de modelos (SageMaker Model Registry, MLflow) y las métricas de la evaluación.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -155,38 +155,43 @@ flowchart LR
     P -->|sí| A["APROBADO + registro"]
 ```
 
-```python
-import json
-import re
+La ficha del modelo que el equipo quiere publicar va en `ficha.json` (en la vida real viene del registro de modelos):
 
-# Ficha del modelo que el equipo quiere publicar (en la vida real viene del registro de modelos).
-ficha = json.loads("""{
+```json
+{
   "nombre": "estimador-tiempo-entrega", "version": "3",
   "proposito": "estimar minutos de entrega por parada",
   "datos_entrenamiento": "entregas 2025 anonimizadas",
   "responsable": "equipo-datos",
   "metricas": {"error_medio_min": 6.2, "error_medio_min_zona_rural": 14.8},
   "prompt_sistema": "Responde con minutos. Ejemplo: cliente Ana Pérez, cédula 1020304050."
-}""")
+}
+```
 
-REQUISITOS = ["proposito", "datos_entrenamiento", "responsable"]
-UMBRALES = {"error_medio_min": 8.0, "error_medio_min_zona_rural": 12.0}  # el rural no puede quedar atrás
-PII = re.compile(r"\b\d{8,10}\b")  # números que parecen documentos de identidad
+Crea `puerta_modelo.sh`. `jq` revisa los campos obligatorios, compara cada métrica con su umbral y busca en el prompt
+números que parecen documentos de identidad:
 
-problemas = []
-problemas += [f"falta '{c}' en la ficha" for c in REQUISITOS if not ficha.get(c)]
-problemas += [f"{m} = {ficha['metricas'][m]} supera {u}" for m, u in UMBRALES.items() if ficha["metricas"][m] > u]
-if PII.search(ficha["prompt_sistema"]):
-    problemas.append("el prompt de sistema contiene datos personales")
-
-print(f"{ficha['nombre']} v{ficha['version']}: {'BLOQUEADO' if problemas else 'APROBADO'}")
-for p in problemas:
-    print(" -", p)
+```bash
+#!/usr/bin/env bash
+# puerta_modelo.sh — bloquea la publicación si la ficha está incompleta, hay sesgo o el prompt tiene PII
+jq -r '
+  ["proposito", "datos_entrenamiento", "responsable"] as $requisitos
+  | {"error_medio_min": 8.0, "error_medio_min_zona_rural": 12.0} as $umbrales   # el rural no puede quedar atrás
+  | . as $f
+  | [ ($requisitos[] | select(($f[.] // "") == "") | "falta el campo \(.) en la ficha"),
+      ($umbrales | to_entries[] | select($f.metricas[.key] > .value)
+        | "\(.key) = \($f.metricas[.key]) supera \(.value)"),
+      (select($f.prompt_sistema | test("\\b\\d{8,10}\\b"))   # números que parecen documentos de identidad
+        | "el prompt de sistema contiene datos personales") ] as $problemas
+  | "\($f.nombre) v\($f.version): \(if ($problemas | length) > 0 then "BLOQUEADO" else "APROBADO" end)",
+    ($problemas[] | " - \(.)")
+' ficha.json
 ```
 
 ```bash
 cd academia-labs/cloud/gobierno-ia
-python3 puerta_modelo.py
+chmod +x puerta_modelo.sh
+./puerta_modelo.sh
 ```
 
 ```text

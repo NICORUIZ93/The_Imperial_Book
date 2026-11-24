@@ -225,7 +225,7 @@ psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/well-architected. Ten a mano el diagrama de la arquitectura del proyecto integrador.
+Usa JDK 21 o superior. Crea la carpeta academia-labs/cloud/well-architected. Ten a mano el diagrama de la arquitectura del proyecto integrador.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -244,33 +244,50 @@ flowchart LR
 
 #### Código y verificación
 
-```python
-# Revisión ligera de Well-Architected: cada pilar con preguntas de sí/no y su riesgo.
-REVISION = {
-    "Excelencia operativa": {"runbooks versionados": True, "despliegues automatizados": True},
-    "Seguridad": {"MFA en todas las cuentas": True, "cifrado en reposo": True, "mínimo privilegio revisado": False},
-    "Confiabilidad": {"multi-AZ en la base": False, "respaldos restaurados en prueba": True},
-    "Eficiencia de rendimiento": {"pruebas de carga recientes": False, "caché frente a la base": True},
-    "Optimización de costos": {"etiquetas de costo": True, "presupuestos con alerta": True},
-    "Sostenibilidad": {"apagado nocturno de entornos de prueba": False, "instancias Graviton evaluadas": True},
+```java
+// RevisionWa.java — revisión ligera de Well-Architected: cada pilar con preguntas de sí/no y su riesgo
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class RevisionWa {
+    public static void main(String[] args) {
+        Map<String, Map<String, Boolean>> revision = new LinkedHashMap<>();   // conserva el orden de los pilares
+        revision.put("Excelencia operativa", mapa("runbooks versionados", true, "despliegues automatizados", true));
+        revision.put("Seguridad", mapa("MFA en todas las cuentas", true, "cifrado en reposo", true,
+                "mínimo privilegio revisado", false));
+        revision.put("Confiabilidad", mapa("multi-AZ en la base", false, "respaldos restaurados en prueba", true));
+        revision.put("Eficiencia de rendimiento", mapa("pruebas de carga recientes", false, "caché frente a la base", true));
+        revision.put("Optimización de costos", mapa("etiquetas de costo", true, "presupuestos con alerta", true));
+        revision.put("Sostenibilidad", mapa("apagado nocturno de entornos de prueba", false,
+                "instancias Graviton evaluadas", true));
+        Set<String> altoRiesgo = Set.of("multi-AZ en la base", "mínimo privilegio revisado");
+
+        int altos = 0;
+        for (var pilar : revision.entrySet()) {
+            Map<String, Boolean> preguntas = pilar.getValue();
+            List<String> faltan = preguntas.entrySet().stream().filter(p -> !p.getValue()).map(Map.Entry::getKey).toList();
+            long cumplidas = preguntas.size() - faltan.size();
+            String detalle = faltan.isEmpty() ? "" : " · falta: " + faltan.stream()
+                    .map(p -> p + (altoRiesgo.contains(p) ? " (riesgo alto)" : "")).collect(Collectors.joining(", "));
+            System.out.printf("%s%s: %d/%d%s%n", faltan.isEmpty() ? "OK " : "!! ", pilar.getKey(), cumplidas,
+                    preguntas.size(), detalle);
+            altos += (int) faltan.stream().filter(altoRiesgo::contains).count();
+        }
+        System.out.println("Riesgos altos a resolver primero: " + altos);
+    }
+
+    /** Pares pregunta, respuesta en el orden en que se escriben. */
+    static Map<String, Boolean> mapa(Object... pares) {
+        Map<String, Boolean> m = new LinkedHashMap<>();
+        for (int i = 0; i < pares.length; i += 2) m.put((String) pares[i], (Boolean) pares[i + 1]);
+        return m;
+    }
 }
-ALTO_RIESGO = {"multi-AZ en la base", "mínimo privilegio revisado"}
-
-for pilar, preguntas in REVISION.items():
-    cumplidas = sum(preguntas.values())
-    faltan = [p for p, ok in preguntas.items() if not ok]
-    marca = "OK " if not faltan else "!! "
-    detalle = "" if not faltan else " · falta: " + ", ".join(
-        f"{p}{' (riesgo alto)' if p in ALTO_RIESGO else ''}" for p in faltan)
-    print(f"{marca}{pilar}: {cumplidas}/{len(preguntas)}{detalle}")
-
-altos = [p for preguntas in REVISION.values() for p, ok in preguntas.items() if not ok and p in ALTO_RIESGO]
-print(f"Riesgos altos a resolver primero: {len(altos)}")
 ```
 
 ```bash
 cd academia-labs/cloud/well-architected
-python3 revision_wa.py
+java RevisionWa.java
 ```
 
 ```text
@@ -291,12 +308,12 @@ Riesgos altos a resolver primero: 2
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea academia-labs/cloud/residencia. En un proyecto real, genera el plan con terraform show -json plan.out > plan.json; aquí usarás un plan de ejemplo.
+Necesitas `jq` 1.6 o superior. Crea academia-labs/cloud/residencia. En un proyecto real, genera el plan con terraform show -json plan.out > plan.json; aquí usarás un plan de ejemplo.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    P["terraform plan -json"] --> R["residencia.py"]
+    P["terraform plan -json"] --> R["residencia.sh"]
     R --> C{"¿datos=personales<br/>fuera de regiones permitidas?"}
     C -->|sí| B["BLOQUEADO: CI falla"]
     C -->|no| A["apply"]
@@ -310,38 +327,31 @@ flowchart LR
 #### Código y verificación
 ```mermaid
 flowchart LR
-    P["terraform plan -json"] --> R["residencia.py"]
+    P["terraform plan -json"] --> R["residencia.sh"]
     R --> C{"¿datos=personales<br/>fuera de regiones permitidas?"}
     C -->|sí| B["BLOQUEADO: CI falla"]
     C -->|no| A["apply"]
 ```
 
-```python
-import json
-import sys
+Crea `residencia.sh`. `jq` recorre los cambios del plan de Terraform y la salida decide si el CI falla:
 
-# Regla de residencia: los datos personales de clientes de Colombia solo pueden vivir en estas regiones.
-REGIONES_PERMITIDAS = {"us-east-1", "sa-east-1"}  # acordadas con el área legal
-ETIQUETA = "datos"  # valor "personales" marca recursos con datos personales
-
-def revisar(plan: dict) -> list[str]:
-    hallazgos = []
-    for recurso in plan["resource_changes"]:
-        despues = recurso["change"]["after"] or {}
-        etiquetas = despues.get("tags_all") or {}
-        if etiquetas.get(ETIQUETA) != "personales":
-            continue
-        region = despues.get("region", plan["region"])
-        if region not in REGIONES_PERMITIDAS:
-            hallazgos.append(f"{recurso['address']}: datos personales en {region}")
-    return hallazgos
-
-plan = json.load(open(sys.argv[1]))
-hallazgos = revisar(plan)
-for h in hallazgos:
-    print("BLOQUEADO", h)
-print(f"{len(hallazgos)} problema(s) de residencia")
-sys.exit(1 if hallazgos else 0)
+```bash
+#!/usr/bin/env bash
+# residencia.sh — falla si un recurso con datos personales queda fuera de las regiones permitidas
+# Regla acordada con el área legal: los datos personales de clientes de Colombia solo viven en estas regiones.
+REGIONES_PERMITIDAS='["us-east-1", "sa-east-1"]'
+salida=$(jq -r --argjson permitidas "$REGIONES_PERMITIDAS" '
+  .region as $defecto
+  | [ .resource_changes[]
+      | (.change.after // {}) as $despues
+      | select(($despues.tags_all // {}).datos == "personales")    # la etiqueta datos=personales marca PII
+      | ($despues.region // $defecto) as $region
+      | select($permitidas | index($region) | not)
+      | "\(.address): datos personales en \($region)" ] as $hallazgos
+  | ($hallazgos[] | "BLOQUEADO \(.)"), "\($hallazgos | length) problema(s) de residencia"
+' "$1")
+echo "$salida"
+! grep -q '^BLOQUEADO' <<<"$salida"
 ```
 
 ```json
@@ -357,7 +367,8 @@ sys.exit(1 if hallazgos else 0)
 
 ```bash
 cd academia-labs/cloud/residencia
-python3 residencia.py plan.json; echo "salida: $?"
+chmod +x residencia.sh
+./residencia.sh plan.json; echo "salida: $?"
 ```
 
 ```text

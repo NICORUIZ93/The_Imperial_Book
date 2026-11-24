@@ -144,7 +144,7 @@ test('rechaza un PIN inválido antes de escribir', async () => {
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
+Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker, y JDK 21 con Gradle o Node.js según el lenguaje; verifica `java --version` o `node --version`.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -231,14 +231,14 @@ aws s3 mb s3://demo-multi-nube
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica node --version.
+Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker, y JDK 21 con Gradle o Node.js según el lenguaje; verifica `java --version` o `node --version`.
 
 #### ► LA ANALOGÍA
 El módulo gestiona ciclo de vida como un técnico que prepara y limpia el laboratorio.
 
 **Conceptos clave:** módulo Testcontainers oficial por lenguaje, ciclo de vida gestionado automáticamente, sin puerto fijo ni contenedor persistente entre suites.
 
-Floci publica módulos Testcontainers propios para los lenguajes SDK principales: `io.floci:testcontainers-floci` en Maven Central (Java), `@floci/testcontainers` en npm (Node.js/TypeScript) y `testcontainers-floci` en PyPI (Python). Cada módulo expone una clase `FlociContainer` que envuelve la imagen `floci/floci:latest`: al arrancar, espera a que el puerto 4566 esté listo dentro del contenedor y expone cuatro métodos — `getEndpoint()`, `getRegion()`, `getAccessKey()` y `getSecretKey()` — que se pasan directamente al cliente del SDK que estés probando, sin variables de entorno ni configuración manual del endpoint.
+Floci publica módulos Testcontainers propios para los lenguajes SDK principales: `io.floci:testcontainers-floci` en Maven Central (Java) y `@floci/testcontainers` en npm (Node.js/TypeScript); también hay versiones para Python y .NET. Cada módulo expone una clase `FlociContainer` que envuelve la imagen `floci/floci:latest`: al arrancar, espera a que el puerto 4566 esté listo dentro del contenedor y expone cuatro métodos — `getEndpoint()`, `getRegion()`, `getAccessKey()` y `getSecretKey()` — que se pasan directamente al cliente del SDK que estés probando, sin variables de entorno ni configuración manual del endpoint.
 
 La diferencia frente a levantar Floci con `floci start` o Docker Compose (como hiciste en el resto del track) es el ciclo de vida: Testcontainers arranca un contenedor Floci **nuevo y aislado** para cada suite de pruebas (o para toda la sesión de pruebas, según el scope que elijas) y lo destruye automáticamente al terminar. Esto elimina dos problemas típicos de compartir un único Floci de larga duración entre suites de test: estado que se filtra de una prueba a otra (un bucket creado en el test A todavía existe cuando corre el test B), y conflictos de puerto cuando varias suites corren en paralelo (Testcontainers asigna un puerto de host aleatorio y disponible en cada arranque, expuesto vía `getEndpoint()`).
 
@@ -318,37 +318,7 @@ describe("S3", () => {
 });
 ```
 
-**Ejemplo en Python (pytest, fixture de sesión):**
-
-Instala el paquete con la versión fijada: `pip install testcontainers-floci==0.4.0 pytest boto3`. Aunque el paquete se llama `testcontainers-floci`, el módulo que importas se llama `floci`.
-
-```python
-import pytest
-import boto3
-from floci import FlociContainer
-
-@pytest.fixture(scope="session")
-def floci():
-    with FlociContainer() as container:
-        yield container
-
-@pytest.fixture(scope="session")
-def s3_client(floci):
-    return boto3.client(
-        "s3",
-        endpoint_url=floci.get_endpoint(),
-        region_name=floci.get_region(),
-        aws_access_key_id=floci.get_access_key(),
-        aws_secret_access_key=floci.get_secret_key(),
-    )
-
-def test_create_bucket(s3_client):
-    s3_client.create_bucket(Bucket="my-bucket")
-    buckets = [b["Name"] for b in s3_client.list_buckets()["Buckets"]]
-    assert "my-bucket" in buckets
-```
-
-Fíjate en el patrón compartido por los tres lenguajes: el contenedor se declara una sola vez con alcance de sesión o de clase (`@Container static` en Java, `beforeAll`/`afterAll` en Jest, el fixture `scope="session"` en pytest), no dentro de cada test individual — arrancar un contenedor Docker por cada test sería innecesariamente lento. El módulo Go equivalente (`testcontainers-floci-go`) está en desarrollo activo en el momento de escribir esto; para Go, sigue usando el patrón manual del Módulo 1 (`floci start` + variables de entorno) en tus pruebas de integración.
+Fíjate en el patrón compartido por los dos lenguajes: el contenedor se declara una sola vez con alcance de clase o de suite (`@Container static` en Java, `beforeAll`/`afterAll` en Jest), no dentro de cada test individual — arrancar un contenedor Docker por cada test sería innecesariamente lento. El módulo Go equivalente (`testcontainers-floci-go`) está en desarrollo activo en el momento de escribir esto; para Go, sigue usando el patrón manual del Módulo 1 (`floci start` + variables de entorno) en tus pruebas de integración.
 
 **Analogía:** un Floci levantado con `floci start` para desarrollo diario es como la cocina de tu propia casa: siempre está ahí, acumula lo que vas dejando en ella entre una comida y otra. Un Floci gestionado por Testcontainers es como una cocina de alquiler por horas que llega completamente limpia y vacía para cada evento, y se desmonta por completo al terminar — ideal precisamente porque ninguna prueba puede heredar por accidente algo que dejó la prueba anterior.
 
@@ -463,32 +433,6 @@ describe("S3", () => {
 });
 ```
 
-```python
-import pytest
-import boto3
-from floci import FlociContainer
-
-@pytest.fixture(scope="session")
-def floci():
-    with FlociContainer() as container:
-        yield container
-
-@pytest.fixture(scope="session")
-def s3_client(floci):
-    return boto3.client(
-        "s3",
-        endpoint_url=floci.get_endpoint(),
-        region_name=floci.get_region(),
-        aws_access_key_id=floci.get_access_key(),
-        aws_secret_access_key=floci.get_secret_key(),
-    )
-
-def test_create_bucket(s3_client):
-    s3_client.create_bucket(Bucket="my-bucket")
-    buckets = [b["Name"] for b in s3_client.list_buckets()["Buckets"]]
-    assert "my-bucket" in buckets
-```
-
 ```mermaid
 flowchart TD
     subgraph SIN["Sin Testcontainers"]
@@ -501,49 +445,97 @@ flowchart TD
     end
 ```
 
-```python
-import uuid
+Crea el proyecto con este `build.gradle.kts`:
 
-import boto3
-import pytest
-from floci import FlociContainer
+```kotlin
+plugins { java }
 
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
-@pytest.fixture(scope="session")
-def s3():
-    with FlociContainer() as floci:
-        yield boto3.client(
-            "s3",
-            endpoint_url=floci.get_endpoint(),
-            region_name=floci.get_region(),
-            aws_access_key_id=floci.get_access_key(),
-            aws_secret_access_key=floci.get_secret_key(),
-        )
+repositories { mavenCentral() }
 
+dependencies {
+    testImplementation(platform("software.amazon.awssdk:bom:2.55.6"))
+    testImplementation("software.amazon.awssdk:s3")
+    testImplementation("io.floci:testcontainers-floci:2.11.0")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
 
-def bucket_unico() -> str:
-    return f"evidencias-{uuid.uuid4().hex[:12]}"
+tasks.test { useJUnitPlatform() }
+```
 
+Y la prueba en `src/test/java/AisladoTest.java`:
 
-def test_guarda_evidencia(s3):
-    bucket = bucket_unico()
-    s3.create_bucket(Bucket=bucket)
-    s3.put_object(Bucket=bucket, Key="RF-101.json", Body=b'{"estado":"entregado"}')
-    assert s3.get_object(Bucket=bucket, Key="RF-101.json")["Body"].read() == b'{"estado":"entregado"}'
+```java
+import io.floci.testcontainers.FlociContainer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
+import java.net.URI;
+import java.util.UUID;
 
-def test_bucket_nuevo_esta_vacio(s3):
-    bucket = bucket_unico()
-    s3.create_bucket(Bucket=bucket)
-    assert s3.list_objects_v2(Bucket=bucket).get("KeyCount") == 0
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Testcontainers
+class AisladoTest {
+
+    @Container
+    static FlociContainer floci = new FlociContainer();   // un contenedor para toda la clase
+
+    static S3Client s3;
+
+    @BeforeAll
+    static void cliente() {
+        s3 = S3Client.builder()
+                .endpointOverride(URI.create(floci.getEndpoint()))
+                .region(Region.of(floci.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(floci.getAccessKey(), floci.getSecretKey())))
+                .forcePathStyle(true)
+                .build();
+    }
+
+    /** Cada prueba usa su propio bucket: ninguna depende de lo que dejó otra. */
+    static String bucketUnico() {
+        return "evidencias-" + UUID.randomUUID().toString().substring(0, 12);
+    }
+
+    @Test
+    void guardaEvidencia() {
+        String bucket = bucketUnico();
+        s3.createBucket(b -> b.bucket(bucket));
+        s3.putObject(b -> b.bucket(bucket).key("RF-101.json"), RequestBody.fromString("{\"estado\":\"entregado\"}"));
+        String leido = s3.getObjectAsBytes(b -> b.bucket(bucket).key("RF-101.json")).asUtf8String();
+        assertEquals("{\"estado\":\"entregado\"}", leido);
+    }
+
+    @Test
+    void bucketNuevoEstaVacio() {
+        String bucket = bucketUnico();
+        s3.createBucket(b -> b.bucket(bucket));
+        assertEquals(0, s3.listObjectsV2(b -> b.bucket(bucket)).keyCount());
+    }
+}
 ```
 
 ```bash
-mkdir -p ejemplo-isolated-tests/tests && cd ejemplo-isolated-tests
-python3 -m venv .venv && . .venv/bin/activate
-pip install testcontainers-floci==0.4.0 pytest boto3
-python3 -m pytest -q tests/test_aislado.py
+mkdir -p ejemplo-isolated-tests/src/test/java && cd ejemplo-isolated-tests
+touch settings.gradle.kts            # proyecto de un solo módulo
+gradle wrapper && ./gradlew test     # con Docker en marcha
 ```
+
+Las dos pruebas pasan aunque se ejecuten en cualquier orden: cada una crea su bucket con un nombre aleatorio y
+`bucketNuevoEstaVacio` no ve el objeto que guardó `guardaEvidencia`.
 
 </details>
 
@@ -553,7 +545,7 @@ python3 -m pytest -q tests/test_aislado.py
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea la carpeta academia-labs/cloud/migracion. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
+Usa JDK 21 o superior. Crea la carpeta academia-labs/cloud/migracion. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -590,48 +582,39 @@ flowchart TB
     E -->|sí| R6["Rehospedar"]
 ```
 
-```python
-from dataclasses import dataclass
+```java
+// SieteR.java — decide qué hacer con cada aplicación al migrar, de la pregunta más barata a la más cara
+import java.util.List;
 
-@dataclass
-class Aplicacion:
-    nombre: str
-    se_usa: bool
-    tiene_saas_equivalente: bool
-    cambia_seguido: bool
-    depende_de_hardware_local: bool
-    sistema_operativo_soportado: bool
+public class SieteR {
+    record Aplicacion(String nombre, boolean seUsa, boolean tieneSaasEquivalente, boolean cambiaSeguido,
+                      boolean dependeDeHardwareLocal, boolean sistemaOperativoSoportado) {}
 
-def decidir(app: Aplicacion) -> str:
-    # Orden de las preguntas: de la más barata a la más cara.
-    if not app.se_usa:
-        return "Retirar (retire)"
-    if app.depende_de_hardware_local:
-        return "Retener (retain): revisar en 12 meses"
-    if app.tiene_saas_equivalente:
-        return "Recomprar (repurchase): reemplazar por SaaS"
-    if app.cambia_seguido:
-        return "Refactorizar (refactor): rediseñar para la nube"
-    if not app.sistema_operativo_soportado:
-        return "Replataformar (replatform): cambiar la base, no el código"
-    return "Rehospedar (rehost): mover tal cual"
+    static String decidir(Aplicacion app) {
+        if (!app.seUsa()) return "Retirar (retire)";
+        if (app.dependeDeHardwareLocal()) return "Retener (retain): revisar en 12 meses";
+        if (app.tieneSaasEquivalente()) return "Recomprar (repurchase): reemplazar por SaaS";
+        if (app.cambiaSeguido()) return "Refactorizar (refactor): rediseñar para la nube";
+        if (!app.sistemaOperativoSoportado()) return "Replataformar (replatform): cambiar la base, no el código";
+        return "Rehospedar (rehost): mover tal cual";
+    }
 
-inventario = [
-    Aplicacion("reportes-2015", False, False, False, False, True),
-    Aplicacion("impresora-etiquetas", True, False, False, True, True),
-    Aplicacion("correo-interno", True, True, False, False, True),
-    Aplicacion("api-rutas", True, False, True, False, True),
-    Aplicacion("facturacion", True, False, False, False, False),
-    Aplicacion("intranet", True, False, False, False, True),
-]
-
-for app in inventario:
-    print(f"{app.nombre:<20} -> {decidir(app)}")
+    public static void main(String[] args) {
+        List<Aplicacion> inventario = List.of(
+                new Aplicacion("reportes-2015", false, false, false, false, true),
+                new Aplicacion("impresora-etiquetas", true, false, false, true, true),
+                new Aplicacion("correo-interno", true, true, false, false, true),
+                new Aplicacion("api-rutas", true, false, true, false, true),
+                new Aplicacion("facturacion", true, false, false, false, false),
+                new Aplicacion("intranet", true, false, false, false, true));
+        for (Aplicacion app : inventario) System.out.printf("%-20s -> %s%n", app.nombre(), decidir(app));
+    }
+}
 ```
 
 ```bash
 cd academia-labs/cloud/migracion
-python3 siete_r.py
+java SieteR.java
 ```
 
 ```text

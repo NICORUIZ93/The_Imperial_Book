@@ -415,7 +415,7 @@ Este tema es principalmente conceptual en esta versión. La verificación se rea
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. Prerrequisitos: archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
+Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. Prerrequisitos: archivos, JSON, terminal y `jq`. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.
 
 </details>
 
@@ -428,33 +428,37 @@ mkdir simulacro-backup
 cd simulacro-backup
 ```
 
-```python
-from pathlib import Path
-import hashlib
-import json
-import shutil
+Crea `restaurar.sh`. `shasum -a 256` calcula la huella del archivo y `jq` comprueba la estructura:
 
-original = Path('envios.json')
-backup = Path('envios.backup.json')
-restored = Path('restaurado.json')
-original.write_text('[{"id": "ENV-42", "estado": "creado"}]', encoding='utf-8')
-shutil.copy2(original, backup)
-expected = hashlib.sha256(original.read_bytes()).hexdigest()
+```bash
+#!/usr/bin/env bash
+# restaurar.sh — restaura en un destino separado y verifica con un hash que la copia no cambió
+set -euo pipefail
+hash() { shasum -a 256 "$1" | cut -d' ' -f1; }
+
+echo '[{"id": "ENV-42", "estado": "creado"}]' > envios.json
+cp -p envios.json envios.backup.json
+esperado=$(hash envios.json)
+
 # El destino separado evita sobrescribir datos activos.
-shutil.copy2(backup, restored)
-assert hashlib.sha256(restored.read_bytes()).hexdigest() == expected
-rows = json.loads(restored.read_text(encoding='utf-8'))
-assert rows[0]['id'] == 'ENV-42'
-assert rows[0]['estado'] == 'creado'
-print('Contenido y estructura recuperados: ENV-42')
+cp -p envios.backup.json restaurado.json
+[[ $(hash restaurado.json) == "$esperado" ]] || { echo "fallo: el hash no coincide"; exit 1; }
+[[ $(jq -r '.[0] | "\(.id) \(.estado)"' restaurado.json) == "ENV-42 creado" ]] || { echo "fallo: estructura distinta"; exit 1; }
+echo "Contenido y estructura recuperados: ENV-42"
+
 # También comprobamos que una copia alterada se detecta.
-backup.write_text('[]', encoding='utf-8')
-assert hashlib.sha256(backup.read_bytes()).hexdigest() != expected
-print('Corrupción detectada')
+echo '[]' > envios.backup.json
+[[ $(hash envios.backup.json) != "$esperado" ]] && echo "Corrupción detectada"
 ```
 
 ```bash
-python3 restaurar.py
+chmod +x restaurar.sh
+./restaurar.sh
+```
+
+```text
+Contenido y estructura recuperados: ENV-42
+Corrupción detectada
 ```
 
 </details>

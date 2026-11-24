@@ -494,7 +494,7 @@ aws dynamodb query --table-name ShipmentEvents --key-condition-expression "shipm
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior. Crea academia-labs/cloud/deprecaciones. En una cuenta real, el inventario sale de aws lambda list-functions y el calendario de la tabla oficial de runtimes de Lambda.
+Necesitas `jq` 1.6 o superior (`brew install jq` o `apt install jq`). Crea academia-labs/cloud/deprecaciones. En una cuenta real, el inventario sale de aws lambda list-functions y el calendario de la tabla oficial de runtimes de Lambda.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -548,37 +548,34 @@ flowchart LR
 ]
 ```
 
-```python
-import json
-from datetime import date
+Crea `deprecaciones.sh`. `jq` lee los dos JSON y calcula los días con `strptime` y `mktime`:
 
-HOY = date(2026, 11, 18)         # fija para que el ejercicio sea reproducible; en producción usa date.today()
-AVISO_DIAS = 180                 # avisar con seis meses de anticipación
-
-calendario = {k: date.fromisoformat(v) for k, v in json.load(open("calendario.json")).items() if not k.startswith("_")}
-inventario = json.load(open("inventario.json"))
-
-def estado(runtime: str) -> tuple[int, str]:
-    fin = calendario.get(runtime)
-    if fin is None:
-        return (0, "DESCONOCIDO: agrégalo al calendario")
-    dias = (fin - HOY).days
-    if dias < 0:
-        return (1, f"VENCIDO hace {-dias} días")
-    if dias <= AVISO_DIAS:
-        return (2, f"vence en {dias} días: planear migración")
-    return (3, f"ok hasta {fin.isoformat()}")
-
-# Ordena por urgencia: desconocidos y vencidos primero.
-for f in sorted(inventario, key=lambda f: estado(f["runtime"])[0]):
-    print(f"{f['funcion']:<18} {f['runtime']:<12} {estado(f['runtime'])[1]}")
+```bash
+#!/usr/bin/env bash
+# deprecaciones.sh — qué funciones usan un runtime vencido o por vencer, ordenadas por urgencia
+HOY=2026-11-18     # fija para que el ejercicio sea reproducible; en producción: HOY=$(date +%F)
+AVISO_DIAS=180     # avisar con seis meses de anticipación
+jq -r --arg hoy "$HOY" --argjson aviso "$AVISO_DIAS" --slurpfile cal calendario.json '
+  def dias($fecha): (($fecha | strptime("%Y-%m-%d") | mktime) - ($hoy | strptime("%Y-%m-%d") | mktime)) / 86400 | floor;
+  def estado($runtime):
+    ($cal[0][$runtime]) as $fin
+    | if $fin == null then [0, "DESCONOCIDO: agrégalo al calendario"]
+      else dias($fin) as $d
+        | if $d < 0 then [1, "VENCIDO hace \(-$d) días"]
+          elif $d <= $aviso then [2, "vence en \($d) días: planear migración"]
+          else [3, "ok hasta \($fin)"] end
+      end;
+  sort_by(estado(.runtime)[0])[]
+  | "\(.funcion | . + " " * (18 - length)) \(.runtime | . + " " * (12 - length)) \(estado(.runtime)[1])"
+' inventario.json
 ```
 
 ```bash
 cd academia-labs/cloud/deprecaciones
 # en una cuenta real, genera el inventario así:
 # aws lambda list-functions --query "Functions[].{funcion:FunctionName,runtime:Runtime}" > inventario.json
-python3 deprecaciones.py
+chmod +x deprecaciones.sh
+./deprecaciones.sh
 ```
 
 ```text

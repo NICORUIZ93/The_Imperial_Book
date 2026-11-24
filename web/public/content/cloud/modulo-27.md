@@ -18,18 +18,6 @@ Al finalizar vas a reconocer, con el caso real de sugerir repartidores de respal
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```python
-# archivo: src/labs/modulo-28/tema-1-por-que-un-grafo.py — ejecutar con: python tema-1-por-que-un-grafo.py
-# Compara mentalmente: recuperar "quién entregó el pedido RF-001" es una
-# consulta por clave (DynamoDB). Recuperar "todos los repartidores que
-# alguna vez cubrieron la misma zona que Ana" es un recorrido multi-salto:
-# exactamente el tipo de pregunta que justifica una base de grafos.
-pregunta_por_clave = "SELECT * FROM entregas WHERE guia = 'RF-001'"
-pregunta_multi_salto = "g.V().has('nombre','Ana').out('cubrio_zona').in('cubrio_zona').dedup()"
-print("clave:", pregunta_por_clave)
-print("grafo:", pregunta_multi_salto)
-```
-
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
@@ -144,7 +132,7 @@ mkdir ejemplo && cd ejemplo && floci start
 ```bash
 aws dynamodb get-item --table-name ShipmentEvents --key '{"shipmentId":{"S":"env-4471"},"sequence":{"N":"1"}}'
 curl "http://$ENDPOINT/paquetes/_search?q=fragil"
-# (consulta Gremlin del Tema 1, vía gremlin-python contra el puerto de Neptune)
+# (consulta Gremlin del Tema 1, con un cliente de Apache TinkerPop contra el puerto de Neptune)
 ```
 
 </details>
@@ -155,7 +143,7 @@ curl "http://$ENDPOINT/paquetes/_search?q=fragil"
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
 #### ► DE QUÉ TRATA
-Usa Python 3.10 o superior (trae SQLite). Crea la carpeta academia-labs/cloud/series. No necesitas instalar nada.
+Usa el cliente `sqlite3`, que viene con macOS y con la mayoría de distribuciones Linux (en Windows, descárgalo de sqlite.org). Crea la carpeta academia-labs/cloud/series.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
@@ -172,41 +160,37 @@ flowchart LR
 
 #### Código y verificación
 
-```python
-import sqlite3
-from datetime import datetime, timedelta
+Crea `series.sql`. Todo ocurre en SQL: una CTE recursiva genera las 180 lecturas y un `GROUP BY` por hora las reduce:
 
-db = sqlite3.connect(":memory:")
-# Tabla típica de series temporales: tiempo + etiqueta + valor, ordenada por tiempo.
-db.execute("CREATE TABLE temperatura (instante TEXT, camion TEXT, grados REAL)")
-db.execute("CREATE INDEX idx_tiempo ON temperatura (camion, instante)")
+```sql
+-- series.sql — lecturas por minuto, reducidas a una fila por hora (downsampling)
+-- Tabla típica de series temporales: tiempo + etiqueta + valor, ordenada por tiempo.
+CREATE TABLE temperatura (instante TEXT, camion TEXT, grados REAL);
+CREATE INDEX idx_tiempo ON temperatura (camion, instante);
 
-inicio = datetime(2026, 11, 18, 8, 0)
-lecturas = []
-for minuto in range(180):  # 3 horas, una lectura por minuto
-    grados = 4.0 + (minuto % 60) / 30  # sube durante cada hora y vuelve a bajar
-    if minuto == 125:
-        grados = 9.5                   # puerta abierta: pico
-    lecturas.append(((inicio + timedelta(minutes=minuto)).isoformat(), "CAM-7", grados))
-db.executemany("INSERT INTO temperatura VALUES (?, ?, ?)", lecturas)
+-- 3 horas, una lectura por minuto: sube durante cada hora y vuelve a bajar.
+WITH RECURSIVE minutos(m) AS (SELECT 0 UNION ALL SELECT m + 1 FROM minutos WHERE m < 179)
+INSERT INTO temperatura
+SELECT strftime('%Y-%m-%dT%H:%M', '2026-11-18 08:00', '+' || m || ' minutes'), 'CAM-7',
+       CASE WHEN m = 125 THEN 9.5                 -- puerta abierta: pico
+            ELSE 4.0 + (m % 60) / 30.0 END
+FROM minutos;
 
-# Reducción de resolución (downsampling): una fila por hora con mínimo, promedio y máximo.
-filas = db.execute("""
-    SELECT substr(instante, 1, 13) || ':00' AS hora,
-           round(min(grados), 1), round(avg(grados), 1), round(max(grados), 1), count(*)
-    FROM temperatura WHERE camion = 'CAM-7'
-    GROUP BY hora ORDER BY hora
-""").fetchall()
+SELECT printf('%d lecturas crudas -> %d filas por hora',
+              count(*), count(DISTINCT substr(instante, 1, 13)))
+FROM temperatura;
 
-print(f"{len(lecturas)} lecturas crudas -> {len(filas)} filas por hora")
-for hora, minimo, promedio, maximo, n in filas:
-    alerta = "  <- revisar cadena de frío" if maximo > 8 else ""
-    print(f"{hora}  min {minimo}  prom {promedio}  max {maximo}  ({n} lecturas){alerta}")
+-- Reducción de resolución: una fila por hora con mínimo, promedio y máximo.
+SELECT printf('%s:00  min %.1f  prom %.1f  max %.1f  (%d lecturas)%s',
+              substr(instante, 1, 13), min(grados), avg(grados), max(grados), count(*),
+              CASE WHEN max(grados) > 8 THEN '  <- revisar cadena de frío' ELSE '' END)
+FROM temperatura WHERE camion = 'CAM-7'
+GROUP BY substr(instante, 1, 13) ORDER BY 1;
 ```
 
 ```bash
 cd academia-labs/cloud/series
-python3 series.py
+sqlite3 :memory: < series.sql
 ```
 
 ```text

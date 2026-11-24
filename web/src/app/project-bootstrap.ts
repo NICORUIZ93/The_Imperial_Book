@@ -29,7 +29,7 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
   },
   cloud: {
     workspace: 'academia-labs/cloud',
-    prerequisites: ['Docker', 'AWS CLI', 'Terraform u OpenTofu', 'Git'],
+    prerequisites: ['Docker', 'AWS CLI', 'Terraform u OpenTofu', 'Git', 'jq y JDK 21'],
     createCommands: ['mkdir -p academia-labs/cloud/{infra,evidence}', 'cd academia-labs/cloud', 'git init', 'docker compose up -d', 'docker compose ps'],
     structure: ['compose.yaml', 'infra/main.tf', 'scripts/', 'evidence/', 'README.md'],
     runCommand: 'terraform -chdir=infra init && terraform -chdir=infra validate',

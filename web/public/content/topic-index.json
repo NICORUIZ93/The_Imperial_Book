@@ -1008,8 +1008,8 @@
         "fragment": "opcion-a-javascript-con-aws-sdk-v3"
       },
       {
-        "title": "Opción B — Python con boto3",
-        "fragment": "opcion-b-python-con-boto3"
+        "title": "Opción B — Java con AWS SDK v2",
+        "fragment": "opcion-b-java-con-aws-sdk-v2"
       },
       {
         "title": "Provoca un fallo útil antes de continuar",
