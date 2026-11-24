@@ -149,23 +149,23 @@
      "courseSources": []
     },
     {
-     "title": "Clases y objetos: atributos, métodos e `__init__`",
+     "title": "Clases y objetos: atributos, métodos y constructores",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 6,
-      "fragment": "tema-6-clases-y-objetos-atributos-metodos-e-init"
+      "fragment": "tema-6-clases-y-objetos-atributos-metodos-y-constructores"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Herencia, composición y clases abstractas con `abc`",
+     "title": "Herencia, composición y clases abstractas",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 7,
-      "fragment": "tema-7-herencia-composicion-y-clases-abstractas-con-abc"
+      "fragment": "tema-7-herencia-composicion-y-clases-abstractas"
      },
      "sources": [],
      "courseSources": []

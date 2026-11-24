@@ -30,15 +30,15 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       'Decisiones, repeticiones y trazado de ejecución',
       'Funciones y descomposición de problemas',
       'Cómo la computadora representa los datos — binario, texto y decimales',
-      'Clases y objetos: atributos, métodos e `__init__`',
-      'Herencia, composición y clases abstractas con `abc`'
+      'Clases y objetos: atributos, métodos y constructores',
+      'Herencia, composición y clases abstractas'
     ],
     [
       'Diseña en papel el algoritmo para calcular el precio final de una compra',
-      'Implementa el algoritmo en Python con validación de entradas',
+      'Implementa el algoritmo en Java con validación de entradas',
       'Extrae funciones pequeñas y comprueba cada una con casos normales, límite e inválidos',
       'Modela las tareas como objetos cuyos métodos protegen sus reglas',
-      'Cambia el aviso de una tarea por composición y comprueba el contrato con abc',
+      'Cambia el aviso de una tarea por composición y comprueba el contrato con una clase abstracta',
       'Construye desde carpeta vacía una calculadora de presupuesto por consola',
     ],
     [
@@ -47,7 +47,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Qué beneficio aporta una función que hace una sola cosa?',
       '¿Cuándo prefieres composición sobre herencia?',
     ],
-    ['Python', 'Pseudocódigo', 'abc'],
+    ['Java 25', 'Pseudocódigo', 'Clases abstractas'],
     'Calculadora de presupuesto por consola, dividida en funciones, validada con una tabla de casos y documentada.'),
   m(2, 'Estructuras de datos, algoritmos y complejidad', 'Datos y algoritmos', 'Fundamentos', '8 h', '#6d5dfc',
     'Organiza información con listas, diccionarios, pilas y colas; implementa búsquedas y ordenamientos; y compara soluciones usando corrección, tiempo y memoria.',[

@@ -3026,12 +3026,12 @@
         "fragment": "tema-5-como-la-computadora-representa-los-datos-binario-texto-y-decimales"
       },
       {
-        "title": "Clases y objetos: atributos, métodos e `__init__`",
-        "fragment": "tema-6-clases-y-objetos-atributos-metodos-e-init"
+        "title": "Clases y objetos: atributos, métodos y constructores",
+        "fragment": "tema-6-clases-y-objetos-atributos-metodos-y-constructores"
       },
       {
-        "title": "Herencia, composición y clases abstractas con `abc`",
-        "fragment": "tema-7-herencia-composicion-y-clases-abstractas-con-abc"
+        "title": "Herencia, composición y clases abstractas",
+        "fragment": "tema-7-herencia-composicion-y-clases-abstractas"
       },
       {
         "title": "Proyecto 1: calculadora de presupuesto desde carpeta vacía",

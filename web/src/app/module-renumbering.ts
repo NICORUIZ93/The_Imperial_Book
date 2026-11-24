@@ -593,6 +593,17 @@ export const RENUMBERING_STEPS: RenumberingStep[] = [
       { fromTrack: '__v5__typescript', fromModule: 1, toTrack: 'typescript', toModule: 1 },
     ],
   },
+  {
+    // Fase 2 (Fundamentos en Java): temas renombrados al quitar nombres propios de Python.
+    version: 7,
+    tracks: {},
+    topics: {
+      foundations: {
+        '1:tema-6-clases-y-objetos-atributos-metodos-e-init': '1:tema-6-clases-y-objetos-atributos-metodos-y-constructores',
+        '1:tema-7-herencia-composicion-y-clases-abstractas-con-abc': '1:tema-7-herencia-composicion-y-clases-abstractas',
+      },
+    },
+  },
 ];
 
 export const RENUMBERING_VERSION_KEY = 'imperial-book-renumbering-version';
