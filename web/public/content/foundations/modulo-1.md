@@ -6,72 +6,243 @@
 ## Aprende construyendo
 
 
-### Tema 1: Del problema al algoritmo y a los casos de prueba · Básico · 30 min
+### Tema 1: Del problema al algoritmo y a los casos de prueba · Básico · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python y diseñar casos que incluyan una lista vacía y un estado no admitido. Prerrequisitos: Python instalado y el Tema 4 de Fundamentos módulo 0 (l…
+#### Objetivos
+Al terminar este tema podrás:
+- convertir una necesidad escrita en palabras en entradas, salidas y reglas claras;
+- escribir un algoritmo en pseudocódigo y traducirlo a Python;
+- diseñar casos de prueba que incluyan casos límite y datos inválidos;
+- comprobar tu programa con `assert` y leer un `ValueError` provocado a propósito.
+
+**Conceptos clave:** algoritmo, pseudocódigo, entrada y salida, caso de prueba, caso límite, excepción, assert
+
+#### El problema
+La coordinadora de RutaFlow pregunta cada mañana: «¿cuántos envíos de la ruta siguen pendientes?». Es una pregunta
+en palabras, no un programa. Antes de escribir código hay que responder tres cosas: ¿qué datos entran?, ¿qué
+resultado sale? y ¿qué hacer con un dato raro, como un envío con estado «perdido»?
+
+#### Glosario del tema
+
+**algoritmo**
+- **Definición técnica:** secuencia finita y ordenada de pasos no ambiguos que transforma unas entradas en una salida.
+- **En palabras sencillas:** una receta tan precisa que cualquiera, incluso una máquina, llega al mismo resultado siguiéndola.
+- **Dónde se rompe la comparación:** una receta admite «sal al gusto»; un algoritmo no admite pasos que dependan del gusto.
+- **Ejemplo:** «empieza el contador en 0; por cada envío pendiente, súmale 1; al final, entrega el contador».
+- **Error típico:** dejar un caso sin decidir (¿qué pasa si la lista está vacía?) y descubrirlo cuando el programa falla.
+
+**pseudocódigo**
+- **Definición técnica:** descripción de un algoritmo con estructura de programa (pasos, condiciones, repeticiones) pero en lenguaje natural, sin reglas de un lenguaje concreto.
+- **En palabras sencillas:** un borrador del programa escrito en español, para pensar sin pelear con la sintaxis.
+- **Dónde se rompe la comparación:** el computador no ejecuta pseudocódigo; sirve para pensar y para explicar, no para correr.
+- **Ejemplo:** `SI estado es "pendiente": contador = contador + 1`.
+- **Error típico:** escribirlo tan vago («revisa los envíos») que no dice qué hacer en cada paso.
+
+**entrada y salida**
+- **Definición técnica:** la entrada son los datos que recibe un algoritmo o función; la salida es el resultado que entrega.
+- **En palabras sencillas:** lo que le das y lo que te devuelve.
+- **Dónde se rompe la comparación:** una función también puede «salir» lanzando un error en lugar de devolver un resultado.
+- **Ejemplo:** entrada: lista de envíos; salida: número de pendientes.
+- **Error típico:** mezclar mostrar con devolver: `print` muestra, `return` entrega el resultado a quien llamó.
+
+**caso de prueba**
+- **Definición técnica:** combinación concreta de entrada y salida esperada que se usa para comprobar que un programa cumple su especificación.
+- **En palabras sencillas:** un ejemplo con la respuesta correcta anotada, para comparar con lo que hace el programa.
+- **Dónde se rompe la comparación:** que pasen todos tus casos no prueba que el programa sea correcto, solo que no falla en esos.
+- **Ejemplo:** entrada `[]` (ruta vacía) → salida esperada `0`.
+- **Error típico:** probar solo el caso feliz, el que ya sabes que funciona.
+
+**caso límite**
+- **Definición técnica:** caso de prueba en el borde de lo permitido: vacío, uno solo, el máximo, el primer valor inválido.
+- **En palabras sencillas:** los ejemplos extremos, donde los programas suelen romperse.
+- **Dónde se rompe la comparación:** «extremo» depende del problema: en una ruta es la lista vacía; en un peso, el 0 o un negativo.
+- **Ejemplo:** una ruta sin envíos.
+- **Error típico:** suponer que «nadie mandará una lista vacía».
+
+**excepción**
+- **Definición técnica:** señal que interrumpe el flujo normal del programa cuando ocurre una situación que no puede manejarse ahí; en Python se lanza con `raise` y, si nadie la captura, termina el programa con un mensaje.
+- **En palabras sencillas:** una alarma: «aquí pasó algo que no sé resolver».
+- **Dónde se rompe la comparación:** a diferencia de una alarma, una excepción puede atraparse con `try` y `except` para reaccionar.
+- **Ejemplo:** `raise ValueError("estado no admitido")`.
+- **Error típico:** devolver un valor inventado (como `0`) cuando el dato es inválido, y esconder el problema.
+
+**assert**
+- **Definición técnica:** instrucción que evalúa una condición y lanza `AssertionError` si es falsa; se usa para expresar lo que debe cumplirse.
+- **En palabras sencillas:** «compruébame que esto es cierto; si no, detente y avísame».
+- **Dónde se rompe la comparación:** no sirve para validar datos de usuarios: se puede desactivar al ejecutar Python con `-O`.
+- **Ejemplo:** `assert contar_pendientes([]) == 0`.
+- **Error típico:** escribir `assert` sin comparar (`assert contar_pendientes([])`), que comprueba otra cosa.
 
 #### ► CÓMO FUNCIONA
+Programar empieza antes del código. Primero se aclara la **necesidad**; luego se fijan **entradas y salidas**; después
+se escribe el **algoritmo** y los **casos de prueba**, y solo al final el **código**. Los casos se diseñan antes del
+código para no ajustarlos a lo que el programa ya hace.
+
 ```mermaid
 flowchart LR
-    NEED["necesidad"] --> REQ["requisitos"] --> IO["entradas y salidas"]
-    IO --> ALG["algoritmo"] --> CASES["casos"] --> CODE["código"]
+    NEED["necesidad en palabras"] --> IO["entradas y salidas"]
+    IO --> ALG["algoritmo en pseudocódigo"]
+    ALG --> CASES["casos de prueba"]
+    CASES --> CODE["código"]
+    CODE --> RUN["ejecutar y comparar"]
 ```
+
+#### Problema resuelto 1.1
+Cuenta los envíos pendientes de una ruta. Cada envío tiene un estado: `pendiente` o `entregado`. Cualquier otro
+estado es un error.
+
+**Razonamiento:**
+1. Entrada: una lista de envíos. Salida: un número entero.
+2. Algoritmo: recorrer la lista una vez, sumar 1 por cada pendiente y rechazar los estados desconocidos.
+3. Pseudocódigo antes del código:
+
+```text
+CONTAR_PENDIENTES(envios):
+  contador = 0
+  PARA cada envío (con su número de orden):
+    SI su estado no es "pendiente" ni "entregado":
+      LANZAR error con el número y el estado
+    SI su estado es "pendiente":
+      contador = contador + 1
+  DEVOLVER contador
+```
+
+```python
+# pendientes.py — cuenta los envíos pendientes de una ruta
+ESTADOS_ADMITIDOS = {"pendiente", "entregado"}
+
+
+def contar_pendientes(envios):
+    contador = 0
+    for numero, envio in enumerate(envios, start=1):
+        estado = envio["estado"]
+        if estado not in ESTADOS_ADMITIDOS:
+            raise ValueError(f"envío {numero}: estado no admitido '{estado}'")
+        if estado == "pendiente":
+            contador = contador + 1
+    return contador
+
+
+ruta = [
+    {"guia": "RF-101", "estado": "pendiente"},
+    {"guia": "RF-102", "estado": "entregado"},
+    {"guia": "RF-103", "estado": "pendiente"},
+]
+print("pendientes:", contar_pendientes(ruta))
+```
+
+```text
+$ python3 pendientes.py
+pendientes: 2
+```
+
+**Explicación por partes.**
+- Línea 2: el conjunto de estados válidos se escribe una sola vez, con nombre en mayúsculas porque no cambia.
+- Línea 5: `def` define la función; `envios` es su entrada.
+- Línea 7: `enumerate(..., start=1)` entrega cada envío junto a su número (1, 2, 3…), útil para el mensaje de error.
+- Líneas 9–10: un estado desconocido detiene todo con `ValueError`, en vez de contarse en silencio.
+- Línea 13: `return` entrega la salida a quien llamó la función.
+- Líneas 16–21: una ruta de ejemplo con 2 pendientes; la salida coincide con lo esperado.
+
+> **Error común.** Un envío sin la clave `"estado"` termina con `KeyError: 'estado'`. El mensaje dice qué clave
+> faltó en el diccionario. Revisa de dónde vienen los datos antes de culpar a la función.
+
+> **Buena práctica.** Escribe el pseudocódigo como comentario o en papel antes del código. Si no puedes explicar el
+> algoritmo en español, todavía no estás listo para escribirlo en Python.
+
+#### Problema resuelto 1.2
+Comprueba la función con casos de prueba: ruta vacía, ninguno pendiente, todos pendientes y un estado inválido.
+
+**Razonamiento:**
+1. La ruta vacía es el caso límite: debe dar `0`, no fallar.
+2. Cada `assert` compara la salida real con la esperada.
+3. El estado inválido debe producir `ValueError`; `try` y `except` lo atrapan para mostrar el mensaje.
+
+```python
+# prueba_pendientes.py — casos de prueba de contar_pendientes
+from pendientes import contar_pendientes
+
+assert contar_pendientes([]) == 0                                   # caso límite: ruta vacía
+assert contar_pendientes([{"estado": "entregado"}]) == 0            # ninguno pendiente
+assert contar_pendientes([{"estado": "pendiente"}] * 3) == 3        # todos pendientes
+
+try:
+    contar_pendientes([{"estado": "perdido"}])                      # caso inválido
+    print("ERROR: debía rechazar 'perdido'")
+except ValueError as error:
+    print("rechazado:", error)
+
+print("todas las pruebas pasaron")
+```
+
+```text
+$ python3 prueba_pendientes.py
+pendientes: 2
+rechazado: envío 1: estado no admitido 'perdido'
+todas las pruebas pasaron
+```
+
+**Explicación por partes.**
+- Línea 2: `from pendientes import contar_pendientes` trae la función del otro archivo.
+- Primera línea de la salida: al importar, Python ejecuta `pendientes.py` completo, incluido su `print`. En el Tema 4 verás cómo evitarlo.
+- Líneas 4–6: si un `assert` fallara, el programa terminaría con `AssertionError` en esa línea.
+- Líneas 8–12: el caso inválido se atrapa y se muestra el mensaje de la excepción.
+
+> **Prevenir errores.** Diseña los casos de prueba antes de escribir la función. Si los inventas después, tiendes a
+> probar solo lo que el código ya hace bien.
+
+#### Checkpoint 1.1
+¿Qué devuelve `contar_pendientes([{"estado": "pendiente"}, {"estado": "Pendiente"}])`?
+
+Respuesta: no devuelve nada: lanza `ValueError` en el envío 2, porque `"Pendiente"` con mayúscula no está en `ESTADOS_ADMITIDOS`. Para el computador son textos distintos.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```text
-CONTAR_PENDIENTES(tareas):
-  contador = 0
-  estados_admitidos = {"pendiente", "hecho"}
-  PARA cada numero, tarea en tareas:
-    SI tarea.estado no está en estados_admitidos:
-      LANZAR ValueError con numero y estado
-    SI tarea.estado es "pendiente": contador = contador + 1
-  DEVOLVER contador
-```
+#### Paso 1 · Prepara la carpeta
+Crea `~/labs/algoritmo` y entra con `cd ~/labs/algoritmo`.
 
-```text
-LEER subtotal
-SI subtotal < 0
-    MOSTRAR "valor inválido"
-SI NO, SI subtotal >= 100
-    total = subtotal * 0.90
-SI NO
-    total = subtotal
-MOSTRAR total
-```
+#### Paso 2 · Escribe el algoritmo
+Copia el pseudocódigo del Problema resuelto 1.1 en un archivo `algoritmo.txt`, con tus palabras.
 
-```mermaid
-flowchart LR
-    NEED["necesidad"] --> REQ["requisitos"] --> IO["entradas y salidas"]
-    IO --> ALG["algoritmo"] --> CASES["casos"] --> CODE["código"]
-```
+#### Paso 3 · Tradúcelo a Python
+Escribe `pendientes.py` y ejecútalo. La salida debe ser `pendientes: 2`.
 
-```
-0.1 + 0.1 + 0.1 en Python: _________
-Casos diseñados: _________, _________, _________
-Función validadora: redondea_a_centavos(resultado) _________
-99.99 * 0.90 imprime: _________
-```
+#### Paso 4 · Prueba los casos
+Escribe `prueba_pendientes.py`, ejecútalo y luego cambia `== 3` por `== 4` para ver un `AssertionError` real.
 
-```python
-> from decimal import Decimal
-> precio = Decimal('99.99') * Decimal('0.90')
-> ```
+#### Resumen
+- Un **algoritmo** es una secuencia finita de pasos sin ambigüedad; el **pseudocódigo** lo describe sin sintaxis de un lenguaje.
+- Antes de programar se fijan la **entrada**, la **salida** y qué hacer con datos inválidos.
+- Un **caso de prueba** une una entrada con su salida esperada; los **casos límite** están en los bordes.
+- Una **excepción** (`raise ValueError`) detiene el flujo ante un dato que no se puede manejar.
+- `assert` comprueba que una condición se cumple y falla con `AssertionError` si no.
 
-```bash
-mkdir ejemplo-algoritmo
-cd ejemplo-algoritmo
-mkdir src
-```
+#### Ejercicio verificable 1
+Básico. Escribe en pseudocódigo un algoritmo que cuente los envíos **entregados**.
+
+Respuesta esperada: igual al de pendientes, pero sumando 1 cuando el estado es `"entregado"`. Debe seguir rechazando estados desconocidos.
+
+#### Ejercicio verificable 2
+Intermedio. Agrega a `prueba_pendientes.py` un caso con un envío pendiente y uno entregado. ¿Qué valor esperas?
+
+Respuesta esperada: `assert contar_pendientes([{"estado": "pendiente"}, {"estado": "entregado"}]) == 1`.
+
+#### Ejercicio verificable 3
+Reto. Modifica la función para que acepte `"Pendiente"` y `"PENDIENTE"` como pendientes, sin aceptar `"perdido"`.
+
+Respuesta esperada: normalizar antes de comparar con `estado = envio["estado"].lower()`. El checkpoint deja de lanzar error y devuelve `2`.
+
+#### En el trabajo
+En un equipo profesional este proceso se repite en cada tarea: la necesidad llega en un ticket, se acuerdan entradas
+y salidas, y los casos de prueba se escriben como pruebas automáticas que se ejecutan en cada cambio (lo verás en el
+Módulo 5 con `pytest` y CI). Rechazar datos inválidos con un error claro, en lugar de adivinar, evita reportes
+equivocados que nadie nota hasta que es tarde.
 
 </details>
 
