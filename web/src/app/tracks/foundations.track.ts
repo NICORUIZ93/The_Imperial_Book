@@ -103,7 +103,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ],
     [
       'Reproduce y corrige un defecto mediante una prueba de regresión',
-      'Crea una suite pytest con unidades e integración SQLite',
+      'Crea una suite JUnit con Gradle, con unidades e integración sobre H2',
       'Resuelve un conflicto de merge explicando la intención de ambos cambios',
       'Configura CI para ejecutar formato, análisis y pruebas en cada pull request',
     ],
@@ -112,7 +112,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Por qué cobertura alta no implica pruebas valiosas?',
       '¿Qué debe comunicar un commit además de cambiar archivos?',
     ],
-    ['pytest', 'Git', 'GitHub Actions', 'Ruff'],
+    ['JUnit', 'Gradle', 'JaCoCo', 'Git', 'GitHub Actions', 'google-java-format'],
     'Repositorio colaborativo del inventario con regresiones, pruebas aisladas/integradas, pipeline CI y revisión documentada.'),
   m(5, 'Sistemas operativos, concurrencia, Linux y contenedores', 'Ejecución y contenedores', 'Integración', '12 h', '#6d5dfc',
     'Comprende cómo el sistema operativo ejecuta y aísla programas, razona sobre memoria y concurrencia, administra un servicio Linux y empaqueta la aplicación acumulativa en un contenedor reproducible y observable.',[
