@@ -57,3 +57,16 @@ Un archivo `web/public/content/<curso>/modulo-<N>.md` donde **cada** `### Tema �
 
 Informa: temas migrados, resultado del validador para tu módulo, qué código ejecutaste y con qué versión, y cualquier
 salida que no pudiste verificar.
+
+## Notas por curso
+
+### Java
+- El curso ya tiene prosa de calidad con el estilo «Mecanismo / Por qué existe / Implicación / Regla práctica» y
+  salidas reales capturadas en el Mac del usuario (JDK 27 con toolchain Java 25, Gradle 9.9). **Consérvala**: reubícala
+  dentro de los bloques de la plantilla (Cómo funciona, Problema resuelto, recuadros) en lugar de reescribirla.
+- Las salidas que ya están en el módulo son reales: no las cambies salvo que el código cambie.
+- Para código nuevo: el contenedor tiene JDK 21, Gradle y Maven. Si necesitas Java 25, intenta descargar Temurin 25
+  desde `github.com/adoptium/temurin25-binaries/releases`; si no se puede, usa JDK 21 para lo que no dependa de Java 25
+  y no inventes salidas de funciones exclusivas de Java 25.
+- Build tool del curso: **Gradle** (Kotlin DSL). Maven solo donde el tema lo compara.
+- Declara al inicio del módulo con qué entorno se capturaron las salidas nuevas, sin borrar la línea del entorno original.
