@@ -52,14 +52,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A[:app] --> L[kotlinx-coroutines-core]
-    B[:feature:entregas] --> L
-    L --> V{Versión resuelta}
-    V -->|mayor solicitada| S[1.10.2]
-    V -->|constraint| C[Límite explícito]
-```
 
 ```toml
 [versions]

@@ -27,13 +27,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    C["mi-chart/"] --> F1["Chart.yaml (metadatos)"]
-    C --> F2["values.yaml: replicas 3, image tag 1.0"]
-    C --> F3["templates/deployment.yaml (usa &#123;&#123; .Values.replicaCount &#125;&#125;)"]
-    C -->|se instala con| H["helm install mi-api ./mi-chart --set replicaCount=5"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo7/helm-chart/templates

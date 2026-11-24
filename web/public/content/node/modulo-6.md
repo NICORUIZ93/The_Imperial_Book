@@ -347,18 +347,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-  participant B as Navegador
-  participant A as API
-  participant S as Almacén de sesiones
-  B->>A: POST /sessions
-  A->>S: Regenera sesión y crea token CSRF
-  A-->>B: Set-Cookie HttpOnly + csrfToken en JSON
-  B->>A: POST protegido + cookie + X-CSRF-Token
-  A->>S: Valida sesión y token
-  A-->>B: 204 o 403
-```
 
 ```bash
 mkdir ejemplo-sesion-csrf

@@ -29,13 +29,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Certificado de distribución\nidentidad del Team"] --> D["Provisioning profile"]
-    B["App ID\ncom.rutaflow.conductor"] --> D
-    C["Capabilities\nPush Notifications"] --> D
-    D --> E["Archive firmado\npara App Store Connect"]
-```
 
 ```
 Certificado de desarrollo   → builds para dispositivos registrados manualmente durante desarrollo

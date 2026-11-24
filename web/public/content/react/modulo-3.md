@@ -36,20 +36,6 @@ graph LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph LR
-    A["Evento nativo<br/>del navegador"] -->|Envuelto| B["SyntheticEvent"]
-    B -->|API consistente| C["preventDefault"]
-    B -->|API consistente| D["target.value"]
-    B -->|API consistente| E["currentTarget"]
-    
-    F["Sin preventDefault"] -->|Recarga| G["Estado perdido"]
-    H["Con preventDefault"] -->|Sincrónico| I["Estado preservado"]
-    
-    style B fill:#e3f2fd
-    style G fill:#ffebee
-    style I fill:#e8f5e9
-```
 
 ```jsx
 import { useState } from 'react';

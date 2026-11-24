@@ -29,15 +29,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    A["[38, 27, 43, 3]"] --> B["[38, 27]"]
-    A --> C["[43, 3]"]
-    B --> D["[27, 38]"]
-    C --> E["[3, 43]"]
-    D --> F["mezcla: [3, 27, 38, 43]"]
-    E --> F
-```
 
 ```bash
 mkdir algoritmos && cd algoritmos

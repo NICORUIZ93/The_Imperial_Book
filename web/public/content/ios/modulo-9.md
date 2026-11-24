@@ -83,13 +83,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Dominio/EsEnvioAtrasado.swift\nuna sola regla"] --> B["EsEnvioAtrasadoXCTest.swift\nXCTAssertTrue"]
-    A --> C["EsEnvioAtrasadoTesting.swift\n@Test + #expect"]
-    B --> D["Misma fecha vencida\nmismo resultado esperado"]
-    C --> D
-```
 
 ```swift
 import XCTest

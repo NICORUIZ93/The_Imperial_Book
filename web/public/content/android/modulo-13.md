@@ -459,17 +459,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    D["Dispositivo de laboratorio"] --> M1["dumpsys meminfo"]
-    D --> M2["dumpsys thermalservice"]
-    D --> M3["getprop ro.boot.verifiedbootstate"]
-    M1 --> F["Tres archivos y README con hora y acción"]
-    M2 --> F
-    M3 --> F
-    F --> C["Comparar dos muestras"]
-    C --> N["Correlación observada, no causalidad demostrada"]
-```
 
 ```bash
 mkdir diagnostico-android

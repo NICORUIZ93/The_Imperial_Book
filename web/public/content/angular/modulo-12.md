@@ -30,15 +30,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-  P["package.json: core y CLI"] --> M["tabla de compatibilidad"]
-  N["node --version"] --> M
-  T["TypeScript"] --> M
-  M --> D{"¿soportada?"}
-  D -->|"sí"| OK["continuar"]
-  D -->|"no"| FIX["actualizar la incompatible"]
-```
 
 ```bash
 mkdir ejemplo-version-angular

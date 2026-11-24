@@ -72,16 +72,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  Client["AWS CLI o SDK"] -->|"SigV4 + protocolo AWS"| Floci["Floci :4566"]
-  Floci --> Control["Estado del plano de control"]
-  Floci --> Runtime["Runtime Lambda"]
-  Floci --> SQL["PostgreSQL / MySQL"]
-  Floci --> Redis["Redis / Valkey"]
-  Floci --> Kafka["Redpanda / Kafka"]
-  Floci --> Search["OpenSearch"]
-```
 
 ```mermaid
 flowchart LR

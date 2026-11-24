@@ -28,15 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[Build de la imagen] --> B[Escaneo y SBOM]
-  B --> C[cosign sign con clave del pipeline]
-  C --> D[(Registro de imagenes)]
-  D --> E{cosign verify antes del deploy}
-  E -->|firma valida| F[kubectl apply en rutaflow-envios]
-  E -->|firma invalida o ausente| G[Deploy bloqueado]
-```
 
 ```bash
 kind create cluster --name rutaflow   # crea el contexto kubectl kind-rutaflow

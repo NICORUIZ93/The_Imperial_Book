@@ -122,14 +122,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    T["Texto<br/>'Calle 26 Ñ'"] -->|"Buffer.from(utf8)"| B["Buffer<br/>11 bytes"]
-    B -->|"toString('base64')"| J["JSON<br/>Q2FsbGUg..."]
-    J -->|"Buffer.from(base64)"| B
-    B --> L["Blob"]
-    L --> R["Response / fetch<br/>igual que en el navegador"]
-```
 
 ```js
 import { Buffer } from 'node:buffer';

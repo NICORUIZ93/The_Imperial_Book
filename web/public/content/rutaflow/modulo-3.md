@@ -28,14 +28,6 @@ stateDiagram-v2
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-stateDiagram-v2
-  [*] --> Cargando
-  Cargando --> Listo: respuesta con envio
-  Cargando --> Error: fallo de red o 4xx/5xx
-  Error --> Cargando: reintento
-  Listo --> Cargando: refrescar
-```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-estado-vista/src

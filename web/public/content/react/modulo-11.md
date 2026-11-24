@@ -49,25 +49,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["EnvioCard se invoca<br/>const card = &lt;EnvioCard&gt;"]
-    
-    B["SIN TypeScript:<br/>JavaScript puro"]
-    C["✗ Olvidé pasar guia<br/>✗ Error solo en runtime<br/>✗ El usuario lo ve"]
-    
-    D["CON TypeScript:<br/>interface EnvioCardProps"]
-    E["✓ TypeScript alerta<br/>guia es required<br/>✓ Error en dev, antes de deploy"]
-    
-    A -->|Arriesgado| B
-    B -->|Problema| C
-    
-    A -->|Seguro| D
-    D -->|Ventaja| E
-    
-    style C fill:#ffebee
-    style E fill:#e8f5e9
-```
 
 ```typescript
 interface TarjetaProps {

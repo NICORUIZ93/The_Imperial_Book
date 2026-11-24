@@ -118,12 +118,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["contador.valor = 1"] --> B{"¿nuevo valor distinto?"}
-  B -->|sí| C[notifica observadores: recomposición]
-  B -->|no, mismo valor| D[no hace nada: optimización]
-```
 
 ```bash
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp

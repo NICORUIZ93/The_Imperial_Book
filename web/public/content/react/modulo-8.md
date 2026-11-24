@@ -41,25 +41,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["Test: ¿Funciona el botón?"]
-    
-    B["Enfoque tradicional:<br/>getByClassName"]
-    C["Busca: .btn-primary<br/>si el CSS cambia<br/>el test falla"]
-    
-    D["Testing Library:<br/>getByRole + name"]
-    E["Busca: button + 'Confirmar'<br/>Independiente del CSS<br/>Refleja lo que ve el usuario"]
-    
-    A -->|Frágil| B
-    B -->|Problema| C
-    
-    A -->|Robusto| D
-    D -->|Ventaja| E
-    
-    style C fill:#ffebee
-    style E fill:#e8f5e9
-```
 
 ```jsx
 render(<Formulario />);

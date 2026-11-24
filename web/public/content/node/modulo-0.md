@@ -71,11 +71,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    V8["V8: ejecuta JavaScript"] -->|"solicita I/O"| LIBUV["libuv: Event Loop y sistema operativo"]
-    LIBUV -->|"notifica finalización"| QUEUE["continuación pendiente"] --> V8
-```
 
 ```bash
 mkdir ejemplo-node-io

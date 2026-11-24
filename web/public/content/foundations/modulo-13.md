@@ -31,12 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    C[Cliente] --> F[ConFirma]
-    F --> M[EnMayusculas]
-    M --> N[Notificador]
-```
 
 ```bash
 mkdir patrones && cd patrones

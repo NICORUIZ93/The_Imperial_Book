@@ -380,17 +380,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant A as req-A
-    participant B as req-B
-    participant D as consultarRuta()
-    participant O as Observabilidad
-    A->>D: run(req-A): consulta ENV-1 (lenta)
-    B->>D: run(req-B): consulta ENV-2 (rápida)
-    D-->>O: publish(ENV-2) con contexto req-B
-    D-->>O: publish(ENV-1) con contexto req-A
-```
 
 ```js
 import { AsyncLocalStorage } from 'node:async_hooks';

@@ -243,14 +243,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-  A["muestra GPS válida"] --> B["interpolar posición y rumbo"]
-  B --> C["animación acotada"]
-  C --> D["marcador en destino"]
-  E["muestra nueva"] --> F["cancela la anterior"] --> B
-  G["muestra vieja"] --> H["se descarta"]
-```
 
 ```bash
 flutter create ejemplo

@@ -55,14 +55,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A[App del repartidor] -- ACTION_SEND --> S{Sistema Android}
-    S --> W[WhatsApp]
-    S --> G[Gmail]
-    A -- ACTION_VIEW geo: --> S
-    S --> M[App de mapas]
-```
 
 ```bash
 mkdir android-plataforma-tema1 && cd android-plataforma-tema1

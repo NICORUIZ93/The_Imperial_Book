@@ -36,15 +36,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  T["Terminal"] -->|"floci start"| D["Docker o Podman"]
-  D --> E["Emulador AWS<br/>:4566"]
-  T -->|"eval $(floci env)"| V["AWS_ENDPOINT_URL<br/>credenciales test"]
-  V --> C["AWS CLI / SDK / Terraform"]
-  C -->|"HTTP local"| E
-  E -->|"health"| H["/_localstack/health"]
-```
 
 ```bash
 mkdir -p laboratorio-floci/modulo-22/tema-1-entorno/{src,test,scripts}

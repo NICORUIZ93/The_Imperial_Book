@@ -299,18 +299,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant F as Fuente (callbacks)
-    participant S as AsyncStream
-    participant C as for await
-    F->>S: yield(posición 1)
-    S-->>C: posición 1
-    F->>S: yield(posición 2)
-    S-->>C: posición 2
-    C->>S: tarea cancelada
-    S->>F: onTermination: detener
-```
 
 ```swift
 import Foundation

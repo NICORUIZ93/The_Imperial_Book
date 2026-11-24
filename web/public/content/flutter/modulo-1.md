@@ -38,21 +38,6 @@ Usa `StatefulWidget` cuando el widget necesita datos propios que sobrevivan entr
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["StatelessWidget\n(inmutable)"] -->|constructor| B["build()"]
-    B -->|retorna| C["Widget tree"]
-    C -->|cambio en padre| D["build() de nuevo"]
-    
-    E["StatefulWidget"] -->|createState| F["State object\n(mutable)"]
-    F -->|primera vez| G["initState()"]
-    G -->|luego| H["build()"]
-    H -->|setState| I["build() nuevamente"]
-    I -->|usuario sale| J["dispose()"]
-    
-    style A fill:#e1f5ff
-    style F fill:#fff3e0
-```
 
 ```dart
 class TarjetaTarea extends StatelessWidget {

@@ -370,14 +370,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    I["Internet"] --> S["Shield: capas 3/4"]
-    S --> W["WAF: reglas administradas + límite por IP"]
-    W -->|permitido| C["CloudFront / ALB"]
-    W -->|bloqueado| X["403"]
-    C --> A["API RutaFlow"]
-```
 
 ```hcl
 resource "aws_wafv2_web_acl" "api" {

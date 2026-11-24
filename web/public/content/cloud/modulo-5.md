@@ -511,13 +511,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    I["inventario de funciones"] --> C["cruce con el calendario oficial"]
-    C --> V["VENCIDO: migrar ya"]
-    C --> P["vence en <= 180 días: planear"]
-    C --> O["ok"]
-```
 
 ```json
 {

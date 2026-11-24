@@ -283,13 +283,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    EQ["equipo"] --> GP["API/golden path"] --> GIT["Git"] --> REC["reconciler"] --> CL["cluster"]
-    GP -.->|"políticas/tests"| CL
-    CL -.->|"drift"| REC
-    CL -.->|"métricas/feedback"| GP
-```
 
 ```bash
 mkdir -p ejemplo-politica && cd ejemplo-politica

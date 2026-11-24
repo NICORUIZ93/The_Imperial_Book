@@ -177,14 +177,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    A["logout(vault, db)"] --> B["syncEngine.cancel()"]
-    B --> C["vault.clear()"]
-    C --> D["db.deleteCurrentAccountData()"]
-    D --> E["state.invalidateSession()"]
-    E --> F["Ningún dato del conductor anterior sobrevive"]
-```
 
 ```bash
 flutter create demo_flutter

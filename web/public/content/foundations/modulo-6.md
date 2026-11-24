@@ -31,17 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    U["usuario\\nInternet"] -->|"HTTPS"| A["API\\nDMZ"]
-    O["operador\\nInternet"] -->|"HTTPS + MFA"| A
-    A -->|"gRPC"| D["dominio\\nAplicación"]
-    D -->|"SQL parametrizado"| B["base de datos\\nDatos"]
-    D -->|"AMQP + HMAC"| Q["cola\\nAplicación"]
-    A -. "límite Internet/DMZ" .-> U
-    A -. "límite DMZ/Aplicación" .-> D
-    D -. "límite Aplicación/Datos" .-> B
-```
 
 ```bash
 mkdir ejemplo && cd ejemplo

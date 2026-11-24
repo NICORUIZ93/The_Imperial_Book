@@ -31,17 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    PUSH["git push"] --> TEST["test"]
-    TEST --> BUILD["build"]
-    BUILD --> SCAN["scan Trivy"]
-    SCAN -->|"CRITICAL: falla"| STOP["detener"]
-    SCAN -->|"sin críticas"| DEPLOY["deploy con Helm"]
-    DEPLOY --> VER["verificar métricas"]
-    VER -->|"normal"| OK["fin"]
-    VER -->|"anómalo"| RB["rollback"]
-```
 
 ```bash
 mkdir ejemplo && cd ejemplo

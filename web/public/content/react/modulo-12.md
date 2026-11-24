@@ -52,36 +52,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["src/"]
-    
-    B["features/<br/>envios/"]
-    C["Componentes<br/>Hooks especializados<br/>Types"]
-    
-    D["features/<br/>auth/"]
-    E["Componentes<br/>Hooks login/logout<br/>Types"]
-    
-    F["stores/<br/>UI store"]
-    G["Solo UI:<br/>detallesVisibles<br/>tema"]
-    
-    H["queries/<br/>TanStack Query"]
-    I["Datos de servidor<br/>Cachés"]
-    
-    A --> B
-    B --> C
-    A --> D
-    D --> E
-    A --> F
-    F --> G
-    A --> H
-    H --> I
-    
-    style B fill:#e8f5e9
-    style D fill:#e8f5e9
-    style F fill:#2196f3
-    style H fill:#4caf50
-```
 
 ```
 src/

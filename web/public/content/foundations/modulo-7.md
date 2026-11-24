@@ -147,11 +147,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    PERSON["Operador"] --> WEB["App Web"] --> APP["Aplicación"] --> DB["Base de datos"]
-    APP --> ID["Servicio de identidad"]
-```
 
 ```mermaid
 flowchart LR

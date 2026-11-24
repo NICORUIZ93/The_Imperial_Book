@@ -397,16 +397,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    R["Tráfico real"] --> A["A/B: variante estable por usuario"]
-    R --> C["Canary: porcentaje a la candidata"]
-    R --> S["Shadow: copia de la petición"]
-    A --> AM["Métrica de producto por grupo"]
-    C --> CM["Decisión de continuar o revertir"]
-    S --> SD["Respuesta espejo descartada"]
-    SD --> SR["Se entrega solo la respuesta estable"]
-```
 
 ```bash
 mkdir ejemplo-deploy-strategies

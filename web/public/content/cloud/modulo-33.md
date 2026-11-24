@@ -27,13 +27,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  PR["Pull Request"] --> Plan["terraform plan (CI, solo lectura)"]
-  Plan --> Review["Revisión humana del diff"]
-  Review --> Merge["Merge a main"]
-  Merge --> Apply["terraform apply (CI, con lock de estado)"]
-```
 
 ```hcl
 terraform {

@@ -81,15 +81,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    CT[commonTest] --> Fake[TareaRepositoryFake Kotlin puro]
-    CT --> Mock[Mock dinamico via bytecode JVM]
-    Fake --> AND[Target Android compila]
-    Fake --> IOS[Target iOS Kotlin Native compila]
-    Mock --> AND
-    Mock --> FAIL[compileKotlinIosArm64 falla]
-```
 
 ```kotlin
 class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {

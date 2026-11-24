@@ -28,14 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[POST /envios/:id/asignar] --> B[Verificar firma del JWT]
-  B -->|firma invalida| E1[401 No autenticado]
-  B -->|firma valida| C{claim role es operador?}
-  C -->|no| E2[403 Rol insuficiente]
-  C -->|si| D[Asignar conductor al envio]
-```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-contratos-http-y-autorizacion

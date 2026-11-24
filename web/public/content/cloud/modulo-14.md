@@ -156,14 +156,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    B["CI: build"] --> P["push a ECR<br/>scanOnPush + inmutable"]
-    P --> F["firma con KMS / Signer"]
-    F --> V{"despliegue: ¿firma válida?"}
-    V -->|sí| D["ECS usa @sha256:..."]
-    V -->|no| X["rechazado"]
-```
 
 ```hcl
 resource "aws_ecr_repository" "api" {

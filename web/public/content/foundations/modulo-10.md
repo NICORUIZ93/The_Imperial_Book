@@ -326,16 +326,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant C as Central
-    participant B as Bodega
-    participant M as Moto
-    C->>B: preparar G-1 (marca 2)
-    Note over B: reloj = max(1, 2) + 1 = 3
-    B->>M: G-1 listo (marca 4)
-    Note over M: reloj = max(0, 4) + 1 = 5
-```
 
 ```bash
 mkdir distribuidos && cd distribuidos

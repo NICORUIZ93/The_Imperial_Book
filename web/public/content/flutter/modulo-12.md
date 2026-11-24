@@ -222,13 +222,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    V["EnviosView"] -->|"comando cargar()"| VM["EnviosViewModel"]
-    VM -->|"notifyListeners"| V
-    VM --> R["EnviosRepository<br/>fuente de verdad"]
-    R --> S["EnviosApiService<br/>HTTP"]
-```
 
 ```dart
 class EnviosApiService {

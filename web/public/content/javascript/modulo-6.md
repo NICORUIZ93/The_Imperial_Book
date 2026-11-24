@@ -31,17 +31,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant UI as Interfaz de la app
-    participant F as función async
-    participant API as API
-    UI->>F: consultarGuia()
-    F->>API: await fetch(...)
-    Note over F: se pausa solo esta función
-    API-->>F: respuesta
-    F-->>UI: Promise con la guía
-```
 
 ```bash
 mkdir ejemplo-async-await

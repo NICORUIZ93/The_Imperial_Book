@@ -26,12 +26,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    A["provider aws: region us-east-1"] -->|significa| A2["plugin para hablar con AWS"]
-    B["resource aws_s3_bucket datos"] -->|significa| B2["debe existir este bucket"]
-    C["data aws_ami ubuntu: most_recent true"] -->|significa| C2["consulta, no crees"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/providers-resources
@@ -255,13 +249,6 @@ Nunca corras `terraform apply` directo en un pipeline sin que un `terraform plan
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    C["Configuración HCL + Estado actual conocido"] --> P["terraform plan"]
-    P --> R["muestra: + crear (2), ~ modificar (1), - destruir (0)"]
-    R -->|"revisión humana, o aprobación de PR"| A["terraform apply"]
-    A --> E["ejecuta exactamente esos cambios, actualiza el estado"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo8/plan-apply && cd academia-devops/src/modulo8/plan-apply

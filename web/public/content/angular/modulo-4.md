@@ -370,17 +370,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant U as Usuario
-    participant R as Router
-    participant F as envioResolver
-    participant C as DetalleEnvio
-    U->>R: navega a /envios/ENV-42
-    R->>F: ejecuta el resolver
-    F-->>R: Envio o RedirectCommand
-    R->>C: activa con input envio
-```
 
 ```ts
 import { Injectable } from '@angular/core';

@@ -28,14 +28,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    Push[push a main] --> TC[Job test-common: gradlew shared:allTests]
-    TC -->|needs| BA[Job build-android: assembleDebug]
-    TC -->|needs| BI[Job build-ios: runner macos-latest]
-    BA --> Verde[Pipeline verde]
-    BI --> Verde
-```
 
 ```yaml
 name: CI

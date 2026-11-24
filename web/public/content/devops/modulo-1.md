@@ -37,20 +37,6 @@ Si el equipo despliega varias veces al día con CI/CD y puede ocultar trabajo in
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph TRUNK["Trunk-based"]
-        direction LR
-        TM1(("main")) --> TM2(("main")) --> TM3(("main")) --> TM4(("main")) --> TM5(("main")) --> TM6(("main")) --> TM7(("main")) --> TM8(("main"))
-    end
-    subgraph FLOW["GitFlow"]
-        direction LR
-        GM1(("main")) --> GM2(("main"))
-        GD1(("develop")) --> GD2(("develop")) --> GD3(("develop"))
-        GD1 --> GFX1(("feature/x")) --> GFX2(("feature/x")) --> GFX3(("feature/x")) --> GD2
-        GD3 --> GR1(("release/1.2")) --> GR2(("release/1.2")) --> GM2
-    end
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo1/branching/trunk-demo

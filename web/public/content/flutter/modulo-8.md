@@ -450,14 +450,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    W[ProgresoRuta] --> S[Semantics]
-    S --> B[RepaintBoundary]
-    B --> C[CustomPaint]
-    C --> P[ProgresoRutaPainter.paint]
-    P --> K[Canvas: líneas y círculos]
-```
 
 ```bash
 mkdir custom-painter && cd custom-painter

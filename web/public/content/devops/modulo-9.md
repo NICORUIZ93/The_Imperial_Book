@@ -425,14 +425,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E["estado estable: éxito >= 99 %"] --> H["hipótesis: perder 1 pod no lo afecta"]
-    H --> F["PodChaos: matar 1 pod cada 30 s"]
-    F --> M{"¿éxito < 95 %?"}
-    M -->|sí| P["parar y registrar hallazgo"]
-    M -->|no| C["confirmar hipótesis"]
-```
 
 ```yaml
 apiVersion: chaos-mesh.org/v1alpha1

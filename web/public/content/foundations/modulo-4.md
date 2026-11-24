@@ -402,14 +402,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    U[UPDATE estado] --> B{trigger BEFORE no_revertir}
-    B -- entregada --> X[ABORT]
-    B -- ok --> W[se escribe la fila]
-    W --> A[trigger AFTER auditar_estado]
-    A --> T[(auditoria)]
-```
 
 ```bash
 mkdir sql-avanzado && cd sql-avanzado

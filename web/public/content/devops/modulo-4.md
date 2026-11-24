@@ -29,15 +29,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    W["Workflow CI"]
-    W --> L["Job &quot;lint&quot; (paralelo con &quot;test&quot;)"]
-    L --> LS["steps: checkout, deps, linter"]
-    W --> T["Job &quot;test&quot; (matriz: node 22, node 24)"]
-    T --> T20["instancia node-20: checkout, deps, test"]
-    T --> T22["instancia node-22: checkout, deps, test"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo4/ci-matriz/.github/workflows

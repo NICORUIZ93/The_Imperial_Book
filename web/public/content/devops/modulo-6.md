@@ -426,12 +426,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    DEV["tu máquina (kubectl, navegador)"] -->|"contexto academia"| API["API server del perfil academia"]
-    DEV -->|"minikube tunnel"| ING["Ingress controller (addon)"]
-    ING --> SVC["Service mi-api"] --> PODS["Pods del Deployment mi-api"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo6/minikube && cd academia-devops/src/modulo6/minikube

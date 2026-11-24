@@ -52,35 +52,6 @@ Usa contenedores cuando varias apps pueden compartir el mismo kernel Linux del h
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph VM["VIRTUALIZACIÓN TRADICIONAL — 3 SO completos, más pesado"]
-        direction TB
-        VA["App A — SO A"]
-        VB["App B — SO B"]
-        VC["App C — SO C"]
-        VH["Hipervisor"]
-        VHW["Hardware físico"]
-        VA --> VH
-        VB --> VH
-        VC --> VH
-        VH --> VHW
-    end
-    subgraph CT["CONTENEDORES — 1 kernel compartido, más ligero"]
-        direction TB
-        CA["App A"]
-        CB["App B"]
-        CC["App C"]
-        CE["Docker Engine"]
-        CK["Kernel del host (Linux)"]
-        CHW["Hardware físico"]
-        CA --> CE
-        CB --> CE
-        CC --> CE
-        CE --> CK
-        CK --> CHW
-    end
-```
 
 ```bash
 mkdir ejemplo-contenedores && cd ejemplo-contenedores

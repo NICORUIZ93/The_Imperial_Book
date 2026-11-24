@@ -413,13 +413,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    T["Terraform default_tags<br/>servicio, entorno, equipo"] --> R["recursos etiquetados"]
-    R --> C["Cost Explorer: costo por etiqueta"]
-    C --> B["Budget por entorno"]
-    B -->|"pronóstico > 80 %"| A["alerta al equipo"]
-```
 
 ```hcl
 provider "aws" {

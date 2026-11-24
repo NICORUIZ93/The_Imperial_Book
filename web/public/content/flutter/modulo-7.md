@@ -707,16 +707,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant N as App nativa (Kotlin)
-    participant E as FlutterEngine (precalentado)
-    participant F as Pantalla Flutter
-    N->>E: al iniciar: crea motor y lo cachea
-    N->>F: FlutterActivity.withCachedEngine("seguimiento")
-    N->>E: MethodChannel: mostrar(ENV-42)
-    F-->>N: resultado: cerrar
-```
 
 ```kotlin
 // Incluye el módulo Flutter que vive junto al proyecto nativo.

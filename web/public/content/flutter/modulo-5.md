@@ -38,21 +38,6 @@ Usa `dio` en vez de `http` cuando necesites cancelar peticiones en curso, interc
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph LR
-    A["Código:\ndio.get('/envios')"] -->|OnRequest\ninterceptor| B["Agrega header Auth"]
-    B -->|HTTP GET| C["Servidor"]
-    C -->|HTTP 200\n+ JSON| D["OnResponse\ninterceptor"]
-    D -->|Log respuesta| E["Retorna data"]
-    
-    F["❌ Error"] -->|OnError\ninterceptor| G["Log error"]
-    G -->|Retorna error| A
-    C -->|HTTP 5xx| F
-    
-    style A fill:#c8e6c9
-    style E fill:#c8e6c9
-    style F fill:#ffcccc
-```
 
 ```dart
 // http: simple, suficiente para casos básicos

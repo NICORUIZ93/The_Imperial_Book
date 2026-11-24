@@ -35,21 +35,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["App State\npendientes=3"] -->|pasar manualmente| B["BarraSuperior"]
-    A -->|pasar manualmente| C["ListaEnvios"]
-    C -->|necesita compartir| D["DetalleEnvio"]
-    D -->|anidado 3 niveles| E["BotonEntregado"]
-    
-    E -->|necesita pendientes| F["Requiere pasar\npor 3 widgets\nintermedisos!"]
-    
-    B -->|mostrar pendientes| G["Texto: 3 pendientes"]
-    E -->|ejecutar acción| H["setState pendientes--"]
-    
-    style A fill:#ffebee
-    style F fill:#ffcccc
-```
 
 ```
 setState()  → apropiado: estado local a un widget y su subárbol cercano

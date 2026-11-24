@@ -43,27 +43,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["Ruta padre: /envios<br/>LayoutEnvios"]
-    B["Barra de filtro<br/>zona"]
-    C["Outlet para hijas"]
-    
-    D["Ruta hija 1<br/>index: true<br/>ListaEnvios"]
-    E["Ruta hija 2<br/>path: id<br/>DetalleEnvio"]
-    
-    A -->|contiene| B
-    A -->|contiene| C
-    
-    D -->|renderiza en| C
-    E -->|renderiza en| C
-    
-    F["navegación /envios → /envios/1"] -->|LayoutEnvios permanece<br/>Barra no se recrea| G["Solo Outlet cambia"]
-    
-    style A fill:#fff3e0
-    style B fill:#e8f5e9
-    style G fill:#e8f5e9
-```
 
 ```jsx
 const router = createBrowserRouter([

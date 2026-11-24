@@ -25,11 +25,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    ACTION["tipo de acción"] --> LOOKUP["tabla de handlers"] --> HANDLER["función seleccionada"]
-    LOOKUP -->|"clave ausente"| ERROR["error de dominio"]
-```
 
 ```bash
 mkdir ejemplo-estados

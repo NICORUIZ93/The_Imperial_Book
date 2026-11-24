@@ -301,12 +301,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Teoría\n(entender)"] --> B["Laboratorio\n(paso a paso + verificación)"]
-    B --> C["Ejercicios\n(sin ayuda, autoevaluado)"]
-    C --> D["Resumen\n(checklist final)"]
-```
 
 ```bash
 mkdir -p academia-cloud/src && cd academia-cloud

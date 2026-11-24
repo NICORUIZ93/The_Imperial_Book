@@ -31,17 +31,6 @@ stateDiagram-v2
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-stateDiagram-v2
- [*] --> pending: RunInstances (docker create + start)
- pending --> running
- running --> stopping: StopInstances (docker stop)
- stopping --> stopped
- stopped --> pending: StartInstances (docker start)
- running --> shutting_down: TerminateInstances (docker rm -f)
- shutting_down --> terminated
- terminated --> [*]: consultable 1h, luego se elimina
-```
 
 ```bash
 # archivo: src/labs/modulo-21/tema-1-ciclo-de-vida.sh — ejecutar con: bash tema-1-ciclo-de-vida.sh

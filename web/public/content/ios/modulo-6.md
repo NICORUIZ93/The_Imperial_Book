@@ -263,13 +263,6 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TB
-    F["foto de entrega"] -->|"pendiente de subir"| AS["Application Support"]
-    AS -->|"subida confirmada"| C["Caches (miniatura)"]
-    U["usuario elige PDF"] -->|"fileImporter"| S["URL con ámbito de seguridad"]
-    S -->|"copiar"| AS
-```
 
 ```swift
 import Foundation

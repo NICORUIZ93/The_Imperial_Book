@@ -233,14 +233,6 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TB
-    App["RutaFlowApp"] --> K["producto RutaFlowKit"]
-    K --> R["target Red"]
-    K --> D["target Dominio"]
-    R --> D
-    R --> E["swift-collections (externo)"]
-```
 
 ```swift
 // swift-tools-version: 6.0

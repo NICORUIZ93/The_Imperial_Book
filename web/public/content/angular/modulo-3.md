@@ -201,12 +201,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-  R["Root (toda la app, providedIn: root)"] --> Ro["Inyector de Ruta (providers en una Route)"]
-  Ro --> C["Inyector de Componente (providers en @Component)"]
-  C -.->|"resuelve buscando desde el mas cercano"| R
-```
 
 ```bash
 mkdir -p src/app

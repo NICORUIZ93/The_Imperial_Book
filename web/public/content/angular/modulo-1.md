@@ -30,14 +30,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  P["componente padre"] -->|"[titulo]=valor"| I["input.required titulo"]
-  I -->|"falta en plantilla"| E["NG8008 en el build"]
-  I -->|"falta al crear dinámicamente"| F["NG0950 en ejecución"]
-  C["click del usuario"] --> O["seleccionar.emit"]
-  O -->|"(seleccionar)=manejador"| P
-```
 
 ```ts
 @Component({ selector: 'app-tarjeta', template: `

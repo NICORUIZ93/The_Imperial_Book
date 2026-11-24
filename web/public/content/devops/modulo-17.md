@@ -32,17 +32,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    U["Cliente"] --> CDN["CDN"]
-    CDN --> LB["Balanceador nginx"]
-    LB --> A1["App 1"]
-    LB --> A2["App 2"]
-    A1 --> R["Redis: límite de tasa"]
-    A1 --> D[("PostgreSQL")]
-    A2 --> R
-    A2 --> D
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo17/borde/api

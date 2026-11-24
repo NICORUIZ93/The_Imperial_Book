@@ -28,14 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    CODE["código Dart compartido"] --> AAB["flutter build appbundle --release"]
-    CODE --> IPA["flutter build ipa --release"]
-    AAB --> PLAY[".aab -> Google Play Console"]
-    IPA --> STORE[".ipa -> App Store Connect"]
-    IPA -. "requiere macOS, Xcode y firma" .-> STORE
-```
 
 ```bash
 flutter create flujo_release

@@ -27,13 +27,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  P["ListaEnvios (presentation)"] -->|usa contrato| R[["EnvioRepository (interfaz)"]]
-  R --> DOM["Envio (dominio)"]
-  R --> HTTP["EnvioRepositoryHttp (datos: dio)"]
-  P -.->|acoplamiento indebido| DIO["Cliente HTTP creado dentro del widget"]
-```
 
 ```bash
 mkdir -p rutaflow-labs && cd rutaflow-labs

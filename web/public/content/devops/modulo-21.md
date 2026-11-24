@@ -31,14 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  W["Cliente / Operaciones"] --> E["Servicio envios<br/>dueño del ciclo logístico"]
-  E -->|"GET /envios/:id<br/>contrato v1"| F["Servicio facturacion"]
-  F -->|"POST /facturas"| B["Base de facturación"]
-  E --> D[("Base de envíos")]
-  E -. "no comparte tablas" .- F
-```
 
 ```bash
 mkdir -p arquitectura-moderna/modulo-21/tema-1-contratos/{src/envios,src/facturacion,test}

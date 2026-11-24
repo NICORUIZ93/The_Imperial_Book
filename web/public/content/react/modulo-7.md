@@ -37,21 +37,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["Estado global necesario"]
-    
-    B["Complexity?"]
-    B -->|Mínimo| C["Zustand<br/>create, sin Provider<br/>Suscripción selectiva"]
-    B -->|Máximo| D["Redux Toolkit<br/>Slices, Actions<br/>Mucho boilerplate"]
-    
-    E["¿Es React?"]
-    E -->|Sí, estado pequeño| F["Context API<br/>Provider + Hook<br/>Nativo de React"]
-    
-    style C fill:#e8f5e9
-    style F fill:#e8f5e9
-    style D fill:#fff3e0
-```
 
 ```jsx
 const useCarrito = create((set, get) => ({

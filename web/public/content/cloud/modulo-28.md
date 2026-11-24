@@ -171,12 +171,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    S["sensor cada minuto"] --> C["crudo: 7 días"]
-    C -->|"por hora: min, prom, max"| H["horario: 12 meses"]
-    H -->|"por día"| D["diario: 5 años"]
-```
 
 ```python
 import sqlite3

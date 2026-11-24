@@ -28,12 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  S["signal(0)"] -->|"set/update"| S
-  S -->|"leido dentro de"| C["computed: contador*2 (memoizado)"]
-  S -->|"leido dentro de"| E["effect: efecto secundario"]
-```
 
 ```ts
 const contador = signal(0);
@@ -214,11 +208,6 @@ Usa un signal para estado síncrono simple que se lee directamente; usa un Obser
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  O["Observable$ (RxJS)"] -->|"toSignal()"| S["signal de solo lectura"]
-  S2["signal"] -->|"toObservable()"| O2["Observable$ (RxJS)"]
-```
 
 ```ts
 // Signal: estado síncrono simple, leído directamente

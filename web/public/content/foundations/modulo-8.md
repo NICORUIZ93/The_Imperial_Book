@@ -369,15 +369,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    M0[mensajero 0] -- tiene --> R0[radio 0]
-    M0 -. espera .-> R1[radio 1]
-    M1[mensajero 1] -- tiene --> R1
-    M1 -. espera .-> R2[radio 2]
-    M4[mensajero 4] -- tiene --> R4[radio 4]
-    M4 -. espera .-> R0
-```
 
 ```bash
 mkdir concurrencia && cd concurrencia

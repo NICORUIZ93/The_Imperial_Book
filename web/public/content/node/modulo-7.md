@@ -88,12 +88,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    R[Rojo: prueba que falla] --> V[Verde: código mínimo]
-    V --> F[Refactor con pruebas en verde]
-    F --> R
-```
 
 ```bash
 mkdir practica-tdd-tarifas

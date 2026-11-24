@@ -295,13 +295,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    L["ListaViewModel"] --> U["PuedeTomarEnvioUseCase"]
-    D["DetalleViewModel"] --> U
-    U --> C["ConductorRepository"]
-    U --> E["EnvioRepository"]
-```
 
 ```kotlin
 package co.rutaflow.conductor.domain

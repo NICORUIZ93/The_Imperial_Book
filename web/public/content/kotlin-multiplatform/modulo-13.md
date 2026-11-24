@@ -147,13 +147,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    TaskClient[TaskClient suspend] --> Manual[wrapper manual Swift estable]
-    TaskClient --> Export[Swift Export async experimental]
-    Manual --> AppProd[App iOS produccion]
-    Export --> Lab[modulo experimental aislado]
-```
 
 ```kotlin
 public suspend fun TaskClient.task(id: TaskId): TaskResult // Swift Export lo expone como una función async que puede lanzar: se llama con try await

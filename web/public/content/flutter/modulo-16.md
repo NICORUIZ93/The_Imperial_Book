@@ -186,17 +186,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  D[Dart prepara entradas] --> C[Cruza FFI]
-  C --> N[Algoritmo nativo]
-  N --> R[Dart recibe resultado]
-  D -->|medir con mismas entradas| B[Versión Dart de referencia]
-  R --> V[Comparar resultado y tiempo]
-  B --> V
-  V -->|mejora real y dentro del frame| U[Conservar FFI]
-  V -->|ganancia pequeña o bloqueo| S[Preferir Dart o isolate]
-```
 
 ```bash
 flutter run --profile

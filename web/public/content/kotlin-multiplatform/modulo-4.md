@@ -44,12 +44,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["ObtenerTareasPendientesUseCase"] --> B["TareaRepository (interfaz)"]
-  B -.->|implementación real| C[TareaRepositoryImpl]
-  B -.->|implementación fake| D[FakeTareaRepository]
-```
 
 ```kotlin
 package com.academia.kmp

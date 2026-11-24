@@ -28,11 +28,6 @@ Para código nuevo, usa ESM (`import`/`export`): al ser estático, una herramien
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    ESM["ESM: import/export estático"] --> GRAPH["grafo analizable"] --> SHAKE["tree-shaking"]
-    CJS["CommonJS: require dinámico"] --> RUNTIME["resolución al ejecutar"]
-```
 
 ```bash
 mkdir ejemplo-esm-cjs

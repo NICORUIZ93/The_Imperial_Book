@@ -29,13 +29,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["HttpClient (commonMain)"] --> B["motor OkHttp (Android)"]
-  A --> C["motor Darwin (iOS)"]
-  B --> D[misma API, mismo resultado]
-  C --> D
-```
 
 ```kotlin
 package com.academia.kmp

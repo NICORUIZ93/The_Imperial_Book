@@ -31,17 +31,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant E as Eventos
-    participant D as debounce
-    participant T as throttle
-    E->>D: escribir, escribir, escribir
-    D-->>D: reinicia espera
-    D-->>E: ejecuta tras la pausa
-    E->>T: scroll continuo
-    T-->>E: ejecuta una vez por ventana
-```
 
 ```bash
 mkdir ejemplo-frecuencia

@@ -201,18 +201,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant E as clic
-    participant R as Render con paradas = 0
-    participant C as Cola de React
-    E->>R: setParadas(paradas + 1) x3
-    R->>C: pide 0+1, 0+1, 0+1
-    C-->>R: nuevo render: paradas = 1
-    E->>R: setParadas(p => p + 1) x3
-    R->>C: pide p+1 tres veces
-    C-->>R: nuevo render: paradas = 4
-```
 
 ```jsx
 import { useState } from 'react';

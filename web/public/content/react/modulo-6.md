@@ -43,27 +43,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["PanelEnvios<br/>useQuery['envios', 'norte']"]
-    B["ResumenZona<br/>useQuery['envios', 'norte']"]
-    
-    C["TanStack Query cache: envios/norte"]
-    
-    D["Network: una peticion"]
-    E["Ambos reciben el mismo resultado cacheado"]
-    
-    A -->|queryKey| C
-    B -->|queryKey| C
-    
-    C -->|primera vez| D
-    D -->|almacenar| C
-    
-    C -->|segunda vez| E
-    
-    style D fill:#fff3e0
-    style E fill:#e8f5e9
-```
 
 ```jsx
 const { data, isLoading, error } = useQuery({

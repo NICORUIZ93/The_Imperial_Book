@@ -405,14 +405,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    S["leer-envios.mjs<br/>+ dependencias"] -->|"leer datos/"| OK["permitido"]
-    S -->|"leer /etc/hostname"| NO["ERR_ACCESS_DENIED"]
-    S -->|"escribir datos/"| W{"¿--allow-fs-write?"}
-    W -->|no| NO
-    W -->|sí| OK
-```
 
 ```js
 import { readFile, writeFile } from 'node:fs/promises';

@@ -44,16 +44,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–2"]
-    E1["Aplicación<br/>módulos 3–5"]
-    E2["Integración<br/>módulos 6–8"]
-    E3["Experto<br/>módulos 9–14"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
-```
 
 </details>
 
@@ -225,35 +215,6 @@ Usa `struct` cuando cada variable debe tener su propia copia independiente de lo
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph vt["Struct (Value Type)"]
-        P1["var p1 = Punto(x:1)"]
-        P2["var p2 = p1"]
-        P2_Copy["p2 es una COPIA<br/>independiente"]
-        P1_Old["p1.x = 1 (sin cambios)"]
-        
-        P2 --> P2_Copy
-        P2_Copy --> P1_Old
-    end
-    
-    subgraph rt["Class (Reference Type)"]
-        C1["let c1 = Contador()"]
-        C2["let c2 = c1"]
-        C2_Ref["c2 es una REFERENCIA<br/>al mismo objeto"]
-        C1_New["c1.valor = 5"]
-        C2_Also["c2.valor = 5 (también cambia!)"]
-        
-        C2 --> C2_Ref
-        C2_Ref --> C1_New
-        C1_New --> C2_Also
-    end
-    
-    style vt fill:#e8f5e9
-    style rt fill:#ffe8e8
-    style P2_Copy fill:#c8e6c9
-    style C2_Ref fill:#ffcccc
-```
 
 ```swift
 struct Punto { var x: Int; var y: Int }     // value type: se copia al asignar

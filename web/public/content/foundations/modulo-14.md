@@ -28,14 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A[calc l f] --> R[refactor con assert de equivalencia]
-    R --> T[tarifa_envio]
-    R --> E[es_entregado]
-    R --> S[total_facturable]
-    R --> D[con_descuento_frecuente]
-```
 
 ```bash
 mkdir codigo-limpio && cd codigo-limpio
@@ -201,13 +193,6 @@ Si escribes `pedido.cliente.direccion.ciudad`, estás atravesando tres objetos p
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    L[llamador] -- ciudad_destino --> P[Pedido]
-    P --> C[Cliente]
-    C --> D[Direccion]
-    L -. "evitar: pedido.cliente.direccion.ciudad" .-> D
-```
 
 ```bash
 mkdir codigo-limpio && cd codigo-limpio

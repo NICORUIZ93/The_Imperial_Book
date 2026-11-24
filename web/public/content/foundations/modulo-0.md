@@ -51,16 +51,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–3"]
-    E1["Aplicación<br/>módulos 4–5 y 12"]
-    E2["Integración<br/>módulos 6–8 y 13–14"]
-    E3["Experto<br/>módulos 9–11"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
-```
 
 </details>
 

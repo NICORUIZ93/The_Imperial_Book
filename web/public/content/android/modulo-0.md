@@ -96,25 +96,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    APP["app/"]
-    SRC["src/main/"]
-    JAVA["java/com/miapp/ ← código Kotlin"]
-    RES["res/"]
-    VALUES["values/strings.xml ← textos externalizados"]
-    DRAWABLE["drawable/ ← imágenes/iconos"]
-    MANIFEST["AndroidManifest.xml ← componentes, permisos"]
-    GRADLE["build.gradle.kts ← dependencias del módulo"]
-
-    APP --> SRC
-    APP --> GRADLE
-    SRC --> JAVA
-    SRC --> RES
-    SRC --> MANIFEST
-    RES --> VALUES
-    RES --> DRAWABLE
-```
 
 ```bash
 mkdir -p academia-android

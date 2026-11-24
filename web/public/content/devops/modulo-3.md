@@ -33,19 +33,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph SinHC["Sin healthcheck"]
-        direction LR
-        S1["db arranca"] --> S2["app arranca, intenta conectar (puede fallar si db no lista)"]
-    end
-    subgraph ConHC["Con condition: service_healthy"]
-        direction LR
-        C1["db arranca"] --> C2{"healthcheck verifica ¿pg_isready OK?"}
-        C2 -->|Sí| C3["app arranca"]
-        C2 -->|No| C4["reintenta"]
-    end
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo3/healthcheck && cd academia-devops/src/modulo3/healthcheck

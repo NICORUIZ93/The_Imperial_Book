@@ -45,29 +45,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["Aplicación se 'siente' lenta"]
-    
-    B["Opción 1: Adivinar<br/>SIN Profiler"]
-    C["Asumo que X es lento<br/>Optimizo todo<br/>Uso React.memo por defecto"]
-    D["Resultado:<br/>Más complejidad<br/>Mejor? Quién sabe..."]
-    
-    E["Opción 2: Medir<br/>CON Profiler"]
-    F["Identifico exactamente<br/>qué se re-renderiza<br/>Optimizo solo eso"]
-    G["Resultado:<br/>Mejora medible<br/>Código simple"]
-    
-    A -->|Riesgoso| B
-    B -->|Acción| C
-    C -->|Consecuencia| D
-    
-    A -->|Seguro| E
-    E -->|Acción| F
-    F -->|Consecuencia| G
-    
-    style D fill:#ffebee
-    style G fill:#e8f5e9
-```
 
 ```
 Profiler graba una interacción → muestra QUÉ componentes se re-renderizaron y POR QUÉ

@@ -29,11 +29,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["input sin aria-describedby"] --> X[axe: violación real]
-  B["input con aria-describedby='error-id'"] --> Y[axe: sin violaciones]
-```
 
 ```bash
 mkdir demo-a11y

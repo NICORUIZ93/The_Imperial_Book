@@ -108,11 +108,6 @@ Usa el stub local para todo lo que sea estructura de la llamada (request/respons
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Stub Bedrock (cloud local)"] --> A1["verifica: estructura de request/response, manejo de errores de API"]
-    B["Bedrock real (AWS)"] --> B1["verifica: calidad del contenido generado, comportamiento ante prompts reales"]
-```
 
 ```bash
 # Lo que SÍ confirma el stub de Floci (estructura del contrato):

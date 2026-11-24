@@ -513,13 +513,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    F["foto (bytes)"] --> T["ENV-42.jpg.tmp"]
-    T -->|"rename (atómico)"| A["Application Support/entregas/ENV-42.jpg"]
-    A -->|"subida confirmada"| B["borrar"]
-    M["miniatura"] --> C["Temporary"]
-```
 
 ```dart
 import 'dart:io';

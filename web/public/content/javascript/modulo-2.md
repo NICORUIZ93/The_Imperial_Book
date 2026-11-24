@@ -25,11 +25,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    FACTORY["crearContador()"] --> ENV1["entorno privado A"] --> API1["incrementar / valor"]
-    FACTORY --> ENV2["entorno privado B"] --> API2["incrementar / valor"]
-```
 
 ```bash
 mkdir ejemplo-closures

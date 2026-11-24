@@ -196,15 +196,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    F[FCM: envio_id] --> S[MessagingService]
-    S --> W[Trabajo único en WorkManager]
-    W --> A[API autenticada]
-    A --> R[Room: fuente local de verdad]
-    R --> U[UI observa Flow]
-    U -. no toma el push como estado final .-> F
-```
 
 ```kotlin
 package com.academia.push

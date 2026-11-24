@@ -419,13 +419,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E[escaneo.py] --> P{connect al puerto}
-    P -- acepta --> A[abierto + banner]
-    P -- rechazo RST --> C[cerrado]
-    P -- sin respuesta --> F[filtrado]
-```
 
 ```bash
 mkdir escaneo-laboratorio && cd escaneo-laboratorio

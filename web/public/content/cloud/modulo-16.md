@@ -134,14 +134,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    E["10 archivos"] --> L1["lote 1"] & L2["lote 2"] & L3["lote 3"]
-    L2 -->|"timeout"| R["reintento (máx. 3)"]
-    R --> L2
-    L1 & L2 & L3 --> S["procesados/*.ok<br/>idempotente"]
-    R -->|"3 fallos"| Q["cola de revisión"]
-```
 
 ```python
 import json

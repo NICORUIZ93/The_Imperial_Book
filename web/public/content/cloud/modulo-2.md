@@ -102,18 +102,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    O["Objeto con clave &quot;facturas/2024/factura-001.pdf&quot;"]
-    O --> SYS["Metadatos del sistema\n(S3 los gestiona)"]
-    SYS --> S1["Content-Type: application/pdf"]
-    SYS --> S2["Content-Length: 245678"]
-    SYS --> S3E["ETag: &quot;9bd8a...&quot;"]
-    SYS --> S4["Last-Modified: 2026-03-10T14:22:00Z"]
-    O --> CUS["Metadatos personalizados\n(tú los defines)"]
-    CUS --> C1["x-amz-meta-usuario-id: u-4471"]
-    CUS --> C2["x-amz-meta-categoria: factura"]
-```
 
 ```bash
 aws s3 mb s3://pruebas-entrega

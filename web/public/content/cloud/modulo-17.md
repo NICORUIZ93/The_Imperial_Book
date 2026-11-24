@@ -131,11 +131,6 @@ Si solo necesitas entregar los datos a un destino fijo (S3, un warehouse) sin pr
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Kinesis Data Streams"] --> A1["control fino, procesamiento personalizado en tiempo real"]
-    B["Kinesis Data Firehose"] --> B1["entrega automatizada gestionada hacia S3/warehouse, sin código de consumidor propio"]
-```
 
 ```bash
 aws s3 mb s3://rutaflow-ubicaciones-historico

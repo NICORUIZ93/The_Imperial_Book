@@ -457,15 +457,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["rama migracion-3.50"] --> B["flutter upgrade"]
-    B --> C["dart fix / dart migrate"]
-    C --> D["flutter analyze + flutter test"]
-    D -->|"verde"| E["build web/iOS/Android"]
-    D -->|"rojo"| C
-    E --> F["merge con evidencia"]
-```
 
 ```bash
 git switch -c migracion-3.50

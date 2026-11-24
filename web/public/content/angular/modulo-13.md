@@ -81,13 +81,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  G["auth.guard.ts CanActivateFn"] -->|protege| R["tareas.routes.ts loadComponent lazy"]
-  S["tareas.store.ts"] -->|consumido por| L["tarea-lista.ts"]
-  S -->|consumido por| D["tarea-detalle.ts"]
-  F["formulario reactivo"] -->|store.metodoPublico| S
-```
 
 ```bash
 mkdir -p src/app/tareas

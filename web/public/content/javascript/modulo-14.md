@@ -30,14 +30,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["DeliveryStatus.kind"] --> B{switch}
-  B -->|assigned| C[rama tipada: courierId]
-  B -->|in-transit| D[rama tipada: lat/lng]
-  B -->|delivered| E[rama tipada: receivedBy]
-  B -->|caso nuevo sin rama| F["assertNever: error de compilación"]
-```
 
 ```bash
 mkdir ejemplo-js-modulo-14-tema-1

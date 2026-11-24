@@ -265,20 +265,6 @@ Usa clave simple (solo HASH) cuando cada entidad es un único ítem identificado
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph SIMP["Clave simple (solo HASH) — Tabla: Usuarios — cada id es único"]
-        direction TB
-        U1["id (HASH) = u-001"]
-        U2["id (HASH) = u-002"]
-    end
-    subgraph COMP["Clave compuesta (HASH + RANGE) — Tabla: Pedidos"]
-        direction TB
-        P1["usuario_id=u-001, fecha_pedido=2026-01-05"]
-        P2["usuario_id=u-001, fecha_pedido=2026-02-14 ← mismo HASH, distinto RANGE"]
-        P3["usuario_id=u-002, fecha_pedido=2026-01-20"]
-    end
-```
 
 ```bash
 aws dynamodb query --table-name ShipmentEvents \

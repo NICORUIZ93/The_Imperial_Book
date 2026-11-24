@@ -243,14 +243,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Arquitectura RutaFlow"] --> P["6 pilares<br/>preguntas sí/no"]
-    P --> H["riesgos altos"]
-    P --> M["riesgos medios"]
-    H --> X["plan: resolver primero"]
-    M --> Y["backlog con fecha"]
-```
 
 ```python
 # Revisión ligera de Well-Architected: cada pilar con preguntas de sí/no y su riesgo.

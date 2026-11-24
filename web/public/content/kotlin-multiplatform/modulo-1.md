@@ -28,12 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A["procesarLista(lista, accion)"] --> B["lista.forEach { accion(it) }"]
-  C["accion: (Int) -> Unit"] --> A
-  B --> D[cada elemento pasa por la función recibida]
-```
 
 ```kotlin
 package com.academia.kmp

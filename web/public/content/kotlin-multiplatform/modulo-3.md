@@ -27,11 +27,6 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TB
-  A[commonMain: código compartido] --> B[androidMain: APIs de Android]
-  A --> C[iosMain: APIs de iOS]
-```
 
 ```kotlin
 // shared/src/commonMain/kotlin/com/academia/kmp/Tarea.kt

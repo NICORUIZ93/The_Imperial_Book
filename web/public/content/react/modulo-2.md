@@ -37,21 +37,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["Componente monta"] -->|Primera vez| B["useEffect se ejecuta"]
-    B -->|Sincroniza con|C["Sistema externo:<br/>fetch, evento, suscripción"]
-    
-    D["Dependencia cambia"] -->|zona cambió| B
-    B -->|Primero| E["Función de limpieza<br/>controller.abort"]
-    E -->|Luego| B
-    
-    F["Componente se desmonta"] -->|o| E
-    
-    style B fill:#fff3e0
-    style E fill:#ff9800
-    style C fill:#4caf50
-```
 
 ```jsx
 useEffect(() => {

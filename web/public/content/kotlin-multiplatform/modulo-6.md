@@ -28,12 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[archivo .sq: esquema + queries SQL] --> B[SQLDelight genera código Kotlin tipado]
-  B --> C["database.tareaQueries.selectTodas()"]
-  C --> D["List<Tarea> tipado"]
-```
 
 ```bash
 mkdir -p academia-kmp/shared/src/commonMain/sqldelight/com/academia/kmp

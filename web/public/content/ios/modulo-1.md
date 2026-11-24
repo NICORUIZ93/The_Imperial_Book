@@ -40,26 +40,6 @@ graph TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TB
-    A["Protocolo View<br/>(contrato universal)"]
-    B["Text<br/>(nativa)"] -.-> A
-    C["Button<br/>(nativa)"] -.-> A
-    D["TarjetaEnvio<br/>(propia)"] -.-> A
-    E["ListaEnvios<br/>(compuesta)"] -.-> A
-    
-    E --> B1["compone"]
-    E --> D1["compone"]
-    D1 --> C1["Text"]
-    D1 --> C2["padding"]
-    C2 --> C3["background"]
-    
-    style A fill:#4a90e2,stroke:#2c5aa0,color:#fff
-    style B fill:#90ee90
-    style C fill:#90ee90
-    style D fill:#ffd700
-    style E fill:#ffd700
-```
 
 ```swift
 import SwiftUI

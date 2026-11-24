@@ -133,12 +133,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[valor: Tipo?] --> B{es null?}
-  B -->|sí| C["?. devuelve null / ?: usa el valor por defecto"]
-  B -->|no| D["?. accede normalmente / !! fuerza el acceso"]
-```
 
 ```kotlin
 package com.academia.kmp

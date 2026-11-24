@@ -193,12 +193,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-  A["Paso 1: NgModule -> standalone: true (mover imports al componente)"] --> B["Paso 2: RouterModule.forRoot -> provideRouter(routes)"]
-  B --> C["Paso 3: eliminar el NgModule ya vacio"]
-  C --> D["Automatizacion: ng generate @angular/core:standalone"]
-```
 
 ```bash
 npx ng generate module legacy --routing=false

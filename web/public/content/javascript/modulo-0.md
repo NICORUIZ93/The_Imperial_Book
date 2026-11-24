@@ -89,12 +89,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  D["¿El identificador cambiará?"] -->|"no"| C["const"]
-  D -->|"sí"| L["let"]
-  V["var"] --> X["Solo para comprender código legado"]
-```
 
 ```bash
 mkdir ejemplo-variables

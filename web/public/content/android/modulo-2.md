@@ -300,14 +300,6 @@ flowchart TB
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TB
-    T["RutaFlowTheme"] --> D{"Android 12+ y dinámico?"}
-    D -->|sí| DY["dynamicLight/DarkColorScheme"]
-    D -->|no| FX["esquema propio claro/oscuro"]
-    DY & FX --> M["MaterialTheme"]
-    M --> B["Button, Card, Text leen roles"]
-```
 
 ```kotlin
 package co.rutaflow.conductor.ui.theme

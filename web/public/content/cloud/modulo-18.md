@@ -129,16 +129,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant Servidor
-    Note over Cliente: genera verificador aleatorio → deriva un challenge
-    Cliente->>Servidor: inicia flujo de autorización con el challenge
-    Servidor->>Cliente: emite código de autorización
-    Cliente->>Servidor: presenta el código + el verificador ORIGINAL
-    Servidor->>Cliente: valida y emite el token
-```
 
 ```bash
 aws cognito-idp describe-user-pool-client --user-pool-id "$POOL_ID" --client-id "$CLIENT_ID" \

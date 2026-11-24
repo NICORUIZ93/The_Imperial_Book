@@ -160,12 +160,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["RDS (cloud local)"] --> A1["PostgreSQL REAL corriendo"]
-    B["ECS (cloud local)"] --> B1["contenedores Docker REALES"]
-    C["Lambda (cloud local)"] --> C1["runtime REAL en contenedor Docker"]
-```
 
 ```bash
 mkdir ejemplo-ci && cd ejemplo-ci

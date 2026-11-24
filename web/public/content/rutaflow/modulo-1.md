@@ -27,13 +27,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[INSERT envio] --> B[(envios: estado mutable)]
-  B --> C[INSERT envio_eventos]
-  C --> D[(envio_eventos: append-only)]
-  C -->|UPDATE o DELETE| E[Error: historial inmutable]
-```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-modelo-relacional-e-historial

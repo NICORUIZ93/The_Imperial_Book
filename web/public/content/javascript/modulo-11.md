@@ -315,13 +315,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    S["@servicio"] --> CL[clase Cotizador]
-    P["@positivo"] --> CA[campo precioKilo]
-    R["@registrar"] --> ME[método cotizar]
-    ME --> L[log de cada llamada]
-```
 
 ```bash
 mkdir ts-decoradores && cd ts-decoradores

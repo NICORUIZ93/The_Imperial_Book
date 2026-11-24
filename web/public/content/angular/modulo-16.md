@@ -36,15 +36,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph Capacitor/Ionic
-        A1[Angular] --> A2[WebView] --> A3[Puente a plugin nativo] --> A4[Vista nativa]
-    end
-    subgraph "Angular Native"
-        B1[Angular] --> B2[Fabric renderer] --> B3[Vista nativa]
-    end
-```
 
 ```bash
 npx create-expo-app@latest rutaflow-conductor --template @ng-native/template

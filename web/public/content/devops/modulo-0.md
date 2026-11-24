@@ -107,18 +107,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    P["-rwxr-xr-- 1 nicolas devops script.sh"]
-    P --> T["Tipo de archivo: - (archivo regular, d = directorio)"]
-    P --> O["Propietario: rwx (lectura+escritura+ejecución)"]
-    P --> G["Grupo: r-x (lectura + ejecución)"]
-    P --> OT["Otros: r-- (solo lectura)"]
-    C["chmod 754 script.sh"]
-    C --> C1["7 = rwx (dueño)"]
-    C --> C2["5 = r-x (grupo)"]
-    C --> C3["4 = r-- (otros)"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo0/permisos && cd academia-devops/src/modulo0/permisos

@@ -48,14 +48,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  S["signal(precio)"] --> C["computed(() => calcular(precio))"]
-  C -->|primera lectura| E1[ejecuta la función, cachea]
-  C -->|lecturas repetidas SIN cambio| E2[devuelve el valor cacheado, NO reejecuta]
-  S -->|cambia| C
-  C -->|siguiente lectura| E3[reejecuta: dependencia cambió]
-```
 
 ```bash
 mkdir -p src/app

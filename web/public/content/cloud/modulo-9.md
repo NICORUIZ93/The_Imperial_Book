@@ -28,14 +28,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    C["Cliente (curl/app)"] <-->|HTTP| AG["API Gateway (integración proxy)"]
-    AG <-->|invoca| L["Lambda (lógica CRUD de tareas)"]
-    L -->|lee/escribe| DDB["DynamoDB (tareas)"]
-    L -->|lee/escribe| S3["S3 (adjuntos)"]
-    L -->|lee/escribe| SQS["SQS (proceso en segundo plano)"]
-```
 
 ```bash
 aws dynamodb create-table --table-name Tareas \

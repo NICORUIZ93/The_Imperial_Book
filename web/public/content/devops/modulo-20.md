@@ -32,15 +32,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  D["Dominio<br/>EntregaConfirmada"] --> I["Evento de integración<br/>contrato público v1"]
-  I --> F["Facturación"]
-  I --> N["Notificaciones"]
-  I --> A["Analítica"]
-  C["Comando ConfirmarEntrega"] -.-> D
-  C -. "puede rechazarse" .-> X["Error de negocio"]
-```
 
 ```bash
 mkdir -p arquitectura-moderna/modulo-20/tema-1-eventos/{src,test}

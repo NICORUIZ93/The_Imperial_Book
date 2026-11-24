@@ -29,14 +29,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    C["collection.json\n(peticiones)"] --> N["newman run"]
-    E["environment.json\n(baseUrl)"] --> N
-    N --> S["Servidor real"]
-    S --> N
-    N --> R["Resultado: CLI + código de salida"]
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo16/postman-newman

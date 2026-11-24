@@ -26,13 +26,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[composable real] --> B[ComposeTestRule.setContent]
-  B --> C[espera recomposición estable]
-  C --> D[árbol semántico navegable]
-  D --> E[finder + assertion]
-```
 
 ```bash
 mkdir -p app/src/androidTest/kotlin/com/academia/android

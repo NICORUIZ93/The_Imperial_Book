@@ -26,12 +26,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    B["FROM node:22-alpine AS build<br/>RUN npm ci && npm run build<br/>(etapa &quot;build&quot;: compiladores y deps de desarrollo)"]
-    F["FROM node:22-alpine<br/>CMD [&quot;node&quot;, &quot;dist/index.js&quot;]<br/>(etapa final: imagen limpia)"]
-    B -->|COPY --from=build solo el artefacto| F
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo2/multistage
@@ -236,17 +230,6 @@ Usa bind mount cuando quieres ver reflejado al instante el código que editas en
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    subgraph Bind["Bind mount (desarrollo)"]
-        direction TD
-        B1["Tu carpeta local ./src"] <-->|reflejo instantáneo| B2["/app/src dentro del contenedor"]
-    end
-    subgraph Vol["Volumen gestionado (producción)"]
-        direction TD
-        V1["Docker decide dónde vive"] --> V2["/data dentro del contenedor (portable, sobrevive a docker rm)"]
-    end
-```
 
 ```bash
 mkdir -p academia-devops/src/modulo2/volumenes

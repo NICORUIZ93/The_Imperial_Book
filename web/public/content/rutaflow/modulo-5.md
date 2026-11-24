@@ -30,16 +30,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A((Deposito)) -->|"3.0 km / 6 min"| B((Parada A))
-  B -->|"2.0 km / 25 min: cruza Av. Caracas en hora pico"| D((Parada B))
-  A -->|"4.0 km / 9 min"| C((Parada C))
-  C -->|"2.5 km / 10 min"| D
-  D --> R{"Camino elegido"}
-  R -->|"por distancia_km"| X["Deposito-A-B: 5.0 km, 31 min reales"]
-  R -->|"por minutos reales"| Y["Deposito-C-B: 6.5 km, 19 min reales"]
-```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-grafos-y-problema-de-rutas

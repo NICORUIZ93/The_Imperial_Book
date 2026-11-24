@@ -156,13 +156,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    A["1. Filtrar logs por patrón de error"] --> A1["¿cuándo y con qué frecuencia?"]
-    A1 --> B["2. Extraer correlation ID"] --> B1["reconstruir el recorrido completo de la transacción afectada"]
-    B1 --> C["3. Consultar dashboard de métricas"] --> C1["contexto general del sistema en ese momento"]
-    C1 --> D["4. X-Ray trace"] --> D1["latencia exacta por segmento de la solicitud"]
-```
 
 ```bash
 mkdir ejemplo-incidente && cd ejemplo-incidente

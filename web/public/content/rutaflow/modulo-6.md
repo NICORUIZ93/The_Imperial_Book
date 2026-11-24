@@ -26,12 +26,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[solicitud RF-4471] --> B[tarifa por fecha]
-  B --> C[cálculo con BigDecimal<br/>cotización versionada]
-  C --> D[factura reproducible]
-```
 
 ```bash
 mkdir -p rutaflow-labs/tema-1-cotizacion-facturacion

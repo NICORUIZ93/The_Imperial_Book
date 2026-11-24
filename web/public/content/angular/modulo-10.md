@@ -380,15 +380,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    T[Tablero] --> MT[mat-table]
-    T --> MB[mat-flat-button]
-    T --> LA[LiveAnnouncer del CDK]
-    S[spec] --> H[harnesses]
-    H --> MT
-    H --> MB
-```
 
 ```bash
 mkdir angular-material && cd angular-material

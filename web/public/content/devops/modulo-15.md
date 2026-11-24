@@ -30,16 +30,6 @@ sequenceDiagram
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-sequenceDiagram
-  participant C as docker compose up
-  participant D as db
-  participant A as api
-  C->>D: start
-  D-->>D: healthcheck pg_isready (reintentos)
-  D-->>C: healthy
-  C->>A: start (solo tras healthy)
-```
 
 ```bash
 mkdir ejemplo-devops-health

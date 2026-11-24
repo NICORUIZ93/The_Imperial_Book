@@ -45,12 +45,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["TarjetaEnvio\n.matchedGeometryEffect(id: envio.id)"] -.->|mismo id,\nmismo namespace| B["EncabezadoEnvio\n.matchedGeometryEffect(id: envio.id)"]
-    A --> C["SwiftUI anima tamaño/posición\nentre ambas vistas"]
-    B --> C
-```
 
 ```swift
 import SwiftUI

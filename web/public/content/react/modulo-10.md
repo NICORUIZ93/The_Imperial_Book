@@ -43,27 +43,6 @@ graph TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-graph TD
-    A["React Component"]
-    
-    B["Server Component<br/>// implícito"]
-    C["Se ejecuta en servidor<br/>Sin JS en cliente<br/>Acceso a BD directo"]
-    
-    D["'use client'<br/>Client Component"]
-    E["Se ejecuta en cliente<br/>Necesita JS enviado<br/>Interactividad: onClick, etc"]
-    
-    A -->|Defecto en Next.js| B
-    B -->|Resultado| C
-    
-    A -->|Explícitamente| D
-    D -->|Resultado| E
-    
-    style B fill:#e8f5e9
-    style C fill:#4caf50
-    style D fill:#fff3e0
-    style E fill:#2196f3
-```
 
 ```tsx
 async function PaginaTareas() {

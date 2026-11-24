@@ -31,12 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[renderApplication] --> B[Angular ejecuta en Node.js]
-  B --> C[HTML completo CON datos ya resueltos]
-  C --> D[navegador muestra de inmediato, sin esperar JS]
-```
 
 ```bash
 mkdir demo-ssr

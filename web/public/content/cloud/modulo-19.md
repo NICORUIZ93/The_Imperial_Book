@@ -136,11 +136,6 @@ Si tus consultas casi siempre filtran por una misma columna (como la fecha), par
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["Sin particiones"] --> A1["Athena escanea TODOS los archivos de la tabla, filtra después"]
-    B["Con particiones + partition pruning"] --> B1["Athena IGNORA por completo las carpetas fuera del filtro, sin leerlas"]
-```
 
 ```bash
 mkdir ejemplo && cd ejemplo && floci start

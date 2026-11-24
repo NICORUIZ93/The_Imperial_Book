@@ -142,14 +142,6 @@ flowchart TD
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart TD
-    A{extensión} -- .mjs --> E[ESM]
-    A -- .cjs --> C[CommonJS]
-    A -- .js --> T{type en package.json}
-    T -- module --> E
-    T -- commonjs o ausente --> C
-```
 
 ```bash
 mkdir esm-y-cjs

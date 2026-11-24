@@ -310,13 +310,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    ENTERO["11"] -->|posiciones base 2| BIN["1011"]
-    LETRA["é"] -->|punto de código| CP["U+00E9"]
-    CP -->|codificado| BY["c3 a9 · 2 bytes"]
-    DEC["0.1"] -->|fracción en base 2| FP["0.1000000000000000055511151"]
-```
 
 ```bash
 mkdir ejemplo

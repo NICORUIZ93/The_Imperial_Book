@@ -31,14 +31,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  I["Infraestructura<br/>HTTP, SQL, colas"] --> A["Aplicación<br/>casos de uso"]
-  A --> D["Dominio<br/>reglas e invariantes"]
-  X["Facturación"] -. "prohibido: importar" .-> O["Operaciones"]
-  O --> C["Contrato explícito<br/>evento o API"]
-  C --> X
-```
 
 ```bash
 mkdir -p arquitectura-moderna/modulo-19/tema-1-monolito-modular/src/domain

@@ -29,11 +29,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    A["onCreate"] --> B["onStart"] --> C["onResume"] --> D["(en pantalla)"] --> E["onPause"] --> F["onStop"] --> G["onDestroy"]
-    G -->|"rotación: destruye y recrea todo el ciclo"| A
-```
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación

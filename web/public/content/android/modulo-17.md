@@ -30,13 +30,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    P[Padre envía constraints] --> M[Hijo mide]
-    M --> T[Elige tamaño permitido]
-    T --> U[Padre coloca]
-    U --> D[Dibujo, semántica e interacción]
-```
 
 ```kotlin
 @Composable

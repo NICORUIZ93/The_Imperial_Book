@@ -336,14 +336,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
-    IP --> T["TCP: conexión<br/>orden y entrega"]
-    IP --> U["UDP: datagrama<br/>sin garantía"]
-    T --> H["HTTP, WebSocket, bases de datos"]
-    U --> P["posiciones, video, DNS"]
-```
 
 ```js
 import { createServer, connect } from 'node:net';

@@ -320,12 +320,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-  A[trabajo bloqueante ejecutado directo] --> B[hilo principal congelado durante el trabajo]
-  C["withContext(Dispatchers.IO)"] --> D[hilo principal libre durante el trabajo]
-  D --> E[withContext devuelve el control a Main al terminar]
-```
 
 ```kotlin
 package com.academia.kmp

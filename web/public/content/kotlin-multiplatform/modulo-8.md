@@ -30,16 +30,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    KT["commonMain (Kotlin)"] --> NAT["Kotlin/Native"]
-    NAT --> SIM["iosSimulatorArm64"]
-    NAT --> DEV["iosArm64"]
-    SIM --> FW["Shared.framework"]
-    DEV --> FW
-    FW --> SWIFT["import Shared en Xcode"]
-    KT -. "internal no se exporta" .-> SWIFT
-```
 
 ```bash
 mkdir ejemplo && cd ejemplo

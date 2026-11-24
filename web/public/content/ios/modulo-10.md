@@ -195,12 +195,6 @@ flowchart LR
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```mermaid
-flowchart LR
-    C["Text con interpolación de n"] -->|"build"| X["Localizable.xcstrings<br/>%lld paquetes pendientes"]
-    X --> ES["es: 1 paquete pendiente / 3 paquetes pendientes"]
-    X --> EN["en: 1 pending package / 3 pending packages"]
-```
 
 ```swift
 import SwiftUI
