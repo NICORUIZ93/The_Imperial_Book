@@ -1,6 +1,6 @@
 # Plantilla académica única de The Imperial Book
 
-Versión 1 · 2026-11-24. Aplica a **todos los cursos**. Este documento manda sobre cualquier guía anterior
+Versión 2 · 2026-11-24. Cambios de la v2: teoría obligatoria y extensa en cada tema (bloque 5) y código solo en el lenguaje del curso. Aplica a **todos los cursos**. Este documento manda sobre cualquier guía anterior
 (`EDITORIAL_GUIDE_5_STEPS.md`, `CONTENT_QUALITY_CHECKLIST.md`) cuando se contradigan.
 
 ## De dónde sale
@@ -66,7 +66,7 @@ Cada `### Tema N: Título · Nivel · Duración` lleva estos bloques, en este or
 | 2 | **Conceptos clave** | Lista de términos nuevos del tema | Párrafo `**Conceptos clave:** a, b, c` |
 | 3 | **El problema** | Una situación concreta de RutaFlow que todavía no sabes resolver | `#### El problema` |
 | 4 | **Glosario del tema** | Una ficha por término nuevo (formato abajo) | `#### Glosario del tema` |
-| 5 | **Cómo funciona** | Teoría paso a paso, de lo simple a lo completo, con un diagrama | `#### ► CÓMO FUNCIONA` |
+| 5 | **Teoría** | Explicación de libro de texto, mínimo 700 palabras de prosa sin contar código, en 5 subsecciones fijas (abajo), con diagrama y ejemplos cortos intercalados | `#### ► CÓMO FUNCIONA` + `##### 1.` … `##### 5.` |
 | 6 | **Ejemplo resuelto** | Pseudocódigo o plan → código completo → salida real → explicación por partes | `#### Problema resuelto N.M` + `**Razonamiento:**` |
 | 7 | **Recuadros** | Error común (con el mensaje real), buena práctica, prevenir errores; rendimiento o ingeniería cuando aplique | `> **Error común.** …` |
 | 8 | **Checkpoint** | 1–2 preguntas cortas en mitad de la lectura, respuesta oculta | `#### Checkpoint N.M` + `Respuesta:` |
@@ -74,6 +74,39 @@ Cada `### Tema N: Título · Nivel · Duración` lleva estos bloques, en este or
 | 10 | **Resumen** | 4–8 viñetas, términos en negrita | `#### Resumen` |
 | 11 | **Ejercicios verificables** | 3 graduados, con respuesta esperada | `#### Ejercicio verificable N` + `Respuesta esperada:` |
 | 12 | **En el trabajo** | Dónde aparece esto en una empresa o en un proyecto real | `#### En el trabajo` |
+
+### Teoría (bloque 5): el corazón del tema
+
+El glosario define palabras; la teoría **explica**. Es prosa continua, como un capítulo de libro, que se lee de
+principio a fin y deja al estudiante entendiendo el porqué antes de ver el ejemplo resuelto. Mínimo **700 palabras
+de prosa** (sin contar bloques de código), repartidas en estas subsecciones, en este orden:
+
+```markdown
+#### ► CÓMO FUNCIONA
+
+##### 1. La idea en lenguaje sencillo
+Qué es y para qué existe, con una situación cotidiana y luego con el caso del curso.
+
+##### 2. Definición formal y vocabulario
+La definición técnica precisa, como la diría la documentación oficial, conectada con las fichas del glosario.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Qué pasa en la máquina, el compilador, el intérprete o el framework, en orden. Diagrama aquí.
+Fragmentos de código cortos intercalados, cada uno explicado.
+
+##### 4. Reglas, variantes y casos límite
+Qué dice la especificación del lenguaje o la documentación: reglas exactas, variantes, qué está permitido y qué no,
+qué cambió entre versiones.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Con qué temas anteriores se conecta, en qué se diferencia de algo parecido y qué tema lo usa después.
+```
+
+### Código solo en el lenguaje del curso
+
+Todo ejemplo se escribe en el lenguaje del curso (Java en Java, Swift en iOS, Dart en Flutter…). Si falta una
+librería o herramienta para ejecutarlo, **no se reemplaza por otro lenguaje**: se consigue la herramienta o se
+conserva la salida real ya capturada. Excepción: Fundamentos, cuyo lenguaje es Python.
 
 ### Formato de la ficha de término (bloque 4)
 

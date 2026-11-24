@@ -13,7 +13,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web" / "public" / "content"
-BLOQUEANTES: set[str] = {"foundations"}
+BLOQUEANTES: set[str] = set()
+MIN_TEORIA = 700  # palabras de prosa en «Cómo funciona», sin contar código
+LENGUAJES_PROHIBIDOS = {  # código de otro lenguaje dentro del curso
+    curso: {"python", "py"} for curso in ["java", "spring-boot", "spring-microservices", "android", "kotlin-multiplatform",
+                                          "ios", "flutter", "angular", "react", "javascript", "node", "node-microservices"]
+}
 
 BLOQUES = [
     ("objetivos", r"^#### Objetivos\s*$"),
@@ -49,8 +54,22 @@ def fichas(tema: str) -> dict[str, list[str]]:
     return resultado
 
 
-def revisar(tema: str) -> list[str]:
+def palabras_teoria(tema: str) -> int:
+    m = re.search(r"^#### ► CÓMO FUNCIONA\n(.*?)(?=^#### |\Z)", tema, re.M | re.S)
+    if not m:
+        return 0
+    prosa = re.sub(r"```.*?```", "", m.group(1), flags=re.S)
+    return len([p for p in prosa.split() if not p.startswith("#")])
+
+
+def revisar(tema: str, curso: str = "") -> list[str]:
     faltas = [nombre for nombre, patron in BLOQUES if not re.search(patron, tema, re.M)]
+    teoria = palabras_teoria(tema)
+    if teoria < MIN_TEORIA:
+        faltas.append(f"teoría corta: {teoria}/{MIN_TEORIA} palabras")
+    for lenguaje in LENGUAJES_PROHIBIDOS.get(curso, set()):
+        if re.search(rf"^```{lenguaje}\s*$", tema, re.M):
+            faltas.append(f"código en otro lenguaje: {lenguaje}")
     conceptos = re.search(r"^\*\*Conceptos clave:\*\*(.+)$", tema, re.M)
     definidas = fichas(tema)
     if conceptos:
@@ -76,7 +95,7 @@ def main() -> int:
             texto = archivo.read_text(encoding="utf-8")
             for tema in re.split(r"(?m)^(?=### Tema \d)", texto)[1:]:
                 n += 1
-                faltas = revisar(tema)
+                faltas = revisar(tema, curso.name)
                 if not faltas:
                     ok += 1
                 elif detalle == curso.name:

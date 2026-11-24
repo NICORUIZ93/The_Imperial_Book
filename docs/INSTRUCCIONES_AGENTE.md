@@ -17,6 +17,11 @@ Un archivo `web/public/content/<curso>/modulo-<N>.md` donde **cada** `### Tema �
 
 ## Reglas obligatorias
 
+- **Teoría extensa (plantilla v2):** el bloque `#### ► CÓMO FUNCIONA` es la explicación de libro de texto del tema:
+  mínimo 700 palabras de prosa sin contar código, en las 5 subsecciones `##### 1.` a `##### 5.` de la plantilla.
+  El validador lo mide. Las fichas del glosario no reemplazan la teoría.
+- **Código solo en el lenguaje del curso.** Nunca sustituyas por Python u otro lenguaje porque falte una librería.
+
 - **Español** neutro, segunda persona, frases de máximo 25 palabras.
 - **Cada término técnico nuevo** del tema va en `**Conceptos clave:**` y tiene su ficha con los 5 puntos:
   `**Definición técnica:**`, `**En palabras sencillas:**`, `**Dónde se rompe la comparación:**`, `**Ejemplo:**`,
