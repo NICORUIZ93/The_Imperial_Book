@@ -2648,40 +2648,24 @@
     ],
     "13": [
       {
-        "title": "Una API Dart puede terminar en una frontera nativa",
-        "fragment": "tema-1-una-api-dart-puede-terminar-en-una-frontera-nativa"
+        "title": "Captura global de errores: las tres salidas y un reporte con contexto",
+        "fragment": "tema-1-captura-global-de-errores-las-tres-salidas-y-un-reporte-con-contexto"
       },
       {
-        "title": "Los secretos no pertenecen al binario",
-        "fragment": "tema-2-los-secretos-no-pertenecen-al-binario"
+        "title": "Sentry: errores con contexto, datos personales fuera y medición de rendimiento",
+        "fragment": "tema-2-sentry-errores-con-contexto-datos-personales-fuera-y-medicion-de-rendimiento"
       },
       {
-        "title": "Fluidez se mide contra el presupuesto de cada frame",
-        "fragment": "tema-3-fluidez-se-mide-contra-el-presupuesto-de-cada-frame"
+        "title": "Analítica con consentimiento: medir el uso sin invadir",
+        "fragment": "tema-3-analitica-con-consentimiento-medir-el-uso-sin-invadir"
       },
       {
-        "title": "Producción exige protocolo, telemetría y contención",
-        "fragment": "tema-4-produccion-exige-protocolo-telemetria-y-contencion"
+        "title": "Seguridad en tránsito: fijar el certificado del servidor",
+        "fragment": "tema-4-seguridad-en-transito-fijar-el-certificado-del-servidor"
       },
       {
-        "title": "Versiones y migraciones controladas",
-        "fragment": "versiones-y-migraciones-controladas"
-      },
-      {
-        "title": "Método de estudio y proyecto de ampliación",
-        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
-      },
-      {
-        "title": "reportes de fallos con Crashlytics y Sentry",
-        "fragment": "tema-5-reportes-de-fallos-con-crashlytics-y-sentry"
-      },
-      {
-        "title": "analítica con privacidad y consentimiento",
-        "fragment": "tema-6-analitica-con-privacidad-y-consentimiento"
-      },
-      {
-        "title": "monitoreo de rendimiento en una versión publicada",
-        "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
+        "title": "Proyecto 30: la app de la ruta, lista para producción",
+        "fragment": "proyecto-30-la-app-de-la-ruta-lista-para-produccion"
       }
     ],
     "14": [
