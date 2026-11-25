@@ -2692,36 +2692,24 @@
     ],
     "15": [
       {
-        "title": "flutter test y WidgetTester",
-        "fragment": "tema-1-flutter-test-y-widgettester"
+        "title": "Internacionalización: ARB, plurales, género, fechas, dinero y derecha a izquierda",
+        "fragment": "tema-1-internacionalizacion-arb-plurales-genero-fechas-dinero-y-derecha-a-izquierda"
       },
       {
-        "title": "pumpAndSettle, golden e integration tests",
-        "fragment": "tema-2-pumpandsettle-golden-e-integration-tests"
+        "title": "Reglas propias para el analizador: un plugin que vigila textos, formatos y tamaño",
+        "fragment": "tema-2-reglas-propias-para-el-analizador-un-plugin-que-vigila-textos-formatos-y-tamano"
       },
       {
-        "title": "Rendimiento, RepaintBoundary y Keys",
-        "fragment": "tema-3-rendimiento-repaintboundary-y-keys"
+        "title": "Migrar a Flutter 3.50: de `flutter/material.dart` a `material_ui` con `dart fix` y a mano",
+        "fragment": "tema-3-migrar-a-flutter-3-50-de-flutter-material-dart-a-material-ui-con-dart-fix-y-a-mano"
       },
       {
-        "title": "Clean Architecture",
-        "fragment": "tema-4-clean-architecture"
+        "title": "IA generativa en la app: respuestas en *streaming* con cancelación, límites de tiempo y errores",
+        "fragment": "tema-4-ia-generativa-en-la-app-respuestas-en-streaming-con-cancelacion-limites-de-tiempo-y-errores"
       },
       {
-        "title": "Internacionalización completa",
-        "fragment": "tema-5-internacionalizacion-completa"
-      },
-      {
-        "title": "Builds, firma y despliegue",
-        "fragment": "tema-6-builds-firma-y-despliegue"
-      },
-      {
-        "title": "Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
-        "fragment": "tema-7-migrar-una-app-a-flutter-3-50-y-dart-3-14-sin-romper-la-entrega"
-      },
-      {
-        "title": "Integrar IA generativa en una app Flutter con Firebase AI Logic",
-        "fragment": "tema-8-integrar-ia-generativa-en-una-app-flutter-con-firebase-ai-logic"
+        "title": "Proyecto 32: la app de la ruta, internacional, vigilada, al día y con asistente",
+        "fragment": "proyecto-32-la-app-de-la-ruta-internacional-vigilada-al-dia-y-con-asistente"
       }
     ],
     "16": [

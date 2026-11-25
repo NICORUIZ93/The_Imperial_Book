@@ -1116,92 +1116,59 @@
    "id": "15",
    "kind": "current",
    "title": null,
-   "topicCount": 8,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "flutter test y WidgetTester",
+     "title": "Internacionalización: ARB, plurales, género, fechas, dinero y derecha a izquierda",
      "status": "actual",
      "current": {
       "module": "15",
       "order": 1,
-      "fragment": "tema-1-flutter-test-y-widgettester"
+      "fragment": "tema-1-internacionalizacion-arb-plurales-genero-fechas-dinero-y-derecha-a-izquierda"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "pumpAndSettle, golden e integration tests",
+     "title": "Reglas propias para el analizador: un plugin que vigila textos, formatos y tamaño",
      "status": "actual",
      "current": {
       "module": "15",
       "order": 2,
-      "fragment": "tema-2-pumpandsettle-golden-e-integration-tests"
+      "fragment": "tema-2-reglas-propias-para-el-analizador-un-plugin-que-vigila-textos-formatos-y-tamano"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Rendimiento, RepaintBoundary y Keys",
+     "title": "Migrar a Flutter 3.50: de `flutter/material.dart` a `material_ui` con `dart fix` y a mano",
      "status": "actual",
      "current": {
       "module": "15",
       "order": 3,
-      "fragment": "tema-3-rendimiento-repaintboundary-y-keys"
+      "fragment": "tema-3-migrar-a-flutter-3-50-de-flutter-material-dart-a-material-ui-con-dart-fix-y-a-mano"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Clean Architecture",
+     "title": "IA generativa en la app: respuestas en *streaming* con cancelación, límites de tiempo y errores",
      "status": "actual",
      "current": {
       "module": "15",
       "order": 4,
-      "fragment": "tema-4-clean-architecture"
+      "fragment": "tema-4-ia-generativa-en-la-app-respuestas-en-streaming-con-cancelacion-limites-de-tiempo-y-errores"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Internacionalización completa",
+     "title": "Proyecto 32: la app de la ruta, internacional, vigilada, al día y con asistente",
      "status": "actual",
      "current": {
       "module": "15",
       "order": 5,
-      "fragment": "tema-5-internacionalizacion-completa"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Builds, firma y despliegue",
-     "status": "actual",
-     "current": {
-      "module": "15",
-      "order": 6,
-      "fragment": "tema-6-builds-firma-y-despliegue"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
-     "status": "actual",
-     "current": {
-      "module": "15",
-      "order": 7,
-      "fragment": "tema-7-migrar-una-app-a-flutter-3-50-y-dart-3-14-sin-romper-la-entrega"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Integrar IA generativa en una app Flutter con Firebase AI Logic",
-     "status": "actual",
-     "current": {
-      "module": "15",
-      "order": 8,
-      "fragment": "tema-8-integrar-ia-generativa-en-una-app-flutter-con-firebase-ai-logic"
+      "fragment": "proyecto-32-la-app-de-la-ruta-internacional-vigilada-al-dia-y-con-asistente"
      },
      "sources": [],
      "courseSources": []
