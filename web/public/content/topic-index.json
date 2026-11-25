@@ -2774,28 +2774,24 @@
     ],
     "18": [
       {
-        "title": "catálogo y flujo con `in_app_purchase`",
-        "fragment": "tema-1-catalogo-y-flujo-con-in-app-purchase"
+        "title": "Catálogo y flujo de compra con `in_app_purchase`",
+        "fragment": "tema-1-catalogo-y-flujo-de-compra-con-in-app-purchase"
       },
       {
-        "title": "suscripciones Android, planes base y cambios",
-        "fragment": "tema-2-suscripciones-android-planes-base-y-cambios"
+        "title": "La pantalla de planes: estados, precios de la tienda y sin engaños",
+        "fragment": "tema-2-la-pantalla-de-planes-estados-precios-de-la-tienda-y-sin-enganos"
       },
       {
-        "title": "suscripciones iOS con StoreKit",
-        "fragment": "tema-3-suscripciones-ios-con-storekit"
+        "title": "Validación en servidor y derechos: la app nunca se da el derecho sola",
+        "fragment": "tema-3-validacion-en-servidor-y-derechos-la-app-nunca-se-da-el-derecho-sola"
       },
       {
-        "title": "pruebas de IAP en sandbox",
-        "fragment": "tema-4-pruebas-de-iap-en-sandbox"
+        "title": "Suscripciones, restauración, cuentas de prueba y compilación para Android",
+        "fragment": "tema-4-suscripciones-restauracion-cuentas-de-prueba-y-compilacion-para-android"
       },
       {
-        "title": "restauración de compras y entitlement",
-        "fragment": "tema-5-restauracion-de-compras-y-entitlement"
-      },
-      {
-        "title": "validación de transacciones en servidor",
-        "fragment": "tema-6-validacion-de-transacciones-en-servidor"
+        "title": "Proyecto 35: la app de reparto vende envíos exprés, etiquetas y el Plan Pro",
+        "fragment": "proyecto-35-la-app-de-reparto-vende-envios-expres-etiquetas-y-el-plan-pro"
       }
     ],
     "19": [

@@ -1349,70 +1349,59 @@
    "id": "18",
    "kind": "current",
    "title": null,
-   "topicCount": 6,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "catálogo y flujo con `in_app_purchase`",
+     "title": "Catálogo y flujo de compra con `in_app_purchase`",
      "status": "actual",
      "current": {
       "module": "18",
       "order": 1,
-      "fragment": "tema-1-catalogo-y-flujo-con-in-app-purchase"
+      "fragment": "tema-1-catalogo-y-flujo-de-compra-con-in-app-purchase"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "suscripciones Android, planes base y cambios",
+     "title": "La pantalla de planes: estados, precios de la tienda y sin engaños",
      "status": "actual",
      "current": {
       "module": "18",
       "order": 2,
-      "fragment": "tema-2-suscripciones-android-planes-base-y-cambios"
+      "fragment": "tema-2-la-pantalla-de-planes-estados-precios-de-la-tienda-y-sin-enganos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "suscripciones iOS con StoreKit",
+     "title": "Validación en servidor y derechos: la app nunca se da el derecho sola",
      "status": "actual",
      "current": {
       "module": "18",
       "order": 3,
-      "fragment": "tema-3-suscripciones-ios-con-storekit"
+      "fragment": "tema-3-validacion-en-servidor-y-derechos-la-app-nunca-se-da-el-derecho-sola"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "pruebas de IAP en sandbox",
+     "title": "Suscripciones, restauración, cuentas de prueba y compilación para Android",
      "status": "actual",
      "current": {
       "module": "18",
       "order": 4,
-      "fragment": "tema-4-pruebas-de-iap-en-sandbox"
+      "fragment": "tema-4-suscripciones-restauracion-cuentas-de-prueba-y-compilacion-para-android"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "restauración de compras y entitlement",
+     "title": "Proyecto 35: la app de reparto vende envíos exprés, etiquetas y el Plan Pro",
      "status": "actual",
      "current": {
       "module": "18",
       "order": 5,
-      "fragment": "tema-5-restauracion-de-compras-y-entitlement"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "validación de transacciones en servidor",
-     "status": "actual",
-     "current": {
-      "module": "18",
-      "order": 6,
-      "fragment": "tema-6-validacion-de-transacciones-en-servidor"
+      "fragment": "proyecto-35-la-app-de-reparto-vende-envios-expres-etiquetas-y-el-plan-pro"
      },
      "sources": [],
      "courseSources": []
