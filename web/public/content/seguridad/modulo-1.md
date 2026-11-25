@@ -122,8 +122,10 @@ jobs:
             aquasec/trivy:0.55.0 image --exit-code 1 --severity CRITICAL mi-api:${{ github.sha }}
 ```
 
-```bash
-python3 -c "import yaml; d = yaml.safe_load(open('.github/workflows/seguridad.yml')); print('jobs:', list(d['jobs'].keys()))"
+```text
+$ grep -A1 '^jobs:' .github/workflows/seguridad.yml
+jobs:
+  escaneo-seguridad:
 ```
 
 ```bash
@@ -249,14 +251,14 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-```bash
-python3 -c "
-import yaml
-docs_amplio = list(yaml.safe_load_all(open('pipeline-amplio.yaml')))
-docs_acotado = list(yaml.safe_load_all(open('pipeline-acotado.yaml')))
-print('amplio:', docs_amplio[0]['roleRef']['name'])
-print('acotado, verbos:', docs_acotado[0]['rules'][0]['verbs'], 'recurso:', docs_acotado[0]['rules'][0]['resourceNames'])
-"
+```text
+$ grep -A2 'roleRef' pipeline-amplio.yaml
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+$ grep -E 'resourceNames|verbs' pipeline-acotado.yaml
+    resourceNames: ["mi-api"]
+    verbs: ["get", "update", "patch"]
 ```
 
 ```bash
@@ -299,24 +301,17 @@ mkdir -p academia-devops/src/modulo11/sbom-demo
 cd academia-devops/src/modulo11/sbom-demo
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd)":/salida \
   aquasec/trivy:0.55.0 image --format cyclonedx --output /salida/sbom.json mi-api:1.0
-python3 -c "
-import json
-sbom = json.load(open('sbom.json'))
-componentes = [c['name'] + '@' + c.get('version','?') for c in sbom.get('components', [])]
-print('total componentes:', len(componentes))
-print('lodash presente:', any('lodash' in c for c in componentes))
-"
+jq '.components | length' sbom.json                                   # total de componentes
+jq '[.components[].name] | any(contains("lodash"))' sbom.json        # ¿está lodash?
 ```
 
 ```bash
-python3 -c "
-import json
-sbom = json.load(open('sbom.json'))
-cve_reportada_en = 'lodash'
-afectados = [c['name'] + '@' + c.get('version','?') for c in sbom.get('components', []) if cve_reportada_en in c['name']]
-print('Componentes afectados por una CVE en', cve_reportada_en, ':', afectados)
-"
+# componentes afectados por una CVE reportada en lodash, con su versión ("?" si el SBOM no la trae)
+jq -r '.components[] | select(.name | contains("lodash")) | "\(.name)@\(.version // "?")"' sbom.json
 ```
+
+`jq` es la herramienta estándar de línea de órdenes para consultar JSON; en Ubuntu se instala con
+`sudo apt install jq`. Con un SBOM que contenga `lodash` 4.17.15, la última orden imprime `lodash@4.17.15`.
 
 </details>
 
@@ -389,25 +384,25 @@ Un escaneo **TCP connect** intenta abrir una conexión completa en cada puerto: 
 
 ```mermaid
 flowchart LR
-    E[escaneo.py] --> P{connect al puerto}
+    E[Escaneo.java] --> P{connect al puerto}
     P -- acepta --> A[abierto + banner]
     P -- rechazo RST --> C[cerrado]
     P -- sin respuesta --> F[filtrado]
 ```
 
 **¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
-**Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [socket (docs.python.org)](https://docs.python.org/3/library/socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
+**Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [java.net.Socket (docs.oracle.com)](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/Socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
 **Conceptos clave:** reconocimiento, escaneo TCP connect, abierto, cerrado y filtrado, banner, `nmap -sV`, alcance y autorización.
 **Cuándo no usarlo:** nunca contra redes, IPs o dominios que no te pertenecen o sin autorización escrita. En la nube, revisa también las políticas del proveedor sobre pruebas de penetración.
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un escaneo de los puertos que expone el entorno de pruebas y falla si aparece uno no declarado.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectionRefusedError` (RST), mientras que el filtrado tarda hasta agotar el `timeout` de `create_connection` sin respuesta alguna; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
+**Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectException` (RST), mientras que el filtrado tarda hasta agotar el timeout de `connect` y termina en `SocketTimeoutException`; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
 
 #### ► CÓMO FUNCIONA
 ```mermaid
 flowchart LR
-    E[escaneo.py] --> P{connect al puerto}
+    E[Escaneo.java] --> P{connect al puerto}
     P -- acepta --> A[abierto + banner]
     P -- rechazo RST --> C[cerrado]
     P -- sin respuesta --> F[filtrado]
@@ -424,53 +419,82 @@ flowchart LR
 mkdir escaneo-laboratorio && cd escaneo-laboratorio
 ```
 
-```python
-# Escaneo de puertos SOLO contra tu propio equipo o laboratorio, con autorización escrita.
-import socket
-import threading
-import concurrent.futures as cf
+```java
+// Escaneo.java — escaneo de puertos SOLO contra tu propio equipo o laboratorio, con autorización escrita
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-# Laboratorio: levantamos dos servicios locales para tener algo que descubrir
-def servicio(puerto, banner):
-    s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(("127.0.0.1", puerto)); s.listen()
-    def atender():
-        while True:
-            conexion, _ = s.accept()
-            conexion.sendall(banner); conexion.close()
-    threading.Thread(target=atender, daemon=True).start()
+record Resultado(int puerto, String estado, String banner) {
+}
 
-servicio(18022, b"SSH-2.0-OpenSSH_9.6 laboratorio\r\n")
-servicio(18080, b"HTTP/1.1 200 OK\r\nServer: rutaflow-dev\r\n\r\n")
+// Laboratorio: levantamos dos servicios locales para tener algo que descubrir
+void servicio(int puerto, String banner) throws IOException {
+    ServerSocket escucha = new ServerSocket();
+    escucha.setReuseAddress(true);
+    escucha.bind(new InetSocketAddress("127.0.0.1", puerto));
+    Thread.ofPlatform().daemon().start(() -> {
+        while (true) {
+            try (Socket conexion = escucha.accept()) {
+                conexion.getOutputStream().write(banner.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ignorada) {
+                // el cliente cerró antes de leer
+            }
+        }
+    });
+}
 
-def probar(host, puerto, espera=0.3):
-    try:
-        with socket.create_connection((host, puerto), timeout=espera) as c:   # conexión TCP completa
-            c.settimeout(espera)
-            try:
-                banner = c.recv(64).decode(errors="replace").splitlines()[0]
-            except socket.timeout:
-                banner = ""
-            return puerto, "abierto", banner
-    except ConnectionRefusedError:
-        return puerto, "cerrado", ""
-    except socket.timeout:
-        return puerto, "filtrado", ""
+Resultado probar(String host, int puerto, int esperaMs) {
+    try (Socket conexion = new Socket()) {
+        conexion.connect(new InetSocketAddress(host, puerto), esperaMs);   // conexión TCP completa
+        conexion.setSoTimeout(esperaMs);
+        String banner;
+        try {
+            byte[] leidos = conexion.getInputStream().readNBytes(64);
+            banner = new String(leidos, StandardCharsets.UTF_8).lines().findFirst().orElse("");
+        } catch (SocketTimeoutException sinBanner) {
+            banner = "";
+        }
+        return new Resultado(puerto, "abierto", banner);
+    } catch (ConnectException rechazada) {
+        return new Resultado(puerto, "cerrado", "");
+    } catch (SocketTimeoutException sinRespuesta) {
+        return new Resultado(puerto, "filtrado", "");
+    } catch (IOException otro) {
+        return new Resultado(puerto, "error: " + otro.getMessage(), "");
+    }
+}
 
-objetivo = "127.0.0.1"
-puertos = range(18000, 18100)
-with cf.ThreadPoolExecutor(max_workers=50) as ejecutor:
-    resultados = list(ejecutor.map(lambda p: probar(objetivo, p), puertos))
+void main() throws Exception {
+    servicio(18022, "SSH-2.0-OpenSSH_9.6 laboratorio\r\n");
+    servicio(18080, "HTTP/1.1 200 OK\r\nServer: rutaflow-dev\r\n\r\n");
 
-abiertos = [r for r in resultados if r[1] == "abierto"]
-print(f"Escaneados {len(resultados)} puertos de {objetivo}: {len(abiertos)} abiertos")
-for puerto, estado, banner in abiertos:
-    print(f"  {puerto}/tcp {estado:<8} {banner}")
+    String objetivo = "127.0.0.1";
+    List<Resultado> resultados = new ArrayList<>();
+    try (ExecutorService ejecutor = Executors.newFixedThreadPool(50)) {
+        List<Future<Resultado>> futuros = new ArrayList<>();
+        for (int puerto = 18000; puerto < 18100; puerto++) {
+            int p = puerto;
+            futuros.add(ejecutor.submit(() -> probar(objetivo, p, 300)));
+        }
+        for (Future<Resultado> futuro : futuros) {
+            resultados.add(futuro.get());
+        }
+    }
+    List<Resultado> abiertos = resultados.stream().filter(r -> r.estado().equals("abierto")).toList();
+    IO.println("Escaneados " + resultados.size() + " puertos de " + objetivo + ": " + abiertos.size() + " abiertos");
+    abiertos.forEach(r -> IO.println("  %d/tcp %-8s %s".formatted(r.puerto(), r.estado(), r.banner())));
+}
 ```
 
 ```bash
-python3 escaneo.py
-nmap -sV -p 18000-18100 127.0.0.1   # opcional, con nmap instalado y el script aún corriendo
+java Escaneo.java
+nmap -sV -p 18000-18100 127.0.0.1   # opcional, con nmap instalado y otro programa que mantenga los servicios abiertos
 ```
 
 ```text

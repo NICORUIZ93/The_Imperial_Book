@@ -20,7 +20,7 @@ export const SEGURIDAD_MODULES: CourseModule[] = [
       '¿Por qué una contraseña se hashea y no se cifra para almacenarla?',
       '¿Qué convierte una amenaza en un riesgo priorizable?',
     ],
-    ['Python', 'SQLite', 'pytest', 'OWASP'],
+    ['Java 25', 'javax.crypto', 'H2', 'OpenSSL', 'OWASP'],
     'Inventario endurecido con threat model, credenciales seguras, roles, auditoría, pruebas de abuso y runbook de incidentes.'),
   m(1, 'Seguridad DevSecOps', 'DevSecOps', 'Experto', '2 h 30 min', '#475569',
     'La seguridad no es un paso final: se integra en cada etapa del pipeline.',['Escaneo de imágenes y dependencias (Trivy, Snyk)', 'Integración en el pipeline', 'Gestión de secretos (Vault, SOPS)', 'Menor privilegio en CI/CD', 'SBOM y supply chain security', 'SAST, DAST y SCA — diferencias y herramientas', 'Reconocimiento de tu propio laboratorio: escaneo de puertos y banners'],
