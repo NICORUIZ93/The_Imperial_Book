@@ -159,7 +159,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     'Conecta los fundamentos con teoría, sistemas, datos, inteligencia artificial, gráficos, cómputo científico y práctica profesional sin confundir introducción con dominio especializado.',['Sistemas, arquitectura y sistemas operativos', 'Algoritmos, autómatas, lenguajes y compiladores', 'Bases de datos, almacenes analíticos y minería de datos', 'Inteligencia artificial, aprendizaje automático y visión', 'Gráficos y cómputo científico', 'Redes, seguridad, web e ingeniería profesional'],
     ['Simula una máquina y un autómata', 'Implementa parser pequeño', 'Diseña experimento de datos', 'Evalúa modelo sencillo', 'Renderiza una transformación', 'Presenta informe ético reproducible'],
     ['¿Qué diferencia existe entre usar una herramienta y comprender su fundamento?', '¿Qué especializaciones requieren matemáticas adicionales antes de profundizar?'],
-    ['Python', 'SQL'],
+    ['Java 25', 'H2', 'SQL', 'JDBC'],
     'Portafolio de orientación con seis experimentos, mapa de prerrequisitos y una especialización elegida mediante evidencia.'),
   m(8, 'Algoritmos clásicos', 'Algoritmos clásicos', 'Aplicación', '10 h', '#6d5dfc',
     'Implementa y mide los algoritmos que aparecen en cada entrevista y en cada sistema de rutas: ordenamientos, algoritmos codiciosos, caminos más cortos, búsqueda en cadenas y problemas intratables, aplicados al planificador de entregas de RutaFlow.',[
