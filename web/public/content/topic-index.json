@@ -3036,16 +3036,28 @@
     ],
     "9": [
       {
-        "title": "Unit tests y widget tests",
-        "fragment": "tema-1-unit-tests-y-widget-tests"
+        "title": "Pruebas unitarias: reglas, casos límite y fallos que se entienden",
+        "fragment": "tema-1-pruebas-unitarias-reglas-casos-limite-y-fallos-que-se-entienden"
       },
       {
-        "title": "Mocking con mocktail",
-        "fragment": "tema-2-mocking-con-mocktail"
+        "title": "Pruebas de widgets: construir, buscar, tocar y comprobar",
+        "fragment": "tema-2-pruebas-de-widgets-construir-buscar-tocar-y-comprobar"
       },
       {
-        "title": "Integration tests",
-        "fragment": "tema-3-integration-tests"
+        "title": "Dobles de prueba con mocktail: qué responde y qué se llamó",
+        "fragment": "tema-3-dobles-de-prueba-con-mocktail-que-responde-y-que-se-llamo"
+      },
+      {
+        "title": "Pruebas golden: el diseño también se prueba",
+        "fragment": "tema-4-pruebas-golden-el-diseno-tambien-se-prueba"
+      },
+      {
+        "title": "Integración y cobertura: la app completa y lo que falta probar",
+        "fragment": "tema-5-integracion-y-cobertura-la-app-completa-y-lo-que-falta-probar"
+      },
+      {
+        "title": "Proyecto 26: la red de pruebas de la ruta",
+        "fragment": "proyecto-26-la-red-de-pruebas-de-la-ruta"
       }
     ]
   },

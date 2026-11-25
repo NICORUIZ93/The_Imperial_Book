@@ -727,37 +727,70 @@
    "id": "9",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 6,
    "topics": [
     {
-     "title": "Unit tests y widget tests",
+     "title": "Pruebas unitarias: reglas, casos límite y fallos que se entienden",
      "status": "actual",
      "current": {
       "module": "9",
       "order": 1,
-      "fragment": "tema-1-unit-tests-y-widget-tests"
+      "fragment": "tema-1-pruebas-unitarias-reglas-casos-limite-y-fallos-que-se-entienden"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Mocking con mocktail",
+     "title": "Pruebas de widgets: construir, buscar, tocar y comprobar",
      "status": "actual",
      "current": {
       "module": "9",
       "order": 2,
-      "fragment": "tema-2-mocking-con-mocktail"
+      "fragment": "tema-2-pruebas-de-widgets-construir-buscar-tocar-y-comprobar"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Integration tests",
+     "title": "Dobles de prueba con mocktail: qué responde y qué se llamó",
      "status": "actual",
      "current": {
       "module": "9",
       "order": 3,
-      "fragment": "tema-3-integration-tests"
+      "fragment": "tema-3-dobles-de-prueba-con-mocktail-que-responde-y-que-se-llamo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Pruebas golden: el diseño también se prueba",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 4,
+      "fragment": "tema-4-pruebas-golden-el-diseno-tambien-se-prueba"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Integración y cobertura: la app completa y lo que falta probar",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 5,
+      "fragment": "tema-5-integracion-y-cobertura-la-app-completa-y-lo-que-falta-probar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 26: la red de pruebas de la ruta",
+     "status": "actual",
+     "current": {
+      "module": "9",
+      "order": 6,
+      "fragment": "proyecto-26-la-red-de-pruebas-de-la-ruta"
      },
      "sources": [],
      "courseSources": []
