@@ -2736,28 +2736,112 @@
     ],
     "17": [
       {
-        "title": "macros de Dart y alternativas disponibles",
-        "fragment": "tema-1-macros-de-dart-y-alternativas-disponibles"
+        "title": "Generación de código con `build_runner` y `json_serializable` (y qué pasó con las macros)",
+        "fragment": "tema-1-generacion-de-codigo-con-build-runner-y-json-serializable-y-que-paso-con-las-macros"
       },
       {
-        "title": "generación avanzada con build_runner",
-        "fragment": "tema-2-generacion-avanzada-con-build-runner"
+        "title": "Recorrer el AST con `package:analyzer`: un auditor con archivo y línea",
+        "fragment": "tema-2-recorrer-el-ast-con-package-analyzer-un-auditor-con-archivo-y-linea"
       },
       {
-        "title": "reflexión limitada y registro tipado",
-        "fragment": "tema-3-reflexion-limitada-y-registro-tipado"
+        "title": "Un generador propio con `source_gen`: anotación, `build.yaml` y pruebas",
+        "fragment": "tema-3-un-generador-propio-con-source-gen-anotacion-build-yaml-y-pruebas"
       },
       {
-        "title": "recorrer el AST de Dart con analyzer",
-        "fragment": "tema-4-recorrer-el-ast-de-dart-con-analyzer"
+        "title": "Diseñar, documentar y validar un paquete Dart",
+        "fragment": "tema-4-disenar-documentar-y-validar-un-paquete-dart"
       },
       {
-        "title": "crear un builder pequeño para build_runner",
-        "fragment": "tema-5-crear-un-builder-pequeno-para-build-runner"
+        "title": "[x] 0/10 points: Provide a valid `pubspec.yaml`",
+        "fragment": "x-0-10-points-provide-a-valid-pubspec-yaml"
       },
       {
-        "title": "diseñar y validar un paquete Dart",
-        "fragment": "tema-6-disenar-y-validar-un-paquete-dart"
+        "title": "[*] 5/5 points: Provide a valid `README.md`",
+        "fragment": "5-5-points-provide-a-valid-readme-md"
+      },
+      {
+        "title": "[x] 0/5 points: Provide a valid `CHANGELOG.md`",
+        "fragment": "x-0-5-points-provide-a-valid-changelog-md"
+      },
+      {
+        "title": "[x] 0/10 points: Use an OSI-approved license",
+        "fragment": "x-0-10-points-use-an-osi-approved-license"
+      },
+      {
+        "title": "[*] 10/10 points: 20% or more of the public API has dartdoc comments",
+        "fragment": "10-10-points-20-or-more-of-the-public-api-has-dartdoc-comments"
+      },
+      {
+        "title": "[*] 10/10 points: Package has an example",
+        "fragment": "10-10-points-package-has-an-example"
+      },
+      {
+        "title": "[*] 20/20 points: Supports 6 of 6 possible platforms (**iOS**, **Android**, **Web**, **Windows**, **macOS**, **Linux**)",
+        "fragment": "20-20-points-supports-6-of-6-possible-platforms-ios-android-web-windows-macos-linux"
+      },
+      {
+        "title": "[~] 40/50 points: code has no errors, warnings, lints, or formatting issues",
+        "fragment": "40-50-points-code-has-no-errors-warnings-lints-or-formatting-issues"
+      },
+      {
+        "title": "[*] 10/10 points: All of the package dependencies are supported in the latest version",
+        "fragment": "10-10-points-all-of-the-package-dependencies-are-supported-in-the-latest-version"
+      },
+      {
+        "title": "[*] 10/10 points: Package supports latest stable Dart and Flutter SDKs",
+        "fragment": "10-10-points-package-supports-latest-stable-dart-and-flutter-sdks"
+      },
+      {
+        "title": "[*] 20/20 points: Compatible with dependency constraint lower bounds",
+        "fragment": "20-20-points-compatible-with-dependency-constraint-lower-bounds"
+      },
+      {
+        "title": "[~] 10/10 points: Provide a valid `pubspec.yaml`",
+        "fragment": "10-10-points-provide-a-valid-pubspec-yaml"
+      },
+      {
+        "title": "[*] 5/5 points: Provide a valid `README.md`",
+        "fragment": "5-5-points-provide-a-valid-readme-md-2"
+      },
+      {
+        "title": "[*] 5/5 points: Provide a valid `CHANGELOG.md`",
+        "fragment": "5-5-points-provide-a-valid-changelog-md"
+      },
+      {
+        "title": "[*] 10/10 points: Use an OSI-approved license",
+        "fragment": "10-10-points-use-an-osi-approved-license"
+      },
+      {
+        "title": "[*] 10/10 points: 20% or more of the public API has dartdoc comments",
+        "fragment": "10-10-points-20-or-more-of-the-public-api-has-dartdoc-comments-2"
+      },
+      {
+        "title": "[*] 10/10 points: Package has an example",
+        "fragment": "10-10-points-package-has-an-example-2"
+      },
+      {
+        "title": "[*] 20/20 points: Supports 6 of 6 possible platforms (**iOS**, **Android**, **Web**, **Windows**, **macOS**, **Linux**)",
+        "fragment": "20-20-points-supports-6-of-6-possible-platforms-ios-android-web-windows-macos-linux-2"
+      },
+      {
+        "title": "[*] 50/50 points: code has no errors, warnings, lints, or formatting issues",
+        "fragment": "50-50-points-code-has-no-errors-warnings-lints-or-formatting-issues"
+      },
+      {
+        "title": "[*] 10/10 points: All of the package dependencies are supported in the latest version",
+        "fragment": "10-10-points-all-of-the-package-dependencies-are-supported-in-the-latest-version-2"
+      },
+      {
+        "title": "[*] 10/10 points: Package supports latest stable Dart and Flutter SDKs",
+        "fragment": "10-10-points-package-supports-latest-stable-dart-and-flutter-sdks-2"
+      },
+      {
+        "title": "[*] 20/20 points: Compatible with dependency constraint lower bounds",
+        "fragment": "20-20-points-compatible-with-dependency-constraint-lower-bounds-2"
+      },
+      {
+        "title": "Proyecto 34: un kit de herramientas para el equipo de reparto",
+        "fragment": "proyecto-34-un-kit-de-herramientas-para-el-equipo-de-reparto"
       }
     ],
     "18": [
