@@ -1,12 +1,12 @@
 {
  "schemaVersion": 1,
  "summary": {
-  "currentTopics": 1696,
+  "currentTopics": 1697,
   "currentTopicsWithExactBookEvidence": 0,
   "bookCandidates": 0,
   "courseCandidates": 0,
   "courses": 0,
-  "provisionalTopics": 1696,
+  "provisionalTopics": 1697,
   "booksRequiringOcr": 0
  },
  "stacks": [
@@ -256,11 +256,11 @@
    "id": "arquitectura",
    "asset": "content/curriculum-stacks/arquitectura.json",
    "hasCurrentTrack": true,
-   "currentTopicCount": 29,
+   "currentTopicCount": 30,
    "exactBookEvidenceTopicCount": 0,
    "bookCandidateCount": 0,
    "courseCandidateCount": 0,
-   "topicCount": 29,
+   "topicCount": 30,
    "moduleCount": 5,
    "bookCount": 0,
    "courseCount": 0,
@@ -288,7 +288,7 @@
      "id": "3",
      "kind": "current",
      "title": null,
-     "topicCount": 4
+     "topicCount": 5
     },
     {
      "id": "4",

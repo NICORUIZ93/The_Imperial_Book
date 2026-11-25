@@ -814,8 +814,8 @@
     ],
     "3": [
       {
-        "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
-        "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
+        "title": "Límites y monolito modular: cuándo un microservicio no es la respuesta",
+        "fragment": "tema-1-limites-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
       },
       {
         "title": "Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo",
@@ -826,8 +826,12 @@
         "fragment": "tema-3-agregados-invariantes-y-eventos-de-dominio-donde-vive-la-regla-que-no-se-puede-romper"
       },
       {
-        "title": "ADR y fitness functions: decisiones que el código puede defender",
-        "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
+        "title": "Repositorios y concurrencia optimista: guardar el agregado sin perder cambios",
+        "fragment": "tema-4-repositorios-y-concurrencia-optimista-guardar-el-agregado-sin-perder-cambios"
+      },
+      {
+        "title": "Proyecto 16: el contexto de devoluciones",
+        "fragment": "proyecto-16-el-contexto-de-devoluciones"
       }
     ],
     "4": [

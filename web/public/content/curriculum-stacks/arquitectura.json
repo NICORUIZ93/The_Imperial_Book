@@ -261,15 +261,15 @@
    "id": "3",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta",
+     "title": "Límites y monolito modular: cuándo un microservicio no es la respuesta",
      "status": "actual",
      "current": {
       "module": "3",
       "order": 1,
-      "fragment": "tema-1-limites-acoplamiento-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
+      "fragment": "tema-1-limites-y-monolito-modular-cuando-un-microservicio-no-es-la-respuesta"
      },
      "sources": [],
      "courseSources": []
@@ -297,12 +297,23 @@
      "courseSources": []
     },
     {
-     "title": "ADR y fitness functions: decisiones que el código puede defender",
+     "title": "Repositorios y concurrencia optimista: guardar el agregado sin perder cambios",
      "status": "actual",
      "current": {
       "module": "3",
       "order": 4,
-      "fragment": "tema-4-adr-y-fitness-functions-decisiones-que-el-codigo-puede-defender"
+      "fragment": "tema-4-repositorios-y-concurrencia-optimista-guardar-el-agregado-sin-perder-cambios"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 16: el contexto de devoluciones",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 5,
+      "fragment": "proyecto-16-el-contexto-de-devoluciones"
      },
      "sources": [],
      "courseSources": []
