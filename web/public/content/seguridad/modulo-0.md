@@ -38,8 +38,8 @@ Al terminar este módulo podrás:
 - Métodos, **excepción**, records y colecciones (`Map`, `Set`) de Fundamentos (Módulo 1, Temas 1 y 4; Módulo 2, Tema 1); **codificación** y **UTF-8** (Módulo 1, Tema 5).
 - **Función hash** y tabla hash (Módulo 2, Tema 6).
 - **Cliente y servidor**, **URL**, **DNS**, **puerto**, **HTTP**, **cabecera**, **JSON**, **HTML** y **JavaScript** (Módulo 3, Temas 1 a 3).
-- SQL y JDBC con H2 (Módulo 4, Temas 1 y 2).
-- **Registro**, **Git**, **commit** e **integración continua** (Módulo 5, Temas 1, 3 y 4).
+- SQL y JDBC del curso SQL (Módulo 0, Temas 1 y 2).
+- **Registro**, **Git**, **commit** e **integración continua** (Módulo 4, Temas 1, 3 y 4).
 
 Comprueba tu entorno antes de empezar:
 
@@ -1027,7 +1027,7 @@ viaja por redes que no controlas, pasa por una cola y lo procesa otro servicio. 
 o reenviar el mismo comando mañana. Y la clave para protegerlo, ¿dónde se guarda sin que termine en GitHub?
 
 Este tema usa lo que ya conoces: **hash criptográfico** y `MessageDigest.isEqual` (Tema 2 de este módulo),
-**cliente y servidor**, **puerto** y **DNS** (Módulo 3, Tema 1), **Git** y **commit** (Módulo 5, Tema 3) y
+**cliente y servidor**, **puerto** y **DNS** (Módulo 3, Tema 1), **Git** y **commit** (Módulo 4, Tema 3) y
 **código de salida** (Módulo 0, Tema 4). Aquí no se redefinen.
 
 #### Glosario del tema
@@ -1488,7 +1488,7 @@ Demuestra que un secreto borrado sigue en el historial de Git y escribe un escá
 **Razonamiento:**
 1. Hacer un commit con `.env`, borrarlo en un segundo commit y buscarlo con `git log -p`.
 2. El escáner lee texto por la entrada estándar (`System.in`), busca patrones de secreto y termina con código 1 si encuentra algo.
-3. Ese código de salida es lo que hace fallar un paso de CI (Módulo 5, Tema 4).
+3. Ese código de salida es lo que hace fallar un paso de CI (Fundamentos, Módulo 4, Tema 4).
 
 ```java
 // Escanear.java — busca secretos en un texto (archivo o historial de Git) leído por la entrada estándar
@@ -1659,9 +1659,9 @@ se muestra en el panel del operador, viaja en una URL de búsqueda y queda en el
 texto malicioso puede convertirse en código. Y si la nota trae un teléfono, ya es un dato personal. ¿Cómo tratas
 una entrada que no controlas en cada sitio por donde pasa?
 
-Este tema usa lo que ya conoces: SQL y JDBC con H2 (Módulo 4, Temas 1 y 2), **HTML**, **formulario**,
+Este tema usa lo que ya conoces: SQL y JDBC (SQL, Módulo 0, Temas 1 y 2), **HTML**, **formulario**,
 **JavaScript** y **validación** del navegador (Módulo 3, Tema 3), **URL** (Módulo 3, Tema 1), **registro**
-(Módulo 5, Tema 1) y **límite de confianza** (Tema 1 de este módulo). Aquí no se redefinen.
+(Módulo 4, Tema 1) y **límite de confianza** (Tema 1 de este módulo). Aquí no se redefinen.
 
 #### Glosario del tema
 
@@ -2726,7 +2726,7 @@ lo reporte en minutos y el runbook contenga el daño.
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-El proyecto aplica los cinco temas al inventario del Módulo 5. No hay técnicas nuevas: cada entregable remite al
+El proyecto aplica los cinco temas al inventario de Fundamentos (Módulo 4, Proyecto 5). No hay técnicas nuevas: cada entregable remite al
 tema donde se explicó. El resultado es un repositorio que alguien de seguridad podría auditar sin pedirte nada más.
 
 </details>

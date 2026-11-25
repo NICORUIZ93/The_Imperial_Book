@@ -20,8 +20,8 @@ Tema 7, evaluación de skills de agente; Proyecto 7.
 
 **Qué necesitas saber antes:** de Fundamentos, algoritmo, caso de prueba y excepción (Módulo 1, Tema 1); métodos
 (Módulo 1, Tema 4); clase, objeto y método (Módulo 1, Tema 6); composición, interfaz y polimorfismo (Módulo 1,
-Tema 7); bases de datos con H2 y JDBC (Módulo 4); prueba unitaria, doble de prueba, prueba de regresión, commit,
-pull request y revisión de código (Módulo 5). Del curso de Java, records, colecciones y `java Archivo.java`.
+Tema 7); prueba unitaria, doble de prueba, prueba de regresión, commit, pull request y revisión de código (Módulo
+4). Del curso SQL, bases de datos y JDBC (Módulo 0). Del curso de Java, records, colecciones y `java Archivo.java`.
 
 
 ## Aprende construyendo
@@ -393,7 +393,7 @@ Respuesta esperada: un contador de intentos por guía (un `Map<String, Integer>`
 
 #### En el trabajo
 En un equipo, la historia llega como ticket y los criterios se acuerdan en el refinamiento, antes de estimar. Los
-criterios numerados se vuelven pruebas automáticas que corren en CI (Módulo 5). Cuando producto cambia una regla, la
+criterios numerados se vuelven pruebas automáticas que corren en CI (Fundamentos, Módulo 4). Cuando producto cambia una regla, la
 búsqueda de `C2` en el repositorio muestra al instante qué código y qué pruebas hay que tocar.
 
 </details>
@@ -792,7 +792,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: **módulo** (Módulo 1, Tema 4); **composición**, **interfaz** como tipo y **polimorfismo**
 (Fundamentos, Módulo 1, Tema 7); **doble de prueba** (SQL, Módulo 0, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
-El catálogo completo de patrones está en el Módulo 13, y la técnica completa de refactorización en el Módulo 14.
+El catálogo completo de patrones está en Fundamentos, Módulo 9, y la técnica completa de refactorización en Fundamentos, Módulo 10.
 
 #### El problema
 El método `confirmar` de RutaFlow valida el PIN, abre la base de datos, guarda y manda el SMS, todo junto. Producto pide
@@ -1384,7 +1384,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** decisión de arquitectura, ADR, deuda técnica, interés de la deuda, cambio compatible, deprecación
 
 Este tema usa **trade-off** y **escenario de calidad** (Tema 2), **refactorización** (Tema 3), y **commit** y
-**pull request** (Módulo 5, Temas 3 y 4).
+**pull request** (Fundamentos, Módulo 4, Temas 3 y 4).
 
 #### El problema
 Una desarrolladora nueva llega a RutaFlow y pregunta: «¿por qué los eventos de envío están en DynamoDB y no en
@@ -2104,8 +2104,8 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** especificación, agente de IA, restricción de alcance, cobertura de criterios
 
-Este tema usa **criterio de aceptación** y **trazabilidad** (Tema 1 de este módulo), **prueba unitaria** (Módulo 5,
-Tema 2), las pruebas con JUnit y Gradle (Fundamentos, Módulo 10), y **pull request**, **revisión de código** e **integración continua** (Módulo 5, Tema 4).
+Este tema usa **criterio de aceptación** y **trazabilidad** (Tema 1 de este módulo), **prueba unitaria** y las pruebas con JUnit y Gradle
+(Fundamentos, Módulo 4, Tema 2), y **pull request**, **revisión de código** e **integración continua** (Fundamentos, Módulo 4, Tema 4).
 
 #### El problema
 Un desarrollador de RutaFlow le pide a un agente de IA: «agrega validación del PIN a confirmar». El agente entrega un
@@ -2138,7 +2138,7 @@ sabes qué pediste exactamente, si el agente lo cumplió y si tocó algo que no 
 **cobertura de criterios**
 - **Definición técnica:** proporción de criterios de la especificación que tienen al menos una prueba que dice verificarlos.
 - **En palabras sencillas:** cuántas promesas de la especificación tienen quién las compruebe.
-- **Dónde se rompe la comparación:** no es la cobertura de líneas del Módulo 5: puedes cubrir el 100 % de líneas y dejar un criterio sin probar.
+- **Dónde se rompe la comparación:** no es la cobertura de líneas de Fundamentos (Módulo 4, Tema 2): puedes cubrir el 100 % de líneas y dejar un criterio sin probar.
 - **Ejemplo:** antes, `criterios: 3  cubiertos: 2` y `sin prueba: C3`; después, `cubiertos: 3`.
 - **Error típico:** nombrar la prueba con otro formato (`c3_...`) y que el verificador no la reconozca.
 
@@ -2507,7 +2507,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** skill de agente, cabecera YAML, datos personales, índice de Jaccard, prueba A/B
 
-Este tema usa **agente de IA** y **especificación** (Tema 6 de este módulo), y **pull request** (Módulo 5, Tema 4).
+Este tema usa **agente de IA** y **especificación** (Tema 6 de este módulo), y **pull request** (Fundamentos, Módulo 4, Tema 4).
 
 #### El problema
 El equipo de RutaFlow tiene una carpeta `skills/` con instrucciones reutilizables para su agente de IA. Cada persona
@@ -2547,7 +2547,7 @@ alguna mejora algo. ¿Cómo decides cuáles se quedan antes de que el agente las
 **prueba A/B**
 - **Definición técnica:** experimento que ejecuta las mismas tareas con dos variantes (A sin la skill, B con ella) y compara una métrica de éxito.
 - **En palabras sencillas:** probar con y sin la receta, en las mismas condiciones, y contar cuántas veces sale bien.
-- **Dónde se rompe la comparación:** con 10 tareas, una diferencia pequeña puede ser azar; el Módulo 9 explica cuánta evidencia hace falta.
+- **Dónde se rompe la comparación:** con 10 tareas, una diferencia pequeña puede ser azar; Fundamentos, Módulo 6, Tema 4, explica cuánta evidencia hace falta.
 - **Ejemplo:** `éxito 40% sin la skill -> 80% con ella (aporta)`.
 - **Error típico:** medir con tareas distintas en cada variante; la diferencia ya no se puede atribuir a la skill.
 

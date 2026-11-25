@@ -198,48 +198,59 @@
    "id": "2",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
+     "title": "El borde: proxy inverso, balanceo de carga y chequeos de salud",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 1,
-      "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
+      "fragment": "tema-1-el-borde-proxy-inverso-balanceo-de-carga-y-chequeos-de-salud"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
+     "title": "Límites de tasa: ventana fija, cubo de fichas y la respuesta 429",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 2,
-      "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
+      "fragment": "tema-2-limites-de-tasa-ventana-fija-cubo-de-fichas-y-la-respuesta-429"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
+     "title": "Caché: cache-aside, TTL, estampidas y revalidación HTTP con ETag",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 3,
-      "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
+      "fragment": "tema-3-cache-cache-aside-ttl-estampidas-y-revalidacion-http-con-etag"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
+     "title": "Particionado: clave de partición, hash consistente y consultas que cruzan particiones",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 4,
-      "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
+      "fragment": "tema-4-particionado-clave-de-particion-hash-consistente-y-consultas-que-cruzan-particiones"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 15: el borde del inventario",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "proyecto-15-el-borde-del-inventario"
      },
      "sources": [],
      "courseSources": []

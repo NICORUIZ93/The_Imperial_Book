@@ -28,8 +28,8 @@ efectos una sola vez) → Tema 4 (resiliencia y observabilidad) → Tema 5 (tiem
 
 **Qué necesitas saber antes:** procesos y terminal (Módulo 0); de Fundamentos, métodos, clases, records y
 excepciones (Módulo 1), cola FIFO con `ArrayDeque` y `System.nanoTime` (Módulo 2, Tema 2), cliente y servidor, puerto
-y `localhost` (Módulo 3, Tema 1), HTTP, petición, respuesta, código de estado e idempotencia (Módulo 3, Tema 2), SQL y
-JDBC con H2 (Módulo 4) y registro (Módulo 5, Tema 1). Los programas se ejecutan con `java Programa.java`; los que usan
+y `localhost` (Módulo 3, Tema 1), HTTP, petición, respuesta, código de estado e idempotencia (Módulo 3, Tema 2) y registro
+(Módulo 4, Tema 1); del curso SQL, SQL y JDBC (Módulo 0). Los programas se ejecutan con `java Programa.java`; los que usan
 base de datos, con `java -cp ~/herramientas/h2-2.3.232.jar Programa.java`. Comprueba `java --version` antes de empezar.
 
 
@@ -2205,7 +2205,7 @@ es que cada fallo inyectado deje el inventario correcto y deje evidencia.
 
 **Entregables:** el código de los dos procesos; un `runbook.md` con los pasos para diagnosticar «retiros lentos»
 (qué métrica mirar, cómo filtrar por `trace_id`); y un `postmortem.md` sin culpables de uno de los fallos: qué pasó,
-cómo se detectó, qué se cambió. Si ya dominas el Módulo 8, puedes empaquetar los dos procesos con Docker Compose; no
+cómo se detectó, qué se cambió. Si ya dominas los contenedores (Fundamentos, Módulo 5, Tema 4), puedes empaquetar los dos procesos con Docker Compose; no
 es obligatorio.
 
 </details>
@@ -2639,7 +2639,7 @@ Estima la carga del inventario con los supuestos actuales y decide si hace falta
 1. Lecturas pico = usuarios × consultas por usuario ÷ 86 400 s × factor de pico. Igual para escrituras con los movimientos.
 2. Almacenamiento anual = usuarios × movimientos × bytes por movimiento × 365, en GB.
 3. Utilización = carga pico ÷ capacidad medida. Umbral: 70 %.
-4. El programa termina con código 1 si hay cuello de botella, para usarlo en un script o en CI (Módulo 5).
+4. El programa termina con código 1 si hay cuello de botella, para usarlo en un script o en CI (Fundamentos, Módulo 4, Tema 4).
 5. Los supuestos van en un archivo `.properties` (pares `clave=valor`), que Java lee con `java.util.Properties` sin
    librerías externas.
 

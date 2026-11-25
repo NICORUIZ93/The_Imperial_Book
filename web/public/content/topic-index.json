@@ -792,20 +792,24 @@
     ],
     "2": [
       {
-        "title": "El borde: balanceo, proxy inverso, CDN y límites de tasa",
-        "fragment": "tema-1-el-borde-balanceo-proxy-inverso-cdn-y-limites-de-tasa"
+        "title": "El borde: proxy inverso, balanceo de carga y chequeos de salud",
+        "fragment": "tema-1-el-borde-proxy-inverso-balanceo-de-carga-y-chequeos-de-salud"
       },
       {
-        "title": "Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL",
-        "fragment": "tema-2-datos-que-crecen-indices-replicas-sharding-y-la-eleccion-sql-nosql"
+        "title": "Límites de tasa: ventana fija, cubo de fichas y la respuesta 429",
+        "fragment": "tema-2-limites-de-tasa-ventana-fija-cubo-de-fichas-y-la-respuesta-429"
       },
       {
-        "title": "CAP, consistencia e idempotencia: lo que se paga en cada decisión",
-        "fragment": "tema-3-cap-consistencia-e-idempotencia-lo-que-se-paga-en-cada-decision"
+        "title": "Caché: cache-aside, TTL, estampidas y revalidación HTTP con ETag",
+        "fragment": "tema-3-cache-cache-aside-ttl-estampidas-y-revalidacion-http-con-etag"
       },
       {
-        "title": "Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga",
-        "fragment": "tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga"
+        "title": "Particionado: clave de partición, hash consistente y consultas que cruzan particiones",
+        "fragment": "tema-4-particionado-clave-de-particion-hash-consistente-y-consultas-que-cruzan-particiones"
+      },
+      {
+        "title": "Proyecto 15: el borde del inventario",
+        "fragment": "proyecto-15-el-borde-del-inventario"
       }
     ],
     "3": [

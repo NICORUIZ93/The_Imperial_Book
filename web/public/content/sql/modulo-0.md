@@ -12,7 +12,7 @@
 - llevar una consulta SQL a un reporte de Excel.
 
 **Qué necesitas saber antes:** de Fundamentos, el Módulo 1 (variables, métodos, records, excepciones con
-`try`/`catch`), el Módulo 2 (listas, mapas y el inventario CSV del Proyecto 2) y JDBC del Módulo 4.
+`try`/`catch`), el Módulo 2 (listas, mapas y el inventario CSV del Proyecto 2) y el primer contacto con JDBC y H2 del Módulo 4, Tema 2. El curso de Java (Módulo 17) profundiza en JDBC.
 
 **Prepara el entorno una vez.** Java habla con SQLite mediante un controlador JDBC: un archivo `.jar` que se pasa en el
 *classpath*. Descarga `sqlite-jdbc-3.41.2.2.jar` desde Maven Central
