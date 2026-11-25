@@ -5,10 +5,10 @@ x86_64, con `material_ui` 1.11.1, `package_info_plus` 10.2.2, `flutter_launcher_
 `flutter_native_splash` 2.4.8, y OpenJDK con `keytool`. Todas las compilaciones de este módulo se hicieron ese día, en
 `/home/estudiante/labs/flutter/m11` (tu `~/labs/flutter/m11`): Linux en debug y release, web en release, y las
 variantes ofuscadas y por entorno. Las capturas de la app son de la **app de escritorio real**, ejecutada en una
-pantalla virtual (`xvfb`). El equipo de pruebas **no tiene el SDK de Android ni Xcode**: los archivos de Android e iOS
-(íconos, pantalla de inicio, firma) se generaron y revisaron de verdad, pero el `.aab` y el `.ipa` no se compilaron
-aquí; el módulo muestra el error real que da `flutter build appbundle` sin SDK y explica qué cambia en un equipo con
-él.
+pantalla virtual (`xvfb`). El App Bundle de Android (`.aab`) se compiló y firmó de verdad con el SDK de Android
+(plataforma 36, *build-tools* 36.0.0 y el NDK que Gradle instaló solo), y su firma se comprobó con `keytool`. El
+equipo de pruebas **no tiene Xcode**: los archivos de iOS (íconos, pantalla de inicio, nombre) se generaron y
+revisaron de verdad, pero el `.ipa` necesita una Mac.
 
 Hasta ahora la app se ejecutó con `flutter run` o en pruebas. Este módulo la convierte en algo que se entrega: un
 binario optimizado con su versión, configurado para un entorno (desarrollo o producción), con su ícono y su nombre en
@@ -1216,11 +1216,32 @@ android/.gitignore:12:key.properties	android/key.properties
 .gitignore:37:app.*.symbols	simbolos/app.linux-x64.symbols
 ```
 
-Este equipo no tiene el SDK de Android, así que la compilación del `.aab` se detiene aquí:
+El App Bundle, ofuscado y firmado:
+
+```text
+$ flutter build appbundle --release --dart-define-from-file=config/prod.json --obfuscate --split-debug-info=build/simbolos-android
+Running Gradle task 'bundleRelease'...                              4.6s
+✓ Built build/app/outputs/bundle/release/app-release.aab (44.3MB)
+```
+
+¿Con qué clave quedó firmado?
+
+```text
+$ keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab | grep -E 'Owner|SHA256:'
+Owner: CN=Envios Academia, O=Academia, C=CO
+	 SHA256: 9F:24:EC:6E:19:C4:08:6D:62:F3:E2:20:9C:6B:4B:8E:B9:C9:5B:99:B4:73:64:76:80:25:4F:17:9B:91:B4:0D
+```
+
+Y si falta `android/key.properties` (se movió a otra carpeta para probarlo):
 
 ```text
 $ flutter build appbundle --release --dart-define-from-file=config/prod.json
-[!] No Android SDK found. Try setting the ANDROID_HOME environment variable.
+* What went wrong:
+Execution failed for task ':app:validateSigningRelease' (registered by plugin 'com.android.internal.application').
+> Keystore file not set for signing config subida
+…
+BUILD FAILED in 42s
+Gradle task bundleRelease failed with exit code 1
 [código de salida: 1]
 ```
 
@@ -1382,8 +1403,13 @@ android   needs=calidad  pasos=6 si=startsWith(github.ref, 'refs/tags/v')
   compilación de release falla en lugar de firmar con la clave de depuración.
 - `git check-ignore` confirma que `key.properties` (regla del `.gitignore` de Android) y los símbolos (regla
   `app.*.symbols`) no se suben; `lib/config.dart` no aparece porque sí se sube.
-- Sin SDK, `flutter build appbundle` se niega antes de empezar. En un equipo con el SDK de Android, la misma orden
-  produce `build/app/outputs/bundle/release/app-release.aab` firmado con la clave de subida.
+- El `.aab` pesa 44,3 MB porque lleva el código para tres arquitecturas (arm, arm64 y x64); Google Play genera para
+  cada teléfono un APK con solo la suya. Los símbolos quedaron aparte, uno por arquitectura
+  (`app.android-arm64.symbols`, etc.).
+- `keytool -printcert -jarfile` muestra que el `.aab` está firmado por `CN=Envios Academia` con la huella
+  `9F:24:EC:…:B4:0D`: la misma de la clave de subida.
+- Sin `key.properties`, Gradle se detiene en `validateSigningRelease` con `Keystore file not set for signing config
+  subida`: no hay forma de que una release salga firmada con la clave de depuración.
 - El CI con el archivo mal formateado se detuvo en el primer paso, en menos de un segundo, con código 1: no gastó
   minutos compilando algo que no se iba a aceptar. En verde, recorrió los cinco pasos y terminó con el commit
   evaluado (`7379a8f`).
@@ -1442,7 +1468,8 @@ Convierte la clave a base64 (`base64 -w0 ~/claves/ruta-subida.jks`) y crea en Gi
 #### Ejercicio verificable 1
 Básico. ¿Qué algoritmo y tamaño tiene la clave, y hasta cuándo es válida?
 
-Respuesta esperada: RSA de 2048 bits, firmada con SHA384withRSA, válida hasta el 12 de abril de 2054.
+Respuesta esperada: RSA de 2048 bits, firmada con SHA384withRSA, válida hasta el 12 de abril de 2054; es la misma
+huella que muestra `keytool -printcert -jarfile` sobre el `.aab`.
 
 #### Ejercicio verificable 2
 Intermedio. ¿En qué paso se detuvo `ci.sh` con el archivo mal formateado y con qué código?

@@ -1053,81 +1053,59 @@
    "id": "14",
    "kind": "current",
    "title": null,
-   "topicCount": 7,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Diseño de pantallas y Riverpod",
+     "title": "El mapa con `flutter_map`: teselas, capas y atribución",
      "status": "actual",
      "current": {
       "module": "14",
       "order": 1,
-      "fragment": "tema-1-diseno-de-pantallas-y-riverpod"
+      "fragment": "tema-1-el-mapa-con-flutter-map-teselas-capas-y-atribucion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Google Maps y localización en tiempo real",
+     "title": "Geometría y lecturas de GPS: distancia, ruido, llegada y tiempo estimado",
      "status": "actual",
      "current": {
       "module": "14",
       "order": 2,
-      "fragment": "tema-2-google-maps-y-localizacion-en-tiempo-real"
+      "fragment": "tema-2-geometria-y-lecturas-de-gps-distancia-ruido-llegada-y-tiempo-estimado"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Animaciones de localización",
+     "title": "Tiempo real con WebSocket: reconexión, espera creciente y reanudación",
      "status": "actual",
      "current": {
       "module": "14",
       "order": 3,
-      "fragment": "tema-3-animaciones-de-localizacion"
+      "fragment": "tema-3-tiempo-real-con-websocket-reconexion-espera-creciente-y-reanudacion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Socket.IO y actualización de rutas",
+     "title": "La pantalla de seguimiento: todo junto, en la app real",
      "status": "actual",
      "current": {
       "module": "14",
       "order": 4,
-      "fragment": "tema-4-socket-io-y-actualizacion-de-rutas"
+      "fragment": "tema-4-la-pantalla-de-seguimiento-todo-junto-en-la-app-real"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Almacenamiento local, imágenes y offline",
+     "title": "Proyecto 31: el seguimiento en vivo de un envío",
      "status": "actual",
      "current": {
       "module": "14",
       "order": 5,
-      "fragment": "tema-5-almacenamiento-local-imagenes-y-offline"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Dio y notificaciones push",
-     "status": "actual",
-     "current": {
-      "module": "14",
-      "order": 6,
-      "fragment": "tema-6-dio-y-notificaciones-push"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Cálculo de rutas propio con OSRM en Docker",
-     "status": "actual",
-     "current": {
-      "module": "14",
-      "order": 7,
-      "fragment": "tema-7-calculo-de-rutas-propio-con-osrm-en-docker"
+      "fragment": "proyecto-31-el-seguimiento-en-vivo-de-un-envio"
      },
      "sources": [],
      "courseSources": []

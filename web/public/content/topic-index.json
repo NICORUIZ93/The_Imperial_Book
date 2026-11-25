@@ -2670,32 +2670,24 @@
     ],
     "14": [
       {
-        "title": "Diseño de pantallas y Riverpod",
-        "fragment": "tema-1-diseno-de-pantallas-y-riverpod"
+        "title": "El mapa con `flutter_map`: teselas, capas y atribución",
+        "fragment": "tema-1-el-mapa-con-flutter-map-teselas-capas-y-atribucion"
       },
       {
-        "title": "Google Maps y localización en tiempo real",
-        "fragment": "tema-2-google-maps-y-localizacion-en-tiempo-real"
+        "title": "Geometría y lecturas de GPS: distancia, ruido, llegada y tiempo estimado",
+        "fragment": "tema-2-geometria-y-lecturas-de-gps-distancia-ruido-llegada-y-tiempo-estimado"
       },
       {
-        "title": "Animaciones de localización",
-        "fragment": "tema-3-animaciones-de-localizacion"
+        "title": "Tiempo real con WebSocket: reconexión, espera creciente y reanudación",
+        "fragment": "tema-3-tiempo-real-con-websocket-reconexion-espera-creciente-y-reanudacion"
       },
       {
-        "title": "Socket.IO y actualización de rutas",
-        "fragment": "tema-4-socket-io-y-actualizacion-de-rutas"
+        "title": "La pantalla de seguimiento: todo junto, en la app real",
+        "fragment": "tema-4-la-pantalla-de-seguimiento-todo-junto-en-la-app-real"
       },
       {
-        "title": "Almacenamiento local, imágenes y offline",
-        "fragment": "tema-5-almacenamiento-local-imagenes-y-offline"
-      },
-      {
-        "title": "Dio y notificaciones push",
-        "fragment": "tema-6-dio-y-notificaciones-push"
-      },
-      {
-        "title": "Cálculo de rutas propio con OSRM en Docker",
-        "fragment": "tema-7-calculo-de-rutas-propio-con-osrm-en-docker"
+        "title": "Proyecto 31: el seguimiento en vivo de un envío",
+        "fragment": "proyecto-31-el-seguimiento-en-vivo-de-un-envio"
       }
     ],
     "15": [

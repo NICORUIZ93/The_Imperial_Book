@@ -1,485 +1,1505 @@
-# Módulo 14: Flutter para entregas: mapas, GPS y tiempo real
+# Módulo 14: Mapas, ubicación y tiempo real
 
+**Entorno comprobado para esta edición (2026-11-24):** Flutter 3.50.1 (canal estable) con Dart 3.14.0 en Linux
+x86_64, con `material_ui` 1.11.1, `flutter_map` 8.3.2, `latlong2` 0.10.1, `web_socket_channel` 3.0.3 y `meta`
+1.19.0. Todo el código se analizó con `flutter analyze` (`No issues found!`) y las pruebas se ejecutaron ese día, en
+`/home/estudiante/labs/flutter/m14` (tu `~/labs/flutter/m14`). Las capturas del mapa son de la **app de escritorio
+real** en release, con teselas de OpenStreetMap descargadas en ese momento, siguiendo un recorrido que envía un
+servidor WebSocket local. El GPS no es real: el equipo de pruebas no tiene receptor, así que las lecturas vienen de un
+recorrido de prueba por Chapinero (Bogotá) con errores puestos a propósito. En un teléfono, esas lecturas las daría un
+paquete como `geolocator`; todo lo demás (filtro, geocerca, tiempo estimado, canal en tiempo real, mapa) es igual.
 
-## Antes de escribir código: vertical y estructura de carpetas
+Seguir un envío es lo que más mira la persona que lo espera: un mapa, un punto que se mueve, «llega en 4 min». Detrás
+hay tres problemas distintos: dibujar el mapa, entender lecturas de GPS que mienten, y recibir posiciones por una red
+que se corta. Este módulo los resuelve por separado y después los une en una pantalla.
 
-Construirás una vertical pequeña, no un clon completo de una marca: el conductor inicia una jornada, comparte posiciones aceptables, recibe una ruta y confirma una entrega aun si pierde conexión. Parte de un proyecto nuevo con `flutter create demo_driver`, agrega únicamente los paquetes del incremento que estés implementando y conserva las claves de mapas fuera del repositorio.
+**Al terminar este módulo podrás:**
+- dibujar un mapa con teselas, ruta, zona y marcadores, respetando la atribución y la política del proveedor;
+- calcular distancias, descartar lecturas de GPS imposibles, detectar llegadas sin parpadeos y estimar el tiempo;
+- recibir posiciones por WebSocket con reconexión, espera creciente y reanudación sin perder ni repetir;
+- unir todo en una pantalla de seguimiento y comprobarla con la app real.
+
+**Esquema del módulo:** Tema 1 (el mapa con `flutter_map`) → Tema 2 (geometría y lecturas de GPS) → Tema 3 (tiempo
+real con WebSocket) → Tema 4 (la pantalla de seguimiento) → Proyecto 31.
+
+**Qué necesitas saber antes:** el Módulo 12 (capas y pruebas por capa); del Módulo 5, **errores de red y
+reintentos** (Tema 3); del Módulo 0, **`Stream`, `Timer` y `StreamController`** (Tema 8); del Módulo 11, **la app de
+escritorio en pantalla virtual**.
+
+**Qué no se repite:** las peticiones HTTP y la copia local (Módulos 5 y 12). Aquí la información llega empujada por
+el servidor, segundo a segundo.
+
+**Prepara el proyecto:**
+
+```text
+$ cd ~/labs/flutter
+$ flutter create --org com.academia --platforms=linux,web m14
+$ cd m14
+$ flutter pub add flutter_map latlong2 web_socket_channel meta
+```
+
+Agrega `formatter: page_width: 120` a `analysis_options.yaml`, copia `correr_app.sh` del Módulo 11 y pon la ventana
+de Linux en 420 × 640 (`gtk_window_set_default_size` en `linux/runner/my_application.cc`).
+
+La estructura:
 
 ```text
 lib/
-  features/journey/
-    domain/position_sample.dart
-    domain/journey_repository.dart
-    application/observe_driver_position.dart
-    data/geolocator_position_source.dart
-    data/socket_journey_gateway.dart
-    presentation/journey_controller.dart
-    presentation/journey_map_page.dart
-  shared/
-    network/dio_client.dart
-    storage/local_database.dart
-test/features/journey/
-  position_sample_test.dart
-  journey_controller_test.dart
+├── geo/geo.dart                       distancias, filtro, geocerca, tiempo estimado (Dart puro)
+├── geo/recorrido_demo.dart            el recorrido de prueba
+├── tiempo_real/canal_posiciones.dart  cliente WebSocket con reconexión
+├── tiempo_real/servidor_posiciones.dart
+├── ui/mapa_ruta.dart                  el mapa
+├── ui/seguimiento_vista.dart          la pantalla que lo une todo
+└── main.dart
+bin/servidor_posiciones.dart           servidor para la app real
 ```
 
-La dirección de dependencias es `presentation → application → domain`; `data` implementa interfaces del dominio. Google Maps, Geolocator, Dio y Socket.IO son adaptadores reemplazables, no tipos que deban atravesar toda la aplicación. Ejecuta después de cada incremento con `flutter analyze` y `flutter test`; prueba permisos y ejecución en segundo plano en dispositivo real porque el simulador no reproduce todas las restricciones del sistema operativo.
 
 ## Aprende construyendo
 
 
-### Tema 1: Diseño de pantallas y Riverpod · Intermedio · 35 min
+### Tema 1: El mapa con `flutter_map`: teselas, capas y atribución · Intermedio · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a modelar el estado de una jornada de entrega como un sealed class JourneyState observado con Riverpod, evitando las combinaciones imposibles que producen varios booleanos sueltos. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutte…
+#### Objetivos
+Al terminar este tema podrás:
+- explicar qué son las teselas y cómo un mapa se arma con capas;
+- dibujar la ruta, la zona de llegada y los marcadores con `flutter_map`;
+- encuadrar el mapa en la ruta con `CameraFit` dejando sitio a los marcadores;
+- cumplir la política de uso y la atribución del proveedor de teselas.
 
-#### ► LA ANALOGÍA
-Riverpod es la central de despacho que distribuye un estado único y observable; un estado cerrado (`sealed class`) obliga a un `switch` exhaustivo en la vista, que nunca puede olvidar visualmente un caso como el offline.
+**Conceptos clave:** tesela, capa, `CameraFit`, marcador, atribución
 
-**Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
+#### El problema
+La pantalla de seguimiento necesita un mapa que funcione en Android, iOS, web y escritorio, sin una clave de API para
+empezar. El primer intento centra el mapa en el origen con un zoom fijo: en una ruta larga, el destino queda fuera; en
+una corta, todo se ve diminuto. Y el pin del destino sale cortado contra el borde.
 
-La jornada se diseña desde tareas reales: iniciar turno, aceptar ruta, navegar a una parada, escanear, capturar evidencia y confirmar. La pantalla no debería deducir reglas a partir de varios booleanos independientes (`isLoading`, `hasError`, `isOffline`), porque combinaciones imposibles terminan apareciendo. Modela un estado cerrado que indique exactamente qué puede mostrar y qué acción es válida.
+Este tema usa **`Stack` y capas de widgets** (Módulo 1), **los colores del tema** (Módulo 10, Tema 1) y **la app de
+escritorio** (Módulo 11).
 
-```dart
-sealed class JourneyState {
-  const JourneyState();
-}
-final class JourneyIdle extends JourneyState { const JourneyIdle(); }
-final class JourneyLoading extends JourneyState { const JourneyLoading(); }
-final class JourneyReady extends JourneyState {
-  const JourneyReady(this.viewModel);
-  final JourneyViewModel viewModel;
-}
-final class JourneyOffline extends JourneyState {
-  const JourneyOffline(this.pendingCommands);
-  final int pendingCommands;
-}
-final class JourneyFailure extends JourneyState {
-  const JourneyFailure(this.message, {required this.canRetry});
-  final String message;
-  final bool canRetry;
-}
-```
+#### Glosario del tema
 
-`JourneyController` coordina casos de uso y emite estos estados; no importa widgets, `BuildContext`, Dio ni SQLite. La vista usa un `switch` exhaustivo para renderizar progreso, mapa, cola pendiente o recuperación. Esto permite probar el flujo sin inicializar plugins móviles y hace imposible olvidar visualmente el estado offline.
+**tesela**
+- **Definición técnica:** imagen cuadrada de 256 × 256 píxeles que cubre una parte del mundo en un nivel de zoom `z`, con coordenadas `x`, `y`; el mapa pide las que se ven con una plantilla como `https://tile.openstreetmap.org/{z}/{x}/{y}.png`.
+- **En palabras sencillas:** las baldosas con que se arma el piso del mapa.
+- **Dónde se rompe la comparación:** cada nivel de zoom tiene cuatro veces más teselas que el anterior; por eso se descargan solo las visibles.
+- **Ejemplo:** la captura del tema pidió unas 20 teselas de Bogotá.
+- **Error típico:** usar el servidor de teselas de OpenStreetMap para una app con mucho tráfico: su política lo prohíbe; hay que usar un proveedor comercial o propio.
 
-**Analogía:** Es como un tablero de una sola aguja: en lugar de encender y apagar tres luces que pueden contradecirse, un indicador único dice «en ruta», «sin señal» o «fallo», y no admite dos a la vez.
+**capa**
+- **Definición técnica:** cada hijo de `FlutterMap` (`TileLayer`, `PolylineLayer`, `CircleLayer`, `MarkerLayer`, la atribución) se dibuja encima del anterior, con las mismas coordenadas geográficas.
+- **En palabras sencillas:** hojas transparentes apiladas sobre el plano.
+- **Dónde se rompe la comparación:** el orden importa: lo último queda encima y recibe los toques primero.
+- **Ejemplo:** la ruta va encima de las teselas y los marcadores encima de todo.
+- **Error típico:** poner los marcadores antes de la ruta y que la línea los tape.
 
-**¿Por qué es importante?** Porque una aplicación logística funciona en movimiento, con mala red, concurrencia y datos sensibles. La corrección debe sobrevivir fuera de una demostración local.
+**`CameraFit`**
+- **Definición técnica:** calcula el centro y el zoom para que un conjunto de coordenadas quepa en el mapa, con un margen (`padding`) en píxeles.
+- **En palabras sencillas:** «muéstrame todo esto, con aire alrededor».
+- **Dónde se rompe la comparación:** encuadra puntos, no el dibujo de los marcadores: un pin de 36 px sobre el destino puede quedar cortado si el margen es pequeño.
+- **Ejemplo:** `CameraFit.coordinates(coordinates: ruta, padding: EdgeInsets.fromLTRB(40, 70, 40, 40))`.
+- **Error típico:** un zoom fijo para rutas de cualquier tamaño.
 
-**Casos de uso reales:** una jornada que pasa de «sin conexión» a «reintentando» sin mostrar a la vez error y carga; un operador que ve la cola pendiente y el botón de reintento solo cuando corresponde; una prueba del controlador sin emulador.
+**marcador**
+- **Definición técnica:** widget de Flutter puesto en una coordenada (`Marker(point:, child:)`), con un tamaño y una alineación respecto al punto.
+- **En palabras sencillas:** una chincheta, que puede ser cualquier widget.
+- **Dónde se rompe la comparación:** por defecto se centra en el punto; un pin debe tener la punta en el punto (`alignment: Alignment.topCenter`).
+- **Ejemplo:** el camión del repartidor es un `Container` circular con un ícono.
+- **Error típico:** miles de marcadores con widgets pesados: el mapa se vuelve lento.
 
-**Diagrama: cómo leer la dependencia:** la UI solicita una acción al controlador; el caso de uso aplica la regla; el repositorio decide entre adaptadores sin que el dominio conozca plugins.
-
-```mermaid
-flowchart LR
-  UI[JourneyMapPage] --> C[JourneyController]
-  C --> U[ObserveDriverPosition]
-  U --> R[JourneyRepository]
-  R -.implementado por.-> G[Geolocator adapter]
-  R -.implementado por.-> S[Socket/HTTP adapter]
-  C --> ST[JourneyState cerrado]
-  ST --> UI
-```
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Expón carga, error y ruta disponible desde el provider de entregas. Cambia de pantalla durante una consulta y verifica que el estado anterior no contamina la ruta recién seleccionada.
+**atribución**
+- **Definición técnica:** el crédito obligatorio a los autores de los datos del mapa, visible sobre el mapa; en OpenStreetMap, «© OpenStreetMap contributors», por su licencia ODbL.
+- **En palabras sencillas:** la firma de quienes dibujaron el mapa.
+- **Dónde se rompe la comparación:** no es decoración: quitarla incumple la licencia.
+- **Ejemplo:** `SimpleAttributionWidget(source: Text('OpenStreetMap contributors'))`.
+- **Error típico:** taparla con un panel inferior.
 
 #### ► CÓMO FUNCIONA
+`FlutterMap` convierte cada coordenada a píxeles según la cámara. `TileLayer` pide las teselas visibles; las demás
+capas dibujan sobre ellas. `initialCameraFit` decide la cámara inicial a partir de la ruta.
+
 ```mermaid
-flowchart LR
-  UI[JourneyMapPage] --> C[JourneyController]
-  C --> U[ObserveDriverPosition]
-  U --> R[JourneyRepository]
-  R -.implementado por.-> G[Geolocator adapter]
-  R -.implementado por.-> S[Socket/HTTP adapter]
-  C --> ST[JourneyState cerrado]
-  ST --> UI
+flowchart TB
+    C["MapOptions.initialCameraFit<br/>(ruta + margen)"] --> M["FlutterMap"]
+    M --> T["TileLayer: pide {z}/{x}/{y}.png"]
+    M --> P["PolylineLayer: plan y recorrido"]
+    M --> Z["CircleLayer: geocerca de 50 m"]
+    M --> K["MarkerLayer: origen, destino, repartidor"]
+    M --> A["SimpleAttributionWidget"]
 ```
+
+#### Problema resuelto 1.1
+Dibuja el mapa de la ruta: el plan en color tenue, lo recorrido en color fuerte, una zona de 50 m alrededor del
+destino, los marcadores y la atribución, encuadrado para que todo se vea.
+
+**Razonamiento:**
+1. Las teselas son de OpenStreetMap, con `userAgentPackageName`, que su política exige para identificar la app.
+2. Dos polilíneas: el plan con transparencia y lo recorrido encima.
+3. La zona usa `useRadiusInMeter: true`; sin eso, el radio serían 50 píxeles a cualquier zoom.
+4. El pin del destino tiene `alignment: Alignment.topCenter` para que su punta quede en el punto.
+5. El margen superior es mayor (70) porque el pin se dibuja hacia arriba.
+
+```dart
+// lib/ui/mapa_ruta.dart — el mapa: teselas de OpenStreetMap, la ruta, la geocerca y los marcadores
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:material_ui/material_ui.dart';
+
+class MapaRuta extends StatelessWidget {
+  const MapaRuta({super.key, required this.ruta, required this.recorrido, required this.destino, this.repartidor});
+  final List<LatLng> ruta; // la ruta planeada
+  final List<LatLng> recorrido; // lo que ya recorrió (lecturas buenas)
+  final LatLng destino;
+  final LatLng? repartidor;
+
+  @override
+  Widget build(BuildContext context) {
+    final esquema = Theme.of(context).colorScheme;
+    return FlutterMap(
+      options: MapOptions(
+        initialCameraFit: CameraFit.coordinates(coordinates: ruta, padding: const EdgeInsets.fromLTRB(40, 70, 40, 40)),
+        interactionOptions: const InteractionOptions(flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.academia.m14', // la política de OSM exige identificarse
+        ),
+        PolylineLayer(
+          polylines: [
+            Polyline(points: ruta, strokeWidth: 5, color: esquema.primary.withValues(alpha: 0.35)),
+            Polyline(points: recorrido, strokeWidth: 5, color: esquema.primary),
+          ],
+        ),
+        CircleLayer(
+          circles: [
+            CircleMarker(
+              point: destino,
+              radius: 50,
+              useRadiusInMeter: true, // 50 m reales, no 50 píxeles
+              color: esquema.tertiary.withValues(alpha: 0.2),
+              borderColor: esquema.tertiary,
+              borderStrokeWidth: 2,
+            ),
+          ],
+        ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              point: ruta.first,
+              child: Icon(Icons.trip_origin, color: esquema.primary),
+            ),
+            Marker(
+              point: destino,
+              width: 36,
+              height: 36,
+              alignment: Alignment.topCenter, // la punta del pin en el punto
+              child: Icon(Icons.location_on, color: esquema.tertiary, size: 36),
+            ),
+            if (repartidor != null)
+              Marker(
+                point: repartidor!,
+                width: 34,
+                height: 34,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: esquema.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                  child: const Icon(Icons.local_shipping, color: Colors.white, size: 16),
+                ),
+              ),
+          ],
+        ),
+        const SimpleAttributionWidget(source: Text('OpenStreetMap contributors')),
+      ],
+    );
+  }
+}
+```
+
+![La app real a los 3 segundos: el mapa de OpenStreetMap de Chapinero, de la calle 45 a la 93, con la ruta planeada como una línea azul tenue que sube hacia el nordeste, el tramo ya recorrido en azul fuerte desde el origen, el camión del repartidor sobre la ruta, el pin morado del destino arriba con margen suficiente, y abajo la atribución «flutter_map | © OpenStreetMap contributors» y el panel «EN-4472 · en camino, 4.3 km · llega en ~9 min», «En vivo»](content/figures/flutter/m14-t1-mapa.png)
+
+**Explicación por partes.**
+- El encuadre muestra la ruta completa, de la calle 45 a la 93, sin elegir zoom a mano. Con `padding: all(40)`, en
+  una primera versión, el pin del destino quedaba pegado al borde superior; con 70 arriba se ve completo.
+- El tramo recorrido es corto porque la captura se tomó a los 3 segundos; el resto de la ruta se ve tenue.
+- La zona de 50 m existe, pero a este zoom mide unos pocos píxeles bajo el pin: es la escala real. Se ve al acercar
+  el mapa, y por eso tiene sentido el `pinchZoom`.
+- La ruta es una línea recta entre tres puntos (calle 45, calle 72 y calle 93): el recorrido de prueba se generó así.
+  Un GPS real sigue las calles, y una ruta planeada real vendría de un servicio de rutas.
+- La atribución quedó visible sobre el mapa y encima del panel, como exige la licencia.
+
+> **Error común.** Usar el servidor público de teselas de OpenStreetMap en una app de producción con muchas personas
+> usuarias. Su política lo prohíbe y puede bloquear la app. En producción se contrata un proveedor de teselas o se
+> sirven las propias; el código solo cambia la `urlTemplate`.
+
+> **Error común.** Dibujar la zona de llegada con un radio en píxeles. A zoom bajo cubre kilómetros; a zoom alto, un
+> poste. Usa `useRadiusInMeter: true`.
+
+> **Buena práctica.** Encuadra con `CameraFit` y un margen pensado para los marcadores. Revisa la captura: lo que se
+> corta en el borde no se ve en las pruebas de lógica.
+
+> **Prevenir errores.** Agrega la atribución desde el primer día y comprueba en cada captura que ningún panel la tape.
+
+#### Checkpoint 1.1
+¿Qué cambia en el código para usar Mapbox, Stadia o un servidor de teselas propio en lugar de OpenStreetMap?
+
+Respuesta: la `urlTemplate` (con la clave del proveedor si la pide, que no debe ir en el binario sin restricciones,
+Módulo 11) y el texto de la atribución que exija ese proveedor. Las demás capas no cambian.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```dart
-sealed class JourneyState {
-  const JourneyState();
-}
-final class JourneyIdle extends JourneyState { const JourneyIdle(); }
-final class JourneyLoading extends JourneyState { const JourneyLoading(); }
-final class JourneyReady extends JourneyState {
-  const JourneyReady(this.viewModel);
-  final JourneyViewModel viewModel;
-}
-final class JourneyOffline extends JourneyState {
-  const JourneyOffline(this.pendingCommands);
-  final int pendingCommands;
-}
-final class JourneyFailure extends JourneyState {
-  const JourneyFailure(this.message, {required this.canRetry});
-  final String message;
-  final bool canRetry;
-}
-```
+#### Paso 1 · Crea el mapa
+Crea `lib/ui/mapa_ruta.dart` y una pantalla mínima que lo muestre con `rutaPlaneada` y `destino` (Tema 2).
 
-```mermaid
-flowchart LR
-  UI[JourneyMapPage] --> C[JourneyController]
-  C --> U[ObserveDriverPosition]
-  U --> R[JourneyRepository]
-  R -.implementado por.-> G[Geolocator adapter]
-  R -.implementado por.-> S[Socket/HTTP adapter]
-  C --> ST[JourneyState cerrado]
-  ST --> UI
-```
+#### Paso 2 · Ejecuta
+Ejecuta `flutter run -d linux`. Arrastra y acerca el mapa: ¿cuándo empieza a verse la zona de 50 m?
 
-```bash
-flutter create ejemplo
-```
+#### Paso 3 · Quita el margen
+Cambia el `padding` a `EdgeInsets.all(8)` y compara el pin del destino.
 
-```bash
-flutter create ejemplo_riverpod
-flutter analyze
-```
+#### Paso 4 · Radio en píxeles
+Quita `useRadiusInMeter` y acerca y aleja el mapa. ¿Qué pasa con la zona?
+
+#### Paso 5 · Otra capa
+Agrega una `PolygonLayer` con la zona de cobertura de la empresa (un polígono de cuatro esquinas en Chapinero) por
+debajo de la ruta.
+
+#### Resumen
+- El mapa se arma con **teselas** y **capas** apiladas.
+- **`CameraFit`** encuadra la ruta; el margen debe dejar sitio a los **marcadores**.
+- Las distancias del mapa se dibujan en metros reales.
+- La **atribución** es obligatoria y visible.
+
+#### Ejercicio verificable 1
+Básico. ¿Qué parámetro de `TileLayer` exige la política de OpenStreetMap?
+
+Respuesta esperada: `userAgentPackageName` (que identifica la app en cada petición).
+
+#### Ejercicio verificable 2
+Intermedio. En el Paso 4, ¿qué pasa con la zona al alejar el mapa?
+
+Respuesta esperada: mantiene 50 píxeles de radio, así que cubre cada vez más terreno; con `useRadiusInMeter` cubre
+siempre 50 m y se ve más pequeña al alejar.
+
+#### Ejercicio verificable 3
+Reto. ¿Por qué el margen superior es mayor que los demás?
+
+Respuesta esperada: porque `CameraFit` encuadra los puntos, y el pin del destino se dibuja 36 px hacia arriba de su
+punto (`alignment: Alignment.topCenter`); con un margen pequeño, el pin se sale del mapa.
+
+#### En el trabajo
+Las apps de logística y movilidad eligen el proveedor de mapas por costo, cobertura y condiciones de uso, y lo
+esconden detrás de un widget propio como `MapaRuta` para poder cambiarlo. Google Maps (`google_maps_flutter`) solo
+funciona en Android, iOS y web, y exige claves restringidas por app.
 
 </details>
 
-### Tema 2: Google Maps y localización en tiempo real · Intermedio · 40 min
+### Tema 2: Geometría y lecturas de GPS: distancia, ruido, llegada y tiempo estimado · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a convertir una Position cruda del plugin de geolocalización en un PositionSample de dominio que rechaza coordenadas imposibles, muestras viejas o imprecisas. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutter doctor.
+#### Objetivos
+Al terminar este tema podrás:
+- calcular distancias entre coordenadas con la fórmula de haversine y saber cuánto se equivoca;
+- descartar lecturas de GPS imprecisas o imposibles;
+- detectar la llegada a un destino con una geocerca con histéresis;
+- estimar el tiempo de llegada con la velocidad reciente.
+
+**Conceptos clave:** haversine, precisión de la lectura, filtro de saltos, geocerca con histéresis, tiempo estimado
+de llegada
+
+#### El problema
+El repartidor reporta posiciones cada 5 segundos. Algunas vienen con un radio de error de 120 m (debajo de un puente),
+una lo pone 2 km atrás durante un instante, y al llegar, entre edificios, el GPS oscila entre 45 y 60 m del destino.
+La app marcaba «Llegó» y «En camino» varias veces seguidas, y el mapa dibujaba un rayo hacia el salto.
+
+Este tema usa **las listas y los records** (Módulo 0), **la inyección del reloj y los datos de prueba** (Módulo 12)
+y **las pruebas unitarias** (Módulo 9, Tema 1).
+
+#### Glosario del tema
+
+**haversine**
+- **Definición técnica:** fórmula de la distancia sobre una esfera a partir de latitudes y longitudes: `2R·asin(√(sin²(Δφ/2) + cos φ1·cos φ2·sin²(Δλ/2)))`, con `R` = 6 371 km.
+- **En palabras sencillas:** la distancia en línea recta, siguiendo la curva de la Tierra.
+- **Dónde se rompe la comparación:** la Tierra no es una esfera perfecta; la fórmula de Vincenty, sobre el elipsoide, es más exacta (y más lenta).
+- **Ejemplo:** origen → destino: 5 256 m con haversine y 5 231 m con `latlong2` (Vincenty).
+- **Error típico:** restar grados como si fueran metros.
+
+**precisión de la lectura**
+- **Definición técnica:** el radio, en metros, dentro del cual el sistema estima que está la posición real con cierta confianza; Android e iOS la entregan con cada lectura.
+- **En palabras sencillas:** «estoy por aquí, más o menos tantos metros».
+- **Dónde se rompe la comparación:** es una estimación del propio GPS; una lectura con precisión buena también puede estar mal.
+- **Ejemplo:** la lectura 45 trae 120 m y se descarta.
+- **Error típico:** usar todas las lecturas sin mirar la precisión.
+
+**filtro de saltos**
+- **Definición técnica:** descartar una lectura si, para llegar a ella desde la última buena, habría que ir más rápido de lo posible (aquí, 40 m/s = 144 km/h).
+- **En palabras sencillas:** «una moto no se teletransporta».
+- **Dónde se rompe la comparación:** compara con la última **buena**; si la primera es mala, todas las siguientes parecen saltos.
+- **Ejemplo:** la lectura 30 implicaba 1 441 km/h.
+- **Error típico:** comparar con la lectura anterior aunque esa también fuera mala.
+
+**geocerca con histéresis**
+- **Definición técnica:** zona circular con dos umbrales: se entra al bajar de `radio` y se sale solo al superar `radio × factor` (aquí 50 m y 75 m), para no cambiar de estado con el ruido.
+- **En palabras sencillas:** una puerta que se abre fácil pero hay que alejarse de verdad para cerrarla.
+- **Dónde se rompe la comparación:** un factor muy grande tarda en detectar salidas reales.
+- **Ejemplo:** sin histéresis, 5 cambios en la llegada; con factor 1,5, uno.
+- **Error típico:** un solo umbral: la app avisa «llegó» y «se fue» varias veces en un minuto.
+
+**tiempo estimado de llegada**
+- **Definición técnica:** distancia restante dividida por la velocidad media de las últimas lecturas buenas; si no hay movimiento, no se estima.
+- **En palabras sencillas:** «a este ritmo, llegas en…».
+- **Dónde se rompe la comparación:** usa la línea recta hasta el destino; por calles, el camino es más largo.
+- **Ejemplo:** a 1 189 m, estimado 150 s, real 145 s.
+- **Error típico:** dividir por la velocidad instantánea: con un semáforo, la estimación salta a infinito.
 
 #### ► CÓMO FUNCIONA
+Las lecturas pasan por el filtro; las buenas alimentan la geocerca, el tiempo estimado y la línea del mapa. Todo es
+Dart puro: corre en pruebas, en el servidor y en la app.
+
 ```mermaid
 flowchart LR
-  P[Position del plugin] --> V{coordenadas válidas?}
-  V -->|no| X[descartar + métrica]
-  V -->|sí| T{edad menor a 20 s?}
-  T -->|no| X
-  T -->|sí| A{precisión menor a 50 m?}
-  A -->|no| AP[mostrar aproximación]
-  A -->|sí| OK[aceptar, persistir y publicar]
+    L["lecturas crudas<br/>(posición, hora, precisión)"] --> F{"precisión ≤ 50 m<br/>y velocidad ≤ 144 km/h?"}
+    F -->|no| D["descartadas (con motivo)"]
+    F -->|sí| B["lecturas buenas"]
+    B --> G["geocerca 50 m / 75 m"]
+    B --> E["tiempo estimado"]
+    B --> M["línea del recorrido"]
 ```
+
+#### Problema resuelto 2.1
+Implementa la distancia, el filtro, la geocerca y el tiempo estimado, y pruébalos con el recorrido de prueba: 138
+lecturas por Chapinero, con un salto de 2 km, dos lecturas imprecisas y una llegada que oscila.
+
+**Razonamiento:**
+1. La capa `geo` no importa Flutter (usa `package:meta` para `@immutable`): así la usan también el servidor con
+   `dart run` y las pruebas.
+2. El recorrido se genera a 8 m/s (40 m cada 5 s) entre tres puntos, y después se le meten los errores en posiciones
+   fijas.
+3. La geocerca se prueba con factor 1,0 (sin histéresis) y 1,5.
+4. El tiempo estimado se compara con el momento en que, de verdad, el recorrido entra a 50 m del destino.
+
+```dart
+// lib/geo/geo.dart — distancias, filtro de lecturas malas, geocerca con histéresis y tiempo estimado
+import 'dart:math' as math;
+
+import 'package:meta/meta.dart'; // no Flutter: también corre con dart run
+import 'package:latlong2/latlong.dart';
+
+const radioTierra = 6371000.0; // metros
+
+/// Distancia sobre la esfera (haversine), en metros.
+double distanciaMetros(LatLng a, LatLng b) {
+  double rad(double g) => g * math.pi / 180;
+  final dLat = rad(b.latitude - a.latitude), dLon = rad(b.longitude - a.longitude);
+  final h =
+      math.pow(math.sin(dLat / 2), 2) +
+      math.cos(rad(a.latitude)) * math.cos(rad(b.latitude)) * math.pow(math.sin(dLon / 2), 2);
+  return 2 * radioTierra * math.asin(math.sqrt(h));
+}
+
+@immutable
+class Lectura {
+  const Lectura(this.posicion, this.cuando, {this.precisionMetros = 8});
+  final LatLng posicion;
+  final DateTime cuando;
+  final double precisionMetros; // radio de error que informa el GPS
+}
+
+/// Descarta lecturas imprecisas y saltos imposibles (más rápido que [maxMetrosPorSegundo] desde la última buena).
+({List<Lectura> buenas, List<String> descartadas}) filtrarRuido(
+  List<Lectura> lecturas, {
+  double maxPrecision = 50,
+  double maxMetrosPorSegundo = 40, // 144 km/h
+}) {
+  final buenas = <Lectura>[];
+  final descartadas = <String>[];
+  for (final (i, l) in lecturas.indexed) {
+    if (l.precisionMetros > maxPrecision) {
+      descartadas.add('#$i: precisión ${l.precisionMetros.round()} m');
+      continue;
+    }
+    if (buenas.isNotEmpty) {
+      final anterior = buenas.last;
+      final segundos = l.cuando.difference(anterior.cuando).inMilliseconds / 1000;
+      final velocidad = distanciaMetros(anterior.posicion, l.posicion) / segundos;
+      if (velocidad > maxMetrosPorSegundo) {
+        descartadas.add('#$i: salto a ${(velocidad * 3.6).round()} km/h');
+        continue;
+      }
+    }
+    buenas.add(l);
+  }
+  return (buenas: buenas, descartadas: descartadas);
+}
+
+enum CambioGeocerca { entro, salio }
+
+/// Una zona circular con histéresis: entra a menos de [radio] y sale solo a más de [radio] × [factorSalida].
+class Geocerca {
+  Geocerca(this.centro, this.radio, {this.factorSalida = 1.5});
+  final LatLng centro;
+  final double radio;
+  final double factorSalida;
+  bool _dentro = false;
+
+  bool get dentro => _dentro;
+
+  CambioGeocerca? actualizar(LatLng p) {
+    final d = distanciaMetros(centro, p);
+    if (!_dentro && d < radio) {
+      _dentro = true;
+      return CambioGeocerca.entro;
+    }
+    if (_dentro && d > radio * factorSalida) {
+      _dentro = false;
+      return CambioGeocerca.salio;
+    }
+    return null;
+  }
+}
+
+/// Tiempo estimado de llegada con la velocidad media de las últimas lecturas buenas.
+Duration? tiempoEstimado(List<Lectura> buenas, LatLng destino, {int ultimas = 6}) {
+  if (buenas.length < 2) return null;
+  final tramo = buenas.sublist(math.max(0, buenas.length - ultimas));
+  var metros = 0.0;
+  for (var i = 1; i < tramo.length; i++) {
+    metros += distanciaMetros(tramo[i - 1].posicion, tramo[i].posicion);
+  }
+  final segundos = tramo.last.cuando.difference(tramo.first.cuando).inSeconds;
+  if (metros < 1 || segundos == 0) return null; // detenido: no se puede estimar
+  return Duration(seconds: (distanciaMetros(tramo.last.posicion, destino) / (metros / segundos)).round());
+}
+```
+
+```dart
+// lib/geo/recorrido_demo.dart — un recorrido de prueba por Chapinero (Bogotá), una lectura cada 5 s
+import 'package:latlong2/latlong.dart';
+
+import 'geo.dart';
+
+const origen = LatLng(4.6325, -74.0670); // Cl 45 con Cra 13
+const destino = LatLng(4.6770, -74.0510); // Cra 15 # 93
+const _paso = [LatLng(4.6560, -74.0590)]; // Cl 72 con Cra 13
+const rutaPlaneada = [origen, ..._paso, destino]; // la que se dibuja como plan
+
+/// 8 m/s entre los puntos, con tres lecturas malas a propósito y un vaivén al llegar.
+List<Lectura> recorridoDemo({DateTime? inicio}) {
+  final t0 = inicio ?? DateTime(2026, 11, 24, 9);
+  final puntos = [origen, ..._paso, destino];
+  final lecturas = <Lectura>[];
+  var t = t0;
+  for (var s = 0; s < puntos.length - 1; s++) {
+    final a = puntos[s], b = puntos[s + 1];
+    final n = (distanciaMetros(a, b) / 40).ceil(); // 40 m cada 5 s = 8 m/s
+    for (var i = 0; i < n; i++) {
+      final f = i / n;
+      lecturas.add(
+        Lectura(LatLng(a.latitude + (b.latitude - a.latitude) * f, a.longitude + (b.longitude - a.longitude) * f), t),
+      );
+      t = t.add(const Duration(seconds: 5));
+    }
+  }
+  // Al llegar, el GPS oscila alrededor de 45-60 m del destino (un edificio alto, una calle estrecha).
+  for (final metrosAlNorte in [-60.0, -45.0, -58.0, -44.0, -20.0, -8.0]) {
+    lecturas.add(Lectura(LatLng(destino.latitude + metrosAlNorte / 111320, destino.longitude), t));
+    t = t.add(const Duration(seconds: 5));
+  }
+  // Las lecturas malas: un salto de 2 km, una imprecisa y otra imprecisa al llegar.
+  lecturas[30] = Lectura(const LatLng(4.6500, -74.0800), lecturas[30].cuando);
+  lecturas[45] = Lectura(lecturas[45].posicion, lecturas[45].cuando, precisionMetros: 120);
+  lecturas[lecturas.length - 3] = Lectura(
+    lecturas[lecturas.length - 3].posicion,
+    lecturas[lecturas.length - 3].cuando,
+    precisionMetros: 80,
+  );
+  return lecturas;
+}
+```
+
+```dart
+// test/geo_test.dart — la geometría con el recorrido de prueba; sin GPS, sin mapa y sin red
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:m14/geo/geo.dart';
+import 'package:m14/geo/recorrido_demo.dart';
+
+void main() {
+  final lecturas = recorridoDemo();
+
+  test('distancias', () {
+    final propia = distanciaMetros(origen, destino);
+    final libreria = const Distance().as(LengthUnit.Meter, origen, destino);
+    debugPrint('origen → destino: haversine propio ${propia.round()} m, latlong2 ${libreria.round()} m');
+    debugPrint(
+      '0,001° de latitud: ${distanciaMetros(origen, LatLng(origen.latitude + 0.001, origen.longitude)).toStringAsFixed(1)} m',
+    );
+    debugPrint(
+      '0,001° de longitud en Bogotá: '
+      '${distanciaMetros(origen, LatLng(origen.latitude, origen.longitude + 0.001)).toStringAsFixed(1)} m',
+    );
+  });
+
+  test('filtro de lecturas', () {
+    final r = filtrarRuido(lecturas);
+    debugPrint('${lecturas.length} lecturas → ${r.buenas.length} buenas; descartadas: ${r.descartadas}');
+  });
+
+  test('geocerca de 50 m en el destino, sin y con histéresis', () {
+    final buenas = filtrarRuido(lecturas).buenas;
+    for (final factor in [1.0, 1.5]) {
+      final cerca = Geocerca(destino, 50, factorSalida: factor);
+      final cambios = <String>[];
+      for (final l in buenas) {
+        final c = cerca.actualizar(l.posicion);
+        if (c != null) cambios.add('${c.name}@${distanciaMetros(destino, l.posicion).round()}m');
+      }
+      debugPrint('factor de salida $factor: $cambios');
+    }
+  });
+
+  test('tiempo estimado de llegada', () {
+    final buenas = filtrarRuido(lecturas).buenas;
+    for (final i in [10, 60, 100]) {
+      final hasta = buenas.sublist(0, i + 1);
+      final eta = tiempoEstimado(hasta, destino)!;
+      final faltan = distanciaMetros(hasta.last.posicion, destino).round();
+      final real = buenas
+          .firstWhere((l) => distanciaMetros(l.posicion, destino) < 50)
+          .cuando
+          .difference(hasta.last.cuando);
+      debugPrint(
+        'lectura $i: faltan $faltan m, estimado ${eta.inSeconds} s, real hasta la geocerca ${real.inSeconds} s',
+      );
+    }
+  });
+}
+```
+
+```text
+$ flutter test test/geo_test.dart
+00:00 +0: loading /home/estudiante/labs/flutter/m14/test/geo_test.dart
+00:00 +0: distancias
+origen → destino: haversine propio 5256 m, latlong2 5231 m
+0,001° de latitud: 111.2 m
+0,001° de longitud en Bogotá: 110.8 m
+00:00 +1: filtro de lecturas
+138 lecturas → 135 buenas; descartadas: [#30: salto a 1441 km/h, #45: precisión 120 m, #135: precisión 80 m]
+00:00 +2: geocerca de 50 m en el destino, sin y con histéresis
+factor de salida 1.0: [entro@40m, salio@60m, entro@45m, salio@58m, entro@20m]
+factor de salida 1.5: [entro@40m]
+00:00 +3: tiempo estimado de llegada
+lectura 10: faltan 4856 m, estimado 607 s, real hasta la geocerca 605 s
+lectura 60: faltan 2778 m, estimado 347 s, real hasta la geocerca 345 s
+lectura 100: faltan 1189 m, estimado 150 s, real hasta la geocerca 145 s
+00:00 +4: All tests passed!
+```
+
+**Explicación por partes.**
+- **Distancias:** haversine da 5 256 m y `latlong2`, 5 231 m: 25 m (0,5 %) de diferencia, porque `latlong2` usa
+  Vincenty sobre el elipsoide. Para una app de entregas sobra; para topografía, no.
+- 0,001° de latitud son 111,2 m; de longitud, 110,8 m en Bogotá. Están casi iguales porque Bogotá está cerca del
+  ecuador; en Buenos Aires, 0,001° de longitud son unos 92 m.
+- **Filtro:** de 138 lecturas quedan 135; se descartan el salto (1 441 km/h), la de 120 m y la de 80 m, cada una con
+  su motivo.
+- **Geocerca:** sin histéresis, la llegada produce cinco cambios (entra a 40 m, sale a 60, entra a 45, sale a 58,
+  entra a 20). Con factor 1,5, uno solo: entra a 40 m y las oscilaciones hasta 58 m ya no la sacan.
+- **Tiempo estimado:** coincide con el real con menos de 5 s de diferencia. Es tan bueno porque el recorrido de
+  prueba va a velocidad constante y casi en línea recta; con tráfico y calles, el error crece, y por eso la interfaz
+  muestra «~9 min» y no «607 s».
+
+> **Error común.** No pedir la precisión al GPS, o no usarla. Una sola lectura de 120 m al lado de un río mueve el
+> punto al otro lado del agua.
+
+> **Error común.** Una geocerca con un solo umbral. El ruido del GPS cerca del borde dispara llegadas y salidas en
+> cadena, y cada una puede ser una notificación.
+
+> **Buena práctica.** Guarda los motivos de descarte (como `descartadas`) y envíalos a la analítica en agregado
+> (Módulo 13): dicen dónde y cuándo falla el GPS de tus repartidores.
+
+> **Prevenir errores.** Prueba la geometría con recorridos grabados que incluyan los casos malos (saltos, lecturas
+> imprecisas, oscilaciones), no solo con recorridos perfectos.
+
+#### Checkpoint 2.1
+La primera lectura del día viene con un salto (el teléfono aún recordaba la posición de ayer). ¿Qué hace el filtro
+con las siguientes, y cómo lo evitarías?
+
+Respuesta: como el filtro compara con la última **buena**, la primera (mala) se toma como referencia y las lecturas
+correctas parecen saltos imposibles; solo se aceptan cuando pasó tanto tiempo que el «salto» ya parece posible. Se
+evita exigiendo una precisión buena y reciente para la primera, o aceptando un salto si varias lecturas seguidas
+coinciden entre sí.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
+#### Paso 1 · Crea los archivos
+Crea `geo.dart`, `recorrido_demo.dart` y `geo_test.dart`, y ejecuta.
+
+#### Paso 2 · Primera lectura mala
+Cambia la lectura 0 del recorrido por una en `LatLng(4.70, -74.10)` y ejecuta el filtro. ¿Cuántas quedan?
+
+#### Paso 3 · Corrige el arranque
+Implementa la solución del Checkpoint y vuelve a probar.
+
+#### Paso 4 · Factor de histéresis
+Prueba factores 1,2 y 2,0 en la geocerca. ¿Cuántos cambios hay con cada uno?
+
+#### Paso 5 · Velocidad del repartidor
+Agrega a `geo.dart` una función que devuelva la velocidad media en km/h de las últimas lecturas, y muéstrala en la
+prueba para la lectura 60.
+
+#### Resumen
+- **Haversine** da distancias sobre la esfera; Vincenty es más exacta.
+- La **precisión de la lectura** y el **filtro de saltos** quitan lo que el GPS inventa.
+- La **geocerca con histéresis** detecta llegadas sin parpadeos.
+- El **tiempo estimado de llegada** usa la velocidad reciente y es una aproximación.
+
+#### Ejercicio verificable 1
+Básico. ¿Cuántas lecturas quedan después del filtro?
+
+Respuesta esperada: 135 de 138.
+
+#### Ejercicio verificable 2
+Intermedio. Sin histéresis, ¿cuántas veces cambia la geocerca al llegar?
+
+Respuesta esperada: 5 (entro, salio, entro, salio, entro).
+
+#### Ejercicio verificable 3
+Reto. En el Paso 2, ¿cuántas lecturas quedan y por qué?
+
+Respuesta esperada: quedan 97 y se descartan 41. Las lecturas 1 a 29, que eran buenas (y varias después), se descartan como saltos desde
+la primera; la primera que se acepta es la 30, justo el salto falso, porque está más cerca de la lectura mala. Un
+error al arrancar contamina todo lo que sigue.
+
+#### En el trabajo
+Los equipos de logística guardan recorridos reales (anonimizados) de los casos difíciles —túneles, edificios altos,
+puentes— y los usan como datos de prueba. Las reglas de la geocerca (radio, histéresis) se ajustan con esos datos, no
+con un recorrido perfecto.
+
+</details>
+
+### Tema 3: Tiempo real con WebSocket: reconexión, espera creciente y reanudación · Avanzado · 45 min
+
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
+
+#### Objetivos
+Al terminar este tema podrás:
+- recibir posiciones por WebSocket como un `Stream`;
+- detectar una conexión muerta por silencio, no solo por cierre;
+- reconectar con espera creciente sin saturar al servidor;
+- reanudar desde el último mensaje recibido, sin huecos ni repetidos.
+
+**Conceptos clave:** WebSocket, latido o vigilante de silencio, espera creciente (*backoff*), reanudación, mensaje
+idempotente
+
+#### El problema
+Preguntar al servidor cada 5 segundos «¿dónde está?» gasta batería y datos y llega tarde. Con WebSocket, el servidor
+empuja cada posición. Pero la red del repartidor se corta en túneles, y la conexión a veces queda «abierta» sin que
+llegue nada. La primera versión no se daba cuenta, y cuando reconectaba, pedía todo desde el principio y repetía
+posiciones.
+
+Este tema usa **`Stream`, `StreamController` y `Timer`** (Módulo 0, Tema 8), **los reintentos** (Módulo 5, Tema 3)
+y **el servidor de prueba local** (Módulo 12).
+
+#### Glosario del tema
+
+**WebSocket**
+- **Definición técnica:** protocolo que, tras un saludo HTTP (`Upgrade: websocket`), mantiene una conexión TCP abierta por la que los dos lados envían mensajes cuando quieren; en Dart, `WebSocketChannel.connect` y `WebSocketTransformer.upgrade`.
+- **En palabras sencillas:** una llamada telefónica abierta en lugar de mensajes de texto sueltos.
+- **Dónde se rompe la comparación:** no avisa siempre cuando se corta; una red que cae sin cerrar deja la llamada «abierta» y en silencio.
+- **Ejemplo:** `ws://127.0.0.1:8097` en la app real.
+- **Error típico:** asumir que `onDone` llega siempre que se pierde la conexión.
+
+**vigilante de silencio**
+- **Definición técnica:** un `Timer` que se reinicia con cada mensaje; si vence (aquí, 3 s sin nada), el cliente da la conexión por muerta y la cierra.
+- **En palabras sencillas:** «si no oigo nada en un rato, cuelgo y vuelvo a llamar».
+- **Dónde se rompe la comparación:** si el servidor no tiene nada que enviar, debe mandar un latido (*ping*) para que el silencio signifique algo.
+- **Ejemplo:** `silencioMaximo: Duration(seconds: 3)`.
+- **Error típico:** quedarse esperando para siempre en una conexión zombi.
+
+**espera creciente**
+- **Definición técnica:** entre intentos de reconexión, una espera que se duplica (250, 500, 1 000 ms…) hasta un máximo (8 s), y vuelve al mínimo al conectar.
+- **En palabras sencillas:** insistir, pero cada vez con más paciencia.
+- **Dónde se rompe la comparación:** si miles de teléfonos reconectan con la misma espera, llegan todos juntos; en producción se le suma un poco de azar (*jitter*).
+- **Ejemplo:** tres intentos fallidos a los 250, 500 y 1 000 ms; el cuarto conecta.
+- **Error típico:** reintentar en bucle sin espera: la batería se va y el servidor se cae del todo.
+
+**reanudación**
+- **Definición técnica:** al reconectar, el cliente dice desde qué número de mensaje quiere seguir (`{"desde": n}`), y el servidor continúa desde ahí.
+- **En palabras sencillas:** «íbamos en la página 6».
+- **Dónde se rompe la comparación:** exige que el servidor guarde los mensajes recientes y que estén numerados.
+- **Ejemplo:** después de la caída, llegan 6, 7, 8, 9.
+- **Error típico:** pedir todo desde el principio y redibujar el recorrido completo.
+
+**mensaje idempotente**
+- **Definición técnica:** mensaje que, si llega dos veces, produce el mismo efecto que una; aquí, se ignora todo `n` menor o igual al último recibido.
+- **En palabras sencillas:** recibir dos veces la misma carta no cambia nada.
+- **Dónde se rompe la comparación:** solo funciona si cada mensaje tiene un identificador ordenado.
+- **Ejemplo:** `if (n <= ultimaRecibida) return;`.
+- **Error típico:** sumar distancias o contar entregas con mensajes repetidos.
+
+#### ► CÓMO FUNCIONA
+El cliente se conecta, pide desde el siguiente número y vigila el silencio. Si la conexión se cierra o se calla, espera
+y reconecta, con esperas que crecen. Al volver, pide desde donde iba.
+
+```mermaid
+stateDiagram-v2
+    [*] --> conectando
+    conectando --> conectado: listo → envía {"desde": n}
+    conectado --> conectado: mensaje (reinicia el vigilante)
+    conectado --> reconectando: cierre o 3 s de silencio
+    reconectando --> conectado: intento con éxito (espera vuelve a 250 ms)
+    reconectando --> reconectando: falla (espera ×2, máx. 8 s)
+    conectado --> cerrado: cerrar()
+```
+
+#### Problema resuelto 3.1
+Escribe el cliente con reconexión y el servidor que envía el recorrido. En una prueba con sockets reales, el servidor
+se cae a los 0,7 s y vuelve 1,6 s después en el mismo puerto. Comprueba los intentos, que no se pierda ni repita
+ninguna posición, y que la secuencia siga donde iba.
+
+**Razonamiento:**
+1. El cliente expone dos `Stream`: posiciones (con su número) y estados.
+2. Toda pérdida (cierre, error o silencio) pasa por `_perdida`, que calcula la espera y programa el intento.
+3. El servidor envía una posición cada 100 ms desde el número que el cliente pida.
+4. La caída se simula cerrando los sockets y el servidor; la vuelta, con un servidor nuevo en el mismo puerto.
+5. Al final se cuentan repetidas y huecos en la secuencia recibida.
+
 ```dart
-final class PositionSample {
-  PositionSample({
-    required this.latitude,
-    required this.longitude,
-    required this.accuracyMeters,
-    required this.capturedAt,
-  }) {
-    if (latitude < -90 || latitude > 90) throw ArgumentError('latitude');
-    if (longitude < -180 || longitude > 180) throw ArgumentError('longitude');
-    if (accuracyMeters < 0) throw ArgumentError('accuracyMeters');
+// lib/tiempo_real/canal_posiciones.dart — WebSocket con reconexión, espera creciente y reanudación
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
+
+import 'package:latlong2/latlong.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '../geo/geo.dart';
+
+enum EstadoCanal { conectando, conectado, reconectando, cerrado }
+
+class CanalPosiciones {
+  CanalPosiciones(
+    this.url, {
+    this.silencioMaximo = const Duration(seconds: 3),
+    this.esperaBase = const Duration(milliseconds: 250),
+  });
+  final Uri url;
+  final Duration silencioMaximo; // sin mensajes en este tiempo: conexión muerta
+  final Duration esperaBase;
+
+  final _posiciones = StreamController<(int, Lectura)>.broadcast();
+  final _estados = StreamController<EstadoCanal>.broadcast();
+  WebSocketChannel? _canal;
+  StreamSubscription<dynamic>? _sub;
+  Timer? _vigilante;
+  int _intentos = 0;
+  Duration ultimaEspera = Duration.zero; // la espera antes del próximo intento
+  int ultimaRecibida = -1; // para pedir desde ahí al reconectar
+  bool _cerrado = false;
+
+  Stream<(int, Lectura)> get posiciones => _posiciones.stream;
+  Stream<EstadoCanal> get estados => _estados.stream;
+
+  Future<void> conectar() async {
+    if (_intentos == 0) _estados.add(EstadoCanal.conectando);
+    try {
+      final canal = WebSocketChannel.connect(url);
+      await canal.ready;
+      _canal = canal;
+      _intentos = 0;
+      _estados.add(EstadoCanal.conectado);
+      canal.sink.add(jsonEncode({'desde': ultimaRecibida + 1})); // reanudar sin repetir ni perder
+      _vigilar();
+      _sub = canal.stream.listen(_recibir, onDone: _perdida, onError: (_) => _perdida());
+    } catch (_) {
+      _perdida();
+    }
   }
 
-  final double latitude;
-  final double longitude;
-  final double accuracyMeters;
-  final DateTime capturedAt;
-
-  bool isUsableAt(DateTime now) =>
-      accuracyMeters <= 50 && now.difference(capturedAt) <= const Duration(seconds: 20);
-}
-```
-
-```mermaid
-flowchart LR
-  P[Position del plugin] --> V{coordenadas válidas?}
-  V -->|no| X[descartar + métrica]
-  V -->|sí| T{edad menor a 20 s?}
-  T -->|no| X
-  T -->|sí| A{precisión menor a 50 m?}
-  A -->|no| AP[mostrar aproximación]
-  A -->|sí| OK[aceptar, persistir y publicar]
-```
-
-```bash
-flutter create ejemplo
-```
-
-```bash
-flutter create ejemplo_mapa
-flutter analyze
-```
-
-</details>
-
-### Tema 3: Animaciones de localización · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a interpolar la posición y el rumbo de un marcador entre dos muestras de GPS durante un intervalo limitado, en vez de saltar directamente a la nueva coordenada. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutter doctor.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-  A["muestra GPS válida"] --> B["interpolar posición y rumbo"]
-  B --> C["animación acotada"]
-  C --> D["marcador en destino"]
-  E["muestra nueva"] --> F["cancela la anterior"] --> B
-  G["muestra vieja"] --> H["se descarta"]
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-
-```bash
-flutter create ejemplo
-```
-
-```bash
-flutter create ejemplo_animacion
-flutter analyze
-```
-
-</details>
-
-### Tema 4: Socket.IO y actualización de rutas · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar vas a aplicar un JourneyEventReducer que descarta eventos de posición duplicados o fuera de secuencia recibidos por Socket.IO. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutter doctor.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-  participant M as App Flutter
-  participant S as Canal tiempo real
-  participant A as API de jornadas
-  M->>S: conectar(token, journeyId)
-  S->>A: autorizar identidad + propiedad
-  A-->>S: permitido
-  S-->>M: position sequence=41
-  Note over M,S: pérdida de red
-  M->>S: reconectar(lastSequence=41)
-  S->>A: obtener eventos desde 41
-  A-->>M: snapshot actual + sequence=47
-  M->>M: descartar cualquier sequence menor o igual a 47
-```
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```dart
-final class JourneyEventReducer {
-  int _lastSequence = 0;
-
-  PositionSample? apply(DriverPositionEvent event, DateTime now) {
-    if (event.sequence <= _lastSequence) return null;
-    if (!event.position.isUsableAt(now)) return null;
-    _lastSequence = event.sequence;
-    return event.position;
+  void _recibir(dynamic mensaje) {
+    _vigilar();
+    final m = jsonDecode(mensaje as String) as Map<String, Object?>;
+    final n = m['n']! as int;
+    if (n <= ultimaRecibida) return; // repetida: se ignora
+    ultimaRecibida = n;
+    _posiciones.add((
+      n,
+      Lectura(
+        LatLng(m['lat']! as double, m['lon']! as double),
+        DateTime.parse(m['t']! as String),
+        precisionMetros: (m['precision']! as num).toDouble(),
+      ),
+    ));
   }
 
-  int get resumeAfter => _lastSequence;
+  void _vigilar() {
+    _vigilante?.cancel();
+    _vigilante = Timer(silencioMaximo, () => _canal?.sink.close()); // silencio: se cierra y se reconecta
+  }
+
+  void _perdida() {
+    _vigilante?.cancel();
+    _sub?.cancel();
+    _canal = null;
+    if (_cerrado) return;
+    _intentos++;
+    final espera = esperaBase * math.min(math.pow(2, _intentos - 1), 32).toInt(); // 250, 500, 1000… hasta 8 s
+    ultimaEspera = espera;
+    _estados.add(EstadoCanal.reconectando);
+    Timer(espera, conectar);
+  }
+
+  Future<void> cerrar() async {
+    _cerrado = true;
+    _vigilante?.cancel();
+    await _sub?.cancel();
+    await _canal?.sink.close();
+    _estados.add(EstadoCanal.cerrado);
+    await _posiciones.close();
+    await _estados.close();
+  }
 }
 ```
 
-```mermaid
-sequenceDiagram
-  participant M as App Flutter
-  participant S as Canal tiempo real
-  participant A as API de jornadas
-  M->>S: conectar(token, journeyId)
-  S->>A: autorizar identidad + propiedad
-  A-->>S: permitido
-  S-->>M: position sequence=41
-  Note over M,S: pérdida de red
-  M->>S: reconectar(lastSequence=41)
-  S->>A: obtener eventos desde 41
-  A-->>M: snapshot actual + sequence=47
-  M->>M: descartar cualquier sequence menor o igual a 47
+```dart
+// lib/tiempo_real/servidor_posiciones.dart — envía el recorrido por WebSocket, desde donde el cliente pida
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import '../geo/geo.dart';
+
+class ServidorPosiciones {
+  ServidorPosiciones(this.lecturas, {this.cada = const Duration(milliseconds: 100)});
+  final List<Lectura> lecturas;
+  final Duration cada;
+  HttpServer? _http;
+  final _clientes = <WebSocket>{};
+
+  int get puerto => _http!.port;
+
+  Future<void> iniciar({int puerto = 0}) async {
+    _http = await HttpServer.bind(InternetAddress.loopbackIPv4, puerto, shared: true);
+    _http!.listen((p) async {
+      final ws = await WebSocketTransformer.upgrade(p);
+      _clientes.add(ws);
+      Timer? emisor;
+      ws.listen(
+        (m) {
+          var n = (jsonDecode(m as String) as Map)['desde'] as int; // el cliente dice desde cuál
+          emisor?.cancel();
+          emisor = Timer.periodic(cada, (_) {
+            if (n >= lecturas.length) return emisor?.cancel();
+            final l = lecturas[n];
+            ws.add(
+              jsonEncode({
+                'n': n++,
+                'lat': l.posicion.latitude,
+                'lon': l.posicion.longitude,
+                't': l.cuando.toIso8601String(),
+                'precision': l.precisionMetros,
+              }),
+            );
+          });
+        },
+        onDone: () {
+          emisor?.cancel();
+          _clientes.remove(ws);
+        },
+      );
+    });
+  }
+
+  /// Simula una caída: corta a todos los clientes y deja de escuchar.
+  Future<void> caer() async {
+    for (final ws in _clientes.toList()) {
+      await ws.close(WebSocketStatus.goingAway);
+    }
+    await _http?.close(force: true);
+  }
+}
 ```
 
-```bash
-flutter create ejemplo
+```dart
+// test/tiempo_real_test.dart — WebSocket real en 127.0.0.1: el servidor se cae y vuelve; el cliente se recupera
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:m14/geo/recorrido_demo.dart';
+import 'package:m14/tiempo_real/canal_posiciones.dart';
+import 'package:m14/tiempo_real/servidor_posiciones.dart';
+
+void main() {
+  test('caída del servidor, reconexión con espera creciente y reanudación', () async {
+    final reloj = Stopwatch()..start();
+    String ms() => '${reloj.elapsedMilliseconds}'.padLeft(5);
+    final lecturas = recorridoDemo();
+    var servidor = ServidorPosiciones(lecturas);
+    await servidor.iniciar();
+    final puerto = servidor.puerto;
+
+    final canal = CanalPosiciones(Uri.parse('ws://127.0.0.1:$puerto'));
+    final recibidas = <int>[];
+    canal.estados.listen(
+      (e) => debugPrint(
+        '${ms()} ms  estado: ${e.name}${e == EstadoCanal.reconectando ? ' (próximo intento en ${canal.ultimaEspera.inMilliseconds} ms)' : ''}',
+      ),
+    );
+    canal.posiciones.listen((p) => recibidas.add(p.$1));
+    await canal.conectar();
+
+    await Future<void>.delayed(const Duration(milliseconds: 650));
+    debugPrint('${ms()} ms  recibidas hasta ahora: $recibidas');
+    debugPrint('${ms()} ms  ── el servidor se cae ──');
+    final antes = recibidas.length;
+    await servidor.caer();
+
+    await Future<void>.delayed(const Duration(milliseconds: 1600));
+    debugPrint('${ms()} ms  ── el servidor vuelve en el mismo puerto ──');
+    servidor = ServidorPosiciones(lecturas);
+    await servidor.iniciar(puerto: puerto);
+
+    await Future<void>.delayed(const Duration(milliseconds: 2500));
+    debugPrint(
+      '${ms()} ms  recibidas: ${recibidas.length}, primeras después de la caída: '
+      '${recibidas.sublist(antes).take(4).toList()}',
+    );
+    final repetidas = recibidas.length - recibidas.toSet().length;
+    final huecos = [
+      for (var i = 1; i < recibidas.length; i++)
+        if (recibidas[i] != recibidas[i - 1] + 1) i,
+    ];
+    debugPrint('${ms()} ms  repetidas: $repetidas, huecos en la secuencia: $huecos');
+    await canal.cerrar();
+    await servidor.caer();
+  });
+}
 ```
 
-```bash
-flutter create ejemplo_socket
-flutter analyze
+```text
+$ flutter test test/tiempo_real_test.dart
+00:00 +0: loading /home/estudiante/labs/flutter/m14/test/tiempo_real_test.dart
+00:00 +0: caída del servidor, reconexión con espera creciente y reanudación
+   14 ms  estado: conectando
+   33 ms  estado: conectado
+  685 ms  recibidas hasta ahora: [0, 1, 2, 3, 4, 5]
+  687 ms  ── el servidor se cae ──
+  701 ms  estado: reconectando (próximo intento en 250 ms)
+  957 ms  estado: reconectando (próximo intento en 500 ms)
+ 1460 ms  estado: reconectando (próximo intento en 1000 ms)
+ 2304 ms  ── el servidor vuelve en el mismo puerto ──
+ 2468 ms  estado: conectado
+ 4807 ms  recibidas: 29, primeras después de la caída: [6, 7, 8, 9]
+ 4809 ms  repetidas: 0, huecos en la secuencia: []
+ 4812 ms  estado: cerrado
+00:04 +1: All tests passed!
 ```
 
-</details>
+**Explicación por partes.**
+- Conectó a los 33 ms y, en unos 650 ms, recibió las posiciones 0 a 5.
+- Al caer el servidor, el cliente lo detectó en 14 ms (el cierre llegó) y reintentó con esperas de 250, 500 y
+  1 000 ms; los tres intentos fallaron porque no había servidor.
+- El servidor volvió a los 2,3 s; el cuarto intento (después de la espera de 1 000 ms) conectó y pidió desde la 6.
+- En total llegaron 29 posiciones, sin repetidas ni huecos: después de la caída, la secuencia siguió en 6, 7, 8, 9.
+- La espera vuelve a 250 ms al conectar (`_intentos = 0`): la próxima caída empieza de nuevo con esperas cortas.
 
-### Tema 5: Almacenamiento local, imágenes y offline · Avanzado · 35 min
+> **Error común.** Confiar en que la conexión avisa cuando se pierde. En redes móviles, muchas veces no llega ningún
+> cierre: sin vigilante de silencio, la app muestra «En vivo» con datos de hace diez minutos.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+> **Error común.** Reconectar en bucle, sin espera. Con miles de clientes, el servidor que vuelve recibe miles de
+> conexiones por segundo y se vuelve a caer.
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a conservar una confirmación de entrega en una cola local (SQLite) con estado pending/syncing/synced/failed, que sobrevive aunque el conductor pierda conexión o reinicie la app. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutter d…
+> **Buena práctica.** Numera los mensajes y haz que el cliente pida desde el siguiente: reanudar es más barato que
+> volver a empezar, y la idempotencia protege de los duplicados.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-  A["confirmación y foto cifrada<br/>con solo la ruta local"] --> B["fila local: pending"]
-  B --> C["syncing"]
-  C -->|"200"| D["synced: fila eliminada"]
-  C -->|"error de red"| E["failed: reintento acotado"]
-  E --> C
-```
+> **Prevenir errores.** Prueba la reconexión con sockets reales y caídas reales, como aquí, y cuenta huecos y
+> repetidos. Un doble de `WebSocketChannel` no reproduce el orden de los eventos de red.
+
+#### Checkpoint 3.1
+Si el servidor tarda 20 segundos en volver, ¿cuántos intentos hace el cliente y cuánto espera entre los últimos?
+
+Respuesta: esperas de 250, 500, 1 000, 2 000, 4 000 y 8 000 ms (ya en el máximo), y después 8 000 ms entre intentos:
+unos 8 intentos en 20 s, el último a lo sumo 8 s después de que el servidor vuelve.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```mermaid
-flowchart TD
-  A["confirmación y foto cifrada<br/>con solo la ruta local"] --> B["fila local: pending"]
-  B --> C["syncing"]
-  C -->|"200"| D["synced: fila eliminada"]
-  C -->|"error de red"| E["failed: reintento acotado"]
-  E --> C
-```
+#### Paso 1 · Crea los archivos
+Crea `canal_posiciones.dart`, `servidor_posiciones.dart` y `tiempo_real_test.dart`, y ejecuta.
 
-```bash
-flutter create ejemplo
-```
+#### Paso 2 · Sin reanudación
+Cambia el cliente para que envíe siempre `{"desde": 0}` y quita la línea que ignora repetidas. ¿Cuántas repetidas
+cuenta la prueba?
 
-```bash
-flutter create ejemplo_offline
-flutter analyze
-```
+#### Paso 3 · Conexión zombi
+Agrega al servidor un modo que deje de enviar sin cerrar el socket. ¿Cuándo se da cuenta el cliente?
+
+#### Paso 4 · Azar en la espera
+Suma a cada espera un azar de hasta el 20 % y explica por qué ayuda con muchos clientes.
+
+#### Paso 5 · Latido
+Haz que el servidor envíe `{"ping": true}` cada segundo cuando no tenga posiciones, y que el cliente lo use para el
+vigilante sin tratarlo como posición.
+
+#### Resumen
+- **WebSocket** mantiene una conexión por la que el servidor empuja mensajes.
+- Un **vigilante de silencio** detecta conexiones muertas que no avisan.
+- La **espera creciente** reconecta sin saturar.
+- La **reanudación** con **mensajes idempotentes** evita huecos y repetidos.
+
+#### Ejercicio verificable 1
+Básico. ¿Cuántas posiciones había recibido el cliente antes de la caída?
+
+Respuesta esperada: 6 (de la 0 a la 5).
+
+#### Ejercicio verificable 2
+Intermedio. ¿Qué esperas usó el cliente mientras el servidor estaba caído?
+
+Respuesta esperada: 250, 500 y 1 000 ms.
+
+#### Ejercicio verificable 3
+Reto. En el Paso 3, ¿cuánto tarda el cliente en reconectar después del último mensaje?
+
+Respuesta esperada: unos 3 s (el `silencioMaximo`) hasta cerrar la conexión, más 250 ms de la primera espera.
+
+#### En el trabajo
+El seguimiento en vivo de pedidos, conductores o repartidores usa WebSocket (o servicios construidos sobre él) con
+exactamente estas piezas: vigilante, espera creciente con azar, reanudación y deduplicación. Los equipos las prueban
+con caídas provocadas antes de cada versión.
 
 </details>
 
-### Tema 6: Dio y notificaciones push · Avanzado · 40 min
+### Tema 4: La pantalla de seguimiento: todo junto, en la app real · Avanzado · 40 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-#### ► DE QUÉ TRATA
-Al finalizar vas a configurar un cliente Dio con interceptores que serializan la renovación de token, y a tratar una notificación push como un aviso, no como una autorización. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma flutter doctor.
+#### Objetivos
+Al terminar este tema podrás:
+- unir canal, filtro, geocerca, tiempo estimado y mapa en una pantalla;
+- mostrar el estado de la conexión y el progreso con textos útiles;
+- ejecutar la app real contra el servidor de posiciones y capturarla en varios momentos;
+- revisar las capturas buscando lo que una prueba de lógica no ve.
+
+**Conceptos clave:** vista de seguimiento, estado de conexión visible, texto de distancia, captura por momentos
+
+#### El problema
+Cada pieza funciona por separado. Falta la pantalla que la persona mira: el camión que avanza, cuánto falta, cuándo
+llega, si la información está en vivo, y el aviso de llegada una sola vez.
+
+Este tema usa **los Temas 1 a 3**, **`StatefulWidget` con suscripciones** (Módulo 4) y **la app de escritorio en
+pantalla virtual** (Módulo 11).
+
+#### Glosario del tema
+
+**vista de seguimiento**
+- **Definición técnica:** pantalla que se suscribe a los `Stream` del canal en `initState`, aplica el filtro y la geocerca a cada posición, y dibuja el mapa y un panel; cancela las suscripciones en `dispose`.
+- **En palabras sencillas:** la ventanilla desde donde se ve todo.
+- **Dónde se rompe la comparación:** con más pantallas, este trabajo iría a un *view model* (Módulo 12); aquí es una sola.
+- **Ejemplo:** `SeguimientoVista`.
+- **Error típico:** olvidar cancelar las suscripciones: la pantalla cerrada sigue recibiendo posiciones.
+
+**estado de conexión visible**
+- **Definición técnica:** un indicador en la interfaz con el estado del canal (`En vivo` o `Reconectando…`).
+- **En palabras sencillas:** decir si lo que ves es de ahora.
+- **Dónde se rompe la comparación:** «En vivo» solo es verdad si hay vigilante de silencio (Tema 3).
+- **Ejemplo:** el `Chip` con el ícono de wifi.
+- **Error típico:** mostrar la última posición sin decir que es vieja.
+
+**texto de distancia**
+- **Definición técnica:** la distancia formateada para leer: kilómetros con un decimal desde 1 km, metros redondeados a 10 por debajo.
+- **En palabras sencillas:** decir la distancia como la diría una persona.
+- **Dónde se rompe la comparación:** la precisión del texto no debe superar la del GPS: «a 7 m» promete más de lo que se sabe.
+- **Ejemplo:** `distanciaLegible(4320)` → `4.3 km`; `distanciaLegible(8)` → `a 10 m`.
+- **Error típico:** «0.0 km» al llegar.
+
+**captura por momentos**
+- **Definición técnica:** tomar pantallazos de la app real a tiempos fijos mientras el servidor envía un recorrido conocido, para revisar estados que solo existen en movimiento.
+- **En palabras sencillas:** fotos de la carrera en la salida, a la mitad y en la meta.
+- **Dónde se rompe la comparación:** los tiempos dependen de la máquina; sirven para revisar, no como prueba golden.
+- **Ejemplo:** `demo_mapa.sh` captura a los 3, 9 y 17 segundos.
+- **Error típico:** revisar solo el estado inicial.
 
 #### ► CÓMO FUNCIONA
+Cada posición recibida se agrega a las crudas, se filtra, actualiza la geocerca y redibuja. El panel calcula la
+distancia y el tiempo estimado de las lecturas buenas.
+
 ```mermaid
 sequenceDiagram
-  participant P as Petición
-  participant D as Interceptor Dio
-  participant S as Backend
-  participant N as Push (FCM/APNs)
-  P->>D: request con token vencido
-  D->>S: refresh serializado, una sola vez
-  S-->>D: token nuevo
-  D->>S: reintento acotado
-  S-->>P: respuesta
-  N->>P: push recibido
-  P->>S: consulta el recurso
-  Note over P,S: el push avisa, no autoriza
+    participant S as servidor_posiciones
+    participant C as CanalPosiciones
+    participant V as SeguimientoVista
+    participant G as filtro + geocerca
+    participant M as MapaRuta
+    S->>C: {"n": 42, lat, lon, t, precision}
+    C->>V: posiciones (42, Lectura)
+    V->>G: filtrarRuido(crudas) → buenas
+    G-->>V: ¿entró? → «Llegó al destino»
+    V->>M: recorrido = buenas, repartidor = última
+    V->>V: panel: distancia y «llega en ~N min»
 ```
+
+#### Problema resuelto 4.1
+Escribe la vista y `main`, compila la app en release y ejecútala contra el servidor de posiciones, con capturas a la
+salida, a la mitad y al llegar.
+
+**Razonamiento:**
+1. La vista crea su geocerca de 50 m y se suscribe a estados y posiciones.
+2. La geocerca solo se actualiza cuando hay una lectura buena nueva, y «Llegó» queda fijo al entrar.
+3. El panel usa `distanciaLegible` y redondea el tiempo estimado hacia arriba en minutos.
+4. El servidor envía una lectura cada 100 ms (el recorrido de 11 minutos pasa en unos 14 s) para capturar todo en
+   una ejecución.
+5. La ventana mide 420 × 640, y la pantalla virtual lo mismo.
+
+```dart
+// lib/ui/seguimiento_vista.dart — une el canal en tiempo real, el filtro, la geocerca y el mapa
+import 'dart:async';
+
+import 'package:latlong2/latlong.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../geo/geo.dart';
+import '../tiempo_real/canal_posiciones.dart';
+import 'mapa_ruta.dart';
+
+/// «0.0 km» no dice nada al llegar: por debajo de 1 km, en metros redondeados a 10.
+String distanciaLegible(double metros) =>
+    metros < 1000 ? 'a ${(metros / 10).round() * 10} m' : '${(metros / 1000).toStringAsFixed(1)} km';
+
+class SeguimientoVista extends StatefulWidget {
+  const SeguimientoVista({super.key, required this.canal, required this.ruta, required this.destino});
+  final CanalPosiciones canal;
+  final List<LatLng> ruta;
+  final LatLng destino;
+
+  @override
+  State<SeguimientoVista> createState() => _SeguimientoVistaState();
+}
+
+class _SeguimientoVistaState extends State<SeguimientoVista> {
+  final _crudas = <Lectura>[];
+  List<Lectura> _buenas = [];
+  late final _geocerca = Geocerca(widget.destino, 50);
+  EstadoCanal _estado = EstadoCanal.conectando;
+  bool _llego = false;
+  late final List<StreamSubscription<Object>> _subs;
+
+  @override
+  void initState() {
+    super.initState();
+    _subs = [
+      widget.canal.estados.listen((e) => setState(() => _estado = e)),
+      widget.canal.posiciones.listen((p) {
+        _crudas.add(p.$2);
+        final buenas = filtrarRuido(_crudas).buenas;
+        if (buenas.length != _buenas.length && _geocerca.actualizar(buenas.last.posicion) == CambioGeocerca.entro) {
+          _llego = true;
+        }
+        setState(() => _buenas = buenas);
+      }),
+    ];
+    widget.canal.conectar();
+  }
+
+  @override
+  void dispose() {
+    for (final s in _subs) {
+      s.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final texto = Theme.of(context).textTheme;
+    final ultima = _buenas.isEmpty ? null : _buenas.last;
+    final eta = tiempoEstimado(_buenas, widget.destino);
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: MapaRuta(
+              ruta: widget.ruta,
+              recorrido: [for (final l in _buenas) l.posicion],
+              destino: widget.destino,
+              repartidor: ultima?.posicion,
+            ),
+          ),
+          Material(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_llego ? 'Llegó al destino' : 'EN-4472 · en camino', style: texto.titleMedium),
+                        Text(
+                          ultima == null
+                              ? 'Esperando la primera posición…'
+                              : '${distanciaLegible(distanciaMetros(ultima.posicion, widget.destino))}'
+                                    '${eta == null || _llego ? '' : ' · llega en ~${(eta.inSeconds / 60).ceil()} min'}',
+                          style: texto.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Chip(
+                    avatar: Icon(_estado == EstadoCanal.conectado ? Icons.wifi : Icons.wifi_off, size: 18),
+                    label: Text(_estado == EstadoCanal.conectado ? 'En vivo' : 'Reconectando…'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+```dart
+import 'package:material_ui/material_ui.dart';
+
+import 'geo/recorrido_demo.dart';
+import 'tiempo_real/canal_posiciones.dart';
+import 'ui/seguimiento_vista.dart';
+
+const _servidor = String.fromEnvironment('POSICIONES', defaultValue: 'ws://127.0.0.1:8097');
+
+void main() => runApp(
+  MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Seguimiento',
+    theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo)),
+    home: SeguimientoVista(canal: CanalPosiciones(Uri.parse(_servidor)), ruta: rutaPlaneada, destino: destino),
+  ),
+);
+```
+
+```dart
+// bin/servidor_posiciones.dart — dart run bin/servidor_posiciones.dart [puerto] [ms por lectura]
+import 'dart:io';
+
+import 'package:m14/geo/recorrido_demo.dart';
+import 'package:m14/tiempo_real/servidor_posiciones.dart';
+
+Future<void> main(List<String> args) async {
+  final s = ServidorPosiciones(
+    recorridoDemo(),
+    cada: Duration(milliseconds: int.parse(args.elementAtOrNull(1) ?? '100')),
+  );
+  await s.iniciar(puerto: int.parse(args.firstOrNull ?? '8097'));
+  stdout.writeln('posiciones en ws://127.0.0.1:${s.puerto}');
+}
+```
+
+```bash
+#!/bin/bash
+# demo_mapa.sh : la app real siguiendo al repartidor; tres capturas: al salir, a mitad y al llegar
+cd "$(dirname "$0")"
+app=build/linux/x64/release/bundle/m14
+dart run bin/servidor_posiciones.dart 8097 100 > /tmp/posiciones.log 2>&1 &
+servidor=$!
+sleep 4
+xvfb-run -a -s "-screen 0 420x640x24" bash -c "
+  $app > /tmp/app14.log 2>&1 & p=\$!
+  sleep 3;  import -window root /tmp/m14-salida.png
+  sleep 6;  import -window root /tmp/m14-mitad.png
+  sleep 8;  import -window root /tmp/m14-llegada.png
+  kill \$p"
+kill $servidor; wait $servidor 2>/dev/null
+cat /tmp/posiciones.log
+echo "capturas: /tmp/m14-salida.png /tmp/m14-mitad.png /tmp/m14-llegada.png"
+```
+
+```text
+$ flutter build linux --release
+$ ./demo_mapa.sh
+posiciones en ws://127.0.0.1:8097
+capturas: /tmp/m14-salida.png /tmp/m14-mitad.png /tmp/m14-llegada.png
+```
+
+![Tres capturas de la app real. A los 3 s: el camión cerca del origen, la línea recorrida corta, el panel «EN-4472 · en camino», «4.3 km · llega en ~9 min» y «En vivo». A los 9 s: el camión cerca de la calle 81, la línea recorrida hasta ahí, «1.8 km · llega en ~4 min». A los 17 s: el camión junto al pin del destino en la calle 93, la línea completa, «Llegó al destino» y «a 10 m»](content/figures/flutter/m14-seguimiento.png)
+
+Toda la suite:
+
+```text
+$ flutter test
+00:00 +0: loading /home/estudiante/labs/flutter/m14/test/tiempo_real_test.dart
+00:00 +0: /home/estudiante/labs/flutter/m14/test/tiempo_real_test.dart: caída del servidor, reconexión con espera creciente y reanudación
+   20 ms  estado: conectando
+   40 ms  estado: conectado
+  690 ms  recibidas hasta ahora: [0, 1, 2, 3, 4, 5]
+  692 ms  ── el servidor se cae ──
+  707 ms  estado: reconectando (próximo intento en 250 ms)
+  963 ms  estado: reconectando (próximo intento en 500 ms)
+ 1466 ms  estado: reconectando (próximo intento en 1000 ms)
+ 2309 ms  ── el servidor vuelve en el mismo puerto ──
+ 2474 ms  estado: conectado
+ 4813 ms  recibidas: 29, primeras después de la caída: [6, 7, 8, 9]
+ 4817 ms  repetidas: 0, huecos en la secuencia: []
+ 4821 ms  estado: cerrado
+00:04 +1: loading /home/estudiante/labs/flutter/m14/test/geo_test.dart
+00:05 +1: /home/estudiante/labs/flutter/m14/test/geo_test.dart: distancias
+origen → destino: haversine propio 5256 m, latlong2 5231 m
+0,001° de latitud: 111.2 m
+0,001° de longitud en Bogotá: 110.8 m
+00:05 +2: /home/estudiante/labs/flutter/m14/test/geo_test.dart: filtro de lecturas
+138 lecturas → 135 buenas; descartadas: [#30: salto a 1441 km/h, #45: precisión 120 m, #135: precisión 80 m]
+00:05 +3: /home/estudiante/labs/flutter/m14/test/geo_test.dart: geocerca de 50 m en el destino, sin y con histéresis
+factor de salida 1.0: [entro@40m, salio@60m, entro@45m, salio@58m, entro@20m]
+factor de salida 1.5: [entro@40m]
+00:05 +4: /home/estudiante/labs/flutter/m14/test/geo_test.dart: tiempo estimado de llegada
+lectura 10: faltan 4856 m, estimado 607 s, real hasta la geocerca 605 s
+lectura 60: faltan 2778 m, estimado 347 s, real hasta la geocerca 345 s
+lectura 100: faltan 1189 m, estimado 150 s, real hasta la geocerca 145 s
+00:05 +5: All tests passed!
+```
+
+**Explicación por partes.**
+- Las tres capturas son la misma app en release, con teselas reales y posiciones por WebSocket. El tramo recorrido
+  crece y el plan tenue va quedando debajo.
+- A los 3 s: 4,3 km y ~9 min. A los 9 s: 1,8 km y ~4 min. A los 17 s: «Llegó al destino», «a 10 m», y ya no se
+  muestra tiempo estimado.
+- La línea recorrida no tiene el rayo del salto de la lectura 30: el filtro lo quitó antes de dibujar.
+- Dos detalles salieron al revisar estas capturas y se corrigieron: el pin del destino se cortaba arriba (margen de
+  40 → 70 en el Tema 1) y, al llegar, el panel decía «0.0 km» (ahora `distanciaLegible` dice «a 10 m»).
+- En una ejecución de esta demostración, el servidor de posiciones no arrancó: `bin/servidor_posiciones.dart` falló
+  con «Dart library 'dart:ui' is not available on this platform», porque `geo.dart` importaba
+  `package:flutter/foundation.dart` solo para `@immutable`. Con `package:meta`, la capa `geo` es Dart puro y la usan
+  la app, las pruebas y el servidor.
+
+> **Error común.** Importar `package:flutter/foundation.dart` en código que también usa un servidor o un script con
+> `dart run`. Basta un `@immutable` para que ese código ya no corra fuera de Flutter. Usa `package:meta`.
+
+> **Error común.** Escribir números con más precisión de la que tienen: «a 7 m» o «llega en 607 s» con un GPS de
+> ±10 m y un tiempo estimado en línea recta. Redondea a lo que de verdad sabes.
+
+> **Buena práctica.** Ten un servidor de posiciones con recorridos grabados y una velocidad ajustable, como
+> `bin/servidor_posiciones.dart`: permite revisar toda la experiencia de seguimiento en segundos.
+
+> **Prevenir errores.** Captura la app en movimiento (salida, mitad, llegada, reconexión) antes de cada versión y
+> lee cada texto del panel.
+
+#### Checkpoint 4.1
+El repartidor entra en la geocerca y, por un error del GPS, la siguiente lectura buena está a 70 m. ¿Qué muestra la
+pantalla?
+
+Respuesta: sigue «Llegó al destino»: la vista fija `_llego` al entrar, y además 70 m está por debajo del umbral de
+salida (75 m) de la geocerca con histéresis.
 
 </details>
 
 <details>
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
-#### Código y verificación
-```mermaid
-sequenceDiagram
-  participant P as Petición
-  participant D as Interceptor Dio
-  participant S as Backend
-  participant N as Push (FCM/APNs)
-  P->>D: request con token vencido
-  D->>S: refresh serializado, una sola vez
-  S-->>D: token nuevo
-  D->>S: reintento acotado
-  S-->>P: respuesta
-  N->>P: push recibido
-  P->>S: consulta el recurso
-  Note over P,S: el push avisa, no autoriza
-```
+#### Paso 1 · Crea la vista
+Crea `seguimiento_vista.dart`, `main.dart` y `bin/servidor_posiciones.dart`.
 
-```bash
-flutter create ejemplo
-```
+#### Paso 2 · Ejecuta la demostración
+Compila en release y ejecuta `demo_mapa.sh`. Revisa las tres capturas.
 
-```bash
-flutter create ejemplo_http
-flutter analyze
-```
+#### Paso 3 · Reconexión en vivo
+Con la app abierta (`flutter run -d linux`), detén el servidor y vuelve a iniciarlo. ¿Qué muestra el chip y qué
+pasa con el recorrido?
+
+#### Paso 4 · Seguir al camión
+Agrega un `MapController` y, con cada posición buena, mueve la cámara para que el camión quede visible si sale del
+encuadre.
+
+#### Paso 5 · Separa la lógica
+Mueve el filtro, la geocerca y los textos a un *view model* (Módulo 12) y prueba sus estados sin mapa.
+
+#### Resumen
+- La **vista de seguimiento** une canal, geometría y mapa, y cancela sus suscripciones.
+- El **estado de conexión visible** dice si los datos son de ahora.
+- El **texto de distancia** no promete más precisión que el GPS.
+- La **captura por momentos** revisa lo que solo existe en movimiento.
+
+#### Ejercicio verificable 1
+Básico. ¿Qué texto muestra el panel a los 9 segundos?
+
+Respuesta esperada: «EN-4472 · en camino» y «1.8 km · llega en ~4 min», con «En vivo».
+
+#### Ejercicio verificable 2
+Intermedio. En el Paso 3, ¿se repiten tramos del recorrido al reconectar?
+
+Respuesta esperada: no; el cliente pide desde la siguiente posición y el recorrido sigue donde iba. Mientras el
+servidor está detenido, el chip dice «Reconectando…».
+
+#### Ejercicio verificable 3
+Reto. ¿Por qué el servidor de la demostración envía una lectura cada 100 ms si el recorrido real tiene una cada 5 s?
+
+Respuesta esperada: para recorrer los 11 minutos del trayecto en unos 14 s y capturar los tres momentos en una sola
+ejecución; la lógica no depende del ritmo de llegada, solo de las horas que trae cada lectura.
+
+#### En el trabajo
+Las pantallas de seguimiento se revisan en movimiento, con recorridos grabados y redes que se cortan, porque es ahí
+donde fallan. Los textos (distancias, tiempos, «llegó») los revisa el equipo de producto: son lo que la persona que
+espera el envío lee.
 
 </details>
 
-### Tema 7: Cálculo de rutas propio con OSRM en Docker · Avanzado · 40 min
 
-## Motivación
+### Proyecto 31: el seguimiento en vivo de un envío
 
-La app de entregas pide una ruta a la API de Google cada vez que un repartidor cambia de destino. Con miles de peticiones al día, la factura crece, y sin conexión a esa API no hay rutas. **OSRM** (*Open Source Routing Machine*) calcula rutas en tu propio servidor con los mapas libres de OpenStreetMap.
+<details open>
+<summary><strong>Capa 1 — Lectura</strong></summary>
 
-## Concepto
+Vas a construir la pantalla de seguimiento de un envío, de punta a punta: mapa con atribución, lecturas de GPS
+filtradas, llegada detectada una sola vez, tiempo estimado honesto y posiciones en vivo que sobreviven a cortes de
+red.
 
-OSRM trabaja en dos fases:
-1. **Preparación (una vez):** convierte un mapa de OpenStreetMap (`.osm.pbf`) en un grafo de calles listo para consultas, según un **perfil**: coche, bicicleta o a pie.
-2. **Servicio:** un servidor HTTP responde en milisegundos a «ruta de A a B» con distancia, duración y la geometría para dibujarla.
+**Qué debe cumplir:**
+- El mapa encuadra la ruta con margen para los marcadores, dibuja la geocerca en metros y muestra la atribución; el
+  proveedor de teselas se puede cambiar en un solo lugar (Tema 1).
+- El filtro descarta lecturas imprecisas y saltos, también al arrancar; la geocerca tiene histéresis; el tiempo
+  estimado usa la velocidad reciente (Tema 2).
+- El canal detecta silencio, reconecta con espera creciente con azar, reanuda y deduplica; hay latido (Tema 3).
+- La pantalla muestra el estado de conexión, textos redondeados y la llegada; se revisa en la app real en movimiento
+  y con una caída del servidor (Tema 4).
 
-Los mapas por país se descargan de Geofabrik. Si solo necesitas una región, recorta el mapa a su polígono para que la preparación tarde y pese menos.
+</details>
 
-## Ejemplo mínimo
+<details>
+<summary><strong>Capa 2 — Construcción</strong></summary>
 
-```bash
-# 1. Mapa de Colombia (Geofabrik) y recorte opcional a una región con osmium
-wget https://download.geofabrik.de/south-america/colombia-latest.osm.pbf
-osmium extract -p region.geojson colombia-latest.osm.pbf -o region.osm.pbf   # opcional
+**Pruebas que debes ejecutar y su evidencia esperada:**
 
-# 2. Preparación con el perfil de coche (algoritmo MLD)
-docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
-  osrm-extract -p /opt/car.lua /data/colombia-latest.osm.pbf
-docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
-  osrm-partition /data/colombia-latest.osrm
-docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
-  osrm-customize /data/colombia-latest.osrm
+| Prueba | Cómo | Evidencia esperada |
+|---|---|---|
+| Geometría | `flutter test test/geo_test.dart` | descartes con motivo; una sola entrada a la geocerca |
+| Arranque | primera lectura mala | no se pierden las lecturas buenas siguientes |
+| Tiempo real | caída y vuelta del servidor | esperas crecientes; 0 repetidas; 0 huecos |
+| Silencio | servidor que se calla sin cerrar | reconexión a los ~3 s |
+| App real | `demo_mapa.sh` | capturas de salida, mitad y llegada |
+| Reconexión visible | detener el servidor con la app abierta | «Reconectando…» y continuidad del recorrido |
 
-# 3. Servidor en el puerto 5000
-docker run -t -i -p 5000:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend \
-  osrm-routed --algorithm mld /data/colombia-latest.osrm
+**Entregables:** el proyecto; las capturas de la app real (incluida una durante la reconexión); la salida de las
+pruebas; y `seguimiento.md` con el proveedor de teselas elegido y sus condiciones, los umbrales del filtro y de la
+geocerca, y la política de reconexión.
 
-# 4. Ruta en Bogotá: coordenadas en orden LONGITUD,LATITUD
-curl "http://localhost:5000/route/v1/driving/-74.0817,4.6097;-74.0480,4.6760?overview=full&geometries=geojson"
-```
-
-La respuesta JSON trae `routes[0].distance` (metros), `routes[0].duration` (segundos) y `routes[0].geometry`, la lista de puntos que la app dibuja como polilínea en el mapa (Tema 2).
-
-> **Nota de verificación.** Los comandos siguen el README oficial de OSRM, pero no se ejecutaron al escribir el tema porque el entorno de verificación no tiene Docker. Preparar un país entero puede necesitar varios GB de RAM: empieza con el recorte de una ciudad.
-
-## Reglas y casos límite
-
-- **Longitud primero.** OSRM usa `lon,lat`, al revés que Google Maps. Invertirlas da rutas en otro continente o errores `NoRoute`.
-- **El mapa no se actualiza solo.** Calles nuevas o sentidos cambiados exigen descargar el mapa y repetir la preparación, por ejemplo con una tarea semanal.
-- **OSRM calcula rutas, no geocodifica.** Convertir «Calle 26 #59-41» en coordenadas lo hace otro servicio, como Nominatim.
-- **Tráfico en tiempo real no incluido.** Los tiempos salen de velocidades típicas por tipo de vía.
-
-## Compruébalo
-
-1. ¿Qué pasa si envías las coordenadas como `4.6097,-74.0817`? Predícelo antes de probar.
-2. ¿Qué perfil (`car.lua`, `bicycle.lua` o `foot.lua`) usarías para repartidores en bicicleta, y qué cambiaría en las rutas?
-
+</details>
