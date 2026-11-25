@@ -2552,24 +2552,32 @@
     ],
     "1": [
       {
-        "title": "StatelessWidget vs StatefulWidget",
-        "fragment": "tema-1-statelesswidget-vs-statefulwidget"
+        "title": "La primera pantalla: MaterialApp, Scaffold y el árbol de widgets",
+        "fragment": "tema-1-la-primera-pantalla-materialapp-scaffold-y-el-arbol-de-widgets"
       },
       {
-        "title": "Layout con Row, Column y Stack, y ciclo de vida",
-        "fragment": "tema-2-layout-con-row-column-y-stack-y-ciclo-de-vida"
+        "title": "Maquetar una tarjeta: filas, columnas, espacios y jerarquía visual",
+        "fragment": "tema-2-maquetar-una-tarjeta-filas-columnas-espacios-y-jerarquia-visual"
       },
       {
-        "title": "Keys",
-        "fragment": "tema-3-keys"
+        "title": "Capas, decoración y desbordes: Stack, BoxDecoration y Expanded",
+        "fragment": "tema-3-capas-decoracion-y-desbordes-stack-boxdecoration-y-expanded"
       },
       {
-        "title": "Los tres árboles de Flutter: Widget, Element y RenderObject",
-        "fragment": "tema-4-los-tres-arboles-de-flutter-widget-element-y-renderobject"
+        "title": "Estado y ciclo de vida: StatefulWidget, setState, initState y dispose",
+        "fragment": "tema-4-estado-y-ciclo-de-vida-statefulwidget-setstate-initstate-y-dispose"
       },
       {
-        "title": "Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos",
-        "fragment": "tema-5-gestos-en-flutter-gesturedetector-dismissible-y-la-arena-de-gestos"
+        "title": "Listas largas y keys: ListView.builder y estado que sigue a su fila",
+        "fragment": "tema-5-listas-largas-y-keys-listview-builder-y-estado-que-sigue-a-su-fila"
+      },
+      {
+        "title": "Los tres árboles: widgets, elementos y objetos de render",
+        "fragment": "tema-6-los-tres-arboles-widgets-elementos-y-objetos-de-render"
+      },
+      {
+        "title": "Gestos: tocar, mantener y deslizar",
+        "fragment": "tema-7-gestos-tocar-mantener-y-deslizar"
       }
     ],
     "10": [
