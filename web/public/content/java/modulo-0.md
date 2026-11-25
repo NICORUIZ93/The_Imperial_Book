@@ -47,9 +47,10 @@ completo en las secciones siguientes, es el caso guía: cada tema explica una pa
 
 ## Qué necesitas saber antes
 
-Este módulo supone que terminaste el curso de Fundamentos (en Python): variables, condiciones, bucles, funciones,
-excepciones y uso de la terminal. Todo lo específico de Java se explica aquí desde cero, comparándolo con Python
-cuando ayuda. Si dudas con la terminal, repasa el Módulo 0 de Fundamentos («Cómo funciona tu entorno de desarrollo»).
+Este módulo supone que terminaste el curso de Fundamentos: variables, condiciones, bucles, métodos, excepciones y
+uso de la terminal, ya escritos en Java con archivos compactos (`void main()`) que ejecutabas con `java Archivo.java`.
+Aquí se explica, desde cero, el Java de los proyectos reales: clases con nombre, compilación separada, tipos y
+paquetes, comparándolo con lo que ya hacías cuando ayuda. Si dudas con la terminal, repasa el Módulo 0 de Fundamentos («Cómo funciona tu entorno de desarrollo»).
 
 ## Proyecto desde cero: tienda-aurora-fundamentos
 
@@ -1319,15 +1320,15 @@ En el IDE aprietas «Run» y aparece la salida. No ves que se creó un archivo n
 Cuando el mismo programa falla en el servidor de integración, no tienes un modelo mental para diagnosticar. No sabes
 si el problema es el código, el compilador, la versión del runtime o el classpath.
 
-En Fundamentos ejecutabas `python3 archivo.py` y listo: el intérprete leía el texto directamente. Java no funciona
-así. Antes de ejecutar Tienda Aurora tienes que entender qué archivo se ejecuta realmente y quién lo ejecuta.
+En Fundamentos ejecutabas `java Archivo.java` y listo: el lanzador compilaba en memoria y ejecutaba en un solo paso,
+sin dejar archivos. Un proyecto real no funciona así. Antes de ejecutar Tienda Aurora tienes que entender qué archivo se ejecuta realmente y quién lo ejecuta.
 
 #### Glosario del tema
 
 **código fuente**
 - **Definición técnica:** texto escrito en un lenguaje de programación, guardado en archivos `.java`, que un compilador traduce a otra forma ejecutable.
 - **En palabras sencillas:** la receta que tú escribes y lees; la máquina no la ejecuta tal cual.
-- **Dónde se rompe la comparación:** en Python el intérprete lee el `.py` directamente; en Java el `.java` siempre pasa antes por un compilador.
+- **Dónde se rompe la comparación:** con `java Archivo.java` la compilación ocurre en memoria y no la ves; aun así, el `.java` siempre pasa por un compilador antes de ejecutarse.
 - **Ejemplo:** `Hola.java` (Problema resuelto 1.1) es código fuente; al compilarlo aparece `Hola.class`.
 - **Error típico:** editar el `.java` y ejecutar con `java Hola` sin recompilar: la JVM corre el `.class` viejo y no ves tu cambio.
 
@@ -2062,7 +2063,7 @@ salió mal. Para eso tienes que saber qué hace cada palabra de esa línea y qu�
 **clase**
 - **Definición técnica:** plantilla que declara campos (datos) y métodos (comportamiento); en Java todo método vive dentro de una clase.
 - **En palabras sencillas:** el plano de algo: dice qué datos tiene y qué sabe hacer.
-- **Dónde se rompe la comparación:** en Python puedes escribir funciones sueltas en un archivo; en un programa Java clásico no.
+- **Dónde se rompe la comparación:** en un archivo compacto de Fundamentos escribías `void main()` y métodos sueltos; en un programa Java clásico todo va dentro de una clase con nombre.
 - **Ejemplo:** `public class Contador { ... }` en el Problema resuelto 3.2.
 - **Error típico:** llamar distinto a la clase pública y al archivo: `javac` responde `class Recibo is public, should be declared in a file named Recibo.java`.
 
@@ -2075,7 +2076,7 @@ salió mal. Para eso tienes que saber qué hace cada palabra de esa línea y qu�
 
 **método**
 - **Definición técnica:** bloque de código con nombre, parámetros y tipo de retorno, declarado dentro de una clase.
-- **En palabras sencillas:** una función de Python que pertenece a una clase.
+- **En palabras sencillas:** una acción con nombre que pertenece a una clase.
 - **Dónde se rompe la comparación:** en Java debes declarar el tipo de cada parámetro y el de lo que devuelve.
 - **Ejemplo:** `static int sumar(int a, int b)` recibe dos `int` y devuelve un `int`; `sumar(2, 3)` da `5`.
 - **Error típico:** devolver un valor desde un método `void`: `incompatible types: unexpected return value`.
@@ -2083,14 +2084,14 @@ salió mal. Para eso tienes que saber qué hace cada palabra de esa línea y qu�
 **constructor**
 - **Definición técnica:** bloque especial con el mismo nombre de la clase y sin tipo de retorno, que se ejecuta al crear el objeto con `new`.
 - **En palabras sencillas:** las instrucciones de montaje que se siguen una vez, al construir cada objeto.
-- **Dónde se rompe la comparación:** equivale al `__init__` de Python, pero no recibe `self` explícito: usa `this`.
+- **Dónde se rompe la comparación:** parece un método, pero no declara tipo de retorno y se llama igual que la clase; dentro, `this` es el objeto que se está creando.
 - **Ejemplo:** `Contador(String nombre)` guarda el nombre en `this.nombre` y suma uno a `creados`.
 - **Error típico:** ponerle tipo de retorno (`void Contador(...)`): deja de ser constructor y pasa a ser un método común.
 
 **`main`**
 - **Definición técnica:** método que el lanzador `java` busca en la clase indicada para empezar la ejecución.
 - **En palabras sencillas:** la puerta de entrada del programa.
-- **Dónde se rompe la comparación:** en Python el archivo se ejecuta de arriba abajo; en Java solo corre lo que `main` llama.
+- **Dónde se rompe la comparación:** un script de la terminal se ejecuta de arriba abajo; en Java solo corre lo que `main` llama.
 - **Ejemplo:** `java Argumentos cotizar` ejecuta `Argumentos.main` con `args = ["cotizar"]`.
 - **Error típico:** ejecutar una clase sin `main`: `Error: Main method not found in class SinMain`.
 
@@ -2118,7 +2119,7 @@ salió mal. Para eso tienes que saber qué hace cada palabra de esa línea y qu�
 **`String[] args`**
 - **Definición técnica:** parámetro de `main`: arreglo de textos con las palabras escritas después del nombre de la clase.
 - **En palabras sencillas:** la lista de instrucciones que el usuario le pasa al programa al arrancarlo.
-- **Dónde se rompe la comparación:** a diferencia de `sys.argv` de Python, `args[0]` no es el nombre del programa sino el primer argumento.
+- **Dónde se rompe la comparación:** a diferencia de `$0` en Bash o de `argv[0]` en C, `args[0]` no es el nombre del programa sino el primer argumento.
 - **Ejemplo:** `java Argumentos 'Café Aurora' 3` da `args.length = 2` y `args[0] = Café Aurora`.
 - **Error típico:** leer `args[0]` sin comprobar `args.length`; si no hay argumentos, el programa falla con `ArrayIndexOutOfBoundsException`.
 
@@ -2472,8 +2473,8 @@ Al terminar este tema podrás:
 Ya conoces y no se repiten: *clase*, *objeto* y *constructor* (Tema 3).
 
 #### El problema
-El molino de Tienda Aurora cuesta 34,90 € y un cliente compra tres. En Python escribirías `34.90 * 3` y no
-pensarías en el tipo. En Java cada variable declara su tipo, y esa elección decide si el total cuadra al céntimo,
+El molino de Tienda Aurora cuesta 34,90 € y un cliente compra tres. En Fundamentos escribías `34.90 * 3` con un
+`double` y no pensabas en el tipo. En Java cada variable declara su tipo, y esa elección decide si el total cuadra al céntimo,
 si un pedido grande se vuelve negativo o si dos variables cambian a la vez sin que lo notes.
 
 #### Glosario del tema
@@ -2481,7 +2482,7 @@ si un pedido grande se vuelve negativo o si dos variables cambian a la vez sin q
 **tipo primitivo**
 - **Definición técnica:** uno de los ocho tipos básicos de Java (`byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean`), cuya variable guarda directamente el valor.
 - **En palabras sencillas:** una caja que contiene el número mismo, no una indicación de dónde buscarlo.
-- **Dónde se rompe la comparación:** en Python todo es objeto; en Java los primitivos no tienen métodos: `stock.length()` no compila.
+- **Dónde se rompe la comparación:** un `String` es un objeto con métodos; un primitivo no: `stock.length()` no compila.
 - **Ejemplo:** `int stock = 40;` guarda 40; su máximo es `2147483647` (salida del Problema resuelto 4.1).
 - **Error típico:** elegir `int` para un dato que puede superar 2 147 483 647, como un total en centavos de muchos pedidos.
 
@@ -2495,7 +2496,7 @@ si un pedido grande se vuelve negativo o si dos variables cambian a la vez sin q
 **`null`**
 - **Definición técnica:** valor especial que solo pueden tener las variables de tipo referencia; indica que no apuntan a ningún objeto.
 - **En palabras sencillas:** una caja de direcciones vacía.
-- **Dónde se rompe la comparación:** se parece a `None` de Python, pero un primitivo nunca puede valer `null`: `int x = null;` no compila.
+- **Dónde se rompe la comparación:** solo las referencias pueden valer `null`; un primitivo nunca: `int x = null;` no compila.
 - **Ejemplo:** `Producto vacio = null;` se imprime como `vacio = null`.
 - **Error típico:** usar un campo o método de una variable `null`; la JVM lanza `NullPointerException`.
 
@@ -2892,14 +2893,14 @@ compara cadenas sin normalizar, el mismo producto se comporta como dos. Además,
 **variable con tipo declarado**
 - **Definición técnica:** nombre asociado a un valor cuyo tipo se fija al declararla (`int stock;`) y no puede cambiar durante su vida.
 - **En palabras sencillas:** una caja con etiqueta de contenido: «solo enteros».
-- **Dónde se rompe la comparación:** en Python el mismo nombre puede pasar de número a texto; en Java `stock = "cuarenta";` no compila.
+- **Dónde se rompe la comparación:** una variable no cambia de tipo: si `stock` es `int`, `stock = "cuarenta";` no compila.
 - **Ejemplo:** `int stock = 40;` declara e inicializa en una línea.
 - **Error típico:** usarla antes de darle valor: `variable stock might not have been initialized`.
 
 **`var`**
 - **Definición técnica:** palabra que pide al compilador deducir el tipo de una variable local a partir de su valor inicial; el tipo sigue siendo fijo.
 - **En palabras sencillas:** «pon tú la etiqueta, compilador, mirando lo que meto en la caja».
-- **Dónde se rompe la comparación:** no convierte a Java en Python: después de `var stock = 40;`, `stock` es `int` para siempre.
+- **Dónde se rompe la comparación:** `var` no quita el tipo, solo lo deduce: después de `var stock = 40;`, `stock` es `int` para siempre.
 - **Ejemplo:** `var stock = 40; stock = stock + 5;` imprime `stock = 45`.
 - **Error típico:** escribir `var x;` sin valor inicial; el compilador no tiene de dónde deducir el tipo.
 
@@ -2941,7 +2942,7 @@ compara cadenas sin normalizar, el mismo producto se comporta como dos. Además,
 **`equals`**
 - **Definición técnica:** método que compara el contenido de dos objetos; `==` entre referencias compara si son el mismo objeto.
 - **En palabras sencillas:** `equals` pregunta «¿dicen lo mismo?»; `==` pregunta «¿son la misma hoja de papel?».
-- **Dónde se rompe la comparación:** en Python `==` compara contenido; en Java hay que pedirlo con `equals`.
+- **Dónde se rompe la comparación:** con objetos, `==` compara si son el mismo objeto; para comparar el contenido hay que pedirlo con `equals`.
 - **Ejemplo:** `a.equals(b)` da `true` y `a == b` da `false` para dos `new String("CAF-0001")`.
 - **Error típico:** llamar `equals` sobre una variable `null`; escribe `"CAF-0001".equals(sku)` o usa `Objects.equals`.
 
@@ -3357,7 +3358,7 @@ Necesitas expresar esas reglas sin que un paréntesis mal puesto o un caso olvid
 **operador lógico**
 - **Definición técnica:** operador que combina valores `boolean`: `&&` (y), `||` (o) y `!` (no).
 - **En palabras sencillas:** unir preguntas de sí o no: «¿hay cantidad y hay stock?».
-- **Dónde se rompe la comparación:** en Python se escriben `and`, `or` y `not`; en Java son símbolos.
+- **Dónde se rompe la comparación:** en español decimos «y», «o» y «no»; en Java son símbolos: `&&`, `||` y `!`.
 - **Ejemplo:** `dia % 7 != 6 && dia % 7 != 0` es `true` solo de lunes a viernes.
 - **Error típico:** usar `&` o `|` (de bits) en condiciones: evalúan los dos lados siempre.
 
@@ -3406,7 +3407,7 @@ Necesitas expresar esas reglas sin que un paréntesis mal puesto o un caso olvid
 **`for`**
 - **Definición técnica:** bucle con inicialización, condición y actualización en una línea (`for (int i = 0; i < n; i++)`), o forma mejorada `for (T x : arreglo)`.
 - **En palabras sencillas:** repetir un número conocido de veces, o una vez por cada elemento.
-- **Dónde se rompe la comparación:** el `for` de Python siempre recorre elementos; el `for` clásico de Java recorre índices.
+- **Dónde se rompe la comparación:** el `for` mejorado (`for (var x : lista)`) recorre elementos; el `for` clásico recorre índices.
 - **Ejemplo:** `for (long subtotal : subtotales)` procesa 1600, 5600 y 10470.
 - **Error típico:** escribir `i <= arreglo.length`; la última vuelta lee una posición que no existe.
 
@@ -3777,14 +3778,14 @@ se copia y qué se comparte.
 **arreglo**
 - **Definición técnica:** objeto que guarda un número fijo de elementos del mismo tipo en posiciones contiguas; su tipo se escribe `T[]`.
 - **En palabras sencillas:** una fila de casilleros numerados, todos del mismo tamaño, que no se puede alargar.
-- **Dónde se rompe la comparación:** una lista de Python crece con `append`; un arreglo Java tiene longitud fija desde que se crea.
+- **Dónde se rompe la comparación:** una `List` crece con `add`; un arreglo tiene longitud fija desde que se crea.
 - **Ejemplo:** `int[] stock = {40, 25, 10};` tiene `stock.length` igual a 3.
 - **Error típico:** imprimir el arreglo directamente: muestra algo como `[I@1b6d3586`; usa `Arrays.toString`.
 
 **índice**
 - **Definición técnica:** posición entera de un elemento en un arreglo, desde 0 hasta `length - 1`; también se usa `length` para saber cuántos hay.
 - **En palabras sencillas:** el número del casillero, empezando a contar en cero.
-- **Dónde se rompe la comparación:** Java no acepta índices negativos como Python: `stock[-1]` no es el último.
+- **Dónde se rompe la comparación:** Java no acepta índices negativos: `stock[-1]` no es el último, sino un error al ejecutar.
 - **Ejemplo:** `stock[0]` es `40` y `stock[2]` es `10`.
 - **Error típico:** usar `stock[stock.length]`; el último índice válido es `length - 1`.
 
@@ -3846,7 +3847,7 @@ se copia y qué se comparte.
 
 **`List`**
 - **Definición técnica:** interfaz de colección ordenada y de tamaño variable; `ArrayList` es su implementación más usada y `<Integer>` indica el tipo de elementos.
-- **En palabras sencillas:** la versión de Java de la lista de Python: crece cuando agregas.
+- **En palabras sencillas:** un arreglo que crece cuando agregas.
 - **Dónde se rompe la comparación:** solo guarda objetos: `List<int>` no compila, por eso existen los wrappers.
 - **Ejemplo:** `List<Integer> cantidades = new ArrayList<>();` con dos `add` imprime `[3, 7]`.
 - **Error típico:** confundir `length` (arreglos) con `size()` (listas). El Módulo 2 trata las colecciones a fondo.
@@ -4152,14 +4153,14 @@ laborables y guarda la hora del pedido para la pasarela de pagos, que vive en ot
 **`Scanner`**
 - **Definición técnica:** clase de `java.util` que lee texto de una fuente (como `System.in`) y lo separa en líneas o en piezas.
 - **En palabras sencillas:** un lector que toma lo que llega por la entrada y te lo entrega línea a línea.
-- **Dónde se rompe la comparación:** se parece a `input()` de Python, pero no muestra mensaje: el aviso se imprime aparte.
+- **Dónde se rompe la comparación:** a diferencia de `IO.readln("mensaje")`, no muestra mensaje: el aviso se imprime aparte.
 - **Ejemplo:** `teclado.nextLine().strip()` devuelve `"tres"` en la primera vuelta de `LeerCantidad`.
 - **Error típico:** mezclar `nextInt()` con `nextLine()`; el salto de línea pendiente se lee como una línea vacía.
 
 **`try` y `catch`**
 - **Definición técnica:** bloque `try` que ejecuta código que puede lanzar una excepción, seguido de `catch (Tipo e)` que la atrapa si ocurre.
 - **En palabras sencillas:** «intenta esto; si sale esta alarma concreta, haz esto otro en vez de detenerte».
-- **Dónde se rompe la comparación:** es el `try`/`except` de Python, pero en Java se nombra la clase exacta de la excepción.
+- **Dónde se rompe la comparación:** atrapa solo lo que nombras: cada `catch` declara la clase exacta de la excepción.
 - **Ejemplo:** `catch (NumberFormatException e)` muestra `'tres' no es un entero válido` y el bucle sigue.
 - **Error típico:** un `catch` vacío que se traga el error sin avisar (lo verás en el Módulo 3).
 
@@ -4608,8 +4609,8 @@ necesita calcular el valor de su inventario con un archivo que quepa en una pant
 
 **archivo compacto**
 - **Definición técnica:** archivo fuente (*compact source file*, Java 25) que declara métodos y campos en el nivel superior, sin una declaración de clase que los envuelva.
-- **En palabras sencillas:** un archivo Java que se escribe casi como un script de Python.
-- **Dónde se rompe la comparación:** sigue siendo Java compilado y con tipos: no hay ejecución línea a línea como en Python.
+- **En palabras sencillas:** un archivo Java que se escribe casi como un script, sin declarar la clase.
+- **Dónde se rompe la comparación:** sigue siendo Java compilado y con tipos: no hay ejecución línea a línea como en un script de Bash.
 - **Ejemplo:** `Saludo.java` tiene solo `void main() { ... }` e imprime `Hola desde un archivo compacto`.
 - **Error típico:** ejecutarlo con un JDK anterior a 25; Java 21 responde `unnamed classes are a preview feature and are disabled by default`.
 
@@ -4630,7 +4631,7 @@ necesita calcular el valor de su inventario con un archivo que quepa en una pant
 **`IO`**
 - **Definición técnica:** clase `java.lang.IO` (Java 25) con métodos estáticos para consola: `println`, `print` y `readln`.
 - **En palabras sencillas:** atajos para imprimir y leer sin `System.out` ni `Scanner`.
-- **Dónde se rompe la comparación:** `IO.readln("mensaje")` se parece a `input("mensaje")` de Python, pero devuelve `null` si la entrada terminó.
+- **Dónde se rompe la comparación:** `IO.readln("mensaje")` muestra el mensaje y espera la línea, pero devuelve `null` si la entrada terminó.
 - **Ejemplo:** `IO.readln("Tu nombre: ")` con la entrada `Aurora` imprime `Tu nombre: Hola, Aurora`.
 - **Error típico:** usar `IO` en código que debe compilar con Java 21; esa clase no existe ahí.
 
@@ -4650,7 +4651,7 @@ necesita calcular el valor de su inventario con un archivo que quepa en una pant
 
 **lanzador de código fuente**
 - **Definición técnica:** modo del comando `java` que recibe un archivo `.java`, lo compila en memoria y ejecuta su `main` sin dejar `.class` en disco.
-- **En palabras sencillas:** compilar y ejecutar en un solo paso, como `python3 archivo.py`.
+- **En palabras sencillas:** compilar y ejecutar en un solo paso, como hacías en Fundamentos con `java Archivo.java`.
 - **Dónde se rompe la comparación:** compila en cada ejecución; para un programa grande es más lento que ejecutar un `.class` ya compilado.
 - **Ejemplo:** `java scripts/Inventario.java` imprime el inventario sin `javac` previo.
 - **Error típico:** buscar el `.class` después de ejecutar; este modo no lo guarda.

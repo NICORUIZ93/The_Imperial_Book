@@ -24,10 +24,10 @@ Tema 2); interfaces y clases abstractas (Módulo 1, Tema 3); `record` (Módulo 1
 métodos (Módulo 4, Tema 4); `AtomicInteger` y `synchronized` (Módulo 5, Tema 4); `sealed` y `switch` exhaustivo
 (Módulo 7, Temas 1 y 2); JUnit (Módulo 9, Tema 1).
 
-**Relación con Fundamentos.** El catálogo conceptual ya está en el curso de Fundamentos, con ejemplos en Python:
-*patrón de diseño* y Decorator (Fundamentos, Módulo 13, Tema 1), Template Method (Fundamentos, Módulo 13, Tema 3),
-Flyweight con estado intrínseco y extrínseco (Fundamentos, Módulo 13, Tema 8), y SOLID, inversión de dependencias,
-Repository y Adapter (Fundamentos, Módulo 7, Tema 3). Aquí esas fichas no se repiten. Cada tema las cita y explica
+**Relación con Fundamentos.** El catálogo conceptual ya está en el curso de Fundamentos: Decorator (Fundamentos,
+Módulo 9, Tema 1), Template Method (Fundamentos, Módulo 9, Tema 3) y Flyweight con estado intrínseco y extrínseco
+(Fundamentos, Módulo 9, Tema 8). *Patrón de diseño*, SOLID, inversión de dependencias, Repository y Adapter están en el
+curso de Arquitectura (Módulo 0, Tema 3). Aquí esas fichas no se repiten. Cada tema las cita y explica
 solo la versión idiomática en Java: qué cambia con interfaces, `sealed`, `record`, `enum` y lambdas.
 
 ## Visual del módulo
@@ -124,7 +124,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** constructor telescópico, Builder, interfaz fluida, invariante, copia defensiva
 
-Ya los conoces y no se repiten: *patrón de diseño* (Fundamentos, Módulo 13, Tema 1); *clase*, *constructor* y
+Ya los conoces y no se repiten: *patrón de diseño* (Fundamentos, Módulo 9, Tema 1); *clase*, *constructor* y
 *encapsulación* (Java, Módulo 1, Tema 1); `record` (Java, Módulo 1, Tema 5); `IllegalStateException` e
 `IllegalArgumentException` (Java, Módulo 3, Tema 1).
 
@@ -607,7 +607,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** factory simple, Factory Method, Strategy, interfaz funcional, escala de `BigDecimal`
 
 Ya los conoces y no se repiten: *Template Method*, el flujo fijo con pasos variables que usa Factory Method
-(Fundamentos, Módulo 13, Tema 3); *inversión de dependencias* (Fundamentos, Módulo 7, Tema 3); *interfaz* y *clase
+(Fundamentos, Módulo 9, Tema 3); *inversión de dependencias* (Arquitectura, Módulo 0, Tema 3); *interfaz* y *clase
 abstracta* (Java, Módulo 1, Tema 3); *lambda* (Java, Módulo 4, Tema 1); `switch` con flechas (Java, Módulo 0, Tema 6).
 
 #### El problema
@@ -1586,8 +1586,8 @@ Al terminar este tema podrás:
 **Conceptos clave:** Facade, Composite, Proxy, Bridge, sobre-ingeniería, `Logger` de `java.util.logging`, `ConcurrentHashMap`
 
 Ya los conoces y no se repiten: *principios SOLID*, *inversión de dependencias*, *Adapter*, *refactorización* y
-*prueba caracterizadora* (Fundamentos, Módulo 7, Tema 3); *Decorator* (Fundamentos, Módulo 13, Tema 1); *Flyweight*,
-*estado intrínseco* y *estado extrínseco* (Fundamentos, Módulo 13, Tema 8); *Strategy* e *interfaz funcional*
+*prueba caracterizadora* (Arquitectura, Módulo 0, Tema 3); *Decorator* (Fundamentos, Módulo 9, Tema 1); *Flyweight*,
+*estado intrínseco* y *estado extrínseco* (Fundamentos, Módulo 9, Tema 8); *Strategy* e *interfaz funcional*
 (Tema 2 de este módulo); `sealed` (Java, Módulo 7, Tema 1); `switch` exhaustivo (Java, Módulo 7, Tema 2); patrón `_`
 (Java, Módulo 7, Tema 3); `AtomicInteger` y `synchronized` (Java, Módulo 5, Tema 4).
 
@@ -1653,7 +1653,7 @@ SOLID aparece aquí de forma comprobable: **S**RP se demuestra con `CobroAcoplad
 
 La pregunta de diagnóstico es siempre la misma: *¿qué cambio espero y cuánto cuesta el diseño actual?* Si no hay cambio probable, la solución simple gana. Al final de este tema hay una comparación ejecutable entre una solución directa y una factory innecesaria.
 
-**Adapter — traducir un contrato incompatible.** La ficha de Adapter está en Fundamentos, Módulo 7, Tema 3. En Java:
+**Adapter — traducir un contrato incompatible.** La ficha de Adapter está en Arquitectura, Módulo 0, Tema 3. En Java:
 
 **Mecanismo.** `PagoExternoAdapter` implementa `ProcesadorPago` y delega en `PagoExterno.ejecutarPago(clienteId, centavos)`, convirtiendo `BigDecimal` a centavos con `RoundingMode.HALF_UP`.
 
@@ -1663,7 +1663,7 @@ La pregunta de diagnóstico es siempre la misma: *¿qué cambio espero y cuánto
 
 **Confusión común.** Confundirlo con Facade. Adapter *traduce* una interfaz incompatible; Facade *simplifica* un subsistema compatible.
 
-**Decorator — agregar comportamiento sin subclases.** La ficha de Decorator está en Fundamentos, Módulo 13, Tema 1.
+**Decorator — agregar comportamiento sin subclases.** La ficha de Decorator está en Fundamentos, Módulo 9, Tema 1.
 En Java:
 
 **Mecanismo.** `ProcesadorPagoDecorado` implementa la misma interfaz que su delegado, registra antes y después de la llamada y devuelve el resultado del delegado.
@@ -1723,7 +1723,7 @@ flowchart LR
 
 **Confusión común.** Confundirlo con Strategy o Adapter. Strategy cambia un algoritmo detrás de una interfaz; Bridge separa dos jerarquías que varían por razones distintas. Adapter se usa cuando la interfaz ya existente es incompatible.
 
-**Flyweight — compartir estado inmutable.** La ficha de Flyweight está en Fundamentos, Módulo 13, Tema 8. En Java:
+**Flyweight — compartir estado inmutable.** La ficha de Flyweight está en Fundamentos, Módulo 9, Tema 8. En Java:
 
 **Mecanismo.** `EtiquetaFactory` mantiene un `ConcurrentHashMap<Clave, EtiquetaFlyweight>`. La clave (canal, estilo) es el estado intrínseco compartido; el producto se pasa como estado extrínseco a `renderizar(producto)`.
 
@@ -2984,7 +2984,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** Prototype, aliasing, copia profunda, constructor de copia, `Cloneable` y `clone()`
 
-Ya los conoces y no se repiten: *copia superficial* (Fundamentos, Módulo 13, Tema 6); *copia defensiva* e
+Ya los conoces y no se repiten: *copia superficial* (Fundamentos, Módulo 9, Tema 6); *copia defensiva* e
 *invariante* (Tema 1 de este módulo); `record` (Java, Módulo 1, Tema 5); referencias frente a primitivos (Java,
 Módulo 0, Tema 4).
 

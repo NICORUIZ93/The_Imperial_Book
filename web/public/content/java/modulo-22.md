@@ -21,7 +21,7 @@ está completo en «Código completo del proyecto», antes de los temas; cada te
 `static` e identidad (Java, Módulo 1, Tema 1); `record`, *objeto de valor* y *copia defensiva* (Java, Módulo 1,
 Tema 5); `equals`, `hashCode` y claves mutables (Java, Módulo 2, Temas 2 y 3); lambdas (Java, Módulo 4, Tema 1);
 `switch` exhaustivo (Java, Módulo 7, Tema 2); referencias débiles (Java, Módulo 11, Tema 3); *Prototype*, *copia
-profunda* y `clone()` (Java, Módulo 12, Tema 5); *copia superficial* (Fundamentos, Módulo 13, Tema 6).
+profunda* y `clone()` (Java, Módulo 12, Tema 5); *copia superficial* (Fundamentos, Módulo 9, Tema 6).
 
 ## Prerrequisitos y bootstrap
 
@@ -805,7 +805,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** enum con comportamiento, `ordinal()`, `valueOf` de un enum, `EnumMap`
 
-Ya los conoces y no se repiten: *copia superficial* (Fundamentos, Módulo 13, Tema 6); *Prototype*, *aliasing*, *copia
+Ya los conoces y no se repiten: *copia superficial* (Fundamentos, Módulo 9, Tema 6); *Prototype*, *aliasing*, *copia
 profunda*, *constructor de copia* y *`Cloneable` y `clone()`* (Java, Módulo 12, Tema 5); *inmutabilidad superficial*
 (Java, Módulo 1, Tema 5) e *inmutabilidad profunda* (Fundamentos, Módulo 7, Tema 5); `enum` y `switch` (Java,
 Módulo 0, Tema 6); *switch con patrones* y exhaustividad (Java, Módulo 7, Tema 2); *copia de entrada y de salida*

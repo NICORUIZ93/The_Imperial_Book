@@ -28,7 +28,7 @@ Al terminar este módulo podrás:
 4. Laboratorio integrador — `tienda-aurora-excepciones`, una CLI que importa productos desde CSV y reserva stock.
 
 #### Qué necesitas saber antes
-- **Fundamentos, Módulo 1, Tema 1:** la ficha *excepción* explica la idea general con Python (`raise`, `try`, `except`). Aquí solo se explica lo propio de Java.
+- **Fundamentos, Módulo 1, Tema 1:** la ficha *excepción* explica la idea general (`throw`, `try`, `catch`). Aquí se profundiza en lo propio de Java.
 - **Java, Módulos 0 a 2:** clases, `record`, interfaces, herencia, `String`, `List` y `Map`.
 
 ## Visual del módulo
@@ -70,8 +70,8 @@ negocio violada. ¿Cómo le dice Java a quien llama un método que puede fallar,
 
 #### Glosario del tema
 
-En Fundamentos viste qué es una **excepción** con Python: una señal que interrumpe el flujo normal. Java usa la misma
-idea, pero añade algo que Python no tiene: el compilador revisa algunas excepciones antes de ejecutar.
+En Fundamentos viste qué es una **excepción**: una señal que interrumpe el flujo normal. Java añade algo que muchos
+lenguajes no tienen: el compilador revisa algunas excepciones antes de ejecutar.
 
 **Throwable**
 - **Definición técnica:** clase raíz de todo lo que Java puede lanzar con `throw`; sus dos ramas son `Exception` (fallos que un programa puede tratar) y `Error` (fallos graves de la JVM).
@@ -97,7 +97,7 @@ idea, pero añade algo que Python no tiene: el compilador revisa algunas excepci
 **throw**
 - **Definición técnica:** instrucción que lanza un objeto `Throwable`; el método se interrumpe y la JVM busca un `catch` compatible subiendo por la pila de llamadas.
 - **En palabras sencillas:** el momento en que el código dice «aquí no puedo seguir» y entrega el problema a quien lo llamó.
-- **Dónde se rompe la comparación:** a diferencia de Python (`raise`), en Java lanzas un objeto creado con `new`.
+- **Dónde se rompe la comparación:** no se lanza un texto ni un código: se lanza un objeto creado con `new`.
 - **Ejemplo:** `throw new IllegalStateException("stock insuficiente: ...")` en la línea 13 del Problema resuelto 1.2.
 - **Error típico:** escribir `throw IllegalStateException("x")` sin `new`: el compilador responde `cannot find symbol`.
 
@@ -111,7 +111,7 @@ idea, pero añade algo que Python no tiene: el compilador revisa algunas excepci
 **try-catch**
 - **Definición técnica:** bloque que ejecuta las instrucciones de `try` y, si se lanza una excepción compatible con el tipo de un `catch`, salta a ese `catch`; los demás tipos siguen subiendo.
 - **En palabras sencillas:** «intenta esto; si pasa este problema concreto, haz esto otro».
-- **Dónde se rompe la comparación:** equivale al `try`/`except` de Python, pero en Java cada `catch` declara un tipo y el compilador lo revisa.
+- **Dónde se rompe la comparación:** cada `catch` declara un tipo y el compilador lo revisa: no puedes atrapar una excepción comprobada que el bloque nunca lanza.
 - **Ejemplo:** `catch (IOException e)` en la línea 22 del Problema resuelto 1.2 imprime `checked: NoSuchFileException -> no-existe.csv`.
 - **Error típico:** capturar una checked que el bloque no puede lanzar: `error: exception IOException is never thrown in body of corresponding try statement`.
 

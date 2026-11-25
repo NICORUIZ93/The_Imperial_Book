@@ -1645,7 +1645,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** clase, objeto, referencia, `new`, campo, constructor, `this`, método de instancia, `private`, `public`, encapsulación, invariante, `final`, accesor, `static`, `toString`, identidad, igualdad
 
-Ya los conoces y no se repiten: la idea de *clase*, *objeto*, *atributo*, *método*, `__init__` y `__str__` en Python
+Ya los conoces y no se repiten: la idea de *clase*, *objeto*, *atributo*, *método*, constructor y `toString`
 (Fundamentos, Módulo 1, Tema 6); *excepción* (Fundamentos, Módulo 1, Tema 1); `main`, *tipos primitivos*, `String`,
 arreglos y `try`/`catch` (Java, Módulo 0). Aquí solo se explica lo que cambia en Java.
 
@@ -1660,7 +1660,7 @@ se propaga hasta la factura. ¿Cómo haces que un producto **no pueda existir** 
 **clase**
 - **Definición técnica:** declaración con `class` de un tipo nuevo; fija en compilación qué campos tiene cada objeto, qué constructores lo crean y qué métodos admite.
 - **En palabras sencillas:** el mismo molde de Fundamentos (Módulo 1, Tema 6), pero con las casillas impresas: no se agregan después.
-- **Dónde se rompe la comparación:** en Python puedes añadir un atributo a un objeto cuando quieras; en Java la clase declara todos los campos y el compilador rechaza cualquier otro.
+- **Dónde se rompe la comparación:** a un formulario impreso le puedes escribir algo al margen; a un objeto Java no: la clase declara todos los campos y el compilador rechaza cualquier otro.
 - **Ejemplo:** `class Producto { ... }` en `ProductosBasicos.java` (Problema resuelto 1.1, líneas 16–34) declara el tipo `Producto`.
 - **Error típico:** marcar `public` una segunda clase del archivo: `error: class Producto is public, should be declared in a file named Producto.java`.
 
@@ -1681,27 +1681,27 @@ se propaga hasta la factura. ¿Cómo haces que un producto **no pueda existir** 
 **`new`**
 - **Definición técnica:** operador que reserva memoria para un objeto de la clase indicada, pone sus campos en valores por defecto, ejecuta el constructor y devuelve la referencia.
 - **En palabras sencillas:** la orden «fabrica uno con este molde y dame su dirección».
-- **Dónde se rompe la comparación:** en Python escribes `Producto(...)`; en Java, sin `new`, el compilador busca un método llamado `Producto`.
+- **Dónde se rompe la comparación:** un record o una clase se crea siempre con `new Producto(...)`; sin `new`, el compilador busca un método llamado `Producto`.
 - **Ejemplo:** `new Producto("TAZ-0002", "Taza Aurora", 800)` (línea 5 del Problema resuelto 1.1).
 - **Error típico:** olvidarlo: `Producto("TAZ-0002", "Taza Aurora", 800)` produce `error: cannot find symbol` con `symbol: method Producto(String,String,int)`.
 
 **campo**
 - **Definición técnica:** variable declarada en el cuerpo de la clase, fuera de los métodos, con su tipo; cada objeto tiene su propia copia salvo que sea `static`.
-- **En palabras sencillas:** el atributo de Python, pero declarado con su tipo antes de usarse.
+- **En palabras sencillas:** un dato que guarda cada objeto, declarado con su tipo antes de usarse.
 - **Dónde se rompe la comparación:** un campo que nadie asigna no falla al leerlo: vale `0`, `false` o `null` según su tipo.
 - **Ejemplo:** `private final long precioCentavos;` (línea 19 del Problema resuelto 1.1).
 - **Error típico:** escribir `long precioCentavos = precio;` dentro del constructor: crea una variable local nueva y el campo queda sin valor.
 
 **constructor**
 - **Definición técnica:** bloque con el mismo nombre de la clase y sin tipo de retorno que inicializa el objeto recién creado; se ejecuta una vez por cada `new`.
-- **En palabras sencillas:** el `__init__` de Python con otro nombre: llena el formulario en el momento de crearlo.
+- **En palabras sencillas:** llena el formulario en el momento de crearlo.
 - **Dónde se rompe la comparación:** una clase Java puede tener varios constructores con distintos parámetros; si no escribes ninguno, el compilador agrega uno vacío.
 - **Ejemplo:** las líneas 21–25 del Problema resuelto 1.1 asignan los tres campos del producto.
 - **Error típico:** pasar menos argumentos: `error: constructor Producto in class Producto cannot be applied to given types;`.
 
 **`this`**
 - **Definición técnica:** referencia al objeto sobre el que se ejecuta el constructor o el método de instancia.
-- **En palabras sencillas:** el `self` de Python, pero no se declara como parámetro: Java lo pone solo.
+- **En palabras sencillas:** «yo mismo»: el objeto sobre el que se está ejecutando el método; no se declara como parámetro, Java lo pone solo.
 - **Dónde se rompe la comparación:** puedes omitirlo si no hay confusión; es obligatorio cuando un parámetro se llama igual que un campo.
 - **Ejemplo:** `this.sku = sku;` (línea 22 del Problema resuelto 1.1) copia el parámetro `sku` en el campo `sku`.
 - **Error típico:** escribir `sku = sku;`: asigna el parámetro a sí mismo y, como el campo es `final`, javac responde `error: variable sku might not have been initialized`.
@@ -1709,14 +1709,14 @@ se propaga hasta la factura. ¿Cómo haces que un producto **no pueda existir** 
 **método de instancia**
 - **Definición técnica:** método declarado sin `static`; se invoca sobre un objeto y lee los campos de ese objeto a través de `this`.
 - **En palabras sencillas:** una acción que cada producto sabe hacer con sus propios datos.
-- **Dónde se rompe la comparación:** a diferencia de Python, declara el tipo que devuelve (`long`, `String`) o `void` si no devuelve nada.
+- **Dónde se rompe la comparación:** a diferencia de una receta, declara qué entrega al terminar: el tipo que devuelve (`long`, `String`) o `void` si no devuelve nada.
 - **Ejemplo:** `cafe.precioPor(3)` (línea 10 del Problema resuelto 1.1) devuelve `3750`.
 - **Error típico:** llamarlo sobre la clase: `Producto.precioPor(3)` produce `error: non-static method precioPor(int) cannot be referenced from a static context`.
 
 **`private` y `public`**
 - **Definición técnica:** modificadores de acceso; `private` limita el uso de un miembro a su propia clase y `public` lo abre a cualquier clase.
 - **En palabras sencillas:** `private` es el cajón con llave; `public` es el mostrador.
-- **Dónde se rompe la comparación:** en Python el guion bajo es solo una convención; en Java el compilador hace cumplir la llave. Los otros dos niveles llegan en el Tema 4.
+- **Dónde se rompe la comparación:** un letrero de «privado» se puede ignorar; en Java el compilador hace cumplir la llave. Los otros dos niveles llegan en el Tema 4.
 - **Ejemplo:** `private final long precioCentavos;` junto a `public long precioPor(int cantidad)`.
 - **Error típico:** escribir `cafe.precioCentavos = -10;` desde otra clase: `error: precioCentavos has private access in Producto`.
 
@@ -1757,7 +1757,7 @@ se propaga hasta la factura. ¿Cómo haces que un producto **no pueda existir** 
 
 **`toString`**
 - **Definición técnica:** método que toda clase hereda de `java.lang.Object` y que devuelve el objeto como texto; `println` y la concatenación con `+` lo llaman solos.
-- **En palabras sencillas:** el `__str__` de Python: cómo se presenta el producto en pantalla.
+- **En palabras sencillas:** cómo se presenta el producto en pantalla.
 - **Dónde se rompe la comparación:** si no lo redefines, Java muestra el nombre de la clase y un código hash, por ejemplo `Producto@4c40b76e`, distinto en cada ejecución.
 - **Ejemplo:** líneas 31–33 del Problema resuelto 1.1; `println(cafe)` muestra `CAF-0001 Café Aurora 1250 centavos`.
 - **Error típico:** usar su texto para comparar objetos o extraer datos; para eso existen los accesores y `equals`.
@@ -2156,8 +2156,8 @@ Al terminar este tema podrás:
 **Conceptos clave:** herencia, `extends`, superclase, subclase, `super(...)`, `super.metodo()`, sobreescritura, `@Override`, `Object`, tipo declarado, tipo real, polimorfismo, despacho dinámico, `final` en clases y métodos, composición, principio de sustitución de Liskov
 
 Ya los conoces y no se repiten: *clase*, *objeto*, *referencia*, *constructor*, `this`, `private`/`public`, `final` en
-campos, `static` y `toString` (Tema 1). La idea de herencia, `super()`, sobrescritura, composición y polimorfismo en
-Python está en Fundamentos, Módulo 1, Tema 7: aquí solo ves lo que cambia en Java.
+campos, `static` y `toString` (Tema 1). La idea de herencia, `super`, sobrescritura, composición y polimorfismo
+está en Fundamentos, Módulo 1, Tema 7: aquí la ves con clases completas y las reglas que el compilador hace cumplir.
 
 #### El problema
 Cuando la tienda solo vendía café, el catálogo tenía un `tipo` y un `if` en cada método. Al añadir cursos digitales, el cálculo de envío necesitó otro `if`; al añadir suscripciones, otro más. ¿Cómo agregas un tipo de producto
@@ -2168,7 +2168,7 @@ nuevo sin tocar el catálogo, el carrito ni la factura?
 **herencia y `extends`**
 - **Definición técnica:** mecanismo por el que una clase declara, con `extends`, ser subtipo de otra y recibe sus miembros accesibles; en Java cada clase extiende exactamente una.
 - **En palabras sencillas:** un producto físico es un producto con algo más: hereda lo común y agrega lo suyo.
-- **Dónde se rompe la comparación:** Python admite varias superclases (`class C(A, B)`); Java solo una. Para combinar capacidades usa interfaces (Tema 3).
+- **Dónde se rompe la comparación:** una persona hereda de dos padres; una clase Java, de una sola superclase. Para combinar capacidades usa interfaces (Tema 3).
 - **Ejemplo:** `final class ProductoFisico extends Producto` (línea 46 del Problema resuelto 2.1).
 - **Error típico:** heredar solo para reutilizar un método cuando la frase «X es un Y» no se sostiene: un descuento no es un producto.
 
@@ -2182,7 +2182,7 @@ nuevo sin tocar el catálogo, el carrito ni la factura?
 **`super(...)` y `super.metodo()`**
 - **Definición técnica:** `super(...)` invoca un constructor de la superclase para inicializar la parte base del objeto; `super.metodo()` ejecuta la versión de la superclase de un método sobrescrito.
 - **En palabras sencillas:** «construye primero lo general» y «haz lo que hacía el molde general y después sigo yo».
-- **Dónde se rompe la comparación:** en Python `super().__init__` es una llamada más; en Java, si la base no tiene constructor sin parámetros, `super(...)` es obligatorio.
+- **Dónde se rompe la comparación:** no es una llamada opcional: si la base no tiene constructor sin parámetros, `super(...)` es obligatorio y debe ir primero.
 - **Ejemplo:** `super(sku, nombre, precioCentavos);` (línea 50) y `super.descripcion() + ", " + pesoGramos + " g"` (línea 61) del Problema resuelto 2.1.
 - **Error típico:** omitir `super(...)` cuando la base exige argumentos: `error: constructor Producto in class Producto cannot be applied to given types;` con `found: no arguments`.
 
@@ -2196,7 +2196,7 @@ nuevo sin tocar el catálogo, el carrito ni la factura?
 **`@Override`**
 - **Definición técnica:** anotación que pide al compilador comprobar que el método sobrescribe o implementa uno de un supertipo; si no es así, la compilación falla.
 - **En palabras sencillas:** un sello que dice «esto reemplaza algo heredado»; el compilador revisa que sea verdad.
-- **Dónde se rompe la comparación:** Python no tiene esta comprobación; un nombre mal escrito pasa en silencio. En Java la anotación es opcional, pero conviene ponerla siempre.
+- **Dónde se rompe la comparación:** sin ella, un nombre mal escrito crea un método nuevo y pasa en silencio. La anotación es opcional, pero conviene ponerla siempre.
 - **Ejemplo:** líneas 54, 59 y 64 del Problema resuelto 2.1.
 - **Error típico:** anotar un método con otra firma: `error: method does not override or implement a method from a supertype`.
 
@@ -2231,7 +2231,7 @@ nuevo sin tocar el catálogo, el carrito ni la factura?
 **composición**
 - **Definición técnica:** diseño en el que un objeto guarda otro en un campo y le delega trabajo, en lugar de heredar de él.
 - **En palabras sencillas:** el producto no **es** dinero; **tiene** un precio que es dinero.
-- **Dónde se rompe la comparación:** igual que en Python, la pieza se puede cambiar sin tocar la jerarquía; en Java el campo declara el tipo que acepta.
+- **Dónde se rompe la comparación:** la pieza se puede cambiar sin tocar la jerarquía, pero el campo declara el tipo que acepta: solo encajan piezas de ese tipo.
 - **Ejemplo:** el `Producto` de Tienda Aurora tiene `private final Dinero precioBase;`, no `extends Dinero`.
 - **Error típico:** heredar de una clase solo para usar uno de sus métodos.
 
@@ -2666,7 +2666,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: *herencia*, `extends`, `super(...)`, *sobreescritura*, `@Override`, *polimorfismo*,
 `final` en clases y métodos, *composición* (Tema 2); `private`, `public`, `static` y `final` en campos (Tema 1). La
-idea de clase abstracta con `abc` en Python está en Fundamentos, Módulo 1, Tema 7. El modificador `protected` aparece
+idea de clase abstracta está en Fundamentos, Módulo 1, Tema 7. El modificador `protected` aparece
 aquí en un constructor: por ahora basta saber que lo usan las subclases; su ficha completa está en el Tema 4.
 
 #### El problema
@@ -2699,7 +2699,7 @@ eje, y cómo consigues que la calculadora no tenga un `switch` por cada regla?
 **clase abstracta**
 - **Definición técnica:** clase marcada `abstract` que no se puede instanciar; puede tener campos, constructores, métodos concretos y métodos abstractos.
 - **En palabras sencillas:** un molde a medio terminar: trae piezas hechas y huecos que cada subclase debe llenar.
-- **Dónde se rompe la comparación:** en Python el control ocurre al crear el objeto (`TypeError`); en Java ocurre al compilar.
+- **Dónde se rompe la comparación:** el control no espera a que el programa corra: `new` sobre una clase abstracta ni siquiera compila.
 - **Ejemplo:** `abstract class MedioPago` (líneas 82–98 del Problema resuelto 3.1).
 - **Error típico:** instanciarla: `new MedioPago("Cripto")` produce `error: MedioPago is abstract; cannot be instantiated`.
 
@@ -3199,7 +3199,7 @@ otro paquete debería usar. ¿Quién elige qué método se ejecuta, y cómo esco
 **sobrecarga**
 - **Definición técnica:** declarar en una misma clase (o heredar) varios métodos con el mismo nombre y distinta lista de parámetros.
 - **En palabras sencillas:** el mismo verbo con distintos complementos: «calcular el pedido», «calcular el pedido con descuento».
-- **Dónde se rompe la comparación:** Python no la tiene: allí se usan valores por defecto. En Java cada variante es un método separado.
+- **Dónde se rompe la comparación:** Java no tiene parámetros con valor por defecto; cada variante es un método separado con su propia lista de parámetros.
 - **Ejemplo:** `precioCon(int)` y `precioCon(int, Descuento)` en el `Producto` de Tienda Aurora.
 - **Error típico:** confundirla con sobreescritura y esperar que la elija el tipo real del objeto.
 
