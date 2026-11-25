@@ -2984,28 +2984,28 @@
     ],
     "7": [
       {
-        "title": "MethodChannel",
-        "fragment": "tema-1-methodchannel"
+        "title": "MethodChannel: preguntarle algo al código nativo",
+        "fragment": "tema-1-methodchannel-preguntarle-algo-al-codigo-nativo"
       },
       {
-        "title": "Plugins federados",
-        "fragment": "tema-2-plugins-federados"
+        "title": "EventChannel: datos que llegan solos, y la pantalla real",
+        "fragment": "tema-2-eventchannel-datos-que-llegan-solos-y-la-pantalla-real"
       },
       {
-        "title": "Permisos de plataforma y cuándo escribir un platform channel propio",
-        "fragment": "tema-3-permisos-de-plataforma-y-cuando-escribir-un-platform-channel-propio"
+        "title": "Plugins federados con Pigeon: el canal empaquetado y con tipos",
+        "fragment": "tema-3-plugins-federados-con-pigeon-el-canal-empaquetado-y-con-tipos"
       },
       {
-        "title": "Cámara, galería y carga multipart de una evidencia",
-        "fragment": "tema-4-camara-galeria-y-carga-multipart-de-una-evidencia"
+        "title": "Permisos: explicar, pedir y aceptar un «no»",
+        "fragment": "tema-4-permisos-explicar-pedir-y-aceptar-un-no"
       },
       {
-        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
-        "fragment": "tema-5-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
+        "title": "La foto de la entrega: enviar un archivo con progreso y cancelación",
+        "fragment": "tema-5-la-foto-de-la-entrega-enviar-un-archivo-con-progreso-y-cancelacion"
       },
       {
-        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
-        "fragment": "tema-6-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+        "title": "Proyecto 24: la evidencia de entrega completa",
+        "fragment": "proyecto-24-la-evidencia-de-entrega-completa"
       }
     ],
     "8": [
