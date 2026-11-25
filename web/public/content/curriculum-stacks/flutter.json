@@ -1423,70 +1423,59 @@
    "id": "19",
    "kind": "current",
    "title": null,
-   "topicCount": 6,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "configurar AdMob y cargar el primer banner de prueba",
+     "title": "AdMob con `google_mobile_ads`: App ID, IDs de prueba y lo que llega al APK",
      "status": "actual",
      "current": {
       "module": "19",
       "order": 1,
-      "fragment": "tema-1-configurar-admob-y-cargar-el-primer-banner-de-prueba"
+      "fragment": "tema-1-admob-con-google-mobile-ads-app-id-ids-de-prueba-y-lo-que-llega-al-apk"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "elegir mediación, bidding y waterfall",
+     "title": "El espacio del banner: reservar el alto, no tapar nada y un marcador",
      "status": "actual",
      "current": {
       "module": "19",
       "order": 2,
-      "fragment": "tema-2-elegir-mediacion-bidding-y-waterfall"
+      "fragment": "tema-2-el-espacio-del-banner-reservar-el-alto-no-tapar-nada-y-un-marcador"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "banners, interstitials y anuncios recompensados",
+     "title": "Intersticiales y recompensados con reglas propias: frecuencia, recompensa y sin relleno",
      "status": "actual",
      "current": {
       "module": "19",
       "order": 3,
-      "fragment": "tema-3-banners-interstitials-y-anuncios-recompensados"
+      "fragment": "tema-3-intersticiales-y-recompensados-con-reglas-propias-frecuencia-recompensa-y-sin-relleno"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "pruebas de anuncios y diagnóstico de no-fill",
+     "title": "Consentimiento y privacidad: UMP, anuncios no personalizados, menores y mediación",
      "status": "actual",
      "current": {
       "module": "19",
       "order": 4,
-      "fragment": "tema-4-pruebas-de-anuncios-y-diagnostico-de-no-fill"
+      "fragment": "tema-4-consentimiento-y-privacidad-ump-anuncios-no-personalizados-menores-y-mediacion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "consentimiento, privacidad y audiencias",
+     "title": "Proyecto 36: la app de seguimiento, monetizada con respeto",
      "status": "actual",
      "current": {
       "module": "19",
       "order": 5,
-      "fragment": "tema-5-consentimiento-privacidad-y-audiencias"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",
-     "status": "actual",
-     "current": {
-      "module": "19",
-      "order": 6,
-      "fragment": "tema-6-comparar-admob-applovin-max-y-unity-levelplay"
+      "fragment": "proyecto-36-la-app-de-seguimiento-monetizada-con-respeto"
      },
      "sources": [],
      "courseSources": []
