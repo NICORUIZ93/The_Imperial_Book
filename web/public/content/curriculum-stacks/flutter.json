@@ -9,78 +9,78 @@
    "topicCount": 7,
    "topics": [
     {
-     "title": "Sound null safety",
+     "title": "Null safety: valores que pueden faltar sin que la app se caiga",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 1,
-      "fragment": "tema-1-sound-null-safety"
+      "fragment": "tema-1-null-safety-valores-que-pueden-faltar-sin-que-la-app-se-caiga"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Clases y mixins",
+     "title": "Clases, constructores y mixins",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 2,
-      "fragment": "tema-2-clases-y-mixins"
+      "fragment": "tema-2-clases-constructores-y-mixins"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Futures, async/await y colecciones funcionales",
+     "title": "Asincronía y colecciones: Future, async/await, en serie o en paralelo",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 3,
-      "fragment": "tema-3-futures-async-await-y-colecciones-funcionales"
+      "fragment": "tema-3-asincronia-y-colecciones-future-async-await-en-serie-o-en-paralelo"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Lints y estilo con analysis_options.yaml",
+     "title": "El analizador y los lints: reglas del equipo que se comprueban solas",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 4,
-      "fragment": "tema-4-lints-y-estilo-con-analysis-options-yaml"
+      "fragment": "tema-4-el-analizador-y-los-lints-reglas-del-equipo-que-se-comprueban-solas"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Streams en Dart: secuencias de eventos asíncronos con await for y StreamController",
+     "title": "Streams: secuencias de eventos en el tiempo",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 5,
-      "fragment": "tema-5-streams-en-dart-secuencias-de-eventos-asincronos-con-await-for-y-streamcontroller"
+      "fragment": "tema-5-streams-secuencias-de-eventos-en-el-tiempo"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Records y patterns en Dart: varios valores sin clases y switch exhaustivo",
+     "title": "Records, patrones y clases selladas: modelar estados sin olvidar casos",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 6,
-      "fragment": "tema-6-records-y-patterns-en-dart-varios-valores-sin-clases-y-switch-exhaustivo"
+      "fragment": "tema-6-records-patrones-y-clases-selladas-modelar-estados-sin-olvidar-casos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Extension methods y extension types: agregar comportamiento sin heredar",
+     "title": "Extensiones y extension types: comportamiento nuevo sobre tipos que no son tuyos",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 7,
-      "fragment": "tema-7-extension-methods-y-extension-types-agregar-comportamiento-sin-heredar"
+      "fragment": "tema-7-extensiones-y-extension-types-comportamiento-nuevo-sobre-tipos-que-no-son-tuyos"
      },
      "sources": [],
      "courseSources": []
