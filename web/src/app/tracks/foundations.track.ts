@@ -191,9 +191,9 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Java 25', 'record', 'interfaces', 'Git'],
     'Núcleo de envíos con estados, validadores encadenados, notificaciones decoradas, deshacer, reportes y tarifas por visitante, con README que justifica cada patrón.'),
   m(10, 'Código limpio', 'Código limpio', 'Integración', '8 h', '#6d5dfc',
-    'Aplica las prácticas de Código limpio (Robert C. Martin) a código Python real: nombres, funciones pequeñas, comentarios honestos, excepciones, objetos frente a estructuras de datos y pruebas F.I.R.S.T., siempre con una red de seguridad antes de refactorizar.',['Nombres que revelan intención y funciones pequeñas', 'Comentarios honestos y excepciones en lugar de códigos de error', 'Objetos frente a estructuras de datos y la ley de Demeter', 'Pruebas limpias: F.I.R.S.T. y un concepto por prueba'],
-    ['Refactoriza una función críptica sin cambiar su resultado', 'Reemplaza códigos de error por excepciones con nombre', 'Elimina cadenas de vagón moviendo decisiones al objeto', 'Convierte una prueba no determinista en una repetible'],
+    'Aplica las prácticas de Código limpio (Robert C. Martin) a código Java real: nombres, métodos pequeños, comentarios honestos, excepciones, objetos frente a estructuras de datos y pruebas F.I.R.S.T., siempre con una red de seguridad antes de refactorizar.',['Nombres que revelan intención y métodos pequeños', 'Comentarios honestos y excepciones en lugar de códigos de error', 'Objetos frente a estructuras de datos y la ley de Demeter', 'Pruebas limpias: F.I.R.S.T. y un concepto por prueba'],
+    ['Refactoriza un método críptico sin cambiar su resultado', 'Reemplaza códigos de error por excepciones con nombre', 'Elimina cadenas de vagón moviendo decisiones al objeto', 'Convierte una prueba no determinista en una repetible'],
     ['¿Qué indica un argumento bandera?', '¿Cuándo aporta un comentario?', '¿Qué dice la ley de Demeter?', '¿Qué significa F.I.R.S.T.?'],
-    ['Python', 'unittest', 'Git'],
+    ['Java 25', 'JUnit', 'Checkstyle', 'Git'],
     'Rescate de código heredado con prueba de caracterización, commits por tipo de cambio, suite F.I.R.S.T. y README con olores encontrados.'),
 ];
