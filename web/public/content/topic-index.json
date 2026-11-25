@@ -2872,16 +2872,32 @@
     ],
     "3": [
       {
-        "title": "go_router: navegación como función de la URL",
-        "fragment": "tema-1-go-router-navegacion-como-funcion-de-la-url"
+        "title": "Navigator: abrir una pantalla, pasar datos y recibir un resultado",
+        "fragment": "tema-1-navigator-abrir-una-pantalla-pasar-datos-y-recibir-un-resultado"
       },
       {
-        "title": "Guards y deep linking",
-        "fragment": "tema-2-guards-y-deep-linking"
+        "title": "go_router: cada pantalla con su dirección",
+        "fragment": "tema-2-go-router-cada-pantalla-con-su-direccion"
       },
       {
-        "title": "Transiciones personalizadas",
-        "fragment": "tema-3-transiciones-personalizadas"
+        "title": "Pestañas que recuerdan: StatefulShellRoute y NavigationBar",
+        "fragment": "tema-3-pestanas-que-recuerdan-statefulshellroute-y-navigationbar"
+      },
+      {
+        "title": "Guardias y enlaces directos: redirect, login y volver a donde ibas",
+        "fragment": "tema-4-guardias-y-enlaces-directos-redirect-login-y-volver-a-donde-ibas"
+      },
+      {
+        "title": "Transiciones con intención: CustomTransitionPage y Hero",
+        "fragment": "tema-5-transiciones-con-intencion-customtransitionpage-y-hero"
+      },
+      {
+        "title": "Hojas inferiores, diálogos y SnackBar: elegir, confirmar e informar",
+        "fragment": "tema-6-hojas-inferiores-dialogos-y-snackbar-elegir-confirmar-e-informar"
+      },
+      {
+        "title": "Proyecto 20: el recorrido completo del conductor",
+        "fragment": "proyecto-20-el-recorrido-completo-del-conductor"
       }
     ],
     "4": [

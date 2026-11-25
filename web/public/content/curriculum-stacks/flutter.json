@@ -261,37 +261,81 @@
    "id": "3",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 7,
    "topics": [
     {
-     "title": "go_router: navegación como función de la URL",
+     "title": "Navigator: abrir una pantalla, pasar datos y recibir un resultado",
      "status": "actual",
      "current": {
       "module": "3",
       "order": 1,
-      "fragment": "tema-1-go-router-navegacion-como-funcion-de-la-url"
+      "fragment": "tema-1-navigator-abrir-una-pantalla-pasar-datos-y-recibir-un-resultado"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Guards y deep linking",
+     "title": "go_router: cada pantalla con su dirección",
      "status": "actual",
      "current": {
       "module": "3",
       "order": 2,
-      "fragment": "tema-2-guards-y-deep-linking"
+      "fragment": "tema-2-go-router-cada-pantalla-con-su-direccion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Transiciones personalizadas",
+     "title": "Pestañas que recuerdan: StatefulShellRoute y NavigationBar",
      "status": "actual",
      "current": {
       "module": "3",
       "order": 3,
-      "fragment": "tema-3-transiciones-personalizadas"
+      "fragment": "tema-3-pestanas-que-recuerdan-statefulshellroute-y-navigationbar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Guardias y enlaces directos: redirect, login y volver a donde ibas",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 4,
+      "fragment": "tema-4-guardias-y-enlaces-directos-redirect-login-y-volver-a-donde-ibas"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Transiciones con intención: CustomTransitionPage y Hero",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 5,
+      "fragment": "tema-5-transiciones-con-intencion-customtransitionpage-y-hero"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Hojas inferiores, diálogos y SnackBar: elegir, confirmar e informar",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 6,
+      "fragment": "tema-6-hojas-inferiores-dialogos-y-snackbar-elegir-confirmar-e-informar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 20: el recorrido completo del conductor",
+     "status": "actual",
+     "current": {
+      "module": "3",
+      "order": 7,
+      "fragment": "proyecto-20-el-recorrido-completo-del-conductor"
      },
      "sources": [],
      "courseSources": []
