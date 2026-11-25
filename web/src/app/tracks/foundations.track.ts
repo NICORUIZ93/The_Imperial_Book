@@ -182,7 +182,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Por qué Dijkstra falla con pesos negativos?',
       '¿Qué significa que un problema sea NP-completo?',
     ],
-    ['Python', 'heapq', 'Git'],
+    ['Java 25', 'PriorityQueue', 'Git'],
     'Planificador de entregas con orden de carga estable, tiempos mínimos por Dijkstra, ruta heurística medida contra la exacta y README con complejidad y límites.'),
   m(9, 'Catálogo de patrones de diseño', 'Patrones de diseño', 'Integración', '10 h', '#6d5dfc',
     'Referencia de patrones del curso: Decorator, State, Template Method, Chain of Responsibility, Mediator, Memento, Visitor y Flyweight, cada uno justificado por un requisito de RutaFlow y comparado con su alternativa más simple. Parte de las clases, la herencia, la composición y abc del Módulo 1.',['Decorator: agregar comportamiento sin heredar', 'State: un objeto que cambia de comportamiento según su estado', 'Template Method: un algoritmo fijo con pasos variables', 'Chain of Responsibility: una cadena de validadores', 'Mediator: coordinar objetos sin que se conozcan', 'Memento: guardar y restaurar estado para deshacer', 'Visitor: operaciones nuevas sin tocar las clases', 'Flyweight: compartir estado para ahorrar memoria'],

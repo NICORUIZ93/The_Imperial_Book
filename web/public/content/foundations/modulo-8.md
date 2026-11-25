@@ -1,10 +1,11 @@
 # Módulo 8: Algoritmos clásicos
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64, solo con la biblioteca
-estándar (`heapq`, `itertools`, `math`, `random`, `time`). La línea de referencia del curso es Python 3.14
-(`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las salidas se obtuvieron
+**Entorno comprobado para esta edición (2026-11-24):** OpenJDK 25.0.5.1 en Linux x86_64, solo con la biblioteca
+estándar de Java (`PriorityQueue`, `ArrayDeque`, `Random`, `System.nanoTime`). Todas las salidas se obtuvieron
 ejecutando el código mostrado. Los **conteos** de comparaciones, distancias y rutas son exactos y deben coincidir
-con los tuyos. Los **tiempos** en milisegundos cambian de una máquina a otra; lo que se mantiene es la proporción.
+con los tuyos. Los **tiempos** en milisegundos cambian de una máquina a otra y, en Java, también entre la primera
+medición y las siguientes, porque el compilador JIT optimiza mientras el programa corre (Módulo 6, Tema 4); lo que
+se mantiene son los conteos.
 
 ## Apertura del módulo
 
@@ -26,8 +27,8 @@ Al terminar este módulo podrás:
 
 #### Qué necesitas saber antes
 Este módulo construye sobre el Módulo 2 y **no redefine** sus términos; los enlaza:
-- **estructura de datos**, lista, diccionario, conjunto y tupla (Módulo 2, Tema 1);
-- **pila**, **cola** y `deque` (Módulo 2, Tema 2);
+- **estructura de datos**, arreglo, `List`, `Map`, `Set` y record (Módulo 2, Tema 1);
+- **pila**, **cola** y `ArrayDeque` (Módulo 2, Tema 2);
 - **búsqueda lineal** y **búsqueda binaria** (Módulo 2, Tema 3);
 - **complejidad temporal y espacial**, **peor caso**, **notación O grande**, **logaritmo**, **ordenamiento**,
   **recursión** y **caso base**; además, el ordenamiento por inserción y el de mezcla (Módulo 2, Tema 4,
@@ -35,9 +36,9 @@ Este módulo construye sobre el Módulo 2 y **no redefine** sus términos; los e
 - **árbol**, **nodo** y **raíz** (Módulo 2, Tema 5);
 - **grafo**, **vértice**, **arista**, **lista de adyacencia**, **BFS**, **DFS** y **camino más corto** (Módulo 2, Tema 7);
 - **memoización**, **programación dinámica** y **algoritmo voraz** (Módulo 2, Tema 8);
-- funciones, `lambda` y comprensiones de lista (Módulos 1 y 2).
+- métodos, lambdas y streams (Módulos 1 y 2).
 
-Todos los programas se guardan en una carpeta `~/labs/algoritmos` y se ejecutan con `python3 archivo.py`.
+Todos los programas se guardan en una carpeta `~/labs/algoritmos` y se ejecutan con `java Archivo.java`.
 
 ## Aprende construyendo
 
@@ -57,8 +58,8 @@ Al terminar este tema podrás:
 
 #### El problema
 Cada mañana RutaFlow recibe hasta 3000 paradas y debe ordenarlas por distancia al depósito. En el Módulo 2
-implementaste inserción y mezcla. Un compañero propone quick sort «porque es el más rápido». Lo prueba con la
-lista del día anterior, que ya venía ordenada, y el programa se cae. Además, dos paradas a la misma distancia
+implementaste inserción y mezcla. Un compañero propone quick sort «porque es el más rápido». Lo prueba con el
+histórico del mes, que ya venía ordenado, y el programa se cae. Además, dos paradas a la misma distancia
 cambian de lugar entre ejecuciones. ¿Qué hace quick sort por dentro y cuándo conviene usarlo?
 
 El **ordenamiento por inserción** y el **ordenamiento por mezcla** ya están explicados e implementados en el
@@ -78,7 +79,7 @@ Módulo 2, Tema 4 (Problema resuelto 4.4), junto con la **recursión** y la **no
 - **En palabras sencillas:** escoger una parada de referencia y separar las más cercanas de las más lejanas; repetir en cada grupo.
 - **Dónde se rompe la comparación:** el trabajo duro está **antes** de la recursión (partir); en la mezcla está **después** (combinar).
 - **Ejemplo:** con `[7, 2, 9, 4, 3, 8, 5]` y pivote `5`, la primera partición deja `[2, 4, 3, 5, 9, 8, 7]`.
-- **Error típico:** usar siempre el último elemento como pivote con datos ya ordenados: cae en `O(n²)` y en `RecursionError`.
+- **Error típico:** usar siempre el último elemento como pivote con datos ya ordenados: cae en `O(n²)` y en `StackOverflowError`.
 
 **pivote**
 - **Definición técnica:** elemento elegido en cada llamada de quick sort; al terminar la partición queda en su posición final definitiva.
@@ -98,14 +99,14 @@ Módulo 2, Tema 4 (Problema resuelto 4.4), junto con la **recursión** y la **no
 - **Definición técnica:** ordenamiento que reorganiza los elementos dentro de la misma lista, con memoria extra `O(1)` o `O(log n)` (*in-place*).
 - **En palabras sencillas:** ordenar las cajas en el mismo estante, sin bajar todo a un estante auxiliar.
 - **Dónde se rompe la comparación:** la recursión sí usa memoria en la pila de llamadas, aunque no copie la lista.
-- **Ejemplo:** `particionar` intercambia elementos con `datos[a], datos[b] = datos[b], datos[a]`; la mezcla, en cambio, crea listas nuevas.
+- **Ejemplo:** `particionar` mueve elementos con `intercambiar(datos, a, b)`, dentro del mismo arreglo; la mezcla, en cambio, crea arreglos nuevos.
 - **Error típico:** esperar que la lista original quede intacta después de un ordenamiento in situ.
 
 **ordenamiento estable**
 - **Definición técnica:** ordenamiento que conserva el orden relativo original de los elementos con la misma clave.
 - **En palabras sencillas:** si dos paradas están a la misma distancia, siguen en el orden en que se registraron.
 - **Dónde se rompe la comparación:** la estabilidad solo se ve cuando ordenas por una parte del dato y el resto es distinto.
-- **Ejemplo:** `sorted(paradas, key=...)` es estable; la mezcla con `<=` también; quick sort con Lomuto no.
+- **Ejemplo:** `lista.sort(Comparator.comparingInt(Parada::km))` es estable; la mezcla con `<=` también; quick sort con Lomuto no.
 - **Error típico:** ordenar por distancia con un método inestable y luego culpar a los datos porque las guías «se desordenan».
 
 #### ► CÓMO FUNCIONA
@@ -160,7 +161,7 @@ Implementa quick sort in situ con la partición de Lomuto y muestra la traza de 
 
 **Razonamiento:**
 1. `particionar` recibe la lista y un tramo `[inicio..fin]`; devuelve la posición final del pivote.
-2. `quick_sort` llama a `particionar` y luego se llama a sí misma con cada lado.
+2. `quickSort` llama a `particionar` y luego se llama a sí mismo con cada lado.
 3. El caso base es un tramo con 0 o 1 elementos: `inicio >= fin`.
 4. Un parámetro `nivel` agrega sangría para ver qué llamada está trabajando.
 
@@ -174,46 +175,55 @@ QUICK_SORT(lista, inicio, fin):
   QUICK_SORT(lista, p + 1, fin)
 ```
 
-```python
-# quick_traza.py — quick sort in situ con partición de Lomuto, paso a paso
-def particionar(datos, inicio, fin, traza=False):
-    pivote = datos[fin]                      # el último elemento es el pivote
-    frontera = inicio                        # datos[inicio:frontera] ya son < pivote
-    for j in range(inicio, fin):
-        menor = datos[j] < pivote
-        if menor:
-            datos[frontera], datos[j] = datos[j], datos[frontera]
-            frontera += 1
-        if traza:
-            print(f"j={j}  {'menor' if menor else 'mayor'}  {datos}  frontera={frontera}")
-    datos[frontera], datos[fin] = datos[fin], datos[frontera]   # pivote a su lugar
-    return frontera
+```java
+// QuickTraza.java — quick sort in situ con partición de Lomuto, paso a paso
+void intercambiar(int[] datos, int a, int b) {
+    int temporal = datos[a];
+    datos[a] = datos[b];
+    datos[b] = temporal;
+}
 
+int particionar(int[] datos, int inicio, int fin, boolean traza) {
+    int pivote = datos[fin];                 // el último elemento es el pivote
+    int frontera = inicio;                   // datos[inicio..frontera-1] ya son < pivote
+    for (int j = inicio; j < fin; j++) {
+        boolean menor = datos[j] < pivote;
+        if (menor) {
+            intercambiar(datos, frontera, j);
+            frontera++;
+        }
+        if (traza) {
+            IO.println("j=%d  %s  %s  frontera=%d".formatted(j, menor ? "menor" : "mayor", Arrays.toString(datos), frontera));
+        }
+    }
+    intercambiar(datos, frontera, fin);      // pivote a su lugar
+    return frontera;
+}
 
-def quick_sort(datos, inicio=0, fin=None, nivel=0):
-    if fin is None:
-        fin = len(datos) - 1
-    if inicio >= fin:                        # caso base: 0 o 1 elementos
-        return
-    p = particionar(datos, inicio, fin)
-    print(f"{'  ' * nivel}[{inicio}..{fin}] pivote={datos[p]} -> {datos[inicio:fin + 1]}")
-    quick_sort(datos, inicio, p - 1, nivel + 1)
-    quick_sort(datos, p + 1, fin, nivel + 1)
+void quickSort(int[] datos, int inicio, int fin, int nivel) {
+    if (inicio >= fin) return;               // caso base: 0 o 1 elementos
+    int p = particionar(datos, inicio, fin, false);
+    IO.println("%s[%d..%d] pivote=%d -> %s".formatted("  ".repeat(nivel), inicio, fin, datos[p],
+            Arrays.toString(Arrays.copyOfRange(datos, inicio, fin + 1))));
+    quickSort(datos, inicio, p - 1, nivel + 1);
+    quickSort(datos, p + 1, fin, nivel + 1);
+}
 
-
-km = [7, 2, 9, 4, 3, 8, 5]                   # distancias del depósito a 7 paradas
-print("Partición de", km, "con pivote", km[-1])
-copia = list(km)
-posicion = particionar(copia, 0, len(copia) - 1, traza=True)
-print("pivote en la posición", posicion, "->", copia)
-print()
-print("Llamadas recursivas:")
-quick_sort(km)
-print("ordenada:", km)
+void main() {
+    int[] km = {7, 2, 9, 4, 3, 8, 5};        // distancias del depósito a 7 paradas
+    IO.println("Partición de " + Arrays.toString(km) + " con pivote " + km[km.length - 1]);
+    int[] copia = km.clone();
+    int posicion = particionar(copia, 0, copia.length - 1, true);
+    IO.println("pivote en la posición " + posicion + " -> " + Arrays.toString(copia));
+    IO.println();
+    IO.println("Llamadas recursivas:");
+    quickSort(km, 0, km.length - 1, 0);
+    IO.println("ordenada: " + Arrays.toString(km));
+}
 ```
 
 ```text
-$ python3 quick_traza.py
+$ java QuickTraza.java
 Partición de [7, 2, 9, 4, 3, 8, 5] con pivote 5
 j=0  mayor  [7, 2, 9, 4, 3, 8, 5]  frontera=0
 j=1  menor  [2, 7, 9, 4, 3, 8, 5]  frontera=1
@@ -232,46 +242,53 @@ ordenada: [2, 3, 4, 5, 7, 8, 9]
 ```
 
 **Explicación por partes.**
-- Línea 3: el pivote es el último elemento del tramo.
-- Línea 4: `frontera` marca dónde termina la zona de menores; empieza vacía.
-- Líneas 7–9: si el elemento es menor, lo intercambias con la frontera y la avanzas. Es la tabla del Paso 1.
-- Línea 12: el pivote pasa a la frontera, su posición definitiva.
-- Líneas 19–20: caso base; un tramo de 0 o 1 elementos ya está ordenado.
-- Líneas 23–24: las dos llamadas recursivas; el pivote ya no se toca.
+- Líneas 2–6: `intercambiar` cambia dos posiciones del arreglo con una variable temporal.
+- Línea 9: el pivote es el último elemento del tramo.
+- Línea 10: `frontera` marca dónde termina la zona de menores; empieza vacía.
+- Líneas 13–16: si el elemento es menor, lo intercambias con la frontera y la avanzas. Es la tabla del Paso 1.
+- Línea 21: el pivote pasa a la frontera, su posición definitiva.
+- Línea 26: caso base; un tramo de 0 o 1 elementos ya está ordenado.
+- Líneas 30–31: las dos llamadas recursivas; el pivote ya no se toca.
 - Salida: el tramo `[0..2]` y el `[4..6]` se ordenan por separado. El `[4..4]` no aparece: es un caso base.
 
 > **Error común.** Usar el último elemento como pivote con una lista ya ordenada. Cada partición deja un lado
-> vacío y la recursión baja un nivel por elemento. Con 3000 paradas el programa termina con
-> `RecursionError: maximum recursion depth exceeded`. Python limita la pila a unas 1000 llamadas.
-> El programa siguiente lo reproduce; de la salida se muestran solo las cuatro últimas líneas del traceback.
+> vacío y la recursión baja un nivel por elemento. Con 3000 paradas Java todavía termina, aunque hace 4,5 millones de
+> comparaciones; con 30 000 el programa se cae con `StackOverflowError`: la pila de llamadas de Java tiene un tamaño
+> fijo (Módulo 6, Tema 2). El programa siguiente lo reproduce; de la salida se muestran las tres primeras líneas.
 
-```python
-# pivote_fijo.py — quick sort con el último elemento como pivote y una lista ya ordenada
-def ordenar(lista, inicio, fin):
-    if inicio >= fin:
-        return
-    pivote, frontera = lista[fin], inicio
-    for j in range(inicio, fin):
-        if lista[j] < pivote:
-            lista[frontera], lista[j] = lista[j], lista[frontera]
-            frontera += 1
-    lista[frontera], lista[fin] = lista[fin], lista[frontera]
-    ordenar(lista, inicio, frontera - 1)
-    ordenar(lista, frontera + 1, fin)
+```java
+// PivoteFijo.java — quick sort con el último elemento como pivote y una lista ya ordenada
+void ordenar(int[] lista, int inicio, int fin) {
+    if (inicio >= fin) return;
+    int pivote = lista[fin], frontera = inicio;
+    for (int j = inicio; j < fin; j++) {
+        if (lista[j] < pivote) {
+            int temporal = lista[frontera];
+            lista[frontera] = lista[j];
+            lista[j] = temporal;
+            frontera++;
+        }
+    }
+    int temporal = lista[frontera];
+    lista[frontera] = lista[fin];
+    lista[fin] = temporal;
+    ordenar(lista, inicio, frontera - 1);
+    ordenar(lista, frontera + 1, fin);
+}
 
-
-paradas = list(range(3000))          # ya vienen ordenadas por distancia
-ordenar(paradas, 0, len(paradas) - 1)
-print("listo")
+void main() {
+    int[] paradas = IntStream.range(0, 30_000).toArray();   // ya vienen ordenadas por distancia
+    ordenar(paradas, 0, paradas.length - 1);
+    IO.println("listo");
+}
 ```
 
 ```text
-$ python3 pivote_fijo.py
-…
-    ordenar(lista, inicio, frontera - 1)
-    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [Previous line repeated 996 more times]
-RecursionError: maximum recursion depth exceeded
+$ java PivoteFijo.java
+Exception in thread "main" java.lang.StackOverflowError
+	at PivoteFijo.ordenar(PivoteFijo.java:16)
+	at PivoteFijo.ordenar(PivoteFijo.java:16)
+	... (cientos de líneas iguales omitidas aquí)
 ```
 
 > **Prevenir errores.** Prueba todo ordenamiento con cuatro entradas: vacía, de un elemento, ya ordenada y en
@@ -282,193 +299,224 @@ Cuenta las comparaciones de inserción, mezcla y quick sort con 100, 1000 y 3000
 compara el pivote fijo con el pivote al azar sobre una lista ya ordenada.
 
 **Razonamiento:**
-1. Las tres funciones devuelven la lista ordenada y el número de comparaciones entre elementos.
-2. Un `assert` compara cada resultado con `sorted`: si un algoritmo falla, el programa se detiene.
+1. Los tres métodos devuelven un `Resultado` con el arreglo ordenado y el número de comparaciones entre elementos.
+2. Cada resultado se compara con `Arrays.sort`: si un algoritmo falla, el programa se detiene.
 3. La predicción: inserción crece cerca de 9 veces al triplicar `n` (`O(n²)`); mezcla y quick sort, poco más de 3.
 4. Con 900 datos ya ordenados y pivote fijo deben salir `900 · 899 / 2 = 404 550` comparaciones.
 
-```python
-# ordenamientos.py — tres ordenamientos con contador de comparaciones
-import random
-import time
+```java
+// Ordenamientos.java — tres ordenamientos con contador de comparaciones
+record Resultado(int[] lista, long comp) {}
 
+long comp;                                   // contador compartido; cada algoritmo lo pone en 0
+final Random azar = new Random(12);
 
-def insercion(valores):
-    lista, comp = list(valores), 0
-    for i in range(1, len(lista)):
-        actual, j = lista[i], i - 1
-        while j >= 0:
-            comp += 1
-            if lista[j] <= actual:
-                break
-            lista[j + 1] = lista[j]
-            j -= 1
-        lista[j + 1] = actual
-    return lista, comp
+Resultado insercion(int[] valores) {
+    int[] lista = valores.clone();
+    comp = 0;
+    for (int i = 1; i < lista.length; i++) {
+        int actual = lista[i], j = i - 1;
+        while (j >= 0) {
+            comp++;
+            if (lista[j] <= actual) break;
+            lista[j + 1] = lista[j];
+            j--;
+        }
+        lista[j + 1] = actual;
+    }
+    return new Resultado(lista, comp);
+}
 
+int[] mezclar(int[] valores) {
+    if (valores.length <= 1) return valores.clone();
+    int medio = valores.length / 2;
+    int[] izq = mezclar(Arrays.copyOfRange(valores, 0, medio));
+    int[] der = mezclar(Arrays.copyOfRange(valores, medio, valores.length));
+    int[] res = new int[valores.length];
+    int i = 0, j = 0, k = 0;
+    while (i < izq.length && j < der.length) {
+        comp++;
+        if (izq[i] <= der[j]) res[k++] = izq[i++];   // <= conserva el orden de los iguales
+        else res[k++] = der[j++];
+    }
+    while (i < izq.length) res[k++] = izq[i++];
+    while (j < der.length) res[k++] = der[j++];
+    return res;
+}
 
-def mezcla(valores):
-    if len(valores) <= 1:
-        return list(valores), 0
-    medio = len(valores) // 2
-    izq, c1 = mezcla(valores[:medio])
-    der, c2 = mezcla(valores[medio:])
-    res, comp, i, j = [], c1 + c2, 0, 0
-    while i < len(izq) and j < len(der):
-        comp += 1
-        if izq[i] <= der[j]:                 # <= conserva el orden de los iguales
-            res.append(izq[i])
-            i += 1
-        else:
-            res.append(der[j])
-            j += 1
-    return res + izq[i:] + der[j:], comp
+Resultado mezcla(int[] valores) {
+    comp = 0;
+    int[] lista = mezclar(valores);
+    return new Resultado(lista, comp);
+}
 
+void ordenarRapido(int[] lista, int inicio, int fin, boolean pivoteAzar) {
+    if (inicio >= fin) return;
+    if (pivoteAzar) {                        // mueve un elemento al azar al final
+        int k = azar.nextInt(inicio, fin + 1);
+        int t = lista[k]; lista[k] = lista[fin]; lista[fin] = t;
+    }
+    int pivote = lista[fin], frontera = inicio;
+    for (int j = inicio; j < fin; j++) {
+        comp++;
+        if (lista[j] < pivote) {
+            int t = lista[frontera]; lista[frontera] = lista[j]; lista[j] = t;
+            frontera++;
+        }
+    }
+    int t = lista[frontera]; lista[frontera] = lista[fin]; lista[fin] = t;
+    ordenarRapido(lista, inicio, frontera - 1, pivoteAzar);
+    ordenarRapido(lista, frontera + 1, fin, pivoteAzar);
+}
 
-def rapido(valores, pivote_azar=True):
-    lista, comp = list(valores), 0
+Resultado rapido(int[] valores, boolean pivoteAzar) {
+    int[] lista = valores.clone();
+    comp = 0;
+    ordenarRapido(lista, 0, lista.length - 1, pivoteAzar);
+    return new Resultado(lista, comp);
+}
 
-    def ordenar(inicio, fin):
-        nonlocal comp                        # comp es la variable de rapido()
-        if inicio >= fin:
-            return
-        if pivote_azar:                      # mueve un elemento al azar al final
-            k = random.randint(inicio, fin)
-            lista[k], lista[fin] = lista[fin], lista[k]
-        pivote, frontera = lista[fin], inicio
-        for j in range(inicio, fin):
-            comp += 1
-            if lista[j] < pivote:
-                lista[frontera], lista[j] = lista[j], lista[frontera]
-                frontera += 1
-        lista[frontera], lista[fin] = lista[fin], lista[frontera]
-        ordenar(inicio, frontera - 1)
-        ordenar(frontera + 1, fin)
-
-    ordenar(0, len(lista) - 1)
-    return lista, comp
-
-
-random.seed(12)
-print(f"{'n':>5} {'inserción':>10} {'mezcla':>7} {'rápido':>7}   tiempos en ms (ins/mez/ráp)")
-for n in (100, 1000, 3000):
-    km = [random.randint(1, 30_000) for _ in range(n)]   # metros hasta cada parada
-    fila, tiempos = [], []
-    for funcion in (insercion, mezcla, rapido):
-        inicio = time.perf_counter()
-        resultado, comp = funcion(km)
-        tiempos.append((time.perf_counter() - inicio) * 1000)
-        assert resultado == sorted(km)
-        fila.append(comp)
-    print(f"{n:>5} {fila[0]:>10,} {fila[1]:>7,} {fila[2]:>7,}   "
-          + " / ".join(f"{t:.1f}" for t in tiempos))
-
-ya_ordenada = list(range(900))
-print("rápido, pivote fijo, lista ordenada n=900:", f"{rapido(ya_ordenada, False)[1]:,}")
-print("rápido, pivote al azar, misma lista:      ", f"{rapido(ya_ordenada)[1]:,}")
+void main() {
+    IO.println("%5s %10s %7s %7s   tiempos en ms (ins/mez/ráp)".formatted("n", "inserción", "mezcla", "rápido"));
+    List<Function<int[], Resultado>> algoritmos = List.of(this::insercion, this::mezcla, v -> rapido(v, true));
+    for (int n : new int[] {100, 1000, 3000}) {
+        int[] km = new int[n];
+        for (int i = 0; i < n; i++) km[i] = azar.nextInt(1, 30_001);   // metros hasta cada parada
+        int[] esperado = km.clone();
+        Arrays.sort(esperado);
+        long[] fila = new long[3];
+        double[] tiempos = new double[3];
+        for (int a = 0; a < 3; a++) {
+            long inicio = System.nanoTime();
+            Resultado r = algoritmos.get(a).apply(km);
+            tiempos[a] = (System.nanoTime() - inicio) / 1e6;
+            if (!Arrays.equals(r.lista(), esperado)) throw new AssertionError("ordenamiento incorrecto");
+            fila[a] = r.comp();
+        }
+        IO.println(String.format(Locale.ROOT, "%5d %,10d %,7d %,7d   %.1f / %.1f / %.1f",
+                n, fila[0], fila[1], fila[2], tiempos[0], tiempos[1], tiempos[2]));
+    }
+    int[] yaOrdenada = IntStream.range(0, 900).toArray();
+    IO.println(String.format(Locale.ROOT, "rápido, pivote fijo, lista ordenada n=900: %,d", rapido(yaOrdenada, false).comp()));
+    IO.println(String.format(Locale.ROOT, "rápido, pivote al azar, misma lista:       %,d", rapido(yaOrdenada, true).comp()));
+}
 ```
 
 ```text
-$ python3 ordenamientos.py
+$ java Ordenamientos.java
     n  inserción  mezcla  rápido   tiempos en ms (ins/mez/ráp)
-  100      2,565     546     596   0.2 / 0.1 / 0.1
- 1000    251,642   8,696  12,150   17.8 / 1.4 / 1.3
- 3000  2,231,614  30,908  38,693   181.6 / 5.2 / 4.2
+  100      2,684     546     673   0.1 / 0.1 / 0.1
+ 1000    254,915   8,696  10,133   2.7 / 0.7 / 0.5
+ 3000  2,215,653  30,911  39,017   4.8 / 0.6 / 0.3
 rápido, pivote fijo, lista ordenada n=900: 404,550
-rápido, pivote al azar, misma lista:       9,190
+rápido, pivote al azar, misma lista:       9,800
 ```
 
 **Explicación por partes.**
-- Líneas 6–17 y 20–35: inserción y mezcla del Módulo 2 con un contador `comp`.
-- Línea 41: `ordenar` es una función definida dentro de `rapido`; ve la lista y el contador de la función externa.
-- Línea 42: `nonlocal comp` permite **modificar** ese contador desde la función interna. Sin esa línea, `comp += 1`
-  produce `UnboundLocalError`.
-- Líneas 45–47: con `pivote_azar`, un elemento elegido al azar se cambia al final y hace de pivote.
-- Línea 71: el `assert` garantiza que los tres algoritmos ordenan bien antes de comparar su costo.
-- Salida, tabla: de 1000 a 3000 datos, inserción multiplica sus comparaciones por 8,9; mezcla, por 3,6; quick sort, por 3,2.
-- Salida, dos últimas líneas: el pivote fijo hace exactamente `n(n-1)/2`; el pivote al azar, 44 veces menos.
+- Línea 2: un record para devolver dos cosas juntas: el arreglo ordenado y su conteo.
+- Línea 4: `comp` es un campo del programa. Los métodos recursivos (`mezclar`, `ordenarRapido`) lo incrementan sin
+  tener que devolverlo en cada llamada; los métodos `insercion`, `mezcla` y `rapido` lo ponen en 0 al empezar.
+- Línea 5: un único generador con semilla 12: los datos y los pivotes al azar salen iguales en cada ejecución.
+- Líneas 7–43: inserción y mezcla del Módulo 2 con el contador.
+- Líneas 48–51: con `pivoteAzar`, un elemento elegido al azar se cambia al final y hace de pivote.
+- Línea 74: `this::insercion` y la lambda `v -> rapido(v, true)` permiten recorrer los tres algoritmos con un `for`.
+- Línea 86: comprueba que los tres algoritmos ordenan bien antes de comparar su costo. No se usa `assert` porque
+  Java lo ignora salvo que ejecutes con `java -ea`.
+- Salida, tabla: de 1000 a 3000 datos, inserción multiplica sus comparaciones por 8,7; mezcla, por 3,6; quick sort, por 3,9.
+- Salida, dos últimas líneas: el pivote fijo hace exactamente `n(n-1)/2`; el pivote al azar, 41 veces menos.
+- Los tiempos no siguen la misma proporción que los conteos: la primera medición incluye el trabajo del compilador
+  JIT. Para comparar algoritmos, fíate de los conteos; para medir tiempos, calienta antes (Módulo 6, Tema 4).
 
-> **Rendimiento.** Con 3000 datos, `n · log2(n)` vale cerca de 34 650. Mezcla hizo 30 908 comparaciones y quick
-> sort 38 693: el mismo orden de magnitud. Inserción hizo 2,2 millones, que es del orden de `n²/4`.
+> **Rendimiento.** Con 3000 datos, `n · log2(n)` vale cerca de 34 650. Mezcla hizo 30 911 comparaciones y quick
+> sort 39 017: el mismo orden de magnitud. Inserción hizo 2,2 millones, que es del orden de `n²/4`.
 
-> **Buena práctica.** En producción usa `sorted()` o `lista.sort()`. Usan Timsort: `O(n log n)` en el peor caso,
-> estable y rápido con datos casi ordenados. Escribe quick sort para entender y para entrevistas.
+> **Buena práctica.** En producción usa `Arrays.sort` o `List.sort`. Para objetos usan Timsort: `O(n log n)` en el
+> peor caso, estable y rápido con datos casi ordenados. Para arreglos de `int`, `Arrays.sort` usa un quick sort de
+> doble pivote, que no necesita estabilidad porque dos `int` iguales son indistinguibles. Escribe quick sort para
+> entender y para entrevistas.
 
 #### Problema resuelto 1.3
 Ordena seis paradas por distancia y comprueba qué métodos conservan el orden de registro de los empates.
 
 **Razonamiento:**
-1. Cada parada es una tupla `(km, guía)`; se ordena **solo** por los kilómetros.
+1. Cada parada es un record `Parada(km, guia)`; se ordena **solo** por los kilómetros.
 2. Las guías `RF-01`, `RF-03` y `RF-06` están a 4 km. Un método estable las deja en ese orden.
-3. Se comparan `sorted` con `key`, la mezcla con `<=` y quick sort con Lomuto.
+3. Se comparan `List.sort` con un `Comparator`, la mezcla con `<=` y quick sort con Lomuto.
 
-```python
-# estable.py — ¿conserva cada algoritmo el orden de registro de las paradas empatadas?
-paradas = [(4, "RF-01"), (2, "RF-02"), (4, "RF-03"), (1, "RF-04"), (2, "RF-05"), (4, "RF-06")]
+```java
+// Estable.java — ¿conserva cada algoritmo el orden de registro de las paradas empatadas?
+record Parada(int km, String guia) {}
 
+final List<Parada> paradas = List.of(new Parada(4, "RF-01"), new Parada(2, "RF-02"), new Parada(4, "RF-03"),
+        new Parada(1, "RF-04"), new Parada(2, "RF-05"), new Parada(4, "RF-06"));
 
-def mezcla_por_km(lista):
-    if len(lista) <= 1:
-        return list(lista)
-    medio = len(lista) // 2
-    izq, der = mezcla_por_km(lista[:medio]), mezcla_por_km(lista[medio:])
-    res, i, j = [], 0, 0
-    while i < len(izq) and j < len(der):
-        if izq[i][0] <= der[j][0]:               # empate: gana la izquierda
-            res.append(izq[i])
-            i += 1
-        else:
-            res.append(der[j])
-            j += 1
-    return res + izq[i:] + der[j:]
+List<Parada> mezclaPorKm(List<Parada> lista) {
+    if (lista.size() <= 1) return new ArrayList<>(lista);
+    int medio = lista.size() / 2;
+    List<Parada> izq = mezclaPorKm(lista.subList(0, medio)), der = mezclaPorKm(lista.subList(medio, lista.size()));
+    List<Parada> res = new ArrayList<>();
+    int i = 0, j = 0;
+    while (i < izq.size() && j < der.size()) {
+        if (izq.get(i).km() <= der.get(j).km()) res.add(izq.get(i++));   // empate: gana la izquierda
+        else res.add(der.get(j++));
+    }
+    res.addAll(izq.subList(i, izq.size()));
+    res.addAll(der.subList(j, der.size()));
+    return res;
+}
 
+void ordenarRapido(List<Parada> lista, int inicio, int fin) {
+    if (inicio >= fin) return;
+    int pivote = lista.get(fin).km(), frontera = inicio;
+    for (int j = inicio; j < fin; j++) {
+        if (lista.get(j).km() < pivote) {                  // compara solo los kilómetros
+            Collections.swap(lista, frontera, j);
+            frontera++;
+        }
+    }
+    Collections.swap(lista, frontera, fin);
+    ordenarRapido(lista, inicio, frontera - 1);
+    ordenarRapido(lista, frontera + 1, fin);
+}
 
-def rapido_por_km(lista):
-    lista = list(lista)
+List<Parada> rapidoPorKm(List<Parada> original) {
+    List<Parada> lista = new ArrayList<>(original);
+    ordenarRapido(lista, 0, lista.size() - 1);
+    return lista;
+}
 
-    def ordenar(inicio, fin):
-        if inicio >= fin:
-            return
-        pivote, frontera = lista[fin][0], inicio
-        for j in range(inicio, fin):
-            if lista[j][0] < pivote:             # compara solo los kilómetros
-                lista[frontera], lista[j] = lista[j], lista[frontera]
-                frontera += 1
-        lista[frontera], lista[fin] = lista[fin], lista[frontera]
-        ordenar(inicio, frontera - 1)
-        ordenar(frontera + 1, fin)
+void mostrar(String nombre, List<Parada> lista) {
+    IO.println("%-9s %s".formatted(nombre,
+            lista.stream().map(p -> p.km() + ":" + p.guia()).collect(Collectors.joining(" "))));
+}
 
-    ordenar(0, len(lista) - 1)
-    return lista
-
-
-def mostrar(nombre, lista):
-    print(f"{nombre:<9}", " ".join(f"{km}:{guia}" for km, guia in lista))
-
-
-mostrar("registro", paradas)
-mostrar("sorted", sorted(paradas, key=lambda p: p[0]))
-mostrar("mezcla", mezcla_por_km(paradas))
-mostrar("rápido", rapido_por_km(paradas))
+void main() {
+    List<Parada> conSort = new ArrayList<>(paradas);
+    conSort.sort(Comparator.comparingInt(Parada::km));
+    mostrar("registro", paradas);
+    mostrar("sort", conSort);
+    mostrar("mezcla", mezclaPorKm(paradas));
+    mostrar("rápido", rapidoPorKm(paradas));
+}
 ```
 
 ```text
-$ python3 estable.py
+$ java Estable.java
 registro  4:RF-01 2:RF-02 4:RF-03 1:RF-04 2:RF-05 4:RF-06
-sorted    1:RF-04 2:RF-02 2:RF-05 4:RF-01 4:RF-03 4:RF-06
+sort      1:RF-04 2:RF-02 2:RF-05 4:RF-01 4:RF-03 4:RF-06
 mezcla    1:RF-04 2:RF-02 2:RF-05 4:RF-01 4:RF-03 4:RF-06
 rápido    1:RF-04 2:RF-05 2:RF-02 4:RF-06 4:RF-01 4:RF-03
 ```
 
 **Explicación por partes.**
-- Línea 12: con `<=`, en un empate gana el elemento de la mitad izquierda, que se registró antes. Por eso la mezcla es estable.
-- Línea 29: Lomuto compara solo `lista[j][0]`, los kilómetros, igual que los otros dos métodos.
-- Línea 45: `key=lambda p: p[0]` le dice a `sorted` que compare solo el primer valor de cada tupla.
-- Salida: `sorted` y `mezcla` dejan `RF-01 RF-03 RF-06`; quick sort deja `RF-06 RF-01 RF-03`. Los intercambios
+- Línea 14: con `<=`, en un empate gana el elemento de la mitad izquierda, que se registró antes. Por eso la mezcla es estable.
+- Línea 26: Lomuto compara solo `km()`, igual que los otros dos métodos. `Collections.swap` intercambia dos posiciones de una lista.
+- Línea 49: `Comparator.comparingInt(Parada::km)` le dice a `sort` que compare solo los kilómetros.
+- Salida: `sort` y `mezcla` dejan `RF-01 RF-03 RF-06`; quick sort deja `RF-06 RF-01 RF-03`. Los intercambios
   largos de la partición saltan por encima de elementos iguales.
 
 #### Checkpoint 1.1
-¿Qué devuelve `particionar([3, 1, 2], 0, 2)` y cómo queda la lista?
+¿Qué devuelve `particionar` con el arreglo `{3, 1, 2}`, de 0 a 2, y cómo queda el arreglo?
 
 Respuesta: devuelve `1` y la lista queda `[1, 2, 3]`. El pivote es `2`; solo el `1` es menor, así que la frontera
 termina en 1 y el `2` se cambia a esa posición.
@@ -488,19 +536,19 @@ comparaciones suman `n(n-1)/2`. Se evita eligiendo el pivote al azar o con la me
 Crea `~/labs/algoritmos` y entra con `cd ~/labs/algoritmos`. Todos los archivos del módulo van ahí.
 
 #### Paso 2 · Traza a mano antes de ejecutar
-Copia en papel la tabla del Paso 1 con la lista `[6, 1, 8, 3, 5]`. Después escribe `quick_traza.py`, cambia `km`
-por esa lista y compara tu tabla con la traza.
+Copia en papel la tabla del Paso 1 con la lista `[6, 1, 8, 3, 5]`. Después escribe `QuickTraza.java`, cambia `km`
+por ese arreglo y compara tu tabla con la traza.
 
 #### Paso 3 · Mide los tres ordenamientos
-Escribe `ordenamientos.py` y ejecútalo. Tus conteos deben ser idénticos a los del Problema resuelto 1.2; tus
+Escribe `Ordenamientos.java` y ejecútalo. Tus conteos deben ser idénticos a los del Problema resuelto 1.2; tus
 tiempos, no.
 
 #### Paso 4 · Derriba el pivote fijo
-Escribe `pivote_fijo.py`, ejecútalo y lee la última línea del error. Luego cambia `range(3000)` por `range(500)` y
-comprueba que termina: la profundidad, no la lista, era el problema.
+Escribe `PivoteFijo.java`, ejecútalo y lee la primera línea del error. Luego cambia `30_000` por `3_000` y comprueba
+que termina: la profundidad, no el arreglo, era el problema.
 
 #### Paso 5 · Comprueba la estabilidad
-Escribe `estable.py` y agrega una séptima parada `(2, "RF-07")`. Predice dónde la deja cada método antes de ejecutar.
+Escribe `Estable.java` y agrega una séptima parada `new Parada(2, "RF-07")`. Predice dónde la deja cada método antes de ejecutar.
 
 #### Resumen
 - **Divide y vencerás** parte el problema, resuelve cada parte con recursión y combina.
@@ -509,29 +557,31 @@ Escribe `estable.py` y agrega una séptima parada `(2, "RF-07")`. Predice dónde
 - Quick sort cuesta `O(n log n)` con pivotes equilibrados y `O(n²)` si el pivote es siempre un extremo.
 - Un pivote al azar hace que el peor caso sea improbable para cualquier entrada.
 - Un **ordenamiento in situ** no copia la lista; uno **estable** respeta el orden de los empates.
-- `sorted()` es estable y `O(n log n)`: es la opción por defecto en código real.
+- `List.sort` es estable y `O(n log n)`: es la opción por defecto en código real.
 
 #### Ejercicio verificable 1
-Básico. Ejecuta `particionar([6, 1, 8, 3, 5], 0, 4)` y escribe la lista resultante y el valor devuelto.
+Básico. Ejecuta `particionar` con el arreglo `{6, 1, 8, 3, 5}`, de 0 a 4, sin traza, y escribe el arreglo resultante
+y el valor devuelto.
 
 Respuesta esperada: devuelve `2` y la lista queda `[1, 3, 5, 6, 8]`. El `1` y el `3` son menores que `5`; la
 frontera llega a 2 y allí queda el pivote.
 
 #### Ejercicio verificable 2
-Intermedio. Sin ejecutar, predice cuántas comparaciones hace `rapido(list(range(100)), False)`. Después compruébalo.
+Intermedio. Sin ejecutar, predice cuántas comparaciones hace `rapido(IntStream.range(0, 100).toArray(), false)`. Después compruébalo.
 
 Respuesta esperada: `4950`, que es `100 · 99 / 2`. Con pivote fijo y lista ordenada, cada partición compara todo el
 tramo y deja un lado vacío.
 
 #### Ejercicio verificable 3
-Reto. Escribe un quick sort de **tres listas**: `menores`, `iguales` y `mayores` que el pivote `lista[len(lista) // 2][0]`,
-construidas con comprensiones. Ordénalo por kilómetros con las paradas de `estable.py`. ¿Es estable? ¿Es in situ?
+Reto. Escribe un quick sort de **tres listas**: `menores`, `iguales` y `mayores` que el pivote
+`lista.get(lista.size() / 2).km()`, construidas con `filter`. Ordena por kilómetros las paradas de `Estable.java`.
+¿Es estable? ¿Es in situ?
 
-Respuesta esperada: `[(1, 'RF-04'), (2, 'RF-02'), (2, 'RF-05'), (4, 'RF-01'), (4, 'RF-03'), (4, 'RF-06')]`. Es
-estable, porque cada comprensión recorre la lista en orden. No es in situ: crea listas nuevas, memoria `O(n)`.
+Respuesta esperada: el orden `RF-04, RF-02, RF-05, RF-01, RF-03, RF-06`, con kilómetros 1, 2, 2, 4, 4, 4. Es
+estable, porque cada `filter` recorre la lista en orden. No es in situ: crea listas nuevas, memoria `O(n)`.
 
 #### En el trabajo
-Los lenguajes ya traen ordenamientos afinados: Python y Java usan Timsort para objetos; C++ usa introsort, un
+Los lenguajes ya traen ordenamientos afinados: Java usa Timsort para objetos y un quick sort de doble pivote para tipos primitivos; C++ usa introsort, un
 quick sort que cambia a otro método si la recursión se hace muy profunda. Tu trabajo es elegir la **clave** y
 saber si necesitas **estabilidad**. Por ejemplo, para ordenar por barrio y, dentro del barrio, por hora: ordenas
 primero por hora y luego, con un método estable, por barrio.
@@ -566,7 +616,7 @@ está en el Módulo 2, Tema 8. **Grafo**, **vértice** y **arista** están en el
 - **Definición técnica:** grafo en el que cada arista tiene un número asociado, su peso, que representa un costo, una distancia o un tiempo.
 - **En palabras sencillas:** un mapa de carreteras donde cada carretera tiene escrito su precio o sus minutos.
 - **Dónde se rompe la comparación:** un peso no tiene que ser una distancia física; puede ser dinero, riesgo o incluso negativo.
-- **Ejemplo:** `(4, "Usaquen", "Chapinero")`: el enlace entre esas bodegas cuesta 4 millones.
+- **Ejemplo:** `new Enlace(4, "Usaquen", "Chapinero")`: el enlace entre esas bodegas cuesta 4 millones.
 - **Error típico:** usar BFS del Módulo 2 en un grafo ponderado: BFS minimiza tramos, no la suma de pesos.
 
 **contraejemplo**
@@ -601,15 +651,15 @@ está en el Módulo 2, Tema 8. **Grafo**, **vértice** y **arista** están en el
 - **Definición técnica:** estructura de datos que mantiene grupos sin elementos en común y ofrece dos operaciones: encontrar el representante (raíz) de un elemento y unir dos grupos (*union-find*).
 - **En palabras sencillas:** cada bodega apunta a un «jefe de grupo»; dos bodegas están conectadas si tienen el mismo jefe.
 - **Dónde se rompe la comparación:** el jefe no es especial: es solo la bodega en la que termina la cadena de apuntadores.
-- **Ejemplo:** `padre = {n: n for n in nodos}`: al inicio cada bodega es su propio jefe.
-- **Error típico:** unir `padre[a] = b` en vez de unir las raíces: grupos que ya estaban unidos se separan.
+- **Ejemplo:** `for (String n : nodos) padre.put(n, n);`: al inicio cada bodega es su propio jefe.
+- **Error típico:** unir `padre.put(a, b)` en vez de unir las raíces: grupos que ya estaban unidos se separan.
 
 **algoritmo de Prim**
 - **Definición técnica:** algoritmo codicioso que hace crecer un solo árbol desde un vértice inicial; en cada paso agrega la arista más barata que conecta un vértice del árbol con uno de fuera.
 - **En palabras sencillas:** empezar en una bodega y, en cada paso, instalar el enlace más barato que suma una bodega nueva a la red.
 - **Dónde se rompe la comparación:** el orden de los enlaces cambia según la bodega inicial, pero el costo total mínimo es el mismo.
 - **Ejemplo:** desde Chapinero agrega Usaquén (4), Suba (3), Engativá (5), Kennedy (2) y Bosa (3): total 17.
-- **Error típico:** aplicarlo a un grafo no conexo: no hay arista que cruce y `min` falla con una lista vacía.
+- **Error típico:** aplicarlo a un grafo no conexo: no hay arista que cruce y `min` no tiene qué devolver.
 
 #### ► CÓMO FUNCIONA
 **Paso 1: refutar con un contraejemplo.** La regla «usa siempre la moneda más grande» paga 1700 pesos con
@@ -669,117 +719,137 @@ Las líneas continuas son el árbol de 17 millones; las punteadas, los enlaces q
 Refuta la regla «usa siempre la moneda más grande» con un contraejemplo y compárala con el óptimo.
 
 **Razonamiento:**
-1. `cambio_codicioso` ordena las monedas de mayor a menor y resta mientras pueda.
-2. `cambio_optimo` usa la tabulación del Módulo 2, Tema 8: `mejor[v]` es el mínimo de monedas para pagar `v`.
+1. `cambioCodicioso` ordena las monedas de mayor a menor y resta mientras pueda.
+2. `cambioOptimo` usa la tabulación del Módulo 2, Tema 8: `mejor[v]` es el mínimo de monedas para pagar `v`.
 3. Si ambas cuentas difieren para algún monto, ese monto es el contraejemplo.
 
-```python
-# codiciosos.py — una elección codiciosa que funciona y otra que falla
-def cambio_codicioso(monto, monedas):
-    usadas = []
-    for moneda in sorted(monedas, reverse=True):   # la moneda más grande primero
-        while monto >= moneda:
-            monto -= moneda
-            usadas.append(moneda)
-    return usadas
+```java
+// Codiciosos.java — una elección codiciosa que funciona y otra que falla
+List<Integer> cambioCodicioso(int monto, List<Integer> monedas) {
+    List<Integer> usadas = new ArrayList<>();
+    for (int moneda : monedas.stream().sorted(Comparator.reverseOrder()).toList()) {   // la más grande primero
+        while (monto >= moneda) {
+            monto -= moneda;
+            usadas.add(moneda);
+        }
+    }
+    return usadas;
+}
 
+Integer cambioOptimo(int monto, List<Integer> monedas) {
+    // programación dinámica: mejor[v] = mínimo de monedas para pagar v (null: todavía no se sabe pagar)
+    Integer[] mejor = new Integer[monto + 1];
+    mejor[0] = 0;
+    for (int valor = 1; valor <= monto; valor++) {
+        for (int m : monedas) {
+            if (m <= valor && mejor[valor - m] != null
+                    && (mejor[valor] == null || mejor[valor - m] + 1 < mejor[valor])) {
+                mejor[valor] = mejor[valor - m] + 1;
+            }
+        }
+    }
+    return mejor[monto];
+}
 
-def cambio_optimo(monto, monedas):
-    # programación dinámica: mejor[v] = mínimo de monedas para pagar v
-    mejor = [0] + [None] * monto
-    for valor in range(1, monto + 1):
-        opciones = [mejor[valor - m] for m in monedas
-                    if m <= valor and mejor[valor - m] is not None]
-        mejor[valor] = min(opciones) + 1 if opciones else None
-    return mejor[monto]
-
-
-colombianas = [1000, 500, 200, 100, 50]
-print("1700 con monedas colombianas:", cambio_codicioso(1700, colombianas),
-      "| óptimo:", cambio_optimo(1700, colombianas), "monedas")
-fichas = [4, 3, 1]                                   # fichas de peaje de un sistema inventado
-print("6 con fichas [4, 3, 1]:", cambio_codicioso(6, fichas),
-      "| óptimo:", cambio_optimo(6, fichas), "fichas")
+void main() {
+    List<Integer> colombianas = List.of(1000, 500, 200, 100, 50);
+    IO.println("1700 con monedas colombianas: " + cambioCodicioso(1700, colombianas)
+            + " | óptimo: " + cambioOptimo(1700, colombianas) + " monedas");
+    List<Integer> fichas = List.of(4, 3, 1);           // fichas de peaje de un sistema inventado
+    IO.println("6 con fichas [4, 3, 1]: " + cambioCodicioso(6, fichas)
+            + " | óptimo: " + cambioOptimo(6, fichas) + " fichas");
+}
 ```
 
 ```text
-$ python3 codiciosos.py
+$ java Codiciosos.java
 1700 con monedas colombianas: [1000, 500, 200] | óptimo: 3 monedas
 6 con fichas [4, 3, 1]: [4, 1, 1] | óptimo: 2 fichas
 ```
 
 **Explicación por partes.**
-- Línea 4: `sorted(monedas, reverse=True)` recorre de la moneda más grande a la más pequeña.
-- Líneas 5–7: mientras el monto alcance, usa esa moneda. Nunca reconsidera.
-- Línea 13: `mejor[0] = 0` es el caso base; `None` marca montos que todavía no se saben pagar.
-- Líneas 15–17: para cada valor prueba todas las monedas y se queda con la opción de menos monedas.
+- Línea 4: `sorted(Comparator.reverseOrder())` recorre de la moneda más grande a la más pequeña.
+- Líneas 5–8: mientras el monto alcance, usa esa moneda. Nunca reconsidera.
+- Línea 15: un arreglo de `Integer` (no `int`) para poder guardar `null`, que marca montos que todavía no se saben pagar.
+- Línea 16: `mejor[0] = 0` es el caso base.
+- Líneas 18–22: para cada valor prueba todas las monedas y se queda con la opción de menos monedas.
 - Salida: con monedas colombianas ambos dan 3; con fichas de 4, 3 y 1, la regla codiciosa usa 3 y el óptimo, 2.
 
 #### Problema resuelto 2.2
 Conecta las seis bodegas con Kruskal y con Prim, y comprueba que ambos llegan al mismo costo mínimo.
 
 **Razonamiento:**
-1. Los enlaces se guardan como tuplas `(costo, a, b)`: así `sorted` los ordena por costo sin `key`.
-2. Kruskal necesita saber si dos bodegas ya están en el mismo grupo: conjuntos disjuntos con un diccionario `padre`.
+1. Los enlaces son records `Enlace(costo, a, b)`; un `Comparator` los ordena por costo y, en empate, por nombre.
+2. Kruskal necesita saber si dos bodegas ya están en el mismo grupo: conjuntos disjuntos con un mapa `padre`.
 3. Prim necesita saber qué bodegas ya están conectadas: un conjunto `conectadas`.
 4. Un árbol con 6 vértices tiene 5 aristas: Kruskal puede detenerse al llegar a 5.
 
-```python
-# red_minima.py — conectar las seis bodegas de RutaFlow al menor costo (Kruskal y Prim)
-bodegas = ["Usaquen", "Suba", "Chapinero", "Engativa", "Kennedy", "Bosa"]
-enlaces = [  # (costo en millones de pesos, bodega, bodega)
-    (4, "Usaquen", "Chapinero"), (3, "Usaquen", "Suba"), (5, "Suba", "Chapinero"),
-    (5, "Suba", "Engativa"), (6, "Chapinero", "Engativa"), (7, "Chapinero", "Kennedy"),
-    (2, "Engativa", "Kennedy"), (3, "Kennedy", "Bosa"), (9, "Chapinero", "Bosa"),
-]
+```java
+// RedMinima.java — conectar las seis bodegas de RutaFlow al menor costo (Kruskal y Prim)
+record Enlace(int costo, String a, String b) {}
 
+final Comparator<Enlace> MAS_BARATO =
+        Comparator.comparingInt(Enlace::costo).thenComparing(Enlace::a).thenComparing(Enlace::b);
+final List<String> bodegas = List.of("Usaquen", "Suba", "Chapinero", "Engativa", "Kennedy", "Bosa");
+final List<Enlace> enlaces = List.of(   // costo en millones de pesos
+        new Enlace(4, "Usaquen", "Chapinero"), new Enlace(3, "Usaquen", "Suba"), new Enlace(5, "Suba", "Chapinero"),
+        new Enlace(5, "Suba", "Engativa"), new Enlace(6, "Chapinero", "Engativa"), new Enlace(7, "Chapinero", "Kennedy"),
+        new Enlace(2, "Engativa", "Kennedy"), new Enlace(3, "Kennedy", "Bosa"), new Enlace(9, "Chapinero", "Bosa"));
 
-def kruskal(nodos, aristas):
-    padre = {n: n for n in nodos}            # cada bodega empieza sola en su grupo
+String raiz(Map<String, String> padre, String n) {
+    while (!padre.get(n).equals(n)) {
+        padre.put(n, padre.get(padre.get(n)));      // acorta el camino hacia la raíz
+        n = padre.get(n);
+    }
+    return n;
+}
 
-    def raiz(n):
-        while padre[n] != n:
-            padre[n] = padre[padre[n]]       # acorta el camino hacia la raíz
-            n = padre[n]
-        return n
+int kruskal(List<String> nodos, List<Enlace> aristas) {
+    Map<String, String> padre = new HashMap<>();
+    for (String n : nodos) padre.put(n, n);          // cada bodega empieza sola en su grupo
+    List<Enlace> arbol = new ArrayList<>();
+    int total = 0;
+    for (Enlace e : aristas.stream().sorted(MAS_BARATO).toList()) {   // la más barata primero
+        String ra = raiz(padre, e.a()), rb = raiz(padre, e.b());
+        if (ra.equals(rb)) {
+            IO.println("  %s-%s (%d): descartada, cerraría un ciclo".formatted(e.a(), e.b(), e.costo()));
+            continue;
+        }
+        padre.put(ra, rb);                           // une los dos grupos
+        arbol.add(e);
+        total += e.costo();
+        IO.println("  %s-%s (%d): aceptada, total=%d".formatted(e.a(), e.b(), e.costo(), total));
+        if (arbol.size() == nodos.size() - 1) break; // un árbol con V vértices tiene V-1 aristas
+    }
+    return total;
+}
 
-    arbol, total = [], 0
-    for costo, a, b in sorted(aristas):      # elección codiciosa: la más barata primero
-        ra, rb = raiz(a), raiz(b)
-        if ra == rb:
-            print(f"  {a}-{b} ({costo}): descartada, cerraría un ciclo")
-            continue
-        padre[ra] = rb                       # une los dos grupos
-        arbol.append((a, b, costo))
-        total += costo
-        print(f"  {a}-{b} ({costo}): aceptada, total={total}")
-        if len(arbol) == len(nodos) - 1:     # un árbol con V vértices tiene V-1 aristas
-            break
-    return arbol, total
+int prim(List<String> nodos, List<Enlace> aristas, String inicio) {
+    Set<String> conectadas = new HashSet<>(Set.of(inicio));
+    int total = 0;
+    while (conectadas.size() < nodos.size()) {
+        Enlace e = aristas.stream()
+                .filter(x -> conectadas.contains(x.a()) != conectadas.contains(x.b()))
+                .min(MAS_BARATO).orElseThrow();      // elección codiciosa: el cruce más barato
+        String nueva = conectadas.contains(e.a()) ? e.b() : e.a();
+        conectadas.add(nueva);
+        total += e.costo();
+        IO.println("  %s-%s (%d): agrega %s, total=%d".formatted(e.a(), e.b(), e.costo(), nueva, total));
+    }
+    return total;
+}
 
-
-def prim(nodos, aristas, inicio):
-    conectadas, arbol, total = {inicio}, [], 0
-    while len(conectadas) < len(nodos):
-        cruzan = [(c, a, b) for c, a, b in aristas if (a in conectadas) != (b in conectadas)]
-        costo, a, b = min(cruzan)            # elección codiciosa: el cruce más barato
-        nueva = b if a in conectadas else a
-        conectadas.add(nueva)
-        arbol.append((a, b, costo))
-        total += costo
-        print(f"  {a}-{b} ({costo}): agrega {nueva}, total={total}")
-    return arbol, total
-
-
-print("Kruskal:")
-_, total_k = kruskal(bodegas, enlaces)
-print("Prim desde Chapinero:")
-_, total_p = prim(bodegas, enlaces, "Chapinero")
-print("costo total Kruskal:", total_k, "| Prim:", total_p)
+void main() {
+    IO.println("Kruskal:");
+    int totalK = kruskal(bodegas, enlaces);
+    IO.println("Prim desde Chapinero:");
+    int totalP = prim(bodegas, enlaces, "Chapinero");
+    IO.println("costo total Kruskal: " + totalK + " | Prim: " + totalP);
+}
 ```
 
 ```text
-$ python3 red_minima.py
+$ java RedMinima.java
 Kruskal:
   Engativa-Kennedy (2): aceptada, total=2
   Kennedy-Bosa (3): aceptada, total=5
@@ -797,21 +867,23 @@ costo total Kruskal: 17 | Prim: 17
 ```
 
 **Explicación por partes.**
-- Línea 11: cada bodega empieza como su propia raíz: seis grupos de uno.
-- Líneas 13–17: `raiz` sube por los apuntadores hasta una bodega que se apunta a sí misma. La línea 15 hace que
+- Líneas 4–5: `MAS_BARATO` compara primero el costo y, si empatan, los nombres. Así el orden es siempre el mismo.
+- Línea 22: cada bodega empieza como su propia raíz: seis grupos de uno.
+- Líneas 12–18: `raiz` sube por los apuntadores hasta una bodega que se apunta a sí misma. La línea 14 hace que
   cada bodega apunte a su abuelo; así las cadenas se acortan para las consultas siguientes.
-- Líneas 22–24: si las dos raíces coinciden, el enlace cerraría un ciclo y se descarta.
-- Línea 25: une las **raíces**, no las bodegas, para fusionar los grupos completos.
-- Líneas 29–30: con `V - 1` enlaces el árbol está completo y el bucle termina.
-- Línea 37: `(a in conectadas) != (b in conectadas)` es verdadero cuando el enlace cruza: un extremo dentro y otro fuera.
-- Línea 38: `min` sobre tuplas compara primero el costo: elige el cruce más barato.
+- Líneas 27–30: si las dos raíces coinciden, el enlace cerraría un ciclo y se descarta.
+- Línea 31: une las **raíces**, no las bodegas, para fusionar los grupos completos.
+- Línea 35: con `V - 1` enlaces el árbol está completo y el bucle termina.
+- Línea 45: `conectadas.contains(a) != conectadas.contains(b)` es verdadero cuando el enlace cruza: un extremo dentro y otro fuera.
+- Línea 46: `min(MAS_BARATO)` elige el cruce más barato; devuelve un `Optional` y `orElseThrow` lo abre.
 - Salida: Kruskal y Prim instalan los mismos cinco enlaces en distinto orden; ambos cuestan 17.
 
 > **Error común.** Aplicar Prim a un grafo que no es conexo. Si agregas `"Soacha"` a `bodegas` sin ningún
-> enlace, después de conectar las otras seis no queda arista que cruce y el programa termina con
-> `ValueError: min() iterable argument is empty`. Kruskal no falla, pero devuelve solo 5 enlaces para 7 bodegas.
+> enlace, después de conectar las otras seis no queda arista que cruce: `min` devuelve un `Optional` vacío y el
+> programa termina con `java.util.NoSuchElementException: No value present`, en `RedMinima.prim(RedMinima.java:46)`.
+> Kruskal no falla, pero devuelve solo 5 enlaces para 7 bodegas.
 
-> **Prevenir errores.** Después de Kruskal, comprueba `len(arbol) == len(nodos) - 1`. Si no se cumple, el grafo
+> **Prevenir errores.** Después de Kruskal, comprueba `arbol.size() == nodos.size() - 1`. Si no se cumple, el grafo
 > no es conexo y alguna bodega quedó aislada.
 
 > **Ingeniería de software.** Tanto Kruskal como Prim dan **un** árbol mínimo. Si hay empates de costo pueden dar
@@ -835,17 +907,17 @@ incluye la mejor elección local) y subestructura óptima. Se demuestra para cad
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Refuta la regla
-En `~/labs/algoritmos` escribe `codiciosos.py`, ejecútalo y busca a mano otro monto que falle con fichas de 4, 3 y 1.
+En `~/labs/algoritmos` escribe `Codiciosos.java`, ejecútalo y busca a mano otro monto que falle con fichas de 4, 3 y 1.
 
 #### Paso 2 · Dibuja la red
 Dibuja las seis bodegas y los nueve enlaces. Llena la tabla de Kruskal en papel antes de programar.
 
 #### Paso 3 · Implementa Kruskal y Prim
-Escribe `red_minima.py` y compara la salida con tus tablas.
+Escribe `RedMinima.java` y compara la salida con tus tablas.
 
 #### Paso 4 · Rompe la conexión
-Agrega `"Soacha"` a `bodegas` sin enlaces y lee el error de Prim. Luego agrega `(8, "Bosa", "Soacha")` y comprueba
-que ambos algoritmos dan 25.
+Agrega `"Soacha"` a `bodegas` sin enlaces y lee el error de Prim. Luego agrega `new Enlace(8, "Bosa", "Soacha")` y
+comprueba que ambos algoritmos dan 25.
 
 #### Resumen
 - Un **grafo ponderado** asigna un peso a cada arista.
@@ -856,7 +928,7 @@ que ambos algoritmos dan 25.
 - **Prim** hace crecer un árbol desde un vértice: `O(V · A)` en su versión simple.
 
 #### Ejercicio verificable 1
-Básico. ¿Qué devuelven `cambio_codicioso(900, colombianas)` y `cambio_optimo(900, colombianas)`?
+Básico. ¿Qué devuelven `cambioCodicioso(900, colombianas)` y `cambioOptimo(900, colombianas)`?
 
 Respuesta esperada: `[500, 200, 200]` y `3`. Con monedas colombianas la regla codiciosa coincide con el óptimo.
 
@@ -868,7 +940,7 @@ empezar en Chapinero, pero no el costo.
 
 #### Ejercicio verificable 3
 Reto. Escribe un bucle que encuentre todos los montos entre 1 y 29 en los que la regla codiciosa con fichas
-`[4, 3, 1]` usa más fichas que el óptimo.
+`List.of(4, 3, 1)` usa más fichas que el óptimo.
 
 Respuesta esperada: `[6, 10, 14, 18, 22, 26]`. Todos dejan resto 2 al dividir entre 4: la regla toma un 4 de
 más y paga el resto con unos, cuando dos fichas de 3 lo cubren mejor.
@@ -887,7 +959,7 @@ si te detienes antes de unir todo, los grupos que quedan son clústeres de punto
 
 #### Objetivos
 Al terminar este tema podrás:
-- usar `heapq` como cola de prioridad y explicar por qué sacar el mínimo cuesta `O(log n)`;
+- usar `PriorityQueue` como cola de prioridad y explicar por qué sacar el mínimo cuesta `O(log n)`;
 - calcular con Dijkstra los minutos mínimos desde el depósito y reconstruir cada ruta;
 - trazar en una tabla cada extracción y cada relajación de Dijkstra;
 - explicar por qué Dijkstra falla con pesos negativos y detectar un ciclo negativo con Bellman-Ford.
@@ -909,14 +981,14 @@ corto** en tramos, del Módulo 2, Tema 7.
 - **En palabras sencillas:** la fila de urgencias: pasa primero el más grave, no el que llegó primero.
 - **Dónde se rompe la comparación:** en urgencias alguien decide la gravedad; aquí la prioridad es un número que tú pones al insertar.
 - **Ejemplo:** la parada con plazo de 5 minutos sale antes que la de 40, aunque haya llegado después.
-- **Error típico:** usar una lista y `min()` cada vez: sacar el mínimo cuesta `O(n)` en lugar de `O(log n)`.
+- **Error típico:** usar una lista y buscar el mínimo cada vez: sacarlo cuesta `O(n)` en lugar de `O(log n)`.
 
 **montículo binario**
-- **Definición técnica:** árbol binario completo guardado en una lista, en el que cada padre es menor o igual que sus hijos; el hijo de la posición `i` está en `2i + 1` y `2i + 2` (*binary heap*).
+- **Definición técnica:** árbol binario completo guardado en un arreglo, en el que cada padre es menor o igual que sus hijos; el hijo de la posición `i` está en `2i + 1` y `2i + 2` (*binary heap*).
 - **En palabras sencillas:** una pirámide de números donde cada uno es menor que los dos que tiene debajo; el menor de todos queda arriba.
 - **Dónde se rompe la comparación:** la pirámide no está ordenada por pisos: dos hermanos pueden estar en cualquier orden.
-- **Ejemplo:** `[5, 15, 30, 40, 20]` es un montículo válido aunque la lista no esté ordenada.
-- **Error típico:** leer `monticulo[1]` como el segundo menor; solo `monticulo[0]` tiene garantía.
+- **Ejemplo:** `[5, 15, 30, 40, 20]` es un montículo válido aunque el arreglo no esté ordenado.
+- **Error típico:** creer que recorrer la cola con un `for` o imprimirla da los elementos en orden; solo `peek()` (la raíz) tiene garantía.
 
 **relajación**
 - **Definición técnica:** operación que, para una arista `u → v` con peso `p`, actualiza `distancia[v] = distancia[u] + p` si ese valor es menor que el actual.
@@ -947,8 +1019,8 @@ corto** en tramos, del Módulo 2, Tema 7.
 - **Error típico:** hacer solo `V - 2` rondas: un camino de `V - 1` tramos queda sin terminar de mejorar.
 
 #### ► CÓMO FUNCIONA
-**Paso 1: la cola de prioridad.** `heapq` guarda el montículo en una lista común. `heappush` agrega al final y
-hace **subir** el valor mientras sea menor que su padre. `heappop` saca la raíz, pone el último en su lugar y lo
+**Paso 1: la cola de prioridad.** `PriorityQueue` guarda el montículo en un arreglo interno. `add` agrega al final
+y hace **subir** el valor mientras sea menor que su padre. `poll` saca la raíz, pone el último en su lugar y lo
 hace **bajar**. Un montículo de `n` elementos tiene altura `log2(n)`: cada operación cuesta `O(log n)`.
 
 | Operación | Lista interna | Qué pasó |
@@ -977,54 +1049,64 @@ barrio ya finalizado vuelve a salir de la cola, es una entrada vieja y se descar
 están a `d` o más. Con pesos **no negativos**, ningún desvío por ellos puede llegar antes. Por eso `d` ya es
 definitivo. Con un peso negativo este argumento se cae: un desvío largo puede terminar en un tramo que resta.
 
-**Paso 4: complejidad.** Cada tramo puede provocar a lo sumo un `heappush`; hay como mucho `A` entradas en la
-cola. Cada `push` y cada `pop` cuestan `O(log A)`, y `log A <= 2 log V`. Total: `O((V + A) log V)`.
+**Paso 4: complejidad.** Cada tramo puede provocar a lo sumo un `add`; hay como mucho `A` entradas en la
+cola. Cada `add` y cada `poll` cuestan `O(log A)`, y `log A <= 2 log V`. Total: `O((V + A) log V)`.
 Bellman-Ford hace `V - 1` rondas sobre las `A` aristas: `O(V · A)`.
 
 ```mermaid
 flowchart TD
     I["distancia: origen 0, resto infinito"] --> Q{"¿cola vacía?"}
     Q -- sí --> F["fin: distancias mínimas"]
-    Q -- no --> P["heappop: el pendiente más cercano"]
+    Q -- no --> P["poll: el pendiente más cercano"]
     P --> V{"¿ya finalizado?"}
     V -- sí --> Q
     V -- no --> M["marcar finalizado"]
-    M --> R["relajar cada tramo: si mejora, actualizar y heappush"]
+    M --> R["relajar cada tramo: si mejora, actualizar y add"]
     R --> Q
 ```
 
 #### Problema resuelto 3.1
-Atiende cinco paradas por plazo, la más urgente primero, con `heapq`, y observa la lista interna del montículo.
+Atiende cinco paradas por plazo, la más urgente primero, con `PriorityQueue`, y observa el arreglo interno del montículo.
 
 **Razonamiento:**
-1. La prioridad son los minutos que faltan para el plazo; la tupla `(minutos, guía)` se compara por su primer valor.
-2. Imprimir solo los minutos de la lista interna permite comparar con la tabla del Paso 1.
-3. `heappop` debe entregar los plazos en orden creciente aunque la lista interna no esté ordenada.
+1. La prioridad son los minutos que faltan para el plazo; un `Comparator` dice que se compara por `minutos`.
+2. Imprimir solo los minutos del arreglo interno permite comparar con la tabla del Paso 1.
+3. `poll` debe entregar los plazos en orden creciente aunque el arreglo interno no esté ordenado.
 
-```python
-# cola_prioridad.py — paradas urgentes primero, con un montículo de heapq
-import heapq
+```java
+// ColaPrioridad.java — paradas urgentes primero, con el montículo de PriorityQueue
+record Pendiente(int minutos, String guia) {}
 
-llegadas = [("RF-11", 40), ("RF-12", 15), ("RF-13", 30), ("RF-14", 5), ("RF-15", 20)]
-monticulo = []                                   # una lista vacía es un montículo válido
-for guia, minutos in llegadas:                   # minutos que faltan para el plazo
-    heapq.heappush(monticulo, (minutos, guia))   # la tupla se compara por su primer valor
-    print(f"push ({minutos:>2}, {guia})  lista={[m for m, _ in monticulo]}")
+void main() {
+    List<Pendiente> llegadas = List.of(new Pendiente(40, "RF-11"), new Pendiente(15, "RF-12"),
+            new Pendiente(30, "RF-13"), new Pendiente(5, "RF-14"), new Pendiente(20, "RF-15"));
+    // minutos que faltan para el plazo: el comparador decide quién es «menor»
+    PriorityQueue<Pendiente> monticulo = new PriorityQueue<>(Comparator.comparingInt(Pendiente::minutos));
+    for (Pendiente p : llegadas) {
+        monticulo.add(p);
+        IO.println("push (%2d, %s)  lista=%s".formatted(p.minutos(), p.guia(), interna(monticulo)));
+    }
+    IO.println("raíz (el mínimo): " + monticulo.peek());
+    while (!monticulo.isEmpty()) {
+        Pendiente p = monticulo.poll();          // saca siempre el plazo más cercano
+        IO.println("pop  (%2d, %s)  quedan=%s".formatted(p.minutos(), p.guia(), interna(monticulo)));
+    }
+}
 
-print("raíz (el mínimo):", monticulo[0])
-while monticulo:
-    minutos, guia = heapq.heappop(monticulo)     # saca siempre el plazo más cercano
-    print(f"pop  ({minutos:>2}, {guia})  quedan={[m for m, _ in monticulo]}")
+/** Los minutos en el orden del arreglo interno del montículo (el iterador lo recorre así). */
+List<Integer> interna(PriorityQueue<Pendiente> monticulo) {
+    return monticulo.stream().map(Pendiente::minutos).toList();
+}
 ```
 
 ```text
-$ python3 cola_prioridad.py
+$ java ColaPrioridad.java
 push (40, RF-11)  lista=[40]
 push (15, RF-12)  lista=[15, 40]
 push (30, RF-13)  lista=[15, 40, 30]
 push ( 5, RF-14)  lista=[5, 15, 30, 40]
 push (20, RF-15)  lista=[5, 15, 30, 40, 20]
-raíz (el mínimo): (5, 'RF-14')
+raíz (el mínimo): Pendiente[minutos=5, guia=RF-14]
 pop  ( 5, RF-14)  quedan=[15, 20, 30, 40]
 pop  (15, RF-12)  quedan=[20, 40, 30]
 pop  (20, RF-15)  quedan=[30, 40]
@@ -1033,86 +1115,115 @@ pop  (40, RF-11)  quedan=[]
 ```
 
 **Explicación por partes.**
-- Línea 5: el montículo es una lista común; `heapq` no es una clase, son funciones que la mantienen como montículo.
-- Línea 7: `heappush` inserta la tupla y la hace subir; cuesta `O(log n)`.
-- Línea 10: `monticulo[0]` es siempre el mínimo; leerlo cuesta `O(1)`.
-- Línea 12: `heappop` saca el mínimo y reacomoda; cuesta `O(log n)`.
-- Salida: la lista interna nunca está ordenada, pero los `pop` salen en orden 5, 15, 20, 30, 40.
+- Línea 8: la cola recibe el criterio de orden. «Menor» significa «menos minutos para el plazo».
+- Línea 10: `add` inserta y hace subir; cuesta `O(log n)`.
+- Línea 13: `peek` muestra la raíz, siempre el mínimo; leerla cuesta `O(1)`.
+- Línea 15: `poll` saca el mínimo y reacomoda; cuesta `O(log n)`.
+- Líneas 20–23: el iterador de `PriorityQueue` recorre el arreglo interno tal como está, sin ordenarlo.
+- Salida: el arreglo interno nunca está ordenado, pero los `poll` salen en orden 5, 15, 20, 30, 40.
 
-> **Error común.** Guardar en el montículo tuplas cuyo segundo valor no se puede comparar. Con dos entradas de
-> igual prioridad, `heapq.heappush(h, (15, {"guia": "RF-2"}))` termina con
-> `TypeError: '<' not supported between instances of 'dict' and 'dict'`. Ante un empate, Python compara el
-> segundo valor. Usa `(prioridad, contador, dato)` con un contador que nunca se repite.
+> **Error común.** Crear la cola sin `Comparator` para un tipo que no sabe compararse: `new PriorityQueue<>()` con
+> records `Pendiente`. Compila, pero el primer `add` que necesita comparar termina con
+> `java.lang.ClassCastException: class ColaPrioridad$Pendiente cannot be cast to class java.lang.Comparable`. La cola
+> no sabe cuál es menor. Pásale un `Comparator`, como en la línea 8, o haz que el record implemente `Comparable`.
 
 #### Problema resuelto 3.2
 Calcula los minutos mínimos desde el depósito a cada barrio y reconstruye la ruta de cada uno.
 
 **Razonamiento:**
-1. El mapa es un diccionario de diccionarios: `mapa["Chapinero"]["Kennedy"]` son los minutos de ese tramo.
+1. El mapa es un `Map` de mapas: `mapa.get("Chapinero").get("Kennedy")` son los minutos de ese tramo. Se usan
+   `LinkedHashMap` para que el orden de recorrido sea el de escritura y la traza salga igual siempre.
 2. `distancia` guarda el mejor tiempo conocido; `anterior` guarda desde dónde se llegó, para reconstruir la ruta.
 3. La traza imprime una fila por extracción para compararla con la tabla del Paso 2.
 4. Para reconstruir, se sigue `anterior` desde el destino hasta el origen y se invierte la lista.
 
-```python
-# rutas.py — tiempos mínimos desde el depósito con Dijkstra
-import heapq
-
-mapa = {  # minutos de viaje por cada tramo (grafo dirigido y ponderado)
-    "Deposito": {"Chapinero": 15, "Kennedy": 25},
-    "Chapinero": {"Usaquen": 20, "Kennedy": 5},
-    "Kennedy": {"Bosa": 10, "Usaquen": 40},
-    "Usaquen": {"Bosa": 30},
-    "Bosa": {},
+```java
+// Rutas.java — tiempos mínimos desde el depósito con Dijkstra
+record Entrada(int d, String nodo) {
+    @Override
+    public String toString() {
+        return "(" + d + ", " + nodo + ")";
+    }
 }
 
+final Comparator<Entrada> MAS_CERCANA = Comparator.comparingInt(Entrada::d).thenComparing(Entrada::nodo);
+final int INFINITO = Integer.MAX_VALUE;
 
-def dijkstra(grafo, origen, traza=False):
-    distancia = {nodo: float("inf") for nodo in grafo}
-    anterior = {}
-    distancia[origen] = 0
-    pendientes = [(0, origen)]                   # cola de prioridad: (minutos, nodo)
-    finalizados = set()
-    while pendientes:
-        d, nodo = heapq.heappop(pendientes)
-        if nodo in finalizados:                  # entrada vieja: ya tiene su mínimo
-            if traza:
-                print(f"descarta ({d}, {nodo}): entrada vieja")
-            continue
-        finalizados.add(nodo)
-        cambios = []
-        for vecino, peso in grafo[nodo].items():
-            nueva = d + peso
-            if vecino not in finalizados and nueva < distancia[vecino]:
-                distancia[vecino] = nueva        # relajación: encontramos algo mejor
-                anterior[vecino] = nodo
-                heapq.heappush(pendientes, (nueva, vecino))
-                cambios.append(f"{vecino}={nueva}")
-        if traza:
-            print(f"saca {nodo:<9} d={d:<3} mejora: {', '.join(cambios) or '-':<23}"
-                  f" cola={sorted(pendientes)}")
-    return distancia, anterior
+/** Arma los tramos que salen de un barrio, conservando el orden en que se escriben. */
+Map<String, Integer> tramos(Object... pares) {
+    Map<String, Integer> salida = new LinkedHashMap<>();
+    for (int i = 0; i < pares.length; i += 2) salida.put((String) pares[i], (Integer) pares[i + 1]);
+    return salida;
+}
 
+Map<String, Map<String, Integer>> crearMapa() {   // minutos de viaje por tramo (dirigido y ponderado)
+    Map<String, Map<String, Integer>> mapa = new LinkedHashMap<>();
+    mapa.put("Deposito", tramos("Chapinero", 15, "Kennedy", 25));
+    mapa.put("Chapinero", tramos("Usaquen", 20, "Kennedy", 5));
+    mapa.put("Kennedy", tramos("Bosa", 10, "Usaquen", 40));
+    mapa.put("Usaquen", tramos("Bosa", 30));
+    mapa.put("Bosa", tramos());
+    return mapa;
+}
 
-def camino(anterior, destino):
-    ruta = [destino]
-    while ruta[-1] in anterior:                  # retrocede hasta el origen
-        ruta.append(anterior[ruta[-1]])
-    return list(reversed(ruta))
+void dijkstra(Map<String, Map<String, Integer>> grafo, String origen,
+              Map<String, Integer> distancia, Map<String, String> anterior) {
+    for (String nodo : grafo.keySet()) distancia.put(nodo, INFINITO);
+    distancia.put(origen, 0);
+    PriorityQueue<Entrada> pendientes = new PriorityQueue<>(MAS_CERCANA);
+    pendientes.add(new Entrada(0, origen));
+    Set<String> finalizados = new HashSet<>();
+    while (!pendientes.isEmpty()) {
+        Entrada e = pendientes.poll();
+        if (finalizados.contains(e.nodo())) {      // entrada vieja: ya tiene su mínimo
+            IO.println("descarta " + e + ": entrada vieja");
+            continue;
+        }
+        finalizados.add(e.nodo());
+        List<String> cambios = new ArrayList<>();
+        for (var tramo : grafo.get(e.nodo()).entrySet()) {
+            String vecino = tramo.getKey();
+            int nueva = e.d() + tramo.getValue();
+            if (!finalizados.contains(vecino) && nueva < distancia.get(vecino)) {
+                distancia.put(vecino, nueva);      // relajación: encontramos algo mejor
+                anterior.put(vecino, e.nodo());
+                pendientes.add(new Entrada(nueva, vecino));
+                cambios.add(vecino + "=" + nueva);
+            }
+        }
+        String mejora = cambios.isEmpty() ? "-" : String.join(", ", cambios);
+        IO.println("saca %-9s d=%-3d mejora: %-23s cola=%s".formatted(e.nodo(), e.d(), mejora,
+                pendientes.stream().sorted(MAS_CERCANA).toList()));
+    }
+}
 
+List<String> camino(Map<String, String> anterior, String destino) {
+    List<String> ruta = new ArrayList<>(List.of(destino));
+    while (anterior.containsKey(ruta.getLast())) {   // retrocede hasta el origen
+        ruta.add(anterior.get(ruta.getLast()));
+    }
+    return ruta.reversed();
+}
 
-distancia, anterior = dijkstra(mapa, "Deposito", traza=True)
-print()
-for destino in ["Chapinero", "Kennedy", "Usaquen", "Bosa"]:
-    print(f"{destino:<9} {distancia[destino]:>3} min  ruta: {' -> '.join(camino(anterior, destino))}")
+void main() {
+    Map<String, Integer> distancia = new LinkedHashMap<>();
+    Map<String, String> anterior = new HashMap<>();
+    dijkstra(crearMapa(), "Deposito", distancia, anterior);
+    IO.println();
+    for (String destino : List.of("Chapinero", "Kennedy", "Usaquen", "Bosa")) {
+        IO.println("%-9s %3d min  ruta: %s".formatted(destino, distancia.get(destino),
+                String.join(" -> ", camino(anterior, destino))));
+    }
+}
 ```
 
 ```text
-$ python3 rutas.py
-saca Deposito  d=0   mejora: Chapinero=15, Kennedy=25 cola=[(15, 'Chapinero'), (25, 'Kennedy')]
-saca Chapinero d=15  mejora: Usaquen=35, Kennedy=20  cola=[(20, 'Kennedy'), (25, 'Kennedy'), (35, 'Usaquen')]
-saca Kennedy   d=20  mejora: Bosa=30                 cola=[(25, 'Kennedy'), (30, 'Bosa'), (35, 'Usaquen')]
+$ java Rutas.java
+saca Deposito  d=0   mejora: Chapinero=15, Kennedy=25 cola=[(15, Chapinero), (25, Kennedy)]
+saca Chapinero d=15  mejora: Usaquen=35, Kennedy=20  cola=[(20, Kennedy), (25, Kennedy), (35, Usaquen)]
+saca Kennedy   d=20  mejora: Bosa=30                 cola=[(25, Kennedy), (30, Bosa), (35, Usaquen)]
 descarta (25, Kennedy): entrada vieja
-saca Bosa      d=30  mejora: -                       cola=[(35, 'Usaquen')]
+saca Bosa      d=30  mejora: -                       cola=[(35, Usaquen)]
 saca Usaquen   d=35  mejora: -                       cola=[]
 
 Chapinero  15 min  ruta: Deposito -> Chapinero
@@ -1122,17 +1233,23 @@ Bosa       30 min  ruta: Deposito -> Chapinero -> Kennedy -> Bosa
 ```
 
 **Explicación por partes.**
-- Línea 14: `float("inf")` es infinito: cualquier tiempo real es menor que él.
-- Líneas 21–24: si el barrio ya está finalizado, la entrada es vieja y se descarta. Es la fila «descarta (25, Kennedy)».
-- Línea 25: al sacarlo por primera vez, su distancia es definitiva (Paso 3).
-- Líneas 29–32: la relajación. Si el tiempo por este barrio mejora, se actualizan `distancia` y `anterior`, y se mete a la cola.
-- Línea 36: `sorted(pendientes)` solo ordena una copia para imprimir; la cola interna sigue siendo un montículo.
-- Líneas 40–44: `camino` sigue `anterior` hacia atrás; el origen no tiene anterior y detiene el bucle.
+- Líneas 2–7: cada entrada de la cola es un record `(minutos, barrio)`.
+- Línea 9: la cola ordena por minutos y, si empatan, por nombre.
+- Línea 10: `Integer.MAX_VALUE` hace de infinito: cualquier tiempo real es menor que él. Nunca se le suma nada,
+  porque solo se relaja desde barrios ya finalizados, que tienen una distancia real.
+- Líneas 13–17: `tramos` arma un `LinkedHashMap` a partir de pares nombre–minutos.
+- Líneas 38–41: si el barrio ya está finalizado, la entrada es vieja y se descarta. Es la fila «descarta (25, Kennedy)».
+- Línea 42: al sacarlo por primera vez, su distancia es definitiva (Paso 3).
+- Líneas 47–52: la relajación. Si el tiempo por este barrio mejora, se actualizan `distancia` y `anterior`, y se mete a la cola.
+- Línea 56: ordena una copia solo para imprimir; la cola interna sigue siendo un montículo.
+- Líneas 60–66: `camino` sigue `anterior` hacia atrás; el origen no tiene anterior y detiene el bucle. `reversed()` la invierte.
 - Salida: Kennedy queda en 20, no en 25: el tramo directo pierde contra `15 + 5`.
 
-> **Error común.** Olvidar un barrio sin salidas como clave del mapa. Si borras la línea `"Bosa": {},`, la
-> relajación desde Kennedy hace `distancia["Bosa"]` y el programa termina con `KeyError: 'Bosa'`. Todo vértice
-> debe ser clave, aunque su diccionario de vecinos esté vacío.
+> **Error común.** Olvidar un barrio sin salidas como clave del mapa. Si borras la línea `mapa.put("Bosa", tramos());`,
+> Bosa no recibe distancia inicial y la relajación desde Kennedy termina con
+> `java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because the return value of
+> "java.util.Map.get(Object)" is null`. El mensaje dice que `distancia.get(...)` devolvió `null`. Todo vértice debe
+> ser clave, aunque su mapa de vecinos esté vacío.
 
 #### Problema resuelto 3.3
 Un tramo con reembolso tiene peso negativo. Muestra que Dijkstra da una respuesta incorrecta, que Bellman-Ford
@@ -1153,7 +1270,7 @@ Traza de Dijkstra con el reembolso:
 | Bosa | 3 | ninguna | — |
 | Kennedy | 5 | `Kennedy -> Chapinero` daría 1, pero Chapinero ya está finalizado | Chapinero y Bosa quedan mal |
 
-Traza de Bellman-Ford, primera ronda, en el orden de las aristas del diccionario:
+Traza de Bellman-Ford, primera ronda, en el orden de las aristas del mapa:
 
 | Arista | Cálculo | Resultado |
 |---|---|---|
@@ -1164,73 +1281,102 @@ Traza de Bellman-Ford, primera ronda, en el orden de las aristas del diccionario
 
 Las rondas 2 y 3 no cambian nada: las distancias ya son mínimas.
 
-```python
-# negativos.py — un reembolso (peso negativo) engaña a Dijkstra; Bellman-Ford no se deja
-import heapq
+```java
+// Negativos.java — un reembolso (peso negativo) engaña a Dijkstra; Bellman-Ford no se deja
+record Arista(String a, String b, int peso) {}
 
-costos = {  # miles de pesos por tramo; Kennedy -> Chapinero paga un reembolso de 4
-    "Deposito": {"Chapinero": 2, "Kennedy": 5},
-    "Kennedy": {"Chapinero": -4},
-    "Chapinero": {"Bosa": 1},
-    "Bosa": {},
+final int INFINITO = Integer.MAX_VALUE;
+
+Map<String, Integer> tramos(Object... pares) {
+    Map<String, Integer> salida = new LinkedHashMap<>();
+    for (int i = 0; i < pares.length; i += 2) salida.put((String) pares[i], (Integer) pares[i + 1]);
+    return salida;
 }
 
+Map<String, Integer> dijkstra(Map<String, Map<String, Integer>> grafo, String origen) {
+    Map<String, Integer> distancia = new LinkedHashMap<>();
+    for (String n : grafo.keySet()) distancia.put(n, INFINITO);
+    distancia.put(origen, 0);
+    PriorityQueue<Map.Entry<String, Integer>> pendientes = new PriorityQueue<>(Map.Entry.comparingByValue());
+    pendientes.add(Map.entry(origen, 0));
+    Set<String> finalizados = new HashSet<>();
+    while (!pendientes.isEmpty()) {
+        var e = pendientes.poll();
+        String nodo = e.getKey();
+        int d = e.getValue();
+        if (!finalizados.add(nodo)) continue;    // add devuelve false si ya estaba: entrada vieja
+        // al finalizar, Dijkstra supone que d ya no puede bajar
+        for (var tramo : grafo.get(nodo).entrySet()) {
+            String vecino = tramo.getKey();
+            if (!finalizados.contains(vecino) && d + tramo.getValue() < distancia.get(vecino)) {
+                distancia.put(vecino, d + tramo.getValue());
+                pendientes.add(Map.entry(vecino, d + tramo.getValue()));
+            }
+        }
+    }
+    return distancia;
+}
 
-def dijkstra(grafo, origen):
-    distancia = {n: float("inf") for n in grafo}
-    distancia[origen] = 0
-    pendientes, finalizados = [(0, origen)], set()
-    while pendientes:
-        d, nodo = heapq.heappop(pendientes)
-        if nodo in finalizados:
-            continue
-        finalizados.add(nodo)                    # supone que d ya no puede bajar
-        for vecino, peso in grafo[nodo].items():
-            if vecino not in finalizados and d + peso < distancia[vecino]:
-                distancia[vecino] = d + peso
-                heapq.heappush(pendientes, (d + peso, vecino))
-    return distancia
+Map<String, Integer> bellmanFord(Map<String, Map<String, Integer>> grafo, String origen) {
+    Map<String, Integer> distancia = new LinkedHashMap<>();
+    for (String n : grafo.keySet()) distancia.put(n, INFINITO);
+    distancia.put(origen, 0);
+    List<Arista> aristas = new ArrayList<>();
+    grafo.forEach((a, vecinos) -> vecinos.forEach((b, p) -> aristas.add(new Arista(a, b, p))));
+    for (int ronda = 0; ronda < grafo.size() - 1; ronda++) {   // V - 1 rondas bastan sin ciclos negativos
+        for (Arista x : aristas) {
+            if (distancia.get(x.a()) == INFINITO) continue;     // aún no se sabe llegar a x.a()
+            if (distancia.get(x.a()) + x.peso() < distancia.get(x.b())) {
+                distancia.put(x.b(), distancia.get(x.a()) + x.peso());
+            }
+        }
+    }
+    for (Arista x : aristas) {                   // ronda extra: si aún mejora, hay ciclo negativo
+        if (distancia.get(x.a()) != INFINITO && distancia.get(x.a()) + x.peso() < distancia.get(x.b())) {
+            throw new IllegalStateException(
+                    "ciclo negativo alcanzable: el tramo " + x.a() + " -> " + x.b() + " sigue bajando");
+        }
+    }
+    return distancia;
+}
 
+void main() {
+    Map<String, Map<String, Integer>> costos = new LinkedHashMap<>();   // miles de pesos por tramo
+    costos.put("Deposito", tramos("Chapinero", 2, "Kennedy", 5));
+    costos.put("Kennedy", tramos("Chapinero", -4));                     // reembolso de 4
+    costos.put("Chapinero", tramos("Bosa", 1));
+    costos.put("Bosa", tramos());
 
-def bellman_ford(grafo, origen):
-    distancia = {n: float("inf") for n in grafo}
-    distancia[origen] = 0
-    aristas = [(a, b, p) for a in grafo for b, p in grafo[a].items()]
-    for _ in range(len(grafo) - 1):              # V - 1 rondas bastan sin ciclos negativos
-        for a, b, p in aristas:
-            if distancia[a] + p < distancia[b]:
-                distancia[b] = distancia[a] + p
-    for a, b, p in aristas:                      # ronda extra: si aún mejora, hay ciclo negativo
-        if distancia[a] + p < distancia[b]:
-            raise ValueError(f"ciclo negativo alcanzable: el tramo {a} -> {b} sigue bajando")
-    return distancia
+    IO.println("Dijkstra:     " + dijkstra(costos, "Deposito"));
+    IO.println("Bellman-Ford: " + bellmanFord(costos, "Deposito"));
 
-
-print("Dijkstra:    ", dijkstra(costos, "Deposito"))
-print("Bellman-Ford:", bellman_ford(costos, "Deposito"))
-
-costos["Chapinero"]["Kennedy"] = 1               # Kennedy -> Chapinero -> Kennedy suma -3
-try:
-    bellman_ford(costos, "Deposito")
-except ValueError as error:
-    print("Bellman-Ford:", error)
+    costos.get("Chapinero").put("Kennedy", 1);   // Kennedy -> Chapinero -> Kennedy suma -3
+    try {
+        bellmanFord(costos, "Deposito");
+    } catch (IllegalStateException error) {
+        IO.println("Bellman-Ford: " + error.getMessage());
+    }
+}
 ```
 
 ```text
-$ python3 negativos.py
-Dijkstra:     {'Deposito': 0, 'Kennedy': 5, 'Chapinero': 2, 'Bosa': 3}
-Bellman-Ford: {'Deposito': 0, 'Kennedy': 5, 'Chapinero': 1, 'Bosa': 2}
+$ java Negativos.java
+Dijkstra:     {Deposito=0, Kennedy=5, Chapinero=2, Bosa=3}
+Bellman-Ford: {Deposito=0, Kennedy=5, Chapinero=1, Bosa=2}
 Bellman-Ford: ciclo negativo alcanzable: el tramo Kennedy -> Chapinero sigue bajando
 ```
 
 **Explicación por partes.**
-- Línea 20: el comentario resume la suposición de Dijkstra; con pesos negativos es falsa.
-- Línea 22: `vecino not in finalizados` impide corregir a Chapinero desde Kennedy.
-- Línea 31: la lista de aristas como tuplas `(origen, destino, peso)`, sacada del diccionario.
-- Líneas 32–35: `V - 1` rondas de relajación. Un camino mínimo sin ciclos tiene como mucho `V - 1` tramos.
-- Líneas 36–38: si en la ronda extra algo todavía mejora, hay un ciclo negativo alcanzable.
-- Línea 45: se agrega el tramo de vuelta y aparece el ciclo `Kennedy -> Chapinero -> Kennedy`.
-- Salida: Dijkstra dice 2 y 3; los valores correctos son 1 y 2. Sin el `try`, el `ValueError` detendría el programa.
+- Línea 16: aquí la cola guarda pares `Map.entry(barrio, costo)` ordenados por su valor: otra forma de no escribir un record.
+- Línea 23: `Set.add` devuelve `false` si el barrio ya estaba: así se descartan las entradas viejas en una línea.
+- Línea 24: el comentario resume la suposición de Dijkstra; con pesos negativos es falsa.
+- Línea 27: `!finalizados.contains(vecino)` impide corregir a Chapinero desde Kennedy.
+- Línea 41: la lista de aristas como records `Arista(origen, destino, peso)`, sacada del mapa.
+- Líneas 42–49: `V - 1` rondas de relajación. Un camino mínimo sin ciclos tiene como mucho `V - 1` tramos. La línea 44
+  salta los barrios a los que aún no se sabe llegar: sumarle a `Integer.MAX_VALUE` se desbordaría y daría un negativo.
+- Líneas 50–55: si en la ronda extra algo todavía mejora, hay un ciclo negativo alcanzable.
+- Línea 69: se agrega el tramo de vuelta y aparece el ciclo `Kennedy -> Chapinero -> Kennedy`.
+- Salida: Dijkstra dice 2 y 3; los valores correctos son 1 y 2. Sin el `try`, la `IllegalStateException` detendría el programa.
 
 > **Buena práctica.** Antes de elegir algoritmo, valida los datos: si algún peso es negativo, usa Bellman-Ford o
 > lanza un error explícito. Dijkstra con pesos negativos no avisa: entrega números equivocados.
@@ -1252,21 +1398,21 @@ ningún desvío posterior puede bajarla, y un peso negativo sí la baja.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Observa el montículo
-En `~/labs/algoritmos` escribe `cola_prioridad.py`. Antes de ejecutar, dibuja la pirámide después de cada `push`.
+En `~/labs/algoritmos` escribe `ColaPrioridad.java`. Antes de ejecutar, dibuja la pirámide después de cada `push`.
 
 #### Paso 2 · Traza Dijkstra en papel
-Copia la tabla del Paso 2 con las columnas vacías y llénala tú. Luego escribe `rutas.py` y compara.
+Copia la tabla del Paso 2 con las columnas vacías y llénala tú. Luego escribe `Rutas.java` y compara.
 
 #### Paso 3 · Provoca los dos errores
-Borra la línea `"Bosa": {},` y lee el `KeyError`. Restaura la línea. Después reproduce el `TypeError` del montículo
-con dos diccionarios de igual prioridad.
+Borra la línea `mapa.put("Bosa", tramos());` y lee la `NullPointerException`. Restaura la línea. Después reproduce
+la `ClassCastException` de `ColaPrioridad.java` quitando el `Comparator`.
 
 #### Paso 4 · Rompe Dijkstra con un reembolso
-Escribe `negativos.py`, ejecútalo y explica la diferencia con las dos trazas del Problema resuelto 3.3.
+Escribe `Negativos.java`, ejecútalo y explica la diferencia con las dos trazas del Problema resuelto 3.3.
 
 #### Resumen
-- Una **cola de prioridad** entrega siempre el mínimo; en Python se implementa con `heapq`.
-- Un **montículo binario** guarda un árbol completo en una lista; insertar y sacar cuestan `O(log n)`.
+- Una **cola de prioridad** entrega siempre el mínimo; en Java es `PriorityQueue`.
+- Un **montículo binario** guarda un árbol completo en un arreglo; insertar y sacar cuestan `O(log n)`.
 - La **relajación** mejora la distancia de un vértice si un tramo ofrece un camino más corto.
 - **Dijkstra** finaliza el pendiente más cercano y relaja sus tramos: `O((V + A) log V)`.
 - La ruta se reconstruye siguiendo `anterior` desde el destino.
@@ -1274,21 +1420,22 @@ Escribe `negativos.py`, ejecútalo y explica la diferencia con las dos trazas de
 - Un **ciclo negativo** alcanzable hace que no exista camino mínimo; Bellman-Ford lo detecta con una ronda extra.
 
 #### Ejercicio verificable 1
-Básico. ¿Qué lista queda después de `h = [30, 10, 20, 5]` y `heapq.heapify(h)`? ¿En qué orden salen con `heappop`?
+Básico. ¿Qué imprime `new PriorityQueue<>(List.of(30, 10, 20, 5))`? ¿En qué orden salen con `poll`?
 
-Respuesta esperada: `[5, 10, 20, 30]` y salen `5, 10, 20, 30`. `heapify` reordena la lista en `O(n)` para que cumpla la propiedad del montículo.
+Respuesta esperada: `[5, 10, 20, 30]` y salen `5, 10, 20, 30`. Al recibir una colección, el constructor arma el
+montículo de una vez, en `O(n)`. Que el arreglo interno quede ordenado aquí es casualidad: con otros datos no pasa.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `mapa` un tramo directo `"Deposito" -> "Usaquen"` de 30 minutos. ¿Qué cambia?
+Intermedio. Agrega al mapa un tramo directo `"Deposito" -> "Usaquen"` de 30 minutos. ¿Qué cambia?
 
 Respuesta esperada: Usaquén pasa de 35 a 30 minutos con ruta `Deposito -> Usaquen`. Los demás barrios no cambian.
 
 #### Ejercicio verificable 3
-Reto. Agrega a `bellman_ford` un diccionario `anterior` y una función `camino`, como en `rutas.py`. Con los
-costos originales de `negativos.py`, ¿cuál es la ruta más barata a Bosa?
+Reto. Agrega a `bellmanFord` un mapa `anterior` y un método `camino`, como en `Rutas.java`. Con los costos
+originales de `Negativos.java`, ¿cuál es la ruta más barata a Bosa?
 
-Respuesta esperada: `Deposito -> Kennedy -> Chapinero -> Bosa`, con costo 2. Actualiza `anterior[b] = a` en la misma
-línea donde mejoras `distancia[b]`.
+Respuesta esperada: `Deposito -> Kennedy -> Chapinero -> Bosa`, con costo 2. Haz `anterior.put(x.b(), x.a())` justo donde
+mejoras la distancia de `x.b()`.
 
 #### En el trabajo
 Los servicios de mapas y las plataformas de domicilios calculan rutas con variantes de Dijkstra, como A*, que
@@ -1317,7 +1464,7 @@ encontrar todas las apariciones de un código dentro de ese registro. La primera
 desde cada posición y, con ciertos registros, tarda muchísimo. ¿Se puede buscar sin volver a mirar caracteres
 que ya revisaste?
 
-Las cadenas (`str`), los índices y las rebanadas son del Módulo 1. La **búsqueda lineal** y la **notación O
+Las cadenas (`String`), `charAt` y `substring` son del Módulo 1. La **búsqueda lineal** y la **notación O
 grande** están en el Módulo 2, Temas 3 y 4.
 
 #### Glosario del tema
@@ -1327,14 +1474,14 @@ grande** están en el Módulo 2, Temas 3 y 4.
 - **En palabras sencillas:** la palabra que buscas con Ctrl+F.
 - **Dónde se rompe la comparación:** Ctrl+F suele ignorar mayúsculas; el algoritmo compara caracteres exactos.
 - **Ejemplo:** buscar `"RF-1"` en `"RF-10RF-10RF-1"` da las posiciones 0, 5 y 10.
-- **Error típico:** buscar un patrón vacío: no tiene sentido y algunas implementaciones fallan con `IndexError`.
+- **Error típico:** buscar un patrón vacío: no tiene sentido y algunas implementaciones fallan con `StringIndexOutOfBoundsException`.
 
 **búsqueda ingenua**
 - **Definición técnica:** algoritmo que prueba cada posición inicial `i` del texto y compara el patrón carácter por carácter hasta la primera diferencia; cuesta `O(n · m)` en el peor caso (fuerza bruta).
 - **En palabras sencillas:** poner la palabra debajo del texto, comparar, correrla un espacio y volver a empezar.
 - **Dónde se rompe la comparación:** con textos normales suele cortar en el primer carácter y parece rápida; el peor caso se esconde.
 - **Ejemplo:** con 20 001 caracteres y un patrón de 51, hace 1 017 501 comparaciones.
-- **Error típico:** recorrer `range(len(texto))` en vez de `range(len(texto) - len(patron) + 1)`: `texto[i + j]` se sale del texto y puede producir `IndexError`.
+- **Error típico:** recorrer `i < texto.length()` en vez de `i < texto.length() - patron.length() + 1`: `texto.charAt(i + j)` se sale del texto y puede producir `StringIndexOutOfBoundsException`.
 
 **caso adversario**
 - **Definición técnica:** entrada construida a propósito para provocar el peor caso de un algoritmo.
@@ -1351,7 +1498,7 @@ grande** están en el Módulo 2, Temas 3 y 4.
 - **Error típico:** contar la cadena completa como borde de sí misma; entonces la tabla nunca avanza.
 
 **tabla de fallos**
-- **Definición técnica:** lista `fallo` del mismo largo que el patrón, donde `fallo[i]` es el largo del borde más largo de `patron[:i+1]`; se construye en `O(m)`.
+- **Definición técnica:** arreglo `fallo` del mismo largo que el patrón, donde `fallo[i]` es el largo del borde más largo de los primeros `i + 1` caracteres; se construye en `O(m)`.
 - **En palabras sencillas:** una chuleta que dice «si fallas aquí, ya tienes estas letras ganadas; sigue desde ahí».
 - **Dónde se rompe la comparación:** depende solo del patrón, nunca del texto; se calcula una vez y sirve para cualquier texto.
 - **Ejemplo:** para `"ABABC"` es `[0, 0, 1, 2, 0]`.
@@ -1418,69 +1565,81 @@ Busca un código en un registro adversario con la búsqueda ingenua y con KMP, c
 muestra la traza del Paso 3.
 
 **Razonamiento:**
-1. Las dos funciones devuelven la lista de posiciones y el número de comparaciones de caracteres.
-2. `tabla_fallos` se prueba con `"ABABC"`: debe dar `[0, 0, 1, 2, 0]`, como en la tabla del Paso 2.
+1. Los dos métodos devuelven un record `Busqueda` con la lista de posiciones y el número de comparaciones de caracteres.
+2. `tablaFallos` se prueba con `"ABABC"`: debe dar `[0, 0, 1, 2, 0]`, como en la tabla del Paso 2.
 3. El registro adversario tiene 20 000 letras `A` y una `B`; el patrón, 50 `A` y una `B`.
-4. `str.find` de Python sirve para comprobar que la posición es correcta.
+4. `String.indexOf` sirve para comprobar que la posición es correcta.
 
-```python
-# cadenas.py — búsqueda ingenua frente a KMP, contando comparaciones
-def busqueda_ingenua(texto, patron):
-    posiciones, comparaciones = [], 0
-    for i in range(len(texto) - len(patron) + 1):   # cada posible punto de inicio
-        j = 0
-        while j < len(patron):
-            comparaciones += 1
-            if texto[i + j] != patron[j]:
-                break
-            j += 1
-        if j == len(patron):
-            posiciones.append(i)
-    return posiciones, comparaciones
+```java
+// Cadenas.java — búsqueda ingenua frente a KMP, contando comparaciones
+record Busqueda(List<Integer> posiciones, long comparaciones) {}
 
+Busqueda busquedaIngenua(String texto, String patron) {
+    List<Integer> posiciones = new ArrayList<>();
+    long comparaciones = 0;
+    for (int i = 0; i < texto.length() - patron.length() + 1; i++) {   // cada posible punto de inicio
+        int j = 0;
+        while (j < patron.length()) {
+            comparaciones++;
+            if (texto.charAt(i + j) != patron.charAt(j)) break;
+            j++;
+        }
+        if (j == patron.length()) posiciones.add(i);
+    }
+    return new Busqueda(posiciones, comparaciones);
+}
 
-def tabla_fallos(patron):
-    # fallo[i] = largo del prefijo propio más largo que también es sufijo de patron[:i+1]
-    fallo, k = [0] * len(patron), 0
-    for i in range(1, len(patron)):
-        while k > 0 and patron[i] != patron[k]:
-            k = fallo[k - 1]                        # prueba un borde más corto
-        if patron[i] == patron[k]:
-            k += 1
-        fallo[i] = k
-    return fallo
+int[] tablaFallos(String patron) {
+    // fallo[i] = largo del prefijo propio más largo que también es sufijo de patron[0..i]
+    int[] fallo = new int[patron.length()];
+    int k = 0;
+    for (int i = 1; i < patron.length(); i++) {
+        while (k > 0 && patron.charAt(i) != patron.charAt(k)) {
+            k = fallo[k - 1];                        // prueba un borde más corto
+        }
+        if (patron.charAt(i) == patron.charAt(k)) k++;
+        fallo[i] = k;
+    }
+    return fallo;
+}
 
+Busqueda kmp(String texto, String patron, boolean traza) {
+    int[] fallo = tablaFallos(patron);
+    List<Integer> posiciones = new ArrayList<>();
+    int k = 0;
+    long comparaciones = 0;
+    for (int i = 0; i < texto.length(); i++) {      // i nunca retrocede
+        char c = texto.charAt(i);
+        int antes = k;
+        while (k > 0 && c != patron.charAt(k)) {
+            comparaciones++;
+            k = fallo[k - 1];                        // salta usando la tabla
+        }
+        comparaciones++;
+        if (c == patron.charAt(k)) k++;
+        if (traza) IO.println("i=%d c=%c k: %d -> %d".formatted(i, c, antes, k));
+        if (k == patron.length()) {
+            posiciones.add(i - k + 1);
+            k = fallo[k - 1];
+        }
+    }
+    return new Busqueda(posiciones, comparaciones);
+}
 
-def kmp(texto, patron, traza=False):
-    fallo, posiciones, k, comparaciones = tabla_fallos(patron), [], 0, 0
-    for i, c in enumerate(texto):                   # i nunca retrocede
-        antes = k
-        while k > 0 and c != patron[k]:
-            comparaciones += 1
-            k = fallo[k - 1]                        # salta usando la tabla
-        comparaciones += 1
-        if c == patron[k]:
-            k += 1
-        if traza:
-            print(f"i={i} c={c} k: {antes} -> {k}")
-        if k == len(patron):
-            posiciones.append(i - k + 1)
-            k = fallo[k - 1]
-    return posiciones, comparaciones
+void main() {
+    IO.println("tabla de fallos de 'ABABC': " + Arrays.toString(tablaFallos("ABABC")));
+    IO.println(kmp("ABABABC", "ABABC", true));
 
-
-print("tabla de fallos de 'ABABC':", tabla_fallos("ABABC"))
-print(kmp("ABABABC", "ABABC", traza=True))
-
-registro = "A" * 20000 + "B"            # caso adversario: casi coincide en cada posición
-patron = "A" * 50 + "B"
-print("ingenua:", busqueda_ingenua(registro, patron))
-print("kmp:    ", kmp(registro, patron))
-print("find:   ", registro.find(patron))
+    String registro = "A".repeat(20_000) + "B";      // caso adversario: casi coincide en cada posición
+    String patron = "A".repeat(50) + "B";
+    IO.println("ingenua: " + busquedaIngenua(registro, patron));
+    IO.println("kmp:     " + kmp(registro, patron, false));
+    IO.println("indexOf: " + registro.indexOf(patron));
+}
 ```
 
 ```text
-$ python3 cadenas.py
+$ java Cadenas.java
 tabla de fallos de 'ABABC': [0, 0, 1, 2, 0]
 i=0 c=A k: 0 -> 1
 i=1 c=B k: 1 -> 2
@@ -1489,28 +1648,28 @@ i=3 c=B k: 3 -> 4
 i=4 c=A k: 4 -> 3
 i=5 c=B k: 3 -> 4
 i=6 c=C k: 4 -> 5
-([2], 8)
-ingenua: ([19950], 1017501)
-kmp:     ([19950], 39951)
-find:    19950
+Busqueda[posiciones=[2], comparaciones=8]
+ingenua: Busqueda[posiciones=[19950], comparaciones=1017501]
+kmp:     Busqueda[posiciones=[19950], comparaciones=39951]
+indexOf: 19950
 ```
 
 **Explicación por partes.**
-- Línea 4: las posiciones válidas de inicio van de 0 a `n - m`; por eso el `+ 1`.
-- Líneas 6–10: compara hasta la primera diferencia; `break` corta el `while`.
-- Líneas 20–21: si el carácter no extiende el borde, prueba el borde del borde, más corto.
-- Líneas 22–24: si coincide, el borde crece en 1 y se anota en la tabla.
-- Línea 30: `enumerate` da el índice `i` y el carácter `c`; el `for` nunca retrocede.
-- Líneas 32–34: ante una diferencia, `k` baja con la tabla en vez de mover `i` hacia atrás.
-- Líneas 40–42: al completar el patrón, registra la posición y sigue con `fallo[k - 1]`, lo que permite apariciones solapadas.
+- Línea 7: las posiciones válidas de inicio van de 0 a `n - m`; por eso el `+ 1`.
+- Líneas 9–13: compara hasta la primera diferencia; `break` corta el `while`.
+- Líneas 24–26: si el carácter no extiende el borde, prueba el borde del borde, más corto.
+- Líneas 27–28: si coincide, el borde crece en 1 y se anota en la tabla.
+- Línea 38: el índice `i` del texto solo avanza; el `for` nunca retrocede.
+- Líneas 41–44: ante una diferencia, `k` baja con la tabla en vez de mover `i` hacia atrás.
+- Líneas 48–51: al completar el patrón, registra la posición y sigue con `fallo[k - 1]`, lo que permite apariciones solapadas.
 - Salida: la traza coincide con la tabla del Paso 3. En el caso adversario, KMP hace 25 veces menos comparaciones.
 
-> **Error común.** Buscar un patrón vacío con KMP. `kmp("RF-100", "")` termina con
-> `IndexError: string index out of range`, porque `patron[k]` con `k = 0` no existe. Valida al inicio:
-> `if not patron: raise ValueError("el patrón no puede estar vacío")`.
+> **Error común.** Buscar un patrón vacío con KMP. `kmp("RF-100", "", false)` termina con
+> `java.lang.StringIndexOutOfBoundsException: Index 0 out of bounds for length 0`, porque `patron.charAt(0)` no
+> existe. Valida al inicio: `if (patron.isEmpty()) throw new IllegalArgumentException("el patrón no puede estar vacío");`.
 
-> **Buena práctica.** En código real usa `texto.find(patron)`, el operador `in` o el módulo `re`. Están escritos
-> en C y optimizados para casos comunes. Implementa KMP para entender la idea de no repetir trabajo.
+> **Buena práctica.** En código real usa `texto.indexOf(patron)`, `texto.contains(patron)` o `java.util.regex`.
+> Están optimizados para casos comunes. Implementa KMP para entender la idea de no repetir trabajo.
 
 > **Rendimiento.** La búsqueda ingenua es `O(n · m)` solo en casos como este. Con texto al azar suele cortar en el
 > primer carácter y se comporta casi como `O(n)`. Mide con tus datos reales antes de cambiar de algoritmo.
@@ -1526,17 +1685,17 @@ Respuesta: `[0, 1, 2, 3]`. Cada prefijo de largo `i + 1` tiene como borde más l
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Construye la tabla a mano
-En papel, llena la tabla del Paso 2 para `"ABAAB"`. Después compárala con `tabla_fallos("ABAAB")`.
+En papel, llena la tabla del Paso 2 para `"ABAAB"`. Después compárala con `tablaFallos("ABAAB")`.
 
 #### Paso 2 · Implementa las dos búsquedas
-En `~/labs/algoritmos` escribe `cadenas.py`, ejecútalo y compara la traza con la tabla del Paso 3.
+En `~/labs/algoritmos` escribe `Cadenas.java`, ejecútalo y compara la traza con la tabla del Paso 3.
 
 #### Paso 3 · Mide el caso adversario
 Cambia el largo del patrón a 100 `A` y una `B`. Predice con la fórmula `(n - m + 1) · m` las comparaciones de la
 búsqueda ingenua antes de ejecutar.
 
 #### Paso 4 · Provoca el error
-Llama `kmp("RF-100", "")`, lee el `IndexError` y agrega la validación del recuadro.
+Llama `kmp("RF-100", "", false)`, lee la `StringIndexOutOfBoundsException` y agrega la validación del recuadro.
 
 #### Resumen
 - Un **patrón** de largo `m` se busca en un texto de largo `n`.
@@ -1544,16 +1703,16 @@ Llama `kmp("RF-100", "")`, lee el `IndexError` y agrega la validación del recua
 - Un **borde** es un prefijo propio que también es sufijo.
 - La **tabla de fallos** guarda el borde más largo de cada prefijo del patrón y se construye en `O(m)`.
 - **KMP** no retrocede en el texto: cuesta `O(n + m)`.
-- En producción se usan `find`, `in` o `re`; KMP explica por qué se puede buscar sin repetir trabajo.
+- En producción se usan `indexOf`, `contains` o `java.util.regex`; KMP explica por qué se puede buscar sin repetir trabajo.
 
 #### Ejercicio verificable 1
-Básico. ¿Qué devuelve `tabla_fallos("ABAAB")`?
+Básico. ¿Qué devuelve `tablaFallos("ABAAB")`?
 
 Respuesta esperada: `[0, 0, 1, 1, 2]`. En la posición 3, el `A` no extiende el borde `"A"` hacia `"AB"`; baja a 0 y
 vuelve a coincidir con la primera `A`.
 
 #### Ejercicio verificable 2
-Intermedio. Ejecuta `kmp("RF-10RF-10RF-1", "RF-1")` y `busqueda_ingenua` con los mismos datos. Compara
+Intermedio. Ejecuta `kmp("RF-10RF-10RF-1", "RF-1", false)` y `busquedaIngenua` con los mismos datos. Compara
 posiciones y comparaciones.
 
 Respuesta esperada: ambas dan `[0, 5, 10]`; KMP hace 14 comparaciones y la ingenua 20. La tabla de `"RF-1"` es
@@ -1707,66 +1866,95 @@ Construye la ruta de cinco puntos con vecino más cercano, mejórala con 2-opt y
 
 **Razonamiento:**
 1. Las distancias salen de coordenadas en km: la línea recta redondeada al km.
-2. `vecino_mas_cercano` imprime cada decisión para compararla con la tabla del Paso 3.
-3. `dos_opt` imprime cada inversión aceptada, como en la tabla del Paso 4.
+2. `vecinoMasCercano` imprime cada decisión para compararla con la tabla del Paso 3.
+3. `dosOpt` imprime cada inversión aceptada, como en la tabla del Paso 4.
 4. `verificar` es el algoritmo polinomial que comprueba un certificado contra un límite.
 
-```python
-# heuristica.py — vecino más cercano y mejora 2-opt sobre cinco puntos de RutaFlow
-nombres = ["Deposito", "Bosa", "Kennedy", "Chapinero", "Usaquen"]
-coordenadas = [(2, 9), (1, 4), (1, 7), (7, 7), (10, 6)]      # posición en km sobre un plano
-d = [[round(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5) for b in coordenadas]
-     for a in coordenadas]                                  # distancia en línea recta, redondeada
+```java
+// Heuristica.java — vecino más cercano y mejora 2-opt sobre cinco puntos de RutaFlow
+final List<String> nombres = List.of("Deposito", "Bosa", "Kennedy", "Chapinero", "Usaquen");
+final int[][] coordenadas = {{2, 9}, {1, 4}, {1, 7}, {7, 7}, {10, 6}};   // posición en km sobre un plano
+final int[][] d = distancias(coordenadas);
 
+int[][] distancias(int[][] p) {                      // distancia en línea recta, redondeada al km
+    int[][] m = new int[p.length][p.length];
+    for (int a = 0; a < p.length; a++)
+        for (int b = 0; b < p.length; b++)
+            m[a][b] = (int) Math.round(Math.hypot(p[a][0] - p[b][0], p[a][1] - p[b][1]));
+    return m;
+}
 
-def costo(ruta):
-    return sum(d[a][b] for a, b in zip(ruta, ruta[1:]))
+int costo(List<Integer> ruta) {
+    int total = 0;
+    for (int i = 0; i + 1 < ruta.size(); i++) total += d[ruta.get(i)][ruta.get(i + 1)];
+    return total;
+}
 
+List<Integer> vecinoMasCercano() {
+    List<Integer> ruta = new ArrayList<>(List.of(0));
+    TreeSet<Integer> pendientes = new TreeSet<>();
+    for (int i = 1; i < d.length; i++) pendientes.add(i);
+    while (!pendientes.isEmpty()) {
+        int actual = ruta.getLast(), siguiente = -1;
+        for (int c : pendientes) {                   // en orden: en un empate gana el menor índice
+            if (siguiente == -1 || d[actual][c] < d[actual][siguiente]) siguiente = c;
+        }
+        IO.println("  desde %-9s va a %-9s (%d km)".formatted(nombres.get(actual), nombres.get(siguiente), d[actual][siguiente]));
+        ruta.add(siguiente);
+        pendientes.remove(siguiente);
+    }
+    ruta.add(0);                                     // vuelve al depósito
+    return ruta;
+}
 
-def vecino_mas_cercano():
-    ruta, pendientes = [0], set(range(1, len(d)))
-    while pendientes:
-        siguiente = min(pendientes, key=lambda c: (d[ruta[-1]][c], c))   # empate: menor índice
-        print(f"  desde {nombres[ruta[-1]]:<9} va a {nombres[siguiente]:<9} ({d[ruta[-1]][siguiente]} km)")
-        ruta.append(siguiente)
-        pendientes.remove(siguiente)
-    return ruta + [0]                                       # vuelve al depósito
+List<Integer> invertir(List<Integer> ruta, int i, int j) {
+    List<Integer> nueva = new ArrayList<>(ruta);
+    Collections.reverse(nueva.subList(i, j + 1));    // invierte el tramo i..j
+    return nueva;
+}
 
+List<Integer> dosOpt(List<Integer> ruta) {
+    boolean mejoro = true;
+    while (mejoro) {
+        mejoro = false;
+        for (int i = 1; i < ruta.size() - 2; i++) {
+            for (int j = i + 1; j < ruta.size() - 1; j++) {
+                List<Integer> nueva = invertir(ruta, i, j);
+                if (costo(nueva) < costo(ruta)) {
+                    IO.println("  invierte posiciones %d..%d: %d -> %d km".formatted(i, j, costo(ruta), costo(nueva)));
+                    ruta = nueva;
+                    mejoro = true;
+                }
+            }
+        }
+    }
+    return ruta;
+}
 
-def dos_opt(ruta):
-    mejoro = True
-    while mejoro:
-        mejoro = False
-        for i in range(1, len(ruta) - 2):
-            for j in range(i + 1, len(ruta) - 1):
-                nueva = ruta[:i] + ruta[i:j + 1][::-1] + ruta[j + 1:]   # invierte un tramo
-                if costo(nueva) < costo(ruta):
-                    print(f"  invierte posiciones {i}..{j}: {costo(ruta)} -> {costo(nueva)} km")
-                    ruta, mejoro = nueva, True
-    return ruta
+boolean verificar(List<Integer> ruta, int limite) {
+    // comprobar un certificado es rápido: O(n)
+    List<Integer> interior = ruta.subList(1, ruta.size() - 1).stream().sorted().toList();
+    boolean visitaTodo = interior.equals(IntStream.range(1, d.length).boxed().toList());
+    return ruta.getFirst() == 0 && ruta.getLast() == 0 && visitaTodo && costo(ruta) <= limite;
+}
 
+String mostrar(List<Integer> ruta) {
+    return ruta.stream().map(nombres::get).collect(Collectors.joining(" -> ")) + " = " + costo(ruta) + " km";
+}
 
-def verificar(ruta, limite):
-    # comprobar un certificado es rápido: O(n)
-    visita_todo = sorted(ruta[1:-1]) == list(range(1, len(d)))
-    return ruta[0] == ruta[-1] == 0 and visita_todo and costo(ruta) <= limite
-
-
-def mostrar(ruta):
-    return " -> ".join(nombres[i] for i in ruta) + f" = {costo(ruta)} km"
-
-
-print("Vecino más cercano:")
-inicial = vecino_mas_cercano()
-print(" ", mostrar(inicial))
-print("2-opt:")
-mejorada = dos_opt(inicial)
-print(" ", mostrar(mejorada))
-print("¿ruta de 22 km o menos?", verificar(mejorada, 22), "| ¿de 21 o menos?", verificar(mejorada, 21))
+void main() {
+    IO.println("Vecino más cercano:");
+    List<Integer> inicial = vecinoMasCercano();
+    IO.println("  " + mostrar(inicial));
+    IO.println("2-opt:");
+    List<Integer> mejorada = dosOpt(inicial);
+    IO.println("  " + mostrar(mejorada));
+    IO.println("¿ruta de 22 km o menos? " + verificar(mejorada, 22) + " | ¿de 21 o menos? " + verificar(mejorada, 21));
+}
 ```
 
 ```text
-$ python3 heuristica.py
+$ java Heuristica.java
 Vecino más cercano:
   desde Deposito  va a Kennedy   (2 km)
   desde Kennedy   va a Bosa      (3 km)
@@ -1776,113 +1964,168 @@ Vecino más cercano:
 2-opt:
   invierte posiciones 3..4: 24 -> 22 km
   Deposito -> Kennedy -> Bosa -> Usaquen -> Chapinero -> Deposito = 22 km
-¿ruta de 22 km o menos? True | ¿de 21 o menos? False
+¿ruta de 22 km o menos? true | ¿de 21 o menos? false
 ```
 
 **Explicación por partes.**
-- Líneas 4–5: una comprensión doble construye la matriz `d`; `** 0.5` es la raíz cuadrada.
-- Línea 9: `zip(ruta, ruta[1:])` empareja cada punto con el siguiente: los tramos de la ruta.
-- Línea 15: `min` con `key` elige la parada más cercana; en un empate de km gana el menor índice.
-- Línea 28: `ruta[i:j + 1][::-1]` invierte el segmento; las rebanadas a cada lado quedan igual.
-- Líneas 26–27: `i` empieza en 1 y `j` termina antes del último: el depósito nunca se mueve.
-- Líneas 35–38: verificar es `O(n)`: un `sorted` pequeño y una suma.
+- Líneas 4–12: la matriz `d` se calcula una vez; `Math.hypot` da la distancia en línea recta y `Math.round` la redondea al km.
+- Líneas 14–18: el costo suma los tramos: cada punto con el siguiente.
+- Líneas 26–28: el `TreeSet` recorre las paradas pendientes de menor a mayor índice; con `<` estricto, en un empate de km gana la primera.
+- Línea 39: `Collections.reverse` sobre una `subList` invierte el tramo dentro de la copia; los lados quedan igual.
+- Líneas 47–48: `i` empieza en 1 y `j` termina antes del último: el depósito nunca se mueve.
+- Líneas 61–66: verificar es `O(n)`: ordenar unos pocos índices y una suma.
 - Salida: el certificado prueba que hay una ruta de 22 km; responder «no» para 21 km exige otro argumento.
 
 #### Problema resuelto 5.2
 Mide la búsqueda exacta con 6, 8 y 10 puntos al azar, compara la heurística y estima el tiempo para 15 y 20.
 
 **Razonamiento:**
-1. `permutations` genera los `(n - 1)!` órdenes de las paradas; el depósito es el punto 0.
+1. `siguientePermutacion` recorre los `(n - 1)!` órdenes de las paradas sin guardarlos; el depósito es el punto 0.
 2. Se mide el tiempo de la exacta y se divide entre `9!` para obtener el costo de un orden.
 3. Multiplicar ese costo por `(n - 1)!` da una estimación para tamaños que no se pueden ejecutar.
 
-```python
-# np_rutas.py — la ruta exacta crece en factorial; la heurística no
-import math
-import random
-import time
-from itertools import permutations
+```java
+// NpRutas.java — la ruta exacta crece en factorial; la heurística no
+int[][] puntosDeEntrega(int n, long semilla) {
+    Random azar = new Random(semilla);
+    int[][] p = new int[n][2];
+    for (int[] punto : p) {
+        punto[0] = azar.nextInt(0, 101);
+        punto[1] = azar.nextInt(0, 101);
+    }
+    int[][] d = new int[n][n];
+    for (int a = 0; a < n; a++)
+        for (int b = 0; b < n; b++)
+            d[a][b] = (int) Math.round(Math.hypot(p[a][0] - p[b][0], p[a][1] - p[b][1]));
+    return d;
+}
 
+int costo(int[] ruta, int[][] d) {
+    int total = 0;
+    for (int i = 0; i + 1 < ruta.length; i++) total += d[ruta[i]][ruta[i + 1]];
+    return total;
+}
 
-def puntos_de_entrega(n, semilla):
-    random.seed(semilla)
-    p = [(random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
-    return [[round(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5) for b in p] for a in p]
+/** Pasa al siguiente orden en orden lexicográfico; devuelve false después del último. */
+boolean siguientePermutacion(int[] a) {
+    int i = a.length - 2;
+    while (i >= 0 && a[i] >= a[i + 1]) i--;
+    if (i < 0) return false;
+    int j = a.length - 1;
+    while (a[j] <= a[i]) j--;
+    int t = a[i]; a[i] = a[j]; a[j] = t;
+    for (int x = i + 1, y = a.length - 1; x < y; x++, y--) {
+        t = a[x]; a[x] = a[y]; a[y] = t;
+    }
+    return true;
+}
 
+int[] exacta(int[][] d) {
+    int n = d.length;
+    int[] orden = IntStream.range(1, n).toArray();   // empieza en el orden 1, 2, …, n-1
+    int[] mejor = null;
+    int mejorCosto = Integer.MAX_VALUE;
+    do {                                             // (n-1)! órdenes posibles
+        int[] ruta = new int[n + 1];                 // ruta[0] y ruta[n] quedan en 0: el depósito
+        System.arraycopy(orden, 0, ruta, 1, n - 1);
+        int c = costo(ruta, d);
+        if (c < mejorCosto) {
+            mejor = ruta;
+            mejorCosto = c;
+        }
+    } while (siguientePermutacion(orden));
+    return mejor;
+}
 
-def costo(ruta, d):
-    return sum(d[a][b] for a, b in zip(ruta, ruta[1:]))
+int[] vecinoMasCercano(int[][] d) {
+    int n = d.length;
+    int[] ruta = new int[n + 1];
+    boolean[] visitado = new boolean[n];
+    visitado[0] = true;
+    for (int paso = 1; paso < n; paso++) {
+        int actual = ruta[paso - 1], siguiente = -1;
+        for (int c = 1; c < n; c++) {
+            if (!visitado[c] && (siguiente == -1 || d[actual][c] < d[actual][siguiente])) siguiente = c;
+        }
+        ruta[paso] = siguiente;
+        visitado[siguiente] = true;
+    }
+    return ruta;                                     // ruta[n] es 0: vuelve al depósito
+}
 
+int[] dosOpt(int[] ruta, int[][] d) {
+    boolean mejoro = true;
+    while (mejoro) {
+        mejoro = false;
+        for (int i = 1; i < ruta.length - 2; i++) {
+            for (int j = i + 1; j < ruta.length - 1; j++) {
+                int[] nueva = ruta.clone();
+                for (int x = i, y = j; x < y; x++, y--) {
+                    int t = nueva[x]; nueva[x] = nueva[y]; nueva[y] = t;
+                }
+                if (costo(nueva, d) < costo(ruta, d)) {
+                    ruta = nueva;
+                    mejoro = true;
+                }
+            }
+        }
+    }
+    return ruta;
+}
 
-def exacta(d):
-    mejor, mejor_costo = None, math.inf
-    for orden in permutations(range(1, len(d))):     # (n-1)! órdenes posibles
-        ruta = (0,) + orden + (0,)
-        c = costo(ruta, d)
-        if c < mejor_costo:
-            mejor, mejor_costo = ruta, c
-    return list(mejor)
+long factorial(int n) {
+    long r = 1;
+    for (int i = 2; i <= n; i++) r *= i;
+    return r;
+}
 
-
-def vecino_mas_cercano(d):
-    ruta, pendientes = [0], set(range(1, len(d)))
-    while pendientes:
-        siguiente = min(pendientes, key=lambda c: (d[ruta[-1]][c], c))
-        ruta.append(siguiente)
-        pendientes.remove(siguiente)
-    return ruta + [0]
-
-
-def dos_opt(ruta, d):
-    mejoro = True
-    while mejoro:
-        mejoro = False
-        for i in range(1, len(ruta) - 2):
-            for j in range(i + 1, len(ruta) - 1):
-                nueva = ruta[:i] + ruta[i:j + 1][::-1] + ruta[j + 1:]
-                if costo(nueva, d) < costo(ruta, d):
-                    ruta, mejoro = nueva, True
-    return ruta
-
-
-print(" n  órdenes    exacta   tiempo     vecino  +2-opt")
-for n in (6, 8, 10):
-    d = puntos_de_entrega(n, semilla=1)
-    inicio = time.perf_counter()
-    optima = costo(exacta(d), d)
-    ms = (time.perf_counter() - inicio) * 1000
-    vecino = vecino_mas_cercano(d)
-    mejorada = dos_opt(vecino, d)
-    print(f"{n:>2} {math.factorial(n - 1):>8,} {optima:>8} {ms:>8.1f} ms"
-          f" {costo(vecino, d):>6} {costo(mejorada, d):>7}")
-
-por_orden = ms / math.factorial(9)                    # costo medido de un orden con n=10
-for n in (15, 20):
-    dias = por_orden * math.factorial(n - 1) / 1000 / 3600 / 24
-    print(f"estimado exacta n={n}: {dias:,.1f} días")
+void main() {
+    IO.println(" n  órdenes    exacta   tiempo     vecino  +2-opt");
+    double ms = 0;
+    for (int n : new int[] {6, 8, 10}) {
+        int[][] d = puntosDeEntrega(n, 1);
+        long inicio = System.nanoTime();
+        int optima = costo(exacta(d), d);
+        ms = (System.nanoTime() - inicio) / 1e6;
+        int[] vecino = vecinoMasCercano(d);
+        int[] mejorada = dosOpt(vecino, d);
+        IO.println(String.format(Locale.ROOT, "%2d %,8d %8d %8.1f ms %6d %7d",
+                n, factorial(n - 1), optima, ms, costo(vecino, d), costo(mejorada, d)));
+    }
+    double porOrden = ms / factorial(9);             // costo medido de un orden con n=10
+    for (int n : new int[] {15, 20}) {
+        double dias = porOrden * factorial(n - 1) / 1000 / 3600 / 24;
+        IO.println(String.format(Locale.ROOT, "estimado exacta n=%d: %,.1f días", n, dias));
+    }
+}
 ```
 
 ```text
-$ python3 np_rutas.py
+$ java NpRutas.java
  n  órdenes    exacta   tiempo     vecino  +2-opt
- 6      120      284      0.1 ms    318     284
- 8    5,040      291      4.6 ms    336     291
-10  362,880      303    357.7 ms    363     303
-estimado exacta n=15: 1.0 días
-estimado exacta n=20: 1,387,954.5 días
+ 6      120      250      1.1 ms    271     269
+ 8    5,040      271      1.1 ms    300     288
+10  362,880      275     37.4 ms    345     275
+estimado exacta n=15: 0.1 días
+estimado exacta n=20: 144,934.0 días
 ```
 
 **Explicación por partes.**
-- Línea 5: `permutations(iterable)` devuelve cada orden posible, uno a la vez, sin guardarlos todos en memoria.
-- Línea 19: `math.inf` es infinito; la primera ruta siempre lo mejora.
-- Líneas 20–24: recorre los `(n - 1)!` órdenes y guarda el más corto.
-- Línea 31: igual que en `heuristica.py`, pero recibe la matriz `d` como parámetro.
-- Líneas 60–63: estima con el tiempo medido para `n = 10`; `/ 1000 / 3600 / 24` pasa de milisegundos a días.
-- Salida: de 8 a 10 puntos los órdenes se multiplican por 72 y el tiempo crece en una proporción parecida.
-- Salida: con esta semilla, 2-opt alcanzó el óptimo; el vecino más cercano solo quedó entre 12 % y 20 % por encima.
+- Líneas 23–34: `siguientePermutacion` transforma el arreglo en el siguiente orden lexicográfico, en el mismo
+  arreglo: así se recorren millones de órdenes sin guardarlos todos en memoria. Devuelve `false` tras el último.
+- Línea 40: `Integer.MAX_VALUE` hace de infinito; la primera ruta siempre lo mejora.
+- Líneas 41–49: un `do … while` revisa el orden inicial y después cada siguiente, y guarda el más corto.
+- Línea 108: estima con el tiempo medido para `n = 10`; la línea 110 pasa de milisegundos a días.
+- Salida: de 8 a 10 puntos los órdenes se multiplican por 72. El tiempo creció menos (34 veces) porque, en Java, las
+  primeras mediciones incluyen a la JVM optimizando el código (Módulo 6, Tema 4): la estimación es solo un orden de
+  magnitud, y aun así habla de siglos para 20 puntos.
+- Salida: el vecino más cercano quedó entre 8 % y 25 % por encima del óptimo. 2-opt alcanzó el óptimo con 10
+  puntos, pero no con 6 ni con 8: se quedó en un óptimo local, 8 % y 6 % por encima.
 
-> **Error común.** Generar las paradas con `range(1, len(d) + 1)`. La última no existe en la matriz y el programa
-> termina con `IndexError: list index out of range`. Si `d` tiene `n` filas, los puntos van de `0` a `n - 1`.
+> **Error común.** Generar las paradas con `IntStream.range(1, n + 1)` en la línea 38. La última no existe en la
+> matriz y, ya con `n = 6`, el programa termina con
+> `java.lang.ArrayIndexOutOfBoundsException: Index 6 out of bounds for length 6`, en `costo`. Si `d` tiene `n` filas,
+> los puntos van de `0` a `n - 1`.
 
 > **Rendimiento.** Ninguna máquina más rápida salva la búsqueda exacta. Una 1000 veces más veloz divide la
 > estimación de `n = 20` entre 1000 y sigue tardando años. El crecimiento factorial le gana a cualquier mejora constante.
@@ -1907,14 +2150,15 @@ Si alguien lo resolviera en tiempo polinomial, resolvería así todos los de NP.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Traza la heurística a mano
-Con la matriz de `heuristica.py`, llena en papel la tabla del Paso 3. Luego escribe el archivo y compara.
+Con la matriz de `Heuristica.java`, llena en papel la tabla del Paso 3. Luego escribe el archivo y compara.
 
 #### Paso 2 · Verifica certificados
-Llama `verificar` con la ruta inicial y límites de 24 y 23. Explica por qué una da `True` y la otra `False`.
+Llama `verificar` con la ruta inicial y límites de 24 y 23. Explica por qué una da `true` y la otra `false`.
 
 #### Paso 3 · Mide el crecimiento
-Escribe `np_rutas.py` y ejecútalo. Agrega `11` a la tupla `(6, 8, 10)` y cambia `math.factorial(9)` por `math.factorial(10)`. Comprueba que el
-tiempo se multiplica por cerca de 10.
+Escribe `NpRutas.java` y ejecútalo. Agrega `11` al arreglo `{6, 8, 10}` y cambia `factorial(9)` por
+`factorial(10)` en la línea 108. Los órdenes se multiplican por 11; el tiempo crece algo menos, porque la JVM sigue
+optimizando el código durante las primeras mediciones. Ejecuta dos veces y anota cuánto cambian los tiempos.
 
 #### Paso 4 · Busca dónde falla 2-opt
 Cambia la semilla de `puntos_de_entrega` y anota en qué casos `+2-opt` no alcanza el valor de `exacta`.
@@ -1926,23 +2170,25 @@ Cambia la semilla de `puntos_de_entrega` y anota en qué casos `+2-opt` no alcan
 - Un problema **NP-completo** es de los más difíciles de NP; el **problema del viajante** es el ejemplo de RutaFlow.
 - La búsqueda exacta del viajante cuesta `O(n!)`: con 20 puntos ya no termina en una vida.
 - Una **heurística** como vecino más cercano, `O(n²)`, da rutas buenas sin garantía.
-- **2-opt** desenreda cruces hasta un óptimo local; su calidad se mide contra el óptimo en casos pequeños.
+- **2-opt** desenreda cruces hasta un óptimo local, que no siempre es el óptimo; su calidad se mide contra el óptimo en casos pequeños.
 
 #### Ejercicio verificable 1
-Básico. Con `heuristica.py`, ¿cuánto mide la ruta `[0, 1, 2, 3, 4, 0]` y qué devuelve `verificar([0, 1, 2, 3, 4, 0], 30)`?
+Básico. Con `Heuristica.java`, ¿cuánto mide la ruta `List.of(0, 1, 2, 3, 4, 0)` y qué devuelve `verificar` con límite 30?
 
-Respuesta esperada: 26 km y `True`: empieza y termina en el depósito, visita todo y no pasa de 30.
+Respuesta esperada: 26 km y `true`: empieza y termina en el depósito, visita todo y no pasa de 30.
 
 #### Ejercicio verificable 2
-Intermedio. Recorre las 24 permutaciones de `[1, 2, 3, 4]` en `heuristica.py` y encuentra la ruta exacta. ¿Llegó 2-opt al óptimo?
+Intermedio. Recorre las 24 permutaciones de `1, 2, 3, 4` en `Heuristica.java` y encuentra la ruta exacta. ¿Llegó 2-opt al óptimo?
 
-Respuesta esperada: la ruta `(0, 2, 1, 4, 3, 0)` con 22 km. Sí: es la misma que dejó 2-opt.
+Respuesta esperada: la ruta `[0, 2, 1, 4, 3, 0]` con 22 km. Sí: es la misma que dejó 2-opt.
 
 #### Ejercicio verificable 3
-Reto. En `np_rutas.py` usa `semilla=2` con `n = 10`. Compara exacta, vecino más cercano y 2-opt.
+Reto. En `NpRutas.java` usa la semilla `2` con `n = 10`. Compara exacta, vecino más cercano y 2-opt. Después
+explica qué pasó con la semilla `1` y `n = 8` en la tabla del Problema resuelto 5.2.
 
-Respuesta esperada: exacta 300, vecino 305 y 2-opt 305. Aquí 2-opt no mejora nada: la ruta del vecino ya es un
-óptimo local que queda 1,7 % por encima del óptimo.
+Respuesta esperada: exacta 334, vecino 336 y 2-opt 334: aquí el vecino queda apenas 0,6 % por encima y 2-opt
+alcanza el óptimo. Con la semilla 1 y `n = 8`, en cambio, 2-opt se detuvo en 288 contra un óptimo de 271: un
+óptimo local del que ninguna inversión de un tramo lo saca. Por eso la calidad se mide en muchos casos, no en uno.
 
 #### En el trabajo
 Las empresas de logística resuelven variantes del viajante con ventanas horarias y capacidad de vehículos. Usan
@@ -1968,7 +2214,7 @@ al tema donde se explicó.
 | Minutos mínimos entre cada par de barrios | Dijkstra desde cada barrio | pesos no negativos; `O(V · (V + A) log V)` (Tema 3) |
 | Ruta exacta con pocas paradas | búsqueda exhaustiva | 5 barrios dan `5! = 120` órdenes (Tema 5) |
 | Ruta cuando crezcan las paradas | vecino más cercano + 2-opt | rápida y medida contra la exacta (Tema 5) |
-| Orden de carga | `sorted` con `key` y `reverse=True` | estable: los empates conservan el orden de registro (Tema 1) |
+| Orden de carga | `List.sort` con un `Comparator` invertido | estable: los empates conservan el orden de registro (Tema 1) |
 
 El camión se carga por atrás: lo que se entrega de último entra primero. Dos guías del mismo barrio deben quedar
 en el orden en que se registraron, para que el conductor las encuentre como dice la planilla.
@@ -1983,95 +2229,139 @@ Crea `~/labs/planificador` y entra con `cd ~/labs/planificador`.
 
 #### Paso 2 · Escribe el programa
 
-```python
-# planificador.py — tiempos mínimos, ruta del día y orden de carga de RutaFlow
-import heapq
-from itertools import permutations
+```java
+// Planificador.java — tiempos mínimos, ruta del día y orden de carga de RutaFlow
+record Tramo(String a, String b, int minutos) {}
 
-tramos = [  # (barrio, barrio, minutos); cada tramo sirve en ambos sentidos
-    ("Deposito", "Chapinero", 15), ("Deposito", "Kennedy", 25), ("Chapinero", "Kennedy", 5),
-    ("Chapinero", "Usaquen", 20), ("Kennedy", "Bosa", 10), ("Usaquen", "Suba", 12),
-    ("Suba", "Engativa", 14), ("Engativa", "Kennedy", 18), ("Engativa", "Chapinero", 22),
-]
-paradas = [  # (guía, barrio) en orden de registro
-    ("RF-501", "Suba"), ("RF-502", "Bosa"), ("RF-503", "Usaquen"),
-    ("RF-504", "Bosa"), ("RF-505", "Engativa"), ("RF-506", "Kennedy"),
-]
+record Parada(String guia, String barrio) {}
 
+final List<Tramo> tramos = List.of(   // cada tramo sirve en ambos sentidos
+        new Tramo("Deposito", "Chapinero", 15), new Tramo("Deposito", "Kennedy", 25), new Tramo("Chapinero", "Kennedy", 5),
+        new Tramo("Chapinero", "Usaquen", 20), new Tramo("Kennedy", "Bosa", 10), new Tramo("Usaquen", "Suba", 12),
+        new Tramo("Suba", "Engativa", 14), new Tramo("Engativa", "Kennedy", 18), new Tramo("Engativa", "Chapinero", 22));
+final List<Parada> paradas = List.of(   // en orden de registro
+        new Parada("RF-501", "Suba"), new Parada("RF-502", "Bosa"), new Parada("RF-503", "Usaquen"),
+        new Parada("RF-504", "Bosa"), new Parada("RF-505", "Engativa"), new Parada("RF-506", "Kennedy"));
 
-def construir_mapa(lista):
-    mapa = {}
-    for a, b, minutos in lista:
-        mapa.setdefault(a, {})[b] = minutos
-        mapa.setdefault(b, {})[a] = minutos
-    return mapa
+Map<String, Map<String, Integer>> construirMapa(List<Tramo> lista) {
+    Map<String, Map<String, Integer>> mapa = new LinkedHashMap<>();
+    for (Tramo x : lista) {
+        mapa.computeIfAbsent(x.a(), k -> new LinkedHashMap<>()).put(x.b(), x.minutos());
+        mapa.computeIfAbsent(x.b(), k -> new LinkedHashMap<>()).put(x.a(), x.minutos());
+    }
+    return mapa;
+}
 
+Map<String, Integer> dijkstra(Map<String, Map<String, Integer>> grafo, String origen) {
+    Map<String, Integer> distancia = new HashMap<>();
+    for (String n : grafo.keySet()) distancia.put(n, Integer.MAX_VALUE);
+    distancia.put(origen, 0);
+    PriorityQueue<Map.Entry<String, Integer>> pendientes = new PriorityQueue<>(Map.Entry.comparingByValue());
+    pendientes.add(Map.entry(origen, 0));
+    Set<String> finalizados = new HashSet<>();
+    while (!pendientes.isEmpty()) {
+        var e = pendientes.poll();
+        if (!finalizados.add(e.getKey())) continue;
+        for (var tramo : grafo.get(e.getKey()).entrySet()) {
+            int nueva = e.getValue() + tramo.getValue();
+            if (nueva < distancia.get(tramo.getKey())) {
+                distancia.put(tramo.getKey(), nueva);
+                pendientes.add(Map.entry(tramo.getKey(), nueva));
+            }
+        }
+    }
+    return distancia;
+}
 
-def dijkstra(grafo, origen):
-    distancia = {n: float("inf") for n in grafo}
-    distancia[origen] = 0
-    pendientes, finalizados = [(0, origen)], set()
-    while pendientes:
-        d, nodo = heapq.heappop(pendientes)
-        if nodo in finalizados:
-            continue
-        finalizados.add(nodo)
-        for vecino, peso in grafo[nodo].items():
-            if d + peso < distancia[vecino]:
-                distancia[vecino] = d + peso
-                heapq.heappush(pendientes, (d + peso, vecino))
-    return distancia
+int costo(List<String> ruta, Map<String, Map<String, Integer>> t) {
+    int total = 0;
+    for (int i = 0; i + 1 < ruta.size(); i++) total += t.get(ruta.get(i)).get(ruta.get(i + 1));
+    return total;
+}
 
+List<String> rutaExacta(List<String> barrios, Map<String, Map<String, Integer>> t) {
+    List<String> mejor = null;
+    for (List<String> orden : permutaciones(barrios)) {
+        List<String> ruta = new ArrayList<>(List.of("Deposito"));
+        ruta.addAll(orden);
+        ruta.add("Deposito");
+        if (mejor == null || costo(ruta, t) < costo(mejor, t)) mejor = ruta;
+    }
+    return mejor;
+}
 
-def costo(ruta, t):
-    return sum(t[a][b] for a, b in zip(ruta, ruta[1:]))
+/** Todos los órdenes de la lista; si la lista viene ordenada, salen en orden lexicográfico. */
+List<List<String>> permutaciones(List<String> xs) {
+    if (xs.isEmpty()) return List.of(List.of());
+    List<List<String>> r = new ArrayList<>();
+    for (String x : xs) {
+        List<String> resto = new ArrayList<>(xs);
+        resto.remove(x);
+        for (List<String> p : permutaciones(resto)) {
+            List<String> fila = new ArrayList<>(List.of(x));
+            fila.addAll(p);
+            r.add(fila);
+        }
+    }
+    return r;
+}
 
+List<String> rutaHeuristica(List<String> barrios, Map<String, Map<String, Integer>> t) {
+    List<String> ruta = new ArrayList<>(List.of("Deposito"));
+    TreeSet<String> pendientes = new TreeSet<>(barrios);
+    while (!pendientes.isEmpty()) {                       // vecino más cercano
+        String actual = ruta.getLast(), siguiente = null;
+        for (String b : pendientes) {                     // en orden alfabético: en empate gana el primero
+            if (siguiente == null || t.get(actual).get(b) < t.get(actual).get(siguiente)) siguiente = b;
+        }
+        ruta.add(siguiente);
+        pendientes.remove(siguiente);
+    }
+    ruta.add("Deposito");
+    boolean mejoro = true;
+    while (mejoro) {                                      // mejora 2-opt
+        mejoro = false;
+        for (int i = 1; i < ruta.size() - 2; i++) {
+            for (int j = i + 1; j < ruta.size() - 1; j++) {
+                List<String> nueva = new ArrayList<>(ruta);
+                Collections.reverse(nueva.subList(i, j + 1));
+                if (costo(nueva, t) < costo(ruta, t)) {
+                    ruta = nueva;
+                    mejoro = true;
+                }
+            }
+        }
+    }
+    return ruta;
+}
 
-def ruta_exacta(barrios, t):
-    candidatas = (["Deposito", *orden, "Deposito"] for orden in permutations(barrios))
-    return min(candidatas, key=lambda r: costo(r, t))
+void main() {
+    Map<String, Map<String, Integer>> mapa = construirMapa(tramos);
+    Map<String, Map<String, Integer>> t = new HashMap<>();   // minutos mínimos entre todo par
+    for (String barrio : mapa.keySet()) t.put(barrio, dijkstra(mapa, barrio));
+    List<String> barrios = paradas.stream().map(Parada::barrio).distinct().sorted().toList();
+    Map<String, Integer> desdeDeposito = new LinkedHashMap<>();
+    for (String b : barrios) desdeDeposito.put(b, t.get("Deposito").get(b));
+    IO.println("minutos desde el depósito: " + desdeDeposito);
 
+    List<String> exacta = rutaExacta(barrios, t);
+    List<String> heuristica = rutaHeuristica(barrios, t);
+    IO.println("ruta exacta:     " + String.join(" -> ", exacta) + " (" + costo(exacta, t) + " min)");
+    IO.println("ruta heurística: " + String.join(" -> ", heuristica) + " (" + costo(heuristica, t) + " min)");
 
-def ruta_heuristica(barrios, t):
-    ruta, pendientes = ["Deposito"], set(barrios)
-    while pendientes:                                    # vecino más cercano
-        siguiente = min(pendientes, key=lambda b: (t[ruta[-1]][b], b))
-        ruta.append(siguiente)
-        pendientes.remove(siguiente)
-    ruta.append("Deposito")
-    mejoro = True
-    while mejoro:                                        # mejora 2-opt
-        mejoro = False
-        for i in range(1, len(ruta) - 2):
-            for j in range(i + 1, len(ruta) - 1):
-                nueva = ruta[:i] + ruta[i:j + 1][::-1] + ruta[j + 1:]
-                if costo(nueva, t) < costo(ruta, t):
-                    ruta, mejoro = nueva, True
-    return ruta
-
-
-mapa = construir_mapa(tramos)
-t = {barrio: dijkstra(mapa, barrio) for barrio in mapa}  # minutos mínimos entre todo par
-barrios = sorted({barrio for _, barrio in paradas})
-print("minutos desde el depósito:", {b: t["Deposito"][b] for b in barrios})
-
-exacta = ruta_exacta(barrios, t)
-heuristica = ruta_heuristica(barrios, t)
-print("ruta exacta:    ", " -> ".join(exacta), f"({costo(exacta, t)} min)")
-print("ruta heurística:", " -> ".join(heuristica), f"({costo(heuristica, t)} min)")
-
-turno = {barrio: i for i, barrio in enumerate(exacta[1:-1])}
-carga = sorted(paradas, key=lambda p: turno[p[1]], reverse=True)   # estable: respeta el registro
-print("orden de carga (entra primero lo que se entrega de último):")
-for guia, barrio in carga:
-    print(f"  {guia} {barrio}")
+    List<String> enOrden = exacta.subList(1, exacta.size() - 1);
+    List<Parada> carga = new ArrayList<>(paradas);
+    carga.sort(Comparator.comparingInt((Parada p) -> enOrden.indexOf(p.barrio())).reversed());   // estable
+    IO.println("orden de carga (entra primero lo que se entrega de último):");
+    for (Parada p : carga) IO.println("  " + p.guia() + " " + p.barrio());
+}
 ```
 
 #### Paso 3 · Ejecuta y lee el resultado
 
 ```text
-$ python3 planificador.py
-minutos desde el depósito: {'Bosa': 30, 'Engativa': 37, 'Kennedy': 20, 'Suba': 47, 'Usaquen': 35}
+$ java Planificador.java
+minutos desde el depósito: {Bosa=30, Engativa=37, Kennedy=20, Suba=47, Usaquen=35}
 ruta exacta:     Deposito -> Bosa -> Kennedy -> Engativa -> Suba -> Usaquen -> Deposito (119 min)
 ruta heurística: Deposito -> Kennedy -> Bosa -> Engativa -> Suba -> Usaquen -> Deposito (119 min)
 orden de carga (entra primero lo que se entrega de último):
@@ -2084,22 +2374,25 @@ orden de carga (entra primero lo que se entrega de último):
 ```
 
 **Explicación por partes.**
-- Líneas 16–21: `setdefault(a, {})` devuelve el diccionario de vecinos de `a` y lo crea vacío si no existe. Cada
+- Líneas 17–18: `computeIfAbsent(a, …)` devuelve el mapa de vecinos de `a` y lo crea vacío si no existe. Cada
   tramo se anota en los dos sentidos.
-- Línea 68: Dijkstra desde cada barrio arma la tabla `t[a][b]` con los minutos mínimos entre todo par, aunque no
-  haya tramo directo.
-- Línea 45: `*orden` desempaca la tupla de barrios entre los dos depósitos.
-- Líneas 44–46 y 49–64: la ruta exacta y la heurística usan la misma tabla `t` y la misma función `costo`.
-- Línea 78: `reverse=True` invierte el orden, pero `sorted` sigue siendo estable: `RF-502` queda antes que `RF-504`.
+- Línea 109: Dijkstra desde cada barrio arma la tabla `t` con los minutos mínimos entre todo par, aunque no haya
+  tramo directo.
+- Línea 110: `distinct().sorted()` deja cada barrio una vez y en orden alfabético; así las permutaciones salen en
+  orden lexicográfico y, entre rutas empatadas, la exacta elige siempre la misma.
+- Líneas 50–75 y 77–104: la ruta exacta y la heurística usan la misma tabla `t` y el mismo método `costo`.
+- Línea 122: `reversed()` invierte el comparador, pero `List.sort` sigue siendo estable: `RF-502` queda antes que `RF-504`.
 - Salida: las dos rutas son distintas y miden lo mismo, 119 minutos; con empates hay más de una ruta óptima.
 
-> **Prevenir errores.** Si agregas la parada `("RF-507", "Soacha")` y Soacha no aparece en `tramos`, la línea 70
-> termina con `KeyError: 'Soacha'`. Valida al inicio que cada barrio de `paradas` sea clave de `mapa` y reporta
-> las guías inválidas.
+> **Prevenir errores.** Si agregas la parada `new Parada("RF-507", "Soacha")` y Soacha no aparece en `tramos`, la
+> primera línea ya muestra `Soacha=null` y luego el programa termina con
+> `java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because the return value of
+> "java.util.Map.get(Object)" is null`, en `Planificador.costo`. Valida al inicio que cada barrio de `paradas` sea
+> clave de `mapa` y reporta las guías inválidas.
 
 #### Entregables
-1. **Programa.** `planificador.py` con las tres salidas, ejecutable con `python3 planificador.py`.
-2. **Prueba de la heurística.** Un archivo de pruebas que compare la ruta heurística con la exacta en al menos
+1. **Programa.** `Planificador.java` con las tres salidas, ejecutable con `java Planificador.java`.
+2. **Prueba de la heurística.** Una clase de pruebas JUnit (Módulo 4) que compare la ruta heurística con la exacta en al menos
    cinco juegos de paradas y reporte el porcentaje de diferencia (Tema 5).
 3. **Prueba de estabilidad.** Una prueba con tres guías del mismo barrio que confirme que conservan su orden de registro (Tema 1).
 4. **Validación de pesos.** Un error explícito si algún tramo tiene minutos negativos, con su prueba (Tema 3).
