@@ -6,59 +6,37 @@
    "id": "0",
    "kind": "current",
    "title": null,
-   "topicCount": 7,
+   "topicCount": 6,
    "topics": [
     {
-     "title": "macOS: entorno completo recomendado",
+     "title": "Opcionales: datos que pueden faltar, sin forzar nada",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 1,
-      "fragment": "macos-entorno-completo-recomendado"
+      "fragment": "tema-1-opcionales-datos-que-pueden-faltar-sin-forzar-nada"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Windows y Linux: etapa de fundamentos",
+     "title": "`struct` frente a `class`: copiar o compartir",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 2,
-      "fragment": "windows-y-linux-etapa-de-fundamentos"
+      "fragment": "tema-2-struct-frente-a-class-copiar-o-compartir"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Optionals y unwrapping seguro",
+     "title": "Enums con valores asociados y protocolos",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 3,
-      "fragment": "tema-1-optionals-y-unwrapping-seguro"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "struct vs class",
-     "status": "actual",
-     "current": {
-      "module": "0",
-      "order": 4,
-      "fragment": "tema-2-struct-vs-class"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Protocolos y enums con valores asociados",
-     "status": "actual",
-     "current": {
-      "module": "0",
-      "order": 5,
-      "fragment": "tema-3-protocolos-y-enums-con-valores-asociados"
+      "fragment": "tema-3-enums-con-valores-asociados-y-protocolos"
      },
      "sources": [],
      "courseSources": []
@@ -68,19 +46,30 @@
      "status": "actual",
      "current": {
       "module": "0",
-      "order": 6,
+      "order": 4,
       "fragment": "tema-4-closures-colecciones-y-genericos-con-proposito"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Ownership en Swift: borrowing, consuming y tipos ~Copyable",
+     "title": "Ownership: `borrowing`, `consuming` y tipos `~Copyable`",
      "status": "actual",
      "current": {
       "module": "0",
-      "order": 7,
-      "fragment": "tema-5-ownership-en-swift-borrowing-consuming-y-tipos-copyable"
+      "order": 5,
+      "fragment": "tema-5-ownership-borrowing-consuming-y-tipos-copyable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 37: la libreta de la ruta del día",
+     "status": "actual",
+     "current": {
+      "module": "0",
+      "order": 6,
+      "fragment": "proyecto-37-la-libreta-de-la-ruta-del-dia"
      },
      "sources": [],
      "courseSources": []
@@ -578,37 +567,59 @@
    "id": "11",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Certificados y provisioning profiles",
+     "title": "Versiones, número de compilación y entornos con `.xcconfig`",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 1,
-      "fragment": "tema-1-certificados-y-provisioning-profiles"
+      "fragment": "tema-1-versiones-numero-de-compilacion-y-entornos-con-xcconfig"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Archivar, subir y TestFlight",
+     "title": "Ícono y pantalla de inicio",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 2,
-      "fragment": "tema-2-archivar-subir-y-testflight"
+      "fragment": "tema-2-icono-y-pantalla-de-inicio"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Metadata y versionado",
+     "title": "Firma, perfiles y archivo",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 3,
-      "fragment": "tema-3-metadata-y-versionado"
+      "fragment": "tema-3-firma-perfiles-y-archivo"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Manifiesto de privacidad, TestFlight y revisión",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 4,
+      "fragment": "tema-4-manifiesto-de-privacidad-testflight-y-revision"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 48: La app de reparto, lista para la App Store",
+     "status": "actual",
+     "current": {
+      "module": "11",
+      "order": 5,
+      "fragment": "proyecto-48-la-app-de-reparto-lista-para-la-app-store"
      },
      "sources": [],
      "courseSources": []
@@ -619,48 +630,59 @@
    "id": "12",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Arquitectura del proyecto integrador",
+     "title": "Arquitectura por capas: el dominio en un paquete Swift",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 1,
-      "fragment": "tema-1-arquitectura-del-proyecto-integrador"
+      "fragment": "tema-1-arquitectura-por-capas-el-dominio-en-un-paquete-swift"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Sincronización entre red y persistencia local",
+     "title": "Datos: cliente HTTP, copia local y repositorio",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 2,
-      "fragment": "tema-2-sincronizacion-entre-red-y-persistencia-local"
+      "fragment": "tema-2-datos-cliente-http-copia-local-y-repositorio"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
+     "title": "Presentación: el modelo de la pantalla con `@Observable` y `@MainActor`",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 3,
-      "fragment": "tema-3-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
+      "fragment": "tema-3-presentacion-el-modelo-de-la-pantalla-con-observable-y-mainactor"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Cierre del track",
+     "title": "Interfaz: cada estado en SwiftUI, comprobado en el simulador",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 4,
-      "fragment": "tema-4-cierre-del-track"
+      "fragment": "tema-4-interfaz-cada-estado-en-swiftui-comprobado-en-el-simulador"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 49: La app de reparto completa, por capas",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 5,
+      "fragment": "proyecto-49-la-app-de-reparto-completa-por-capas"
      },
      "sources": [],
      "courseSources": []
@@ -671,136 +693,59 @@
    "id": "13",
    "kind": "current",
    "title": null,
-   "topicCount": 12,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "El sandbox reduce superficie, pero no valida intenciones",
+     "title": "Secretos en el llavero (Keychain)",
      "status": "actual",
      "current": {
       "module": "13",
       "order": 1,
-      "fragment": "tema-1-el-sandbox-reduce-superficie-pero-no-valida-intenciones"
+      "fragment": "tema-1-secretos-en-el-llavero-keychain"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Proteger datos es controlar todas sus copias",
+     "title": "Seguridad en tránsito: App Transport Security y fijación de certificados",
      "status": "actual",
      "current": {
       "module": "13",
       "order": 2,
-      "fragment": "tema-2-proteger-datos-es-controlar-todas-sus-copias"
+      "fragment": "tema-2-seguridad-en-transito-app-transport-security-y-fijacion-de-certificados"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Keychain — guardar secretos de forma segura",
+     "title": "Operación: registro con `os.Logger` e informes de MetricKit",
      "status": "actual",
      "current": {
       "module": "13",
       "order": 3,
-      "fragment": "tema-3-keychain-guardar-secretos-de-forma-segura"
+      "fragment": "tema-3-operacion-registro-con-os-logger-e-informes-de-metrickit"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Permisos y privacidad — pedir acceso con criterio",
+     "title": "Sincronización con reintentos: cola de salida, retroceso e idempotencia",
      "status": "actual",
      "current": {
       "module": "13",
       "order": 4,
-      "fragment": "tema-4-permisos-y-privacidad-pedir-acceso-con-criterio"
+      "fragment": "tema-4-sincronizacion-con-reintentos-cola-de-salida-retroceso-e-idempotencia"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
+     "title": "Proyecto 50: La app de reparto, lista para la calle",
      "status": "actual",
      "current": {
       "module": "13",
       "order": 5,
-      "fragment": "tema-5-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Notificaciones push con APNs",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 6,
-      "fragment": "tema-6-notificaciones-push-con-apns"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Offline-first es un protocolo, no una caché",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 7,
-      "fragment": "tema-7-offline-first-es-un-protocolo-no-una-cache"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Operar significa detectar, limitar y aprender del fallo",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 8,
-      "fragment": "tema-8-operar-significa-detectar-limitar-y-aprender-del-fallo"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 9,
-      "fragment": "tema-9-core-location-moderno-cllocationupdate-permisos-y-precision"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 10,
-      "fragment": "tema-10-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Swift 6.2 y actualizaciones SwiftUI de 2026",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 11,
-      "fragment": "swift-6-2-y-actualizaciones-swiftui-de-2026"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "Método de estudio y proyecto de ampliación",
-     "status": "actual",
-     "current": {
-      "module": "13",
-      "order": 12,
-      "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+      "fragment": "proyecto-50-la-app-de-reparto-lista-para-la-calle"
      },
      "sources": [],
      "courseSources": []

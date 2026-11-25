@@ -3504,32 +3504,28 @@
   "ios": {
     "0": [
       {
-        "title": "macOS: entorno completo recomendado",
-        "fragment": "macos-entorno-completo-recomendado"
+        "title": "Opcionales: datos que pueden faltar, sin forzar nada",
+        "fragment": "tema-1-opcionales-datos-que-pueden-faltar-sin-forzar-nada"
       },
       {
-        "title": "Windows y Linux: etapa de fundamentos",
-        "fragment": "windows-y-linux-etapa-de-fundamentos"
+        "title": "`struct` frente a `class`: copiar o compartir",
+        "fragment": "tema-2-struct-frente-a-class-copiar-o-compartir"
       },
       {
-        "title": "Optionals y unwrapping seguro",
-        "fragment": "tema-1-optionals-y-unwrapping-seguro"
-      },
-      {
-        "title": "struct vs class",
-        "fragment": "tema-2-struct-vs-class"
-      },
-      {
-        "title": "Protocolos y enums con valores asociados",
-        "fragment": "tema-3-protocolos-y-enums-con-valores-asociados"
+        "title": "Enums con valores asociados y protocolos",
+        "fragment": "tema-3-enums-con-valores-asociados-y-protocolos"
       },
       {
         "title": "Closures, colecciones y genéricos con propósito",
         "fragment": "tema-4-closures-colecciones-y-genericos-con-proposito"
       },
       {
-        "title": "Ownership en Swift: borrowing, consuming y tipos ~Copyable",
-        "fragment": "tema-5-ownership-en-swift-borrowing-consuming-y-tipos-copyable"
+        "title": "Ownership: `borrowing`, `consuming` y tipos `~Copyable`",
+        "fragment": "tema-5-ownership-borrowing-consuming-y-tipos-copyable"
+      },
+      {
+        "title": "Proyecto 37: la libreta de la ruta del día",
+        "fragment": "proyecto-37-la-libreta-de-la-ruta-del-dia"
       }
     ],
     "1": [
@@ -3570,84 +3566,68 @@
     ],
     "11": [
       {
-        "title": "Certificados y provisioning profiles",
-        "fragment": "tema-1-certificados-y-provisioning-profiles"
+        "title": "Versiones, número de compilación y entornos con `.xcconfig`",
+        "fragment": "tema-1-versiones-numero-de-compilacion-y-entornos-con-xcconfig"
       },
       {
-        "title": "Archivar, subir y TestFlight",
-        "fragment": "tema-2-archivar-subir-y-testflight"
+        "title": "Ícono y pantalla de inicio",
+        "fragment": "tema-2-icono-y-pantalla-de-inicio"
       },
       {
-        "title": "Metadata y versionado",
-        "fragment": "tema-3-metadata-y-versionado"
+        "title": "Firma, perfiles y archivo",
+        "fragment": "tema-3-firma-perfiles-y-archivo"
+      },
+      {
+        "title": "Manifiesto de privacidad, TestFlight y revisión",
+        "fragment": "tema-4-manifiesto-de-privacidad-testflight-y-revision"
+      },
+      {
+        "title": "Proyecto 48: La app de reparto, lista para la App Store",
+        "fragment": "proyecto-48-la-app-de-reparto-lista-para-la-app-store"
       }
     ],
     "12": [
       {
-        "title": "Arquitectura del proyecto integrador",
-        "fragment": "tema-1-arquitectura-del-proyecto-integrador"
+        "title": "Arquitectura por capas: el dominio en un paquete Swift",
+        "fragment": "tema-1-arquitectura-por-capas-el-dominio-en-un-paquete-swift"
       },
       {
-        "title": "Sincronización entre red y persistencia local",
-        "fragment": "tema-2-sincronizacion-entre-red-y-persistencia-local"
+        "title": "Datos: cliente HTTP, copia local y repositorio",
+        "fragment": "tema-2-datos-cliente-http-copia-local-y-repositorio"
       },
       {
-        "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
-        "fragment": "tema-3-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
+        "title": "Presentación: el modelo de la pantalla con `@Observable` y `@MainActor`",
+        "fragment": "tema-3-presentacion-el-modelo-de-la-pantalla-con-observable-y-mainactor"
       },
       {
-        "title": "Cierre del track",
-        "fragment": "tema-4-cierre-del-track"
+        "title": "Interfaz: cada estado en SwiftUI, comprobado en el simulador",
+        "fragment": "tema-4-interfaz-cada-estado-en-swiftui-comprobado-en-el-simulador"
+      },
+      {
+        "title": "Proyecto 49: La app de reparto completa, por capas",
+        "fragment": "proyecto-49-la-app-de-reparto-completa-por-capas"
       }
     ],
     "13": [
       {
-        "title": "El sandbox reduce superficie, pero no valida intenciones",
-        "fragment": "tema-1-el-sandbox-reduce-superficie-pero-no-valida-intenciones"
+        "title": "Secretos en el llavero (Keychain)",
+        "fragment": "tema-1-secretos-en-el-llavero-keychain"
       },
       {
-        "title": "Proteger datos es controlar todas sus copias",
-        "fragment": "tema-2-proteger-datos-es-controlar-todas-sus-copias"
+        "title": "Seguridad en tránsito: App Transport Security y fijación de certificados",
+        "fragment": "tema-2-seguridad-en-transito-app-transport-security-y-fijacion-de-certificados"
       },
       {
-        "title": "Keychain — guardar secretos de forma segura",
-        "fragment": "tema-3-keychain-guardar-secretos-de-forma-segura"
+        "title": "Operación: registro con `os.Logger` e informes de MetricKit",
+        "fragment": "tema-3-operacion-registro-con-os-logger-e-informes-de-metrickit"
       },
       {
-        "title": "Permisos y privacidad — pedir acceso con criterio",
-        "fragment": "tema-4-permisos-y-privacidad-pedir-acceso-con-criterio"
+        "title": "Sincronización con reintentos: cola de salida, retroceso e idempotencia",
+        "fragment": "tema-4-sincronizacion-con-reintentos-cola-de-salida-retroceso-e-idempotencia"
       },
       {
-        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
-        "fragment": "tema-5-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
-      },
-      {
-        "title": "Notificaciones push con APNs",
-        "fragment": "tema-6-notificaciones-push-con-apns"
-      },
-      {
-        "title": "Offline-first es un protocolo, no una caché",
-        "fragment": "tema-7-offline-first-es-un-protocolo-no-una-cache"
-      },
-      {
-        "title": "Operar significa detectar, limitar y aprender del fallo",
-        "fragment": "tema-8-operar-significa-detectar-limitar-y-aprender-del-fallo"
-      },
-      {
-        "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
-        "fragment": "tema-9-core-location-moderno-cllocationupdate-permisos-y-precision"
-      },
-      {
-        "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
-        "fragment": "tema-10-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
-      },
-      {
-        "title": "Swift 6.2 y actualizaciones SwiftUI de 2026",
-        "fragment": "swift-6-2-y-actualizaciones-swiftui-de-2026"
-      },
-      {
-        "title": "Método de estudio y proyecto de ampliación",
-        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
+        "title": "Proyecto 50: La app de reparto, lista para la calle",
+        "fragment": "proyecto-50-la-app-de-reparto-lista-para-la-calle"
       }
     ],
     "14": [

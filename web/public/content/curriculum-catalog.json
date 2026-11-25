@@ -1,12 +1,12 @@
 {
  "schemaVersion": 1,
  "summary": {
-  "currentTopics": 1729,
+  "currentTopics": 1724,
   "currentTopicsWithExactBookEvidence": 0,
   "bookCandidates": 0,
   "courseCandidates": 0,
   "courses": 0,
-  "provisionalTopics": 1729,
+  "provisionalTopics": 1724,
   "booksRequiringOcr": 0
  },
  "stacks": [
@@ -1066,11 +1066,11 @@
    "id": "ios",
    "asset": "content/curriculum-stacks/ios.json",
    "hasCurrentTrack": true,
-   "currentTopicCount": 73,
+   "currentTopicCount": 68,
    "exactBookEvidenceTopicCount": 0,
    "bookCandidateCount": 0,
    "courseCandidateCount": 0,
-   "topicCount": 73,
+   "topicCount": 68,
    "moduleCount": 15,
    "bookCount": 0,
    "courseCount": 0,
@@ -1080,7 +1080,7 @@
      "id": "0",
      "kind": "current",
      "title": null,
-     "topicCount": 7
+     "topicCount": 6
     },
     {
      "id": "1",
@@ -1146,19 +1146,19 @@
      "id": "11",
      "kind": "current",
      "title": null,
-     "topicCount": 3
+     "topicCount": 5
     },
     {
      "id": "12",
      "kind": "current",
      "title": null,
-     "topicCount": 4
+     "topicCount": 5
     },
     {
      "id": "13",
      "kind": "current",
      "title": null,
-     "topicCount": 12
+     "topicCount": 5
     },
     {
      "id": "14",
