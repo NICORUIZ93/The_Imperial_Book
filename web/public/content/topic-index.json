@@ -2842,16 +2842,32 @@
     ],
     "2": [
       {
-        "title": "MediaQuery vs LayoutBuilder",
-        "fragment": "tema-1-mediaquery-vs-layoutbuilder"
+        "title": "Restricciones: cómo decide Flutter el tamaño de cada caja",
+        "fragment": "tema-1-restricciones-como-decide-flutter-el-tamano-de-cada-caja"
       },
       {
-        "title": "Cómo Flutter calcula tamaños",
-        "fragment": "tema-2-como-flutter-calcula-tamanos"
+        "title": "Row y Column a fondo: alinear y repartir el espacio",
+        "fragment": "tema-2-row-y-column-a-fondo-alinear-y-repartir-el-espacio"
       },
       {
-        "title": "Breakpoints propios y SafeArea",
-        "fragment": "tema-3-breakpoints-propios-y-safearea"
+        "title": "MediaQuery o LayoutBuilder: ¿quién decide el espacio?",
+        "fragment": "tema-3-mediaquery-o-layoutbuilder-quien-decide-el-espacio"
+      },
+      {
+        "title": "Tamaños de ventana y navegación adaptable",
+        "fragment": "tema-4-tamanos-de-ventana-y-navegacion-adaptable"
+      },
+      {
+        "title": "Lo que el sistema le quita a tu pantalla: muesca, teclado y texto grande",
+        "fragment": "tema-5-lo-que-el-sistema-le-quita-a-tu-pantalla-muesca-teclado-y-texto-grande"
+      },
+      {
+        "title": "Sistema de diseño: espacios, tipografía y color con intención",
+        "fragment": "tema-6-sistema-de-diseno-espacios-tipografia-y-color-con-intencion"
+      },
+      {
+        "title": "Proyecto 19: la pantalla de entrega en tres tamaños",
+        "fragment": "proyecto-19-la-pantalla-de-entrega-en-tres-tamanos"
       }
     ],
     "3": [

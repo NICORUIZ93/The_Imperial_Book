@@ -176,37 +176,81 @@
    "id": "2",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 7,
    "topics": [
     {
-     "title": "MediaQuery vs LayoutBuilder",
+     "title": "Restricciones: cómo decide Flutter el tamaño de cada caja",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 1,
-      "fragment": "tema-1-mediaquery-vs-layoutbuilder"
+      "fragment": "tema-1-restricciones-como-decide-flutter-el-tamano-de-cada-caja"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Cómo Flutter calcula tamaños",
+     "title": "Row y Column a fondo: alinear y repartir el espacio",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 2,
-      "fragment": "tema-2-como-flutter-calcula-tamanos"
+      "fragment": "tema-2-row-y-column-a-fondo-alinear-y-repartir-el-espacio"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Breakpoints propios y SafeArea",
+     "title": "MediaQuery o LayoutBuilder: ¿quién decide el espacio?",
      "status": "actual",
      "current": {
       "module": "2",
       "order": 3,
-      "fragment": "tema-3-breakpoints-propios-y-safearea"
+      "fragment": "tema-3-mediaquery-o-layoutbuilder-quien-decide-el-espacio"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Tamaños de ventana y navegación adaptable",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 4,
+      "fragment": "tema-4-tamanos-de-ventana-y-navegacion-adaptable"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Lo que el sistema le quita a tu pantalla: muesca, teclado y texto grande",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 5,
+      "fragment": "tema-5-lo-que-el-sistema-le-quita-a-tu-pantalla-muesca-teclado-y-texto-grande"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sistema de diseño: espacios, tipografía y color con intención",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 6,
+      "fragment": "tema-6-sistema-de-diseno-espacios-tipografia-y-color-con-intencion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 19: la pantalla de entrega en tres tamaños",
+     "status": "actual",
+     "current": {
+      "module": "2",
+      "order": 7,
+      "fragment": "proyecto-19-la-pantalla-de-entrega-en-tres-tamanos"
      },
      "sources": [],
      "courseSources": []
