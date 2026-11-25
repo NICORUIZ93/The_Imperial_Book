@@ -6922,32 +6922,32 @@
     ],
     "1": [
       {
-        "title": "Escaneo de imágenes y dependencias (Trivy, Snyk)",
-        "fragment": "tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
+        "title": "Dependencias vulnerables: análisis de composición y la puerta del pipeline",
+        "fragment": "tema-1-dependencias-vulnerables-analisis-de-composicion-y-la-puerta-del-pipeline"
       },
       {
-        "title": "Integración en el pipeline",
-        "fragment": "tema-2-integracion-en-el-pipeline"
+        "title": "Secretos de configuración: cifrado de sobre, manipulación y rotación",
+        "fragment": "tema-2-secretos-de-configuracion-cifrado-de-sobre-manipulacion-y-rotacion"
       },
       {
-        "title": "Gestión de secretos (Vault, SOPS)",
-        "fragment": "tema-3-gestion-de-secretos-vault-sops"
+        "title": "Menor privilegio en CI/CD: permisos del token, acciones fijadas y entradas no confiables",
+        "fragment": "tema-3-menor-privilegio-en-ci-cd-permisos-del-token-acciones-fijadas-y-entradas-no-confiables"
       },
       {
-        "title": "Menor privilegio en CI/CD",
-        "fragment": "tema-4-menor-privilegio-en-ci-cd"
+        "title": "SBOM e integridad de artefactos: qué hay adentro y si alguien lo cambió",
+        "fragment": "tema-4-sbom-e-integridad-de-artefactos-que-hay-adentro-y-si-alguien-lo-cambio"
       },
       {
-        "title": "SBOM y supply chain security",
-        "fragment": "tema-5-sbom-y-supply-chain-security"
+        "title": "SAST y DAST: buscar defectos en el código y en el servicio en ejecución",
+        "fragment": "tema-5-sast-y-dast-buscar-defectos-en-el-codigo-y-en-el-servicio-en-ejecucion"
       },
       {
-        "title": "SAST, DAST y SCA — diferencias y herramientas",
-        "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
+        "title": "Reconocimiento de tu propio laboratorio: puertos, estados y banners",
+        "fragment": "tema-6-reconocimiento-de-tu-propio-laboratorio-puertos-estados-y-banners"
       },
       {
-        "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
-        "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
+        "title": "Proyecto 18: el pipeline seguro del inventario",
+        "fragment": "proyecto-18-el-pipeline-seguro-del-inventario"
       }
     ]
   },

@@ -83,78 +83,78 @@
    "topicCount": 7,
    "topics": [
     {
-     "title": "Escaneo de imágenes y dependencias (Trivy, Snyk)",
+     "title": "Dependencias vulnerables: análisis de composición y la puerta del pipeline",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 1,
-      "fragment": "tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
+      "fragment": "tema-1-dependencias-vulnerables-analisis-de-composicion-y-la-puerta-del-pipeline"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Integración en el pipeline",
+     "title": "Secretos de configuración: cifrado de sobre, manipulación y rotación",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 2,
-      "fragment": "tema-2-integracion-en-el-pipeline"
+      "fragment": "tema-2-secretos-de-configuracion-cifrado-de-sobre-manipulacion-y-rotacion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Gestión de secretos (Vault, SOPS)",
+     "title": "Menor privilegio en CI/CD: permisos del token, acciones fijadas y entradas no confiables",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 3,
-      "fragment": "tema-3-gestion-de-secretos-vault-sops"
+      "fragment": "tema-3-menor-privilegio-en-ci-cd-permisos-del-token-acciones-fijadas-y-entradas-no-confiables"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Menor privilegio en CI/CD",
+     "title": "SBOM e integridad de artefactos: qué hay adentro y si alguien lo cambió",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 4,
-      "fragment": "tema-4-menor-privilegio-en-ci-cd"
+      "fragment": "tema-4-sbom-e-integridad-de-artefactos-que-hay-adentro-y-si-alguien-lo-cambio"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "SBOM y supply chain security",
+     "title": "SAST y DAST: buscar defectos en el código y en el servicio en ejecución",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 5,
-      "fragment": "tema-5-sbom-y-supply-chain-security"
+      "fragment": "tema-5-sast-y-dast-buscar-defectos-en-el-codigo-y-en-el-servicio-en-ejecucion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "SAST, DAST y SCA — diferencias y herramientas",
+     "title": "Reconocimiento de tu propio laboratorio: puertos, estados y banners",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 6,
-      "fragment": "tema-6-sast-dast-y-sca-diferencias-y-herramientas"
+      "fragment": "tema-6-reconocimiento-de-tu-propio-laboratorio-puertos-estados-y-banners"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Reconocimiento de tu propio laboratorio: escaneo de puertos y banners",
+     "title": "Proyecto 18: el pipeline seguro del inventario",
      "status": "actual",
      "current": {
       "module": "1",
       "order": 7,
-      "fragment": "tema-7-reconocimiento-de-tu-propio-laboratorio-escaneo-de-puertos-y-banners"
+      "fragment": "proyecto-18-el-pipeline-seguro-del-inventario"
      },
      "sources": [],
      "courseSources": []
