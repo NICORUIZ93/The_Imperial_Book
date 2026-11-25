@@ -86,12 +86,12 @@
      "courseSources": []
     },
     {
-     "title": "Proyecto 4: migrar el inventario JSON a SQLite",
+     "title": "Proyecto 4: migrar el inventario CSV a SQLite",
      "status": "actual",
      "current": {
       "module": "0",
       "order": 8,
-      "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
+      "fragment": "proyecto-4-migrar-el-inventario-csv-a-sqlite"
      },
      "sources": [],
      "courseSources": []

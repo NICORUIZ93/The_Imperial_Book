@@ -7382,8 +7382,8 @@
         "fragment": "tema-7-de-sql-a-excel-reportes-con-tablas-y-formulas-vivas"
       },
       {
-        "title": "Proyecto 4: migrar el inventario JSON a SQLite",
-        "fragment": "proyecto-4-migrar-el-inventario-json-a-sqlite"
+        "title": "Proyecto 4: migrar el inventario CSV a SQLite",
+        "fragment": "proyecto-4-migrar-el-inventario-csv-a-sqlite"
       }
     ]
   },
