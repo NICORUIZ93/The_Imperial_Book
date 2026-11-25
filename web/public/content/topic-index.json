@@ -2902,24 +2902,32 @@
     ],
     "4": [
       {
-        "title": "setState y sus límites",
-        "fragment": "tema-1-setstate-y-sus-limites"
+        "title": "setState y sus límites: el estado en el ancestro común",
+        "fragment": "tema-1-setstate-y-sus-limites-el-estado-en-el-ancestro-comun"
       },
       {
-        "title": "Riverpod",
-        "fragment": "tema-2-riverpod"
+        "title": "ChangeNotifier: sacar el estado del árbol de widgets",
+        "fragment": "tema-2-changenotifier-sacar-el-estado-del-arbol-de-widgets"
       },
       {
-        "title": "Bloc/Cubit y otras alternativas",
-        "fragment": "tema-3-bloc-cubit-y-otras-alternativas"
+        "title": "Riverpod: providers, estado derivado y escuchar solo lo necesario",
+        "fragment": "tema-3-riverpod-providers-estado-derivado-y-escuchar-solo-lo-necesario"
       },
       {
-        "title": "Formularios profesionales con Formz y Riverpod",
-        "fragment": "tema-4-formularios-profesionales-con-formz-y-riverpod"
+        "title": "Datos asíncronos: AsyncNotifier y el diseño de cada estado",
+        "fragment": "tema-4-datos-asincronos-asyncnotifier-y-el-diseno-de-cada-estado"
       },
       {
-        "title": "Inyección de dependencias con Riverpod: reemplazar implementaciones",
-        "fragment": "tema-5-inyeccion-de-dependencias-con-riverpod-reemplazar-implementaciones"
+        "title": "Formularios: validación por campo y un envío con estado",
+        "fragment": "tema-5-formularios-validacion-por-campo-y-un-envio-con-estado"
+      },
+      {
+        "title": "Pruebas e inyección: reemplazar dependencias y comparar con Cubit",
+        "fragment": "tema-6-pruebas-e-inyeccion-reemplazar-dependencias-y-comparar-con-cubit"
+      },
+      {
+        "title": "Proyecto 21: la ruta del día con estado completo",
+        "fragment": "proyecto-21-la-ruta-del-dia-con-estado-completo"
       }
     ],
     "5": [
