@@ -867,56 +867,56 @@
    "topicCount": 5,
    "topics": [
     {
-     "title": "Builds de release para cada plataforma",
+     "title": "Modos de compilación, versión y ofuscación",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 1,
-      "fragment": "tema-1-builds-de-release-para-cada-plataforma"
+      "fragment": "tema-1-modos-de-compilacion-version-y-ofuscacion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Iconos y splash screens",
+     "title": "Entornos con `--dart-define-from-file`: dev y prod sin secretos",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 2,
-      "fragment": "tema-2-iconos-y-splash-screens"
+      "fragment": "tema-2-entornos-con-dart-define-from-file-dev-y-prod-sin-secretos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "CI/CD con Codemagic o Fastlane",
+     "title": "Identidad de la app: nombre, íconos y pantalla de inicio",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 3,
-      "fragment": "tema-3-ci-cd-con-codemagic-o-fastlane"
+      "fragment": "tema-3-identidad-de-la-app-nombre-iconos-y-pantalla-de-inicio"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Entornos y flavors con --dart-define-from-file",
+     "title": "Firma de Android y CI/CD",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 4,
-      "fragment": "tema-4-entornos-y-flavors-con-dart-define-from-file"
+      "fragment": "tema-4-firma-de-android-y-ci-cd"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador",
+     "title": "Proyecto 28: la línea de publicación de la ruta",
      "status": "actual",
      "current": {
       "module": "11",
       "order": 5,
-      "fragment": "tema-5-flutter-para-web-y-escritorio-compilar-adaptar-la-interfaz-y-elegir-el-renderizador"
+      "fragment": "proyecto-28-la-linea-de-publicacion-de-la-ruta"
      },
      "sources": [],
      "courseSources": []

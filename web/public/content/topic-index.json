@@ -2604,24 +2604,24 @@
     ],
     "11": [
       {
-        "title": "Builds de release para cada plataforma",
-        "fragment": "tema-1-builds-de-release-para-cada-plataforma"
+        "title": "Modos de compilación, versión y ofuscación",
+        "fragment": "tema-1-modos-de-compilacion-version-y-ofuscacion"
       },
       {
-        "title": "Iconos y splash screens",
-        "fragment": "tema-2-iconos-y-splash-screens"
+        "title": "Entornos con `--dart-define-from-file`: dev y prod sin secretos",
+        "fragment": "tema-2-entornos-con-dart-define-from-file-dev-y-prod-sin-secretos"
       },
       {
-        "title": "CI/CD con Codemagic o Fastlane",
-        "fragment": "tema-3-ci-cd-con-codemagic-o-fastlane"
+        "title": "Identidad de la app: nombre, íconos y pantalla de inicio",
+        "fragment": "tema-3-identidad-de-la-app-nombre-iconos-y-pantalla-de-inicio"
       },
       {
-        "title": "Entornos y flavors con --dart-define-from-file",
-        "fragment": "tema-4-entornos-y-flavors-con-dart-define-from-file"
+        "title": "Firma de Android y CI/CD",
+        "fragment": "tema-4-firma-de-android-y-ci-cd"
       },
       {
-        "title": "Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador",
-        "fragment": "tema-5-flutter-para-web-y-escritorio-compilar-adaptar-la-interfaz-y-elegir-el-renderizador"
+        "title": "Proyecto 28: la línea de publicación de la ruta",
+        "fragment": "proyecto-28-la-linea-de-publicacion-de-la-ruta"
       }
     ],
     "12": [
