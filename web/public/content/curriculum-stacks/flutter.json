@@ -1212,70 +1212,59 @@
    "id": "16",
    "kind": "current",
    "title": null,
-   "topicCount": 6,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "reconocer cuándo usar FFI y crear el paquete",
+     "title": "Cuándo usar FFI y el primer binding a mano",
      "status": "actual",
      "current": {
       "module": "16",
       "order": 1,
-      "fragment": "tema-1-reconocer-cuando-usar-ffi-y-crear-el-paquete"
+      "fragment": "tema-1-cuando-usar-ffi-y-el-primer-binding-a-mano"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "generar bindings C seguros para Dart",
+     "title": "Bindings generados con ffigen y una biblioteca que se compila sola",
      "status": "actual",
      "current": {
       "module": "16",
       "order": 2,
-      "fragment": "tema-2-generar-bindings-c-seguros-para-dart"
+      "fragment": "tema-2-bindings-generados-con-ffigen-y-una-biblioteca-que-se-compila-sola"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "conectar una biblioteca Rust mediante una ABI C",
+     "title": "Memoria y errores: quién reserva, quién libera y cómo se detecta",
      "status": "actual",
      "current": {
       "module": "16",
       "order": 3,
-      "fragment": "tema-3-conectar-una-biblioteca-rust-mediante-una-abi-c"
+      "fragment": "tema-3-memoria-y-errores-quien-reserva-quien-libera-y-como-se-detecta"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "compilar y empaquetar bibliotecas por plataforma",
+     "title": "Rendimiento sin bloquear la interfaz: isolates y callbacks nativos",
      "status": "actual",
      "current": {
       "module": "16",
       "order": 4,
-      "fragment": "tema-4-compilar-y-empaquetar-bibliotecas-por-plataforma"
+      "fragment": "tema-4-rendimiento-sin-bloquear-la-interfaz-isolates-y-callbacks-nativos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "medir rendimiento y evitar bloquear la interfaz",
+     "title": "Proyecto 33: la biblioteca nativa de la ruta, empaquetada, segura y fluida",
      "status": "actual",
      "current": {
       "module": "16",
       "order": 5,
-      "fragment": "tema-5-medir-rendimiento-y-evitar-bloquear-la-interfaz"
-     },
-     "sources": [],
-     "courseSources": []
-    },
-    {
-     "title": "propiedad de memoria, liberación y errores",
-     "status": "actual",
-     "current": {
-      "module": "16",
-      "order": 6,
-      "fragment": "tema-6-propiedad-de-memoria-liberacion-y-errores"
+      "fragment": "proyecto-33-la-biblioteca-nativa-de-la-ruta-empaquetada-segura-y-fluida"
      },
      "sources": [],
      "courseSources": []
