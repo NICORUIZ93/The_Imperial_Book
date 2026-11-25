@@ -927,48 +927,59 @@
    "id": "12",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Arquitectura por features y Clean Architecture",
+     "title": "Capas y reglas de dependencia, comprobadas con una prueba",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 1,
-      "fragment": "tema-1-arquitectura-por-features-y-clean-architecture"
+      "fragment": "tema-1-capas-y-reglas-de-dependencia-comprobadas-con-una-prueba"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Uniendo los módulos del track",
+     "title": "Capa de datos: servicios, repositorio y copia local",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 2,
-      "fragment": "tema-2-uniendo-los-modulos-del-track"
+      "fragment": "tema-2-capa-de-datos-servicios-repositorio-y-copia-local"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Retrospectiva del proyecto integrador",
+     "title": "Dominio y *view models*: reglas en un lugar, estado de pantalla en otro",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 3,
-      "fragment": "tema-3-retrospectiva-del-proyecto-integrador"
+      "fragment": "tema-3-dominio-y-view-models-reglas-en-un-lugar-estado-de-pantalla-en-otro"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services",
+     "title": "La app integrada: la vista por estados y la app real contra un servidor",
      "status": "actual",
      "current": {
       "module": "12",
       "order": 4,
-      "fragment": "tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
+      "fragment": "tema-4-la-app-integrada-la-vista-por-estados-y-la-app-real-contra-un-servidor"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 29: la app de la ruta, completa y por capas",
+     "status": "actual",
+     "current": {
+      "module": "12",
+      "order": 5,
+      "fragment": "proyecto-29-la-app-de-la-ruta-completa-y-por-capas"
      },
      "sources": [],
      "courseSources": []

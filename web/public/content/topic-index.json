@@ -2626,20 +2626,24 @@
     ],
     "12": [
       {
-        "title": "Arquitectura por features y Clean Architecture",
-        "fragment": "tema-1-arquitectura-por-features-y-clean-architecture"
+        "title": "Capas y reglas de dependencia, comprobadas con una prueba",
+        "fragment": "tema-1-capas-y-reglas-de-dependencia-comprobadas-con-una-prueba"
       },
       {
-        "title": "Uniendo los módulos del track",
-        "fragment": "tema-2-uniendo-los-modulos-del-track"
+        "title": "Capa de datos: servicios, repositorio y copia local",
+        "fragment": "tema-2-capa-de-datos-servicios-repositorio-y-copia-local"
       },
       {
-        "title": "Retrospectiva del proyecto integrador",
-        "fragment": "tema-3-retrospectiva-del-proyecto-integrador"
+        "title": "Dominio y *view models*: reglas en un lugar, estado de pantalla en otro",
+        "fragment": "tema-3-dominio-y-view-models-reglas-en-un-lugar-estado-de-pantalla-en-otro"
       },
       {
-        "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services",
-        "fragment": "tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
+        "title": "La app integrada: la vista por estados y la app real contra un servidor",
+        "fragment": "tema-4-la-app-integrada-la-vista-por-estados-y-la-app-real-contra-un-servidor"
+      },
+      {
+        "title": "Proyecto 29: la app de la ruta, completa y por capas",
+        "fragment": "proyecto-29-la-app-de-la-ruta-completa-y-por-capas"
       }
     ],
     "13": [
