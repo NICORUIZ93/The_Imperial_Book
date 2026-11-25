@@ -505,59 +505,70 @@
    "id": "6",
    "kind": "current",
    "title": null,
-   "topicCount": 5,
+   "topicCount": 6,
    "topics": [
     {
-     "title": "shared_preferences",
+     "title": "Preferencias: shared_preferences y la pantalla de ajustes",
      "status": "actual",
      "current": {
       "module": "6",
       "order": 1,
-      "fragment": "tema-1-shared-preferences"
+      "fragment": "tema-1-preferencias-shared-preferences-y-la-pantalla-de-ajustes"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "sqflite vs Hive",
+     "title": "SQLite: tablas, índices, transacciones y migraciones",
      "status": "actual",
      "current": {
       "module": "6",
       "order": 2,
-      "fragment": "tema-2-sqflite-vs-hive"
+      "fragment": "tema-2-sqlite-tablas-indices-transacciones-y-migraciones"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Offline-first y Firebase",
+     "title": "Primero el teléfono: cola de cambios y sincronización",
      "status": "actual",
      "current": {
       "module": "6",
       "order": 3,
-      "fragment": "tema-3-offline-first-y-firebase"
+      "fragment": "tema-3-primero-el-telefono-cola-de-cambios-y-sincronizacion"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
+     "title": "Restauración: volver como estaba cuando el sistema cierra la app",
      "status": "actual",
      "current": {
       "module": "6",
       "order": 4,
-      "fragment": "tema-4-restauracion-de-formularios-con-restorationmixin-y-una-prueba-de-recreacion"
+      "fragment": "tema-4-restauracion-volver-como-estaba-cuando-el-sistema-cierra-la-app"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Archivos en Flutter: path_provider, carpetas correctas y escritura segura",
+     "title": "Archivos: dónde guardar y cómo no dejarlos a medias",
      "status": "actual",
      "current": {
       "module": "6",
       "order": 5,
-      "fragment": "tema-5-archivos-en-flutter-path-provider-carpetas-correctas-y-escritura-segura"
+      "fragment": "tema-5-archivos-donde-guardar-y-como-no-dejarlos-a-medias"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 23: la ruta que funciona sin red",
+     "status": "actual",
+     "current": {
+      "module": "6",
+      "order": 6,
+      "fragment": "proyecto-23-la-ruta-que-funciona-sin-red"
      },
      "sources": [],
      "courseSources": []

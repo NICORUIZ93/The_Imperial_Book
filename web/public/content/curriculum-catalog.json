@@ -1,12 +1,12 @@
 {
  "schemaVersion": 1,
  "summary": {
-  "currentTopics": 1712,
+  "currentTopics": 1713,
   "currentTopicsWithExactBookEvidence": 0,
   "bookCandidates": 0,
   "courseCandidates": 0,
   "courses": 0,
-  "provisionalTopics": 1712,
+  "provisionalTopics": 1713,
   "booksRequiringOcr": 0
  },
  "stacks": [
@@ -804,11 +804,11 @@
    "id": "flutter",
    "asset": "content/curriculum-stacks/flutter.json",
    "hasCurrentTrack": true,
-   "currentTopicCount": 120,
+   "currentTopicCount": 121,
    "exactBookEvidenceTopicCount": 0,
    "bookCandidateCount": 0,
    "courseCandidateCount": 0,
-   "topicCount": 120,
+   "topicCount": 121,
    "moduleCount": 20,
    "bookCount": 0,
    "courseCount": 0,
@@ -854,7 +854,7 @@
      "id": "6",
      "kind": "current",
      "title": null,
-     "topicCount": 5
+     "topicCount": 6
     },
     {
      "id": "7",

@@ -2958,24 +2958,28 @@
     ],
     "6": [
       {
-        "title": "shared_preferences",
-        "fragment": "tema-1-shared-preferences"
+        "title": "Preferencias: shared_preferences y la pantalla de ajustes",
+        "fragment": "tema-1-preferencias-shared-preferences-y-la-pantalla-de-ajustes"
       },
       {
-        "title": "sqflite vs Hive",
-        "fragment": "tema-2-sqflite-vs-hive"
+        "title": "SQLite: tablas, índices, transacciones y migraciones",
+        "fragment": "tema-2-sqlite-tablas-indices-transacciones-y-migraciones"
       },
       {
-        "title": "Offline-first y Firebase",
-        "fragment": "tema-3-offline-first-y-firebase"
+        "title": "Primero el teléfono: cola de cambios y sincronización",
+        "fragment": "tema-3-primero-el-telefono-cola-de-cambios-y-sincronizacion"
       },
       {
-        "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
-        "fragment": "tema-4-restauracion-de-formularios-con-restorationmixin-y-una-prueba-de-recreacion"
+        "title": "Restauración: volver como estaba cuando el sistema cierra la app",
+        "fragment": "tema-4-restauracion-volver-como-estaba-cuando-el-sistema-cierra-la-app"
       },
       {
-        "title": "Archivos en Flutter: path_provider, carpetas correctas y escritura segura",
-        "fragment": "tema-5-archivos-en-flutter-path-provider-carpetas-correctas-y-escritura-segura"
+        "title": "Archivos: dónde guardar y cómo no dejarlos a medias",
+        "fragment": "tema-5-archivos-donde-guardar-y-como-no-dejarlos-a-medias"
+      },
+      {
+        "title": "Proyecto 23: la ruta que funciona sin red",
+        "fragment": "proyecto-23-la-ruta-que-funciona-sin-red"
       }
     ],
     "7": [
