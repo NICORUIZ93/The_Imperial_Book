@@ -153,7 +153,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       '¿Cómo ayuda un grafo a detectar un ciclo de dependencias?',
       '¿Por qué correlación no implica causalidad?',
     ],
-    ['Python', 'Hypothesis'],
+    ['Java 25', 'jqwik', 'Gradle', 'BigInteger'],
     'Cuaderno reproducible del inventario con especificaciones lógicas, pruebas generativas, análisis de grafos y experimento probabilístico con conclusiones limitadas por evidencia.'),
   m(7, 'Ciencias de la Computación: mapa de especializaciones', 'Mapa de especializaciones', 'Experto', '18 h', '#6d5dfc',
     'Conecta los fundamentos con teoría, sistemas, datos, inteligencia artificial, gráficos, cómputo científico y práctica profesional sin confundir introducción con dominio especializado.',['Sistemas, arquitectura y sistemas operativos', 'Algoritmos, autómatas, lenguajes y compiladores', 'Bases de datos, almacenes analíticos y minería de datos', 'Inteligencia artificial, aprendizaje automático y visión', 'Gráficos y cómputo científico', 'Redes, seguridad, web e ingeniería profesional'],
