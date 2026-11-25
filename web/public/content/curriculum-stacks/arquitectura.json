@@ -324,48 +324,59 @@
    "id": "4",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
+     "title": "Contratos entre servicios: pruebas guiadas por el consumidor y cambios compatibles",
      "status": "actual",
      "current": {
       "module": "4",
       "order": 1,
-      "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
+      "fragment": "tema-1-contratos-entre-servicios-pruebas-guiadas-por-el-consumidor-y-cambios-compatibles"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Datos por servicio: propiedad, composición y réplicas",
+     "title": "Datos por servicio: composición de API y copias locales alimentadas por eventos",
      "status": "actual",
      "current": {
       "module": "4",
       "order": 2,
-      "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
+      "fragment": "tema-2-datos-por-servicio-composicion-de-api-y-copias-locales-alimentadas-por-eventos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
+     "title": "Sagas: una operación de negocio que cruza tres servicios sin transacción distribuida",
      "status": "actual",
      "current": {
       "module": "4",
       "order": 3,
-      "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
+      "fragment": "tema-3-sagas-una-operacion-de-negocio-que-cruza-tres-servicios-sin-transaccion-distribuida"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Observabilidad distribuida: trazas, correlación y SLO",
+     "title": "Trazas distribuidas: propagar el contexto W3C y reconstruir una petición",
      "status": "actual",
      "current": {
       "module": "4",
       "order": 4,
-      "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
+      "fragment": "tema-4-trazas-distribuidas-propagar-el-contexto-w3c-y-reconstruir-una-peticion"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 17: la compra que cruza tres servicios",
+     "status": "actual",
+     "current": {
+      "module": "4",
+      "order": 5,
+      "fragment": "proyecto-17-la-compra-que-cruza-tres-servicios"
      },
      "sources": [],
      "courseSources": []

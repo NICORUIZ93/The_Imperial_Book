@@ -836,20 +836,24 @@
     ],
     "4": [
       {
-        "title": "Descomponer por capacidad de negocio: dos servicios, un contrato",
-        "fragment": "tema-1-descomponer-por-capacidad-de-negocio-dos-servicios-un-contrato"
+        "title": "Contratos entre servicios: pruebas guiadas por el consumidor y cambios compatibles",
+        "fragment": "tema-1-contratos-entre-servicios-pruebas-guiadas-por-el-consumidor-y-cambios-compatibles"
       },
       {
-        "title": "Datos por servicio: propiedad, composición y réplicas",
-        "fragment": "tema-2-datos-por-servicio-propiedad-composicion-y-replicas"
+        "title": "Datos por servicio: composición de API y copias locales alimentadas por eventos",
+        "fragment": "tema-2-datos-por-servicio-composicion-de-api-y-copias-locales-alimentadas-por-eventos"
       },
       {
-        "title": "Resiliencia: timeouts, reintentos y cortacircuitos",
-        "fragment": "tema-3-resiliencia-timeouts-reintentos-y-cortacircuitos"
+        "title": "Sagas: una operación de negocio que cruza tres servicios sin transacción distribuida",
+        "fragment": "tema-3-sagas-una-operacion-de-negocio-que-cruza-tres-servicios-sin-transaccion-distribuida"
       },
       {
-        "title": "Observabilidad distribuida: trazas, correlación y SLO",
-        "fragment": "tema-4-observabilidad-distribuida-trazas-correlacion-y-slo"
+        "title": "Trazas distribuidas: propagar el contexto W3C y reconstruir una petición",
+        "fragment": "tema-4-trazas-distribuidas-propagar-el-contexto-w3c-y-reconstruir-una-peticion"
+      },
+      {
+        "title": "Proyecto 17: la compra que cruza tres servicios",
+        "fragment": "proyecto-17-la-compra-que-cruza-tres-servicios"
       }
     ]
   },
