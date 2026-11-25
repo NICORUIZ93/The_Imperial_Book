@@ -801,37 +801,59 @@
    "id": "10",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "ThemeData con Material 3",
+     "title": "El tema de la app: un color semilla, dos modos y colores propios",
      "status": "actual",
      "current": {
       "module": "10",
       "order": 1,
-      "fragment": "tema-1-themedata-con-material-3"
+      "fragment": "tema-1-el-tema-de-la-app-un-color-semilla-dos-modos-y-colores-propios"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Adaptación Material vs Cupertino",
+     "title": "Contraste medible: que el texto se pueda leer",
      "status": "actual",
      "current": {
       "module": "10",
       "order": 2,
-      "fragment": "tema-2-adaptacion-material-vs-cupertino"
+      "fragment": "tema-2-contraste-medible-que-el-texto-se-pueda-leer"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Accesibilidad con Semantics y dark mode",
+     "title": "Accesibilidad: tamaño táctil, etiquetas y lo que anuncia el lector de pantalla",
      "status": "actual",
      "current": {
       "module": "10",
       "order": 3,
-      "fragment": "tema-3-accesibilidad-con-semantics-y-dark-mode"
+      "fragment": "tema-3-accesibilidad-tamano-tactil-etiquetas-y-lo-que-anuncia-el-lector-de-pantalla"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Material y Cupertino: una pantalla que se siente de cada plataforma",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 4,
+      "fragment": "tema-4-material-y-cupertino-una-pantalla-que-se-siente-de-cada-plataforma"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 27: el sistema de diseño accesible de la ruta",
+     "status": "actual",
+     "current": {
+      "module": "10",
+      "order": 5,
+      "fragment": "proyecto-27-el-sistema-de-diseno-accesible-de-la-ruta"
      },
      "sources": [],
      "courseSources": []

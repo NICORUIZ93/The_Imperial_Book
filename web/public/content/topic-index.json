@@ -2582,16 +2582,24 @@
     ],
     "10": [
       {
-        "title": "ThemeData con Material 3",
-        "fragment": "tema-1-themedata-con-material-3"
+        "title": "El tema de la app: un color semilla, dos modos y colores propios",
+        "fragment": "tema-1-el-tema-de-la-app-un-color-semilla-dos-modos-y-colores-propios"
       },
       {
-        "title": "Adaptación Material vs Cupertino",
-        "fragment": "tema-2-adaptacion-material-vs-cupertino"
+        "title": "Contraste medible: que el texto se pueda leer",
+        "fragment": "tema-2-contraste-medible-que-el-texto-se-pueda-leer"
       },
       {
-        "title": "Accesibilidad con Semantics y dark mode",
-        "fragment": "tema-3-accesibilidad-con-semantics-y-dark-mode"
+        "title": "Accesibilidad: tamaño táctil, etiquetas y lo que anuncia el lector de pantalla",
+        "fragment": "tema-3-accesibilidad-tamano-tactil-etiquetas-y-lo-que-anuncia-el-lector-de-pantalla"
+      },
+      {
+        "title": "Material y Cupertino: una pantalla que se siente de cada plataforma",
+        "fragment": "tema-4-material-y-cupertino-una-pantalla-que-se-siente-de-cada-plataforma"
+      },
+      {
+        "title": "Proyecto 27: el sistema de diseño accesible de la ruta",
+        "fragment": "proyecto-27-el-sistema-de-diseno-accesible-de-la-ruta"
       }
     ],
     "11": [
