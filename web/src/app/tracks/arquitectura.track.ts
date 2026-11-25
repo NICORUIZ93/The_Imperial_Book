@@ -7,7 +7,7 @@ export const ARQUITECTURA_MODULES: CourseModule[] = [
       'Arquitectura guiada por atributos de calidad',
       'Diseño modular, principios, patrones y refactoring',
       'Decisiones, documentación, deuda y evolución',
-      'Records de C#: igualdad por valor no implica inmutabilidad profunda',
+      'Records de Java y C#: igualdad por valor no implica inmutabilidad profunda',
       'Desarrollo guiado por especificación con agentes de IA',
       'Evaluar una skill de agente antes de usarla: validar, deduplicar y medir'
     ],
@@ -22,7 +22,7 @@ export const ARQUITECTURA_MODULES: CourseModule[] = [
       '¿Por qué una arquitectura depende de atributos de calidad?',
       '¿Cuándo un patrón mejora el diseño y cuándo añade complejidad accidental?',
     ],
-    ['C4', 'ADRs', 'Python', 'Node.js 24', 'Git'],
+    ['C4', 'ADRs', 'Java 25', 'JUnit', 'Git'],
     'Inventario modular con especificación, diagramas, ADRs, refactoring protegido por pruebas y plan de mantenimiento.'),
   m(1, 'Sistemas distribuidos, resiliencia y observabilidad', 'Sistemas distribuidos', 'Experto', '14 h', '#6d5dfc',
     'Evoluciona el inventario hacia componentes que se comunican por red y aprende a diseñar bajo fallos parciales, mensajes duplicados, relojes imperfectos y dependencias lentas mediante invariantes, idempotencia y evidencia operativa.',[

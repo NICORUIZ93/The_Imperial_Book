@@ -2,7 +2,7 @@
 
 > **Requisitos de este curso:** [Java](/curso/java), [SQL](/curso/sql). Lo que esos cursos enseñan aquí se usa sin volver a explicarlo; si algo no te suena, vuelve a su capítulo antes de seguir.
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64 (Ubuntu 24.04), Node.js 22.23.5 y Git 2.43.0. La línea de referencia del curso es Python 3.14 (`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/modulo-7` (tu `~/labs/modulo-7`). El TypeScript del Tema 3 se ejecutó con Node.js 22.23.5, que ya quita los tipos sin compilar; con Node.js 24 funciona igual. El programa C# del Tema 5 **no se ejecutó**: el equipo no tenía el SDK de .NET. Su comportamiento se describe y se comprueba con un programa Python equivalente que sí se ejecutó.
+**Entorno comprobado para esta edición (2026-11-24):** OpenJDK 25.0.5.1 en Linux x86_64 (Ubuntu 24.04), Node.js 22.23.5 y Git 2.43.0. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/arquitectura` (tu `~/labs/arquitectura`). Los programas Java se ejecutan con `java Archivo.java`, como en el curso de Java; los que usan base de datos llevan H2 2.3.232 en `~/herramientas`, y el Tema 6 usa Gradle 8.14.3 con JUnit 5.13.4. El TypeScript del Tema 3 se ejecutó con Node.js 22.23.5, que ya quita los tipos sin compilar; con Node.js 24 funciona igual. El programa C# del Tema 5 **no se ejecutó**: el equipo no tenía el SDK de .NET. Su comportamiento se describe y se comprueba con un programa Java equivalente, con records, que sí se ejecutó.
 
 ## Apertura del módulo
 
@@ -18,10 +18,10 @@ Al terminar este módulo podrás:
 decisiones y deuda; Tema 5, igualdad e inmutabilidad en records de C#; Tema 6, especificación para agentes de IA;
 Tema 7, evaluación de skills de agente; Proyecto 7.
 
-**Qué necesitas saber antes:** algoritmo, caso de prueba, excepción y `assert` (Módulo 1, Tema 1); funciones y
-módulos (Módulo 1, Tema 4); clase, objeto y método (Módulo 1, Tema 6); composición, clase abstracta y polimorfismo
-(Módulo 1, Tema 7); SQLite desde Python y restricciones (Módulo 4); prueba unitaria, doble de prueba, prueba de
-regresión, commit, pull request y revisión de código (Módulo 5).
+**Qué necesitas saber antes:** de Fundamentos, algoritmo, caso de prueba y excepción (Módulo 1, Tema 1); métodos
+(Módulo 1, Tema 4); clase, objeto y método (Módulo 1, Tema 6); composición, interfaz y polimorfismo (Módulo 1,
+Tema 7); bases de datos con H2 y JDBC (Módulo 4); prueba unitaria, doble de prueba, prueba de regresión, commit,
+pull request y revisión de código (Módulo 5). Del curso de Java, records, colecciones y `java Archivo.java`.
 
 
 ## Aprende construyendo
@@ -40,8 +40,8 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** stakeholder, requisito funcional, requisito no funcional, historia de usuario, criterio de aceptación, trazabilidad
 
-Este tema usa lo que ya conoces: **caso de prueba**, **excepción** y **assert** tienen su ficha en el Módulo 1, Tema 1.
-Aquí no se redefinen.
+Este tema usa lo que ya conoces: **caso de prueba** y **excepción** tienen su ficha en el Módulo 1, Tema 1 de
+Fundamentos. Aquí no se redefinen.
 
 #### El problema
 La coordinadora de RutaFlow escribe en el chat: «confirmar una entrega debe ser rápido y seguro». El conductor
@@ -55,7 +55,7 @@ algo que un programa comprueba?
 - **Definición técnica:** persona o grupo que afecta al sistema o se ve afectado por él, y cuyas necesidades originan requisitos.
 - **En palabras sencillas:** cada persona a la que le importa cómo funciona la confirmación de entregas.
 - **Dónde se rompe la comparación:** no es solo quien usa la pantalla: auditoría nunca la abre y aun así impone reglas.
-- **Ejemplo:** en `revisar_requisitos.py`, cada requisito «después» lleva su stakeholder: conductor, cliente o auditoría.
+- **Ejemplo:** en `RevisarRequisitos.java`, cada requisito «después» lleva su stakeholder: conductor, cliente o auditoría.
 - **Error típico:** escribir requisitos sin dueño; la salida «antes» marca R2 con `nadie lo pidió`.
 
 **requisito funcional**
@@ -83,14 +83,14 @@ algo que un programa comprueba?
 - **Definición técnica:** condición verificable que la historia debe cumplir para darse por terminada; se escribe como «dado *contexto*, cuando *acción*, entonces *resultado*».
 - **En palabras sencillas:** un ejemplo concreto con la respuesta correcta, acordado antes de programar.
 - **Dónde se rompe la comparación:** se parece a un caso de prueba, pero lo escribe y lo entiende alguien que no programa.
-- **Ejemplo:** `C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con ValueError y el estado no cambia.`
-- **Error típico:** escribirlo sin «dado/cuando/entonces»; `verificar_criterios.py` responde `falta dado/cuando/entonces`.
+- **Ejemplo:** `C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con IllegalArgumentException y el estado no cambia.`
+- **Error típico:** escribirlo sin «dado/cuando/entonces»; `VerificarCriterios.java` responde `falta dado/cuando/entonces`.
 
 **trazabilidad**
 - **Definición técnica:** capacidad de seguir cada requisito hasta el código que lo implementa y la prueba que lo comprueba, y de vuelta.
 - **En palabras sencillas:** poder señalar, para cada criterio, la línea que lo cumple y la prueba que lo demuestra.
 - **Dónde se rompe la comparación:** no es un archivo aparte: vive en nombres y comentarios compartidos (`C1`, `C2`, `C3`).
-- **Ejemplo:** el comentario `# C2: PIN de 6 dígitos` en `entregas.py` y la línea `C2 ok` de `prueba_criterios.py`.
+- **Ejemplo:** el comentario `// C2: PIN de 6 dígitos` en `Entregas.java` y la línea `C2 ok` de `PruebaCriterios.java`.
 - **Error típico:** cambiar un criterio sin buscar su prueba: la prueba sigue verde comprobando una regla vieja.
 
 #### ► CÓMO FUNCIONA
@@ -104,7 +104,7 @@ flowchart LR
     NEED --> REQ["requisito con medida<br/>funcional o no funcional"]
     REQ --> HIST["historia de usuario"]
     HIST --> CRIT["criterios C1, C2, C3<br/>dado / cuando / entonces"]
-    CRIT --> CODE["código con # C1, # C2"]
+    CRIT --> CODE["código con // C1, // C2"]
     CRIT --> TEST["prueba por criterio"]
     TEST --> EV["evidencia: C1 ok, C2 ok, C3 ok"]
 ```
@@ -119,43 +119,48 @@ Revisa los requisitos de la confirmación de entregas. Marca de qué tipo es cad
 2. Un adjetivo de calidad («rápido», «seguro») sin número no se puede medir.
 3. Se reescribe cada frase vaga con una medida concreta y un dueño.
 
-```python
-# revisar_requisitos.py — clasifica requisitos y marca los que no se pueden verificar
-import re
+```java
+// RevisarRequisitos.java — clasifica requisitos y marca los que no se pueden verificar
+import java.util.regex.Pattern;
 
-VAGOS = ("rápido", "seguro", "fácil", "estable", "cómodo")
-CALIDADES = ("segundos", "%", "disponible", "cifrad", "intentos")
+record Requisito(String stakeholder, String texto) {}
 
+final List<String> VAGOS = List.of("rápido", "seguro", "fácil", "estable", "cómodo");
+final List<String> CALIDADES = List.of("segundos", "%", "disponible", "cifrad", "intentos");
+final Pattern NUMERO = Pattern.compile("\\d");
 
-def revisar(stakeholder, requisito):
-    texto = requisito.lower()
-    tipo = "no funcional" if any(c in texto for c in CALIDADES + VAGOS) else "funcional"
-    problemas = []
-    if not stakeholder:
-        problemas.append("nadie lo pidió")
-    if any(v in texto for v in VAGOS) and not re.search(r"\d", texto):
-        problemas.append("adjetivo sin medida")
-    return tipo, "; ".join(problemas) or "verificable"
+String[] revisar(Requisito requisito) {
+    String texto = requisito.texto().toLowerCase();
+    boolean deCalidad = Stream.concat(CALIDADES.stream(), VAGOS.stream()).anyMatch(texto::contains);
+    String tipo = deCalidad ? "no funcional" : "funcional";
+    List<String> problemas = new ArrayList<>();
+    if (requisito.stakeholder().isEmpty()) problemas.add("nadie lo pidió");
+    if (VAGOS.stream().anyMatch(texto::contains) && !NUMERO.matcher(texto).find()) problemas.add("adjetivo sin medida");
+    return new String[] {tipo, problemas.isEmpty() ? "verificable" : String.join("; ", problemas)};
+}
 
-
-antes = [
-    ("coordinadora", "El conductor confirma la entrega con el PIN del destinatario."),
-    ("", "Confirmar una entrega debe ser rápido y seguro."),
-]
-despues = [
-    ("conductor", "El conductor confirma la entrega con el PIN de 6 dígitos del destinatario."),
-    ("cliente", "El 95 % de las confirmaciones responde en menos de 2 segundos."),
-    ("auditoría", "Tras 3 intentos con PIN errado, el envío se bloquea 15 minutos."),
-]
-for titulo, lista in (("ANTES", antes), ("DESPUÉS", despues)):
-    print(titulo)
-    for numero, (stakeholder, requisito) in enumerate(lista, start=1):
-        tipo, veredicto = revisar(stakeholder, requisito)
-        print(f"  R{numero} [{tipo}] pedido por {stakeholder or '?'}: {veredicto}")
+void main() {
+    List<Requisito> antes = List.of(
+            new Requisito("coordinadora", "El conductor confirma la entrega con el PIN del destinatario."),
+            new Requisito("", "Confirmar una entrega debe ser rápido y seguro."));
+    List<Requisito> despues = List.of(
+            new Requisito("conductor", "El conductor confirma la entrega con el PIN de 6 dígitos del destinatario."),
+            new Requisito("cliente", "El 95 % de las confirmaciones responde en menos de 2 segundos."),
+            new Requisito("auditoría", "Tras 3 intentos con PIN errado, el envío se bloquea 15 minutos."));
+    for (var grupo : List.of(Map.entry("ANTES", antes), Map.entry("DESPUÉS", despues))) {
+        IO.println(grupo.getKey());
+        int numero = 1;
+        for (Requisito requisito : grupo.getValue()) {
+            String[] resultado = revisar(requisito);
+            String quien = requisito.stakeholder().isEmpty() ? "?" : requisito.stakeholder();
+            IO.println("  R%d [%s] pedido por %s: %s".formatted(numero++, resultado[0], quien, resultado[1]));
+        }
+    }
+}
 ```
 
 ```text
-$ python3 revisar_requisitos.py
+$ java RevisarRequisitos.java
 ANTES
   R1 [funcional] pedido por coordinadora: verificable
   R2 [no funcional] pedido por ?: nadie lo pidió; adjetivo sin medida
@@ -166,11 +171,11 @@ DESPUÉS
 ```
 
 **Explicación por partes.**
-- Líneas 4–5: palabras que delatan un requisito no funcional; `VAGOS` son las que no traen medida por sí solas.
-- Línea 10: si el texto habla de calidad, se clasifica como no funcional; si no, como funcional.
-- Líneas 12–15: dos problemas posibles: nadie lo pidió, o hay un adjetivo sin ningún número.
-- Líneas 19–22: la versión «antes»; R2 junta dos defectos y la salida muestra ambos.
-- Líneas 23–27: la versión «después»; la frase vaga se volvió dos requisitos medibles, cada uno con dueño.
+- Líneas 6–7: palabras que delatan un requisito no funcional; `VAGOS` son las que no traen medida por sí solas.
+- Líneas 12–13: si el texto habla de calidad, se clasifica como no funcional; si no, como funcional.
+- Líneas 15–16: dos problemas posibles: nadie lo pidió, o hay un adjetivo sin ningún número (`\\d` busca un dígito).
+- Líneas 21–23: la versión «antes»; R2 junta dos defectos y la salida muestra ambos.
+- Líneas 24–27: la versión «después»; la frase vaga se volvió dos requisitos medibles, cada uno con dueño.
 
 > **Error común.** Creer que el verificador prueba que el requisito es **bueno**. Solo detecta señales de vaguedad. El
 > R1 de «antes» sale `verificable` aunque no dice cuántos dígitos tiene el PIN: eso lo encuentra una persona.
@@ -196,39 +201,42 @@ Primero, el borrador que llegó y la versión corregida:
 
 ```markdown
 - C1: Dado un envío "pendiente" y un PIN de 6 dígitos correcto, cuando se confirma, entonces queda "entregado".
-- C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con ValueError y el estado no cambia.
+- C2: Dado un PIN de 4 dígitos, cuando se confirma, entonces se rechaza con IllegalArgumentException y el estado no cambia.
 - C3: Dado un comando ya procesado, cuando se reenvía, entonces se devuelve el resultado anterior sin confirmar de nuevo.
 ```
 
 El verificador de redacción:
 
-```python
-# verificar_criterios.py — comprueba que cada criterio sea verificable
-import re
-import sys
-from pathlib import Path
+```java
+// VerificarCriterios.java — comprueba que cada criterio sea verificable
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
 
-VAGOS = ("rápido", "rapido", "lento", "seguro", "fácil", "facil", "cómodo", "comodo", "estable")
-archivo = sys.argv[1] if len(sys.argv) > 1 else "criterios.md"
-lineas = [l.strip() for l in Path(archivo).read_text(encoding="utf-8").splitlines() if l.strip()]
-fallos = []
-for numero, linea in enumerate(lineas, 1):
-    texto = linea.lower()
-    if not all(palabra in texto for palabra in ("dado", "cuando", "entonces")):
-        fallos.append(f"criterio {numero}: falta dado/cuando/entonces")
-    elif any(vago in texto for vago in VAGOS) and not re.search(r"\d", linea):
-        fallos.append(f"criterio {numero}: adjetivo sin medida numérica")
-print(f"criterios: {len(lineas)}")
-print(f"verificables: {len(lineas) - len(fallos)}")
-if not any("6 dígitos" in l for l in lineas):
-    fallos.append("falta la regla del PIN de 6 dígitos")
-for fallo in fallos:
-    print("fallo:", fallo)
-sys.exit(1 if fallos else 0)
+final List<String> VAGOS = List.of("rápido", "rapido", "lento", "seguro", "fácil", "facil", "cómodo", "comodo", "estable");
+
+void main(String[] args) throws Exception {
+    String archivo = args.length > 0 ? args[0] : "criterios.md";
+    List<String> lineas = Files.readAllLines(Path.of(archivo)).stream().map(String::strip).filter(l -> !l.isEmpty()).toList();
+    List<String> fallos = new ArrayList<>();
+    for (int numero = 1; numero <= lineas.size(); numero++) {
+        String texto = lineas.get(numero - 1).toLowerCase();
+        if (!(texto.contains("dado") && texto.contains("cuando") && texto.contains("entonces"))) {
+            fallos.add("criterio " + numero + ": falta dado/cuando/entonces");
+        } else if (VAGOS.stream().anyMatch(texto::contains) && !Pattern.compile("\\d").matcher(texto).find()) {
+            fallos.add("criterio " + numero + ": adjetivo sin medida numérica");
+        }
+    }
+    IO.println("criterios: " + lineas.size());
+    IO.println("verificables: " + (lineas.size() - fallos.size()));
+    if (lineas.stream().noneMatch(l -> l.contains("6 dígitos"))) fallos.add("falta la regla del PIN de 6 dígitos");
+    for (String fallo : fallos) IO.println("fallo: " + fallo);
+    System.exit(fallos.isEmpty() ? 0 : 1);
+}
 ```
 
 ```text
-$ python3 verificar_criterios.py criterios_antes.md; echo "salida: $?"
+$ java VerificarCriterios.java criterios_antes.md; echo "salida: $?"
 criterios: 2
 verificables: 1
 fallo: criterio 1: falta dado/cuando/entonces
@@ -237,79 +245,103 @@ salida: 1
 ```
 
 ```text
-$ python3 verificar_criterios.py; echo "salida: $?"
+$ java VerificarCriterios.java; echo "salida: $?"
 criterios: 3
 verificables: 3
 salida: 0
 ```
 
-Después, el código y una prueba por criterio:
+Después, el código y una prueba por criterio. `Envio` es un record; confirmar devuelve un envío nuevo:
 
-```python
-# entregas.py — regla de confirmación de entregas de RutaFlow
-def confirmar_entrega(envio, pin, comando_id, procesados):
-    if comando_id in procesados:                       # C3: el reintento no repite
-        return procesados[comando_id]
-    if len(pin) != 6 or not pin.isdigit():             # C2: PIN de 6 dígitos
-        raise ValueError("el PIN debe tener 6 dígitos")
-    if pin != envio["pin"]:
-        raise ValueError("PIN incorrecto")
-    resultado = {**envio, "estado": "entregado"}       # C1: queda entregado
-    procesados[comando_id] = resultado
-    return resultado
+```java
+// Envio.java — un envío con su estado y el PIN del destinatario
+record Envio(String guia, String estado, String pin) {
+    Envio conEstado(String nuevo) {
+        return new Envio(guia, nuevo, pin);
+    }
+}
 ```
 
-```python
-# prueba_criterios.py — una prueba por criterio de aceptación
-from entregas import confirmar_entrega
+```java
+// Entregas.java — regla de confirmación de entregas de RutaFlow
+import java.util.Map;
 
-envio = {"guia": "RF-4471", "estado": "pendiente", "pin": "482913"}
+class Entregas {
+    static Envio confirmarEntrega(Envio envio, String pin, String comandoId, Map<String, Envio> procesados) {
+        if (procesados.containsKey(comandoId)) {               // C3: el reintento no repite
+            return procesados.get(comandoId);
+        }
+        if (pin.length() != 6 || !pin.chars().allMatch(Character::isDigit)) {   // C2: PIN de 6 dígitos
+            throw new IllegalArgumentException("el PIN debe tener 6 dígitos");
+        }
+        if (!pin.equals(envio.pin())) {
+            throw new IllegalArgumentException("PIN incorrecto");
+        }
+        Envio resultado = envio.conEstado("entregado");       // C1: queda entregado
+        procesados.put(comandoId, resultado);
+        return resultado;
+    }
+}
+```
 
-# C1
-procesados = {}
-assert confirmar_entrega(envio, "482913", "cmd-1", procesados)["estado"] == "entregado"
-print("C1 ok: PIN correcto deja el envío entregado")
+```java
+// PruebaCriterios.java — una prueba por criterio de aceptación
+void comprobar(boolean condicion, String criterio) {
+    if (!condicion) throw new AssertionError(criterio + " FALLA");
+}
 
-# C2
-try:
-    confirmar_entrega(envio, "4829", "cmd-2", {})
-    print("C2 FALLA: debía rechazar el PIN corto")
-except ValueError as error:
-    assert envio["estado"] == "pendiente"
-    print("C2 ok:", error, "| estado sigue", envio["estado"])
+void main() {
+    Envio envio = new Envio("RF-4471", "pendiente", "482913");
 
-# C3
-primero = confirmar_entrega(envio, "482913", "cmd-3", procesados)
-segundo = confirmar_entrega(envio, "000000", "cmd-3", procesados)
-assert segundo is primero and len(procesados) == 2
-print("C3 ok: el reintento devuelve el mismo resultado; confirmaciones:", len(procesados))
+    // C1
+    Map<String, Envio> procesados = new HashMap<>();
+    comprobar(Entregas.confirmarEntrega(envio, "482913", "cmd-1", procesados).estado().equals("entregado"), "C1");
+    IO.println("C1 ok: PIN correcto deja el envío entregado");
+
+    // C2
+    try {
+        Entregas.confirmarEntrega(envio, "4829", "cmd-2", new HashMap<>());
+        IO.println("C2 FALLA: debía rechazar el PIN corto");
+    } catch (IllegalArgumentException error) {
+        comprobar(envio.estado().equals("pendiente"), "C2");
+        IO.println("C2 ok: " + error.getMessage() + " | estado sigue " + envio.estado());
+    }
+
+    // C3
+    Envio primero = Entregas.confirmarEntrega(envio, "482913", "cmd-3", procesados);
+    Envio segundo = Entregas.confirmarEntrega(envio, "000000", "cmd-3", procesados);
+    comprobar(segundo == primero && procesados.size() == 2, "C3");
+    IO.println("C3 ok: el reintento devuelve el mismo resultado; confirmaciones: " + procesados.size());
+}
 ```
 
 ```text
-$ python3 prueba_criterios.py
+$ java PruebaCriterios.java
 C1 ok: PIN correcto deja el envío entregado
 C2 ok: el PIN debe tener 6 dígitos | estado sigue pendiente
 C3 ok: el reintento devuelve el mismo resultado; confirmaciones: 2
 ```
 
 **Explicación por partes.**
-- `verificar_criterios.py`, líneas 10–15: revisa cada línea; primero la forma (dado/cuando/entonces), luego los adjetivos sin número.
-- Líneas 16–17: los verificables son los criterios sin fallo propio. En el borrador, el segundo sí lo era.
-- Líneas 18–19: una regla del caso: el PIN de 6 dígitos debe aparecer en algún criterio.
-- Línea 22: `sys.exit(1)` deja código de salida 1 si hay fallos; por eso la primera ejecución muestra `salida: 1`.
-- `entregas.py`, líneas 3, 5 y 9: los comentarios `# C1`, `# C2`, `# C3` apuntan al criterio que cumple cada línea.
-- `prueba_criterios.py`, líneas 6, 11 y 19: un bloque por criterio; si un `assert` falla, sabes qué criterio se rompió.
-- Líneas 20–22: el reintento con el mismo `cmd-3` devuelve el **mismo** objeto y no agrega una tercera confirmación.
+- `VerificarCriterios.java`, líneas 12–19: revisa cada línea; primero la forma (dado/cuando/entonces), luego los adjetivos sin número.
+- Líneas 20–21: los verificables son los criterios sin fallo propio. En el borrador, el segundo sí lo era.
+- Línea 22: una regla del caso: el PIN de 6 dígitos debe aparecer en algún criterio.
+- Línea 24: `System.exit(1)` deja código de salida 1 si hay fallos; por eso la primera ejecución muestra `salida: 1`.
+- `Entregas.java`, líneas 6, 9 y 15: los comentarios `// C3`, `// C2`, `// C1` apuntan al criterio que cumple cada línea.
+- `PruebaCriterios.java`, líneas 2–4: `comprobar` lanza un `AssertionError` con el criterio si la condición falla.
+  No se usa `assert` porque Java lo ignora sin `java -ea`.
+- Líneas 9, 14 y 23: un bloque por criterio; si una comprobación falla, sabes qué criterio se rompió.
+- Líneas 24–26: el reintento con el mismo `cmd-3` devuelve el **mismo** objeto (`==`) y no agrega una tercera confirmación.
 
-Si ejecutas el verificador en una carpeta sin `criterios.md`, la última línea del error es esta:
+Si ejecutas el verificador en una carpeta sin `criterios.md`, la primera línea del error es esta:
 
 ```text
-$ python3 verificar_criterios.py
-FileNotFoundError: [Errno 2] No such file or directory: 'criterios.md'
+$ java VerificarCriterios.java
+Exception in thread "main" java.nio.file.NoSuchFileException: criterios.md
 ```
 
-> **Error común.** Ejecutar el verificador desde otra carpeta. Python termina con
-> `FileNotFoundError: [Errno 2] No such file or directory: 'criterios.md'`. Lee el final: el archivo que faltó es `criterios.md`, buscado en la carpeta
+> **Error común.** Ejecutar el verificador desde otra carpeta. Java termina con
+> `java.nio.file.NoSuchFileException: criterios.md`. El archivo que faltó es `criterios.md`, buscado en la carpeta
 > actual. Comprueba con `pwd` y `ls` antes de culpar al programa.
 
 > **Prevenir errores.** Escribe los criterios **antes** del código y numéralos. Un criterio sin número no se puede
@@ -326,16 +358,16 @@ Respuesta: porque no dice qué situación revisar ni qué resultado esperar. «T
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/requisitos` y entra con `cd ~/labs/modulo-7/requisitos`.
+Crea `~/labs/arquitectura/requisitos` y entra con `cd ~/labs/arquitectura/requisitos`.
 
 #### Paso 2 · Lista stakeholders y requisitos
-Escribe `revisar_requisitos.py` y ejecútalo. Agrega un requisito tuyo del cliente sin medida y comprueba que sale `adjetivo sin medida`.
+Escribe `RevisarRequisitos.java` y ejecútalo. Agrega un requisito tuyo del cliente sin medida y comprueba que sale `adjetivo sin medida`.
 
 #### Paso 3 · Escribe historia y criterios
 Crea `criterios_antes.md` y `criterios.md` como en el Problema resuelto 1.2. Ejecuta el verificador con cada uno y anota el código de salida.
 
 #### Paso 4 · Conecta criterios y código
-Escribe `entregas.py` y `prueba_criterios.py`. Cambia la línea 5 de `entregas.py` para aceptar 4 dígitos y observa qué criterio falla.
+Escribe `Envio.java`, `Entregas.java` y `PruebaCriterios.java`. Cambia el `6` de la línea 9 de `Entregas.java` por `4` y observa qué criterio falla.
 
 #### Resumen
 - Un **stakeholder** es quien origina o sufre un requisito; todo requisito tiene dueño.
@@ -355,9 +387,9 @@ Intermedio. Agrega a `criterios.md` el criterio C4 para el bloqueo tras 3 intent
 Respuesta esperada: `C4: Dado un envío con 3 intentos fallidos, cuando se confirma con un PIN correcto, entonces se rechaza durante 15 minutos.` La salida muestra `criterios: 4`, `verificables: 4` y `salida: 0`.
 
 #### Ejercicio verificable 3
-Reto. Implementa C4 en `entregas.py` y agrega su bloque en `prueba_criterios.py`, sin romper C1 a C3.
+Reto. Implementa C4 en `Entregas.java` y agrega su bloque en `PruebaCriterios.java`, sin romper C1 a C3.
 
-Respuesta esperada: un contador de intentos por guía que lanza `ValueError("envío bloqueado")` al cuarto intento. La salida muestra `C1 ok`, `C2 ok`, `C3 ok` y `C4 ok`.
+Respuesta esperada: un contador de intentos por guía (un `Map<String, Integer>`) que lanza `new IllegalArgumentException("envío bloqueado")` al cuarto intento. La salida muestra `C1 ok`, `C2 ok`, `C3 ok` y `C4 ok`.
 
 #### En el trabajo
 En un equipo, la historia llega como ticket y los criterios se acuerdan en el refinamiento, antes de estimar. Los
@@ -381,7 +413,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** arquitectura, componente, dependencia, atributo de calidad, escenario de calidad, trade-off, modelo C4, fitness function
 
 Este tema usa **requisito no funcional** y **criterio de aceptación** (Tema 1 de este módulo), **módulo** (Módulo 1,
-Tema 4) y la restricción `UNIQUE` de SQLite (Módulo 4, Tema 3).
+Tema 4) y la restricción `UNIQUE` en H2 (Fundamentos, Módulo 4, Tema 3).
 
 #### El problema
 El conductor de RutaFlow confirma una entrega en una zona con mala señal. La app no recibe respuesta y reintenta.
@@ -394,14 +426,14 @@ el cliente recibe dos avisos. ¿Qué parte del sistema debe impedirlo, y cómo d
 - **Definición técnica:** conjunto de decisiones estructurales de un sistema (sus partes, sus responsabilidades y cómo se comunican) que son costosas de cambiar después.
 - **En palabras sencillas:** los planos del edificio: dónde van los muros de carga, no de qué color se pintan.
 - **Dónde se rompe la comparación:** un edificio no cambia de planos cada mes; el software sí evoluciona, y la arquitectura debe permitirlo.
-- **Ejemplo:** decidir que la regla de confirmación no habla directo con SQLite, sino con un repositorio (`despues/dominio.py`).
+- **Ejemplo:** decidir que la regla de confirmación no habla directo con la base de datos, sino con un repositorio (`despues/Dominio.java`).
 - **Error típico:** llamar arquitectura a un diagrama bonito que nadie puede comprobar contra el código.
 
 **componente y dependencia**
 - **Definición técnica:** un componente es una parte del sistema con una responsabilidad y una interfaz; una dependencia existe cuando un componente necesita a otro para funcionar (lo importa o lo llama).
 - **En palabras sencillas:** los componentes son las piezas; las dependencias son las flechas «yo necesito a ese».
-- **Dónde se rompe la comparación:** la flecha tiene dirección: si el dominio importa `sqlite3`, cambiar la base obliga a tocar el dominio.
-- **Ejemplo:** `antes/dominio.py importa: ['sqlite3']` (dependencia hacia la infraestructura); `despues/dominio.py importa: nada`.
+- **Dónde se rompe la comparación:** la flecha tiene dirección: si el dominio importa `java.sql`, cambiar la base obliga a tocar el dominio.
+- **Ejemplo:** `antes/Dominio.java importa: [java.sql.Connection, …]` (dependencia hacia la infraestructura); `despues/Dominio.java importa: nada`.
 - **Error típico:** dibujar flechas en ambos sentidos «por si acaso»; dos componentes que se necesitan mutuamente ya son uno solo.
 
 **atributo de calidad**
@@ -422,7 +454,7 @@ el cliente recibe dos avisos. ¿Qué parte del sistema debe impedirlo, y cómo d
 - **Definición técnica:** compromiso entre atributos de calidad: la decisión que mejora uno tiene un costo medible en otro.
 - **En palabras sencillas:** no hay almuerzo gratis; cada ventaja se paga con algo.
 - **Dónde se rompe la comparación:** a veces el costo es tan pequeño que no importa; igual se nombra, para decidir con datos.
-- **Ejemplo:** `UNIQUE` deja `1` fila en vez de `2`, pero SQLite crea un índice extra: `sqlite_autoindex_confirmacion_1`.
+- **Ejemplo:** `UNIQUE` deja `1` fila en vez de `2`, pero H2 crea un índice extra: `COMANDO_UNICO_INDEX_7`.
 - **Error típico:** presentar una decisión solo con sus ventajas; quien la revise después no sabrá qué se aceptó perder.
 
 **modelo C4**
@@ -436,7 +468,7 @@ el cliente recibe dos avisos. ¿Qué parte del sistema debe impedirlo, y cómo d
 - **Definición técnica:** prueba automática que comprueba que el sistema conserva una propiedad de arquitectura, como una regla de dependencias o un tiempo máximo.
 - **En palabras sencillas:** un guardia que revisa en cada cambio que nadie rompió una regla de los planos.
 - **Dónde se rompe la comparación:** no prueba que el negocio funcione; prueba la forma del sistema.
-- **Ejemplo:** `fitness_dependencias.py antes` termina con `salida: 1`; con `despues`, con `salida: 0`.
+- **Ejemplo:** `java FitnessDependencias.java antes` termina con `salida: 1`; con `despues`, con `salida: 0`.
 - **Error típico:** escribir la regla en un documento y no en código: el primer cambio apurado la rompe sin que nadie lo note.
 
 #### ► CÓMO FUNCIONA
@@ -458,7 +490,7 @@ El nivel de contenedores del modelo C4 para la confirmación muestra dónde vive
 ```mermaid
 flowchart LR
     C["Conductor"] --> APP["App del conductor<br/>móvil"]
-    APP -->|"HTTPS, reintenta"| API["API de RutaFlow<br/>Python"]
+    APP -->|"HTTPS, reintenta"| API["API de RutaFlow<br/>Java"]
     API --> DB[("Base de datos<br/>UNIQUE(command_id)")]
     API --> SMS["Servicio de SMS<br/>externo"]
 ```
@@ -471,66 +503,86 @@ Escribe el escenario de calidad del reintento y mide qué pasa con y sin la rest
 **Razonamiento:**
 1. Fuente y estímulo: la red del conductor reenvía el mismo comando.
 2. Medida: cero confirmaciones duplicadas. Se cuenta con `SELECT COUNT(*)`.
-3. Se miden dos alternativas en una base en memoria; también se lista qué índices creó SQLite, para ver el costo.
+3. Se miden dos alternativas en una base H2 en memoria; también se lista qué índices creó H2, para ver el costo.
 
 ```text
 Fuente: red inestable del conductor
 Estímulo: el mismo comando "confirmar entrega" se reenvía dos veces (reintento automático)
-Artefacto: confirmar_entrega() + repositorio
+Artefacto: Entregas.confirmar() + repositorio
 Entorno: operación normal con conexión intermitente
 Respuesta: la segunda llamada devuelve el resultado ya guardado, sin confirmar de nuevo
 Medida: cero entregas duplicadas, verificable con UNIQUE(command_id) en la base real
 ```
 
-```python
-# escenario_unique.py — valida el escenario y mide su respuesta en SQLite
-import sqlite3
-from pathlib import Path
+```java
+// EscenarioUnique.java — valida el escenario y mide su respuesta en H2
+import java.sql.*;
 
-CAMPOS = ("Fuente:", "Estímulo:", "Artefacto:", "Entorno:", "Respuesta:", "Medida:")
-texto = Path("escenario.txt").read_text(encoding="utf-8")
-faltan = [campo for campo in CAMPOS if campo not in texto]
-print(f"campos del escenario: {len(CAMPOS) - len(faltan)}/{len(CAMPOS)}")
-if faltan:
-    print("faltan:", faltan)
-    raise SystemExit(1)
+static final List<String> CAMPOS =
+        List.of("Fuente:", "Estímulo:", "Artefacto:", "Entorno:", "Respuesta:", "Medida:");
 
+void main() throws Exception {
+    String texto = Files.readString(Path.of("escenario.txt"));
+    List<String> faltan = CAMPOS.stream().filter(campo -> !texto.contains(campo)).toList();
+    IO.println("campos del escenario: " + (CAMPOS.size() - faltan.size()) + "/" + CAMPOS.size());
+    if (!faltan.isEmpty()) {
+        IO.println("faltan: " + faltan);
+        System.exit(1);
+    }
+    IO.println("ANTES (sin restricción): " + medir(false));
+    IO.println("DESPUÉS (UNIQUE): " + medir(true));
+}
 
-def medir(con_restriccion):
-    conexion = sqlite3.connect(":memory:")
-    sufijo = " UNIQUE" if con_restriccion else ""
-    conexion.execute(f"CREATE TABLE confirmacion(id INTEGER PRIMARY KEY, command_id TEXT{sufijo})")
-    for _ in range(2):  # el mismo comando llega dos veces
-        try:
-            conexion.execute("INSERT INTO confirmacion(command_id) VALUES ('cmd-1')")
-        except sqlite3.IntegrityError as error:
-            print("  segundo intento rechazado:", error)
-    filas = conexion.execute("SELECT COUNT(*) FROM confirmacion").fetchone()[0]
-    indices = [fila[1] for fila in conexion.execute("PRAGMA index_list(confirmacion)")]
-    return filas, indices
-
-
-print("ANTES (sin restricción):", medir(False))
-print("DESPUÉS (UNIQUE):", medir(True))
+String medir(boolean conRestriccion) throws SQLException {
+    try (Connection conexion = DriverManager.getConnection("jdbc:h2:mem:")) {
+        Statement sentencia = conexion.createStatement();
+        String sufijo = conRestriccion ? " CONSTRAINT comando_unico UNIQUE" : "";
+        sentencia.execute("CREATE TABLE confirmacion(id INT AUTO_INCREMENT PRIMARY KEY,"
+                + " command_id VARCHAR(20)" + sufijo + ")");
+        for (int intento = 0; intento < 2; intento++) { // el mismo comando llega dos veces
+            try {
+                sentencia.execute("INSERT INTO confirmacion(command_id) VALUES ('cmd-1')");
+            } catch (SQLIntegrityConstraintViolationException error) {
+                IO.println("  segundo intento rechazado: " + error.getMessage().split("; SQL")[0]);
+            }
+        }
+        ResultSet cuenta = sentencia.executeQuery("SELECT COUNT(*) FROM confirmacion");
+        cuenta.next();
+        int filas = cuenta.getInt(1);
+        List<String> indices = new ArrayList<>();
+        ResultSet filasIndice = sentencia.executeQuery(
+                "SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES"
+                + " WHERE TABLE_NAME = 'CONFIRMACION' AND INDEX_TYPE_NAME <> 'PRIMARY KEY'");
+        while (filasIndice.next()) {
+            indices.add(filasIndice.getString(1));
+        }
+        return "(" + filas + ", " + indices + ")";
+    }
+}
 ```
 
 ```text
-$ python3 escenario_unique.py
+$ java -cp ~/herramientas/h2-2.3.232.jar EscenarioUnique.java
 campos del escenario: 6/6
 ANTES (sin restricción): (2, [])
-  segundo intento rechazado: UNIQUE constraint failed: confirmacion.command_id
-DESPUÉS (UNIQUE): (1, ['sqlite_autoindex_confirmacion_1'])
+  segundo intento rechazado: Unique index or primary key violation: "PUBLIC.COMANDO_UNICO_INDEX_7 ON PUBLIC.CONFIRMACION(COMMAND_ID NULLS FIRST) VALUES ( /* 1 */ 'cmd-1' )"
+DESPUÉS (UNIQUE): (1, [COMANDO_UNICO_INDEX_7])
 ```
 
 **Explicación por partes.**
-- Líneas 5–11: si al escenario le falta alguna de las seis partes, el programa se detiene con código 1.
-- Línea 17: la tabla se crea con o sin `UNIQUE` según el parámetro.
-- Líneas 18–22: el mismo `cmd-1` se inserta dos veces; con `UNIQUE`, SQLite rechaza el segundo con `IntegrityError`.
-- Línea 24: `PRAGMA index_list` muestra los índices; el automático es el precio de la restricción.
+- Líneas 8–14: si al escenario le falta alguna de las seis partes, el programa se detiene con código 1.
+- Líneas 22–24: la tabla se crea con o sin `UNIQUE` según el parámetro; la restricción lleva nombre, `comando_unico`.
+- Líneas 25–31: el mismo `cmd-1` se inserta dos veces; con `UNIQUE`, H2 rechaza el segundo con
+  `SQLIntegrityConstraintViolationException`. Línea 29: se muestra el mensaje hasta `; SQL` para no imprimir la sentencia.
+- Líneas 36–41: `INFORMATION_SCHEMA.INDEXES` lista los índices de la tabla (sin el de la clave primaria); el que creó
+  la restricción es su precio.
 - Salida: «antes» deja `2` filas; «después» deja `1` y un índice. Ese es el trade-off, medido.
 
 > **Error común.** Confiar en que la app «no reintenta». Los reintentos los hacen también la red, el sistema operativo
 > y las librerías. Sin la restricción, la base acepta el duplicado en silencio: `(2, [])`.
+>
+> Si olvidas `-cp ~/herramientas/h2-2.3.232.jar`, Java no encuentra el controlador y termina con
+> `java.sql.SQLException: No suitable driver found for jdbc:h2:mem:`.
 
 > **Ingeniería de software.** La restricción vive en la base de datos, no solo en el código. Si mañana otro servicio
 > escribe en la misma tabla, la regla lo protege también.
@@ -540,93 +592,134 @@ Convierte la regla «el dominio no importa infraestructura» en una fitness func
 
 **Razonamiento:**
 1. La regla se puede comprobar sin ejecutar el dominio: basta leer sus `import`.
-2. El módulo `ast` de Python convierte el archivo en un árbol y permite recorrer sus instrucciones.
+2. El propio compilador de Java (`javax.tools` y `com.sun.source`) convierte el archivo en un árbol de sintaxis y permite
+   recorrer sus `import` sin compilarlo ni ejecutarlo.
 3. Si aparece un módulo prohibido, el programa termina con código 1 para que CI lo marque en rojo.
 
-```python
-# antes/dominio.py — la regla de negocio abre la base de datos ella misma
-import sqlite3
+```java
+// antes/Dominio.java — la regla de negocio abre la base de datos ella misma
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-
-def confirmar_entrega(guia, pin):
-    if len(pin) != 6:
-        raise ValueError("el PIN debe tener 6 dígitos")
-    conexion = sqlite3.connect("rutaflow.db")
-    conexion.execute("UPDATE envio SET estado = 'entregado' WHERE guia = ?", (guia,))
+class Dominio {
+    static void confirmarEntrega(String guia, String pin) throws SQLException {
+        if (pin.length() != 6) {
+            throw new IllegalArgumentException("el PIN debe tener 6 dígitos");
+        }
+        Connection conexion = DriverManager.getConnection("jdbc:h2:./rutaflow");
+        conexion.createStatement().execute("UPDATE envio SET estado = 'entregado' WHERE guia = '" + guia + "'");
+    }
+}
 ```
 
-```python
-# despues/dominio.py — la regla solo conoce un repositorio que recibe de afuera
-def confirmar_entrega(guia, pin, repositorio):
-    if len(pin) != 6:
-        raise ValueError("el PIN debe tener 6 dígitos")
-    repositorio.marcar_entregado(guia)
+En la versión «después», el dominio declara la interfaz que necesita y la infraestructura la implementa:
+
+```java
+// despues/Repositorio.java — el contrato que el dominio necesita, sin decir cómo se guarda
+interface Repositorio {
+    void marcarEntregado(String guia);
+}
 ```
 
-```python
-# despues/repositorio_sqlite.py — la infraestructura sí puede usar sqlite3
-import sqlite3
-
-
-class RepositorioSQLite:
-    def __init__(self, ruta):
-        self.conexion = sqlite3.connect(ruta)
-
-    def marcar_entregado(self, guia):
-        self.conexion.execute("UPDATE envio SET estado = 'entregado' WHERE guia = ?", (guia,))
+```java
+// despues/Dominio.java — la regla solo conoce un repositorio que recibe de afuera
+class Dominio {
+    static void confirmarEntrega(String guia, String pin, Repositorio repositorio) {
+        if (pin.length() != 6) {
+            throw new IllegalArgumentException("el PIN debe tener 6 dígitos");
+        }
+        repositorio.marcarEntregado(guia);
+    }
+}
 ```
 
-```python
-# fitness_dependencias.py — regla de arquitectura: el dominio no importa infraestructura
-import ast
-import sys
-from pathlib import Path
+```java
+// despues/RepositorioJdbc.java — la infraestructura sí puede usar java.sql
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-PROHIBIDOS = {"sqlite3", "http", "urllib", "requests", "boto3"}
-carpeta = Path(sys.argv[1])
-arbol = ast.parse((carpeta / "dominio.py").read_text(encoding="utf-8"))
-importados = set()
-for nodo in ast.walk(arbol):
-    if isinstance(nodo, ast.Import):
-        importados |= {alias.name.split(".")[0] for alias in nodo.names}
-    elif isinstance(nodo, ast.ImportFrom) and nodo.module:
-        importados.add(nodo.module.split(".")[0])
-violaciones = sorted(importados & PROHIBIDOS)
-print(f"{carpeta}/dominio.py importa: {sorted(importados) or 'nada'}")
-print("violaciones:", violaciones or "ninguna")
-sys.exit(1 if violaciones else 0)
+class RepositorioJdbc implements Repositorio {
+    private final Connection conexion;
+
+    RepositorioJdbc(Connection conexion) {
+        this.conexion = conexion;
+    }
+
+    @Override
+    public void marcarEntregado(String guia) {
+        try (PreparedStatement sentencia =
+                conexion.prepareStatement("UPDATE envio SET estado = 'entregado' WHERE guia = ?")) {
+            sentencia.setString(1, guia);
+            sentencia.executeUpdate();
+        } catch (SQLException error) {
+            throw new IllegalStateException("no se pudo marcar " + guia, error);
+        }
+    }
+}
+```
+
+```java
+// FitnessDependencias.java — regla de arquitectura: el dominio no importa infraestructura
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.util.JavacTask;
+import javax.tools.ToolProvider;
+
+static final List<String> PROHIBIDOS = List.of("java.sql", "javax.sql", "java.net", "org.h2");
+
+void main(String[] args) throws Exception {
+    Path archivo = Path.of(args[0], "Dominio.java");
+    var compilador = ToolProvider.getSystemJavaCompiler();
+    var archivos = compilador.getStandardFileManager(null, null, null).getJavaFileObjects(archivo);
+    var tarea = (JavacTask) compilador.getTask(null, null, null, null, null, archivos);
+    Set<String> importados = new TreeSet<>();
+    for (CompilationUnitTree unidad : tarea.parse()) {
+        for (ImportTree importacion : unidad.getImports()) {
+            importados.add(importacion.getQualifiedIdentifier().toString());
+        }
+    }
+    List<String> violaciones = importados.stream()
+            .filter(nombre -> PROHIBIDOS.stream().anyMatch(prefijo -> nombre.startsWith(prefijo + ".")))
+            .toList();
+    IO.println(archivo + " importa: " + (importados.isEmpty() ? "nada" : importados));
+    IO.println("violaciones: " + (violaciones.isEmpty() ? "ninguna" : violaciones));
+    System.exit(violaciones.isEmpty() ? 0 : 1);
+}
 ```
 
 ```text
-$ python3 fitness_dependencias.py antes; echo "salida: $?"
-antes/dominio.py importa: ['sqlite3']
-violaciones: ['sqlite3']
+$ java FitnessDependencias.java antes; echo "salida: $?"
+antes/Dominio.java importa: [java.sql.Connection, java.sql.DriverManager, java.sql.SQLException]
+violaciones: [java.sql.Connection, java.sql.DriverManager, java.sql.SQLException]
 salida: 1
 ```
 
 ```text
-$ python3 fitness_dependencias.py despues; echo "salida: $?"
-despues/dominio.py importa: nada
+$ java FitnessDependencias.java despues; echo "salida: $?"
+despues/Dominio.java importa: nada
 violaciones: ninguna
 salida: 0
 ```
 
 **Explicación por partes.**
-- Línea 6: la lista de módulos de infraestructura que el dominio no puede importar.
-- Línea 8: `ast.parse` lee el archivo como árbol de sintaxis; no lo ejecuta.
-- Líneas 10–14: recoge los nombres de `import x` y de `from x import y`.
-- Línea 15: la intersección de conjuntos deja solo los prohibidos que sí se importaron.
-- Línea 18: el código de salida es lo que lee CI; `1` bloquea el cambio.
+- Línea 7: los paquetes de infraestructura que el dominio no puede importar.
+- Líneas 11–13: se pide al compilador una tarea sobre `Dominio.java`; `JavacTask` da acceso al árbol.
+- Líneas 15–19: `parse()` solo lee la sintaxis; no compila ni ejecuta. Se recoge cada `import`.
+- Líneas 20–22: quedan las importaciones que empiezan por un paquete prohibido.
+- Línea 25: el código de salida es lo que lee CI; `1` bloquea el cambio.
 
-Si olvidas el argumento con la carpeta, la última línea del error es esta:
+Si olvidas el argumento con la carpeta, la primera línea del error es esta:
 
 ```text
-$ python3 fitness_dependencias.py
-IndexError: list index out of range
+$ java FitnessDependencias.java
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
 ```
 
-> **Error común.** Ejecutar `python3 fitness_dependencias.py` sin carpeta termina con `IndexError: list index out of range`. La lista
-> `sys.argv` solo tiene el nombre del programa; la posición `1` no existe. Pasa la carpeta: `antes` o `despues`.
+> **Error común.** Ejecutar `java FitnessDependencias.java` sin carpeta termina con
+> `ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0`. El arreglo `args` está vacío; la posición `0`
+> no existe. Pasa la carpeta: `antes` o `despues`.
 
 > **Buena práctica.** Toda regla de arquitectura que se pueda comprobar con un programa se comprueba con un programa.
 > Lo que queda en un documento se cumple mientras alguien se acuerde.
@@ -642,16 +735,16 @@ Respuesta: solo la medida. Fuente, estímulo, artefacto, entorno y respuesta sig
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/arquitectura` con las subcarpetas `antes` y `despues`.
+Crea `~/labs/arquitectura/arquitectura` con las subcarpetas `antes` y `despues`.
 
 #### Paso 2 · Escribe y mide el escenario
-Crea `escenario.txt` y `escenario_unique.py`. Borra la línea `Medida:` y comprueba que sale `faltan: ['Medida:']`.
+Crea `escenario.txt` y `EscenarioUnique.java`. Borra la línea `Medida:` y comprueba que sale `campos del escenario: 5/6` y `faltan: [Medida:]`.
 
 #### Paso 3 · Dibuja el C4
 Copia el diagrama de contenedores y agrega un contenedor «Panel de auditoría» que lee la base de datos.
 
 #### Paso 4 · Automatiza la regla
-Escribe los dos `dominio.py`, el repositorio y `fitness_dependencias.py`. Ejecuta la función con ambas carpetas y anota los códigos de salida.
+Escribe los dos `Dominio.java`, `Repositorio.java`, `RepositorioJdbc.java` y `FitnessDependencias.java`. Ejecuta la función con ambas carpetas y anota los códigos de salida.
 
 #### Resumen
 - La **arquitectura** son las decisiones estructurales costosas de cambiar, no el dibujo.
@@ -667,19 +760,19 @@ Básico. Ordena estas palabras en las seis partes del escenario: «base de datos
 Respuesta esperada: fuente: monitor; estímulo: base de datos caída; artefacto: API; entorno: operación nocturna; respuesta: responder 503 con reintento; medida: en menos de 1 s.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega la línea `from http import client` al final de `despues/dominio.py` y ejecuta la fitness function.
+Intermedio. Agrega la línea `import java.net.http.HttpClient;` al inicio de `despues/Dominio.java` y ejecuta la fitness function.
 
-Respuesta esperada: `despues/dominio.py importa: ['http']`, `violaciones: ['http']` y `salida: 1`.
+Respuesta esperada: `despues/Dominio.java importa: [java.net.http.HttpClient]`, `violaciones: [java.net.http.HttpClient]` y `salida: 1`.
 
 #### Ejercicio verificable 3
-Reto. Amplía la fitness function para que también revise que `repositorio_sqlite.py` no importe `dominio`.
+Reto. Amplía la fitness function para que también revise que `RepositorioJdbc.java` no use la clase `Dominio`.
 
-Respuesta esperada: una segunda lectura con `ast` sobre ese archivo y una regla `PROHIBIDOS_INFRA = {"dominio"}`. Con los archivos del tema, la salida sigue siendo `0`.
+Respuesta esperada: un segundo `parse()` sobre ese archivo que busque el identificador `Dominio` en el árbol (por ejemplo con un `TreeScanner` que visite los `IdentifierTree`). Con los archivos del tema, la salida sigue siendo `0`.
 
 #### En el trabajo
 Los equipos escriben sus escenarios de calidad en el documento de arquitectura y los revisan cuando cambia el tráfico
-o el negocio. Las fitness functions corren en el pipeline junto a las pruebas: herramientas como import-linter
-(Python) o ArchUnit (Java) automatizan reglas de dependencias como la de este tema.
+o el negocio. Las fitness functions corren en el pipeline junto a las pruebas: en Java, ArchUnit automatiza reglas de
+dependencias como la de este tema dentro de JUnit.
 
 </details>
 
@@ -691,18 +784,18 @@ o el negocio. Las fitness functions corren en el pipeline junto a las pruebas: h
 #### Objetivos
 Al terminar este tema podrás:
 - reconocer baja cohesión y alto acoplamiento en una función real y medirlos por sus `import`;
-- definir una interfaz con `Protocol` e invertir la dependencia entre la regla y la base de datos;
+- definir una interfaz de Java e invertir la dependencia entre la regla y la base de datos;
 - aplicar los patrones Repository y Adapter, y decir cuándo sobran;
 - refactorizar con una prueba caracterizadora que demuestre que el comportamiento no cambió.
 
 **Conceptos clave:** cohesión, acoplamiento, interfaz, principios SOLID, inversión de dependencias, patrón de diseño, Repository, Adapter, refactorización, prueba caracterizadora
 
-Ya los conoces y no se repiten: **módulo** (Módulo 1, Tema 4); **composición**, **clase abstracta** y **polimorfismo**
-(Módulo 1, Tema 7); **doble de prueba** (Módulo 5, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
+Ya los conoces y no se repiten: **módulo** (Módulo 1, Tema 4); **composición**, **interfaz** como tipo y **polimorfismo**
+(Fundamentos, Módulo 1, Tema 7); **doble de prueba** (Módulo 5, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
 El catálogo completo de patrones está en el Módulo 13, y la técnica completa de refactorización en el Módulo 14.
 
 #### El problema
-La función `confirmar` de RutaFlow valida el PIN, abre SQLite, guarda y manda el SMS, todo junto. Producto pide
+El método `confirmar` de RutaFlow valida el PIN, abre la base de datos, guarda y manda el SMS, todo junto. Producto pide
 avisar por correo en vez de SMS. Pruebas pide verificar la regla del PIN sin crear una base de datos. Las dos cosas
 obligan a tocar la misma función, que además ya funciona. ¿Cómo la reorganizas sin romper nada?
 
@@ -712,75 +805,75 @@ obligan a tocar la misma función, que además ya funciona. ¿Cómo la reorganiz
 - **Definición técnica:** grado en que los elementos de un módulo o función contribuyen a una sola responsabilidad.
 - **En palabras sencillas:** qué tan relacionadas están las cosas que viven juntas.
 - **Dónde se rompe la comparación:** alta cohesión no es «una línea por función»: es una sola **razón para cambiar**.
-- **Ejemplo:** `antes/entregas.py` mezcla PIN, SQL y SMS (baja); `despues/dominio.py` solo tiene la regla y sus contratos (alta).
+- **Ejemplo:** `antes/Entregas.java` mezcla PIN, SQL y SMS (baja); `despues/Dominio.java` solo tiene la regla (alta).
 - **Error típico:** partir una función en trozos por tamaño, no por responsabilidad: quedan piezas que siempre cambian juntas.
 
 **acoplamiento**
 - **Definición técnica:** grado en que un módulo depende de los detalles internos de otro; a más acoplamiento, más cambios en cadena.
 - **En palabras sencillas:** cuántos hilos te atan a otras piezas; si una se mueve, tú te mueves.
 - **Dónde se rompe la comparación:** algo de acoplamiento es inevitable; el problema es depender de detalles que cambian.
-- **Ejemplo:** `antes/entregas.py importa ['sqlite3']`; `despues/dominio.py importa ['typing']`, nada de infraestructura.
+- **Ejemplo:** `antes/Entregas.java importa [java.sql.*]`; `despues/Dominio.java importa []`, nada de infraestructura.
 - **Error típico:** creer que separar en archivos reduce el acoplamiento; si el archivo nuevo importa al viejo, siguen atados.
 
 **interfaz**
-- **Definición técnica:** conjunto de operaciones (nombres, parámetros y resultado) que un componente ofrece, sin decir cómo las implementa; en Python se declara con `typing.Protocol`.
+- **Definición técnica:** conjunto de operaciones (nombres, parámetros y resultado) que un componente ofrece, sin decir cómo las implementa; en Java se declara con `interface`.
 - **En palabras sencillas:** el enchufe: dice qué forma tiene la conexión, no qué aparato hay detrás.
-- **Dónde se rompe la comparación:** `Protocol` no se revisa al ejecutar; un objeto sin el método falla recién al llamarlo.
-- **Ejemplo:** `class RepositorioEntregas(Protocol): def marcar_entregado(self, guia: str) -> None: ...`.
-- **Error típico:** pasar un objeto equivocado: `AttributeError: 'RepositorioMemoria' object has no attribute 'enviar'`.
+- **Dónde se rompe la comparación:** el compilador la revisa: una clase que dice `implements` y le falta un método no compila.
+- **Ejemplo:** `interface RepositorioEntregas { void marcarEntregado(String guia); }`.
+- **Error típico:** pasar un objeto equivocado: `incompatible types: RepositorioMemoria cannot be converted to Aviso`.
 
 **principios SOLID**
 - **Definición técnica:** cinco guías de diseño orientado a objetos: responsabilidad única, abierto/cerrado, sustitución de Liskov, segregación de interfaces e inversión de dependencias.
 - **En palabras sencillas:** cinco preguntas para revisar si una clase será fácil de cambiar mañana.
 - **Dónde se rompe la comparación:** son guías, no leyes; aplicarlas donde nada cambia agrega capas sin beneficio.
-- **Ejemplo:** responsabilidad única: el dominio cambia si cambia la regla del PIN; `adaptadores.py`, si cambia la base o el canal.
+- **Ejemplo:** responsabilidad única: `Dominio` cambia si cambia la regla del PIN; los adaptadores, si cambia la base o el canal.
 - **Error típico:** crear una interfaz por cada clase «por SOLID», aunque solo exista una implementación posible.
 
 **inversión de dependencias**
 - **Definición técnica:** principio por el que los módulos de alto nivel (reglas) no dependen de los de bajo nivel (infraestructura); ambos dependen de una abstracción que define el de alto nivel.
 - **En palabras sencillas:** la regla dice «necesito algo que guarde»; quien la usa le entrega el que quiera.
-- **Dónde se rompe la comparación:** se invierte la dirección del `import`, no la del flujo: los datos siguen yendo hacia SQLite.
-- **Ejemplo:** `confirmar_entrega(guia, pin, repositorio, aviso)` recibe sus dependencias como parámetros.
-- **Error típico:** olvidar pasar una: `TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'`.
+- **Dónde se rompe la comparación:** se invierte la dirección del `import`, no la del flujo: los datos siguen yendo hacia la base.
+- **Ejemplo:** `confirmarEntrega(guia, pin, repositorio, aviso)` recibe sus dependencias como parámetros.
+- **Error típico:** olvidar pasar una: el compilador responde `method confirmarEntrega in class Dominio cannot be applied to given types`.
 
 **patrón de diseño**
 - **Definición técnica:** solución con nombre a un problema de diseño que se repite, descrita por su intención, su estructura y sus consecuencias.
 - **En palabras sencillas:** una receta conocida con nombre propio, para no reinventarla y para hablar rápido con el equipo.
 - **Dónde se rompe la comparación:** la receta no se copia igual siempre; se adapta, y a veces la solución simple es mejor.
-- **Ejemplo:** decir «aquí usamos un Repository» explica en tres palabras lo que hace `RepositorioSQLite`.
+- **Ejemplo:** decir «aquí usamos un Repository» explica en tres palabras lo que hace `RepositorioJdbc`.
 - **Error típico:** elegir el patrón antes de tener el problema; el código se llena de piezas que nadie necesita.
 
 **Repository**
 - **Definición técnica:** patrón que ofrece al dominio una interfaz tipo colección para guardar y recuperar objetos, ocultando el mecanismo de almacenamiento.
-- **En palabras sencillas:** un archivador: le pides guardar o buscar, y no te importa si es papel, SQLite o la nube.
-- **Dónde se rompe la comparación:** no es un envoltorio de cada consulta SQL; sus métodos hablan el idioma del negocio (`marcar_entregado`).
-- **Ejemplo:** `RepositorioSQLite` y `RepositorioMemoria` cumplen el mismo `RepositorioEntregas`.
-- **Error típico:** exponer métodos como `ejecutar_sql(consulta)`: el dominio vuelve a saber de SQL.
+- **En palabras sencillas:** un archivador: le pides guardar o buscar, y no te importa si es papel, H2 o la nube.
+- **Dónde se rompe la comparación:** no es un envoltorio de cada consulta SQL; sus métodos hablan el idioma del negocio (`marcarEntregado`).
+- **Ejemplo:** `RepositorioJdbc` y `RepositorioMemoria` implementan la misma interfaz `RepositorioEntregas`.
+- **Error típico:** exponer métodos como `ejecutarSql(consulta)`: el dominio vuelve a saber de SQL.
 
 **Adapter**
-- **Definición técnica:** patrón que convierte la interfaz de una pieza concreta (SQLite, un proveedor de SMS) en la interfaz que espera el cliente.
+- **Definición técnica:** patrón que convierte la interfaz de una pieza concreta (JDBC, un proveedor de SMS) en la interfaz que espera el cliente.
 - **En palabras sencillas:** el adaptador de viaje: el enchufe del hotel es distinto, pero tu cargador funciona.
 - **Dónde se rompe la comparación:** aquí el «enchufe» lo define tu dominio, no el fabricante.
-- **Ejemplo:** `AvisoConsola` adapta `print` al contrato `Aviso`; mañana `AvisoCorreo` adaptará un servidor de correo.
-- **Error típico:** meter reglas de negocio en el adaptador (por ejemplo, validar el PIN en `RepositorioSQLite`).
+- **Ejemplo:** `AvisoConsola` adapta `System.out.println` al contrato `Aviso`; mañana `AvisoCorreo` adaptará un servidor de correo.
+- **Error típico:** meter reglas de negocio en el adaptador (por ejemplo, validar el PIN en `RepositorioJdbc`).
 
 **refactorización**
 - **Definición técnica:** cambio en la estructura interna del código que no altera su comportamiento observable, hecho en pasos pequeños y verificados.
 - **En palabras sencillas:** ordenar el cuarto sin botar nada: todo sigue ahí, pero ahora encuentras las cosas.
 - **Dónde se rompe la comparación:** si cambia lo que el programa responde, ya no es refactorización: es un cambio funcional.
-- **Ejemplo:** `despues/entregas.py` conserva la firma `confirmar(ruta_db, guia, pin)`; `diff antes.txt despues.txt` no muestra diferencias.
+- **Ejemplo:** `despues/Entregas.java` conserva la firma `confirmar(urlBase, guia, pin)`; `diff antes.txt despues.txt` no muestra diferencias.
 - **Error típico:** mezclar en el mismo commit la refactorización y la funcionalidad nueva; si algo falla, no sabes cuál de las dos fue.
 
 **prueba caracterizadora**
 - **Definición técnica:** prueba que registra el comportamiento actual de un código, correcto o no, para detectar cualquier cambio durante una refactorización.
 - **En palabras sencillas:** una foto del «antes» para compararla con el «después».
 - **Dónde se rompe la comparación:** no dice si el comportamiento es bueno; solo si cambió.
-- **Ejemplo:** `caracterizar.py` imprime las respuestas y el contenido de la base para tres casos; la salida se guarda en `antes.txt`.
+- **Ejemplo:** `Caracterizar.java` imprime las respuestas y el contenido de la base para tres casos; la salida se guarda en `antes.txt`.
 - **Error típico:** «corregir» de paso lo que la foto muestra raro; primero se refactoriza igual, después se corrige con su propia prueba.
 
 #### ► CÓMO FUNCIONA
 Se empieza con una foto del comportamiento actual. Luego se separan las responsabilidades: la regla va al dominio con
-sus interfaces; SQLite y el aviso van a adaptadores. La función vieja queda como fachada con la misma firma. Al
+sus interfaces; la base de datos y el aviso van a adaptadores. La función vieja queda como fachada con la misma firma. Al
 final se repite la foto: si es idéntica, la refactorización es segura.
 
 ```mermaid
@@ -796,10 +889,10 @@ Después de la refactorización, las dependencias apuntan hacia el dominio:
 
 ```mermaid
 flowchart RL
-    SQL["RepositorioSQLite<br/>adaptadores.py"] -.->|"cumple"| RP["RepositorioEntregas<br/>Protocol"]
-    MEM["RepositorioMemoria"] -.->|"cumple"| RP
-    CON["AvisoConsola"] -.->|"cumple"| AV["Aviso<br/>Protocol"]
-    RP --- DOM["confirmar_entrega<br/>dominio.py"]
+    SQL["RepositorioJdbc"] -.->|"implements"| RP["RepositorioEntregas<br/>interface"]
+    MEM["RepositorioMemoria"] -.->|"implements"| RP
+    CON["AvisoConsola"] -.->|"implements"| AV["Aviso<br/>interface"]
+    RP --- DOM["confirmarEntrega<br/>Dominio.java"]
     AV --- DOM
 ```
 
@@ -807,61 +900,78 @@ flowchart RL
 Toma una foto del comportamiento de la función actual antes de tocarla.
 
 **Razonamiento:**
-1. La función devuelve un texto, imprime un SMS y escribe en la base: la foto debe capturar las tres cosas.
+1. El método devuelve un texto, imprime un SMS y escribe en la base: la foto debe capturar las tres cosas.
 2. Se prueban tres casos: PIN válido, PIN con letra y PIN corto.
-3. Se usa una base temporal para que la foto no dependa de datos viejos.
+3. Se usa una base H2 en memoria, nueva en cada ejecución, para que la foto no dependa de datos viejos.
+4. La misma foto debe servir para «antes» y «después». Por eso se compila cada versión con `javac` en su propia
+   carpeta de clases y se elige cuál usar con `-cp`.
 
-```python
-# antes/entregas.py — una sola función valida, guarda y avisa
-import sqlite3
+```java
+// antes/Entregas.java — un solo método valida, guarda y avisa
+import java.sql.*;
 
-
-def confirmar(ruta_db, guia, pin):
-    if len(pin) != 6 or not pin.isdigit():
-        return "error: PIN inválido"
-    conexion = sqlite3.connect(ruta_db)
-    conexion.execute("CREATE TABLE IF NOT EXISTS envio(guia TEXT PRIMARY KEY, estado TEXT)")
-    conexion.execute("INSERT OR REPLACE INTO envio VALUES (?, 'entregado')", (guia,))
-    conexion.commit()
-    print(f"SMS al cliente: su envío {guia} fue entregado")
-    return "ok"
+class Entregas {
+    static String confirmar(String urlBase, String guia, String pin) throws SQLException {
+        if (pin.length() != 6 || !pin.chars().allMatch(Character::isDigit)) {
+            return "error: PIN inválido";
+        }
+        try (Connection conexion = DriverManager.getConnection(urlBase)) {
+            conexion.createStatement().execute(
+                    "CREATE TABLE IF NOT EXISTS envio(guia VARCHAR(20) PRIMARY KEY, estado VARCHAR(20))");
+            PreparedStatement guardar = conexion.prepareStatement("MERGE INTO envio VALUES (?, 'entregado')");
+            guardar.setString(1, guia);
+            guardar.executeUpdate();
+        }
+        System.out.println("SMS al cliente: su envío " + guia + " fue entregado");
+        return "ok";
+    }
+}
 ```
 
-```python
-# caracterizar.py — registra lo que hace hoy confirmar(), sin juzgar si está bien
-import sqlite3
-import sys
-import tempfile
-from pathlib import Path
+```java
+// Caracterizar.java — registra lo que hace hoy Entregas.confirmar(), sin juzgar si está bien
+import java.sql.*;
 
-sys.path.insert(0, sys.argv[1])          # carpeta con la versión a caracterizar
-from entregas import confirmar
+static final String[][] CASOS = {{"RF-1", "123456"}, {"RF-2", "12a456"}, {"RF-3", "1234"}};
 
-CASOS = [("RF-1", "123456"), ("RF-2", "12a456"), ("RF-3", "1234")]
-with tempfile.TemporaryDirectory() as carpeta:
-    ruta = str(Path(carpeta) / "rutaflow.db")
-    for guia, pin in CASOS:
-        print(f"{guia} {pin} -> {confirmar(ruta, guia, pin)}")
-    filas = sqlite3.connect(ruta).execute("SELECT guia, estado FROM envio").fetchall()
-    print("en la base:", filas)
+void main() throws Exception {
+    String url = "jdbc:h2:mem:foto;DB_CLOSE_DELAY=-1"; // base nueva en cada ejecución
+    for (String[] caso : CASOS) {
+        IO.println(caso[0] + " " + caso[1] + " -> " + Entregas.confirmar(url, caso[0], caso[1]));
+    }
+    try (Connection conexion = DriverManager.getConnection(url)) {
+        ResultSet filas = conexion.createStatement().executeQuery("SELECT guia, estado FROM envio");
+        List<String> guardado = new ArrayList<>();
+        while (filas.next()) {
+            guardado.add(filas.getString(1) + "=" + filas.getString(2));
+        }
+        IO.println("en la base: " + guardado);
+    }
+}
 ```
 
 ```text
-$ python3 caracterizar.py antes | tee antes.txt
+$ javac -d clases/antes antes/*.java Caracterizar.java
+$ java -cp clases/antes:~/herramientas/h2-2.3.232.jar Caracterizar | tee antes.txt
 SMS al cliente: su envío RF-1 fue entregado
 RF-1 123456 -> ok
 RF-2 12a456 -> error: PIN inválido
 RF-3 1234 -> error: PIN inválido
-en la base: [('RF-1', 'entregado')]
+en la base: [RF-1=entregado]
 ```
 
 **Explicación por partes.**
-- `antes/entregas.py`, línea 2: el `import sqlite3` ata la regla a una base concreta (acoplamiento).
-- Líneas 6–7, 8–11 y 12: tres responsabilidades en una función: validar, guardar y avisar (baja cohesión).
-- `caracterizar.py`, línea 7: la carpeta se recibe como argumento; así la misma foto sirve para «antes» y «después».
-- Líneas 11–12: `tempfile.TemporaryDirectory` crea una carpeta que se borra sola al terminar.
-- Líneas 15–16: la foto incluye lo que quedó guardado, no solo lo que se imprimió.
+- `antes/Entregas.java`, línea 2: el `import java.sql.*` ata la regla a JDBC (acoplamiento).
+- Líneas 6–8, 9–15 y 16: tres responsabilidades en un método: validar, guardar y avisar (baja cohesión).
+- `Caracterizar.java`, línea 9: llama a `Entregas.confirmar` sin saber de qué carpeta viene la clase; eso lo decide `-cp`.
+- Línea 7: `jdbc:h2:mem:foto` es una base en memoria; `DB_CLOSE_DELAY=-1` la mantiene viva entre conexiones mientras
+  corre el programa, y desaparece al terminar.
+- Líneas 11–17: la foto incluye lo que quedó guardado, no solo lo que se imprimió.
 - `tee antes.txt` muestra la salida y además la guarda en un archivo para compararla después.
+
+> **Error común.** Ejecutar `java Caracterizar.java` en modo archivo fuente con `-cp clases/antes`. El lanzador carga
+> `Caracterizar` con otro cargador de clases y Java responde
+> `IllegalAccessError: failed to access class Entregas from class Caracterizar`. Compila todo con `javac`, como arriba.
 
 > **Buena práctica.** Guarda la foto en un archivo antes de cambiar una sola línea. Si la tomas a mitad de la
 > refactorización, ya no es el «antes».
@@ -870,164 +980,225 @@ en la base: [('RF-1', 'entregado')]
 Separa la regla de la infraestructura con interfaces, repositorios y adaptadores. Conserva la firma pública y demuestra que nada cambió.
 
 **Razonamiento:**
-1. La regla (PIN válido → guardar → avisar) va a `dominio.py`, que define lo que necesita con dos `Protocol`.
-2. SQLite y la consola van a `adaptadores.py`; también un repositorio y un aviso en memoria, para probar sin base.
-3. `entregas.py` conserva `confirmar(ruta_db, guia, pin)` y solo conecta las piezas.
+1. La regla (PIN válido → guardar → avisar) va a `Dominio.java`, que define lo que necesita con dos `interface`.
+2. JDBC y la consola van a adaptadores; también un repositorio y un aviso en memoria, para probar sin base.
+3. `Entregas.java` conserva `confirmar(urlBase, guia, pin)` y solo conecta las piezas.
 4. Se toma la foto otra vez y se compara con `diff`.
 
-```python
-# despues/dominio.py — la regla de negocio y sus contratos; no conoce SQLite ni SMS
-from typing import Protocol
-
-
-class RepositorioEntregas(Protocol):
-    def marcar_entregado(self, guia: str) -> None: ...
-
-
-class Aviso(Protocol):
-    def enviar(self, mensaje: str) -> None: ...
-
-
-def pin_valido(pin: str) -> bool:
-    return len(pin) == 6 and pin.isdigit()
-
-
-def confirmar_entrega(guia: str, pin: str, repositorio: RepositorioEntregas, aviso: Aviso) -> str:
-    if not pin_valido(pin):
-        return "error: PIN inválido"
-    repositorio.marcar_entregado(guia)
-    aviso.enviar(f"SMS al cliente: su envío {guia} fue entregado")
-    return "ok"
+```java
+// despues/RepositorioEntregas.java — contrato que define el dominio
+interface RepositorioEntregas {
+    void marcarEntregado(String guia);
+}
 ```
 
-```python
-# despues/adaptadores.py — implementaciones concretas de los contratos del dominio
-import sqlite3
-
-
-class RepositorioSQLite:
-    def __init__(self, ruta_db: str):
-        self.ruta_db = ruta_db
-
-    def marcar_entregado(self, guia: str) -> None:
-        with sqlite3.connect(self.ruta_db) as conexion:
-            conexion.execute("CREATE TABLE IF NOT EXISTS envio(guia TEXT PRIMARY KEY, estado TEXT)")
-            conexion.execute("INSERT OR REPLACE INTO envio VALUES (?, 'entregado')", (guia,))
-
-
-class RepositorioMemoria:
-    def __init__(self):
-        self.estados = {}
-
-    def marcar_entregado(self, guia: str) -> None:
-        self.estados[guia] = "entregado"
-
-
-class AvisoConsola:
-    def enviar(self, mensaje: str) -> None:
-        print(mensaje)
-
-
-class AvisoMemoria:
-    def __init__(self):
-        self.enviados = []
-
-    def enviar(self, mensaje: str) -> None:
-        self.enviados.append(mensaje)
+```java
+// despues/Aviso.java — contrato que define el dominio
+interface Aviso {
+    void enviar(String mensaje);
+}
 ```
 
-```python
-# despues/entregas.py — misma firma de antes; ahora solo conecta las piezas
-from adaptadores import AvisoConsola, RepositorioSQLite
-from dominio import confirmar_entrega
+```java
+// despues/Dominio.java — la regla de negocio; no conoce la base de datos ni el SMS
+class Dominio {
+    static boolean pinValido(String pin) {
+        return pin.length() == 6 && pin.chars().allMatch(Character::isDigit);
+    }
 
+    static String confirmarEntrega(String guia, String pin, RepositorioEntregas repositorio, Aviso aviso) {
+        if (!pinValido(pin)) {
+            return "error: PIN inválido";
+        }
+        repositorio.marcarEntregado(guia);
+        aviso.enviar("SMS al cliente: su envío " + guia + " fue entregado");
+        return "ok";
+    }
+}
+```
 
-def confirmar(ruta_db, guia, pin):
-    return confirmar_entrega(guia, pin, RepositorioSQLite(ruta_db), AvisoConsola())
+Los adaptadores reales y los dobles de prueba implementan esas interfaces:
+
+```java
+// despues/RepositorioJdbc.java — adaptador del contrato a una base JDBC
+import java.sql.*;
+
+class RepositorioJdbc implements RepositorioEntregas {
+    private final String urlBase;
+
+    RepositorioJdbc(String urlBase) {
+        this.urlBase = urlBase;
+    }
+
+    @Override
+    public void marcarEntregado(String guia) {
+        try (Connection conexion = DriverManager.getConnection(urlBase)) {
+            conexion.createStatement().execute(
+                    "CREATE TABLE IF NOT EXISTS envio(guia VARCHAR(20) PRIMARY KEY, estado VARCHAR(20))");
+            PreparedStatement guardar = conexion.prepareStatement("MERGE INTO envio VALUES (?, 'entregado')");
+            guardar.setString(1, guia);
+            guardar.executeUpdate();
+        } catch (SQLException error) {
+            throw new IllegalStateException("no se pudo guardar " + guia, error);
+        }
+    }
+}
+```
+
+```java
+// despues/AvisoConsola.java — adaptador del contrato a la consola
+class AvisoConsola implements Aviso {
+    @Override
+    public void enviar(String mensaje) {
+        System.out.println(mensaje);
+    }
+}
+```
+
+```java
+// despues/RepositorioMemoria.java — doble de prueba: guarda en un mapa
+import java.util.Map;
+import java.util.TreeMap;
+
+class RepositorioMemoria implements RepositorioEntregas {
+    final Map<String, String> estados = new TreeMap<>();
+
+    @Override
+    public void marcarEntregado(String guia) {
+        estados.put(guia, "entregado");
+    }
+}
+```
+
+```java
+// despues/AvisoMemoria.java — doble de prueba: recuerda los avisos
+import java.util.ArrayList;
+import java.util.List;
+
+class AvisoMemoria implements Aviso {
+    final List<String> enviados = new ArrayList<>();
+
+    @Override
+    public void enviar(String mensaje) {
+        enviados.add(mensaje);
+    }
+}
+```
+
+```java
+// despues/Entregas.java — misma firma de antes; ahora solo conecta las piezas
+class Entregas {
+    static String confirmar(String urlBase, String guia, String pin) {
+        return Dominio.confirmarEntrega(guia, pin, new RepositorioJdbc(urlBase), new AvisoConsola());
+    }
+}
 ```
 
 ```text
-$ python3 caracterizar.py despues > despues.txt; diff antes.txt despues.txt; echo "diff: $?"
+$ javac -d clases/despues despues/*.java Caracterizar.java PruebaDominio.java
+$ java -cp clases/despues:~/herramientas/h2-2.3.232.jar Caracterizar > despues.txt; diff antes.txt despues.txt; echo "diff: $?"
 diff: 0
 ```
 
-`diff` no imprime nada y termina con `0`: las dos fotos son idénticas. Ahora la regla se prueba sin SQLite:
+`diff` no imprime nada y termina con `0`: las dos fotos son idénticas. Ahora la regla se prueba sin base de datos:
 
-```python
-# prueba_dominio.py — prueba la regla sin SQLite ni consola
-import sys
-
-sys.path.insert(0, "despues")
-from adaptadores import AvisoMemoria, RepositorioMemoria
-from dominio import confirmar_entrega
-
-repositorio, aviso = RepositorioMemoria(), AvisoMemoria()
-print(confirmar_entrega("RF-9", "654321", repositorio, aviso))
-print(confirmar_entrega("RF-8", "65432", repositorio, aviso))
-print("guardado:", repositorio.estados)
-print("avisos:", aviso.enviados)
+```java
+// PruebaDominio.java — prueba la regla sin base de datos ni consola
+void main() {
+    var repositorio = new RepositorioMemoria();
+    var aviso = new AvisoMemoria();
+    IO.println(Dominio.confirmarEntrega("RF-9", "654321", repositorio, aviso));
+    IO.println(Dominio.confirmarEntrega("RF-8", "65432", repositorio, aviso));
+    IO.println("guardado: " + repositorio.estados);
+    IO.println("avisos: " + aviso.enviados);
+}
 ```
 
 ```text
-$ python3 prueba_dominio.py
+$ java -cp clases/despues PruebaDominio
 ok
 error: PIN inválido
-guardado: {'RF-9': 'entregado'}
-avisos: ['SMS al cliente: su envío RF-9 fue entregado']
+guardado: {RF-9=entregado}
+avisos: [SMS al cliente: su envío RF-9 fue entregado]
 ```
 
 Y el acoplamiento se ve en los `import` de cada archivo:
 
-```python
-# acoplamiento.py — lista de qué módulos importa cada archivo
-import ast
-import sys
-from pathlib import Path
+```java
+// Acoplamiento.java — lista qué importa y qué define cada archivo
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.util.JavacTask;
+import javax.tools.ToolProvider;
 
-for ruta in sys.argv[1:]:
-    arbol = ast.parse(Path(ruta).read_text(encoding="utf-8"))
-    nombres = sorted({a.name for n in ast.walk(arbol) if isinstance(n, ast.Import) for a in n.names}
-                     | {n.module for n in ast.walk(arbol) if isinstance(n, ast.ImportFrom)})
-    funciones = [n.name for n in arbol.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))]
-    print(f"{ruta:<24} importa {nombres}  define {funciones}")
+void main(String[] args) {
+    var compilador = ToolProvider.getSystemJavaCompiler();
+    var gestor = compilador.getStandardFileManager(null, null, null);
+    for (String ruta : args) {
+        var tarea = (JavacTask) compilador.getTask(null, gestor, null, null, null,
+                gestor.getJavaFileObjects(ruta));
+        for (CompilationUnitTree unidad : parsear(tarea)) {
+            List<String> importa = unidad.getImports().stream()
+                    .map(i -> i.getQualifiedIdentifier().toString()).toList();
+            List<String> define = unidad.getTypeDecls().stream()
+                    .map(t -> ((ClassTree) t).getSimpleName().toString()).toList();
+            IO.println("%-32s importa %s  define %s".formatted(ruta, importa, define));
+        }
+    }
+}
+
+Iterable<? extends CompilationUnitTree> parsear(JavacTask tarea) {
+    try {
+        return tarea.parse();
+    } catch (java.io.IOException error) {
+        throw new UncheckedIOException(error);
+    }
+}
 ```
 
 ```text
-$ python3 acoplamiento.py antes/entregas.py despues/dominio.py despues/adaptadores.py despues/entregas.py
-antes/entregas.py        importa ['sqlite3']  define ['confirmar']
-despues/dominio.py       importa ['typing']  define ['RepositorioEntregas', 'Aviso', 'pin_valido', 'confirmar_entrega']
-despues/adaptadores.py   importa ['sqlite3']  define ['RepositorioSQLite', 'RepositorioMemoria', 'AvisoConsola', 'AvisoMemoria']
-despues/entregas.py      importa ['adaptadores', 'dominio']  define ['confirmar']
+$ java Acoplamiento.java antes/Entregas.java despues/Dominio.java despues/RepositorioJdbc.java despues/Entregas.java
+antes/Entregas.java              importa [java.sql.*]  define [Entregas]
+despues/Dominio.java             importa []  define [Dominio]
+despues/RepositorioJdbc.java     importa [java.sql.*]  define [RepositorioJdbc]
+despues/Entregas.java            importa []  define [Entregas]
 ```
 
 **Explicación por partes.**
-- `dominio.py`, líneas 5–10: dos interfaces. Dicen **qué** necesita la regla, no **cómo** se hace.
-- Línea 17: la función recibe repositorio y aviso como parámetros: eso es la inversión de dependencias.
-- `adaptadores.py`, líneas 5–12: el adaptador SQLite; `with` confirma la transacción al salir del bloque.
-- Líneas 15–20 y 28–33: dobles de prueba en memoria que cumplen las mismas interfaces.
-- `entregas.py`, línea 7: la fachada arma las piezas reales; quien la llamaba antes no nota el cambio.
-- `acoplamiento.py`: solo `adaptadores.py` importa `sqlite3`; el dominio quedó libre de infraestructura.
+- `RepositorioEntregas.java` y `Aviso.java`: dos interfaces. Dicen **qué** necesita la regla, no **cómo** se hace.
+- `Dominio.java`, línea 7: el método recibe repositorio y aviso como parámetros: eso es la inversión de dependencias.
+- `RepositorioJdbc.java`: el adaptador JDBC; el `try` con recursos cierra la conexión, y el `SQLException` se
+  envuelve para que el contrato no hable de SQL.
+- `RepositorioMemoria.java` y `AvisoMemoria.java`: dobles de prueba en memoria que implementan las mismas interfaces.
+- `despues/Entregas.java`, línea 4: la fachada arma las piezas reales; quien la llamaba antes no nota el cambio.
+- `Acoplamiento.java`: lee los `import` con el árbol del compilador. Solo `RepositorioJdbc` importa `java.sql`; el
+  dominio quedó libre de infraestructura.
 
 Si llamas la regla sin uno de sus colaboradores:
 
-```python
-# error_sin_aviso.py — olvidar inyectar una dependencia
-import sys
-
-sys.path.insert(0, "despues")
-from adaptadores import RepositorioMemoria
-from dominio import confirmar_entrega
-
-print(confirmar_entrega("RF-9", "654321", RepositorioMemoria()))
+```java
+// ErrorSinAviso.java — olvidar inyectar una dependencia
+void main() {
+    IO.println(Dominio.confirmarEntrega("RF-9", "654321", new RepositorioMemoria()));
+}
 ```
 
 ```text
-$ python3 error_sin_aviso.py
-TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'
+$ javac -cp clases/despues -d /tmp/x ErrorSinAviso.java; echo "salida: $?"
+salida: 1
+ErrorSinAviso.java:3: error: method confirmarEntrega in class Dominio cannot be applied to given types;
+    IO.println(Dominio.confirmarEntrega("RF-9", "654321", new RepositorioMemoria()));
+                      ^
+  required: String,String,RepositorioEntregas,Aviso
+  found:    String,String,RepositorioMemoria
+  reason: actual and formal argument lists differ in length
+1 error
 ```
 
-> **Error común.** Olvidar inyectar una dependencia produce `TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'`. El mensaje dice qué parámetro
-> faltó; pasa un objeto que cumpla `Aviso`, como `AvisoMemoria()`.
+> **Error común.** Olvidar inyectar una dependencia ya no llega a ejecutarse: el compilador responde
+> `method confirmarEntrega in class Dominio cannot be applied to given types` y muestra `required` frente a `found`.
+> Pasa un objeto que implemente `Aviso`, como `new AvisoMemoria()`. Por eso `ErrorSinAviso.java` vive fuera de
+> `despues/`: si estuviera dentro, `javac despues/*.java` fallaría.
 
 > **Error común.** Aplicar Repository y Adapter a todo. Si un script de 20 líneas solo escribirá siempre en un
 > archivo, la interfaz extra solo agrega lectura. Usa estos patrones en los límites que cambian o que pruebas aparte.
@@ -1038,7 +1209,7 @@ TypeError: confirmar_entrega() missing 1 required positional argument: 'aviso'
 #### Checkpoint 3.1
 Producto pide avisar por correo. ¿Qué archivos tocas en la versión «después» y cuáles no?
 
-Respuesta: agregas una clase `AvisoCorreo` en `adaptadores.py` y la usas en `entregas.py`. `dominio.py` no cambia: depende de `Aviso`, no de un canal concreto.
+Respuesta: agregas una clase `AvisoCorreo implements Aviso` y la usas en `Entregas.java`. `Dominio.java` no cambia: depende de `Aviso`, no de un canal concreto.
 
 </details>
 
@@ -1046,16 +1217,16 @@ Respuesta: agregas una clase `AvisoCorreo` en `adaptadores.py` y la usas en `ent
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/diseno` con las subcarpetas `antes`, `despues` y `ts`.
+Crea `~/labs/arquitectura/diseno` con las subcarpetas `antes`, `despues` y `ts`.
 
 #### Paso 2 · Toma la foto
-Escribe `antes/entregas.py` y `caracterizar.py`. Ejecuta `python3 caracterizar.py antes | tee antes.txt`.
+Escribe `antes/Entregas.java` y `Caracterizar.java`. Compila con `javac -d clases/antes antes/*.java Caracterizar.java` y ejecuta `java -cp clases/antes:~/herramientas/h2-2.3.232.jar Caracterizar | tee antes.txt`.
 
 #### Paso 3 · Refactoriza en pasos pequeños
-Escribe `dominio.py`, luego `adaptadores.py`, luego la fachada `entregas.py`. Tras cada archivo, compara la foto con `diff`.
+Escribe las dos interfaces y `Dominio.java`, luego los adaptadores, luego la fachada `Entregas.java`. Cuando compile, compara la foto con `diff`.
 
 #### Paso 4 · Prueba sin infraestructura
-Ejecuta `prueba_dominio.py` y `acoplamiento.py`. Comprueba que solo `adaptadores.py` importa `sqlite3`.
+Ejecuta `PruebaDominio` y `Acoplamiento.java`. Comprueba que solo `RepositorioJdbc.java` importa `java.sql`.
 
 #### Paso 5 · El mismo puerto en TypeScript
 El mismo diseño se escribe en TypeScript con un puerto `DeliveryRepository`. En `ts/` crea `confirm-delivery.ts`:
@@ -1136,57 +1307,63 @@ salida: 0
 ```
 
 La segunda llamada con `cmd-1` devuelve el resultado guardado y no agrega otra confirmación (línea 22). El PIN corto
-se rechaza con `TypeError` (línea 25). Comprueba el puerto con Python:
+se rechaza con `TypeError` (línea 25). Comprueba el puerto con un programa Java en la misma carpeta `ts/`:
 
-```python
-# verificar_puerto.py — el puerto tiene dos métodos y ninguna palabra de infraestructura
-import re
-from pathlib import Path
+```java
+// VerificarPuerto.java — el puerto tiene dos métodos y ninguna palabra de infraestructura
+import java.util.regex.Pattern;
 
-fuente = Path("confirm-delivery.ts").read_text(encoding="utf-8")
-bloque = re.search(r"export interface DeliveryRepository \{(.*?)\n\}", fuente, re.S)
-if not bloque:
-    raise SystemExit("no se encontró DeliveryRepository")
-cuerpo = bloque.group(1)
-metodos = re.findall(r"^\s{2}(\w+)\(", cuerpo, re.M)
-infra = re.findall(r"(?i)\b(sqlite|sql|http|fetch|dynamodb|aws)\b", cuerpo)
-print("métodos:", ", ".join(metodos))
-print("métodos esperados:", len(metodos) == 2)
-print("referencias de infraestructura:", len(infra))
+void main() throws IOException {
+    String fuente = Files.readString(Path.of("confirm-delivery.ts"));
+    var bloque = Pattern.compile("export interface DeliveryRepository \\{(.*?)\\n\\}", Pattern.DOTALL)
+            .matcher(fuente);
+    if (!bloque.find()) {
+        IO.println("no se encontró DeliveryRepository");
+        System.exit(1);
+    }
+    String cuerpo = bloque.group(1);
+    List<String> metodos = Pattern.compile("^\\s{2}(\\w+)\\(", Pattern.MULTILINE).matcher(cuerpo)
+            .results().map(m -> m.group(1)).toList();
+    long infra = Pattern.compile("(?i)\\b(sqlite|sql|http|fetch|dynamodb|aws)\\b").matcher(cuerpo)
+            .results().count();
+    IO.println("métodos: " + String.join(", ", metodos));
+    IO.println("métodos esperados: " + (metodos.size() == 2));
+    IO.println("referencias de infraestructura: " + infra);
+}
 ```
 
 ```text
-$ python3 verificar_puerto.py
+$ java VerificarPuerto.java
 métodos: findCommandResult, confirm
-métodos esperados: True
+métodos esperados: true
 referencias de infraestructura: 0
 ```
 
 #### Resumen
 - **Cohesión** alta: cada módulo tiene una razón para cambiar; **acoplamiento** bajo: depende de pocos detalles ajenos.
-- Una **interfaz** (`Protocol`) declara qué se necesita; la **inversión de dependencias** hace que la regla la reciba de afuera.
+- Una **interfaz** (`interface`) declara qué se necesita; la **inversión de dependencias** hace que la regla la reciba de afuera.
 - Los **principios SOLID** guían el diseño; se aplican donde hay cambio real.
 - Un **patrón de diseño** es una solución con nombre: **Repository** oculta el almacenamiento y **Adapter** traduce piezas concretas.
 - Una **refactorización** cambia la estructura sin cambiar el comportamiento; la **prueba caracterizadora** lo demuestra.
 
 #### Ejercicio verificable 1
-Básico. En `antes/entregas.py`, señala las líneas de cada responsabilidad.
+Básico. En `antes/Entregas.java`, señala las líneas de cada responsabilidad.
 
-Respuesta esperada: validar el PIN, líneas 6–7; guardar en SQLite, líneas 8–11; avisar al cliente, línea 12.
+Respuesta esperada: validar el PIN, líneas 6–8; guardar en la base, líneas 9–15; avisar al cliente, línea 16.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega `AvisoCorreo` en `adaptadores.py` que imprima `Correo: ...` y úsalo en un script con `RepositorioMemoria`.
+Intermedio. Agrega `despues/AvisoCorreo.java`, que imprima `Correo: ...`, y úsalo en un programa con `RepositorioMemoria`.
 
-Respuesta esperada: `Correo: SMS al cliente: su envío RF-9 fue entregado` y `ok`. `dominio.py` no se modificó.
+Respuesta esperada: `Correo: SMS al cliente: su envío RF-9 fue entregado` y `ok`. `Dominio.java` no se modificó.
 
 #### Ejercicio verificable 3
-Reto. Cambia en `dominio.py` el texto `"error: PIN inválido"` por `"PIN inválido"` y repite la foto.
+Reto. Cambia en `Dominio.java` el texto `"error: PIN inválido"` por `"PIN inválido"`, recompila y repite la foto.
 
 Respuesta esperada: `diff` muestra dos líneas cambiadas (RF-2 y RF-3) y termina con `diff: 1`. Ya no es refactorización: es un cambio de comportamiento que necesita su propio criterio.
 
 #### En el trabajo
 Este patrón se llama arquitectura hexagonal o de puertos y adaptadores, y es común en backends de Java, Node.js y
-Python. En sistemas heredados sin pruebas, la prueba caracterizadora es el primer paso de cualquier cambio: primero se
+otros lenguajes. En sistemas heredados sin pruebas, la prueba caracterizadora es el primer paso de cualquier cambio: primero se
 fija lo que hace hoy y después se mejora. Los equipos lo revisan en el pull request mirando que el `diff` del commit de
 refactor no toque pruebas.
 
@@ -1234,7 +1411,7 @@ arreglar algún día» tiene 40 entradas sin orden. ¿Cómo dejas memoria de las
 - **Definición técnica:** costo futuro de trabajo adicional que se acumula al elegir hoy una solución más rápida o menos limpia que la adecuada.
 - **En palabras sencillas:** un préstamo: ganas tiempo hoy y lo pagas después, con intereses.
 - **Dónde se rompe la comparación:** a veces la deuda no se paga nunca porque el código se borra; entonces era la decisión correcta.
-- **Ejemplo:** `confirmar() mezcla regla, SQLite y SMS` (la versión «antes» del Tema 3).
+- **Ejemplo:** `Entregas.confirmar() mezcla regla, SQL y SMS` (la versión «antes» del Tema 3).
 - **Error típico:** llamar deuda a todo lo que no te gusta; sin costo estimado, la lista no sirve para decidir.
 
 **interés de la deuda**
@@ -1248,14 +1425,14 @@ arreglar algún día» tiene 40 entradas sin orden. ¿Cómo dejas memoria de las
 - **Definición técnica:** modificación de una interfaz pública tras la cual el código que ya la usaba sigue funcionando sin cambios.
 - **En palabras sencillas:** mejorar la herramienta sin obligar a nadie a cambiar cómo la usa.
 - **Dónde se rompe la comparación:** compatible no es idéntico: la función puede hacer más, pero lo viejo debe seguir igual.
-- **Ejemplo:** `calcular_tarifa(peso_kg, urgente=False)`: las llamadas viejas con solo el peso siguen dando `10500.0`.
-- **Error típico:** agregar un parámetro obligatorio: `TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'`.
+- **Ejemplo:** la sobrecarga `calcularTarifa(double pesoKg)` llama a `calcularTarifa(pesoKg, false)`: las llamadas viejas con solo el peso siguen dando `10500.0`.
+- **Error típico:** agregar un parámetro obligatorio sin sobrecarga: el código de otros deja de compilar con `method calcularTarifa in class Tarifas cannot be applied to given types`.
 
 **deprecación**
 - **Definición técnica:** marca formal de que una interfaz será retirada en una versión futura; sigue funcionando, pero avisa y señala la alternativa.
 - **En palabras sencillas:** el aviso de «este puente se cierra en marzo; use el nuevo».
-- **Dónde se rompe la comparación:** Python oculta `DeprecationWarning` salvo en el programa principal y en las pruebas; quien no mira la salida no lo ve.
-- **Ejemplo:** `tarifa()` emite `DeprecationWarning: tarifa() se retirará en la versión 3; usa calcular_tarifa()`.
+- **Dónde se rompe la comparación:** en Java el aviso lo da el compilador, no el programa al ejecutarse; quien no lee las advertencias de compilación no lo ve.
+- **Ejemplo:** `@Deprecated(since = "2", forRemoval = true)` sobre `tarifa()` produce `warning: [removal] tarifa(double) in Tarifas has been deprecated and marked for removal`.
 - **Error típico:** borrar la función vieja sin aviso previo; el código de otros equipos se rompe el día del despliegue.
 
 #### ► CÓMO FUNCIONA
@@ -1312,26 +1489,31 @@ Descartamos PostgreSQL para esta tabla: daría uniones que no necesitamos y exig
 - Revisión: si aparecen 3 o más consultas que no usan `shipment_id`, se reabre esta decisión.
 ```
 
-```python
-# verificar_adr.py — un ADR completo tiene estado y las tres secciones
-import re
-import sys
-from pathlib import Path
+```java
+// VerificarAdr.java — un ADR completo tiene estado y las tres secciones
+import java.util.regex.Pattern;
 
-SECCIONES = ("## Contexto", "## Decisión", "## Consecuencias")
-ruta = Path(sys.argv[1])
-texto = ruta.read_text(encoding="utf-8")
-faltan = [s for s in SECCIONES if s not in texto]
-estado = re.search(r"^Estado: (propuesto|aceptado|reemplazado|obsoleto)", texto, re.M)
-print(f"{ruta.name}: secciones {len(SECCIONES) - len(faltan)}/{len(SECCIONES)}")
-print("estado:", estado.group(1) if estado else "FALTA")
-for seccion in faltan:
-    print("falta:", seccion)
-sys.exit(1 if faltan or not estado else 0)
+static final List<String> SECCIONES = List.of("## Contexto", "## Decisión", "## Consecuencias");
+static final Pattern ESTADO =
+        Pattern.compile("^Estado: (propuesto|aceptado|reemplazado|obsoleto)", Pattern.MULTILINE);
+
+void main(String[] args) throws IOException {
+    Path ruta = Path.of(args[0]);
+    String texto = Files.readString(ruta);
+    List<String> faltan = SECCIONES.stream().filter(s -> !texto.contains(s)).toList();
+    var estado = ESTADO.matcher(texto);
+    boolean hayEstado = estado.find();
+    IO.println(ruta.getFileName() + ": secciones " + (SECCIONES.size() - faltan.size()) + "/" + SECCIONES.size());
+    IO.println("estado: " + (hayEstado ? estado.group(1) : "FALTA"));
+    for (String seccion : faltan) {
+        IO.println("falta: " + seccion);
+    }
+    System.exit(faltan.isEmpty() && hayEstado ? 0 : 1);
+}
 ```
 
 ```text
-$ python3 verificar_adr.py docs/adr/0001-borrador.md; echo "salida: $?"
+$ java VerificarAdr.java docs/adr/0001-borrador.md; echo "salida: $?"
 0001-borrador.md: secciones 2/3
 estado: FALTA
 falta: ## Consecuencias
@@ -1339,17 +1521,17 @@ salida: 1
 ```
 
 ```text
-$ python3 verificar_adr.py docs/adr/0001-shipment-events-dynamodb.md; echo "salida: $?"
+$ java VerificarAdr.java docs/adr/0001-shipment-events-dynamodb.md; echo "salida: $?"
 0001-shipment-events-dynamodb.md: secciones 3/3
 estado: aceptado
 salida: 0
 ```
 
 **Explicación por partes.**
-- Línea 6: las tres secciones obligatorias, con su título exacto en Markdown.
-- Línea 9: lista las que no aparecen en el texto.
-- Línea 10: el estado debe ser una de cuatro palabras, al inicio de una línea; `re.M` hace que `^` marque cada línea.
-- Línea 15: falta una sección **o** el estado → código 1.
+- Línea 4: las tres secciones obligatorias, con su título exacto en Markdown.
+- Líneas 5–6: el estado debe ser una de cuatro palabras, al inicio de una línea; `Pattern.MULTILINE` hace que `^` marque cada línea.
+- Línea 11: lista las secciones que no aparecen en el texto.
+- Línea 19: falta una sección **o** el estado → código 1.
 - El ADR completo nombra lo que se pierde («reportes por ciudad necesitan otra tabla»): ese es el trade-off escrito.
 
 > **Error común.** Escribir el título con otra forma, como `## Consecuencia` o `## consecuencias`. El verificador
@@ -1364,103 +1546,154 @@ Prioriza la deuda técnica de RutaFlow y evoluciona la función de tarifas sin r
 **Razonamiento:**
 1. Cada deuda lleva dos números: horas para arreglarla y horas que cuesta por semana.
 2. Semanas de recuperación = costo ÷ interés. Se paga primero lo que se recupera antes.
-3. Para la tarifa, el parámetro nuevo lleva valor por defecto, y la función vieja avisa antes de desaparecer.
+3. Para la tarifa, Java no tiene valores por defecto: se agrega una **sobrecarga** con la firma vieja, y el método
+   viejo se marca como deprecado para que el compilador avise antes de que desaparezca.
 
-```python
-# deuda.py — registro de deuda técnica priorizado por cuánto tarda en pagarse
-DEUDA = [
-    # (descripción, horas para arreglarla, horas que cuesta cada semana sin arreglar)
-    ("confirmar() mezcla regla, SQLite y SMS", 6, 3.0),
-    ("pruebas lentas: 4 min por ejecución", 16, 2.0),
-    ("nombres en inglés y español mezclados", 10, 0.5),
-    ("sin índice en envio.guia", 1, 1.5),
-]
+```java
+// Deuda.java — registro de deuda técnica priorizado por cuánto tarda en pagarse
+record Item(String descripcion, int costoHoras, double interesHorasSemana) {
+    double semanasRecuperacion() {
+        return costoHoras / interesHorasSemana;
+    }
+}
 
-print("ANTES: orden en que se anotó")
-for descripcion, costo, interes in DEUDA:
-    print(f"  {descripcion}")
+static final List<Item> DEUDA = List.of(
+        new Item("Entregas.confirmar() mezcla regla, SQL y SMS", 6, 3.0),
+        new Item("pruebas lentas: 4 min por ejecución", 16, 2.0),
+        new Item("nombres en inglés y español mezclados", 10, 0.5),
+        new Item("sin índice en envio.guia", 1, 1.5));
 
-print("DESPUÉS: orden por semanas para recuperar la inversión")
-for descripcion, costo, interes in sorted(DEUDA, key=lambda d: d[1] / d[2]):
-    print(f"  {costo / interes:5.1f} sem  {descripcion} ({costo} h, {interes} h/sem)")
+void main() {
+    IO.println("ANTES: orden en que se anotó");
+    for (Item item : DEUDA) {
+        IO.println("  " + item.descripcion());
+    }
+    IO.println("DESPUÉS: orden por semanas para recuperar la inversión");
+    DEUDA.stream()
+            .sorted(Comparator.comparingDouble(Item::semanasRecuperacion))
+            .forEach(item -> IO.println(String.format(Locale.ROOT, "  %5.1f sem  %s (%d h, %s h/sem)",
+                    item.semanasRecuperacion(), item.descripcion(), item.costoHoras(), item.interesHorasSemana())));
+}
 ```
 
 ```text
-$ python3 deuda.py
+$ java Deuda.java
 ANTES: orden en que se anotó
-  confirmar() mezcla regla, SQLite y SMS
+  Entregas.confirmar() mezcla regla, SQL y SMS
   pruebas lentas: 4 min por ejecución
   nombres en inglés y español mezclados
   sin índice en envio.guia
 DESPUÉS: orden por semanas para recuperar la inversión
     0.7 sem  sin índice en envio.guia (1 h, 1.5 h/sem)
-    2.0 sem  confirmar() mezcla regla, SQLite y SMS (6 h, 3.0 h/sem)
+    2.0 sem  Entregas.confirmar() mezcla regla, SQL y SMS (6 h, 3.0 h/sem)
     8.0 sem  pruebas lentas: 4 min por ejecución (16 h, 2.0 h/sem)
    20.0 sem  nombres en inglés y español mezclados (10 h, 0.5 h/sem)
 ```
 
-Primero, la versión 2 **incompatible**:
+Primero, la versión 2 **incompatible**, en la carpeta `rota/`, con el código de otro equipo que la usa:
 
-```python
-# tarifas_rota.py — versión 2 incompatible: el parámetro nuevo es obligatorio
-def calcular_tarifa(peso_kg, urgente):
-    base = 4200 * peso_kg
-    return base + 3000 if urgente else base
+```java
+// rota/Tarifas.java — versión 2 incompatible: el parámetro nuevo es obligatorio
+class Tarifas {
+    static double calcularTarifa(double pesoKg, boolean urgente) {
+        double base = 4200 * pesoKg;
+        return urgente ? base + 3000 : base;
+    }
+}
+```
 
-
-print("llamada de la versión 1:", calcular_tarifa(2.5))
+```java
+// rota/UsoTarifas.java — código de otro equipo, escrito contra la versión 1
+void main() {
+    IO.println("llamada de la versión 1: " + Tarifas.calcularTarifa(2.5));
+}
 ```
 
 ```text
-$ python3 tarifas_rota.py
-TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'
+$ cd rota && java UsoTarifas.java; echo "salida: $?"
+UsoTarifas.java:3: error: method calcularTarifa in class Tarifas cannot be applied to given types;
+    IO.println("llamada de la versión 1: " + Tarifas.calcularTarifa(2.5));
+                                                    ^
+  required: double,boolean
+  found:    double
+  reason: actual and formal argument lists differ in length
+1 error
+error: compilation failed
+salida: 1
 ```
 
-Ahora la versión 2 compatible, con deprecación de la versión 1:
+Ahora la versión 2 compatible, con deprecación de la versión 1, en la carpeta `adr/`:
 
-```python
-# tarifas.py — versión 2: agrega el recargo sin romper a quien usa la versión 1
-import warnings
+```java
+// Tarifas.java — versión 2: agrega el recargo sin romper a quien usa la versión 1
+class Tarifas {
+    /** Versión 2. */
+    static double calcularTarifa(double pesoKg, boolean urgente) {
+        double base = 4200 * pesoKg;
+        return urgente ? base + 3000 : base;
+    }
 
+    /** Sobrecarga: las llamadas viejas, con solo el peso, siguen sirviendo. */
+    static double calcularTarifa(double pesoKg) {
+        return calcularTarifa(pesoKg, false);
+    }
 
-def calcular_tarifa(peso_kg, urgente=False):
-    """Versión 2. El parámetro nuevo tiene valor por defecto: las llamadas viejas siguen sirviendo."""
-    base = 4200 * peso_kg
-    return base + 3000 if urgente else base
+    /** Versión 1. Se conserva un tiempo y avisa que será retirada. */
+    @Deprecated(since = "2", forRemoval = true)
+    static double tarifa(double pesoKg) {
+        return calcularTarifa(pesoKg);
+    }
+}
+```
 
-
-def tarifa(peso_kg):
-    """Versión 1. Se conserva un tiempo y avisa que será retirada."""
-    warnings.warn("tarifa() se retirará en la versión 3; usa calcular_tarifa()", DeprecationWarning, stacklevel=2)
-    return calcular_tarifa(peso_kg)
-
-
-print("v1:", tarifa(2.5))
-print("v2:", calcular_tarifa(2.5))
-print("v2 urgente:", calcular_tarifa(2.5, urgente=True))
+```java
+// UsoTarifas.java — código de otro equipo que todavía usa la versión 1
+void main() {
+    IO.println("v1: " + Tarifas.tarifa(2.5));
+    IO.println("v2: " + Tarifas.calcularTarifa(2.5));
+    IO.println("v2 urgente: " + Tarifas.calcularTarifa(2.5, true));
+}
 ```
 
 ```text
-$ python3 tarifas.py
-/home/estudiante/labs/modulo-7/adr/tarifas.py:17: DeprecationWarning: tarifa() se retirará en la versión 3; usa calcular_tarifa()
-  print("v1:", tarifa(2.5))
+$ java UsoTarifas.java; echo "salida: $?"
+UsoTarifas.java:3: warning: [removal] tarifa(double) in Tarifas has been deprecated and marked for removal
+    IO.println("v1: " + Tarifas.tarifa(2.5));
+                               ^
+1 warning
 v1: 10500.0
 v2: 10500.0
 v2 urgente: 13500.0
+salida: 0
 ```
 
 **Explicación por partes.**
-- `deuda.py`, línea 15: `sorted` con `key` ordena por costo ÷ interés; la deuda más barata de recuperar va primero.
-- `tarifas_rota.py`, línea 2: `urgente` no tiene valor por defecto, así que toda llamada vieja falla.
-- `tarifas.py`, línea 5: `urgente=False` hace opcional el parámetro nuevo; la llamada de la línea 18 da lo mismo que antes.
-- Línea 13: `warnings.warn` con `DeprecationWarning`; `stacklevel=2` señala la línea de **quien llamó** (la 17), no la de `tarifa`.
-- La advertencia sale por la salida de errores y aparece antes del `print` porque se emite mientras se calcula `tarifa(2.5)`.
+- `Deuda.java`, líneas 2–6: cada deuda es un record con su costo, su interés y un método que calcula las semanas.
+- Líneas 20–21: `Comparator.comparingDouble` ordena por costo ÷ interés; la deuda más barata de recuperar va primero.
+  `Locale.ROOT` fija el punto decimal, sin importar el idioma del sistema.
+- `rota/Tarifas.java`, línea 3: solo existe la firma con `urgente`; la llamada vieja con un solo argumento no compila.
+- `Tarifas.java`, líneas 10–12: la sobrecarga conserva la firma de la versión 1 y elige `false`, el comportamiento anterior.
+- Líneas 15–18: `@Deprecated(since = "2", forRemoval = true)` marca `tarifa`. El aviso lo da el compilador en la línea
+  de **quien llamó** (`UsoTarifas.java:3`), no dentro de `Tarifas`; el programa igual se ejecuta.
 
-> **Error común.** Agregar un parámetro obligatorio a una función pública: `TypeError: calcular_tarifa() missing 1 required positional argument: 'urgente'`. El mensaje nombra el
-> parámetro que falta. Dale un valor por defecto que conserve el comportamiento anterior.
+> **Error común.** Cambiar la firma de un método público sin dejar la vieja. El código de otros equipos deja de
+> compilar con `cannot be applied to given types` y el mensaje muestra `required: double,boolean` frente a
+> `found: double`. Agrega una sobrecarga que conserve el comportamiento anterior.
 
-> **Prevenir errores.** Ejecuta las pruebas con `python3 -W error::DeprecationWarning -m unittest`. Así cualquier uso
-> de una función deprecada falla en CI antes de que la retiren.
+> **Prevenir errores.** Compila en CI con `-Xlint:removal -Werror`. Así cualquier uso de un método marcado para
+> retiro falla antes de que lo retiren:
+
+```text
+$ javac -d /tmp/clases-adr -Xlint:removal -Werror Tarifas.java UsoTarifas.java; echo "salida: $?"
+UsoTarifas.java:3: warning: [removal] tarifa(double) in Tarifas has been deprecated and marked for removal
+    IO.println("v1: " + Tarifas.tarifa(2.5));
+                               ^
+error: warnings found and -Werror specified
+1 error
+1 warning
+salida: 1
+```
+
 
 #### Checkpoint 4.1
 Dentro de un año, RutaFlow necesita reportes por ciudad todos los días. ¿Editas el ADR 0001?
@@ -1473,16 +1706,16 @@ Respuesta: no. Escribes un ADR 0002 con el contexto nuevo y la decisión nueva, 
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/adr/docs/adr` y entra en `~/labs/modulo-7/adr`.
+Crea `~/labs/arquitectura/adr/docs/adr` y entra en `~/labs/arquitectura/adr`.
 
 #### Paso 2 · Escribe y verifica el ADR
-Crea el borrador y el ADR completo. Ejecuta `verificar_adr.py` con ambos y anota los códigos de salida.
+Crea el borrador y el ADR completo. Ejecuta `VerificarAdr.java` con ambos y anota los códigos de salida.
 
 #### Paso 3 · Registra tu deuda
-Escribe `deuda.py` con cuatro deudas de tu propio proyecto, cada una con costo e interés, y ejecútalo.
+Escribe `Deuda.java` con cuatro deudas de tu propio proyecto, cada una con costo e interés, y ejecútalo.
 
 #### Paso 4 · Evoluciona sin romper
-Ejecuta `tarifas_rota.py` para ver el fallo y luego `tarifas.py`. Repite con `python3 -W error::DeprecationWarning tarifas.py` y observa que el aviso se vuelve error.
+Ejecuta `rota/UsoTarifas.java` para ver el fallo y luego `UsoTarifas.java`. Repite con `javac -d /tmp/clases-adr -Xlint:removal -Werror Tarifas.java UsoTarifas.java` y observa que el aviso se vuelve error.
 
 #### Resumen
 - Una **decisión de arquitectura** es costosa de revertir; por eso se escribe.
@@ -1497,9 +1730,9 @@ Básico. Quita la línea `Estado:` del ADR completo y ejecuta el verificador.
 Respuesta esperada: `secciones 3/3`, `estado: FALTA` y `salida: 1`.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `deuda.py` la deuda «sin respaldo de la base», con 4 h de costo y 4.0 h por semana de interés. ¿En qué posición queda?
+Intermedio. Agrega a `Deuda.java` la deuda «sin respaldo de la base», con 4 h de costo y 4.0 h por semana de interés. ¿En qué posición queda?
 
-Respuesta esperada: `1.0 sem`, en segundo lugar, después del índice (`0.7 sem`) y antes de `confirmar()` (`2.0 sem`).
+Respuesta esperada: `1.0 sem`, en segundo lugar, después del índice (`0.7 sem`) y antes de `Entregas.confirmar()` (`2.0 sem`).
 
 #### Ejercicio verificable 3
 Reto. Escribe el ADR 0002 que reemplaza al 0001 por la necesidad de reportes por ciudad, y cambia el estado del 0001.
@@ -1513,7 +1746,7 @@ pagarla. En librerías y APIs públicas, la deprecación dura al menos una versi
 
 </details>
 
-### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda · Avanzado · 45 min
+### Tema 5: Records de Java y C#: igualdad por valor no implica inmutabilidad profunda · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -1521,14 +1754,15 @@ pagarla. En librerías y APIs públicas, la deprecación dura al menos una versi
 #### Objetivos
 Al terminar este tema podrás:
 - explicar qué compara la igualdad por valor de un record y en qué se diferencia de la identidad;
-- crear una copia con `with` en C# y con `dataclasses.replace` en Python;
+- crear una copia con `with` en C# y con un método «con» (`conId`) en un record de Java;
 - demostrar que una lista dentro de un objeto «inmutable» se puede modificar y se comparte entre copias;
-- lograr inmutabilidad profunda con tipos inmutables (`tuple`, `IReadOnlyList`/`ImmutableList`).
+- lograr inmutabilidad profunda con colecciones no modificables (`List.copyOf` en Java, `ImmutableList` en C#).
 
-**Conceptos clave:** record, igualdad por valor, identidad, expresión `with`, dataclass congelada, inmutabilidad superficial, inmutabilidad profunda
+**Conceptos clave:** record, igualdad por valor, identidad, expresión `with`, constructor compacto, inmutabilidad superficial, inmutabilidad profunda
 
-Este tema usa **clase** y **objeto** (Módulo 1, Tema 6) y **cambio compatible** (Tema 4 de este módulo). Es una
-comparación de diseño, no un curso de C#: el ejemplo C# se explica y se comprueba con su equivalente en Python.
+Este tema usa **clase** y **objeto** (Fundamentos, Módulo 1, Tema 6), los records del curso de Java y **cambio
+compatible** (Tema 4 de este módulo). Es una comparación de diseño, no un curso de C#: el ejemplo C# se explica y se
+comprueba con su equivalente en Java, que sí se ejecutó.
 
 #### El problema
 RutaFlow guarda el historial de estados de cada envío en un objeto `Registro` que el equipo creía inmutable. Para
@@ -1538,53 +1772,53 @@ de auditoría cambió sin que nadie lo tocara. ¿Por qué una copia de un objeto
 #### Glosario del tema
 
 **record**
-- **Definición técnica:** en C#, tipo declarado con `record` para el que el compilador genera igualdad por valor, `ToString`, deconstrucción y copia con `with`; en la forma posicional, sus propiedades son de solo inicialización.
-- **En palabras sencillas:** una clase pensada para guardar datos, con la comparación y la copia ya hechas.
-- **Dónde se rompe la comparación:** «solo inicialización» protege la propiedad, no el objeto al que apunta: la lista sigue siendo modificable.
-- **Ejemplo:** `public record Registro(int Id, List<string> Estados);` en `Program.cs`.
-- **Error típico:** asignar después de crear (`copia.Id = 9`): el compilador lo rechaza porque la propiedad es de solo inicialización.
+- **Definición técnica:** tipo declarado con `record` para el que el compilador genera constructor, igualdad por valor (`equals` y `hashCode` en Java, `Equals` en C#) y `toString`/`ToString`. En Java sus campos son `final`; en C#, en la forma posicional, sus propiedades son de solo inicialización.
+- **En palabras sencillas:** una clase pensada para guardar datos, con la comparación ya hecha.
+- **Dónde se rompe la comparación:** `final` protege el campo, no el objeto al que apunta: la lista sigue siendo modificable.
+- **Ejemplo:** `record Registro(int id, List<String> estados)` en Java; `public record Registro(int Id, List<string> Estados);` en C#.
+- **Error típico:** asignar después de crear (`registro.id = 8`): `error: cannot assign a value to final variable id`.
 
 **igualdad por valor**
 - **Definición técnica:** criterio por el que dos objetos son iguales si todos sus campos son iguales, aunque sean objetos distintos en memoria.
 - **En palabras sencillas:** dos billetes de 10 000 valen lo mismo aunque sean papeles distintos.
-- **Dónde se rompe la comparación:** compara los campos con su propia igualdad; dos listas iguales en contenido dan `True` en Python, pero en C# `List<T>` compara referencias.
-- **Ejemplo:** `Registro(4, ["a"]) == Registro(4, ["a"])` → `igualdad por valor: True`.
-- **Error típico:** usar el objeto como clave de diccionario con un campo mutable: `TypeError: unhashable type: 'list'`.
+- **Dónde se rompe la comparación:** compara los campos con su propia igualdad; dos listas iguales en contenido dan `true` en Java (`List.equals` compara elementos), pero en C# `List<T>` compara referencias.
+- **Ejemplo:** `new Registro(4, List.of("a")).equals(new Registro(4, List.of("a")))` → `igualdad por valor: true`.
+- **Error típico:** usar como clave de `HashMap` un record con una lista modificable y cambiar la lista: la entrada sigue ahí, pero `get` devuelve `null`.
 
 **identidad**
-- **Definición técnica:** propiedad de ser el mismo objeto en memoria; en Python se compara con `is`, en C# con `ReferenceEquals`.
+- **Definición técnica:** propiedad de ser el mismo objeto en memoria; en Java se compara con `==` entre referencias, en C# con `ReferenceEquals`.
 - **En palabras sencillas:** no «iguales», sino **el mismo**: tu billete, no uno igual.
 - **Dónde se rompe la comparación:** dos objetos pueden ser iguales por valor y distintos en identidad, como en la salida.
-- **Ejemplo:** `Registro(4, ["a"]) is Registro(4, ["a"])` → `misma identidad: False`; `original.estados is copia.estados` → `True`.
-- **Error típico:** comparar con `is` cuando quieres saber si los datos coinciden; usa `==`.
+- **Ejemplo:** dos `new Registro(4, List.of("a"))` dan `misma identidad: false`; `original.estados() == copia.estados()` da `true`.
+- **Error típico:** comparar records con `==` cuando quieres saber si los datos coinciden; usa `equals`.
 
 **expresión `with`**
-- **Definición técnica:** en C#, `original with { Id = 8 }` crea un record nuevo copiando los campos del original y reemplazando los indicados; es una copia **superficial**.
+- **Definición técnica:** en C#, `original with { Id = 8 }` crea un record nuevo copiando los campos del original y reemplazando los indicados; es una copia **superficial**. Java 25 no tiene `with` para records: se escribe un método que llama al constructor.
 - **En palabras sencillas:** fotocopiar una ficha y cambiarle un dato a la copia.
 - **Dónde se rompe la comparación:** en una fotocopia, la lista impresa es otra hoja; aquí la copia apunta a **la misma** lista.
-- **Ejemplo:** en Python, el equivalente es `replace(original, id=8)` (línea 12 de `registro_antes.py`).
-- **Error típico:** modificar la lista de la copia creyendo que el original queda intacto: `original.estados: ['creado', 'asignado']`.
+- **Ejemplo:** en Java, el equivalente es `original.conId(8)` (líneas 3–5 de `RegistroAntes.java`).
+- **Error típico:** modificar la lista de la copia creyendo que el original queda intacto: `original.estados: [creado, asignado]`.
 
-**dataclass congelada**
-- **Definición técnica:** clase de Python decorada con `@dataclass(frozen=True)`; genera `__init__`, `__eq__` y `__hash__`, y prohíbe reasignar sus campos.
-- **En palabras sencillas:** el equivalente de Python a un record: datos con comparación y sin reasignación.
-- **Dónde se rompe la comparación:** «congelada» solo impide `objeto.campo = ...`; no congela lo que hay dentro del campo.
-- **Ejemplo:** `@dataclass(frozen=True) class Registro:` en `registro_antes.py`, líneas 5–8.
-- **Error típico:** intentar reasignar un campo: `dataclasses.FrozenInstanceError: cannot assign to field 'id'`.
+**constructor compacto**
+- **Definición técnica:** constructor de un record de Java escrito sin parámetros (`Registro { ... }`); recibe los mismos parámetros que el record y puede validarlos o reemplazarlos antes de que se asignen a los campos.
+- **En palabras sencillas:** la puerta de entrada del record: lo que pase por ahí queda revisado y guardado a tu manera.
+- **Dónde se rompe la comparación:** no se ejecuta cuando alguien modifica la lista **después**; por eso se guarda una copia que no se puede modificar.
+- **Ejemplo:** `estados = List.copyOf(estados);` en `RegistroDespues.java`, línea 4.
+- **Error típico:** asignar `this.estados = ...` dentro del constructor compacto; ahí se reasigna el **parámetro**, sin `this`.
 
 **inmutabilidad superficial**
 - **Definición técnica:** garantía de que los campos de un objeto no se pueden reasignar, sin garantía sobre el estado interno de los objetos a los que apuntan.
 - **En palabras sencillas:** la caja está sellada, pero dentro hay una bolsa abierta.
 - **Dónde se rompe la comparación:** desde fuera parece todo protegido; el cambio entra por la referencia compartida.
-- **Ejemplo:** `copia.estados.append("asignado")` funciona aunque `Registro` sea congelado.
-- **Error típico:** documentar un tipo como «inmutable» solo porque es record o `frozen`.
+- **Ejemplo:** `copia.estados().add("asignado")` funciona aunque `Registro` sea un record.
+- **Error típico:** documentar un tipo como «inmutable» solo porque es record.
 
 **inmutabilidad profunda**
 - **Definición técnica:** garantía de que ni el objeto ni nada alcanzable desde él puede cambiar; se logra usando solo tipos inmutables en todos sus campos.
 - **En palabras sencillas:** sellada la caja y sellado todo lo que hay dentro.
 - **Dónde se rompe la comparación:** cuesta más: cada cambio crea objetos nuevos en lugar de modificar los existentes.
-- **Ejemplo:** con `estados: tuple`, la versión 7 conserva `('creado',)` y la 8 tiene `('creado', 'asignado')`.
-- **Error típico:** cambiar `list` por `tuple` pero seguir aceptando una lista en el constructor sin convertirla.
+- **Ejemplo:** con `List.copyOf`, la versión 7 conserva `[creado]`, la 8 tiene `[creado, asignado]` y `add` lanza `UnsupportedOperationException`.
+- **Error típico:** declarar el campo como `List` y guardar la lista que te pasaron sin copiarla: quien la creó todavía la puede modificar.
 
 #### ► CÓMO FUNCIONA
 Copiar un record copia sus **campos**. Si un campo es un número, la copia tiene su propio número. Si el campo es una
@@ -1595,12 +1829,12 @@ cambios, la lista debe ser de un tipo que no se pueda modificar.
 flowchart LR
     O["original<br/>Id = 7"] -->|"Estados"| L["List: creado, asignado"]
     C["copia = original with { Id = 8 }<br/>Id = 8"] -->|"Estados"| L
-    O2["original (tupla)<br/>id = 7"] --> T1["('creado',)"]
-    C2["copia.con_estado('asignado')<br/>id = 8"] --> T2["('creado', 'asignado')"]
+    O2["original (List.copyOf)<br/>id = 7"] --> T1["[creado]"]
+    C2["copia.conEstado(asignado)<br/>id = 8"] --> T2["[creado, asignado]"]
 ```
 
 #### Problema resuelto 5.1
-Muestra en C# que la copia con `with` comparte la lista, y comprueba lo mismo en Python con una dataclass congelada.
+Muestra en C# que la copia con `with` comparte la lista, y comprueba lo mismo en Java con un record.
 
 **Razonamiento:**
 1. Se crea un registro con `Id = 7` y una lista, y una copia con `Id = 8`.
@@ -1633,140 +1867,168 @@ public record Punto(int X, int Y);
 
 Con el SDK de .NET 10 se ejecuta con `dotnet run --project Records.csproj`. Si las tres comprobaciones se cumplen, el
 programa escribe dos líneas: «IDs independientes; lista compartida» y «Records con valores iguales comparan igual». Si
-alguna falla, termina con la excepción de esa línea. Este programa no se ejecutó en esta edición (ver el entorno).
+alguna falla, termina con la excepción de esa línea. Este programa C# no se ejecutó en esta edición (ver el entorno).
 
-El mismo experimento en Python, ejecutado:
+El mismo experimento en Java, ejecutado:
 
-```python
-# registro_antes.py — copia con dataclasses.replace y una lista compartida
-from dataclasses import dataclass, replace
+```java
+// RegistroAntes.java — copia de un record y una lista compartida
+record Registro(int id, List<String> estados) {
+    Registro conId(int nuevoId) { // como `original with { Id = 8 }` en C#
+        return new Registro(nuevoId, estados);
+    }
+}
 
+void main() {
+    var original = new Registro(7, new ArrayList<>(List.of("creado")));
+    var copia = original.conId(8);
+    copia.estados().add("asignado");
 
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: list
-
-
-original = Registro(7, ["creado"])
-copia = replace(original, id=8)          # como `original with { Id = 8 }` en C#
-copia.estados.append("asignado")
-
-print("ids:", original.id, copia.id)
-print("original.estados:", original.estados)
-print("misma lista:", original.estados is copia.estados)
-print("igualdad por valor:", Registro(4, ["a"]) == Registro(4, ["a"]))
-print("misma identidad:", Registro(4, ["a"]) is Registro(4, ["a"]))
+    IO.println("ids: " + original.id() + " " + copia.id());
+    IO.println("original.estados: " + original.estados());
+    IO.println("misma lista: " + (original.estados() == copia.estados()));
+    IO.println("igualdad por valor: " + new Registro(4, List.of("a")).equals(new Registro(4, List.of("a"))));
+    IO.println("misma identidad: " + (new Registro(4, List.of("a")) == new Registro(4, List.of("a"))));
+    IO.println("toString: " + original);
+}
 ```
 
 ```text
-$ python3 registro_antes.py
+$ java RegistroAntes.java
 ids: 7 8
-original.estados: ['creado', 'asignado']
-misma lista: True
-igualdad por valor: True
-misma identidad: False
+original.estados: [creado, asignado]
+misma lista: true
+igualdad por valor: true
+misma identidad: false
+toString: Registro[id=7, estados=[creado, asignado]]
 ```
 
 **Explicación por partes.**
 - `Program.cs`, línea 5: `with` copia los campos y cambia solo `Id`.
 - Línea 6: se agrega a la lista **de la copia**; la línea 8 comprueba que el original también tiene 2 estados.
 - Líneas 10–12: dos `Punto` creados por separado son iguales con `!=`/`==`, porque el record compara por valor.
-- `registro_antes.py`, línea 12: `replace` hace en Python lo mismo que `with`.
-- Línea 17: `is` confirma que las dos versiones apuntan a la **misma** lista.
-- Líneas 18–19: iguales por valor (`True`), distintas en identidad (`False`).
+- `RegistroAntes.java`, líneas 3–5: `conId` hace en Java lo mismo que `with`: copia el campo `estados` tal cual.
+- Línea 11: se agrega a la lista **de la copia**; la salida muestra que el original también la tiene.
+- Línea 15: `==` entre las dos listas confirma que son la **misma**.
+- Líneas 16–17: iguales por valor (`true`), distintas en identidad (`false`). A diferencia de C#, en Java las listas
+  `List.of("a")` se comparan por contenido.
+- Línea 18: el `toString` generado muestra todos los campos.
 
-> **Error común.** Creer que `frozen=True` congela todo. Solo impide reasignar campos; reasignar uno termina con
-> `dataclasses.FrozenInstanceError: cannot assign to field 'id'`, pero `copia.estados.append(...)` funciona sin aviso.
+> **Error común.** Creer que un record congela todo. Solo impide reasignar campos; reasignar uno ni siquiera compila,
+> pero `copia.estados().add(...)` funciona sin aviso.
 
-```python
-# error_asignar.py — frozen=True impide reasignar un campo
-from dataclasses import dataclass
+```java
+// ErrorAsignar.java — los campos de un record son final
+record Registro(int id) {
+}
 
-
-@dataclass(frozen=True)
-class Registro:
-    id: int
-
-
-registro = Registro(7)
-registro.id = 8
+void main() {
+    var registro = new Registro(7);
+    registro.id = 8;
+}
 ```
 
 ```text
-$ python3 error_asignar.py
-dataclasses.FrozenInstanceError: cannot assign to field 'id'
+$ java ErrorAsignar.java
+ErrorAsignar.java:7: error: cannot assign a value to final variable id
+    registro.id = 8;
+            ^
+1 error
+error: compilation failed
 ```
 
 #### Problema resuelto 5.2
-Corrige el registro para que cada versión tenga su propio historial y sirva como clave de diccionario.
+Corrige el registro para que cada versión tenga su propio historial y sirva como clave de un `HashMap`.
 
 **Razonamiento:**
-1. Una `tuple` no se puede modificar: agregar un estado obliga a crear una tupla nueva.
-2. Un método `con_estado` devuelve un registro nuevo; el original nunca cambia.
-3. Si todos los campos son inmutables, Python puede calcular el `hash` y el objeto sirve como clave.
+1. `List.copyOf` devuelve una lista que no se puede modificar y que no depende de la lista recibida.
+2. Un método `conEstado` devuelve un registro nuevo con una lista nueva; el original nunca cambia.
+3. Si todos los campos son inmutables, el `hashCode` de la clave no cambia nunca y el objeto sirve como clave.
 
-```python
-# registro_despues.py — una tupla hace la inmutabilidad profunda
-from dataclasses import dataclass, replace
+```java
+// RegistroDespues.java — una lista no modificable hace la inmutabilidad profunda
+record Registro(int id, List<String> estados) {
+    Registro {
+        estados = List.copyOf(estados); // copia defensiva y no modificable
+    }
 
+    Registro conId(int nuevoId) {
+        return new Registro(nuevoId, estados);
+    }
 
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: tuple
+    Registro conEstado(String estado) {
+        var nuevos = new ArrayList<>(estados);
+        nuevos.add(estado);
+        return new Registro(id, nuevos);
+    }
+}
 
-    def con_estado(self, estado):
-        return replace(self, estados=self.estados + (estado,))
+void main() {
+    var original = new Registro(7, List.of("creado"));
+    var copia = original.conId(8).conEstado("asignado");
 
-
-original = Registro(7, ("creado",))
-copia = replace(original, id=8).con_estado("asignado")
-
-print("ids:", original.id, copia.id)
-print("original.estados:", original.estados)
-print("copia.estados:", copia.estados)
-indice = {original: "versión 1"}
-print("sirve como clave:", indice[Registro(7, ("creado",))])
+    IO.println("ids: " + original.id() + " " + copia.id());
+    IO.println("original.estados: " + original.estados());
+    IO.println("copia.estados: " + copia.estados());
+    try {
+        original.estados().add("perdido");
+    } catch (UnsupportedOperationException error) {
+        IO.println("modificar original.estados: " + error.getClass().getSimpleName());
+    }
+    Map<Registro, String> indice = new HashMap<>(Map.of(original, "versión 1"));
+    IO.println("sirve como clave: " + indice.get(new Registro(7, List.of("creado"))));
+}
 ```
 
 ```text
-$ python3 registro_despues.py
+$ java RegistroDespues.java
 ids: 7 8
-original.estados: ('creado',)
-copia.estados: ('creado', 'asignado')
+original.estados: [creado]
+copia.estados: [creado, asignado]
+modificar original.estados: UnsupportedOperationException
 sirve como clave: versión 1
 ```
 
 **Explicación por partes.**
-- Línea 8: el campo es `tuple`, no `list`.
-- Líneas 10–11: `self.estados + (estado,)` crea una tupla nueva; la coma hace que `(estado,)` sea una tupla de un elemento.
-- Línea 15: copia con otro `id` y luego con un estado más; el original queda `('creado',)`.
-- Líneas 20–21: un registro **igual** (no el mismo) encuentra la entrada: igualdad por valor más `hash`.
+- Líneas 3–5: el constructor compacto reemplaza la lista recibida por una copia no modificable.
+- Líneas 11–15: `conEstado` copia a una `ArrayList`, agrega y crea un registro nuevo; el constructor compacto vuelve a
+  sellar la lista.
+- Línea 20: copia con otro `id` y luego con un estado más; el original queda `[creado]`.
+- Líneas 25–29: modificar la lista del original lanza `UnsupportedOperationException`: el error aparece en el momento
+  del intento, no semanas después en la auditoría.
+- Líneas 30–31: un registro **igual** (no el mismo) encuentra la entrada: igualdad por valor más `hashCode`.
 
-Con la versión de lista, usar el registro como clave falla:
+Con la versión de lista modificable, Java sí acepta el registro como clave, pero falla en silencio al cambiar la lista:
 
-```python
-# error_clave.py — un registro con lista no puede ser clave de diccionario
-from dataclasses import dataclass
+```java
+// ErrorClave.java — un record con lista modificable como clave de HashMap
+record Registro(int id, List<String> estados) {
+}
 
+void main() {
+    var estados = new ArrayList<>(List.of("creado"));
+    Map<Registro, String> indice = new HashMap<>();
+    indice.put(new Registro(7, estados), "versión 1");
+    IO.println("antes de modificar: " + indice.get(new Registro(7, List.of("creado"))));
 
-@dataclass(frozen=True)
-class Registro:
-    id: int
-    estados: list
-
-
-indice = {Registro(7, ["creado"]): "versión 1"}
+    estados.add("asignado"); // cambia el hashCode de la clave ya guardada
+    IO.println("buscar la clave nueva: " + indice.get(new Registro(7, List.of("creado", "asignado"))));
+    IO.println("buscar la clave vieja: " + indice.get(new Registro(7, List.of("creado"))));
+    IO.println("entradas en el mapa: " + indice.size());
+}
 ```
 
 ```text
-$ python3 error_clave.py
-TypeError: unhashable type: 'list'
+$ java ErrorClave.java
+antes de modificar: versión 1
+buscar la clave nueva: null
+buscar la clave vieja: null
+entradas en el mapa: 1
 ```
 
-> **Error común.** Usar como clave un objeto con un campo lista produce `TypeError: unhashable type: 'list'`. Una clave debe ser
-> inmutable en profundidad; cambia la lista por una tupla.
+> **Error común.** Usar como clave un objeto con un campo lista modificable. Java no avisa: al cambiar la lista cambia
+> el `hashCode`, la entrada queda en el cajón viejo del `HashMap` y ninguna búsqueda la encuentra (`null`), aunque
+> `size()` dice que sigue ahí. Una clave debe ser inmutable en profundidad.
 
 > **Buena práctica.** En C#, declara la colección como `IReadOnlyList<string>` y guarda una `ImmutableList<string>`
 > (de `System.Collections.Immutable`); así el tipo dice la verdad sobre lo que se puede modificar.
@@ -1775,9 +2037,9 @@ TypeError: unhashable type: 'list'
 > costo no importa; con miles de elementos se usan colecciones inmutables que comparten estructura.
 
 #### Checkpoint 5.1
-En `registro_antes.py`, ¿qué imprimiría `original == copia` después del `append`?
+En `RegistroAntes.java`, ¿qué imprimiría `original.equals(copia)` después del `add`?
 
-Respuesta: `False`, porque los `id` son distintos (7 y 8). Las listas sí son iguales: son la misma.
+Respuesta: `false`, porque los `id` son distintos (7 y 8). Las listas sí son iguales: son la misma.
 
 </details>
 
@@ -1785,43 +2047,46 @@ Respuesta: `False`, porque los `id` son distintos (7 y 8). Las listas sí son ig
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/records` y entra en ella.
+Crea `~/labs/arquitectura/records` y entra en ella.
 
-#### Paso 2 · Reproduce el problema en Python
-Escribe `registro_antes.py`, ejecútalo y confirma `misma lista: True`.
+#### Paso 2 · Reproduce el problema en Java
+Escribe `RegistroAntes.java`, ejecútalo y confirma `misma lista: true`.
 
 #### Paso 3 · Corrígelo
-Escribe `registro_despues.py` y comprueba que el original conserva `('creado',)`.
+Escribe `RegistroDespues.java` y comprueba que el original conserva `[creado]`. Ejecuta también `ErrorClave.java`.
 
 #### Paso 4 · Compara con C#
 Si tienes el SDK de .NET 10 (`dotnet --version`), crea `Records.csproj` y `Program.cs` y ejecuta `dotnet run --project Records.csproj`. Compara lo que ves con la descripción del Problema resuelto 5.1.
 
 #### Resumen
-- Un **record** de C# y una **dataclass congelada** de Python guardan datos con igualdad y copia generadas.
+- Un **record** de Java o de C# guarda datos con igualdad y `toString` generados.
 - La **igualdad por valor** compara campos; la **identidad** pregunta si es el mismo objeto.
-- La **expresión `with`** (y `replace`) hace una copia superficial: las referencias se comparten.
+- La **expresión `with`** de C# (y un método `conId` en Java) hace una copia superficial: las referencias se comparten.
+- El **constructor compacto** es el lugar para copiar y sellar las colecciones que recibe el record.
 - La **inmutabilidad superficial** impide reasignar campos; la **inmutabilidad profunda** exige que todo lo alcanzable sea inmutable.
 - Un objeto usable como clave necesita igualdad por valor y campos inmutables.
 
 #### Ejercicio verificable 1
-Básico. En Python, ¿qué imprime `(1, [2]) == (1, [2])` y qué imprime `(1, [2]) is (1, [2])`?
+Básico. En Java, ¿qué imprime `List.of(2).equals(List.of(2))` y qué imprime `List.of(2) == List.of(2)`?
 
-Respuesta esperada: `True` y `False`. Las tuplas son iguales por valor, pero son dos objetos distintos.
+Respuesta esperada: `true` y `false`. Las listas son iguales por valor, pero son dos objetos distintos.
 
 #### Ejercicio verificable 2
-Intermedio. En `registro_antes.py`, cambia la línea 12 por `copia = replace(original, id=8, estados=list(original.estados))` y ejecuta.
+Intermedio. En `RegistroAntes.java`, cambia la línea 10 por `var copia = new Registro(8, new ArrayList<>(original.estados()));` y ejecuta.
 
-Respuesta esperada: `original.estados: ['creado']` y `misma lista: False`. La copia ahora tiene su propia lista, pero sigue siendo modificable.
+Respuesta esperada: `original.estados: [creado]` y `misma lista: false`. La copia ahora tiene su propia lista, pero sigue siendo modificable.
 
 #### Ejercicio verificable 3
-Reto. Agrega a `registro_despues.py` un `__post_init__` que convierta a `tuple` cualquier lista recibida en `estados`.
+Reto. En una copia de `RegistroDespues.java`, borra la línea 4 (`List.copyOf`) y crea el original con una lista
+externa: `var lista = new ArrayList<>(List.of("creado"));`, `new Registro(7, lista)` y después `lista.add("asignado")`.
 
-Respuesta esperada: `object.__setattr__(self, "estados", tuple(self.estados))` dentro de `__post_init__`. `Registro(7, ["creado"])` queda con `('creado',)` y sirve como clave.
+Respuesta esperada: `original.estados: [creado, asignado]`, el `add("perdido")` ya no lanza excepción y
+`sirve como clave: null`. Sin la copia defensiva, quien creó la lista sigue controlando el «historial inmutable».
 
 #### En el trabajo
-Records y dataclasses se usan para eventos, mensajes y objetos de valor en el dominio. Un evento de auditoría que
+Los records se usan para eventos, mensajes y objetos de valor en el dominio. Un evento de auditoría que
 cambia después de guardado es un fallo grave de cumplimiento. Por eso los equipos revisan en el pull request que los
-tipos «inmutables» no tengan listas ni diccionarios mutables dentro.
+tipos «inmutables» no tengan listas ni mapas modificables dentro.
 
 </details>
 
@@ -1840,7 +2105,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** especificación, agente de IA, restricción de alcance, cobertura de criterios
 
 Este tema usa **criterio de aceptación** y **trazabilidad** (Tema 1 de este módulo), **prueba unitaria** (Módulo 5,
-Tema 2), y **pull request**, **revisión de código** e **integración continua** (Módulo 5, Tema 4).
+Tema 2), las pruebas con JUnit y Gradle (Fundamentos, Módulo 10), y **pull request**, **revisión de código** e **integración continua** (Módulo 5, Tema 4).
 
 #### El problema
 Un desarrollador de RutaFlow le pide a un agente de IA: «agrega validación del PIN a confirmar». El agente entrega un
@@ -1860,14 +2125,14 @@ sabes qué pediste exactamente, si el agente lo cumplió y si tocó algo que no 
 - **Definición técnica:** programa basado en un modelo de lenguaje que lee archivos, propone cambios y ejecuta comandos para cumplir una tarea, iterando con lo que observa.
 - **En palabras sencillas:** un asistente que escribe código rápido, pero solo sabe lo que le escribiste y lo que ve en el repositorio.
 - **Dónde se rompe la comparación:** a diferencia de un colega, no recuerda acuerdos de pasillo ni pregunta si algo le parece raro, salvo que se lo pidas.
-- **Ejemplo:** el cambio de este tema: una prueba `test_C3_...` nueva y un `requirements.txt` que nadie pidió.
+- **Ejemplo:** el cambio de este tema: una prueba `C3_...` nueva y una dependencia en `build.gradle.kts` que nadie pidió.
 - **Error típico:** aceptar el cambio porque «las pruebas pasan», sin revisar qué archivos tocó.
 
 **restricción de alcance**
 - **Definición técnica:** límite explícito de qué partes del sistema puede modificar un cambio, comprobable con la lista de archivos modificados.
 - **En palabras sencillas:** «puedes pintar esta pared y nada más».
 - **Dónde se rompe la comparación:** algunos archivos siempre pueden cambiar con el código, como las pruebas; la regla los nombra.
-- **Ejemplo:** `Contexto: solo se modifica entregas.py; no se agregan dependencias.` → `fuera de alcance: ['requirements.txt']`.
+- **Ejemplo:** `Contexto: solo se modifica src/main/java/Entregas.java; no se agregan dependencias.` → `fuera de alcance: [build.gradle.kts]`.
 - **Error típico:** escribir la restricción solo en el mensaje al agente; si no se comprueba, se ignora sin que nadie lo note.
 
 **cobertura de criterios**
@@ -1875,7 +2140,7 @@ sabes qué pediste exactamente, si el agente lo cumplió y si tocó algo que no 
 - **En palabras sencillas:** cuántas promesas de la especificación tienen quién las compruebe.
 - **Dónde se rompe la comparación:** no es la cobertura de líneas del Módulo 5: puedes cubrir el 100 % de líneas y dejar un criterio sin probar.
 - **Ejemplo:** antes, `criterios: 3  cubiertos: 2` y `sin prueba: C3`; después, `cubiertos: 3`.
-- **Error típico:** nombrar la prueba con otro formato (`test_c3`) y que el verificador no la reconozca.
+- **Error típico:** nombrar la prueba con otro formato (`c3_...`) y que el verificador no la reconozca.
 
 #### ► CÓMO FUNCIONA
 La especificación es la fuente de verdad. El agente recibe la especificación, no una idea suelta. Su cambio pasa
@@ -1900,77 +2165,99 @@ Escribe la especificación de la confirmación y comprueba qué criterios tienen
 
 **Razonamiento:**
 1. Cada criterio lleva un identificador `C<n>:` al inicio de la línea.
-2. Cada prueba lleva el identificador en su nombre: `test_C1_...`.
+2. Cada prueba JUnit lleva el identificador al inicio de su nombre: `C1_...`.
 3. Un programa compara los dos conjuntos: lo que falta y lo que sobra.
 
 ```markdown
 # Confirmar entrega
-Contexto: solo se modifica entregas.py; no se agregan dependencias.
+Contexto: solo se modifica src/main/java/Entregas.java; no se agregan dependencias.
 C1: Dado un PIN de 6 dígitos, cuando se confirma, entonces el estado es "delivered".
-C2: Dado un PIN con menos o más de 6 dígitos, cuando se confirma, entonces se lanza ValueError y el estado no cambia.
-C3: Dado un PIN con letras, cuando se confirma, entonces se lanza ValueError.
+C2: Dado un PIN con menos o más de 6 dígitos, cuando se confirma, entonces se lanza IllegalArgumentException y el estado no cambia.
+C3: Dado un PIN con letras, cuando se confirma, entonces se lanza IllegalArgumentException.
 ```
 
-```python
-def confirmar(envio: dict, pin: str) -> dict:
-    """Devuelve una copia del envío confirmado; no muta el original."""
-    if len(pin) != 6 or not pin.isdigit():
-        raise ValueError("recipientPin debe tener exactamente 6 dígitos")
-    return {**envio, "estado": "delivered"}
+```java
+// src/main/java/Entregas.java — confirma un envío; devuelve uno nuevo y no cambia el original
+public final class Entregas {
+    public record Envio(String guia, String estado) {
+    }
+
+    private Entregas() {
+    }
+
+    public static Envio confirmar(Envio envio, String pin) {
+        if (pin.length() != 6 || !pin.chars().allMatch(Character::isDigit)) {
+            throw new IllegalArgumentException("recipientPin debe tener exactamente 6 dígitos");
+        }
+        return new Envio(envio.guia(), "delivered");
+    }
+}
 ```
 
-```python
-import unittest
-from entregas import confirmar
+La prueba inicial, con dos de los tres criterios:
 
+```java
+// src/test/java/EntregasTest.java — una prueba por criterio, con el criterio en el nombre
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ConfirmarEntrega(unittest.TestCase):
-    def test_C1_pin_valido_confirma(self):
-        self.assertEqual(confirmar({"estado": "pending"}, "123456")["estado"], "delivered")
+import org.junit.jupiter.api.Test;
 
-    def test_C2_pin_corto_rechaza_sin_cambiar(self):
-        envio = {"estado": "pending"}
-        with self.assertRaises(ValueError):
-            confirmar(envio, "1234")
-        self.assertEqual(envio["estado"], "pending")
+class EntregasTest {
+    private final Entregas.Envio pendiente = new Entregas.Envio("RF-1", "pending");
 
+    @Test
+    void C1_pinValidoConfirma() {
+        assertEquals("delivered", Entregas.confirmar(pendiente, "123456").estado());
+    }
 
-if __name__ == "__main__":
-    unittest.main()
+    @Test
+    void C2_pinCortoRechazaSinCambiar() {
+        assertThrows(IllegalArgumentException.class, () -> Entregas.confirmar(pendiente, "1234"));
+        assertEquals("pending", pendiente.estado());
+    }
+
+}
 ```
 
-```python
-# verificar_cobertura.py — cada criterio de SPEC.md tiene al menos una prueba
-import re
-import sys
-from pathlib import Path
+```java
+// VerificarCobertura.java — cada criterio de SPEC.md tiene al menos una prueba
+import java.util.regex.Pattern;
 
-# Criterios declarados en la especificación: C1, C2, ...
-criterios = set(re.findall(r"^(C\d+):", Path("SPEC.md").read_text(encoding="utf-8"), re.M))
-# Criterios que alguna prueba dice verificar: test_C1_..., test_C2_...
-cubiertos = set(re.findall(r"def test_(C\d+)_", Path("test_entregas.py").read_text(encoding="utf-8")))
+Set<String> buscar(String regex, String archivo) throws IOException {
+    var coincidencias = Pattern.compile(regex, Pattern.MULTILINE).matcher(Files.readString(Path.of(archivo)));
+    return coincidencias.results().map(m -> m.group(1)).collect(Collectors.toCollection(TreeSet::new));
+}
 
-print(f"criterios: {len(criterios)}  cubiertos: {len(criterios & cubiertos)}")
-for falta in sorted(criterios - cubiertos):
-    print(f"sin prueba: {falta}")
-for sobra in sorted(cubiertos - criterios):
-    print(f"prueba sin criterio: {sobra}")
-sys.exit(1 if criterios != cubiertos else 0)
+void main() throws IOException {
+    // Criterios declarados en la especificación: C1, C2, ...
+    Set<String> criterios = buscar("^(C\\d+):", "SPEC.md");
+    // Criterios que alguna prueba dice verificar: void C1_..., void C2_...
+    Set<String> cubiertos = buscar("void (C\\d+)_", "src/test/java/EntregasTest.java");
+
+    Set<String> ambos = new TreeSet<>(criterios);
+    ambos.retainAll(cubiertos);
+    IO.println("criterios: " + criterios.size() + "  cubiertos: " + ambos.size());
+    criterios.stream().filter(c -> !cubiertos.contains(c)).forEach(c -> IO.println("sin prueba: " + c));
+    cubiertos.stream().filter(c -> !criterios.contains(c)).forEach(c -> IO.println("prueba sin criterio: " + c));
+    System.exit(criterios.equals(cubiertos) ? 0 : 1);
+}
 ```
 
 ```text
-$ python3 verificar_cobertura.py; echo "salida: $?"
+$ java VerificarCobertura.java; echo "salida: $?"
 criterios: 3  cubiertos: 2
 sin prueba: C3
 salida: 1
 ```
 
 **Explicación por partes.**
-- `verificar_cobertura.py`, línea 7: `^(C\d+):` toma los identificadores al inicio de cada línea de `SPEC.md`.
-- Línea 9: `def test_(C\d+)_` toma el identificador del nombre de cada prueba.
-- Línea 11: `&` es la intersección: criterios que sí tienen prueba.
-- Líneas 12–15: lo que falta (criterio sin prueba) y lo que sobra (prueba sin criterio).
-- Línea 16: si los conjuntos no son iguales, código 1. C3 no tiene prueba aunque el código ya lo cumpla.
+- `VerificarCobertura.java`, líneas 4–7: `buscar` devuelve el grupo 1 de cada coincidencia, ordenado en un `TreeSet`.
+- Línea 11: `^(C\d+):` toma los identificadores al inicio de cada línea de `SPEC.md`.
+- Línea 13: `void (C\d+)_` toma el identificador del nombre de cada método de prueba.
+- Líneas 15–16: `retainAll` deja la intersección: criterios que sí tienen prueba.
+- Líneas 18–19: lo que falta (criterio sin prueba) y lo que sobra (prueba sin criterio).
+- Línea 20: si los conjuntos no son iguales, código 1. C3 no tiene prueba aunque el código ya lo cumpla.
 
 > **Buena práctica.** Pide al agente que nombre cada prueba con el criterio que comprueba. La trazabilidad del Tema 1
 > se vuelve automática.
@@ -1980,117 +2267,167 @@ El agente entrega su cambio. Comprueba su alcance y su cobertura antes de revisa
 
 **Razonamiento:**
 1. `git status --short` lista lo modificado (`M`) y lo nuevo (`??`) desde el último commit.
-2. La especificación permite tocar `entregas.py` y las pruebas; cualquier otro archivo está fuera de alcance.
+2. La especificación permite tocar `src/main/java/Entregas.java` y las pruebas; cualquier otro archivo está fuera de alcance.
 3. Si está fuera de alcance, se rechaza esa parte y se vuelve a comprobar.
 
 La prueba que agregó el agente:
 
-```python
-import unittest
-from entregas import confirmar
+```java
+// src/test/java/EntregasTest.java — una prueba por criterio, con el criterio en el nombre
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
 
-class ConfirmarEntrega(unittest.TestCase):
-    def test_C1_pin_valido_confirma(self):
-        self.assertEqual(confirmar({"estado": "pending"}, "123456")["estado"], "delivered")
+class EntregasTest {
+    private final Entregas.Envio pendiente = new Entregas.Envio("RF-1", "pending");
 
-    def test_C2_pin_corto_rechaza_sin_cambiar(self):
-        envio = {"estado": "pending"}
-        with self.assertRaises(ValueError):
-            confirmar(envio, "1234")
-        self.assertEqual(envio["estado"], "pending")
+    @Test
+    void C1_pinValidoConfirma() {
+        assertEquals("delivered", Entregas.confirmar(pendiente, "123456").estado());
+    }
 
-    def test_C3_pin_con_letras_rechaza(self):
-        with self.assertRaises(ValueError):
-            confirmar({"estado": "pending"}, "12a456")
+    @Test
+    void C2_pinCortoRechazaSinCambiar() {
+        assertThrows(IllegalArgumentException.class, () -> Entregas.confirmar(pendiente, "1234"));
+        assertEquals("pending", pendiente.estado());
+    }
 
-
-if __name__ == "__main__":
-    unittest.main()
+    @Test
+    void C3_pinConLetrasRechaza() {
+        assertThrows(IllegalArgumentException.class, () -> Entregas.confirmar(pendiente, "12a456"));
+    }
+}
 ```
 
 Lo que cambió en el repositorio:
 
 ```text
 $ git status --short
- M test_entregas.py
-?? requirements.txt
+ M build.gradle.kts
+ M src/test/java/EntregasTest.java
 ```
 
-```python
-# verificar_alcance.py — el cambio solo toca los archivos que permite SPEC.md
-import re
-import subprocess
-import sys
-from pathlib import Path
+El agente, además, agregó una librería que nadie pidió:
 
-contexto = re.search(r"^Contexto: solo se modifica (.+?);", Path("SPEC.md").read_text(encoding="utf-8"), re.M)
-permitidos = {nombre.strip() for nombre in contexto.group(1).split(",")}
-permitidos |= {"test_entregas.py"}  # las pruebas siempre pueden crecer
-salida = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
-cambiados = {linea[3:] for linea in salida.stdout.splitlines()}  # modificados y nuevos
-print("cambiados:", sorted(cambiados))
-fuera = sorted(cambiados - permitidos)
-print("fuera de alcance:", fuera or "ninguno")
-sys.exit(1 if fuera else 0)
+```text
+$ git diff build.gradle.kts
+diff --git a/build.gradle.kts b/build.gradle.kts
+index f9dd0b2..a34def8 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,6 +13,7 @@ java {
+ }
+ 
+ dependencies {
++    implementation("org.apache.commons:commons-lang3:3.17.0")
+     testImplementation(platform("org.junit:junit-bom:5.13.4"))
+     testImplementation("org.junit.jupiter:junit-jupiter")
+     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+```
+
+```java
+// VerificarAlcance.java — el cambio solo toca los archivos que permite SPEC.md
+import java.util.regex.Pattern;
+
+void main() throws Exception {
+    var contexto = Pattern.compile("^Contexto: solo se modifica (.+?);", Pattern.MULTILINE)
+            .matcher(Files.readString(Path.of("SPEC.md")));
+    if (!contexto.find()) {
+        throw new IllegalStateException("SPEC.md no tiene la línea Contexto");
+    }
+    Set<String> permitidos = new TreeSet<>();
+    for (String nombre : contexto.group(1).split(",")) {
+        permitidos.add(nombre.strip());
+    }
+    permitidos.add("src/test/java/EntregasTest.java"); // las pruebas siempre pueden crecer
+
+    Process git = new ProcessBuilder("git", "status", "--porcelain", "--untracked-files=all")
+            .redirectErrorStream(true).start();
+    List<String> lineas = git.inputReader().lines().toList();
+    if (git.waitFor() != 0) {
+        throw new IllegalStateException("git status terminó con " + git.exitValue() + ": " + lineas);
+    }
+    Set<String> cambiados = new TreeSet<>();
+    for (String linea : lineas) {
+        cambiados.add(linea.substring(3)); // modificados y nuevos
+    }
+    IO.println("cambiados: " + cambiados);
+    List<String> fuera = cambiados.stream().filter(c -> !permitidos.contains(c)).toList();
+    IO.println("fuera de alcance: " + (fuera.isEmpty() ? "ninguno" : fuera));
+    System.exit(fuera.isEmpty() ? 0 : 1);
+}
 ```
 
 ```text
-$ python3 verificar_alcance.py; echo "salida: $?"
-cambiados: ['requirements.txt', 'test_entregas.py']
-fuera de alcance: ['requirements.txt']
+$ java VerificarAlcance.java; echo "salida: $?"
+cambiados: [build.gradle.kts, src/test/java/EntregasTest.java]
+fuera de alcance: [build.gradle.kts]
 salida: 1
 ```
 
-Se descarta el archivo que nadie pidió y se repiten las comprobaciones:
+Se descarta el cambio que nadie pidió con `git restore` y se repiten las comprobaciones:
 
 ```text
-$ rm requirements.txt && python3 verificar_alcance.py; echo "salida: $?"
-cambiados: ['test_entregas.py']
+$ git restore build.gradle.kts && java VerificarAlcance.java; echo "salida: $?"
+cambiados: [src/test/java/EntregasTest.java]
 fuera de alcance: ninguno
 salida: 0
 ```
 
 ```text
-$ python3 verificar_cobertura.py; echo "salida: $?"
+$ java VerificarCobertura.java; echo "salida: $?"
 criterios: 3  cubiertos: 3
 salida: 0
 ```
 
 ```text
-$ python3 -m unittest -v
-test_C1_pin_valido_confirma (test_entregas.ConfirmarEntrega.test_C1_pin_valido_confirma) ... ok
-test_C2_pin_corto_rechaza_sin_cambiar (test_entregas.ConfirmarEntrega.test_C2_pin_corto_rechaza_sin_cambiar) ... ok
-test_C3_pin_con_letras_rechaza (test_entregas.ConfirmarEntrega.test_C3_pin_con_letras_rechaza) ... ok
+$ gradle clean test
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
 
-----------------------------------------------------------------------
-Ran 3 tests in 0.000s
+> Task :test
 
-OK
+EntregasTest > C1_pinValidoConfirma() PASSED
+
+EntregasTest > C3_pinConLetrasRechaza() PASSED
+
+EntregasTest > C2_pinCortoRechazaSinCambiar() PASSED
+
+BUILD SUCCESSFUL in 3s
+3 actionable tasks: 3 executed
 ```
 
 **Explicación por partes.**
-- `verificar_alcance.py`, línea 7: lee de `SPEC.md` la lista de archivos permitidos, entre «solo se modifica» y el punto y coma.
-- Línea 9: las pruebas siempre se pueden tocar; la regla lo dice en el código, no en la memoria de alguien.
-- Líneas 10–11: `git status --porcelain` da una línea por archivo; desde la posición 3 está el nombre.
-- Línea 13: la resta de conjuntos deja solo los archivos no permitidos.
-- `unittest -v` muestra cada prueba con su nombre: la evidencia nombra los criterios.
+- `VerificarAlcance.java`, líneas 5–12: lee de `SPEC.md` la lista de archivos permitidos, entre «solo se modifica» y el punto y coma.
+- Línea 13: las pruebas siempre se pueden tocar; la regla lo dice en el código, no en la memoria de alguien.
+- Líneas 15–20: `ProcessBuilder` ejecuta `git status --porcelain`, que da una línea por archivo; si `git` falla, el
+  programa se detiene con su mensaje.
+- Líneas 21–24: desde la posición 3 de cada línea está el nombre del archivo.
+- Línea 26: quedan solo los archivos no permitidos.
+- Gradle muestra cada prueba con su nombre: la evidencia nombra los criterios. El orden de ejecución de JUnit no es
+  el del archivo; por eso C3 aparece antes que C2.
 
-Si ejecutas el verificador en una carpeta que no es un repositorio Git, la última línea del error es esta:
+Si ejecutas el verificador en una carpeta con `SPEC.md` que no es un repositorio Git, la primera línea del error es esta:
 
 ```text
-$ python3 verificar_alcance.py
-subprocess.CalledProcessError: Command '['git', 'status', '--porcelain']' returned non-zero exit status 128.
+$ java VerificarAlcance.java
+Exception in thread "main" java.lang.IllegalStateException: git status terminó con 128: [fatal: not a git repository (or any of the parent directories): .git]
 ```
 
-> **Error común.** Ejecutar `verificar_alcance.py` fuera del repositorio produce `subprocess.CalledProcessError: Command '['git', 'status', '--porcelain']' returned non-zero exit status 128.`. El código 128
-> es la respuesta de `git` cuando no encuentra un repositorio. Entra en la carpeta del proyecto y repite.
+> **Error común.** Ejecutar el verificador fuera del repositorio. El código 128 es la respuesta de `git` cuando no
+> encuentra un repositorio, y el mensaje lo dice: `fatal: not a git repository`. Entra en la carpeta del proyecto y
+> repite.
 
 > **Prevenir errores.** Ejecuta las dos comprobaciones en CI en cada pull request, también en los que abre un agente.
 > Lo que se revisa a ojo se revisa bien un día y mal al siguiente.
 
 #### Checkpoint 6.1
-Si el agente renombra la prueba a `test_c3_pin_con_letras`, ¿qué responde `verificar_cobertura.py`?
+Si el agente renombra la prueba a `c3_pinConLetrasRechaza`, ¿qué responde `VerificarCobertura.java`?
 
 Respuesta: `cubiertos: 2` y `sin prueba: C3`, con salida 1. La expresión busca `C` mayúscula; la prueba existe, pero perdió su trazabilidad.
 
@@ -2100,16 +2437,16 @@ Respuesta: `cubiertos: 2` y `sin prueba: C3`, con salida 1. La expresión busca 
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara el repositorio
-Crea `~/labs/modulo-7/spec`, escribe `SPEC.md`, `entregas.py`, `test_entregas.py`, los dos verificadores y un `.gitignore` con `__pycache__/`. Haz `git init` y un primer commit.
+Crea `~/labs/arquitectura/spec` con el `build.gradle.kts` y el `settings.gradle.kts` del proyecto `codigo-limpio` de Fundamentos (Módulo 10; cambia `rootProject.name` a `"spec"`). Escribe `SPEC.md`, `Entregas.java`, la prueba con C1 y C2, los dos verificadores y un `.gitignore` con `build/` y `.gradle/`. Haz `git init` y un primer commit.
 
 #### Paso 2 · Mide la cobertura inicial
-Ejecuta `verificar_cobertura.py` y confirma `sin prueba: C3`.
+Ejecuta `java VerificarCobertura.java` y confirma `sin prueba: C3`.
 
 #### Paso 3 · Pide el cambio
-Entrega `SPEC.md` completo a tu agente de IA y pídele: «agrega las pruebas que faltan para cumplir la especificación». Si no usas un agente, escribe tú la prueba `test_C3_...`.
+Entrega `SPEC.md` completo a tu agente de IA y pídele: «agrega las pruebas que faltan para cumplir la especificación». Si no usas un agente, escribe tú la prueba `C3_...`.
 
 #### Paso 4 · Comprueba alcance y cobertura
-Ejecuta `git status --short`, `verificar_alcance.py`, `verificar_cobertura.py` y `python3 -m unittest -v`. Descarta lo que esté fuera de alcance y repite.
+Ejecuta `git status --short`, `java VerificarAlcance.java`, `java VerificarCobertura.java` y `gradle clean test`. Descarta lo que esté fuera de alcance y repite.
 
 #### Resumen
 - Una **especificación** escrita es la fuente de verdad del cambio, para quien lo hace y para quien lo revisa.
@@ -2119,26 +2456,35 @@ Ejecuta `git status --short`, `verificar_alcance.py`, `verificar_cobertura.py` y
 - Los casos no previstos vuelven a la especificación como criterios nuevos.
 
 #### Ejercicio verificable 1
-Básico. Después del Problema resuelto 6.2, agrega a `SPEC.md` el criterio `C4: Dado un PIN vacío, cuando se confirma, entonces se lanza ValueError.` y ejecuta `verificar_cobertura.py`.
+Básico. Después del Problema resuelto 6.2, agrega a `SPEC.md` el criterio `C4: Dado un PIN vacío, cuando se confirma, entonces se lanza IllegalArgumentException.` y ejecuta `VerificarCobertura.java`.
 
 Respuesta esperada: `criterios: 4  cubiertos: 3`, `sin prueba: C4` y `salida: 1`.
 
 #### Ejercicio verificable 2
-Intermedio. Crea un archivo `notas.txt` en el repositorio y ejecuta `verificar_alcance.py`.
+Intermedio. Crea un archivo `notas.txt` en el repositorio y ejecuta `VerificarAlcance.java`.
 
-Respuesta esperada: `fuera de alcance: ['notas.txt']` y `salida: 1`.
+Respuesta esperada: `fuera de alcance: [notas.txt]` y `salida: 1`.
 
 #### Ejercicio verificable 3
-Reto. Ejecuta esta línea en la carpeta del repositorio:
+Reto. Después de `gradle test`, crea este programa **fuera** del repositorio (por ejemplo en `/tmp`, para no
+cambiar el alcance) y ejecútalo desde la carpeta del repositorio:
 
-```text
-$ python3 -c 'from entregas import confirmar; print(confirmar({"estado": "pending"}, "12345²"))'
-{'estado': 'delivered'}
+```java
+// ProbarPin.java — un PIN con un dígito que no es 0-9
+void main() {
+    IO.println(Entregas.confirmar(new Entregas.Envio("RF-1", "pending"), "12345٣"));
+}
 ```
 
-El PIN `12345²` termina en un superíndice, no en un dígito, y aun así se confirmó. Agrega el criterio, la prueba y la corrección.
+```text
+$ java -cp build/classes/java/main /tmp/ProbarPin.java
+Envio[guia=RF-1, estado=delivered]
+```
 
-Respuesta esperada: `C5: Dado un PIN con caracteres que no son 0-9, cuando se confirma, entonces se lanza ValueError.` La corrección cambia `pin.isdigit()` por `pin.isascii() and pin.isdigit()`; `test_C5_...` pasa y la cobertura queda `5/5` si también cubriste C4.
+El PIN `12345٣` termina en el dígito arábigo-índico tres, no en un dígito de 0 a 9, y aun así se confirmó:
+`Character.isDigit` acepta los dígitos de cualquier sistema de escritura. Agrega el criterio, la prueba y la corrección.
+
+Respuesta esperada: `C5: Dado un PIN con caracteres que no son 0-9, cuando se confirma, entonces se lanza IllegalArgumentException.` La corrección cambia la condición por `!pin.matches("[0-9]{6}")`; `C5_...` pasa y la cobertura queda `5/5` si también cubriste C4.
 
 #### En el trabajo
 Los equipos que trabajan con agentes guardan las especificaciones en el repositorio, junto al código. El agente abre
@@ -2266,90 +2612,136 @@ description: Redacta la entrada del CHANGELOG a partir de los commits fusionados
 }
 ```
 
-```python
-"""Evalúa skills de agentes en tres niveles.
+El archivo JSON es tan simple que el evaluador lo lee con expresiones regulares; en un proyecto real se usaría una
+librería como Jackson.
 
-Nivel 1: ¿está bien formada y es segura?  Nivel 2: ¿ya existe otra igual?
-Nivel 3: ¿mejora el resultado frente a no usarla (prueba A/B)?
-"""
-import json
-import re
-import sys
-from pathlib import Path
+```java
+// EvaluarSkill.java — evalúa skills de agentes en tres niveles
+// Nivel 1: ¿está bien formada y es segura?  Nivel 2: ¿ya existe otra igual?
+// Nivel 3: ¿mejora el resultado frente a no usarla (prueba A/B)?
+import java.util.regex.Pattern;
 
-PII = re.compile(r"[\w.-]+@[\w-]+\.\w+|\b\d{8,10}\b")  # correos y números tipo cédula
-UMBRAL_DUPLICADO = 0.6   # parecido de descripciones a partir del cual se revisa a mano
-MEJORA_MINIMA = 0.2      # la skill debe subir la tasa de éxito al menos 20 puntos
+static final Pattern PII = Pattern.compile("[\\w.-]+@[\\w-]+\\.\\w+|\\b\\d{8,10}\\b"); // correos y cédulas
+static final Pattern CABECERA = Pattern.compile("---\\n(.*?)\\n---\\n(.*)", Pattern.DOTALL);
+static final Pattern CAMPO = Pattern.compile("^(\\w+):\\s*(.+)$", Pattern.MULTILINE);
+static final Pattern PALABRA = Pattern.compile("\\w+", Pattern.UNICODE_CHARACTER_CLASS);
+static final double UMBRAL_DUPLICADO = 0.6; // parecido a partir del cual se revisa a mano
+static final double MEJORA_MINIMA = 0.2;    // la skill debe subir la tasa de éxito al menos 20 puntos
 
+record Skill(String nombre, String descripcion, String cuerpo, String carpeta, String error) {
+}
 
-def leer(ruta: Path) -> dict:
-    texto = ruta.read_text(encoding="utf-8")
-    cabecera = re.match(r"---\n(.*?)\n---\n(.*)", texto, re.S)
-    if not cabecera:
-        return {"nombre": ruta.parent.name, "descripcion": "", "error": "sin cabecera YAML", "cuerpo": texto}
-    campos = dict(re.findall(r"^(\w+):\s*(.+)$", cabecera.group(1), re.M))
-    return {"nombre": campos.get("name", ""), "descripcion": campos.get("description", ""),
-            "cuerpo": cabecera.group(2), "carpeta": ruta.parent.name}
+Skill leer(Path ruta) throws IOException {
+    String texto = Files.readString(ruta);
+    String carpeta = ruta.getParent().getFileName().toString();
+    var cabecera = CABECERA.matcher(texto);
+    if (!cabecera.matches()) {
+        return new Skill(carpeta, "", texto, carpeta, "sin cabecera YAML");
+    }
+    Map<String, String> campos = new HashMap<>();
+    CAMPO.matcher(cabecera.group(1)).results().forEach(m -> campos.put(m.group(1), m.group(2)));
+    return new Skill(campos.getOrDefault("name", ""), campos.getOrDefault("description", ""),
+            cabecera.group(2), carpeta, null);
+}
 
+List<String> nivel1(Skill skill) {
+    if (skill.error() != null) {
+        return List.of(skill.error());
+    }
+    List<String> problemas = new ArrayList<>();
+    if (!skill.nombre().equals(skill.carpeta())) {
+        problemas.add("el nombre no coincide con la carpeta");
+    }
+    int largo = skill.descripcion().length();
+    if (largo < 20 || largo > 1024) {
+        problemas.add("la descripción debe tener entre 20 y 1024 caracteres");
+    }
+    if (PII.matcher(skill.cuerpo()).find()) {
+        problemas.add("contiene datos personales");
+    }
+    return problemas;
+}
 
-def nivel1(skill: dict) -> list[str]:
-    problemas = []
-    if "error" in skill:
-        return [skill["error"]]
-    if skill["nombre"] != skill["carpeta"]:
-        problemas.append("el nombre no coincide con la carpeta")
-    if not 20 <= len(skill["descripcion"]) <= 1024:
-        problemas.append("la descripción debe tener entre 20 y 1024 caracteres")
-    if PII.search(skill["cuerpo"]):
-        problemas.append("contiene datos personales")
-    return problemas
+Set<String> palabras(String texto) {
+    return PALABRA.matcher(texto.toLowerCase(Locale.ROOT)).results()
+            .map(MatchResult::group).filter(p -> p.length() > 3).collect(Collectors.toSet());
+}
 
+double parecido(String a, String b) { // índice de Jaccard
+    Set<String> union = new HashSet<>(palabras(a));
+    union.addAll(palabras(b));
+    Set<String> comunes = new HashSet<>(palabras(a));
+    comunes.retainAll(palabras(b));
+    return union.isEmpty() ? 0.0 : (double) comunes.size() / union.size();
+}
 
-def palabras(texto: str) -> set[str]:
-    return {p for p in re.findall(r"\w+", texto.lower()) if len(p) > 3}
+List<String> nivel2(List<Skill> skills) {
+    List<String> avisos = new ArrayList<>();
+    for (int i = 0; i < skills.size(); i++) {
+        for (int j = i + 1; j < skills.size(); j++) {
+            double valor = parecido(skills.get(i).descripcion(), skills.get(j).descripcion());
+            if (valor >= UMBRAL_DUPLICADO) {
+                avisos.add(skills.get(i).nombre() + " y " + skills.get(j).nombre() + " se parecen " + pct(valor));
+            }
+        }
+    }
+    return avisos;
+}
 
+String nivel3(Path ruta) throws IOException {
+    String json = Files.readString(ruta);
+    String skill = campo(json, "\"skill\":\\s*\"([^\"]+)\"");
+    int tareas = Integer.parseInt(campo(json, "\"tareas\":\\s*(\\d+)"));
+    double sin = (double) exitos(campo(json, "\"sin_skill\":\\s*\\[([^]]*)]")) / tareas;
+    double con = (double) exitos(campo(json, "\"con_skill\":\\s*\\[([^]]*)]")) / tareas;
+    String veredicto = con - sin >= MEJORA_MINIMA ? "aporta" : "no aporta lo suficiente";
+    return skill + ": éxito " + pct(sin) + " sin la skill -> " + pct(con) + " con ella (" + veredicto + ")";
+}
 
-def parecido(a: str, b: str) -> float:
-    pa, pb = palabras(a), palabras(b)
-    return len(pa & pb) / len(pa | pb) if pa | pb else 0.0  # índice de Jaccard
+String campo(String json, String regex) {
+    var m = Pattern.compile(regex).matcher(json);
+    if (!m.find()) {
+        throw new IllegalArgumentException("falta en resultados-ab.json: " + regex);
+    }
+    return m.group(1);
+}
 
+int exitos(String lista) {
+    return Arrays.stream(lista.split(",")).map(String::strip).mapToInt(Integer::parseInt).sum();
+}
 
-def nivel2(skills: list[dict]) -> list[str]:
-    avisos = []
-    for i, a in enumerate(skills):
-        for b in skills[i + 1:]:
-            valor = parecido(a["descripcion"], b["descripcion"])
-            if valor >= UMBRAL_DUPLICADO:
-                avisos.append(f"{a['nombre']} y {b['nombre']} se parecen {valor:.0%}")
-    return avisos
+String pct(double valor) {
+    return String.format(Locale.ROOT, "%.0f%%", valor * 100);
+}
 
-
-def nivel3(ruta: Path) -> str:
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
-    sin = sum(datos["sin_skill"]) / datos["tareas"]
-    con = sum(datos["con_skill"]) / datos["tareas"]
-    veredicto = "aporta" if con - sin >= MEJORA_MINIMA else "no aporta lo suficiente"
-    return f"{datos['skill']}: éxito {sin:.0%} sin la skill -> {con:.0%} con ella ({veredicto})"
-
-
-skills = [leer(p) for p in sorted(Path("skills").glob("*/SKILL.md"))]
-fallas = 0
-print("Nivel 1 · validación")
-for skill in skills:
-    problemas = nivel1(skill)
-    fallas += bool(problemas)
-    print(f"  {skill['nombre']:<18} {'ok' if not problemas else '; '.join(problemas)}")
-print("Nivel 2 · duplicados")
-duplicados = nivel2(skills)
-for aviso in duplicados or ["sin duplicados"]:
-    print(f"  {aviso}")
-print("Nivel 3 · prueba A/B")
-print(f"  {nivel3(Path('resultados-ab.json'))}")
-sys.exit(1 if fallas or duplicados else 0)
+void main() throws IOException {
+    List<Skill> skills = new ArrayList<>();
+    try (var rutas = Files.newDirectoryStream(Path.of("skills"))) {
+        for (Path carpeta : rutas) {
+            if (Files.exists(carpeta.resolve("SKILL.md"))) {
+                skills.add(leer(carpeta.resolve("SKILL.md")));
+            }
+        }
+    }
+    skills.sort(Comparator.comparing(Skill::carpeta));
+    int fallas = 0;
+    IO.println("Nivel 1 · validación");
+    for (Skill skill : skills) {
+        List<String> problemas = nivel1(skill);
+        fallas += problemas.isEmpty() ? 0 : 1;
+        IO.println("  %-18s %s".formatted(skill.nombre(), problemas.isEmpty() ? "ok" : String.join("; ", problemas)));
+    }
+    IO.println("Nivel 2 · duplicados");
+    List<String> duplicados = nivel2(skills);
+    (duplicados.isEmpty() ? List.of("sin duplicados") : duplicados).forEach(a -> IO.println("  " + a));
+    IO.println("Nivel 3 · prueba A/B");
+    IO.println("  " + nivel3(Path.of("resultados-ab.json")));
+    System.exit(fallas > 0 || !duplicados.isEmpty() ? 1 : 0);
+}
 ```
 
 ```text
-$ python3 evaluar_skill.py; echo "salida: $?"
+$ java EvaluarSkill.java; echo "salida: $?"
 Nivel 1 · validación
   generar-changelog  ok
   resumir-pr         contiene datos personales
@@ -2362,13 +2754,15 @@ salida: 1
 ```
 
 **Explicación por partes.**
-- Línea 11: la expresión busca correos (`algo@dominio.ext`) y números de 8 a 10 cifras, como una cédula.
-- Líneas 18–21: separa la cabecera del cuerpo y lee sus pares `clave: valor`.
-- Líneas 39–40: las palabras de más de 3 letras, en minúscula, sin repetir.
-- Línea 45: el índice de Jaccard; si las dos descripciones están vacías, devuelve `0.0` en lugar de dividir por cero.
-- Líneas 50–54: compara cada par una sola vez (`skills[i + 1:]`).
-- Líneas 60–62: tasas de éxito y veredicto según la mejora mínima.
-- Línea 79: cualquier falla del nivel 1 o un duplicado dejan código de salida 1.
+- Línea 6: la expresión busca correos (`algo@dominio.ext`) y números de 8 a 10 cifras, como una cédula.
+- Línea 9: `UNICODE_CHARACTER_CLASS` hace que `\w` acepte letras con tilde; sin esa opción, «lógica» se partiría en
+  «l» y «gica».
+- Líneas 16–26: `matches` separa la cabecera del cuerpo; la línea 24 lee sus pares `clave: valor`.
+- Líneas 47–50: las palabras de más de 3 letras, en minúscula, sin repetir.
+- Líneas 52–58: el índice de Jaccard; si las dos descripciones están vacías, devuelve `0.0` en lugar de dividir por cero.
+- Líneas 62–63: compara cada par una sola vez (`j` empieza en `i + 1`).
+- Líneas 77–79: tasas de éxito y veredicto según la mejora mínima.
+- Línea 121: cualquier falla del nivel 1 o un duplicado dejan código de salida 1.
 
 > **Ingeniería de software.** El evaluador es una fitness function (Tema 2) para skills: corre en CI y bloquea el
 > pull request que agrega una skill duplicada o con datos personales.
@@ -2382,7 +2776,7 @@ Corrige lo que marcó el evaluador y vuelve a ejecutarlo.
 3. Se repite la evaluación completa.
 
 ```text
-$ mkdir -p descartadas && mv skills/resumir-pr descartadas/ && python3 evaluar_skill.py; echo "salida: $?"
+$ mkdir -p descartadas && mv skills/resumir-pr descartadas/ && java EvaluarSkill.java; echo "salida: $?"
 Nivel 1 · validación
   generar-changelog  ok
   revisar-pr         ok
@@ -2394,19 +2788,21 @@ salida: 0
 ```
 
 **Explicación por partes.**
-- `mv skills/resumir-pr descartadas/`: la carpeta sale del patrón `skills/*/SKILL.md` y el evaluador ya no la ve.
+- `mv skills/resumir-pr descartadas/`: la carpeta sale de `skills/` y el evaluador ya no la recorre.
 - El nivel 1 queda en `ok` para las dos skills restantes; el nivel 2 responde `sin duplicados`.
 - El nivel 3 no cambia: la prueba A/B es de `generar-changelog`, que sigue aportando.
 
-Si el archivo de resultados tiene `"tareas": 0`, la última línea del error es esta:
+Si el archivo de resultados tiene `"tareas": 0`, no hay error: las dos últimas líneas son estas:
 
 ```text
-$ python3 evaluar_skill.py
-ZeroDivisionError: division by zero
+$ java EvaluarSkill.java | tail -2
+Nivel 3 · prueba A/B
+  generar-changelog: éxito Infinity% sin la skill -> Infinity% con ella (no aporta lo suficiente)
 ```
 
-> **Error común.** Un experimento sin tareas termina con `ZeroDivisionError: division by zero` en la línea 60. No hay tasa de éxito
-> sin tareas: corre el experimento antes de evaluar, o valida que `tareas` sea mayor que cero.
+> **Error común.** Un experimento sin tareas. Como la división es entre `double` (línea 77), Java no lanza
+> excepción: 4 ÷ 0 da `Infinity` y el informe sigue como si nada. No hay tasa de éxito sin tareas: valida que
+> `tareas` sea mayor que cero y lanza `IllegalArgumentException` si no lo es.
 
 > **Buena práctica.** Guarda los resultados A/B en el repositorio junto a la skill. Si alguien cambia la skill, se
 > repite la prueba y se compara con el número anterior.
@@ -2422,13 +2818,13 @@ Respuesta: no. Las palabras de más de 3 letras son {revisa, pruebas, pedido} y 
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Prepara la carpeta
-Crea `~/labs/modulo-7/evaluar-skills` con `skills/generar-changelog`, `skills/resumir-pr` y `skills/revisar-pr`, cada una con su `SKILL.md`.
+Crea `~/labs/arquitectura/evaluar-skills` con `skills/generar-changelog`, `skills/resumir-pr` y `skills/revisar-pr`, cada una con su `SKILL.md`.
 
 #### Paso 2 · Agrega los resultados A/B
 Crea `resultados-ab.json` con las 10 tareas de cada variante.
 
 #### Paso 3 · Evalúa
-Escribe `evaluar_skill.py` y ejecútalo. Anota cada problema que marca y su nivel.
+Escribe `EvaluarSkill.java` y ejecútalo. Anota cada problema que marca y su nivel.
 
 #### Paso 4 · Corrige y repite
 Mueve `resumir-pr` a `descartadas/` y repite hasta obtener `salida: 0`.
@@ -2453,7 +2849,7 @@ Respuesta esperada: `generar-changelog: éxito 40% sin la skill -> 50% con ella 
 #### Ejercicio verificable 3
 Reto. Amplía el nivel 1 para que también marque números de teléfono celular colombianos de 10 cifras que empiezan por 3.
 
-Respuesta esperada: la expresión actual ya los encuentra, porque `\b\d{8,10}\b` incluye 10 cifras. Para distinguirlos agrega una regla propia, `\b3\d{9}\b`, con el mensaje «contiene un teléfono».
+Respuesta esperada: la expresión actual ya los encuentra, porque `\b\d{8,10}\b` incluye 10 cifras. Para distinguirlos agrega un `Pattern` propio, `\\b3\\d{9}\\b` dentro del texto Java, con el mensaje «contiene un teléfono».
 
 #### En el trabajo
 Los equipos que usan agentes mantienen sus skills como código: en un repositorio, con revisión y con evaluación
@@ -2485,11 +2881,11 @@ entregable remite al tema donde se explicó y se comprueba con uno de los progra
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Entregables
-1. **Especificación.** Una historia de usuario del inventario con al menos tres criterios `C<n>` que pasen `verificar_criterios.py` (Tema 1).
+1. **Especificación.** Una historia de usuario del inventario con al menos tres criterios `C<n>` que pasen `VerificarCriterios.java` (Tema 1).
 2. **Arquitectura.** Un diagrama C4 de contenedores, un escenario de calidad de seis partes y una fitness function de dependencias en CI (Tema 2).
-3. **Diseño.** El caso de uso «retirar stock» separado de la persistencia con un puerto y dos adaptadores, SQLite y memoria, con prueba caracterizadora y `diff` vacío (Tema 3).
-4. **Decisiones.** Dos ADR que pasen `verificar_adr.py`, un registro de deuda priorizado y una función pública evolucionada con deprecación (Tema 4).
-5. **Cambio con agente.** Un cambio pedido contra la especificación, con `verificar_alcance.py` y `verificar_cobertura.py` en verde (Tema 6).
+3. **Diseño.** El caso de uso «retirar stock» separado de la persistencia con un puerto y dos adaptadores, JDBC con H2 y memoria, con prueba caracterizadora y `diff` vacío (Tema 3).
+4. **Decisiones.** Dos ADR que pasen `VerificarAdr.java`, un registro de deuda priorizado y un método público evolucionado con sobrecarga y `@Deprecated` (Tema 4).
+5. **Cambio con agente.** Un cambio pedido contra la especificación, con `VerificarAlcance.java` y `VerificarCobertura.java` en verde (Tema 6).
 
 #### Criterio de terminado
 Un clon limpio del repositorio pasa las pruebas, la fitness function y los verificadores de criterios, ADR, alcance
