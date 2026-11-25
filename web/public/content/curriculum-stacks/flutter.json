@@ -653,43 +653,43 @@
    "id": "8",
    "kind": "current",
    "title": null,
-   "topicCount": 5,
+   "topicCount": 6,
    "topics": [
     {
-     "title": "Animaciones implícitas vs explícitas",
+     "title": "Animaciones implícitas: cambia el valor y Flutter anima",
      "status": "actual",
      "current": {
       "module": "8",
       "order": 1,
-      "fragment": "tema-1-animaciones-implicitas-vs-explicitas"
+      "fragment": "tema-1-animaciones-implicitas-cambia-el-valor-y-flutter-anima"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Flutter DevTools y detección de jank",
+     "title": "Animaciones explícitas: AnimationController, curvas e intervalos",
      "status": "actual",
      "current": {
       "module": "8",
       "order": 2,
-      "fragment": "tema-2-flutter-devtools-y-deteccion-de-jank"
+      "fragment": "tema-2-animaciones-explicitas-animationcontroller-curvas-e-intervalos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "const widgets, RepaintBoundary y shouldRepaint",
+     "title": "Medir los cuadros: encontrar el trabajo que traba la app",
      "status": "actual",
      "current": {
       "module": "8",
       "order": 3,
-      "fragment": "tema-3-const-widgets-repaintboundary-y-shouldrepaint"
+      "fragment": "tema-3-medir-los-cuadros-encontrar-el-trabajo-que-traba-la-app"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Isolates — trabajo pesado sin congelar la interfaz",
+     "title": "Isolates: trabajo pesado sin congelar la interfaz",
      "status": "actual",
      "current": {
       "module": "8",
@@ -700,12 +700,23 @@
      "courseSources": []
     },
     {
-     "title": "CustomPainter: dibujar con Canvas sin repintar de más",
+     "title": "Repintar solo lo necesario: RepaintBoundary y shouldRepaint",
      "status": "actual",
      "current": {
       "module": "8",
       "order": 5,
-      "fragment": "tema-5-custompainter-dibujar-con-canvas-sin-repintar-de-mas"
+      "fragment": "tema-5-repintar-solo-lo-necesario-repaintboundary-y-shouldrepaint"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 25: la ruta animada y fluida",
+     "status": "actual",
+     "current": {
+      "module": "8",
+      "order": 6,
+      "fragment": "proyecto-25-la-ruta-animada-y-fluida"
      },
      "sources": [],
      "courseSources": []

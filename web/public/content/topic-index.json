@@ -3010,24 +3010,28 @@
     ],
     "8": [
       {
-        "title": "Animaciones implícitas vs explícitas",
-        "fragment": "tema-1-animaciones-implicitas-vs-explicitas"
+        "title": "Animaciones implícitas: cambia el valor y Flutter anima",
+        "fragment": "tema-1-animaciones-implicitas-cambia-el-valor-y-flutter-anima"
       },
       {
-        "title": "Flutter DevTools y detección de jank",
-        "fragment": "tema-2-flutter-devtools-y-deteccion-de-jank"
+        "title": "Animaciones explícitas: AnimationController, curvas e intervalos",
+        "fragment": "tema-2-animaciones-explicitas-animationcontroller-curvas-e-intervalos"
       },
       {
-        "title": "const widgets, RepaintBoundary y shouldRepaint",
-        "fragment": "tema-3-const-widgets-repaintboundary-y-shouldrepaint"
+        "title": "Medir los cuadros: encontrar el trabajo que traba la app",
+        "fragment": "tema-3-medir-los-cuadros-encontrar-el-trabajo-que-traba-la-app"
       },
       {
-        "title": "Isolates — trabajo pesado sin congelar la interfaz",
+        "title": "Isolates: trabajo pesado sin congelar la interfaz",
         "fragment": "tema-4-isolates-trabajo-pesado-sin-congelar-la-interfaz"
       },
       {
-        "title": "CustomPainter: dibujar con Canvas sin repintar de más",
-        "fragment": "tema-5-custompainter-dibujar-con-canvas-sin-repintar-de-mas"
+        "title": "Repintar solo lo necesario: RepaintBoundary y shouldRepaint",
+        "fragment": "tema-5-repintar-solo-lo-necesario-repaintboundary-y-shouldrepaint"
+      },
+      {
+        "title": "Proyecto 25: la ruta animada y fluida",
+        "fragment": "proyecto-25-la-ruta-animada-y-fluida"
       }
     ],
     "9": [

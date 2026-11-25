@@ -1,7 +1,7 @@
 # Módulo 1: Widgets y maquetación: de la primera pantalla a listas con estado
 
 **Entorno comprobado para esta edición (2026-11-24):** Flutter 3.50.1 (canal estable) con Dart 3.14.0 en Linux
-x86_64, con el paquete `material_ui` 1.1, que reemplaza a `package:flutter/material.dart` desde Flutter 3.50. Todo
+x86_64, con el paquete `material_ui` 1.11.1, que reemplaza a `package:flutter/material.dart` desde Flutter 3.50. Todo
 el código se analizó con `flutter analyze` (`No issues found!`) y se ejecutó con `flutter test` ese día, en
 `/home/estudiante/labs/flutter/m1` (tu `~/labs/flutter/m1`). **Los pantallazos de este módulo los dibujó Flutter**:
 cada uno sale de una prueba que arma la pantalla y la guarda como PNG, con la fuente Roboto y los íconos de Material

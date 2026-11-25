@@ -1,7 +1,7 @@
 # Módulo 4: Gestión de estado: de setState a Riverpod, con pantallas que muestran cada estado
 
 **Entorno comprobado para esta edición (2026-11-24):** Flutter 3.50.1 (canal estable) con Dart 3.14.0 en Linux
-x86_64, con `material_ui` 1.1, `flutter_riverpod` 3.5.0 y `flutter_bloc` 9.1.1. Todo el código se analizó con
+x86_64, con `material_ui` 1.11.1, `flutter_riverpod` 3.5.0 y `flutter_bloc` 9.1.1. Todo el código se analizó con
 `flutter analyze` (`No issues found!`) y se ejecutó con `flutter test` ese día, en
 `/home/estudiante/labs/flutter/m4` (tu `~/labs/flutter/m4`). **Los pantallazos los dibujó Flutter** con la
 herramienta del Módulo 1; cuando una figura muestra varios estados, son pantallazos separados puestos uno al lado del

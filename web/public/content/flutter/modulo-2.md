@@ -1,7 +1,7 @@
 # Módulo 2: Maquetación responsive y diseño: restricciones, tamaños de ventana y sistema de diseño
 
 **Entorno comprobado para esta edición (2026-11-24):** Flutter 3.50.1 (canal estable) con Dart 3.14.0 en Linux
-x86_64, con el paquete `material_ui` 1.1. Todo el código se analizó con `flutter analyze` (`No issues found!`) y se
+x86_64, con el paquete `material_ui` 1.11.1. Todo el código se analizó con `flutter analyze` (`No issues found!`) y se
 ejecutó con `flutter test` ese día, en `/home/estudiante/labs/flutter/m2` (tu `~/labs/flutter/m2`). **Los pantallazos
 los dibujó Flutter** con la misma herramienta del Módulo 1 (`test/pantallazo.dart`); los de pantallas anchas usan
 densidad 1 para que la imagen no sea enorme. Las salidas de texto son literales; los tiempos (`00:01`) y los números

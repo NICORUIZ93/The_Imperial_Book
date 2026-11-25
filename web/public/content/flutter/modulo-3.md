@@ -1,7 +1,7 @@
 # Módulo 3: Navegación: pilas de pantallas, rutas con dirección y flujos con diseño
 
 **Entorno comprobado para esta edición (2026-11-24):** Flutter 3.50.1 (canal estable) con Dart 3.14.0 en Linux
-x86_64, con `material_ui` 1.1 y `go_router` 18.1.4. Todo el código se analizó con `flutter analyze` (`No issues
+x86_64, con `material_ui` 1.11.1 y `go_router` 18.1.4. Todo el código se analizó con `flutter analyze` (`No issues
 found!`) y se ejecutó con `flutter test` ese día, en `/home/estudiante/labs/flutter/m3` (tu `~/labs/flutter/m3`).
 **Los pantallazos los dibujó Flutter** con la herramienta del Módulo 1 (`test/pantallazo.dart`); cuando una figura
 muestra varios pasos de un mismo flujo, son pantallazos separados puestos uno al lado del otro. Las salidas de texto
