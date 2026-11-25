@@ -1,6 +1,6 @@
 # Módulo 9: Catálogo de patrones de diseño
 
-**Entorno comprobado para esta edición (2026-11-24):** Python 3.13.18 en Linux x86_64, solo con la biblioteca estándar (`abc`, `dataclasses`, `functools`, `time`, `sys` y `tracemalloc`). La línea de referencia del curso es Python 3.14 (`docs/VERSIONES.md`); estos ejemplos no usan nada exclusivo de esa versión. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/patrones` (tu `~/labs/patrones`). Los tiempos en milisegundos y los megabytes medidos pueden variar un poco en tu equipo; los textos y los conteos no.
+**Entorno comprobado para esta edición (2026-11-24):** OpenJDK 25.0.5.1 en Linux x86_64, solo con la biblioteca estándar de Java. Todas las transcripciones son literales de esa ejecución, en la carpeta de práctica `/home/estudiante/labs/patrones` (tu `~/labs/patrones`). Los tiempos en milisegundos, los bytes medidos y las direcciones que Java imprime para los objetos (como `@7ee955a8`) cambian en tu equipo; los textos y los conteos no.
 
 ## Apertura del módulo
 
@@ -13,7 +13,7 @@ Al terminar este módulo podrás:
 
 **Esquema del módulo:** Decorator (Tema 1), State (Tema 2), Template Method (Tema 3), Chain of Responsibility (Tema 4), Mediator (Tema 5), Memento (Tema 6), Visitor (Tema 7) y Flyweight (Tema 8). Cierra con el Proyecto 13, que los une en un núcleo de envíos.
 
-**Qué necesitas saber antes:** clase, objeto, atributo, método, `__init__` y `self` (Módulo 1, Tema 6); herencia, `super()`, sobrescritura, composición, clase abstracta, método abstracto y polimorfismo (Módulo 1, Tema 7); excepción y `assert` (Módulo 1, Tema 1); función, parámetro y `__name__` (Módulo 1, Tema 4); lista, diccionario, tupla, conjunto y mutable (Módulo 2, Tema 1); pila (Módulo 2, Tema 2). Esas fichas no se repiten aquí: cada tema las enlaza.
+**Qué necesitas saber antes:** clase, objeto, atributo, método, constructor y `this` (Módulo 1, Tema 6); herencia, `super`, sobrescritura con `@Override`, composición, clase abstracta, método abstracto, interfaz y polimorfismo (Módulo 1, Tema 7); excepción y record (Módulo 1, Tema 1); método y parámetro (Módulo 1, Tema 4); `List`, `Map`, `Set`, lambdas y objetos mutables (Módulo 2, Tema 1); pila (Módulo 2, Tema 2). Esas fichas no se repiten aquí: cada tema las enlaza.
 
 ## Antes de empezar: cómo usar este catálogo
 
@@ -23,7 +23,7 @@ No empieces eligiendo patrón. Identifica primero el problema, las fuerzas que t
 
 La alternativa simple que más vas a ver se llama **Strategy**: pasar un objeto o una función intercambiable. Ya la usaste con los avisos del Módulo 1, Tema 7, cuando `Envio` recibía un `AvisoConsola` o un `AvisoMemoria`.
 
-Prepara la carpeta una sola vez; todos los programas del módulo viven ahí y algunos importan a otros:
+Prepara la carpeta una sola vez; todos los programas del módulo viven ahí y algunos usan clases de otros archivos de la misma carpeta:
 
 ```bash
 mkdir -p ~/labs/patrones && cd ~/labs/patrones
@@ -40,13 +40,13 @@ mkdir -p ~/labs/patrones && cd ~/labs/patrones
 Al terminar este tema podrás:
 - explicar qué es un patrón de diseño y qué problema resuelve el patrón Decorator;
 - envolver un objeto con decoradores apilables y predecir cómo cambia el resultado al cambiar el orden;
-- distinguir el patrón Decorator del decorador de función `@` de Python;
-- conservar el nombre y la documentación de una función decorada con `functools.wraps`.
+- distinguir el patrón Decorator, sobre objetos, de una envoltura de funciones con lambdas;
+- conservar el nombre de una operación envuelta, que una lambda no tiene.
 
-**Conceptos clave:** patrón de diseño, Decorator, decorador de función, argumentos variables, `functools.wraps`
+**Conceptos clave:** patrón de diseño, Decorator, envoltura de función, interfaz funcional, nombre de una lambda
 
-Ya los conoces y no se repiten: *clase*, *objeto*, *método* y `__init__` (Módulo 1, Tema 6); *herencia*,
-*sobrescritura*, `super()` y *composición* (Módulo 1, Tema 7); *función* y `__name__` (Módulo 1, Tema 4).
+Ya los conoces y no se repiten: *clase*, *objeto*, *método* y *constructor* (Módulo 1, Tema 6); *herencia*,
+*sobrescritura*, `super`, *interfaz* y *composición* (Módulo 1, Tema 7); *método* y *lambda* (Módulos 1 y 2).
 
 #### El problema
 RutaFlow avisa a sus clientes cuándo sale cada paquete. Unos clientes quieren el aviso firmado, otros en mayúsculas,
@@ -66,38 +66,42 @@ número de clases. ¿Cómo agregas comportamiento a un objeto, en cualquier comb
 - **Definición técnica:** patrón estructural en el que un objeto envoltorio implementa la misma interfaz que el objeto que envuelve, le delega la llamada y agrega trabajo antes o después.
 - **En palabras sencillas:** como meter un regalo en varias bolsas: cada bolsa agrega algo, pero por fuera sigue siendo «algo que se entrega».
 - **Dónde se rompe la comparación:** las bolsas no cambian el regalo; un decorador sí puede cambiar los datos que pasan, como el mensaje en mayúsculas.
-- **Ejemplo:** `ConFirma(EnMayusculas(Notificador()))` responde a `enviar` igual que un `Notificador`.
-- **Error típico:** olvidar delegar: si `ConFirma.enviar` no llama a `self.envuelto.enviar`, el aviso original se pierde.
+- **Ejemplo:** `new ConFirma(new EnMayusculas(new Basico()))` responde a `enviar` igual que cualquier `Notificador`.
+- **Error típico:** olvidar delegar: si `ConFirma.enviar` no llama a `envuelto.enviar`, el aviso original se pierde.
 
-**decorador de función**
-- **Definición técnica:** función que recibe una función y devuelve otra que la reemplaza; la sintaxis `@nombre` sobre un `def` equivale a `f = nombre(f)`.
+**envoltura de función**
+- **Definición técnica:** método que recibe una función (por ejemplo, un `IntUnaryOperator`) y devuelve otra función del mismo tipo que llama a la original y agrega trabajo antes o después.
 - **En palabras sencillas:** un envoltorio para funciones: la llamas igual que antes y por dentro hace algo extra, como medir el tiempo.
-- **Dónde se rompe la comparación:** se parece al patrón Decorator en la idea, pero se aplica una sola vez al definir la función, no a cada objeto mientras el programa corre.
-- **Ejemplo:** `@cronometrado` sobre `def calcular_tarifa` hace que cada llamada imprima cuánto tardó.
-- **Error típico:** olvidar `return envoltura` al final del decorador: la función queda en `None` y llamarla produce `TypeError: 'NoneType' object is not callable`.
+- **Dónde se rompe la comparación:** es la misma idea del patrón Decorator, pero sobre una sola función y no sobre un objeto con varios métodos.
+- **Ejemplo:** `cronometrado("calcularTarifa", this::calcularTarifa)` devuelve una función que calcula la tarifa e imprime cuánto tardó.
+- **Error típico:** olvidar el `return resultado` dentro de la lambda de la envoltura: el programa no compila.
 
-**argumentos variables**
-- **Definición técnica:** un parámetro escrito `*args` recibe en una tupla todos los argumentos posicionales que lleguen; al llamar, `funcion(*args)` los vuelve a repartir.
-- **En palabras sencillas:** una bolsa que recibe cuantos datos le pasen, para entregarlos intactos a la función envuelta.
-- **Dónde se rompe la comparación:** la bolsa guarda el orden: `args` es una tupla y `args[0]` es el primer argumento.
-- **Ejemplo:** en `calcular_tarifa(3)`, la envoltura recibe `args == (3,)`.
-- **Error típico:** escribir `funcion(args)` sin asterisco: la función recibe una tupla como un solo argumento.
+**interfaz funcional**
+- **Definición técnica:** interfaz con un solo método abstracto; una lambda o una referencia a método (`this::calcularTarifa`) puede ocupar su lugar. `IntUnaryOperator` recibe un `int` y devuelve un `int` con `applyAsInt`.
+- **En palabras sencillas:** el «enchufe» que dice qué forma debe tener una función para conectarse ahí.
+- **Dónde se rompe la comparación:** un enchufe acepta cualquier aparato; aquí el compilador revisa que los tipos de entrada y salida coincidan.
+- **Ejemplo:** `cronometrado` recibe un `IntUnaryOperator` y devuelve otro: por eso las envolturas se pueden apilar.
+- **Error típico:** escribir una envoltura para cada firma posible; antes revisa si alguna interfaz de `java.util.function` ya sirve.
 
-**`functools.wraps`**
-- **Definición técnica:** decorador de la biblioteca estándar que copia a la envoltura los metadatos de la función original: `__name__`, `__doc__` y otros.
-- **En palabras sencillas:** le pone a la envoltura la etiqueta de la función que envuelve, para que no se pierda quién es.
-- **Dónde se rompe la comparación:** copia la etiqueta, no el comportamiento: la envoltura sigue ejecutando su propio código.
-- **Ejemplo:** con `@wraps(funcion)`, `calcular_tarifa.__name__` sigue siendo `'calcular_tarifa'`.
-- **Error típico:** omitirlo: los registros, los errores y las herramientas de prueba muestran `envoltura` en lugar del nombre real.
+**nombre de una lambda**
+- **Definición técnica:** una lambda no tiene nombre propio; su `toString()` muestra el nombre de una clase que genera la JVM, como `Cronometro$$Lambda/0x000000004715d800@1e802ef9`.
+- **En palabras sencillas:** la envoltura no trae etiqueta; si quieres saber qué función es, tienes que ponérsela tú.
+- **Dónde se rompe la comparación:** la etiqueta que le pongas (un `String` o un record) es solo información; no cambia lo que hace la función.
+- **Ejemplo:** el record `Operacion(String nombre, IntUnaryOperator funcion)` guarda la función junto a su nombre.
+- **Error típico:** imprimir la lambda en un registro esperando ver el nombre del método: sale un texto que nadie entiende.
 
 #### ► CÓMO FUNCIONA
-Cada decorador **tiene** un objeto con el mismo método `enviar` y lo guarda en `self.envuelto`: es composición. Al
+Cada decorador **tiene** un objeto con el mismo método `enviar` y lo guarda en el campo `envuelto`: es composición. Al
 llamar `enviar`, el decorador de afuera hace su parte y le pasa la llamada al de adentro. El cliente no sabe cuántas
 capas hay: solo ve algo que responde a `enviar`.
 
 ```mermaid
 classDiagram
     class Notificador {
+      <<interface>>
+      +enviar(guia, mensaje)
+    }
+    class Basico {
       +enviar(guia, mensaje)
     }
     class ConFirma {
@@ -113,13 +117,17 @@ classDiagram
       -limite
       +enviar(guia, mensaje)
     }
+    Basico ..|> Notificador
+    ConFirma ..|> Notificador
+    EnMayusculas ..|> Notificador
+    ParaSMS ..|> Notificador
     ConFirma o-- Notificador : envuelve
     EnMayusculas o-- Notificador : envuelve
     ParaSMS o-- Notificador : envuelve
 ```
 
-El diagrama dibuja el envoltorio hacia `Notificador`, pero cualquier objeto con `enviar` sirve: un `ConFirma` puede
-envolver un `EnMayusculas`. Por eso las capas se apilan en cualquier orden.
+Todos implementan la interfaz `Notificador`, y cada envoltorio guarda un `Notificador` cualquiera: un `ConFirma`
+puede envolver un `EnMayusculas`. Por eso las capas se apilan en cualquier orden.
 
 #### Problema resuelto 1.1
 Antes del patrón. Implementa los avisos con herencia: una subclase para cada combinación de firma y mayúsculas.
@@ -129,34 +137,49 @@ Antes del patrón. Implementa los avisos con herencia: una subclase para cada co
 2. `NotificadorMayusculasConFirma` hereda de `NotificadorMayusculas` y copia la firma.
 3. Cuenta cuántas clases harían falta si cada extra se puede combinar con todos.
 
-```python
-# notificador_herencia.py — cada combinación de extras pide una subclase
-class Notificador:
-    def enviar(self, guia, mensaje):
-        return f"[{guia}] {mensaje}"
+```java
+// NotificadorHerencia.java — cada combinación de extras pide una subclase
+static class Notificador {
+    String enviar(String guia, String mensaje) {
+        return "[" + guia + "] " + mensaje;
+    }
+}
 
-class NotificadorConFirma(Notificador):
-    def enviar(self, guia, mensaje):
-        return super().enviar(guia, mensaje) + " -- RutaFlow"
+static class NotificadorConFirma extends Notificador {
+    @Override
+    String enviar(String guia, String mensaje) {
+        return super.enviar(guia, mensaje) + " -- RutaFlow";
+    }
+}
 
-class NotificadorMayusculas(Notificador):
-    def enviar(self, guia, mensaje):
-        return super().enviar(guia, mensaje.upper())
+static class NotificadorMayusculas extends Notificador {
+    @Override
+    String enviar(String guia, String mensaje) {
+        return super.enviar(guia, mensaje.toUpperCase());
+    }
+}
 
-class NotificadorMayusculasConFirma(NotificadorMayusculas):
-    def enviar(self, guia, mensaje):
-        return super().enviar(guia, mensaje) + " -- RutaFlow"   # firma copiada otra vez
+static class NotificadorMayusculasConFirma extends NotificadorMayusculas {
+    @Override
+    String enviar(String guia, String mensaje) {
+        return super.enviar(guia, mensaje) + " -- RutaFlow";   // firma copiada otra vez
+    }
+}
 
-clases = [Notificador, NotificadorConFirma, NotificadorMayusculas, NotificadorMayusculasConFirma]
-for clase in clases:
-    print(f"{clase.__name__:<30} {clase().enviar('G-101', 'Tu paquete salió')}")
-
-for extras in (2, 3, 4):
-    print(f"Con {extras} extras combinables necesitas {2 ** extras} clases")
+void main() {
+    List<Notificador> todos = List.of(new Notificador(), new NotificadorConFirma(),
+            new NotificadorMayusculas(), new NotificadorMayusculasConFirma());
+    for (Notificador n : todos) {
+        IO.println("%-30s %s".formatted(n.getClass().getSimpleName(), n.enviar("G-101", "Tu paquete salió")));
+    }
+    for (int extras = 2; extras <= 4; extras++) {
+        IO.println("Con %d extras combinables necesitas %d clases".formatted(extras, 1 << extras));
+    }
+}
 ```
 
 ```text
-$ python3 notificador_herencia.py
+$ java NotificadorHerencia.java
 Notificador                    [G-101] Tu paquete salió
 NotificadorConFirma            [G-101] Tu paquete salió -- RutaFlow
 NotificadorMayusculas          [G-101] TU PAQUETE SALIÓ
@@ -167,54 +190,71 @@ Con 4 extras combinables necesitas 16 clases
 ```
 
 **Explicación por partes.**
-- Líneas 6–8 y 14–16: la firma ` -- RutaFlow` aparece escrita dos veces. Si cambia, hay que acordarse de las dos.
-- Línea 14: para combinar dos extras hace falta una clase nueva que herede de una y copie la otra.
-- Líneas 22–23: cada extra puede estar o no, así que con *n* extras hay 2ⁿ combinaciones. Con cuatro, 16 clases.
+- Líneas 8–13 y 22–27: la firma ` -- RutaFlow` aparece escrita dos veces. Si cambia, hay que acordarse de las dos.
+- Línea 22: para combinar dos extras hace falta una clase nueva que herede de una y copie la otra.
+- Línea 36: cada extra puede estar o no, así que con *n* extras hay 2ⁿ combinaciones (`1 << extras` es 2 elevado a
+  `extras`). Con cuatro, 16 clases.
 
 #### Problema resuelto 1.2
 Después del patrón. Escribe cada extra como un envoltorio independiente y apílalos en el orden que pida cada cliente.
 
 **Razonamiento:**
-1. Cada extra es una clase con `envuelto` y un método `enviar` con la misma firma que `Notificador.enviar`.
-2. `enviar` delega en `self.envuelto` y agrega su parte antes o después.
+1. `Notificador` pasa a ser una interfaz. Cada extra es una clase que la implementa y guarda otro `Notificador` en `envuelto`.
+2. `enviar` delega en `envuelto` y agrega su parte antes o después.
 3. Un extra nuevo, como el recorte para SMS, es una clase nueva; ninguna clase anterior cambia.
 
-```python
-# decorator.py — envoltorios con la misma interfaz que se apilan
-class Notificador:                         # componente base
-    def enviar(self, guia, mensaje):
-        return f"[{guia}] {mensaje}"
+```java
+// Decorator.java — envoltorios con la misma interfaz que se apilan
+interface Notificador {
+    String enviar(String guia, String mensaje);
+}
 
-class ConFirma:                            # decorador: misma interfaz, envuelve otro notificador
-    def __init__(self, envuelto):
-        self.envuelto = envuelto
-    def enviar(self, guia, mensaje):
-        return self.envuelto.enviar(guia, mensaje) + " -- RutaFlow"
+static class Basico implements Notificador {           // componente base
+    public String enviar(String guia, String mensaje) {
+        return "[" + guia + "] " + mensaje;
+    }
+}
 
-class EnMayusculas:
-    def __init__(self, envuelto):
-        self.envuelto = envuelto
-    def enviar(self, guia, mensaje):
-        return self.envuelto.enviar(guia, mensaje.upper())
+static class ConFirma implements Notificador {         // decorador: misma interfaz, envuelve otro notificador
+    private final Notificador envuelto;
+    ConFirma(Notificador envuelto) { this.envuelto = envuelto; }
+    public String enviar(String guia, String mensaje) {
+        return envuelto.enviar(guia, mensaje) + " -- RutaFlow";
+    }
+}
 
-class ParaSMS:                             # extra nuevo: no toca ninguna clase anterior
-    def __init__(self, envuelto, limite=32):
-        self.envuelto, self.limite = envuelto, limite
-    def enviar(self, guia, mensaje):
-        return self.envuelto.enviar(guia, mensaje)[: self.limite]
+static class EnMayusculas implements Notificador {
+    private final Notificador envuelto;
+    EnMayusculas(Notificador envuelto) { this.envuelto = envuelto; }
+    public String enviar(String guia, String mensaje) {
+        return envuelto.enviar(guia, mensaje.toUpperCase());
+    }
+}
 
-simple = Notificador()
-completo = ConFirma(EnMayusculas(Notificador()))
-print(simple.enviar("G-101", "Tu paquete salió"))
-print(completo.enviar("G-101", "Tu paquete salió"))
+static class ParaSMS implements Notificador {          // extra nuevo: no toca ninguna clase anterior
+    private final Notificador envuelto;
+    private final int limite;
+    ParaSMS(Notificador envuelto, int limite) { this.envuelto = envuelto; this.limite = limite; }
+    public String enviar(String guia, String mensaje) {
+        String texto = envuelto.enviar(guia, mensaje);
+        return texto.substring(0, Math.min(limite, texto.length()));
+    }
+}
 
-largo = "Tu paquete salió de la bodega de Fontibón"
-print(ParaSMS(ConFirma(Notificador())).enviar("G-101", largo))   # recorta y pierde la firma
-print(ConFirma(ParaSMS(Notificador())).enviar("G-101", largo))   # recorta y luego firma
+void main() {
+    Notificador simple = new Basico();
+    Notificador completo = new ConFirma(new EnMayusculas(new Basico()));
+    IO.println(simple.enviar("G-101", "Tu paquete salió"));
+    IO.println(completo.enviar("G-101", "Tu paquete salió"));
+
+    String largo = "Tu paquete salió de la bodega de Fontibón";
+    IO.println(new ParaSMS(new ConFirma(new Basico()), 32).enviar("G-101", largo));   // recorta y pierde la firma
+    IO.println(new ConFirma(new ParaSMS(new Basico(), 32)).enviar("G-101", largo));   // recorta y luego firma
+}
 ```
 
 ```text
-$ python3 decorator.py
+$ java Decorator.java
 [G-101] Tu paquete salió
 [G-101] TU PAQUETE SALIÓ -- RutaFlow
 [G-101] Tu paquete salió de la b
@@ -222,117 +262,113 @@ $ python3 decorator.py
 ```
 
 **Explicación por partes.**
-- Líneas 6–10: `ConFirma` guarda el objeto envuelto (línea 8) y agrega la firma **después** de su respuesta.
-- Líneas 15–16: `EnMayusculas` cambia el mensaje **antes** de delegar.
-- Líneas 18–22: `ParaSMS` es el extra nuevo. Recorta con `[: self.limite]` lo que devuelve la capa de adentro.
-- Líneas 30–31: las mismas tres clases en distinto orden dan resultados distintos. En la línea 30 la firma se recorta;
-  en la 31 la firma se agrega después del recorte y el texto pasa de 32 caracteres.
+- Líneas 2–4: la interfaz que comparten el componente base y todos los envoltorios.
+- Líneas 12–18: `ConFirma` guarda el objeto envuelto y agrega la firma **después** de su respuesta.
+- Líneas 20–26: `EnMayusculas` cambia el mensaje **antes** de delegar.
+- Líneas 28–36: `ParaSMS` es el extra nuevo. Recorta con `substring` lo que devuelve la capa de adentro; `Math.min`
+  evita salirse del texto si es más corto que el límite.
+- Líneas 45–46: las mismas tres clases en distinto orden dan resultados distintos. En la línea 45 la firma se recorta;
+  en la 46 la firma se agrega después del recorte y el texto pasa de 32 caracteres.
 
 Con *n* extras ahora tienes *n* clases, no 2ⁿ. La combinación se decide al crear el objeto, no al escribir clases.
 
 #### Problema resuelto 1.3
-Python trae su propia versión de la idea para funciones: el decorador `@`. Apila dos decoradores sobre
-`calcular_tarifa`: uno mide el tiempo con `functools.wraps` y otro registra la llamada sin `wraps`.
+La misma idea sirve para funciones sueltas. Apila dos envolturas sobre `calcularTarifa`: una mide el tiempo y
+recibe el nombre de la operación; otra registra la llamada sin recibirlo.
 
 **Razonamiento:**
-1. Un decorador de función recibe `funcion`, define `envoltura(*args)` y devuelve `envoltura`.
-2. Los decoradores se aplican de abajo arriba: primero `@cronometrado`, luego `@registrado`.
-3. Para ver el efecto de `wraps`, imprime `__name__` y `__doc__` de la función final.
+1. Una envoltura recibe un `IntUnaryOperator` y devuelve otro: una lambda que llama a la original.
+2. Las envolturas se aplican de adentro hacia afuera: primero `cronometrado`, luego `registrado`.
+3. Para ver qué se pierde, imprime la función final: una lambda no tiene nombre.
 
-```python
-# cronometro.py — decoradores de función apilados, con y sin functools.wraps
-import time
-from functools import wraps
+```java
+// Cronometro.java — envoltorios de funciones: lambdas que agregan trabajo antes y después
+record Operacion(String nombre, IntUnaryOperator funcion) {}   // la función con su nombre
 
-def cronometrado(funcion):                 # decorador de función de Python (@)
-    @wraps(funcion)                        # copia nombre y documentación de la original
-    def envoltura(*args):
-        inicio = time.perf_counter()
-        resultado = funcion(*args)
-        print(f"  {funcion.__name__} tardó {(time.perf_counter() - inicio) * 1000:.0f} ms")
-        return resultado
-    return envoltura
+IntUnaryOperator cronometrado(String nombre, IntUnaryOperator funcion) {
+    return kilos -> {                         // la envoltura: misma interfaz que la función original
+        long inicio = System.nanoTime();
+        int resultado = funcion.applyAsInt(kilos);
+        IO.println("  %s tardó %d ms".formatted(nombre, (System.nanoTime() - inicio) / 1_000_000));
+        return resultado;
+    };
+}
 
-def registrado(funcion):                   # mismo esquema, pero SIN wraps
-    def envoltura(*args):
-        print(f"  llamada a {funcion.__name__}{args}")
-        return funcion(*args)
-    return envoltura
+IntUnaryOperator registrado(IntUnaryOperator funcion) {   // mismo esquema, pero sin recibir el nombre
+    return kilos -> {
+        IO.println("  llamada a " + funcion + " con " + kilos);
+        return funcion.applyAsInt(kilos);
+    };
+}
 
-@registrado
-@cronometrado
-def calcular_tarifa(kilos):
-    """Tarifa base de 4000 más 1200 por kilo."""
-    time.sleep(0.05)
-    return 4000 + kilos * 1200
+int calcularTarifa(int kilos) {               // tarifa base de 4000 más 1200 por kilo
+    try {
+        Thread.sleep(50);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    return 4000 + kilos * 1200;
+}
 
-print("Tarifa:", calcular_tarifa(3))
-print("Nombre visible:", calcular_tarifa.__name__)
-print("Documentación:", calcular_tarifa.__doc__)
+void main() {
+    IntUnaryOperator tarifa = registrado(cronometrado("calcularTarifa", this::calcularTarifa));
+    IO.println("Tarifa: " + tarifa.applyAsInt(3));
+    IO.println("Nombre visible: " + tarifa);
+
+    Operacion conNombre = new Operacion("calcularTarifa", tarifa);
+    IO.println("Con record: " + conNombre.nombre());
+}
 ```
 
 ```text
-$ python3 cronometro.py
-  llamada a calcular_tarifa(3,)
-  calcular_tarifa tardó 50 ms
+$ java Cronometro.java
+  llamada a Cronometro$$Lambda/0x000000003115c460@7ee955a8 con 3
+  calcularTarifa tardó 50 ms
 Tarifa: 7600
-Nombre visible: envoltura
-Documentación: None
+Nombre visible: Cronometro$$Lambda/0x000000003115d800@1e802ef9
+Con record: calcularTarifa
 ```
 
 **Explicación por partes.**
-- Líneas 5–12: `cronometrado` define una función dentro de otra. La envoltura recuerda `funcion` aunque
-  `cronometrado` ya terminó.
-- Línea 6: `@wraps(funcion)` copia el nombre y la documentación de `calcular_tarifa` a la envoltura.
-- Líneas 20–22: equivalen a `calcular_tarifa = registrado(cronometrado(calcular_tarifa))`.
-- Salida, línea 1: `registrado` imprime `calcular_tarifa` porque la función que recibió ya traía el nombre copiado.
-- Salida, líneas 4–5: la función final es la envoltura de `registrado`, que no usó `wraps`: se llama `envoltura` y
-  perdió su documentación. El tiempo (`50 ms`) puede variar unos milisegundos en tu equipo.
+- Líneas 4–11: `cronometrado` devuelve una lambda. La lambda recuerda `nombre` y `funcion` aunque `cronometrado` ya
+  terminó: se dice que los **captura**.
+- Líneas 13–18: `registrado` tiene el mismo esquema, pero no recibe el nombre: solo puede imprimir la función.
+- Línea 30: `this::calcularTarifa` convierte el método en un `IntUnaryOperator`; `registrado(cronometrado(...))`
+  apila las dos envolturas.
+- Salida, línea 1: `registrado` imprime la lambda que recibió: `Cronometro$$Lambda/...`, un nombre que genera la JVM.
+- Salida, línea 4: la función final tampoco tiene nombre legible. El tiempo (`51 ms`) y las direcciones después de
+  `@` cambian en tu equipo.
+- Líneas 34–35: el record `Operacion` guarda la función junto a su nombre: así no se pierde quién es.
 
-> **Error común.** Olvidar `return envoltura` al final del decorador de función. El `def` decorado queda asociado a
-> `None`, y la primera llamada termina con `TypeError: 'NoneType' object is not callable`. Si ves ese error justo
-> en la línea que llama una función decorada, revisa el `return` del decorador.
+> **Error común.** Olvidar `return resultado;` dentro de la lambda de la envoltura. Java no compila:
 
-```python
-# sin_return.py — un decorador que olvida devolver la envoltura
-def registrado(funcion):
-    def envoltura(*args):
-        print("llamada a", funcion.__name__)
-        return funcion(*args)
-
-@registrado
-def calcular_tarifa(kilos):
-    return 4000 + kilos * 1200
-
-print(calcular_tarifa(3))
-```
+```java
+{rd('SinReturn.java')}```
 
 ```text
-$ python3 sin_return.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/sin_return.py", line 11, in <module>
-    print(calcular_tarifa(3))
-          ~~~~~~~~~~~~~~~^^^
-TypeError: 'NoneType' object is not callable
-```
+$ java SinReturn.java
+{run('SinReturn.java')}```
 
-> **Buena práctica.** Pon `@wraps(funcion)` en cada decorador de función que escribas. Los registros, los mensajes
-> de error y las herramientas como `pytest` usan `__name__` para decirte qué falló.
+> El compilador dice que la lambda debía devolver un `int` («missing return value»). El error aparece antes de
+> ejecutar, en la línea de la envoltura, no donde se llama.
+
+> **Buena práctica.** Cuando una envoltura escriba registros, pásale el nombre de la operación (o un record como
+> `Operacion`). Los registros y los mensajes de error deben decir qué falló, no `Lambda/0x…`.
 
 > **Ingeniería de software.** El orden de los envoltorios es una decisión de negocio. Escribe en un solo lugar cómo
 > se arma cada notificador (por ejemplo, una función `notificador_para(cliente)`), para que nadie apile capas al revés.
 
 #### Cuándo no usarlo
-- Si solo existe una combinación, un método con un parámetro (`enviar(..., firmado=True)`) es más corto y más claro.
+- Si solo existe una combinación, un método con un parámetro (`enviar(guia, mensaje, boolean firmado)`) es más corto y más claro.
 - Si los extras no se combinan sino que se reemplazan uno por otro, pasa un objeto intercambiable: es Strategy.
 - Si necesitas preguntar «¿este aviso tiene firma?», las capas lo esconden; ahí conviene un objeto con atributos explícitos.
 - Más de tres o cuatro capas hacen difícil depurar: cada llamada atraviesa todos los `enviar`.
 
 #### Checkpoint 1.1
-¿Qué imprime `EnMayusculas(ConFirma(Notificador())).enviar("G-9", "ok")`? ¿La firma sale en mayúsculas?
+¿Qué imprime `new EnMayusculas(new ConFirma(new Basico())).enviar("G-9", "ok")`? ¿La firma sale en mayúsculas?
 
 Respuesta: `[G-9] OK -- RutaFlow`. `EnMayusculas` convierte el mensaje **antes** de delegar, y la firma se agrega
-dentro, en `ConFirma`, después de recibir el mensaje ya convertido. La firma no pasa por `upper()`.
+dentro, en `ConFirma`, después de recibir el mensaje ya convertido. La firma no pasa por `toUpperCase()`.
 
 </details>
 
@@ -340,50 +376,52 @@ dentro, en `ConFirma`, después de recibir el mensaje ya convertido. La firma no
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Mide el problema
-En `~/labs/patrones`, escribe `notificador_herencia.py` y ejecútalo con `python3 notificador_herencia.py`. Comprueba
+En `~/labs/patrones`, escribe `NotificadorHerencia.java` y ejecútalo con `java NotificadorHerencia.java`. Comprueba
 las cuatro clases y la línea `Con 4 extras combinables necesitas 16 clases`.
 
 #### Paso 2 · Envuelve en lugar de heredar
-Escribe `decorator.py` y ejecútalo. Comprueba que las dos últimas líneas difieren solo por el orden de `ParaSMS` y
-`ConFirma`. Cambia `limite=32` por `limite=20` y predice la salida antes de ejecutar.
+Escribe `Decorator.java` y ejecútalo. Comprueba que las dos últimas líneas difieren solo por el orden de `ParaSMS` y
+`ConFirma`. Cambia los dos `32` por `20` y predice la salida antes de ejecutar.
 
-#### Paso 3 · Decora funciones y conserva los metadatos
-Escribe `cronometro.py` y ejecútalo: verás `Nombre visible: envoltura`. Agrega `@wraps(funcion)` encima de la
-`envoltura` de `registrado` y ejecuta otra vez.
+#### Paso 3 · Envuelve funciones y conserva el nombre
+Escribe `Cronometro.java` y ejecútalo: verás `Nombre visible: Cronometro$$Lambda/...`. Escribe también
+`SinReturn.java` y lee el error de compilación.
 
 #### Resumen
 - Un **patrón de diseño** es una solución con nombre a un problema que se repite, con sus consecuencias.
 - **Decorator** envuelve un objeto con otro de la misma interfaz que delega y agrega trabajo.
 - Los envoltorios se apilan: *n* extras son *n* clases, y el **orden** de las capas cambia el resultado.
-- Un **decorador de función** (`@`) reemplaza una función por una envoltura al definirla.
-- Los **argumentos variables** `*args` permiten que la envoltura pase cualquier argumento a la función original.
-- **`functools.wraps`** conserva `__name__` y `__doc__`; sin él, la función decorada se llama `envoltura`.
+- Una **envoltura de función** devuelve otra función del mismo tipo que llama a la original y agrega trabajo.
+- Una **interfaz funcional** como `IntUnaryOperator` define la forma de la función; por eso las envolturas se apilan.
+- Una lambda no tiene **nombre**: si lo necesitas en los registros, guárdalo tú, por ejemplo en un record.
 
 #### Ejercicio verificable 1
 Básico. Escribe un decorador `ConPrefijo` que anteponga `RutaFlow: ` al mensaje antes de delegar. ¿Qué imprime
-`ConPrefijo(Notificador()).enviar("G-7", "Llegó")`?
+`new ConPrefijo(new Basico()).enviar("G-7", "Llegó")`?
 
-Respuesta esperada: `[G-7] RutaFlow: Llegó`. La clase guarda `envuelto` y su `enviar` devuelve
-`self.envuelto.enviar(guia, "RutaFlow: " + mensaje)`.
+Respuesta esperada: `[G-7] RutaFlow: Llegó`. La clase implementa `Notificador`, guarda `envuelto` y su `enviar`
+devuelve `envuelto.enviar(guia, "RutaFlow: " + mensaje)`.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega `@wraps(funcion)` a `registrado` en `cronometro.py`. ¿Qué cambia en la salida?
+Intermedio. Cambia `registrado` en `Cronometro.java` para que reciba el nombre, como `cronometrado`, y úsalo en el
+mensaje. ¿Qué cambia en la salida?
 
-Respuesta esperada: las dos últimas líneas pasan a ser `Nombre visible: calcular_tarifa` y
-`Documentación: Tarifa base de 4000 más 1200 por kilo.`. La tarifa sigue siendo `7600`.
+Respuesta esperada: la primera línea pasa a ser `  llamada a calcularTarifa con 3`. La tarifa sigue siendo `7600`, y
+`Nombre visible` sigue mostrando una lambda: el nombre vive en tu mensaje, no en la función.
 
 #### Ejercicio verificable 3
 Reto. Un SMS admite 32 caracteres y debe conservar la firma completa. Arma el notificador solo con `ConFirma`,
-`ParaSMS` y `Notificador`, sin escribir clases nuevas, y comprueba la longitud con `len`.
+`ParaSMS` y `Basico`, sin escribir clases nuevas, y comprueba la longitud con `length()`.
 
-Respuesta esperada: `ConFirma(ParaSMS(Notificador(), limite=32 - len(" -- RutaFlow")))`. Con el mensaje largo de
-`decorator.py` imprime `[G-101] Tu paquete s -- RutaFlow`, y `len` de ese texto da `32`.
+Respuesta esperada: `new ConFirma(new ParaSMS(new Basico(), 32 - " -- RutaFlow".length()))`. Con el mensaje largo de
+`Decorator.java` imprime `[G-101] Tu paquete s -- RutaFlow`, y `length()` de ese texto da `32`.
 
 #### En el trabajo
 El patrón Decorator aparece en los *middlewares* de los frameworks web: cada capa envuelve la petición para medir
-tiempos, revisar permisos o comprimir la respuesta. Los decoradores `@` de Python están en todas partes: rutas de
-Flask y FastAPI, `@pytest.fixture`, `@lru_cache`. En una revisión de código, un decorador sin `wraps` suele
-señalarse porque rompe los registros y la documentación automática.
+tiempos, revisar permisos o comprimir la respuesta. En Java, `java.io` es un catálogo de decoradores:
+`new BufferedReader(new InputStreamReader(new FileInputStream(...)))` apila capas que agregan búfer y conversión
+de caracteres. En Spring, anotaciones como `@Transactional` o `@Cacheable` funcionan porque el framework envuelve tu
+objeto en otro de la misma interfaz que agrega la transacción o la caché: el mismo patrón, generado automáticamente.
 
 </details>
 
@@ -395,18 +433,18 @@ señalarse porque rompe los registros y la documentación automática.
 #### Objetivos
 Al terminar este tema podrás:
 - dibujar la máquina de estados de un envío con sus transiciones permitidas;
-- reemplazar una cadena de `if estado == ...` por un objeto por estado;
+- reemplazar una cadena de `if (estado.equals(...))` por un objeto por estado;
 - rechazar transiciones inválidas con una excepción y comprobar las 12 combinaciones de estado y acción;
-- leer el `AttributeError` de una acción mal escrita.
+- convertir el texto de una acción en un `enum` y leer el error de una acción mal escrita.
 
-**Conceptos clave:** máquina de estados, transición, State, `getattr`
+**Conceptos clave:** máquina de estados, transición, State, `enum` y `valueOf`
 
-Ya los conoces y no se repiten: *clase*, *objeto*, *atributo de clase* y *método* (Módulo 1, Tema 6); *herencia*,
+Ya los conoces y no se repiten: *clase*, *objeto*, *atributo* y *método* (Módulo 1, Tema 6); *herencia*,
 *sobrescritura* y *polimorfismo* (Módulo 1, Tema 7); *excepción* (Módulo 1, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 Un envío de RutaFlow pasa por estados: registrado, en ruta, entregado o cancelado. No todas las acciones valen en
-todos los estados: un envío entregado no se cancela. Hoy esas reglas viven en un `if/elif` largo, y una condición
+todos los estados: un envío entregado no se cancela. Hoy esas reglas viven en un `if/else` largo, y una condición
 olvidada deja pasar una acción prohibida sin ningún error. ¿Cómo haces que cada estado decida qué acciones admite?
 
 #### Glosario del tema
@@ -428,16 +466,16 @@ olvidada deja pasar una acción prohibida sin ningún error. ¿Cómo haces que c
 **State**
 - **Definición técnica:** patrón de comportamiento en el que un objeto delega sus acciones en un objeto estado; cada clase de estado implementa solo las acciones que admite y la transición se hace cambiando ese objeto.
 - **En palabras sencillas:** el envío no se pregunta «¿en qué estado estoy?»; le pasa la acción a su estado y el estado sabe qué hacer.
-- **Dónde se rompe la comparación:** parece que el envío cambia de clase; en realidad sigue siendo el mismo objeto `Envio` y solo cambia lo que guarda en `self.estado`.
-- **Ejemplo:** `Registrado().despachar(envio)` cambia `envio.estado` a un objeto `EnRuta`.
+- **Dónde se rompe la comparación:** parece que el envío cambia de clase; en realidad sigue siendo el mismo objeto `Envio` y solo cambia lo que guarda en su campo `estado`.
+- **Ejemplo:** `new Estado.Registrado().despachar(envio)` cambia `envio.estado` a un objeto `EnRuta`.
 - **Error típico:** crear las clases de estado pero dejar el `if` en `Envio`: el patrón queda a medias y las reglas, duplicadas.
 
-**`getattr`**
-- **Definición técnica:** función integrada que devuelve el atributo de un objeto a partir de su nombre como texto: `getattr(objeto, "nombre")` equivale a `objeto.nombre`.
-- **En palabras sencillas:** buscar un método por su nombre escrito, cuando el nombre llega en una variable.
-- **Dónde se rompe la comparación:** el nombre se comprueba al ejecutar, no al escribir; un error de tipeo aparece solo cuando esa línea corre.
-- **Ejemplo:** `getattr(self.estado, "despachar")` devuelve el método `despachar` del estado actual.
-- **Error típico:** pasar un nombre que no existe: `AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?`.
+**`enum` y `valueOf`**
+- **Definición técnica:** un `enum` es un tipo con una lista fija de valores con nombre; `valueOf("DESPACHAR")` devuelve el valor cuyo nombre coincide exactamente con el texto y lanza `IllegalArgumentException` si no existe.
+- **En palabras sencillas:** la lista cerrada de acciones válidas, y la forma de pasar del texto de una petición a una de ellas.
+- **Dónde se rompe la comparación:** el texto se comprueba al ejecutar; en el código, en cambio, escribir `Accion.DESPACAR` ni compila.
+- **Ejemplo:** `Accion.desde("despachar")` devuelve `Accion.DESPACHAR`.
+- **Error típico:** pasar un nombre que no existe: `IllegalArgumentException: No enum constant Accion.DESPACAR`.
 
 #### ► CÓMO FUNCIONA
 Primero el mapa. Las flechas son las únicas transiciones permitidas:
@@ -450,8 +488,8 @@ stateDiagram-v2
     EnRuta --> Entregado: entregar
 ```
 
-Después las clases. La clase base `Estado` rechaza las tres acciones con `ValueError`. Cada subclase sobrescribe
-solo las acciones que tienen flecha. `Envio` guarda un objeto estado y le delega cada acción:
+Después las clases. La clase base `Estado` rechaza las tres acciones con `IllegalStateException`. Cada subclase
+sobrescribe solo las acciones que tienen flecha. `Envio` guarda un objeto estado y le delega cada acción:
 
 ```mermaid
 classDiagram
@@ -461,7 +499,8 @@ classDiagram
       +ejecutar(accion)
     }
     class Estado {
-      +nombre
+      <<abstract>>
+      +nombre()
       +despachar(envio)
       +entregar(envio)
       +cancelar(envio)
@@ -476,46 +515,55 @@ classDiagram
 Una flecha nueva en el mapa es un método nuevo en una sola clase de estado. Un estado nuevo es una clase nueva.
 
 #### Problema resuelto 2.1
-Antes del patrón. Implementa las transiciones con `if/elif` y prueba la secuencia despachar, entregar, cancelar.
+Antes del patrón. Implementa las transiciones con `if/else` y prueba la secuencia despachar, entregar, cancelar.
 
 **Razonamiento:**
 1. Cada rama del `if` combina una acción con el estado de origen que la permite.
-2. Si ninguna rama coincide, se lanza `ValueError`.
+2. Si ninguna rama coincide, se lanza `IllegalStateException`.
 3. Cancelar después de entregar debería caer en el `else`.
 
-```python
-# estado_con_if.py — las reglas de transición repartidas en if/elif
-class Envio:
-    def __init__(self, guia):
-        self.guia, self.estado = guia, "registrado"
+```java
+// EstadoConIf.java — las reglas de transición repartidas en if/else
+static class Envio {
+    final String guia;
+    String estado = "registrado";
 
-    def ejecutar(self, accion):
-        if accion == "despachar" and self.estado == "registrado":
-            self.estado = "en ruta"
-        elif accion == "entregar" and self.estado == "en ruta":
-            self.estado = "entregado"
-        elif accion == "cancelar":             # olvidó preguntar por el estado
-            self.estado = "cancelado"
-        else:
-            raise ValueError(f"No se puede {accion} en estado {self.estado}")
-        print(f"{self.guia}: {accion:<9} -> {self.estado}")
+    Envio(String guia) {
+        this.guia = guia;
+    }
 
-envio = Envio("G-202")
-envio.ejecutar("despachar")
-envio.ejecutar("entregar")
-envio.ejecutar("cancelar")                     # un envío entregado no debería cancelarse
+    void ejecutar(String accion) {
+        if (accion.equals("despachar") && estado.equals("registrado")) {
+            estado = "en ruta";
+        } else if (accion.equals("entregar") && estado.equals("en ruta")) {
+            estado = "entregado";
+        } else if (accion.equals("cancelar")) {        // olvidó preguntar por el estado
+            estado = "cancelado";
+        } else {
+            throw new IllegalStateException("No se puede " + accion + " en estado " + estado);
+        }
+        IO.println("%s: %-9s -> %s".formatted(guia, accion, estado));
+    }
+}
+
+void main() {
+    Envio envio = new Envio("G-202");
+    envio.ejecutar("despachar");
+    envio.ejecutar("entregar");
+    envio.ejecutar("cancelar");                        // un envío entregado no debería cancelarse
+}
 ```
 
 ```text
-$ python3 estado_con_if.py
+$ java EstadoConIf.java
 G-202: despachar -> en ruta
 G-202: entregar  -> entregado
 G-202: cancelar  -> cancelado
 ```
 
 **Explicación por partes.**
-- Líneas 7–10: despachar y entregar preguntan acción **y** estado de origen.
-- Línea 11: cancelar solo pregunta la acción. Falta `and self.estado == "registrado"`.
+- Líneas 11–14: despachar y entregar preguntan acción **y** estado de origen.
+- Línea 15: cancelar solo pregunta la acción. Falta `&& estado.equals("registrado")`.
 - Salida, línea 3: un envío entregado quedó cancelado. No hubo error: el defecto es silencioso.
 
 El fallo no es de sintaxis, es de diseño: las reglas de los cuatro estados están mezcladas en un solo método, y
@@ -527,88 +575,147 @@ Después del patrón. Escribe un objeto por estado y deja que cada uno decida.
 **Razonamiento:**
 1. La clase base rechaza todo: así, lo que una subclase no permite queda prohibido por defecto.
 2. Cada estado sobrescribe solo sus flechas y, para transitar, reemplaza `envio.estado`.
-3. `Envio.ejecutar` no tiene `if`: busca la acción en su estado con `getattr` y la llama.
+3. `Envio.ejecutar` no pregunta por el estado: convierte el texto en una `Accion` y llama al método del estado.
+4. `Estado` declara sus subclases dentro de su propio archivo (`Estado.Registrado`, `Estado.EnRuta`…), porque `java`
+   busca cada clase de primer nivel en el archivo de su mismo nombre.
 
-```python
-# state.py — cada estado es un objeto que sabe qué acciones admite
-class Estado:
-    nombre = "?"
-    def despachar(self, envio): raise ValueError(f"No se puede despachar en estado {self.nombre}")
-    def entregar(self, envio):  raise ValueError(f"No se puede entregar en estado {self.nombre}")
-    def cancelar(self, envio):  raise ValueError(f"No se puede cancelar en estado {self.nombre}")
+```java
+// Accion.java — las acciones que se le pueden pedir a un envío
+enum Accion {
+    DESPACHAR, ENTREGAR, CANCELAR;
 
-class Registrado(Estado):
-    nombre = "registrado"
-    def despachar(self, envio): envio.estado = EnRuta()
-    def cancelar(self, envio):  envio.estado = Cancelado()
+    /** Convierte el texto de una petición ("despachar") en la acción; falla si no existe. */
+    static Accion desde(String texto) {
+        return valueOf(texto.toUpperCase());
+    }
 
-class EnRuta(Estado):
-    nombre = "en ruta"
-    def entregar(self, envio):  envio.estado = Entregado()
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+}
+```
 
-class Entregado(Estado):
-    nombre = "entregado"
+```java
+// Estado.java — cada estado es un objeto que sabe qué acciones admite
+abstract class Estado {
+    abstract String nombre();
 
-class Cancelado(Estado):
-    nombre = "cancelado"
+    void despachar(Envio envio) { throw new IllegalStateException("No se puede despachar en estado " + nombre()); }
+    void entregar(Envio envio) { throw new IllegalStateException("No se puede entregar en estado " + nombre()); }
+    void cancelar(Envio envio) { throw new IllegalStateException("No se puede cancelar en estado " + nombre()); }
 
-class Envio:
-    def __init__(self, guia):
-        self.guia, self.estado = guia, Registrado()
-    def ejecutar(self, accion):
-        getattr(self.estado, accion)(self)    # delega en el objeto estado actual
-        print(f"{self.guia}: {accion:<9} -> {self.estado.nombre}")
+    static final class Registrado extends Estado {
+        String nombre() { return "registrado"; }
+        @Override void despachar(Envio envio) { envio.estado = new EnRuta(); }
+        @Override void cancelar(Envio envio) { envio.estado = new Cancelado(); }
+    }
 
-if __name__ == "__main__":
-    envio = Envio("G-202")
-    envio.ejecutar("despachar")
-    envio.ejecutar("entregar")
-    try:
-        envio.ejecutar("cancelar")
-    except ValueError as error:
-        print("Rechazado:", error)
+    static final class EnRuta extends Estado {
+        String nombre() { return "en ruta"; }
+        @Override void entregar(Envio envio) { envio.estado = new Entregado(); }
+    }
+
+    static final class Entregado extends Estado {
+        String nombre() { return "entregado"; }
+    }
+
+    static final class Cancelado extends Estado {
+        String nombre() { return "cancelado"; }
+    }
+}
+```
+
+```java
+// Envio.java — el envío no pregunta en qué estado está: le pasa la acción a su estado
+class Envio {
+    final String guia;
+    Estado estado = new Estado.Registrado();
+
+    Envio(String guia) {
+        this.guia = guia;
+    }
+
+    void ejecutar(String texto) {
+        Accion accion = Accion.desde(texto);
+        switch (accion) {                      // elige qué método llamar; la regla la decide el estado
+            case DESPACHAR -> estado.despachar(this);
+            case ENTREGAR -> estado.entregar(this);
+            case CANCELAR -> estado.cancelar(this);
+        }
+        IO.println("%s: %-9s -> %s".formatted(guia, accion, estado.nombre()));
+    }
+}
+```
+
+```java
+// State.java — prueba el envío con el patrón State
+void main() {
+    Envio envio = new Envio("G-202");
+    envio.ejecutar("despachar");
+    envio.ejecutar("entregar");
+    try {
+        envio.ejecutar("cancelar");
+    } catch (IllegalStateException error) {
+        IO.println("Rechazado: " + error.getMessage());
+    }
+}
 ```
 
 ```text
-$ python3 state.py
+$ java State.java
 G-202: despachar -> en ruta
 G-202: entregar  -> entregado
 Rechazado: No se puede cancelar en estado entregado
 ```
 
 **Explicación por partes.**
-- Líneas 2–6: `Estado` es la regla por defecto: cualquier acción lanza `ValueError` con el nombre del estado.
-- Líneas 8–11: `Registrado` admite despachar y cancelar. Cada método cambia el estado del envío que recibe.
-- Líneas 17–21: `Entregado` y `Cancelado` no sobrescriben nada: son estados finales.
-- Línea 27: `getattr(self.estado, accion)` obtiene el método; `(self)` lo llama pasándole el envío.
-- Líneas 34–37: cancelar un envío entregado ahora se rechaza con un mensaje claro.
+- `Accion.java`, líneas 6–8: `desde` pasa el texto a mayúsculas y lo busca entre los valores del `enum`. Líneas
+  10–13: `toString` lo muestra otra vez en minúsculas.
+- `Estado.java`, líneas 5–7: `Estado` es la regla por defecto: cualquier acción lanza `IllegalStateException` con el
+  nombre del estado.
+- `Estado.java`, líneas 9–13: `Registrado` admite despachar y cancelar. Cada método cambia el estado del envío que recibe.
+- `Estado.java`, líneas 20–26: `Entregado` y `Cancelado` no sobrescriben nada: son estados finales.
+- `Envio.java`, líneas 12–16: el `switch` solo elige qué método llamar; no pregunta por el estado. La regla la
+  decide el objeto `estado`.
+- `State.java`, líneas 6–10: cancelar un envío entregado ahora se rechaza con un mensaje claro.
 
 #### Problema resuelto 2.3
 Comprueba que **todas** las transiciones inválidas se rechazan: prueba las tres acciones desde los cuatro estados.
 
 **Razonamiento:**
 1. Son 4 estados por 3 acciones: 12 combinaciones.
-2. Para cada una, crea un envío, ponle el estado y ejecuta la acción dentro de `try`.
+2. Para cada una, crea un envío, ponle el estado y ejecuta la acción dentro de `try`. `Accion.values()` recorre las tres acciones.
 3. Compara la tabla impresa con el diagrama: solo las flechas dibujadas deben aceptarse.
 
-```python
-# transiciones.py — prueba todas las acciones desde cada estado
-from state import Cancelado, EnRuta, Entregado, Envio, Registrado
-
-for estado in (Registrado(), EnRuta(), Entregado(), Cancelado()):
-    for accion in ("despachar", "entregar", "cancelar"):
-        envio = Envio("G-204")
-        envio.estado = estado
-        try:
-            getattr(envio.estado, accion)(envio)
-            resultado = envio.estado.nombre
-        except ValueError:
-            resultado = "rechazada"
-        print(f"{estado.nombre:<10} + {accion:<9} = {resultado}")
+```java
+// Transiciones.java — prueba todas las acciones desde cada estado
+void main() {
+    List<Estado> estados = List.of(new Estado.Registrado(), new Estado.EnRuta(),
+            new Estado.Entregado(), new Estado.Cancelado());
+    for (Estado estado : estados) {
+        for (Accion accion : Accion.values()) {
+            Envio envio = new Envio("G-204");
+            envio.estado = estado;
+            String resultado;
+            try {
+                switch (accion) {
+                    case DESPACHAR -> estado.despachar(envio);
+                    case ENTREGAR -> estado.entregar(envio);
+                    case CANCELAR -> estado.cancelar(envio);
+                }
+                resultado = envio.estado.nombre();
+            } catch (IllegalStateException e) {
+                resultado = "rechazada";
+            }
+            IO.println("%-10s + %-9s = %s".formatted(estado.nombre(), accion, resultado));
+        }
+    }
+}
 ```
 
 ```text
-$ python3 transiciones.py
+$ java Transiciones.java
 registrado + despachar = en ruta
 registrado + entregar  = rechazada
 registrado + cancelar  = cancelado
@@ -625,45 +732,43 @@ cancelado  + cancelar  = rechazada
 
 Tres combinaciones aceptadas, las mismas tres flechas del diagrama. Las nueve restantes se rechazan.
 
-> **Error común.** Escribir mal el nombre de la acción. Como `getattr` busca por texto, el error aparece al ejecutar:
-> `AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?`. No es una
-> transición inválida (eso sería `ValueError`), es una acción que no existe.
+> **Error común.** Escribir mal el nombre de la acción. Como el texto se convierte con `valueOf`, el error aparece
+> al ejecutar: `IllegalArgumentException: No enum constant Accion.DESPACAR`. No es una transición inválida (eso
+> sería `IllegalStateException`), es una acción que no existe.
 
-```python
-# estado_typo.py — una acción mal escrita
-from state import Envio
-
-envio = Envio("G-203")
-envio.ejecutar("despacar")
+```java
+// EstadoTypo.java — una acción mal escrita
+void main() {
+    Envio envio = new Envio("G-203");
+    envio.ejecutar("despacar");
+}
 ```
 
 ```text
-$ python3 estado_typo.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/estado_typo.py", line 5, in <module>
-    envio.ejecutar("despacar")
-    ~~~~~~~~~~~~~~^^^^^^^^^^^^
-  File "/home/estudiante/labs/patrones/state.py", line 27, in ejecutar
-    getattr(self.estado, accion)(self)    # delega en el objeto estado actual
-    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'Registrado' object has no attribute 'despacar'. Did you mean: 'despachar'?
+$ java EstadoTypo.java
+Exception in thread "main" java.lang.IllegalArgumentException: No enum constant Accion.DESPACAR
+	at java.base/java.lang.Enum.valueOf(Enum.java:293)
+	at Accion.valueOf(Accion.java:2)
+	at Accion.desde(Accion.java:7)
+	at Envio.ejecutar(Envio.java:11)
+	at EstadoTypo.main(EstadoTypo.java:4)
 ```
 
-> **Prevenir errores.** Guarda la tabla de `transiciones.py` como prueba: cada estado nuevo debe pasarla. Así una
+> **Prevenir errores.** Guarda la tabla de `Transiciones.java` como prueba: cada estado nuevo debe pasarla. Así una
 > flecha olvidada o sobrante aparece en la prueba, no en producción.
 
 > **Buena práctica.** Haz que la clase base rechace todo y que cada estado permita lo suyo. Al revés (permitir todo
-> y prohibir caso por caso) repite el defecto del `if/elif`.
+> y prohibir caso por caso) repite el defecto del `if/else`.
 
 #### Cuándo no usarlo
-- Con dos o tres estados y una regla simple, un diccionario de transiciones permitidas es más corto: `{"registrado": {"despachar", "cancelar"}, ...}`.
-- Si los estados solo cambian una etiqueta y no el comportamiento, basta un atributo de texto y una validación.
+- Con dos o tres estados y una regla simple, un mapa de transiciones permitidas es más corto: `Map.of("registrado", Set.of("despachar", "cancelar"), ...)`.
+- Si los estados solo cambian una etiqueta y no el comportamiento, basta un `enum` de estados y una validación.
 - Si las reglas las define el negocio y cambian cada semana, guárdalas como datos (tabla o archivo), no como clases.
 
 #### Checkpoint 2.1
-En `state.py`, ¿qué clase cambias para permitir cancelar un envío que está en ruta? ¿Cuántas clases tocas?
+En `Estado.java`, ¿qué clase cambias para permitir cancelar un envío que está en ruta? ¿Cuántas clases tocas?
 
-Respuesta: solo `EnRuta`. Le agregas `def cancelar(self, envio): envio.estado = Cancelado()`. La clase base, los
+Respuesta: solo `EnRuta`. Le agregas `@Override void cancelar(Envio envio) { envio.estado = new Cancelado(); }`. La clase base, los
 otros estados y `Envio` no cambian.
 
 </details>
@@ -672,32 +777,36 @@ otros estados y `Envio` no cambian.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Reproduce el defecto
-Escribe `estado_con_if.py` y ejecútalo. Comprueba que la última línea dice `cancelar  -> cancelado` aunque el envío
+Escribe `EstadoConIf.java` y ejecútalo. Comprueba que la última línea dice `cancelar  -> cancelado` aunque el envío
 ya estaba entregado.
 
 #### Paso 2 · Un objeto por estado
-Escribe `state.py` y ejecútalo. La última línea debe ser `Rechazado: No se puede cancelar en estado entregado`.
+Escribe `Accion.java`, `Estado.java`, `Envio.java` y `State.java`, y ejecuta `java State.java`. La última línea debe ser `Rechazado: No se puede cancelar en estado entregado`.
 
 #### Paso 3 · Comprueba la tabla completa
-Escribe `transiciones.py` y ejecútalo. Cuenta las líneas que no dicen `rechazada`: deben ser tres.
+Escribe `Transiciones.java` y ejecútalo. Cuenta las líneas que no dicen `rechazada`: deben ser tres.
 
 #### Resumen
 - Una **máquina de estados** fija qué **transiciones** existen; lo que no está dibujado no se permite.
 - El patrón **State** delega cada acción en un objeto estado; cambiar de estado es reemplazar ese objeto.
-- La clase base rechaza todo con `ValueError` y cada estado sobrescribe solo sus flechas.
-- **`getattr`** busca un método por su nombre como texto; un nombre mal escrito da `AttributeError`.
+- La clase base rechaza todo con `IllegalStateException` y cada estado sobrescribe solo sus flechas.
+- Un **`enum`** fija la lista de acciones; `valueOf` convierte el texto y, si está mal escrito, lanza `IllegalArgumentException`.
 - Una tabla de todas las combinaciones prueba que ninguna transición inválida se cuela.
 
 #### Ejercicio verificable 1
 Básico. Agrega el estado `Devuelto` y la acción `devolver`, permitida solo desde `EnRuta`. ¿Qué imprime despachar y
 luego devolver el envío `G-205`?
 
-Respuesta esperada: en `Estado`, un `devolver` que lanza `ValueError`; una clase `Devuelto` con
-`nombre = "devuelto"`; y en `EnRuta`, `def devolver(self, envio): envio.estado = Devuelto()`. Imprime
-`G-205: despachar -> en ruta` y `G-205: devolver  -> devuelto`.
+Respuesta esperada: `DEVOLVER` en `Accion`; en `Estado`, un `devolver` que lanza `IllegalStateException`; una clase
+`Devuelto` cuyo `nombre()` devuelve `"devuelto"`; en `EnRuta`, `@Override void devolver(Envio envio) { envio.estado =
+new Devuelto(); }`; y en el `switch` de `Envio`, `case DEVOLVER -> estado.devolver(this);`. Imprime
+`G-205: despachar -> en ruta` y `G-205: devolver  -> devuelto`. Cuidado: si olvidas el `case` en `Envio`, el programa
+compila igual (un `switch` de instrucciones no exige cubrir todos los valores) e imprime `devolver  -> en ruta` sin
+ningún error.
 
 #### Ejercicio verificable 2
-Intermedio. Después del Ejercicio 1, agrega `Devuelto()` y `"devolver"` a las tuplas de `transiciones.py`. ¿Cuántas
+Intermedio. Después del Ejercicio 1, agrega `new Estado.Devuelto()` a la lista de `Transiciones.java` y el `case DEVOLVER`
+a su `switch`. ¿Cuántas
 combinaciones hay y cuántas se aceptan?
 
 Respuesta esperada: 5 estados por 4 acciones, 20 combinaciones. Se aceptan 4: las tres de antes y
@@ -706,9 +815,9 @@ Respuesta esperada: 5 estados por 4 acciones, 20 combinaciones. Se aceptan 4: la
 #### Ejercicio verificable 3
 Reto. Haz que `Envio` guarde la lista de estados por los que pasó, sin tocar ninguna clase de estado.
 
-Respuesta esperada: en `__init__`, `self.historial = [self.estado.nombre]`; en `ejecutar`, después de llamar a la
-acción, `self.historial.append(self.estado.nombre)`. Tras despachar y entregar, `historial` vale
-`['registrado', 'en ruta', 'entregado']`. Una acción rechazada no agrega nada, porque la excepción sale antes.
+Respuesta esperada: un campo `final List<String> historial = new ArrayList<>(List.of("registrado"));` y, en
+`ejecutar`, después del `switch`, `historial.add(estado.nombre());`. Tras despachar y entregar, `historial` vale
+`[registrado, en ruta, entregado]`. Una acción rechazada no agrega nada, porque la excepción sale antes.
 
 #### En el trabajo
 Pedidos, pagos, tickets de soporte y envíos tienen máquinas de estados. En un backend, la regla «no se cancela lo
@@ -727,17 +836,17 @@ Al terminar este tema podrás:
 - identificar en dos funciones parecidas los pasos que se repiten y los que cambian;
 - escribir un método plantilla que fija el orden de los pasos en una clase base abstracta;
 - distinguir un paso obligatorio (método abstracto) de un gancho con valor por defecto;
-- leer el `TypeError` de una subclase que olvida el paso obligatorio.
+- leer el error de compilación de una subclase que olvida el paso obligatorio y proteger los ganchos con `@Override`.
 
 **Conceptos clave:** Template Method, gancho
 
 Ya los conoces y no se repiten: *herencia*, *sobrescritura*, *clase abstracta*, *método abstracto* y *polimorfismo*
-(Módulo 1, Tema 7); *tupla* y *lista* (Módulo 2, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
+(Módulo 1, Tema 7); *record* y *lista* (Módulos 1 y 2); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 Cada noche RutaFlow genera reportes de entregas: uno completo en CSV para contabilidad y otro solo con las fallidas
 para el equipo de reclamos. Los dos siguen los mismos pasos: encabezado, filtrar, dar formato y pie con el total.
-Hoy son dos funciones copiadas, y la copia del pie quedó mal. ¿Cómo fijas el orden de los pasos una sola vez y dejas
+Hoy son dos métodos copiados, y la copia del pie quedó mal. ¿Cómo fijas el orden de los pasos una sola vez y dejas
 variar solo lo que cambia?
 
 #### Glosario del tema
@@ -747,17 +856,17 @@ variar solo lo que cambia?
 - **En palabras sencillas:** un formulario con casillas en orden fijo; cada reporte llena las casillas a su manera, pero nadie cambia el orden.
 - **Dónde se rompe la comparación:** en un formulario las casillas son independientes; aquí un paso recibe el resultado del anterior, como el formato que recibe los datos ya filtrados.
 - **Ejemplo:** `ReporteDiario.generar` llama a `incluir`, `formatear`, `encabezado` y `pie`, siempre en ese orden.
-- **Error típico:** sobrescribir el método plantilla en una subclase: se rompe el orden que el patrón debía proteger.
+- **Error típico:** sobrescribir el método plantilla en una subclase: se rompe el orden que el patrón debía proteger. Por eso en Java se declara `final`.
 
 **gancho**
 - **Definición técnica:** método de la clase base con una implementación por defecto, a menudo vacía o trivial, que el método plantilla llama y que una subclase puede sobrescribir si lo necesita (en inglés, *hook*).
 - **En palabras sencillas:** una casilla que ya viene llena con un valor normal; la cambias solo si tu reporte lo necesita.
-- **Dónde se rompe la comparación:** a diferencia de un paso abstracto, nadie te obliga a sobrescribirlo; si te equivocas en el nombre, Python no avisa y se usa el valor por defecto.
-- **Ejemplo:** `incluir` devuelve `True` para todo; `ReporteFallidas` lo sobrescribe para quedarse solo con las fallidas.
-- **Error típico:** escribir `def incluye(self, entrega)` en la subclase: no sobrescribe el gancho y el reporte incluye todo.
+- **Dónde se rompe la comparación:** a diferencia de un paso abstracto, nadie te obliga a sobrescribirlo; si te equivocas en el nombre y no escribiste `@Override`, Java no avisa y se usa el valor por defecto.
+- **Ejemplo:** `incluir` devuelve `true` para todo; `ReporteFallidas` lo sobrescribe para quedarse solo con las fallidas.
+- **Error típico:** escribir `boolean incluye(Entrega entrega)` en la subclase sin `@Override`: es un método nuevo, no sobrescribe el gancho y el reporte incluye todo.
 
 #### ► CÓMO FUNCIONA
-La clase base es abstracta y tiene el método plantilla `generar`. Ese método nunca cambia: llama a los pasos en
+La clase base es abstracta y tiene el método plantilla `generar`, declarado `final`. Ese método nunca cambia: llama a los pasos en
 orden. `formatear` es abstracto, así que toda subclase debe implementarlo. `encabezado`, `incluir` y `pie` son
 ganchos con un valor por defecto.
 
@@ -765,7 +874,7 @@ ganchos con un valor por defecto.
 classDiagram
     class ReporteDiario {
       <<abstract>>
-      +generar(entregas)
+      +generar(entregas) final
       +encabezado()
       +incluir(entrega)
       +formatear(datos)*
@@ -784,39 +893,45 @@ classDiagram
 ```
 
 El asterisco marca el método abstracto. Fíjate en el sentido de las llamadas: la clase base llama a métodos de la
-subclase. Es al revés de `super()`, donde la subclase llama a la base.
+subclase. Es al revés de `super`, donde la subclase llama a la base.
 
 #### Problema resuelto 3.1
-Antes del patrón. Escribe los dos reportes como funciones independientes y ejecútalas con cuatro entregas.
+Antes del patrón. Escribe los dos reportes como métodos independientes y ejecútalos con cuatro entregas.
 
 **Razonamiento:**
-1. Cada función arma el texto en cuatro pasos: encabezado, filas, filtro (solo una) y pie.
-2. La segunda función nace copiando la primera.
+1. Cada método arma el texto en cuatro pasos: encabezado, filas, filtro (solo una) y pie.
+2. El segundo método nace copiando el primero.
 3. Compara el total de cada reporte con el número de filas que muestra.
 
-```python
-# reportes_copiados.py — dos reportes que repiten los mismos pasos a mano
-def reporte_csv(entregas):
-    texto = "Reporte RutaFlow\n"
-    texto += "guia,estado\n"
-    for guia, estado in entregas:
-        texto += f"{guia},{estado}\n"
-    return texto + f"Total: {len(entregas)}\n"
+```java
+// ReportesCopiados.java — dos reportes que repiten los mismos pasos a mano
+record Entrega(String guia, String estado) {}
 
-def reporte_fallidas(entregas):
-    texto = "Entregas fallidas\n"
-    for guia, estado in entregas:
-        if estado == "fallida":
-            texto += f"- {guia}\n"
-    return texto + f"Total: {len(entregas)}\n"   # pie copiado: cuenta todas, no las fallidas
+String reporteCsv(List<Entrega> entregas) {
+    String texto = "Reporte RutaFlow\n";
+    texto += "guia,estado\n";
+    for (Entrega e : entregas) texto += e.guia() + "," + e.estado() + "\n";
+    return texto + "Total: " + entregas.size() + "\n";
+}
 
-entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
-print(reporte_csv(entregas))
-print(reporte_fallidas(entregas))
+String reporteFallidas(List<Entrega> entregas) {
+    String texto = "Entregas fallidas\n";
+    for (Entrega e : entregas) {
+        if (e.estado().equals("fallida")) texto += "- " + e.guia() + "\n";
+    }
+    return texto + "Total: " + entregas.size() + "\n";   // pie copiado: cuenta todas, no las fallidas
+}
+
+void main() {
+    List<Entrega> entregas = List.of(new Entrega("G-1", "entregada"), new Entrega("G-2", "fallida"),
+            new Entrega("G-3", "entregada"), new Entrega("G-4", "fallida"));
+    IO.println(reporteCsv(entregas));
+    IO.println(reporteFallidas(entregas));
+}
 ```
 
 ```text
-$ python3 reportes_copiados.py
+$ java ReportesCopiados.java
 Reporte RutaFlow
 guia,estado
 G-1,entregada
@@ -829,11 +944,12 @@ Entregas fallidas
 - G-2
 - G-4
 Total: 4
+
 ```
 
 **Explicación por partes.**
-- Líneas 3–7 y 10–14: los dos cuerpos repiten la misma secuencia; solo cambian el encabezado, el filtro y el formato de fila.
-- Línea 14: el pie se copió con `len(entregas)`. Debía contar las filas filtradas.
+- Líneas 4–9 y 11–17: los dos cuerpos repiten la misma secuencia; solo cambian el encabezado, el filtro y el formato de fila.
+- Línea 16: el pie se copió con `entregas.size()`. Debía contar las filas filtradas.
 - Salida: el reporte de fallidas muestra dos guías y dice `Total: 4`. Nadie lo nota hasta que reclamos pregunta.
 
 #### Problema resuelto 3.2
@@ -841,48 +957,78 @@ Después del patrón. Mueve el orden de los pasos a una clase base y deja que ca
 
 **Razonamiento:**
 1. El orden (filtrar, formatear, encabezado, pie) va en un solo método: `generar`.
-2. El pie recibe `len(datos)`, los datos ya filtrados; así ningún reporte puede contar mal.
+2. El pie recibe `datos.size()`, los datos ya filtrados; así ningún reporte puede contar mal.
 3. El formato cambia siempre: es abstracto. Encabezado, filtro y pie casi nunca: son ganchos.
+4. `generar` es `final`: ninguna subclase puede reemplazarlo.
 
-```python
-# template_method.py — el orden de los pasos vive en un solo lugar
-from abc import ABC, abstractmethod
+```java
+// Entrega.java — una entrega del día: guía y estado
+record Entrega(String guia, String estado) {}
+```
 
-class ReporteDiario(ABC):
-    def generar(self, entregas):             # método plantilla: fija el orden de los pasos
-        datos = [e for e in entregas if self.incluir(e)]
-        cuerpo = self.formatear(datos)
-        return self.encabezado() + cuerpo + self.pie(len(datos))
+```java
+// ReporteDiario.java — el orden de los pasos vive en un solo lugar
+import java.util.List;
 
-    def encabezado(self):                    # paso con implementación por defecto (gancho)
-        return "Reporte RutaFlow\n"
-    def incluir(self, entrega):
-        return True
-    @abstractmethod
-    def formatear(self, datos): ...         # paso obligatorio para cada subclase
-    def pie(self, total):
-        return f"Total: {total}\n"
+abstract class ReporteDiario {
+    final String generar(List<Entrega> entregas) {   // método plantilla: final, nadie cambia el orden
+        List<Entrega> datos = entregas.stream().filter(this::incluir).toList();
+        String cuerpo = formatear(datos);
+        return encabezado() + cuerpo + pie(datos.size());
+    }
 
-class ReporteCSV(ReporteDiario):
-    def formatear(self, datos):
-        return "guia,estado\n" + "".join(f"{g},{e}\n" for g, e in datos)
+    String encabezado() {                            // paso con implementación por defecto (gancho)
+        return "Reporte RutaFlow\n";
+    }
 
-class ReporteFallidas(ReporteDiario):
-    def encabezado(self):
-        return "Entregas fallidas\n"
-    def incluir(self, entrega):
-        return entrega[1] == "fallida"
-    def formatear(self, datos):
-        return "".join(f"- {g}\n" for g, _ in datos)
+    boolean incluir(Entrega entrega) {
+        return true;
+    }
 
-if __name__ == "__main__":
-    entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
-    print(ReporteCSV().generar(entregas))
-    print(ReporteFallidas().generar(entregas))
+    abstract String formatear(List<Entrega> datos);  // paso obligatorio para cada subclase
+
+    String pie(int total) {
+        return "Total: " + total + "\n";
+    }
+}
+```
+
+```java
+// TemplateMethod.java — dos reportes que solo cambian sus pasos
+static class ReporteCSV extends ReporteDiario {
+    @Override
+    String formatear(List<Entrega> datos) {
+        return "guia,estado\n" + datos.stream().map(e -> e.guia() + "," + e.estado() + "\n").collect(Collectors.joining());
+    }
+}
+
+static class ReporteFallidas extends ReporteDiario {
+    @Override
+    String encabezado() {
+        return "Entregas fallidas\n";
+    }
+
+    @Override
+    boolean incluir(Entrega entrega) {
+        return entrega.estado().equals("fallida");
+    }
+
+    @Override
+    String formatear(List<Entrega> datos) {
+        return datos.stream().map(e -> "- " + e.guia() + "\n").collect(Collectors.joining());
+    }
+}
+
+void main() {
+    List<Entrega> entregas = List.of(new Entrega("G-1", "entregada"), new Entrega("G-2", "fallida"),
+            new Entrega("G-3", "entregada"), new Entrega("G-4", "fallida"));
+    IO.println(new ReporteCSV().generar(entregas));
+    IO.println(new ReporteFallidas().generar(entregas));
+}
 ```
 
 ```text
-$ python3 template_method.py
+$ java TemplateMethod.java
 Reporte RutaFlow
 guia,estado
 G-1,entregada
@@ -895,50 +1041,87 @@ Entregas fallidas
 - G-2
 - G-4
 Total: 2
+
 ```
 
 **Explicación por partes.**
-- Líneas 5–8: el método plantilla. Filtra con el gancho `incluir`, formatea y une encabezado, cuerpo y pie.
-- Línea 8: el pie recibe `len(datos)`. El defecto del Problema resuelto 3.1 ya no se puede repetir.
-- Líneas 10–17: tres ganchos con valor por defecto y un paso abstracto (líneas 14–15).
-- Líneas 19–21: `ReporteCSV` solo implementa el paso obligatorio.
-- Líneas 23–29: `ReporteFallidas` cambia dos ganchos y el formato, y hereda el pie correcto.
+- `ReporteDiario.java`, líneas 5–9: el método plantilla. Filtra con el gancho `incluir`, formatea y une encabezado,
+  cuerpo y pie. `final` impide que una subclase lo sobrescriba.
+- Línea 8: el pie recibe `datos.size()`. El defecto del Problema resuelto 3.1 ya no se puede repetir.
+- Líneas 11–23: tres ganchos con valor por defecto y un paso abstracto (línea 19).
+- `TemplateMethod.java`, líneas 2–7: `ReporteCSV` solo implementa el paso obligatorio.
+- Líneas 9–24: `ReporteFallidas` cambia dos ganchos y el formato, y hereda el pie correcto. Cada sobrescritura lleva
+  `@Override`.
 - Salida: el reporte de fallidas termina en `Total: 2`.
 
-> **Error común.** Crear una subclase sin el paso abstracto. Python no deja crear el objeto:
-> `TypeError: Can't instantiate abstract class ReporteJSON without an implementation for abstract method 'formatear'`.
-> El mensaje nombra la clase incompleta y el método que falta.
+> **Error común.** Crear una subclase sin el paso abstracto. Java no compila el programa: el mensaje nombra la
+> clase incompleta y el método que falta.
 
-```python
-# reporte_incompleto.py — una subclase que olvida el paso obligatorio
-from template_method import ReporteDiario
+```java
+// ReporteIncompleto.java — una subclase que olvida el paso obligatorio
+static class ReporteJSON extends ReporteDiario {
+    @Override
+    String encabezado() {
+        return "[\n";
+    }
+}
 
-class ReporteJSON(ReporteDiario):
-    def encabezado(self):
-        return "[\n"
-
-print(ReporteJSON().generar([("G-1", "entregada")]))
+void main() {
+    IO.println(new ReporteJSON().generar(List.of(new Entrega("G-1", "entregada"))));
+}
 ```
 
 ```text
-$ python3 reporte_incompleto.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/reporte_incompleto.py", line 8, in <module>
-    print(ReporteJSON().generar([("G-1", "entregada")]))
-          ~~~~~~~~~~~^^
-TypeError: Can't instantiate abstract class ReporteJSON without an implementation for abstract method 'formatear'
+$ java ReporteIncompleto.java
+ReporteIncompleto.java:2: error: ReporteJSON is not abstract and does not override abstract method formatear(List<Entrega>) in ReporteDiario
+static class ReporteJSON extends ReporteDiario {
+       ^
+1 error
+error: compilation failed
 ```
 
-> **Prevenir errores.** Un gancho mal escrito no da error: simplemente no se usa. Prueba cada subclase con datos
-> donde el gancho importe, por ejemplo una entrega `entregada` que el reporte de fallidas debe excluir.
+> **Prevenir errores.** Un gancho mal escrito no da error por sí solo: es un método nuevo que nadie llama. Si lo
+> marcas con `@Override`, el compilador lo detecta:
+
+```java
+// GanchoMalEscrito.java — un gancho con el nombre equivocado
+static class ReporteFallidas extends ReporteDiario {
+    @Override
+    boolean incluye(Entrega entrega) {               // debía llamarse incluir
+        return entrega.estado().equals("fallida");
+    }
+
+    @Override
+    String formatear(List<Entrega> datos) {
+        return datos.stream().map(e -> "- " + e.guia() + "\n").collect(Collectors.joining());
+    }
+}
+
+void main() {
+    IO.println(new ReporteFallidas().generar(List.of(new Entrega("G-1", "entregada"))));
+}
+```
+
+```text
+$ java GanchoMalEscrito.java
+GanchoMalEscrito.java:3: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+1 error
+error: compilation failed
+```
+
+> Sin el `@Override` de la línea 3, el programa compila y el reporte de fallidas incluye `- G-1`, una entrega
+> exitosa, y termina en `Total: 1`. Pon `@Override` en cada sobrescritura y prueba cada subclase con datos donde el
+> gancho importe.
 
 > **Buena práctica.** Deja pocos pasos abstractos y pocos ganchos. Si la clase base tiene ocho ganchos, cada
 > subclase nueva obliga a leerlos todos para saber cuáles tocar.
 
 #### Cuándo no usarlo
-- Si solo cambia un paso, pasa ese paso como función o como objeto (Strategy): `generar(entregas, formatear=a_csv)`. No necesitas herencia.
+- Si solo cambia un paso, pasa ese paso como función o como objeto (Strategy): `generar(entregas, this::aCsv)`. No necesitas herencia.
 - Si los pasos cambian de orden según el caso, no hay algoritmo fijo que proteger.
-- Si hay un solo reporte, una función basta. Extrae la clase cuando aparezca el segundo y veas qué se repite.
+- Si hay un solo reporte, un método basta. Extrae la clase cuando aparezca el segundo y veas qué se repite.
 
 #### Checkpoint 3.1
 Quieres un reporte con todas las entregas, en CSV, pero con el encabezado `Contabilidad`. ¿Qué escribes?
@@ -952,20 +1135,22 @@ Hereda el formato de `ReporteCSV` y el filtro y el pie de `ReporteDiario`.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Encuentra la copia
-Escribe `reportes_copiados.py` y ejecútalo. Marca en el código qué líneas se repiten y cuáles cambian entre las dos
-funciones.
+Escribe `ReportesCopiados.java` y ejecútalo. Marca en el código qué líneas se repiten y cuáles cambian entre los dos
+métodos.
 
 #### Paso 2 · Fija el orden en la clase base
-Escribe `template_method.py` y ejecútalo. El reporte de fallidas debe cerrar con `Total: 2`.
+Escribe `Entrega.java`, `ReporteDiario.java` y `TemplateMethod.java`, y ejecuta `java TemplateMethod.java`. El reporte de fallidas debe cerrar con `Total: 2`.
 
 #### Paso 3 · Rompe el contrato a propósito
-Escribe `reporte_incompleto.py` y ejecútalo para ver el `TypeError`. Después agrega a `ReporteJSON` un `formatear`
-que devuelva `""` y ejecuta otra vez: el objeto ya se crea.
+Escribe `ReporteIncompleto.java` y ejecútalo para ver el error de compilación. Después agrega a `ReporteJSON` un
+`formatear` que devuelva `""` y ejecuta otra vez: ya compila. Luego escribe `GanchoMalEscrito.java`, lee su error y
+quita el `@Override` para ver el defecto silencioso.
 
 #### Resumen
 - El patrón **Template Method** fija el orden de un algoritmo en un **método plantilla** de la clase base.
-- Los pasos obligatorios son **métodos abstractos**; Python impide crear una subclase que no los implemente.
-- Un **gancho** trae un valor por defecto y se sobrescribe solo cuando hace falta.
+- Los pasos obligatorios son **métodos abstractos**; Java no compila una subclase que no los implemente.
+- Un **gancho** trae un valor por defecto y se sobrescribe solo cuando hace falta; `@Override` detecta un nombre mal escrito.
+- El método plantilla se declara `final` para que ninguna subclase cambie el orden.
 - La clase base llama a los métodos de la subclase: el control va de arriba abajo.
 - Si solo varía un paso, pasar una función (Strategy) es más simple que heredar.
 
@@ -980,22 +1165,25 @@ Respuesta esperada: `Entregas exitosas`, `- G-1`, `- G-3` y `Total: 2`. La subcl
 Intermedio. Completa `ReporteJSON` para que con las dos primeras entregas imprima un arreglo JSON entre `[` y `]`, un
 objeto por línea. ¿Qué gancho tienes que sobrescribir además de `encabezado` y `formatear`?
 
-Respuesta esperada: `pie`, para que devuelva `"]\n"` en vez de `Total: ...`. Con
-`formatear` que une con `",\n"` líneas como `  {"guia": "G-1", "estado": "entregada"}`, la salida es `[`, las dos
-líneas separadas por coma y `]`.
+Respuesta esperada: `pie`, para que devuelva `"]\n"` en vez de `Total: ...`. Con un `formatear` que une con
+`Collectors.joining(",\n", "", "\n")` líneas como `  {"guia": "G-1", "estado": "entregada"}`, la salida es `[`, las
+dos líneas separadas por coma y `]`.
 
 #### Ejercicio verificable 3
-Reto. Un compañero propone sobrescribir `generar` en `ReporteFallidas` «para optimizarlo». ¿Qué riesgo concreto
-introduce? Justifica con el defecto del Problema resuelto 3.1.
+Reto. Un compañero propone sobrescribir `generar` en `ReporteFallidas` «para optimizarlo». ¿Qué dice Java? Y si
+alguien quita el `final` para permitirlo, ¿qué riesgo concreto introduce? Justifica con el defecto del Problema
+resuelto 3.1.
 
-Respuesta esperada: la subclase vuelve a tener su propia copia del algoritmo. Si esa copia calcula el pie con la
+Respuesta esperada: Java no compila: `generar(List<Entrega>) in ReporteFallidas cannot override generar(List<Entrega>)
+in ReporteDiario`, con la nota `overridden method is final`. Sin el `final`, la subclase vuelve a tener su propia
+copia del algoritmo. Si esa copia calcula el pie con la
 lista completa, reaparece `Total: 4`. El método plantilla existe para que el orden y el conteo vivan en un solo
 lugar; las subclases solo deben tocar pasos y ganchos.
 
 #### En el trabajo
-Los frameworks están llenos de métodos plantilla: `unittest.TestCase` llama a `setUp`, al método de prueba y a
-`tearDown` en ese orden, y tú solo llenas los pasos. Lo mismo pasa con las vistas de Django o los ciclos de vida de
-Android. En un equipo, el método plantilla protege reglas que no se negocian, como registrar siempre la auditoría al
+Los frameworks están llenos de métodos plantilla: JUnit llama a los métodos `@BeforeEach`, a la prueba y a los
+`@AfterEach` en ese orden, y tú solo llenas los pasos. Lo mismo pasa con `HttpServlet`, que decide cuándo llamar a tu
+`doGet` o `doPost`, con `JdbcTemplate` de Spring o con los ciclos de vida de Android. En un equipo, el método plantilla protege reglas que no se negocian, como registrar siempre la auditoría al
 final de un proceso.
 
 </details>
@@ -1010,17 +1198,17 @@ Al terminar este tema podrás:
 - separar reglas anidadas en manejadores independientes enlazados en una cadena;
 - cortar la cadena en el primer error y explicar por qué el orden de los eslabones importa;
 - reutilizar una parte de la cadena para otro caso sin copiar reglas;
-- demostrar con un `assert` una falla silenciosa en una cadena mal armada.
+- demostrar una falla silenciosa en una cadena mal armada y saber por qué un `assert` de Java no la detecta si no lo activas.
 
 **Conceptos clave:** Chain of Responsibility, manejador, sucesor
 
-Ya los conoces y no se repiten: *herencia*, *sobrescritura* y *polimorfismo* (Módulo 1, Tema 7); *diccionario* y
-*conjunto* (Módulo 2, Tema 1); `assert` (Módulo 1, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
+Ya los conoces y no se repiten: *herencia*, *sobrescritura* y *polimorfismo* (Módulo 1, Tema 7); *record* y
+*conjunto* (Módulos 1 y 2); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 Antes de aceptar un pedido, RutaFlow revisa tres reglas: que tenga dirección, que pese entre 0 y 30 kg y que la
-ciudad tenga cobertura. Hoy son tres `if` anidados en una función. Ahora llegan los puntos de recogida, que no piden
-dirección pero sí las otras reglas. ¿Cómo combinas reglas distintas para casos distintos sin copiar la función?
+ciudad tenga cobertura. Hoy son tres `if` anidados en un método. Ahora llegan los puntos de recogida, que no piden
+dirección pero sí las otras reglas. ¿Cómo combinas reglas distintas para casos distintos sin copiar el método?
 
 #### Glosario del tema
 
@@ -1028,7 +1216,7 @@ dirección pero sí las otras reglas. ¿Cómo combinas reglas distintas para cas
 - **Definición técnica:** patrón de comportamiento que pasa una petición por una secuencia de objetos manejadores; cada uno decide si la atiende, la corta o la entrega al siguiente.
 - **En palabras sencillas:** una fila de revisores en una oficina: cada uno mira una cosa y, si está bien, pasa el papel al siguiente.
 - **Dónde se rompe la comparación:** en una oficina el último revisor sabe que es el último; aquí un eslabón no sabe cuántos vienen después, solo si tiene siguiente o no.
-- **Ejemplo:** `Direccion(Peso(Cobertura()))` revisa dirección, luego peso, luego cobertura.
+- **Ejemplo:** `new Direccion(new Peso(new Cobertura()))` revisa dirección, luego peso, luego cobertura.
 - **Error típico:** armar la cadena por partes y dejar un eslabón sin enlazar: la regla existe en el código, pero nunca se ejecuta.
 
 **manejador**
@@ -1039,10 +1227,10 @@ dirección pero sí las otras reglas. ¿Cómo combinas reglas distintas para cas
 - **Error típico:** meter dos reglas en el mismo manejador: ya no se pueden usar por separado.
 
 **sucesor**
-- **Definición técnica:** el manejador siguiente al que se entrega la petición; cada manejador guarda una referencia a él, o `None` si es el último.
+- **Definición técnica:** el manejador siguiente al que se entrega la petición; cada manejador guarda una referencia a él, o `null` si es el último.
 - **En palabras sencillas:** a quién le pasa el papel cada revisor.
 - **Dónde se rompe la comparación:** si un revisor no tiene a quién pasarlo, en esta cadena eso significa «aprobado», no «perdido».
-- **Ejemplo:** en `Direccion(Peso())`, el sucesor de `Direccion` es el objeto `Peso` y el de `Peso` es `None`.
+- **Ejemplo:** en `new Direccion(new Peso())`, el sucesor de `Direccion` es el objeto `Peso` y el de `Peso` es `null`.
 - **Error típico:** asumir que la cadena tiene un eslabón porque creaste el objeto: si no está como sucesor de nadie, no participa.
 
 #### ► CÓMO FUNCIONA
@@ -1070,96 +1258,150 @@ El diagrama muestra el pedido de Leticia: pasa dos eslabones y lo corta el terce
 mismo camino.
 
 #### Problema resuelto 4.1
-Antes del patrón. Escribe la validación con `if` anidados y copia la función para los puntos de recogida.
+Antes del patrón. Escribe la validación con `if` anidados y copia el método para los puntos de recogida.
 
 **Razonamiento:**
 1. Cada `if` revisa una regla y, si falla, devuelve el rechazo.
-2. Los puntos de recogida no piden dirección: se copia la función y se quita esa regla.
+2. Los puntos de recogida no piden dirección: se copia el método y se quita esa regla.
 3. Prueba los dos con un pedido de 45 kg.
 
-```python
-# validar_todo.py — todas las reglas anidadas en una sola función
-CIUDADES = {"Bogotá", "Medellín", "Cali"}
+```java
+// Pedido.java — lo que llega antes de aceptar un envío
+record Pedido(String direccion, int kilos, String ciudad) {}
+```
 
-def validar(pedido):
-    if pedido.get("direccion"):
-        if 0 < pedido["kilos"] <= 30:
-            if pedido["ciudad"] in CIUDADES:
-                return "aceptado"
-            return f"rechazado: sin cobertura en {pedido['ciudad']}"
-        return f"rechazado: {pedido['kilos']} kg fuera de rango"
-    return "rechazado: falta la dirección"
+```java
+// ValidarTodo.java — todas las reglas anidadas en un solo método
+final Set<String> CIUDADES = Set.of("Bogotá", "Medellín", "Cali");
 
-def validar_punto_recogida(pedido):          # copia sin la regla de dirección...
-    if pedido["ciudad"] in CIUDADES:          # ...y sin la de peso, por descuido
-        return "aceptado"
-    return f"rechazado: sin cobertura en {pedido['ciudad']}"
+String validar(Pedido pedido) {
+    if (pedido.direccion() != null && !pedido.direccion().isBlank()) {
+        if (pedido.kilos() > 0 && pedido.kilos() <= 30) {
+            if (CIUDADES.contains(pedido.ciudad())) {
+                return "aceptado";
+            }
+            return "rechazado: sin cobertura en " + pedido.ciudad();
+        }
+        return "rechazado: " + pedido.kilos() + " kg fuera de rango";
+    }
+    return "rechazado: falta la dirección";
+}
 
-print(validar({"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"}))
-print(validar_punto_recogida({"kilos": 45, "ciudad": "Bogotá"}))
+String validarPuntoRecogida(Pedido pedido) {    // copia sin la regla de dirección...
+    if (CIUDADES.contains(pedido.ciudad())) {   // ...y sin la de peso, por descuido
+        return "aceptado";
+    }
+    return "rechazado: sin cobertura en " + pedido.ciudad();
+}
+
+void main() {
+    IO.println(validar(new Pedido("Cl 80 # 5-12", 45, "Bogotá")));
+    IO.println(validarPuntoRecogida(new Pedido(null, 45, "Bogotá")));
+}
 ```
 
 ```text
-$ python3 validar_todo.py
+$ java ValidarTodo.java
 rechazado: 45 kg fuera de rango
 aceptado
 ```
 
 **Explicación por partes.**
-- Líneas 5–11: tres niveles de `if`. Una regla nueva agrega otro nivel y obliga a reordenar los `return`.
-- Líneas 13–16: la copia quitó la dirección y, por descuido, también el peso.
-- Salida, línea 2: el punto de recogida acepta 45 kg. La regla de peso existe, pero solo en la otra función.
+- Líneas 4–15: tres niveles de `if`. Una regla nueva agrega otro nivel y obliga a reordenar los `return`.
+- Líneas 17–22: la copia quitó la dirección y, por descuido, también el peso.
+- Salida, línea 2: el punto de recogida acepta 45 kg. La regla de peso existe, pero solo en el otro método.
 
 #### Problema resuelto 4.2
 Después del patrón. Escribe cada regla como un manejador y arma cadenas distintas con las mismas piezas.
 
 **Razonamiento:**
-1. Una clase base `Validador` hace el trabajo común: revisar y, si no hay error, pasar al sucesor.
-2. Cada subclase sobrescribe solo `revisar` y devuelve un texto de error o `None`.
+1. Una clase base abstracta `Validador` hace el trabajo común: revisar y, si no hay error, pasar al sucesor.
+2. Cada subclase implementa solo `revisar` y devuelve un texto de error o `null`. Cada una vive en su propio archivo.
 3. Para los puntos de recogida, arma otra cadena sin `Direccion`. Las reglas no se copian.
 
-```python
-# chain.py — cada regla es un eslabón que revisa y pasa al siguiente
-class Validador:
-    def __init__(self, siguiente=None):
-        self.siguiente = siguiente
-    def manejar(self, pedido):
-        error = self.revisar(pedido)
-        if error:
-            return f"rechazado por {type(self).__name__}: {error}"
-        return self.siguiente.manejar(pedido) if self.siguiente else "aceptado"
-    def revisar(self, pedido):
-        return None
+```java
+// Validador.java — un eslabón de la cadena: revisa una regla y, si pasa, entrega al siguiente
+abstract class Validador {
+    final Validador siguiente;                 // el sucesor; null si es el último
 
-class Direccion(Validador):
-    def revisar(self, pedido):
-        return None if pedido.get("direccion") else "falta la dirección"
+    Validador(Validador siguiente) {
+        this.siguiente = siguiente;
+    }
 
-class Peso(Validador):
-    def revisar(self, pedido):
-        return None if 0 < pedido["kilos"] <= 30 else f"{pedido['kilos']} kg fuera de rango"
+    final String manejar(Pedido pedido) {
+        String error = revisar(pedido);
+        if (error != null) {
+            return "rechazado por " + getClass().getSimpleName() + ": " + error;
+        }
+        return siguiente != null ? siguiente.manejar(pedido) : "aceptado";
+    }
 
-class Cobertura(Validador):
-    CIUDADES = {"Bogotá", "Medellín", "Cali"}
-    def revisar(self, pedido):
-        return None if pedido["ciudad"] in self.CIUDADES else f"sin cobertura en {pedido['ciudad']}"
+    abstract String revisar(Pedido pedido);   // devuelve el error, o null si la regla se cumple
+}
+```
 
-if __name__ == "__main__":
-    cadena = Direccion(Peso(Cobertura()))       # el orden de la cadena es una decisión de diseño
-    pedidos = [
-        {"direccion": "Cra 7 # 10-20", "kilos": 4, "ciudad": "Cali"},
-        {"direccion": "", "kilos": 4, "ciudad": "Cali"},
-        {"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"},
-        {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"},
-    ]
-    for pedido in pedidos:
-        print(cadena.manejar(pedido))
-    recogida = Peso(Cobertura())                 # punto de recogida: sin regla de dirección
-    print("Recogida:", recogida.manejar({"kilos": 45, "ciudad": "Bogotá"}))
+```java
+// Direccion.java — regla: el pedido trae dirección
+class Direccion extends Validador {
+    Direccion(Validador siguiente) { super(siguiente); }
+    Direccion() { this(null); }
+
+    @Override
+    String revisar(Pedido pedido) {
+        boolean tiene = pedido.direccion() != null && !pedido.direccion().isBlank();
+        return tiene ? null : "falta la dirección";
+    }
+}
+```
+
+```java
+// Peso.java — regla: entre 0 y 30 kg
+class Peso extends Validador {
+    Peso(Validador siguiente) { super(siguiente); }
+    Peso() { this(null); }
+
+    @Override
+    String revisar(Pedido pedido) {
+        return pedido.kilos() > 0 && pedido.kilos() <= 30 ? null : pedido.kilos() + " kg fuera de rango";
+    }
+}
+```
+
+```java
+// Cobertura.java — regla: la ciudad tiene cobertura
+import java.util.Set;
+
+class Cobertura extends Validador {
+    static final Set<String> CIUDADES = Set.of("Bogotá", "Medellín", "Cali");
+
+    Cobertura(Validador siguiente) { super(siguiente); }
+    Cobertura() { this(null); }
+
+    @Override
+    String revisar(Pedido pedido) {
+        return CIUDADES.contains(pedido.ciudad()) ? null : "sin cobertura en " + pedido.ciudad();
+    }
+}
+```
+
+```java
+// Chain.java — arma cadenas distintas con las mismas reglas
+void main() {
+    Validador cadena = new Direccion(new Peso(new Cobertura()));   // el orden es una decisión de diseño
+    List<Pedido> pedidos = List.of(
+            new Pedido("Cra 7 # 10-20", 4, "Cali"),
+            new Pedido("", 4, "Cali"),
+            new Pedido("Cl 80 # 5-12", 45, "Bogotá"),
+            new Pedido("Av 30 # 2-1", 2, "Leticia"));
+    for (Pedido pedido : pedidos) IO.println(cadena.manejar(pedido));
+
+    Validador recogida = new Peso(new Cobertura());                 // punto de recogida: sin regla de dirección
+    IO.println("Recogida: " + recogida.manejar(new Pedido(null, 45, "Bogotá")));
+}
 ```
 
 ```text
-$ python3 chain.py
+$ java Chain.java
 aceptado
 rechazado por Direccion: falta la dirección
 rechazado por Peso: 45 kg fuera de rango
@@ -1168,12 +1410,14 @@ Recogida: rechazado por Peso: 45 kg fuera de rango
 ```
 
 **Explicación por partes.**
-- Líneas 3–4: el sucesor llega al crear el objeto; por defecto es `None`.
-- Líneas 5–9: `manejar` corta en el primer error. `type(self).__name__` da el nombre de la clase que rechazó.
-- Línea 9: si hay sucesor, le pasa el pedido; si no, este es el último eslabón y acepta.
-- Líneas 13–24: tres reglas en tres clases. Ninguna sabe que las otras existen.
-- Línea 27: se lee de afuera hacia adentro: dirección, peso, cobertura.
-- Líneas 36–37: la cadena de recogida reutiliza `Peso` y `Cobertura`, y el pedido de 45 kg se rechaza.
+- `Validador.java`, líneas 3–7: el sucesor llega al crear el objeto y no cambia después (`final`).
+- Líneas 9–15: `manejar` corta en el primer error. `getClass().getSimpleName()` da el nombre de la clase que rechazó.
+  Es `final`: ningún validador puede saltarse el paso de entregar al siguiente.
+- Línea 14: si hay sucesor, le pasa el pedido; si no, este es el último eslabón y acepta.
+- `Direccion`, `Peso` y `Cobertura`: tres reglas en tres clases. Ninguna sabe que las otras existen. Cada una tiene
+  un segundo constructor sin sucesor, para ser la última.
+- `Chain.java`, línea 3: se lee de afuera hacia adentro: dirección, peso, cobertura.
+- Líneas 11–12: la cadena de recogida reutiliza `Peso` y `Cobertura`, y el pedido de 45 kg se rechaza.
 
 #### Problema resuelto 4.3
 La falla silenciosa. Arma una cadena en la que `Cobertura` se crea pero no se enlaza, y escribe una comprobación
@@ -1182,61 +1426,68 @@ que lo detecte.
 **Razonamiento:**
 1. Un pedido a Leticia debería rechazarse por cobertura.
 2. Si `Cobertura` no es sucesor de nadie, la cadena termina en `Peso` y acepta.
-3. Recorre la cadena siguiendo `siguiente` y compara la lista de nombres con la esperada.
+3. Recorre la cadena siguiendo `siguiente` y compara la lista de nombres con la esperada usando `assert`.
 
-```python
-# cadena_rota.py — los eslabones existen, pero uno quedó suelto
-from chain import Cobertura, Direccion, Peso
+```java
+// CadenaRota.java — los eslabones existen, pero uno quedó suelto
+List<String> eslabones(Validador cadena) {     // recorre la cadena y devuelve los nombres
+    List<String> nombres = new ArrayList<>();
+    while (cadena != null) {
+        nombres.add(cadena.getClass().getSimpleName());
+        cadena = cadena.siguiente;
+    }
+    return nombres;
+}
 
-def eslabones(cadena):                      # recorre la cadena y devuelve los nombres
-    nombres = []
-    while cadena:
-        nombres.append(type(cadena).__name__)
-        cadena = cadena.siguiente
-    return nombres
-
-cobertura = Cobertura()
-rota = Direccion(Peso())                    # se creó Cobertura, pero nadie la enlazó
-pedido = {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"}
-print(rota.manejar(pedido))
-print("Eslabones:", eslabones(rota))
-assert eslabones(rota) == ["Direccion", "Peso", "Cobertura"], "la cadena no tiene los tres validadores"
+void main() {
+    Validador cobertura = new Cobertura();
+    Validador rota = new Direccion(new Peso());    // se creó Cobertura, pero nadie la enlazó
+    Pedido pedido = new Pedido("Av 30 # 2-1", 2, "Leticia");
+    IO.println(rota.manejar(pedido));
+    IO.println("Eslabones: " + eslabones(rota));
+    assert eslabones(rota).equals(List.of("Direccion", "Peso", "Cobertura")) : "la cadena no tiene los tres validadores";
+    IO.println("fin del programa");
+}
 ```
 
 ```text
-$ python3 cadena_rota.py
+$ java CadenaRota.java
 aceptado
-Eslabones: ['Direccion', 'Peso']
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/cadena_rota.py", line 16, in <module>
-    assert eslabones(rota) == ["Direccion", "Peso", "Cobertura"], "la cadena no tiene los tres validadores"
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError: la cadena no tiene los tres validadores
+Eslabones: [Direccion, Peso]
+fin del programa
+$ java -ea CadenaRota.java
+aceptado
+Eslabones: [Direccion, Peso]
+Exception in thread "main" java.lang.AssertionError: la cadena no tiene los tres validadores
+	at CadenaRota.main(CadenaRota.java:17)
 ```
 
 **Explicación por partes.**
 - Línea 11: el objeto `Cobertura` existe, pero ninguna línea lo pasa como sucesor.
 - Salida, línea 1: el pedido a Leticia sale `aceptado`. No hay excepción: es una falla silenciosa.
-- Líneas 4–9: `eslabones` sigue `siguiente` hasta llegar a `None` y anota cada clase.
-- Línea 16: el `assert` convierte la falla silenciosa en un error visible con su mensaje.
+- Líneas 2–9: `eslabones` sigue `siguiente` hasta llegar a `null` y anota cada clase.
+- Línea 16: el `assert` debía convertir la falla silenciosa en un error visible. Pero en la primera ejecución el
+  programa llega a `fin del programa`: Java **ignora** los `assert` salvo que ejecutes con `-ea` (*enable
+  assertions*). Con `java -ea` aparece el `AssertionError` con su mensaje.
 
 > **Error común.** Dejar un eslabón suelto. El programa no falla: acepta pedidos que debía rechazar. El único
-> mensaje que verás es el de tu propia comprobación:
-> `AssertionError: la cadena no tiene los tres validadores`. Sin esa prueba, el defecto llega a producción.
+> mensaje que verás es el de tu propia comprobación, y solo si la activas:
+> `java.lang.AssertionError: la cadena no tiene los tres validadores`. Para una comprobación que debe correr
+> siempre, usa un `if` que lance una excepción, o una prueba JUnit (Módulo 4), que sí falla sin `-ea`.
 
-> **Prevenir errores.** Arma cada cadena en una sola función con nombre (`cadena_domicilio()`,
-> `cadena_recogida()`) y prueba su lista de eslabones. Así el orden y los eslabones quedan escritos en un solo lugar.
+> **Prevenir errores.** Arma cada cadena en un solo método con nombre (`cadenaDomicilio()`,
+> `cadenaRecogida()`) y prueba su lista de eslabones. Así el orden y los eslabones quedan escritos en un solo lugar.
 
 > **Ingeniería de software.** El orden es una decisión: pon primero las reglas baratas y las que más rechazan. Si una
 > regla consulta un servicio externo (por ejemplo, la cobertura), que vaya al final para no llamarla de más.
 
 #### Cuándo no usarlo
-- Si las reglas son pocas y siempre las mismas, una lista de funciones recorrida con `for` hace lo mismo con menos clases.
+- Si las reglas son pocas y siempre las mismas, una lista de funciones (`List<Function<Pedido, String>>`) recorrida con `for` hace lo mismo con menos clases.
 - Si necesitas **todos** los errores a la vez (por ejemplo, para un formulario), no cortes en el primero: recorre todas las reglas y junta los mensajes.
 - Si una regla depende del resultado de otra de forma compleja, una cadena lineal no lo expresa bien.
 
 #### Checkpoint 4.1
-Con la cadena `Direccion(Peso(Cobertura()))`, ¿qué responde un pedido sin dirección, de 45 kg, a Leticia?
+Con la cadena `new Direccion(new Peso(new Cobertura()))`, ¿qué responde un pedido sin dirección, de 45 kg, a Leticia?
 
 Respuesta: `rechazado por Direccion: falta la dirección`. La cadena corta en el primer error, así que `Peso` y
 `Cobertura` nunca lo revisan.
@@ -1247,14 +1498,15 @@ Respuesta: `rechazado por Direccion: falta la dirección`. La cadena corta en el
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Copia y rompe
-Escribe `validar_todo.py` y ejecútalo. Comprueba que el punto de recogida acepta 45 kg.
+Escribe `Pedido.java` y `ValidarTodo.java`, y ejecuta `java ValidarTodo.java`. Comprueba que el punto de recogida acepta 45 kg.
 
 #### Paso 2 · Una regla por eslabón
-Escribe `chain.py` y ejecútalo. Comprueba las cuatro respuestas y la línea `Recogida: rechazado por Peso: 45 kg fuera de rango`.
+Escribe `Validador.java`, `Direccion.java`, `Peso.java`, `Cobertura.java` y `Chain.java`, y ejecuta `java Chain.java`. Comprueba las cuatro respuestas y la línea `Recogida: rechazado por Peso: 45 kg fuera de rango`.
 
 #### Paso 3 · Detecta la cadena rota
-Escribe `cadena_rota.py` en la misma carpeta, porque importa de `chain.py`. Ejecútalo y verás el `AssertionError`.
-Cambia la línea 12 por `rota = Direccion(Peso(cobertura))` y ejecuta otra vez: debe imprimir el rechazo por
+Escribe `CadenaRota.java` en la misma carpeta, porque usa las clases de la cadena. Ejecútalo con `java` y después
+con `java -ea`: solo la segunda vez verás el `AssertionError`. Cambia la línea 12 por
+`Validador rota = new Direccion(new Peso(cobertura));` y ejecuta otra vez con `-ea`: debe imprimir el rechazo por
 cobertura y terminar sin error.
 
 #### Resumen
@@ -1262,33 +1514,37 @@ cobertura y terminar sin error.
 - Cada manejador guarda su **sucesor**; el último, sin sucesor, acepta.
 - La cadena corta en el primer error, así que el orden decide qué mensaje ve el usuario.
 - Las mismas piezas arman cadenas distintas sin copiar reglas.
-- Un eslabón sin enlazar es una falla silenciosa: pruébala con la lista de eslabones y un `assert`.
+- Un eslabón sin enlazar es una falla silenciosa: pruébala con la lista de eslabones. Un `assert` solo corre con `java -ea`.
 
 #### Ejercicio verificable 1
-Básico. Agrega un validador `ValorDeclarado` que rechace pedidos con `valor` mayor a 5 000 000 y ponlo al final de la
-cadena. ¿Qué responde un pedido válido en lo demás con `valor` 8 000 000?
+Básico. La bodega de Medellín no recibe bultos de más de 20 kg. Agrega un validador `Bodega` que rechace esos pedidos
+y ponlo al final de la cadena. ¿Qué responde un pedido válido en lo demás, de 25 kg, a Medellín?
 
-Respuesta esperada: `rechazado por ValorDeclarado: valor 8,000,000 supera el tope`, con
-`revisar` que devuelve `f"valor {pedido['valor']:,} supera el tope"` si se pasa del tope y `None` si no. La cadena
-queda `Direccion(Peso(Cobertura(ValorDeclarado())))`.
+Respuesta esperada: `rechazado por Bodega: 25 kg supera el tope de 20 en Medellín`. `revisar` devuelve ese texto si
+la ciudad es Medellín y los kilos pasan de 20, y `null` si no. La cadena queda
+`new Direccion(new Peso(new Cobertura(new Bodega())))`.
 
 #### Ejercicio verificable 2
-Intermedio. Para un pedido sin dirección, de 2 kg, a Leticia, compara la respuesta de `Direccion(Peso(Cobertura()))`
-con la de `Cobertura(Direccion(Peso()))`.
+Intermedio. Para un pedido sin dirección, de 2 kg, a Leticia, compara la respuesta de
+`new Direccion(new Peso(new Cobertura()))` con la de `new Cobertura(new Direccion(new Peso()))`.
 
 Respuesta esperada: la primera responde `rechazado por Direccion: falta la dirección`; la segunda,
 `rechazado por Cobertura: sin cobertura en Leticia`. Las dos rechazan, pero el mensaje depende del orden.
 
 #### Ejercicio verificable 3
-Reto. Escribe `armar(*clases)`, que construya la cadena a partir de una lista de clases en orden, para que nadie
-tenga que anidar a mano. Compruébala con `eslabones`.
+Reto. Escribe `armar(...)`, que construya la cadena a partir de los constructores en orden
+(`armar(Direccion::new, Peso::new, Cobertura::new)`), para que nadie tenga que anidar a mano. Compruébala con
+`eslabones`.
 
-Respuesta esperada: empezar con `cadena = None` y recorrer `reversed(clases)` haciendo `cadena = clase(cadena)`.
-`eslabones(armar(Direccion, Peso, Cobertura))` da `['Direccion', 'Peso', 'Cobertura']`, y el pedido a Leticia
+Respuesta esperada: el método recibe `Function<Validador, Validador>... pasos` (lleva `@SafeVarargs` y `final`),
+empieza con `Validador cadena = null` y recorre los pasos del último al primero haciendo
+`cadena = pasos[i].apply(cadena)`. `eslabones(armar(Direccion::new, Peso::new, Cobertura::new))` da
+`[Direccion, Peso, Cobertura]`, y el pedido a Leticia
 responde `rechazado por Cobertura: sin cobertura en Leticia`.
 
 #### En el trabajo
-Los *middlewares* de un servidor web forman una cadena: autenticación, límite de peticiones, validación y
+Los *middlewares* de un servidor web forman una cadena (en Java, los `Filter` de servlets y la cadena de filtros
+de Spring Security): autenticación, límite de peticiones, validación y
 finalmente el código del endpoint; cualquiera puede cortar con un 401 o un 429. Los sistemas de aprobación de gastos
 y los filtros de correo siguen la misma idea. En producción, la lista de eslabones se registra al arrancar para
 poder confirmar que ninguno quedó fuera.
@@ -1310,7 +1566,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** acoplamiento, Mediator, colega
 
 Ya los conoces y no se repiten: *clase*, *objeto* y *atributo* (Módulo 1, Tema 6); *composición* (Módulo 1, Tema 7);
-*lista* y *diccionario* (Módulo 2, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
+*`List`* y *`Map`* (Módulo 2, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 Cuando la moto de un mensajero de RutaFlow se avería, su paquete pasa al primer compañero libre. Hoy cada mensajero
@@ -1331,18 +1587,18 @@ uno conozca a todos?
 - **Definición técnica:** patrón de comportamiento que encapsula en un objeto mediador cómo interactúa un grupo de objetos; los objetos se comunican solo con el mediador, que decide a quién avisar.
 - **En palabras sencillas:** la central de despacho: los mensajeros llaman a la central, y la central reparte; ningún mensajero necesita el teléfono de otro.
 - **Dónde se rompe la comparación:** una central humana tiene juicio; el mediador solo aplica las reglas que escribiste, y si acumula demasiadas se vuelve difícil de cambiar.
-- **Ejemplo:** `Central.notificar(emisor, "averia", guia)` busca un mensajero libre y le asigna la guía.
+- **Ejemplo:** `central.notificar(emisor, "averia", guia)` busca un mensajero libre y le asigna la guía.
 - **Error típico:** dejar que el mediador crezca hasta tener la lógica de todo el sistema: el acoplamiento no desaparece, se concentra.
 
 **colega**
 - **Definición técnica:** cada objeto coordinado por un mediador; guarda una referencia al mediador y le notifica sus eventos, sin referencias a otros colegas.
 - **En palabras sencillas:** cada mensajero: sabe hablar con la central y nada más.
 - **Dónde se rompe la comparación:** un colega sin central no puede hacer nada coordinado; uno que no se registró falla al primer aviso.
-- **Ejemplo:** `Mensajero.reportar_averia` llama a `self.central.notificar(...)`.
-- **Error típico:** usar un colega antes de registrarlo: `self.central` vale `None` y aparece `AttributeError: 'NoneType' object has no attribute 'notificar'`.
+- **Ejemplo:** `Mensajero.reportarAveria` llama a `central.notificar(...)`.
+- **Error típico:** usar un colega antes de registrarlo: su campo `central` vale `null` y aparece una `NullPointerException`.
 
 #### ► CÓMO FUNCIONA
-Cada mensajero se registra una vez en la central, que lo guarda en un diccionario y le deja una referencia a sí
+Cada mensajero se registra una vez en la central, que lo guarda en un mapa y le deja una referencia a sí
 misma. Cuando un mensajero reporta una avería, solo avisa a la central. La central busca un libre y le asigna la guía.
 
 ```mermaid
@@ -1370,37 +1626,53 @@ Antes del patrón. Cada mensajero guarda la lista de sus compañeros y busca él
 2. Entra Dani: hay que agregarlo a la lista de los otros tres.
 3. Cuenta las referencias: con 4 mensajeros deberían ser 4 × 3 = 12.
 
-```python
-# mensajeros_acoplados.py — cada mensajero guarda la lista de todos los demás
-class Mensajero:
-    def __init__(self, nombre, libre=True):
-        self.nombre, self.libre, self.companeros = nombre, libre, []
-    def reportar_averia(self, guia):
-        self.libre = False
-        print(f"{self.nombre} reporta avería con {guia}")
-        for otro in self.companeros:            # cada uno decide a quién pasar el envío
-            if otro.libre:
-                otro.asignar(guia)
-                return
-        print(f"  {self.nombre}: nadie libre para {guia}")
-    def asignar(self, guia):
-        self.libre = False
-        print(f"  {self.nombre} recibe {guia}")
+```java
+// MensajerosAcoplados.java — cada mensajero guarda la lista de todos los demás
+static class Mensajero {
+    final String nombre;
+    boolean libre;
+    List<Mensajero> companeros = new ArrayList<>();
 
-ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
-dani = Mensajero("Dani")                        # entra un mensajero nuevo
-ana.companeros = [beto, caro, dani]
-beto.companeros = [ana, caro, dani]
-caro.companeros = [ana, beto]                   # aquí se olvidó agregar a Dani
-dani.companeros = [ana, beto, caro]
+    Mensajero(String nombre, boolean libre) {
+        this.nombre = nombre;
+        this.libre = libre;
+    }
 
-ana.reportar_averia("G-301")
-caro.reportar_averia("G-302")
-print("Referencias entre mensajeros:", sum(len(m.companeros) for m in (ana, beto, caro, dani)))
+    void reportarAveria(String guia) {
+        libre = false;
+        IO.println(nombre + " reporta avería con " + guia);
+        for (Mensajero otro : companeros) {         // cada uno decide a quién pasar el envío
+            if (otro.libre) {
+                otro.asignar(guia);
+                return;
+            }
+        }
+        IO.println("  " + nombre + ": nadie libre para " + guia);
+    }
+
+    void asignar(String guia) {
+        libre = false;
+        IO.println("  " + nombre + " recibe " + guia);
+    }
+}
+
+void main() {
+    Mensajero ana = new Mensajero("Ana", false), beto = new Mensajero("Beto", true), caro = new Mensajero("Caro", true);
+    Mensajero dani = new Mensajero("Dani", true);   // entra un mensajero nuevo
+    ana.companeros = List.of(beto, caro, dani);
+    beto.companeros = List.of(ana, caro, dani);
+    caro.companeros = List.of(ana, beto);           // aquí se olvidó agregar a Dani
+    dani.companeros = List.of(ana, beto, caro);
+
+    ana.reportarAveria("G-301");
+    caro.reportarAveria("G-302");
+    int referencias = Stream.of(ana, beto, caro, dani).mapToInt(m -> m.companeros.size()).sum();
+    IO.println("Referencias entre mensajeros: " + referencias);
+}
 ```
 
 ```text
-$ python3 mensajeros_acoplados.py
+$ java MensajerosAcoplados.java
 Ana reporta avería con G-301
   Beto recibe G-301
 Caro reporta avería con G-302
@@ -1409,8 +1681,8 @@ Referencias entre mensajeros: 11
 ```
 
 **Explicación por partes.**
-- Líneas 8–11: la regla de reparto está dentro de cada mensajero. Cambiarla es cambiar la clase de todos.
-- Línea 21: la lista de Caro no tiene a Dani.
+- Líneas 15–20: la regla de reparto está dentro de cada mensajero. Cambiarla es cambiar la clase de todos.
+- Línea 35: la lista de Caro no tiene a Dani.
 - Salida, línea 4: Caro dice que nadie está libre, y Dani sí lo estaba.
 - Salida, línea 5: 11 referencias en vez de 12. Cada mensajero nuevo agrega 2 × *n* referencias que alguien debe mantener.
 
@@ -1418,52 +1690,85 @@ Referencias entre mensajeros: 11
 Después del patrón. Una central registra a los mensajeros y reparte las averías; los mensajeros solo la conocen a ella.
 
 **Razonamiento:**
-1. La central guarda a los mensajeros en un diccionario y lleva un registro de eventos.
+1. La central guarda a los mensajeros en un mapa y lleva un registro de eventos.
 2. Al registrarse, cada mensajero recibe la referencia a la central.
 3. La regla «primer libre que no sea el emisor» vive en un solo lugar: `Central.notificar`.
+4. `Central` y `Mensajero` se usan desde varios programas, así que cada una va en su propio archivo.
 
-```python
-# mediator.py — una central coordina; los mensajeros solo la conocen a ella
-class Central:                                # mediador: único punto que conoce a todos
-    def __init__(self):
-        self.mensajeros, self.registro = {}, []
-    def registrar(self, mensajero):
-        self.mensajeros[mensajero.nombre] = mensajero
-        mensajero.central = self
-    def notificar(self, emisor, evento, dato):
-        self.registro.append((emisor.nombre, evento, dato))
-        if evento == "averia":
-            libres = [m for m in self.mensajeros.values() if m is not emisor and m.libre]
-            if libres:
-                libres[0].asignar(dato)
-            else:
-                print(f"  Central: nadie libre para {dato}, queda en espera")
+```java
+// Central.java — mediador: el único que conoce a todos los mensajeros
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-class Mensajero:
-    def __init__(self, nombre, libre=True):
-        self.nombre, self.libre, self.central = nombre, libre, None
-    def reportar_averia(self, guia):
-        self.libre = False
-        print(f"{self.nombre} reporta avería con {guia}")
-        self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
-    def asignar(self, guia):
-        self.libre = False
-        print(f"  {self.nombre} recibe {guia}")
+class Central {
+    final Map<String, Mensajero> mensajeros = new LinkedHashMap<>();
+    final List<String> registro = new ArrayList<>();
 
-if __name__ == "__main__":
-    central = Central()
-    ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
-    dani = Mensajero("Dani")
-    for m in (ana, beto, caro, dani):           # un mensajero nuevo = una sola línea de registro
-        central.registrar(m)
-    ana.reportar_averia("G-301")
-    caro.reportar_averia("G-302")
-    beto.reportar_averia("G-303")
-    print("Eventos registrados:", len(central.registro))
+    void registrar(Mensajero mensajero) {
+        mensajeros.put(mensajero.nombre, mensajero);
+        mensajero.central = this;
+    }
+
+    void notificar(Mensajero emisor, String evento, String dato) {
+        registro.add(emisor.nombre + " " + evento + " " + dato);
+        if (evento.equals("averia")) {
+            List<Mensajero> libres = mensajeros.values().stream()
+                    .filter(m -> m != emisor && m.libre).toList();
+            if (!libres.isEmpty()) {
+                libres.getFirst().asignar(dato);
+            } else {
+                IO.println("  Central: nadie libre para " + dato + ", queda en espera");
+            }
+        }
+    }
+}
+```
+
+```java
+// Mensajero.java — colega: solo conoce a la central
+class Mensajero {
+    final String nombre;
+    boolean libre;
+    Central central;                               // la pone la central al registrarlo
+
+    Mensajero(String nombre, boolean libre) {
+        this.nombre = nombre;
+        this.libre = libre;
+    }
+
+    void reportarAveria(String guia) {
+        libre = false;
+        IO.println(nombre + " reporta avería con " + guia);
+        central.notificar(this, "averia", guia);   // no conoce a los otros mensajeros
+    }
+
+    void asignar(String guia) {
+        libre = false;
+        IO.println("  " + nombre + " recibe " + guia);
+    }
+}
+```
+
+```java
+// Mediator.java — una central coordina; los mensajeros solo la conocen a ella
+void main() {
+    Central central = new Central();
+    Mensajero ana = new Mensajero("Ana", false), beto = new Mensajero("Beto", true), caro = new Mensajero("Caro", true);
+    Mensajero dani = new Mensajero("Dani", true);
+    for (Mensajero m : List.of(ana, beto, caro, dani)) {   // un mensajero nuevo = una sola línea de registro
+        central.registrar(m);
+    }
+    ana.reportarAveria("G-301");
+    caro.reportarAveria("G-302");
+    beto.reportarAveria("G-303");
+    IO.println("Eventos registrados: " + central.registro.size());
+}
 ```
 
 ```text
-$ python3 mediator.py
+$ java Mediator.java
 Ana reporta avería con G-301
   Beto recibe G-301
 Caro reporta avería con G-302
@@ -1474,39 +1779,34 @@ Eventos registrados: 3
 ```
 
 **Explicación por partes.**
-- Líneas 5–7: registrar guarda al mensajero y le entrega la central. Es la única conexión que necesita.
-- Líneas 8–15: la regla de reparto. `m is not emisor` evita asignarle el paquete a quien se averió.
-- Línea 23: el mensajero avisa a la central y no sabe quién recibirá la guía.
-- Líneas 32–33: los cuatro mensajeros entran con el mismo `for`. Un mensajero nuevo es una línea más.
+- `Central.java`, líneas 11–14: registrar guarda al mensajero y le entrega la central. Es la única conexión que necesita.
+- Líneas 16–27: la regla de reparto. `m != emisor` compara referencias: evita asignarle el paquete a quien se averió.
+- `Mensajero.java`, línea 15: el mensajero avisa a la central y no sabe quién recibirá la guía.
+- `Mediator.java`, líneas 6–8: los cuatro mensajeros entran con el mismo `for`. Un mensajero nuevo es una línea más.
 - Salida: Dani recibe la guía de Caro. Cuando ya no hay libres, la central lo dice y el evento queda registrado.
 
-> **Error común.** Usar un mensajero que no se registró. Su atributo `central` sigue en `None` y la primera avería
-> termina con `AttributeError: 'NoneType' object has no attribute 'notificar'`. La línea señalada es la llamada a la
-> central, pero la causa está antes: falta `central.registrar(eva)`.
+> **Error común.** Usar un mensajero que no se registró. Su campo `central` sigue en `null` y la primera avería
+> termina con una `NullPointerException`. Java dice exactamente qué era `null`: `"this.central"`. La línea señalada
+> es la llamada a la central, pero la causa está antes: falta `central.registrar(eva)`.
 
-```python
-# sin_registrar.py — un mensajero que nunca se registró en la central
-from mediator import Central, Mensajero
-
-central = Central()
-eva = Mensajero("Eva")
-eva.reportar_averia("G-304")
+```java
+// SinRegistrar.java — un mensajero que nunca se registró en la central
+void main() {
+    Central central = new Central();
+    Mensajero eva = new Mensajero("Eva", true);
+    eva.reportarAveria("G-304");
+}
 ```
 
 ```text
-$ python3 sin_registrar.py
+$ java SinRegistrar.java
 Eva reporta avería con G-304
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/sin_registrar.py", line 6, in <module>
-    eva.reportar_averia("G-304")
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/home/estudiante/labs/patrones/mediator.py", line 23, in reportar_averia
-    self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
-    ^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'notificar'
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "Central.notificar(Mensajero, String, String)" because "this.central" is null
+	at Mensajero.reportarAveria(Mensajero.java:15)
+	at SinRegistrar.main(SinRegistrar.java:5)
 ```
 
-> **Buena práctica.** Deja que el mediador registre lo que coordina (aquí, `self.registro`). Cuando un paquete se
+> **Buena práctica.** Deja que el mediador registre lo que coordina (aquí, `registro`). Cuando un paquete se
 > pierde, ese registro dice quién avisó, qué evento y cuándo.
 
 > **Ingeniería de software.** Vigila el tamaño del mediador. Si `notificar` acumula diez tipos de evento con reglas
@@ -1529,21 +1829,21 @@ cuatro listas de los demás: cinco listas que mantener, y cualquier olvido repit
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Cuenta los hilos
-Escribe `mensajeros_acoplados.py` y ejecútalo. Comprueba que Caro dice `nadie libre` y que hay 11 referencias.
+Escribe `MensajerosAcoplados.java` y ejecútalo. Comprueba que Caro dice `nadie libre` y que hay 11 referencias.
 Agrega `dani` a la lista de Caro y confirma que ahora Dani recibe `G-302` y hay 12 referencias.
 
 #### Paso 2 · Una central para todos
-Escribe `mediator.py` y ejecútalo. Comprueba que `Eventos registrados: 3`.
+Escribe `Central.java`, `Mensajero.java` y `Mediator.java`, y ejecuta `java Mediator.java`. Comprueba que `Eventos registrados: 3`.
 
 #### Paso 3 · Olvida registrar a propósito
-Escribe `sin_registrar.py` y ejecútalo para ver el `AttributeError`. Agrega `central.registrar(eva)` antes de la
+Escribe `SinRegistrar.java` y ejecútalo para ver la `NullPointerException`. Agrega `central.registrar(eva)` antes de la
 avería y ejecuta otra vez: la central responde `nadie libre para G-304, queda en espera`.
 
 #### Resumen
 - El **acoplamiento** mide cuánto depende un objeto de otros; con *n* objetos que se conocen entre todos hay *n* × (*n* − 1) referencias.
 - El patrón **Mediator** pone la coordinación en un objeto central; cada **colega** solo lo conoce a él.
 - Agregar un colega es una línea de registro; la regla de coordinación vive en un solo lugar.
-- Un colega sin registrar falla con `AttributeError` sobre `None`.
+- Un colega sin registrar falla con `NullPointerException` sobre su campo `central`.
 - El mediador concentra el acoplamiento: si crece demasiado, divídelo.
 
 #### Ejercicio verificable 1
@@ -1557,16 +1857,16 @@ Intermedio. RutaFlow tendrá 10 mensajeros. ¿Cuántas referencias entre mensaje
 cuántas referencias a la central en la versión con mediador?
 
 Respuesta esperada: 10 × 9 = 90 en la versión acoplada; 10 en la versión con mediador, una por mensajero (más las 10
-que la central guarda en su diccionario).
+que la central guarda en su mapa).
 
 #### Ejercicio verificable 3
 Reto. Haz que la central guarde las guías que quedan en espera y que, cuando un mensajero avise
 `"libre"`, le asigne la primera pendiente.
 
-Respuesta esperada: la central tiene `self.pendientes = []`. En la rama sin libres hace `self.pendientes.append(dato)`.
-Agrega la rama `elif evento == "libre" and self.pendientes:` con `emisor.asignar(self.pendientes.pop(0))`. El
-mensajero necesita un método `quedar_libre` que ponga `self.libre = True` y llame a
-`self.central.notificar(self, "libre", None)`. Con el ejemplo de `mediator.py`, si Ana llama a `quedar_libre()`
+Respuesta esperada: la central tiene `final Deque<String> pendientes = new ArrayDeque<>();`. En la rama sin libres
+hace `pendientes.addLast(dato)`. Agrega la rama `else if (evento.equals("libre") && !pendientes.isEmpty())` con
+`emisor.asignar(pendientes.pollFirst())`. El mensajero necesita un método `quedarLibre` que ponga `libre = true` y
+llame a `central.notificar(this, "libre", null)`. Con el ejemplo de `Mediator.java`, si Ana llama a `quedarLibre()`
 al final, imprime `  Ana recibe G-303`.
 
 #### En el trabajo
@@ -1587,12 +1887,12 @@ Al terminar este tema podrás:
 - explicar con una ejecución por qué un alias o una copia superficial no sirven como historial;
 - implementar deshacer y rehacer con instantáneas inmutables y dos pilas;
 - separar al originador, que crea y lee las instantáneas, del cuidador, que solo las guarda;
-- leer el `FrozenInstanceError` de un intento de modificar un valor congelado.
+- leer el error de compilación y la excepción que aparecen al intentar modificar una instantánea inmutable.
 
-**Conceptos clave:** Memento, originador, cuidador, copia superficial, dataclass congelada
+**Conceptos clave:** Memento, originador, cuidador, copia superficial, record y `List.copyOf`
 
-Ya los conoces y no se repiten: *clase*, *objeto* y `__str__` (Módulo 1, Tema 6); *lista*, *diccionario*, *tupla* y
-*mutable* (Módulo 2, Tema 1); *pila* (Módulo 2, Tema 2); *patrón de diseño* (Tema 1 de este módulo).
+Ya los conoces y no se repiten: *clase*, *objeto* y `toString` (Módulo 1, Tema 6); *`List`*, *`Map`*, *record* y
+*mutable* (Módulos 1 y 2); *pila* (Módulo 2, Tema 2); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 El planificador de RutaFlow arma la ruta del día agregando paradas. Cuando se equivoca, quiere deshacer, y a veces
@@ -1605,13 +1905,13 @@ el cambio de ahora también modifica la versión guardada. ¿Cómo guardas una f
 - **Definición técnica:** patrón de comportamiento que captura el estado interno de un objeto en un objeto aparte, la instantánea o memento, para restaurarlo después sin exponer cómo está construido por dentro.
 - **En palabras sencillas:** una foto de la ruta en un momento; para deshacer, vuelves a poner la ruta como sale en la foto.
 - **Dónde se rompe la comparación:** una foto de papel no cambia sola; un memento sí puede cambiar si guarda objetos mutables compartidos con el original.
-- **Ejemplo:** `ruta.guardar()` devuelve `Memento(paradas=(...))` con las paradas de ese instante.
+- **Ejemplo:** `ruta.guardar()` devuelve un `Ruta.Memento` con las paradas de ese instante.
 - **Error típico:** guardar la lista original en vez de una copia: la «foto» se mueve con cada cambio.
 
 **originador**
 - **Definición técnica:** el objeto cuyo estado se guarda; es el único que crea sus mementos y el único que sabe leerlos para restaurarse.
 - **En palabras sencillas:** la ruta: se toma la foto a sí misma y sabe volver a ser como en la foto.
-- **Dónde se rompe la comparación:** en Python nada impide que otro objeto lea el memento; la separación es una convención que el diseño respeta.
+- **Dónde se rompe la comparación:** aquí otras clases de la carpeta pueden leer el memento con `paradas()`; la separación es una convención que el diseño respeta (con módulos y paquetes Java puede volverse una regla).
 - **Ejemplo:** `Ruta.guardar` y `Ruta.restaurar`.
 - **Error típico:** dejar que el historial arme las instantáneas leyendo los atributos internos de la ruta.
 
@@ -1619,22 +1919,22 @@ el cambio de ahora también modifica la versión guardada. ¿Cómo guardas una f
 - **Definición técnica:** el objeto que pide mementos al originador, los guarda y decide cuándo devolver uno, sin mirar ni modificar su contenido.
 - **En palabras sencillas:** el álbum de fotos: guarda las fotos en orden y las entrega cuando se las piden.
 - **Dónde se rompe la comparación:** el álbum no entiende las fotos; si una foto se daña por dentro, el cuidador no lo nota.
-- **Ejemplo:** `Historial` guarda mementos en `pila` y en `rehechos`.
+- **Ejemplo:** `Historial` guarda mementos en dos `ArrayDeque`: `pila` y `rehechos`.
 - **Error típico:** olvidar vaciar la pila de rehacer al hacer un cambio nuevo: rehacer aplicaría un estado de otra historia.
 
 **copia superficial**
-- **Definición técnica:** copia que crea un contenedor nuevo pero conserva las mismas referencias a los elementos; `lista.copy()` y `list(lista)` son copias superficiales.
+- **Definición técnica:** copia que crea un contenedor nuevo pero conserva las mismas referencias a los elementos; `new ArrayList<>(lista)` y `List.copyOf(lista)` son copias superficiales.
 - **En palabras sencillas:** fotocopiar el índice de una carpeta, no las hojas: la carpeta nueva señala las mismas hojas.
-- **Dónde se rompe la comparación:** si los elementos son inmutables, como texto o tuplas, la copia superficial basta, porque nadie puede cambiar las hojas.
-- **Ejemplo:** tras `superficial = ruta.copy()`, `superficial[0] is ruta[0]` da `True`.
-- **Error típico:** copiar una lista de diccionarios con `.copy()` y luego editar un diccionario: el cambio aparece en las dos.
+- **Dónde se rompe la comparación:** si los elementos son inmutables, como `String` o records de campos inmutables, la copia superficial basta, porque nadie puede cambiar las hojas.
+- **Ejemplo:** tras `superficial = new ArrayList<>(ruta)`, `superficial.getFirst() == ruta.getFirst()` da `true`.
+- **Error típico:** copiar una lista de mapas con `new ArrayList<>(...)` y luego editar un mapa: el cambio aparece en las dos.
 
-**dataclass congelada (`frozen=True`)**
-- **Definición técnica:** clase generada con el decorador `@dataclass` del módulo `dataclasses`, que crea `__init__` a partir de los campos declarados; con `frozen=True`, asignar a un campo después de crearla lanza `FrozenInstanceError`.
-- **En palabras sencillas:** una ficha que se llena una vez al crearla y después queda plastificada.
-- **Dónde se rompe la comparación:** el plástico protege los campos, no lo que hay dentro de ellos: si un campo guarda una lista, esa lista sí se puede cambiar.
-- **Ejemplo:** `@dataclass(frozen=True) class Parada:` con campos `nombre: str` y `hora: str`.
-- **Error típico:** asignar un campo: `dataclasses.FrozenInstanceError: cannot assign to field 'hora'`.
+**record y `List.copyOf`**
+- **Definición técnica:** los campos de un record son privados y `final`, así que no se pueden reasignar; `List.copyOf` crea una lista inmutable: `add`, `remove` y `set` lanzan `UnsupportedOperationException`.
+- **En palabras sencillas:** una ficha que se llena una vez al crearla y después queda plastificada, dentro de una carpeta sellada.
+- **Dónde se rompe la comparación:** el plástico protege el campo, no lo que hay dentro de él: si un campo de un record guarda una lista mutable, esa lista sí se puede cambiar. Por eso el memento copia con `List.copyOf`.
+- **Ejemplo:** `record Parada(String nombre, String hora)` y `Memento` con `paradas = List.copyOf(paradas)`.
+- **Error típico:** asignar un campo: `error: hora has private access in Parada`. El compilador no deja ni intentarlo.
 
 #### ► CÓMO FUNCIONA
 Antes de cada cambio, el historial le pide a la ruta una instantánea y la apila. Para deshacer, desapila la última y
@@ -1654,112 +1954,158 @@ sequenceDiagram
     H->>R: restaurar(memento desapilado)
 ```
 
-La instantánea funciona porque es inmutable de punta a punta: un `Memento` congelado con una tupla de `Parada`
-congeladas. Ningún cambio posterior la alcanza.
+La instantánea funciona porque es inmutable de punta a punta: un record `Memento` con una lista inmutable de records
+`Parada`. Ningún cambio posterior la alcanza.
 
 #### Problema resuelto 6.1
 Antes del patrón. Guarda «la ruta de antes» de dos formas ingenuas y compáralas después de dos cambios.
 
 **Razonamiento:**
 1. Intento 1: otro nombre para la misma lista (alias).
-2. Intento 2: una copia superficial con `.copy()`.
+2. Intento 2: una copia superficial con `new ArrayList<>(ruta)`.
 3. Haz dos cambios: agrega una parada y edita la hora de la primera. Una foto correcta no debería mostrar ninguno.
 
-```python
-# deshacer_roto.py — dos «fotos» de la ruta que no son fotos
-ruta = [{"parada": "Depósito", "hora": "08:00"}]
+```java
+// DeshacerRoto.java — dos «fotos» de la ruta que no son fotos
+void main() {
+    List<Map<String, String>> ruta = new ArrayList<>();
+    ruta.add(new LinkedHashMap<>(Map.of("parada", "Depósito")));
+    ruta.getFirst().put("hora", "08:00");
 
-alias = ruta                     # intento 1: guardar el mismo objeto con otro nombre
-superficial = ruta.copy()        # intento 2: copiar solo la lista exterior
+    List<Map<String, String>> alias = ruta;                         // intento 1: el mismo objeto con otro nombre
+    List<Map<String, String>> superficial = new ArrayList<>(ruta);  // intento 2: copia solo la lista exterior
 
-ruta.append({"parada": "Suba", "hora": "09:30"})   # cambio 1: agregar una parada
-ruta[0]["hora"] = "07:45"                          # cambio 2: editar una parada que ya existía
+    Map<String, String> suba = new LinkedHashMap<>();
+    suba.put("parada", "Suba");
+    suba.put("hora", "09:30");
+    ruta.add(suba);                                    // cambio 1: agregar una parada
+    ruta.getFirst().put("hora", "07:45");              // cambio 2: editar una parada que ya existía
 
-print("Actual:     ", ruta)
-print("Alias:      ", alias)
-print("Superficial:", superficial)
-print("¿Misma lista?", alias is ruta, "| ¿Mismo diccionario?", superficial[0] is ruta[0])
+    IO.println("Actual:      " + ruta);
+    IO.println("Alias:       " + alias);
+    IO.println("Superficial: " + superficial);
+    IO.println("¿Misma lista? " + (alias == ruta) + " | ¿Mismo mapa? " + (superficial.getFirst() == ruta.getFirst()));
+}
 ```
 
 ```text
-$ python3 deshacer_roto.py
-Actual:      [{'parada': 'Depósito', 'hora': '07:45'}, {'parada': 'Suba', 'hora': '09:30'}]
-Alias:       [{'parada': 'Depósito', 'hora': '07:45'}, {'parada': 'Suba', 'hora': '09:30'}]
-Superficial: [{'parada': 'Depósito', 'hora': '07:45'}]
-¿Misma lista? True | ¿Mismo diccionario? True
+$ java DeshacerRoto.java
+Actual:      [{parada=Depósito, hora=07:45}, {parada=Suba, hora=09:30}]
+Alias:       [{parada=Depósito, hora=07:45}, {parada=Suba, hora=09:30}]
+Superficial: [{parada=Depósito, hora=07:45}]
+¿Misma lista? true | ¿Mismo mapa? true
 ```
 
 **Explicación por partes.**
-- Línea 4: `alias` no es una copia: es el mismo objeto. La salida lo confirma con `¿Misma lista? True`.
-- Línea 5: `.copy()` crea una lista nueva que señala los mismos diccionarios.
-- Línea 7: agregar una parada no afecta a `superficial`, porque su lista exterior es otra.
-- Línea 8: editar la hora sí la afecta: `superficial` muestra `07:45`. Deshacer con ella dejaría una hora que nunca se guardó.
+- Línea 7: `alias` no es una copia: es el mismo objeto. La salida lo confirma con `¿Misma lista? true`.
+- Línea 8: `new ArrayList<>(ruta)` crea una lista nueva que señala los mismos mapas.
+- Línea 13: agregar una parada no afecta a `superficial`, porque su lista exterior es otra.
+- Línea 14: editar la hora sí la afecta: `superficial` muestra `07:45`. Deshacer con ella dejaría una hora que nunca se guardó.
 
 #### Problema resuelto 6.2
 Después del patrón. Guarda mementos inmutables y agrega rehacer con una segunda pila.
 
 **Razonamiento:**
-1. Cada parada es una dataclass congelada; el memento guarda una tupla de paradas, también inmutable.
-2. Solo la ruta crea y lee mementos; el historial los guarda en dos pilas.
+1. Cada parada es un record; el memento es un record que guarda una lista inmutable de paradas.
+2. Solo la ruta crea y lee mementos (por eso `Memento` está declarado dentro de `Ruta`); el historial los guarda en dos pilas.
 3. Deshacer guarda la foto actual en `rehechos`; rehacer hace lo inverso. Un cambio nuevo vacía `rehechos`.
 
-```python
-# memento.py — instantáneas inmutables para deshacer y rehacer
-from dataclasses import dataclass
+```java
+// Parada.java — valor inmutable: nadie la edita por dentro
+record Parada(String nombre, String hora) {}
+```
 
-@dataclass(frozen=True)
-class Parada:                                # valor inmutable: nadie la edita por dentro
-    nombre: str
-    hora: str
+```java
+// Ruta.java — originador: crea y lee sus propios mementos
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@dataclass(frozen=True)
-class Memento:                               # instantánea inmutable y opaca para el historial
-    paradas: tuple
+class Ruta {
+    record Memento(List<Parada> paradas) {   // instantánea inmutable y opaca para el historial
+        Memento {
+            paradas = List.copyOf(paradas);  // copia que no admite agregar, quitar ni cambiar
+        }
+    }
 
-class Ruta:                                  # originador: crea y lee sus propios mementos
-    def __init__(self):
-        self._paradas = []
-    def agregar(self, parada):
-        self._paradas.append(parada)
-    def guardar(self):
-        return Memento(tuple(self._paradas))
-    def restaurar(self, memento):
-        self._paradas = list(memento.paradas)
-    def __str__(self):
-        return " -> ".join(f"{p.nombre} {p.hora}" for p in self._paradas) or "(vacía)"
+    private List<Parada> paradas = new ArrayList<>();
 
-class Historial:                             # cuidador: guarda mementos sin mirar su interior
-    def __init__(self, ruta):
-        self.ruta, self.pila, self.rehechos = ruta, [], []
-    def cambiar(self, parada):
-        self.pila.append(self.ruta.guardar())
-        self.rehechos.clear()                # un cambio nuevo invalida lo que podías rehacer
-        self.ruta.agregar(parada)
-    def deshacer(self):
-        if self.pila:
-            self.rehechos.append(self.ruta.guardar())
-            self.ruta.restaurar(self.pila.pop())
-    def rehacer(self):
-        if self.rehechos:
-            self.pila.append(self.ruta.guardar())
-            self.ruta.restaurar(self.rehechos.pop())
+    void agregar(Parada parada) {
+        paradas.add(parada);
+    }
 
-if __name__ == "__main__":
-    ruta = Ruta()
-    historial = Historial(ruta)
-    for nombre, hora in [("Depósito", "08:00"), ("Chapinero", "08:40"), ("Suba", "09:30")]:
-        historial.cambiar(Parada(nombre, hora))
-    print("Actual:  ", ruta)
-    historial.deshacer()
-    print("Deshacer:", ruta)
-    historial.deshacer()
-    print("Deshacer:", ruta)
-    historial.rehacer()
-    print("Rehacer: ", ruta)
+    Memento guardar() {
+        return new Memento(paradas);
+    }
+
+    void restaurar(Memento memento) {
+        paradas = new ArrayList<>(memento.paradas());   // lista nueva para seguir editando
+    }
+
+    @Override
+    public String toString() {
+        if (paradas.isEmpty()) return "(vacía)";
+        return paradas.stream().map(p -> p.nombre() + " " + p.hora()).collect(Collectors.joining(" -> "));
+    }
+}
+```
+
+```java
+// Historial.java — cuidador: guarda mementos sin mirar su interior
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+class Historial {
+    final Ruta ruta;
+    final Deque<Ruta.Memento> pila = new ArrayDeque<>();
+    final Deque<Ruta.Memento> rehechos = new ArrayDeque<>();
+
+    Historial(Ruta ruta) {
+        this.ruta = ruta;
+    }
+
+    void cambiar(Parada parada) {
+        pila.push(ruta.guardar());
+        rehechos.clear();                    // un cambio nuevo invalida lo que podías rehacer
+        ruta.agregar(parada);
+    }
+
+    void deshacer() {
+        if (!pila.isEmpty()) {
+            rehechos.push(ruta.guardar());
+            ruta.restaurar(pila.pop());
+        }
+    }
+
+    void rehacer() {
+        if (!rehechos.isEmpty()) {
+            pila.push(ruta.guardar());
+            ruta.restaurar(rehechos.pop());
+        }
+    }
+}
+```
+
+```java
+// Deshacer.java — instantáneas inmutables para deshacer y rehacer
+void main() {
+    Ruta ruta = new Ruta();
+    Historial historial = new Historial(ruta);
+    historial.cambiar(new Parada("Depósito", "08:00"));
+    historial.cambiar(new Parada("Chapinero", "08:40"));
+    historial.cambiar(new Parada("Suba", "09:30"));
+    IO.println("Actual:   " + ruta);
+    historial.deshacer();
+    IO.println("Deshacer: " + ruta);
+    historial.deshacer();
+    IO.println("Deshacer: " + ruta);
+    historial.rehacer();
+    IO.println("Rehacer:  " + ruta);
+}
 ```
 
 ```text
-$ python3 memento.py
+$ java Deshacer.java
 Actual:   Depósito 08:00 -> Chapinero 08:40 -> Suba 09:30
 Deshacer: Depósito 08:00 -> Chapinero 08:40
 Deshacer: Depósito 08:00
@@ -1767,35 +2113,55 @@ Rehacer:  Depósito 08:00 -> Chapinero 08:40
 ```
 
 **Explicación por partes.**
-- Líneas 4–11: `Parada` y `Memento` son congeladas. La tupla de la línea 19 no admite agregar ni quitar elementos.
-- Líneas 18–21: la ruta crea su memento y sabe restaurarse. `list(...)` crea una lista nueva para seguir editando.
-- Líneas 28–31: antes de cada cambio se apila la foto. La línea 30 descarta lo que se podía rehacer.
-- Líneas 32–39: deshacer y rehacer son simétricos: guardan la foto actual en una pila y restauran la otra.
+- `Ruta.java`, líneas 7–11: el constructor compacto del record `Memento` copia la lista con `List.copyOf`: nadie
+  puede agregar, quitar ni reemplazar paradas, ni siquiera quien tenía la lista original.
+- Líneas 13–25: la ruta crea su memento y sabe restaurarse. `new ArrayList<>(...)` crea una lista nueva para seguir
+  editando.
+- `Historial.java`, líneas 14–18: antes de cada cambio se apila la foto (`push`). La línea 16 descarta lo que se
+  podía rehacer.
+- Líneas 20–32: deshacer y rehacer son simétricos: guardan la foto actual en una pila y restauran la otra.
 - Salida: dos deshacer quitan Suba y Chapinero; rehacer devuelve Chapinero con su hora original.
 
-> **Error común.** Intentar corregir una parada guardada editándola. Como `Parada` es congelada, Python lo impide:
-> `dataclasses.FrozenInstanceError: cannot assign to field 'hora'`. Para cambiar la hora, crea una `Parada` nueva y
-> regístrala con `historial.cambiar`, así el cambio también se puede deshacer.
+> **Error común.** Intentar corregir una parada guardada editándola. Como `Parada` es un record, Java no compila la
+> asignación. Y si alguien intenta modificar la lista de un memento, la lista inmutable lo rechaza al ejecutar. Para
+> cambiar la hora, crea una `Parada` nueva y regístrala con `historial.cambiar`, así el cambio también se puede deshacer.
 
-```python
-# editar_parada.py — intentar cambiar por dentro una parada guardada
-from memento import Parada
-
-parada = Parada("Depósito", "08:00")
-parada.hora = "07:45"
+```java
+// EditarParada.java — intentar cambiar por dentro una parada guardada
+void main() {
+    Parada parada = new Parada("Depósito", "08:00");
+    parada.hora = "07:45";
+}
 ```
 
 ```text
-$ python3 editar_parada.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/editar_parada.py", line 5, in <module>
-    parada.hora = "07:45"
-    ^^^^^^^^^^^
-  File "<string>", line 16, in __setattr__
-dataclasses.FrozenInstanceError: cannot assign to field 'hora'
+$ java EditarParada.java
+EditarParada.java:4: error: hora has private access in Parada
+    parada.hora = "07:45";
+          ^
+1 error
+error: compilation failed
 ```
 
-> **Prevenir errores.** Antes de confiar en un historial, prueba lo que hizo fallar a `deshacer_roto.py`: guarda,
+```java
+// MementoAlterado.java — intentar modificar la lista de un memento
+void main() {
+    Ruta ruta = new Ruta();
+    ruta.agregar(new Parada("Depósito", "08:00"));
+    Ruta.Memento foto = ruta.guardar();
+    foto.paradas().add(new Parada("Suba", "09:30"));
+}
+```
+
+```text
+$ java MementoAlterado.java
+Exception in thread "main" java.lang.UnsupportedOperationException
+	at java.base/java.util.ImmutableCollections.uoe(ImmutableCollections.java:159)
+	at java.base/java.util.ImmutableCollections$AbstractImmutableCollection.add(ImmutableCollections.java:164)
+	at MementoAlterado.main(MementoAlterado.java:6)
+```
+
+> **Prevenir errores.** Antes de confiar en un historial, prueba lo que hizo fallar a `DeshacerRoto.java`: guarda,
 > modifica un elemento **existente** y compara. Agregar elementos no basta para detectar una copia superficial.
 
 > **Rendimiento.** Cada memento guarda la ruta completa. Con rutas de miles de paradas y cientos de cambios, limita
@@ -1807,9 +2173,9 @@ dataclasses.FrozenInstanceError: cannot assign to field 'hora'
 - Si el estado vive en una base de datos, usa sus transacciones o una tabla de versiones en lugar de fotos en memoria.
 
 #### Checkpoint 6.1
-Después de deshacer dos veces en `memento.py`, el planificador agrega `Usaquén 09:10`. ¿Qué hace `rehacer()` y por qué?
+Después de deshacer dos veces en `Deshacer.java`, el planificador agrega `Usaquén 09:10`. ¿Qué hace `rehacer()` y por qué?
 
-Respuesta: nada. `cambiar` vacía `rehechos` (línea 30), así que no queda nada que rehacer. La ruta queda
+Respuesta: nada. `cambiar` vacía `rehechos` (`Historial.java`, línea 16), así que no queda nada que rehacer. La ruta queda
 `Depósito 08:00 -> Usaquén 09:10`.
 
 </details>
@@ -1818,32 +2184,34 @@ Respuesta: nada. `cambiar` vacía `rehechos` (línea 30), así que no queda nada
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Demuestra la foto falsa
-Escribe `deshacer_roto.py` y ejecútalo. Comprueba que `Superficial` muestra la hora `07:45` aunque se copió antes del cambio.
+Escribe `DeshacerRoto.java` y ejecútalo. Comprueba que `Superficial` muestra la hora `07:45` aunque se copió antes del cambio.
 
 #### Paso 2 · Instantáneas inmutables
-Escribe `memento.py` y ejecútalo. Las cuatro líneas deben terminar en Suba, Chapinero, Depósito y otra vez Chapinero.
+Escribe `Parada.java`, `Ruta.java`, `Historial.java` y `Deshacer.java`, y ejecuta `java Deshacer.java`. Las cuatro líneas deben terminar en Suba, Chapinero, Depósito y otra vez Chapinero.
 
 #### Paso 3 · Prueba el candado
-Escribe `editar_parada.py` y ejecútalo para ver el `FrozenInstanceError`. Quita `frozen=True` de `Parada`, ejecuta
-otra vez y observa que el cambio pasa sin error; después vuelve a ponerlo.
+Escribe `EditarParada.java` y `MementoAlterado.java` y ejecútalos. Después, en `Ruta.java`, quita la línea
+`paradas = List.copyOf(paradas);` y ejecuta otra vez `MementoAlterado.java`: el `add` pasa sin error y la foto quedó
+alterada. Vuelve a poner la línea.
 
 #### Resumen
 - Un **alias** no es una copia, y una **copia superficial** comparte los elementos con el original.
 - El patrón **Memento** guarda instantáneas del estado para restaurarlo sin exponer su estructura interna.
 - El **originador** crea y lee sus mementos; el **cuidador** solo los guarda en orden.
 - Deshacer y rehacer usan dos **pilas**; un cambio nuevo vacía la de rehacer.
-- Una **dataclass congelada** con campos inmutables hace que la instantánea no se pueda alterar.
+- Un **record** con una lista hecha con **`List.copyOf`** hace que la instantánea no se pueda alterar.
 
 #### Ejercicio verificable 1
-Básico. En `deshacer_roto.py`, agrega `import copy` y una tercera foto `profunda = copy.deepcopy(ruta)` junto a las
-otras dos. `copy.deepcopy` copia también los elementos internos. ¿Qué imprime esa foto?
+Básico. En `DeshacerRoto.java`, agrega una tercera foto, una **copia profunda** que copie también cada mapa:
+`List<Map<String, String>> profunda = ruta.stream().map(m -> (Map<String, String>) new LinkedHashMap<>(m)).toList();`,
+justo después de `superficial`. Imprímela al final. ¿Qué muestra?
 
-Respuesta esperada: `[{'parada': 'Depósito', 'hora': '08:00'}]`. Es la ruta tal como estaba: ni la parada nueva ni la
+Respuesta esperada: `[{parada=Depósito, hora=08:00}]`. Es la ruta tal como estaba: ni la parada nueva ni la
 hora editada la alcanzan.
 
 #### Ejercicio verificable 2
 Intermedio. Reproduce el Checkpoint 6.1 en código: tres cambios, dos deshacer, un cambio nuevo con
-`Parada("Usaquén", "09:10")` y un rehacer. Imprime la ruta.
+`new Parada("Usaquén", "09:10")` y un rehacer. Imprime la ruta.
 
 Respuesta esperada: `Depósito 08:00 -> Usaquén 09:10`. El rehacer no tiene efecto porque el cambio nuevo vació `rehechos`.
 
@@ -1851,8 +2219,8 @@ Respuesta esperada: `Depósito 08:00 -> Usaquén 09:10`. El rehacer no tiene efe
 Reto. Escribe `HistorialLimitado`, subclase de `Historial`, que conserve como máximo 3 mementos para deshacer. Haz 5
 cambios (`P1` a `P5`) y luego 5 deshacer. ¿Cómo queda la ruta?
 
-Respuesta esperada: sobrescribe `cambiar`, llama a `super().cambiar(parada)` y, si `len(self.pila) > 3`, descarta el
-más viejo con `self.pila.pop(0)`. Tras 5 deshacer la ruta queda `P1 08:00 -> P2 08:00` (si todas usan la hora
+Respuesta esperada: sobrescribe `cambiar`, llama a `super.cambiar(parada)` y, si `pila.size() > 3`, descarta el
+más viejo con `pila.removeLast()` (`push` agrega al frente, así que el más viejo está al final). Tras 5 deshacer la ruta queda `P1 08:00 -> P2 08:00` (si todas usan la hora
 `08:00`): solo se pudieron deshacer los últimos 3 cambios.
 
 #### En el trabajo
@@ -1870,45 +2238,52 @@ versiones de un registro o como puntos de restauración.
 
 #### Objetivos
 Al terminar este tema podrás:
-- reconocer el costo de repetir `isinstance` en cada operación sobre una familia de clases;
+- reconocer el costo de repetir `instanceof` en cada operación sobre una familia de clases;
 - separar operaciones (tarifa, etiqueta) en visitantes usando doble despacho;
 - agregar una operación nueva escribiendo una sola clase;
-- calcular qué cuesta agregar un tipo nuevo y leer el `AttributeError` que produce un visitante incompleto.
+- calcular qué cuesta agregar un tipo nuevo y leer el error de compilación que produce un visitante incompleto.
 
 **Conceptos clave:** Visitor, doble despacho
 
-Ya los conoces y no se repiten: *clase*, *objeto* y *método* (Módulo 1, Tema 6); `isinstance` y *polimorfismo*
-(Módulo 1, Tema 7); *función* (Módulo 1, Tema 4); *patrón de diseño* (Tema 1 de este módulo).
+Ya los conoces y no se repiten: *clase*, *objeto* y *método* (Módulo 1, Tema 6); `instanceof`, *interfaz* y
+*polimorfismo* (Módulo 1, Tema 7); *record* (Módulo 1, Tema 1); *patrón de diseño* (Tema 1 de este módulo).
 
 #### El problema
 RutaFlow maneja tres tipos de paquete: sobre, caja y pallet. Sobre ellos corren varias operaciones: calcular la
-tarifa, imprimir la etiqueta de bodega y, pronto, calcular el peso total. Hoy cada operación es una función con una
-cadena de `isinstance`, y si a una le falta un caso, devuelve `None` sin avisar. ¿Cómo agregas operaciones sin
+tarifa, imprimir la etiqueta de bodega y, pronto, calcular el peso total. Hoy cada operación es un método con una
+cadena de `instanceof`, y si a una le falta un caso, devuelve `null` sin avisar. ¿Cómo agregas operaciones sin
 repetir la pregunta por el tipo y sin olvidar casos?
 
 #### Glosario del tema
 
 **Visitor**
-- **Definición técnica:** patrón de comportamiento que separa una operación de la jerarquía de clases sobre la que actúa; la operación es un objeto visitante con un método por clase, y cada clase tiene un método `aceptar` que llama al método que le corresponde.
+- **Definición técnica:** patrón de comportamiento que separa una operación de la jerarquía de clases sobre la que actúa; la operación es un objeto visitante con un método `visitar` por clase, y cada clase tiene un método `aceptar` que llama al que le corresponde.
 - **En palabras sencillas:** un inspector que recorre la bodega con una lista: «si es sobre, haz esto; si es caja, esto otro». Un inspector nuevo trae una lista nueva sin cambiar los paquetes.
-- **Dónde se rompe la comparación:** el inspector no mira el paquete para saber qué es; el paquete le dice «soy una caja» al llamar a `visitar_caja`.
-- **Ejemplo:** `paquete.aceptar(CalculoTarifa())` devuelve la tarifa de cualquier tipo de paquete.
+- **Dónde se rompe la comparación:** el inspector no mira el paquete para saber qué es; el paquete le dice «soy una caja» al llamar a `visitar(this)`, donde `this` tiene el tipo `Caja`.
+- **Ejemplo:** `paquete.aceptar(new CalculoTarifa())` devuelve la tarifa de cualquier tipo de paquete.
 - **Error típico:** usar Visitor cuando los tipos cambian a menudo: cada tipo nuevo obliga a editar todos los visitantes.
 
 **doble despacho**
-- **Definición técnica:** mecanismo en el que el método que se ejecuta depende del tipo de dos objetos: primero el del elemento (que elige su `aceptar`) y luego el del visitante (que elige su `visitar_...`).
+- **Definición técnica:** mecanismo en el que el método que se ejecuta depende del tipo de dos objetos: primero el del elemento (que elige su `aceptar`) y luego el del visitante (que elige su `visitar`). En Java, dentro de `aceptar`, el compilador elige la sobrecarga de `visitar` por el tipo de `this`.
 - **En palabras sencillas:** dos llamadas en vez de un `if`: el paquete dice qué es, y el visitante dice qué hacer con eso.
 - **Dónde se rompe la comparación:** «doble» no significa que la operación se haga dos veces; son dos pasos para elegir una sola implementación.
-- **Ejemplo:** `Caja.aceptar(v)` llama a `v.visitar_caja(self)`; si `v` es `CalculoTarifa`, se ejecuta la tarifa de caja.
-- **Error típico:** escribir en `aceptar` el método de otro tipo (`visitar_sobre` dentro de `Caja`): el visitante trata la caja como sobre.
+- **Ejemplo:** `Caja.aceptar(v)` llama a `v.visitar(this)` con `this` de tipo `Caja`; si `v` es `CalculoTarifa`, se ejecuta la tarifa de caja.
+- **Error típico:** escribir un solo `aceptar` en una clase base común con `v.visitar(this)`: ahí `this` no es ni `Sobre` ni `Caja`, y el compilador no encuentra la sobrecarga. Cada clase necesita su propio `aceptar`.
 
 #### ► CÓMO FUNCIONA
 Cada clase de paquete tiene un solo método nuevo, `aceptar`, que llama al método de su tipo en el visitante. Cada
-visitante tiene un método por tipo de paquete. Para calcular una tarifa no se pregunta el tipo: se le pide al
+visitante implementa la interfaz `Visitante<R>`, con un `visitar` por tipo de paquete; `R` es el tipo del resultado
+(`Integer` para la tarifa, `String` para la etiqueta). Para calcular una tarifa no se pregunta el tipo: se le pide al
 paquete que acepte al visitante.
 
 ```mermaid
 classDiagram
+    class Visitante~R~ {
+      <<interface>>
+      +visitar(Sobre) R
+      +visitar(Caja) R
+      +visitar(Pallet) R
+    }
     class Sobre {
       +gramos
       +aceptar(visitante)
@@ -1922,174 +2297,212 @@ classDiagram
       +cajas
       +aceptar(visitante)
     }
-    class CalculoTarifa {
-      +visitar_sobre(s)
-      +visitar_caja(c)
-      +visitar_pallet(p)
-    }
-    class EtiquetaBodega {
-      +visitar_sobre(s)
-      +visitar_caja(c)
-      +visitar_pallet(p)
-    }
-    Sobre ..> CalculoTarifa : llama visitar_sobre
-    Caja ..> CalculoTarifa : llama visitar_caja
-    Pallet ..> CalculoTarifa : llama visitar_pallet
+    CalculoTarifa ..|> Visitante~R~
+    EtiquetaBodega ..|> Visitante~R~
+    Sobre ..> Visitante~R~ : visitar(this)
+    Caja ..> Visitante~R~ : visitar(this)
+    Pallet ..> Visitante~R~ : visitar(this)
     Pallet o-- Caja : contiene
 ```
 
-Las flechas punteadas valen igual para `EtiquetaBodega`: cada paquete llama al método de su tipo en cualquier
-visitante. Un visitante nuevo es una clase con tres métodos. Un tipo de paquete nuevo es un método más en **cada**
-visitante.
+Cada paquete llama al método de su tipo en cualquier visitante. Un visitante nuevo es una clase con tres métodos. Un
+tipo de paquete nuevo es un método más en la interfaz y en **cada** visitante; el compilador señala los que falten.
 
 #### Problema resuelto 7.1
-Antes del patrón. Escribe la tarifa y la etiqueta como funciones que preguntan el tipo con `isinstance`.
+Antes del patrón. Escribe la tarifa y la etiqueta como métodos que preguntan el tipo con `instanceof`.
 
 **Razonamiento:**
-1. Cada función revisa los tres tipos en orden y devuelve el resultado del que coincida.
-2. El pallet suma la tarifa de sus cajas llamando a la misma función.
+1. Cada método revisa los tres tipos en orden y devuelve el resultado del que coincida.
+2. El pallet suma la tarifa de sus cajas llamando al mismo método.
 3. Imprime etiqueta y tarifa de una carga con los tres tipos.
 
-```python
-# operaciones_con_if.py — cada operación pregunta el tipo con isinstance
-class Sobre:
-    def __init__(self, gramos): self.gramos = gramos
+```java
+// OperacionesConIf.java — cada operación pregunta el tipo con instanceof
+record Sobre(int gramos) {}
+record Caja(int kilos, boolean fragil) {}
+record Pallet(List<Caja> cajas) {}
 
-class Caja:
-    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
+int tarifa(Object paquete) {
+    if (paquete instanceof Sobre) return 3000;
+    if (paquete instanceof Caja c) return 5000 + c.kilos() * 1500 + (c.fragil() ? 4000 : 0);
+    if (paquete instanceof Pallet p) return 50000 + p.cajas().stream().mapToInt(this::tarifa).sum();
+    throw new IllegalArgumentException("tipo desconocido: " + paquete);
+}
 
-class Pallet:
-    def __init__(self, cajas): self.cajas = cajas
+String etiqueta(Object paquete) {
+    if (paquete instanceof Sobre s) return "SOBRE " + s.gramos() + " g";
+    if (paquete instanceof Caja c) return "CAJA " + c.kilos() + " kg" + (c.fragil() ? " FRÁGIL" : "");
+    return null;   // el compilador exigía un return; el caso Pallet quedó olvidado
+}
 
-def tarifa(paquete):
-    if isinstance(paquete, Sobre):
-        return 3000
-    if isinstance(paquete, Caja):
-        return 5000 + paquete.kilos * 1500 + (4000 if paquete.fragil else 0)
-    if isinstance(paquete, Pallet):
-        return 50000 + sum(tarifa(c) for c in paquete.cajas)
-
-def etiqueta(paquete):
-    if isinstance(paquete, Sobre):
-        return f"SOBRE {paquete.gramos} g"
-    if isinstance(paquete, Caja):
-        return f"CAJA {paquete.kilos} kg" + (" FRÁGIL" if paquete.fragil else "")
-    # falta el caso Pallet: la función termina y devuelve None sin avisar
-
-carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
-for paquete in carga:
-    print(etiqueta(paquete), "| tarifa", tarifa(paquete))
+void main() {
+    List<Object> carga = List.of(new Sobre(120), new Caja(4, true),
+            new Pallet(List.of(new Caja(10, false), new Caja(12, true))));
+    for (Object paquete : carga) IO.println(etiqueta(paquete) + " | tarifa " + tarifa(paquete));
+}
 ```
 
 ```text
-$ python3 operaciones_con_if.py
+$ java OperacionesConIf.java
 SOBRE 120 g | tarifa 3000
 CAJA 4 kg FRÁGIL | tarifa 15000
-None | tarifa 97000
+null | tarifa 97000
 ```
 
 **Explicación por partes.**
-- Líneas 11–17 y 19–23: la misma escalera de `isinstance` en cada operación. La tercera operación la repetirá.
-- Línea 15: `(4000 if paquete.fragil else 0)` es una condición en una sola expresión: vale 4000 si es frágil y 0 si no.
-- Línea 24: falta el caso `Pallet`. Una función que termina sin `return` devuelve `None`.
-- Salida, línea 3: la etiqueta del pallet sale `None` y nadie recibe un error.
+- Líneas 6–11 y 13–17: la misma escalera de `instanceof` en cada operación. La tercera operación la repetirá.
+- Línea 8: `paquete instanceof Caja c` pregunta el tipo y, si coincide, da la variable `c` ya convertida.
+  `(c.fragil() ? 4000 : 0)` vale 4000 si es frágil y 0 si no.
+- Línea 16: falta el caso `Pallet`. El compilador exigía un `return` al final y alguien puso `return null`.
+- Salida, línea 3: la etiqueta del pallet sale `null` y nadie recibe un error.
 
 #### Problema resuelto 7.2
 Después del patrón. Cada operación es un visitante y cada paquete sabe aceptarlo.
 
 **Razonamiento:**
-1. Cada paquete recibe un método `aceptar(visitante)` que llama a `visitar_<su tipo>`.
-2. Cada operación es una clase con los tres métodos `visitar_...`.
-3. Si a un visitante le falta un método, la llamada falla con un error en vez de devolver `None`.
+1. La interfaz `Visitante<R>` declara un `visitar` por tipo de paquete.
+2. Cada paquete implementa `Paquete` con un método `aceptar(visitante)` que llama a `visitante.visitar(this)`.
+3. Cada operación es una clase que implementa `Visitante`. Si le falta un método, no compila.
+4. Las piezas viven en archivos separados, porque las usan varios programas.
 
-```python
-# visitor.py — cada operación es un visitante; cada paquete sabe aceptarlo
-class Sobre:
-    def __init__(self, gramos): self.gramos = gramos
-    def aceptar(self, visitante): return visitante.visitar_sobre(self)
+```java
+// Visitante.java — una operación sobre paquetes: un método por cada tipo
+interface Visitante<R> {
+    R visitar(Sobre sobre);
+    R visitar(Caja caja);
+    R visitar(Pallet pallet);
+}
+```
 
-class Caja:
-    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
-    def aceptar(self, visitante): return visitante.visitar_caja(self)
+```java
+// Paquete.java — todo paquete sabe aceptar a un visitante
+interface Paquete {
+    <R> R aceptar(Visitante<R> visitante);
+}
+```
 
-class Pallet:
-    def __init__(self, cajas): self.cajas = cajas
-    def aceptar(self, visitante): return visitante.visitar_pallet(self)
+```java
+// Sobre.java
+record Sobre(int gramos) implements Paquete {
+    public <R> R aceptar(Visitante<R> v) { return v.visitar(this); }   // this es un Sobre
+}
+```
 
-class CalculoTarifa:                         # una operación nueva = un visitante nuevo
-    def visitar_sobre(self, s):  return 3000
-    def visitar_caja(self, c):   return 5000 + c.kilos * 1500 + (4000 if c.fragil else 0)
-    def visitar_pallet(self, p): return 50000 + sum(c.aceptar(self) for c in p.cajas)
+```java
+// Caja.java
+record Caja(int kilos, boolean fragil) implements Paquete {
+    public <R> R aceptar(Visitante<R> v) { return v.visitar(this); }   // this es una Caja
+}
+```
 
-class EtiquetaBodega:
-    def visitar_sobre(self, s):  return f"SOBRE {s.gramos} g"
-    def visitar_caja(self, c):   return f"CAJA {c.kilos} kg" + (" FRÁGIL" if c.fragil else "")
-    def visitar_pallet(self, p): return f"PALLET con {len(p.cajas)} cajas"
+```java
+// Pallet.java
+import java.util.List;
 
-if __name__ == "__main__":
-    carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
-    for paquete in carga:
-        print(f"{paquete.aceptar(EtiquetaBodega()):<22} tarifa ${paquete.aceptar(CalculoTarifa()):,}")
+record Pallet(List<Caja> cajas) implements Paquete {
+    public <R> R aceptar(Visitante<R> v) { return v.visitar(this); }   // this es un Pallet
+}
+```
+
+```java
+// CalculoTarifa.java — una operación nueva = un visitante nuevo
+class CalculoTarifa implements Visitante<Integer> {
+    public Integer visitar(Sobre s) { return 3000; }
+    public Integer visitar(Caja c) { return 5000 + c.kilos() * 1500 + (c.fragil() ? 4000 : 0); }
+    public Integer visitar(Pallet p) { return 50000 + p.cajas().stream().mapToInt(c -> c.aceptar(this)).sum(); }
+}
+```
+
+```java
+// EtiquetaBodega.java — otra operación, sin tocar los paquetes
+class EtiquetaBodega implements Visitante<String> {
+    public String visitar(Sobre s) { return "SOBRE " + s.gramos() + " g"; }
+    public String visitar(Caja c) { return "CAJA " + c.kilos() + " kg" + (c.fragil() ? " FRÁGIL" : ""); }
+    public String visitar(Pallet p) { return "PALLET con " + p.cajas().size() + " cajas"; }
+}
+```
+
+```java
+// Visitor.java — cada operación es un visitante; cada paquete sabe aceptarlo
+void main() {
+    List<Paquete> carga = List.of(new Sobre(120), new Caja(4, true),
+            new Pallet(List.of(new Caja(10, false), new Caja(12, true))));
+    for (Paquete paquete : carga) {
+        IO.println(String.format(Locale.ROOT, "%-22s tarifa $%,d",
+                paquete.aceptar(new EtiquetaBodega()), paquete.aceptar(new CalculoTarifa())));
+    }
+}
 ```
 
 ```text
-$ python3 visitor.py
+$ java Visitor.java
 SOBRE 120 g            tarifa $3,000
 CAJA 4 kg FRÁGIL       tarifa $15,000
 PALLET con 2 cajas     tarifa $97,000
 ```
 
 **Explicación por partes.**
-- Líneas 4, 8 y 12: el primer despacho. Cada clase elige el método que corresponde a su tipo.
-- Líneas 14–17: la tarifa completa en una clase. El pallet suma sus cajas pidiéndoles que acepten al mismo visitante.
-- Líneas 19–22: la etiqueta completa en otra clase. Las clases de paquete no cambiaron para agregarla.
-- Línea 27: `:<22` rellena el texto a 22 caracteres alineado a la izquierda; `:,` agrega separadores de miles.
+- `Visitante.java`: tres métodos con el mismo nombre y distinto tipo de parámetro (sobrecarga).
+- `Sobre.java`, `Caja.java` y `Pallet.java`, línea `aceptar`: el primer despacho. Cada record elige el `visitar`
+  que corresponde a su tipo, porque `this` tiene ese tipo.
+- `CalculoTarifa.java`: la tarifa completa en una clase. El pallet suma sus cajas pidiéndoles que acepten al mismo
+  visitante.
+- `EtiquetaBodega.java`: la etiqueta completa en otra clase. Los paquetes no cambiaron para agregarla.
+- `Visitor.java`, línea 6: `%-22s` rellena el texto a 22 caracteres alineado a la izquierda; `%,d` agrega
+  separadores de miles.
 
-> **Error común.** Agregar un tipo de paquete sin agregar su método en los visitantes. La llamada falla al
-> ejecutar: `AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'. Did you mean: 'visitar_caja'?`.
-> La sugerencia de Python no es la solución: falta escribir `visitar_bolsa` en cada visitante.
+> **Error común.** Agregar un tipo de paquete sin preparar a los visitantes. Java no compila: no hay ningún
+> `visitar` que acepte una `Bolsa`.
 
-```python
-# tipo_nuevo.py — llega un tipo de paquete que los visitantes no conocen
-from visitor import EtiquetaBodega
+```java
+// TipoNuevo.java — llega un tipo de paquete que los visitantes no conocen
+record Bolsa(int kilos) implements Paquete {
+    public <R> R aceptar(Visitante<R> v) { return v.visitar(this); }
+}
 
-class Bolsa:
-    def __init__(self, kilos): self.kilos = kilos
-    def aceptar(self, visitante): return visitante.visitar_bolsa(self)
-
-print(Bolsa(2).aceptar(EtiquetaBodega()))
+void main() {
+    IO.println(new Bolsa(2).aceptar(new EtiquetaBodega()));
+}
 ```
 
 ```text
-$ python3 tipo_nuevo.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/tipo_nuevo.py", line 8, in <module>
-    print(Bolsa(2).aceptar(EtiquetaBodega()))
-          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/home/estudiante/labs/patrones/tipo_nuevo.py", line 6, in aceptar
-    def aceptar(self, visitante): return visitante.visitar_bolsa(self)
-                                         ^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'. Did you mean: 'visitar_caja'?
+$ java TipoNuevo.java
+TipoNuevo.java:3: error: no suitable method found for visitar(Bolsa)
+    public <R> R aceptar(Visitante<R> v) { return v.visitar(this); }
+                                                   ^
+    method Visitante.visitar(Sobre) is not applicable
+      (argument mismatch; Bolsa cannot be converted to Sobre)
+    method Visitante.visitar(Caja) is not applicable
+      (argument mismatch; Bolsa cannot be converted to Caja)
+    method Visitante.visitar(Pallet) is not applicable
+      (argument mismatch; Bolsa cannot be converted to Pallet)
+  where R is a type-variable:
+    R extends Object declared in method <R>aceptar(Visitante<R>)
+1 error
+error: compilation failed
 ```
 
-> **Buena práctica.** Declara una clase abstracta `Visitante` con los tres `visitar_...` como métodos abstractos y
-> hereda de ella en cada visitante. Así, un visitante incompleto falla al crearse con `TypeError`, antes de procesar
-> ningún paquete.
+> El arreglo no es convertir la bolsa en otra cosa: es agregar `R visitar(Bolsa bolsa);` a `Visitante`. Entonces el
+> compilador señala cada visitante que todavía no la sabe tratar, por ejemplo
+> `EtiquetaBodega is not abstract and does not override abstract method visitar(Bolsa) in Visitante`. Ningún
+> visitante incompleto llega a ejecutarse.
 
 > **Ingeniería de software.** Visitor intercambia un costo por otro. Operación nueva: una clase, cero cambios en los
 > paquetes. Tipo nuevo: un método en cada visitante. Elígelo cuando los tipos estén quietos y las operaciones crezcan.
 
 #### Cuándo no usarlo
 - Si los tipos cambian más que las operaciones, pon cada operación como método de cada clase (polimorfismo, Módulo 1, Tema 7): un tipo nuevo es una clase completa.
-- Con dos tipos y una operación, un `if isinstance` corto es más legible que dos métodos `aceptar` y una clase visitante.
+- Con dos tipos y una operación, un `if` con `instanceof` corto es más legible que dos métodos `aceptar` y una clase visitante.
+- Desde Java 21 hay una alternativa sin visitante: una interfaz `sealed` con los tipos permitidos y un `switch` con
+  patrones (`case Caja c -> ...`). Si falta un tipo, el `switch` no compila, igual que con Visitor.
 - Si las operaciones necesitan los atributos privados de cada clase, el visitante obliga a exponerlos.
 
 #### Checkpoint 7.1
 ¿Cuántos métodos escribes para agregar la operación `PesoTotal` y cuántos para agregar el tipo `Bolsa`?
 
-Respuesta: `PesoTotal` son tres métodos en una clase nueva (`visitar_sobre`, `visitar_caja`, `visitar_pallet`).
-`Bolsa` es su `aceptar` más un `visitar_bolsa` en cada visitante existente: con dos visitantes, tres métodos
-repartidos en tres clases, y uno más por cada visitante futuro.
+Respuesta: `PesoTotal` son tres métodos `visitar` en una clase nueva. `Bolsa` es su `aceptar`, un `visitar(Bolsa)` en
+la interfaz y uno en cada visitante existente: con dos visitantes, cuatro métodos repartidos en cuatro archivos, y uno
+más por cada visitante futuro.
 
 </details>
 
@@ -2097,36 +2510,39 @@ repartidos en tres clases, y uno más por cada visitante futuro.
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Encuentra el caso olvidado
-Escribe `operaciones_con_if.py` y ejecútalo. Comprueba que la tercera línea empieza con `None`.
+Escribe `OperacionesConIf.java` y ejecútalo. Comprueba que la tercera línea empieza con `null`.
 
 #### Paso 2 · Visitantes
-Escribe `visitor.py` y ejecútalo. La tarifa del pallet debe ser `$97,000`: 50 000 más 20 000 y 27 000 de sus cajas.
+Escribe los archivos de `Visitante.java` a `Visitor.java` y ejecuta `java Visitor.java`. La tarifa del pallet debe ser `$97,000`: 50 000 más 20 000 y 27 000 de sus cajas.
 
 #### Paso 3 · Agrega un tipo y mira qué se rompe
-Escribe `tipo_nuevo.py` y ejecútalo para ver el `AttributeError`. Agrega `visitar_bolsa` a `EtiquetaBodega` en
-`visitor.py` (por ejemplo, `return f"BOLSA {b.kilos} kg"`) y ejecuta otra vez: imprime `BOLSA 2 kg`.
+Escribe `TipoNuevo.java` y ejecútalo para ver el error. Mueve el record `Bolsa` a su propio archivo `Bolsa.java`,
+quítalo de `TipoNuevo.java` y agrega `R visitar(Bolsa bolsa);` a `Visitante`. Ejecuta otra vez y lee qué visitantes
+señala el compilador. Agrega a cada uno su `visitar(Bolsa b)` (en `EtiquetaBodega`, por ejemplo,
+`return "BOLSA " + b.kilos() + " kg";`) hasta que `TipoNuevo.java` imprima `BOLSA 2 kg`.
 
 #### Resumen
-- Repetir `isinstance` en cada operación multiplica los lugares donde se puede olvidar un caso.
+- Repetir `instanceof` en cada operación multiplica los lugares donde se puede olvidar un caso.
 - El patrón **Visitor** pone cada operación en una clase visitante con un método por tipo.
-- El **doble despacho** elige la implementación en dos llamadas: `aceptar` en el paquete y `visitar_...` en el visitante.
+- El **doble despacho** elige la implementación en dos llamadas: `aceptar` en el paquete y `visitar` en el visitante.
 - Operación nueva: una clase. Tipo nuevo: un método en cada visitante.
-- Un visitante incompleto falla con `AttributeError` en vez de devolver `None`.
+- Un visitante incompleto no compila; con `instanceof` el caso olvidado devuelve `null` en silencio.
 
 #### Ejercicio verificable 1
-Básico. Escribe el visitante `PesoTotal` que devuelva kilos: el sobre convierte gramos a kilos, la caja da sus
-kilos y el pallet suma sus cajas. ¿Qué lista da `[p.aceptar(PesoTotal()) for p in carga]`?
+Básico. Escribe el visitante `PesoTotal`, que implementa `Visitante<Double>` y devuelve kilos: el sobre convierte
+gramos a kilos, la caja da sus kilos y el pallet suma sus cajas. ¿Qué lista da
+`carga.stream().map(p -> p.aceptar(new PesoTotal())).toList()`?
 
-Respuesta esperada: `[0.12, 4, 22]`. `visitar_sobre` devuelve `s.gramos / 1000` y `visitar_pallet` suma
-`c.aceptar(self)` de cada caja.
+Respuesta esperada: `[0.12, 4.0, 22.0]`. `visitar(Sobre s)` devuelve `s.gramos() / 1000.0` (con `.0`, para no
+dividir enteros) y `visitar(Pallet p)` suma `c.aceptar(this)` de cada caja.
 
 #### Ejercicio verificable 2
-Intermedio. Agrega a `operaciones_con_if.py` el caso que falta en `etiqueta`. ¿Qué tienes que revisar además para
+Intermedio. Agrega a `OperacionesConIf.java` el caso que falta en `etiqueta`. ¿Qué tienes que revisar además para
 estar seguro de que no falta otro?
 
-Respuesta esperada: agregar `if isinstance(paquete, Pallet): return f"PALLET con {len(paquete.cajas)} cajas"`; la
-salida coincide con la de `visitor.py` salvo el formato. Además, revisar **todas** las funciones con `isinstance`
-sobre paquetes, porque el lenguaje no avisa cuál quedó incompleta.
+Respuesta esperada: agregar `if (paquete instanceof Pallet p) return "PALLET con " + p.cajas().size() + " cajas";`
+antes del `return null`; la salida coincide con la de `Visitor.java` salvo el formato. Además, revisar **todos** los
+métodos con `instanceof` sobre paquetes, porque el compilador no avisa cuál quedó incompleto.
 
 #### Ejercicio verificable 3
 Reto. RutaFlow tiene 3 tipos de paquete y 4 operaciones. Compara cuántas clases tocas para agregar un tipo y una
@@ -2138,8 +2554,9 @@ clases. Visitor gana si las operaciones crecen más que los tipos.
 
 #### En el trabajo
 Los compiladores y las herramientas de análisis de código usan visitantes: el árbol de un programa tiene tipos de
-nodo estables y aparecen operaciones nuevas (revisar estilo, calcular complejidad, traducir). El módulo `ast` de
-Python trae `ast.NodeVisitor` con esa forma. En aplicaciones de negocio es menos común: allí los tipos cambian a
+nodo estables y aparecen operaciones nuevas (revisar estilo, calcular complejidad, traducir). El propio compilador de
+Java ofrece `TreeVisitor` para recorrer el árbol de un programa, y `java.nio.file.FileVisitor` recorre carpetas con
+la misma forma. En aplicaciones de negocio es menos común: allí los tipos cambian a
 menudo y el polimorfismo simple suele ganar.
 
 </details>
@@ -2153,14 +2570,13 @@ menudo y el polimorfismo simple suele ganar.
 Al terminar este tema podrás:
 - separar el estado intrínseco (compartido) del extrínseco (propio de cada objeto);
 - compartir objetos con una fábrica que devuelve siempre el mismo objeto para la misma clave;
-- medir con `tracemalloc` la memoria antes y después de aplicar el patrón;
+- medir con `Runtime` la memoria antes y después de aplicar el patrón;
 - explicar por qué un objeto compartido debe ser inmutable y demostrarlo con una ejecución.
 
-**Conceptos clave:** Flyweight, estado intrínseco, estado extrínseco, fábrica, método de clase, `__slots__`, `tracemalloc`
+**Conceptos clave:** Flyweight, estado intrínseco, estado extrínseco, fábrica, método estático, identidad e igualdad, memoria usada del heap
 
-Ya los conoces y no se repiten: *clase*, *objeto*, *atributo* y *atributo de clase* (Módulo 1, Tema 6); *diccionario*,
-*tupla* y *conjunto* (Módulo 2, Tema 1); *tabla hash* (Módulo 2, Tema 6); *argumentos variables* (Tema 1 de este
-módulo); *dataclass congelada* (Tema 6 de este módulo).
+Ya los conoces y no se repiten: *clase*, *objeto* y *atributo* (Módulo 1, Tema 6); *`Map`*, *`List`* y *`Set`*
+(Módulo 2, Tema 1); *tabla hash* y `equals` (Módulo 2, Tema 6); *record* inmutable (Tema 6 de este módulo).
 
 #### El problema
 El mapa de seguimiento de RutaFlow pinta un marcador por cada entrega del día: diez mil en Bogotá. Cada marcador tiene
@@ -2187,34 +2603,34 @@ que se repite sin mezclar lo que es de cada uno?
 **fábrica**
 - **Definición técnica:** objeto o método cuya responsabilidad es crear objetos y decidir cómo; en el patrón Flyweight, la fábrica devuelve un objeto ya existente si hay uno con la misma clave.
 - **En palabras sencillas:** la ventanilla donde pides un sello: si ya existe te dan ese, y si no, lo fabrican y lo guardan.
-- **Dónde se rompe la comparación:** la ventanilla no avisa si te dio uno nuevo o uno viejo; para comprobarlo comparas identidades con `is` o `id`.
+- **Dónde se rompe la comparación:** la ventanilla no avisa si te dio uno nuevo o uno viejo; para comprobarlo comparas identidades con `==`.
 - **Ejemplo:** `FabricaMarcadores.obtener("verde", "entregado")` devuelve siempre el mismo objeto.
-- **Error típico:** crear `TipoMarcador(...)` directamente en otra parte del código: ese objeto no se comparte.
+- **Error típico:** crear `new TipoMarcador(...)` directamente en otra parte del código: ese objeto no se comparte.
 
-**método de clase (`@classmethod`)**
-- **Definición técnica:** método marcado con el decorador `@classmethod`; recibe la clase como primer parámetro, por convención `cls`, y se llama sobre la clase sin crear un objeto.
+**método estático (`static`)**
+- **Definición técnica:** método que pertenece a la clase y no a un objeto; se llama sobre la clase (`FabricaMarcadores.obtener(...)`) y solo ve los campos `static`.
 - **En palabras sencillas:** una acción de la ventanilla, no de un sello concreto.
-- **Dónde se rompe la comparación:** también se puede llamar desde un objeto, pero sigue recibiendo la clase, no el objeto.
-- **Ejemplo:** `FabricaMarcadores.obtener(...)` usa `cls._cache`, el diccionario de la clase.
-- **Error típico:** olvidar el decorador: Python pasa `"verde"` como `cls` y la llamada falla por falta de un argumento.
+- **Dónde se rompe la comparación:** un campo `static` es uno solo para todo el programa; si guarda una caché que nadie vacía, crece mientras el programa corra.
+- **Ejemplo:** `FabricaMarcadores.obtener` usa el mapa `static` `cache`.
+- **Error típico:** quitar `static` del método: entonces hay que crear una fábrica para usarla, y cada fábrica nueva tendría que compartir la misma caché.
 
-**`__slots__`**
-- **Definición técnica:** atributo de clase con la tupla de nombres de atributos permitidos; los objetos guardan solo esos campos, sin el diccionario interno `__dict__`, y ocupan menos memoria.
-- **En palabras sencillas:** un formulario con casillas fijas: ocupa menos papel, pero no puedes agregar casillas.
-- **Dónde se rompe la comparación:** el ahorro es por objeto; con pocos objetos no se nota.
-- **Ejemplo:** `__slots__ = ("lat", "lon", "tipo")` en `Marcador`.
-- **Error típico:** asignar un atributo no declarado: `AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes`.
+**identidad e igualdad**
+- **Definición técnica:** `a == b` compara identidad: si son el mismo objeto en memoria. `a.equals(b)` compara contenido; en un record, campo por campo.
+- **En palabras sencillas:** dos sellos con el mismo dibujo son iguales (`equals`), pero solo uno es *tu* sello (`==`).
+- **Dónde se rompe la comparación:** dos objetos iguales ocupan memoria dos veces; el patrón busca que sean el mismo.
+- **Ejemplo:** un `TipoMarcador` creado con `new` es `equals` al de la fábrica, pero `==` da `false`.
+- **Error típico:** contar objetos distintos con un `HashSet` normal: junta los iguales por contenido y esconde las copias. Para contar identidades se usa un conjunto basado en `IdentityHashMap`.
 
-**`tracemalloc`**
-- **Definición técnica:** módulo de la biblioteca estándar que registra la memoria que reserva Python; `start()` empieza a medir y `get_traced_memory()` devuelve la memoria actual y el pico en bytes.
-- **En palabras sencillas:** una báscula para la memoria del programa: la enciendes, ejecutas y lees cuánto pesa.
-- **Dónde se rompe la comparación:** solo pesa lo que Python reservó después de `start()`; no mide el intérprete ni lo que ya existía.
-- **Ejemplo:** `actual, pico = tracemalloc.get_traced_memory()`.
-- **Error típico:** llamar a `get_traced_memory()` sin `start()`: devuelve `(0, 0)` y parece que el programa no usa memoria.
+**memoria usada del heap**
+- **Definición técnica:** la JVM guarda los objetos en el *heap*; `Runtime.getRuntime().totalMemory() - freeMemory()` da los bytes ocupados en ese momento. `System.gc()` pide recoger antes los objetos que ya nadie usa.
+- **En palabras sencillas:** una báscula aproximada para la memoria del programa: vacías la basura, pesas, creas objetos y vuelves a pesar.
+- **Dónde se rompe la comparación:** `System.gc()` es una petición, no una orden, y la JVM reserva memoria por bloques: la medición es aproximada, buena para diferencias grandes, no para contar bytes.
+- **Ejemplo:** `memoriaUsada()` llama tres veces a `System.gc()` y resta `freeMemory()` de `totalMemory()`.
+- **Error típico:** medir sin recoger la basura antes: la resta incluye objetos muertos y puede salir hasta negativa.
 
 #### ► CÓMO FUNCIONA
 Cada `Marcador` guarda solo su posición y una referencia a un `TipoMarcador`. La fábrica guarda los tipos en un
-diccionario por clave `(color, icono)`. La primera vez crea el tipo; las demás devuelve el mismo objeto.
+mapa con la clave `List.of(color, icono)`. La primera vez crea el tipo; las demás devuelve el mismo objeto.
 
 ```mermaid
 classDiagram
@@ -2228,14 +2644,14 @@ classDiagram
       +icono
     }
     class FabricaMarcadores {
-      -_cache
+      -cache$
       +obtener(color, icono)$
     }
     Marcador --> TipoMarcador : comparte
     FabricaMarcadores --> TipoMarcador : crea una vez y reutiliza
 ```
 
-El signo `$` marca un método de clase. La flecha de `Marcador` a `TipoMarcador` es una referencia: diez mil flechas
+El signo `$` marca lo que es `static`. La flecha de `Marcador` a `TipoMarcador` es una referencia: diez mil flechas
 llegan a solo tres objetos.
 
 #### Problema resuelto 8.1
@@ -2243,146 +2659,220 @@ Antes del patrón. Crea diez mil marcadores, cada uno con su propio ícono, y mi
 
 **Razonamiento:**
 1. El ícono se simula con un texto repetido 2000 veces, unos 18 000 caracteres.
-2. `icono * 2000` crea un texto nuevo en cada marcador.
-3. Enciende `tracemalloc` antes de crear los marcadores y lee la memoria al final.
+2. `icono.repeat(2000)` crea un texto nuevo en cada marcador.
+3. Mide la memoria usada antes de crear los marcadores y después.
 
-```python
-# marcadores_copiados.py — cada marcador del mapa carga su propio ícono
-import tracemalloc
+```java
+// MarcadoresCopiados.java — cada marcador del mapa carga su propio ícono
+static class Marcador {
+    final double lat, lon;
+    final String color, icono;
 
-class Marcador:
-    def __init__(self, lat, lon, color, icono):
-        self.lat, self.lon = lat, lon
-        self.color, self.icono = color, icono * 2000   # simula un ícono pesado: copia propia
+    Marcador(double lat, double lon, String color, String icono) {
+        this.lat = lat;
+        this.lon = lon;
+        this.color = color;
+        this.icono = icono.repeat(2000);       // simula un ícono pesado: copia propia
+    }
+}
 
-tracemalloc.start()
-estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
-marcadores = [Marcador(4.6 + i * 1e-4, -74.08, *estados[i % 3]) for i in range(10000)]
-actual, pico = tracemalloc.get_traced_memory()
-print("Marcadores:", len(marcadores))
-print("Íconos distintos en memoria:", len({id(m.icono) for m in marcadores}))
-print(f"Memoria medida: {actual / 1024 / 1024:.1f} MB")
+long memoriaUsada() {
+    for (int i = 0; i < 3; i++) System.gc();   // pide recoger la basura antes de medir
+    Runtime r = Runtime.getRuntime();
+    return r.totalMemory() - r.freeMemory();
+}
+
+void main() {
+    long antes = memoriaUsada();
+    String[][] estados = {{"verde", "entregado"}, {"rojo", "fallido"}, {"azul", "en ruta"}};
+    List<Marcador> marcadores = new ArrayList<>();
+    for (int i = 0; i < 10_000; i++) {
+        String[] e = estados[i % 3];
+        marcadores.add(new Marcador(4.6 + i * 1e-4, -74.08, e[0], e[1]));
+    }
+    long despues = memoriaUsada();
+    Set<String> distintos = Collections.newSetFromMap(new IdentityHashMap<>());   // compara con ==
+    for (Marcador m : marcadores) distintos.add(m.icono);
+    IO.println("Marcadores: " + marcadores.size());
+    IO.println("Íconos distintos en memoria: " + distintos.size());
+    IO.println(String.format(Locale.ROOT, "Memoria medida: %.1f MB", (despues - antes) / 1024.0 / 1024));
+}
 ```
 
 ```text
-$ python3 marcadores_copiados.py
+$ java MarcadoresCopiados.java
 Marcadores: 10000
 Íconos distintos en memoria: 10000
-Memoria medida: 147.9 MB
+Memoria medida: 150.1 MB
 ```
 
 **Explicación por partes.**
-- Línea 7: cada marcador fabrica su propio texto largo. Tres estados, pero diez mil copias.
-- Línea 11: `1e-4` es 0.0001 escrito en notación científica. `*estados[i % 3]` reparte la tupla `(color, icono)` en dos argumentos.
-- Línea 14: `id` da la identidad de un objeto; el conjunto cuenta cuántos íconos distintos hay en memoria: 10 000.
-- Salida: casi 148 MB para tres dibujos.
+- Línea 10: cada marcador fabrica su propio texto largo. Tres estados, pero diez mil copias.
+- Líneas 14–18: la báscula. Tres `System.gc()` vacían la basura antes de pesar.
+- Líneas 25–26: `1e-4` es 0.0001 escrito en notación científica; `estados[i % 3]` reparte los tres estados en orden.
+- Líneas 29–30: el conjunto basado en `IdentityHashMap` compara con `==`: cuenta cuántos íconos distintos hay en memoria, 10 000.
+- Salida: unos 149 MB para tres dibujos. Tu número puede variar un poco.
 
 #### Problema resuelto 8.2
 Después del patrón. Comparte el ícono a través de una fábrica y mide otra vez.
 
 **Razonamiento:**
 1. Lo que se repite (color e ícono) va a `TipoMarcador`; lo propio (latitud, longitud) se queda en `Marcador`.
-2. La fábrica guarda los tipos en un diccionario: buscar una clave cuesta lo mismo con 3 o con 300 tipos.
-3. Mide con `tracemalloc` y compara con 8.1; calcula también cuánto pesarían las copias si no se compartieran.
+2. La fábrica guarda los tipos en un `HashMap`: buscar una clave cuesta lo mismo con 3 o con 300 tipos.
+3. Mide igual que en 8.1; calcula también cuántos caracteres habría si cada marcador tuviera su copia. Los íconos son
+   texto ASCII, que Java guarda con un byte por carácter.
 
-```python
-# flyweight.py — los marcadores comparten el ícono a través de una fábrica
-import sys
-import tracemalloc
+```java
+// TipoMarcador.java — estado intrínseco: compartido e inmutable
+record TipoMarcador(String color, String icono) {}
+```
 
-class TipoMarcador:                          # estado intrínseco: compartido e inmutable
-    def __init__(self, color, icono):
-        self.color, self.icono = color, icono * 2000   # simula un ícono pesado en memoria
+```java
+// FabricaMarcadores.java — devuelve siempre el mismo tipo para la misma clave
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-class FabricaMarcadores:
-    _cache = {}
-    @classmethod
-    def obtener(cls, color, icono):
-        clave = (color, icono)
-        if clave not in cls._cache:
-            cls._cache[clave] = TipoMarcador(color, icono)
-        return cls._cache[clave]
+final class FabricaMarcadores {
+    private static final Map<List<String>, TipoMarcador> cache = new HashMap<>();
 
-class Marcador:                              # estado extrínseco: propio de cada entrega
-    __slots__ = ("lat", "lon", "tipo")
-    def __init__(self, lat, lon, tipo):
-        self.lat, self.lon, self.tipo = lat, lon, tipo
+    private FabricaMarcadores() {}
 
-if __name__ == "__main__":
-    tracemalloc.start()
-    estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
-    marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener(*estados[i % 3]))
-                  for i in range(10000)]
-    actual, pico = tracemalloc.get_traced_memory()
-    tipos = {id(m.tipo) for m in marcadores}
-    peso_tipos = sum(sys.getsizeof(t.icono) for t in FabricaMarcadores._cache.values())
-    print("Marcadores:", len(marcadores))
-    print("Objetos de tipo distintos:", len(tipos))
-    print(f"Memoria de íconos compartidos: {peso_tipos / 1024:.0f} KB")
-    sin_compartir = sum(sys.getsizeof(m.tipo.icono) for m in marcadores)   # si cada uno tuviera su copia
-    print(f"Sin compartir serían: {sin_compartir / 1024 / 1024:.0f} MB")
-    print(f"Memoria medida: {actual / 1024 / 1024:.1f} MB")
+    static TipoMarcador obtener(String color, String icono) {
+        return cache.computeIfAbsent(List.of(color, icono),
+                clave -> new TipoMarcador(color, icono.repeat(2000)));   // se crea una vez por clave
+    }
+
+    static int tiposCreados() {
+        return cache.size();
+    }
+
+    static long caracteresCompartidos() {
+        return cache.values().stream().mapToLong(t -> t.icono().length()).sum();
+    }
+}
+```
+
+```java
+// Marcador.java — estado extrínseco: lo propio de cada entrega, más una referencia al tipo
+record Marcador(double lat, double lon, TipoMarcador tipo) {}
+```
+
+```java
+// Flyweight.java — los marcadores comparten el ícono a través de una fábrica
+long memoriaUsada() {
+    for (int i = 0; i < 3; i++) System.gc();   // pide recoger la basura antes de medir
+    Runtime r = Runtime.getRuntime();
+    return r.totalMemory() - r.freeMemory();
+}
+
+void main() {
+    long antes = memoriaUsada();
+    String[][] estados = {{"verde", "entregado"}, {"rojo", "fallido"}, {"azul", "en ruta"}};
+    List<Marcador> marcadores = new ArrayList<>();
+    for (int i = 0; i < 10_000; i++) {
+        String[] e = estados[i % 3];
+        marcadores.add(new Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener(e[0], e[1])));
+    }
+    long despues = memoriaUsada();
+    Set<TipoMarcador> tipos = Collections.newSetFromMap(new IdentityHashMap<>());
+    for (Marcador m : marcadores) tipos.add(m.tipo());
+    long sinCompartir = marcadores.stream().mapToLong(m -> m.tipo().icono().length()).sum();
+    IO.println("Marcadores: " + marcadores.size());
+    IO.println("Objetos de tipo distintos: " + tipos.size());
+    IO.println("Caracteres de íconos compartidos: " + FabricaMarcadores.caracteresCompartidos() / 1024 + " K");
+    IO.println("Sin compartir serían: " + sinCompartir / 1024 / 1024 + " M caracteres");
+    IO.println(String.format(Locale.ROOT, "Memoria medida: %.1f MB", (despues - antes) / 1024.0 / 1024));
+}
 ```
 
 ```text
-$ python3 flyweight.py
+$ java Flyweight.java
 Marcadores: 10000
 Objetos de tipo distintos: 3
-Memoria de íconos compartidos: 45 KB
-Sin compartir serían: 147 MB
-Memoria medida: 0.9 MB
+Caracteres de íconos compartidos: 44 K
+Sin compartir serían: 146 M caracteres
+Memoria medida: 0.3 MB
 ```
 
 **Explicación por partes.**
-- Líneas 5–7: el estado intrínseco. El texto largo se crea una vez por tipo.
-- Líneas 9–16: la fábrica. Si la clave no está, crea el tipo (línea 15); en cualquier caso devuelve el guardado.
-- Líneas 18–21: el estado extrínseco, con `__slots__` para que cada marcador ocupe lo mínimo.
-- Línea 29: el conjunto de identidades confirma que solo hay 3 objetos de tipo.
-- Línea 34: suma el tamaño del ícono una vez por marcador, como si cada uno tuviera su copia: 147 MB.
-- Salida, última línea: la medición real baja de 147.9 MB a 0.9 MB. Tu número puede variar unas décimas.
+- `TipoMarcador.java`: el estado intrínseco, como record: nadie puede cambiar su color ni su ícono.
+- `FabricaMarcadores.java`, líneas 11–14: `computeIfAbsent` crea el tipo solo si la clave no está; en cualquier caso
+  devuelve el guardado. El texto largo se crea una vez por tipo.
+- Línea 9: el constructor privado impide crear fábricas: se usa solo a través de sus métodos `static`.
+- `Marcador.java`: el estado extrínseco, la posición, más una referencia al tipo compartido.
+- `Flyweight.java`, líneas 17–18: el conjunto de identidades confirma que solo hay 3 objetos de tipo.
+- Línea 19: suma el largo del ícono una vez por marcador, como si cada uno tuviera su copia: 146 millones de caracteres.
+- Salida, última línea: la medición baja de unos 149 MB a 0.3 MB. Tu número puede variar unas décimas.
 
-> **Error común.** Agregar a un marcador un dato que `__slots__` no declara. Python lo rechaza:
-> `AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes`. Si el dato
-> es necesario, agrégalo a la tupla de `__slots__`; si es de un solo marcador, guárdalo fuera.
+> **Error común.** Crear un tipo con `new` en vez de pedirlo a la fábrica. No hay mensaje de error: el objeto es
+> igual por contenido, pero no se comparte, y cada uno que se cree así vuelve a ocupar memoria.
 
-```python
-# marcador_slots.py — intentar agregar un atributo que __slots__ no declara
-from flyweight import FabricaMarcadores, Marcador
-
-m = Marcador(4.61, -74.08, FabricaMarcadores.obtener("verde", "entregado"))
-m.nota = "portería"
+```java
+// SinFabrica.java — un tipo creado con new, sin pasar por la fábrica
+void main() {
+    TipoMarcador deFabrica = FabricaMarcadores.obtener("verde", "entregado");
+    TipoMarcador suelto = new TipoMarcador("verde", "entregado".repeat(2000));
+    IO.println("¿Iguales por contenido? " + deFabrica.equals(suelto));
+    IO.println("¿El mismo objeto?       " + (deFabrica == suelto));
+}
 ```
 
 ```text
-$ python3 marcador_slots.py
-Traceback (most recent call last):
-  File "/home/estudiante/labs/patrones/marcador_slots.py", line 5, in <module>
-    m.nota = "portería"
-    ^^^^^^
-AttributeError: 'Marcador' object has no attribute 'nota' and no __dict__ for setting new attributes
+$ java SinFabrica.java
+¿Iguales por contenido? true
+¿El mismo objeto?       false
 ```
 
-> **Error común.** Modificar el objeto compartido «solo para un marcador». Aquí no hay mensaje de error: cambian
-> todos los que comparten el tipo. La salida `['negro', 'negro', 'negro']` es el síntoma.
+> **Error común.** Modificar el objeto compartido «solo para un marcador». Si el tipo compartido tiene un campo que se
+> puede cambiar, no hay mensaje de error: cambian todos los que lo comparten. La salida `[negro, negro, negro]` es el
+> síntoma.
 
-```python
-# flyweight_mutado.py — cambiar el estado compartido desde un solo marcador
-from flyweight import FabricaMarcadores, Marcador
+```java
+// FlyweightMutado.java — cambiar el estado compartido desde un solo marcador
+static class TipoMutable {                      // versión con un campo que sí se puede cambiar
+    String color;
+    TipoMutable(String color) { this.color = color; }
+}
 
-marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener("verde", "entregado"))
-              for i in range(3)]
-marcadores[0].tipo.color = "negro"           # «solo quería cambiar el primero»
-print([m.tipo.color for m in marcadores])
+record MarcadorMutable(double lat, double lon, TipoMutable tipo) {}
+
+void main() {
+    Map<String, TipoMutable> fabrica = new HashMap<>();
+    List<MarcadorMutable> marcadores = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+        TipoMutable verde = fabrica.computeIfAbsent("verde", TipoMutable::new);
+        marcadores.add(new MarcadorMutable(4.6 + i * 1e-4, -74.08, verde));
+    }
+    marcadores.getFirst().tipo().color = "negro";   // «solo quería cambiar el primero»
+    IO.println(marcadores.stream().map(m -> m.tipo().color).toList());
+}
 ```
 
 ```text
-$ python3 flyweight_mutado.py
-['negro', 'negro', 'negro']
+$ java FlyweightMutado.java
+[negro, negro, negro]
 ```
 
-> **Prevenir errores.** Haz inmutable el estado intrínseco: convierte `TipoMarcador` en dataclass congelada (Tema 6
-> de este módulo). Así, el cambio de `flyweight_mutado.py` termina en `FrozenInstanceError` en vez de pintar de negro
-> todo el mapa.
+> **Prevenir errores.** Haz inmutable el estado intrínseco, como el record `TipoMarcador` (Tema 6 de este módulo).
+> Así, el mismo intento ni siquiera compila, en vez de pintar de negro todo el mapa:
+
+```java
+// TipoInmutable.java — el mismo intento contra el TipoMarcador del patrón
+void main() {
+    Marcador m = new Marcador(4.61, -74.08, FabricaMarcadores.obtener("verde", "entregado"));
+    m.tipo().color = "negro";
+}
+```
+
+```text
+$ java TipoInmutable.java
+TipoInmutable.java:4: error: color has private access in TipoMarcador
+    m.tipo().color = "negro";
+            ^
+1 error
+error: compilation failed
+```
 
 > **Rendimiento.** Mide antes de aplicar el patrón. Aquí el ahorro es enorme porque el dato compartido pesa 18 KB.
 > Si fuera un texto de 5 letras, la fábrica y la indirección costarían más de lo que ahorran.
@@ -2390,10 +2880,10 @@ $ python3 flyweight_mutado.py
 #### Cuándo no usarlo
 - Con cientos de objetos, o con datos compartidos pequeños, la diferencia de memoria no se nota.
 - Si cada objeto necesita modificar su parte «compartida», no hay nada que compartir: es estado extrínseco.
-- Si los datos vienen de una base de datos, a menudo basta guardar una clave (`"verde"`) y buscar el ícono en un diccionario: es la misma idea sin clases nuevas.
+- Si los datos vienen de una base de datos, a menudo basta guardar una clave (`"verde"`) y buscar el ícono en un mapa: es la misma idea sin clases nuevas.
 
 #### Checkpoint 8.1
-Si agregas a `estados` un cuarto par `("gris", "devuelto")` y usas `estados[i % 4]`, ¿cuántos objetos de tipo
+Si agregas a `estados` un cuarto par `{"gris", "devuelto"}` y usas `estados[i % 4]`, ¿cuántos objetos de tipo
 distintos habrá? ¿Cambia la memoria de forma notable?
 
 Respuesta: 4 objetos de tipo. La memoria medida casi no cambia, porque solo se agrega un ícono compartido de unos
@@ -2405,49 +2895,49 @@ Respuesta: 4 objetos de tipo. La memoria medida casi no cambia, porque solo se a
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Mide el problema
-Escribe `marcadores_copiados.py` y ejecútalo. Anota la memoria medida: debe rondar los 148 MB.
+Escribe `MarcadoresCopiados.java` y ejecútalo. Anota la memoria medida: debe rondar los 149 MB.
 
 #### Paso 2 · Comparte y vuelve a medir
-Escribe `flyweight.py` y ejecútalo. Comprueba `Objetos de tipo distintos: 3` y compara la última línea con el Paso 1.
+Escribe `TipoMarcador.java`, `FabricaMarcadores.java`, `Marcador.java` y `Flyweight.java`, y ejecuta `java Flyweight.java`. Comprueba `Objetos de tipo distintos: 3` y compara la última línea con el Paso 1.
 
 #### Paso 3 · Comprueba los dos candados
-Escribe `marcador_slots.py` y `flyweight_mutado.py` y ejecútalos. El primero termina en `AttributeError`; el segundo
-imprime tres veces `negro` sin ningún error.
+Escribe `SinFabrica.java`, `FlyweightMutado.java` y `TipoInmutable.java` y ejecútalos. El primero muestra un objeto
+igual pero no compartido; el segundo imprime tres veces `negro` sin ningún error; el tercero no compila.
 
 #### Resumen
 - El patrón **Flyweight** comparte entre muchos objetos la parte del estado que es igual.
 - El **estado intrínseco** se comparte; el **estado extrínseco** queda en cada objeto.
-- Una **fábrica** con un diccionario devuelve siempre el mismo objeto para la misma clave.
-- Un **método de clase** trabaja con la clase (`cls`) y no necesita un objeto.
-- **`__slots__`** reduce la memoria de cada objeto y prohíbe atributos no declarados.
-- **`tracemalloc`** mide la memoria real: aquí bajó de 147.9 MB a 0.9 MB.
+- Una **fábrica** con un mapa devuelve siempre el mismo objeto para la misma clave.
+- Un **método estático** pertenece a la clase y no necesita un objeto.
+- La **identidad** (`==`) dice si dos referencias son el mismo objeto; la **igualdad** (`equals`), si tienen el mismo contenido.
+- La **memoria usada del heap**, medida después de `System.gc()`, bajó de unos 149 MB a 0.3 MB.
 - Lo compartido debe ser inmutable: un cambio en un objeto compartido cambia a todos.
 
 #### Ejercicio verificable 1
-Básico. En `flyweight.py`, cambia `range(10000)` por `range(30000)`. ¿Cuántos objetos de tipo distintos hay y
-cuánto marca la memoria medida?
+Básico. En `Flyweight.java`, cambia `10_000` por `30_000`. ¿Cuántos objetos de tipo distintos hay y cuánto marca la
+memoria medida?
 
-Respuesta esperada: siguen siendo 3 objetos de tipo y la memoria medida sube a unos 2.6 MB. `Sin compartir serían`
-pasa a 440 MB: el ahorro crece con el número de marcadores.
+Respuesta esperada: siguen siendo 3 objetos de tipo y la memoria medida sube a cerca de 1 MB. `Sin compartir serían`
+pasa a 438 M caracteres: el ahorro crece con el número de marcadores.
 
 #### Ejercicio verificable 2
 Intermedio. Agrega el cuarto estado del Checkpoint 8.1 y ejecuta. ¿Qué tres líneas cambian en la salida?
 
-Respuesta esperada: `Objetos de tipo distintos: 4`, `Memoria de íconos compartidos: 61 KB` y
-`Sin compartir serían: 148 MB`. La memoria medida sigue en `0.9 MB`.
+Respuesta esperada: `Objetos de tipo distintos: 4`, `Caracteres de íconos compartidos: 60 K` y
+`Sin compartir serían: 147 M caracteres`. La memoria medida sigue cerca de `0.3 MB`.
 
 #### Ejercicio verificable 3
-Reto. Convierte `TipoMarcador` en una dataclass congelada con campos `color: str` e `icono: str`. ¿Dónde pones ahora
-la multiplicación `* 2000` y qué imprime `flyweight_mutado.py`?
+Reto. En `FlyweightMutado.java`, reemplaza `TipoMutable` por el record `TipoMarcador` y usa la fábrica de verdad.
+¿Qué tienes que cambiar en la línea que pone `negro` y qué pasa con los otros dos marcadores?
 
-Respuesta esperada: la multiplicación pasa a la fábrica: `TipoMarcador(color, icono * 2000)`, porque la dataclass
-crea su propio `__init__`. `flyweight.py` da la misma salida que antes y `flyweight_mutado.py` termina en
-`dataclasses.FrozenInstanceError: cannot assign to field 'color'`.
+Respuesta esperada: la asignación ya no compila (`color has private access in TipoMarcador`). La única forma de
+«cambiar el color de un marcador» es darle otro tipo: `FabricaMarcadores.obtener("negro", "entregado")` en un
+`Marcador` nuevo. Los otros dos siguen apuntando al tipo verde y conservan su color.
 
 #### En el trabajo
 Los mapas, los videojuegos y los editores de texto comparten íconos, texturas y estilos de letra entre miles de
-elementos. Python lo hace por dentro: los enteros pequeños y muchos textos cortos se reutilizan en lugar de crearse
-de nuevo. En un servicio, el mismo criterio aparece al cachear objetos de configuración que se leen miles de veces
+elementos. Java lo hace por dentro: `Integer.valueOf` devuelve el mismo objeto para los números de −128 a 127, y los textos
+literales iguales del código comparten un solo `String`. En un servicio, el mismo criterio aparece al cachear objetos de configuración que se leen miles de veces
 por segundo; ahí la regla «lo compartido no se modifica» evita fallos difíciles de rastrear.
 
 </details>
@@ -2457,7 +2947,7 @@ por segundo; ahí la regla «lo compartido no se modifica» evita fallos difíci
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
 
-El proyecto une los patrones del módulo en un solo paquete de Python para RutaFlow. No hay técnicas nuevas: cada
+El proyecto une los patrones del módulo en un solo proyecto Java con Gradle (Módulo 4) para RutaFlow. No hay técnicas nuevas: cada
 pieza remite al tema donde se explicó. La regla del proyecto es la del módulo: cada patrón entra solo si un requisito
 lo pide, y el README dice cuál requisito y qué alternativa más simple se descartó.
 
@@ -2468,15 +2958,15 @@ lo pide, y el README dice cuál requisito y qué alternativa más simple se desc
 
 #### Entregables
 1. **Estados.** `Envio` con objetos estado y una prueba que recorre todas las combinaciones de estado y acción (Tema 2).
-2. **Validación.** Cadenas `cadena_domicilio()` y `cadena_recogida()` armadas en funciones, con una prueba de sus eslabones (Tema 4).
-3. **Notificaciones.** Avisos decorados con firma y recorte para SMS, y un decorador de función con `functools.wraps` que registre cada envío de aviso (Tema 1).
+2. **Validación.** Cadenas `cadenaDomicilio()` y `cadenaRecogida()` armadas en métodos, con una prueba de sus eslabones (Tema 4).
+3. **Notificaciones.** Avisos decorados con firma y recorte para SMS, y una envoltura de función que registre cada envío de aviso con el nombre de la operación (Tema 1).
 4. **Deshacer.** Planificador de ruta con deshacer y rehacer sobre mementos inmutables, y una prueba que edite una parada existente (Tema 6).
 5. **Reportes y tarifas.** Reportes diarios con método plantilla y tarifas calculadas por un visitante (Temas 3 y 7).
 6. **README.** Para cada patrón: el requisito que lo justifica, la alternativa más simple y por qué no bastó. Incluye al menos un patrón del catálogo que decidiste **no** usar y por qué.
 
 #### Criterio de terminado
-`python3 -m pytest -q` pasa en una carpeta limpia con un entorno virtual nuevo, y cada prueba del README se puede
-señalar en el código. Mediator y Flyweight son opcionales: inclúyelos solo si tu README muestra el requisito que los
-pide (por ejemplo, una medición de memoria con `tracemalloc`).
+`./gradlew test` pasa en un clon limpio de la carpeta, y cada prueba del README se puede señalar en el código.
+Mediator y Flyweight son opcionales: inclúyelos solo si tu README muestra el requisito que los pide (por ejemplo,
+una medición de memoria con `Runtime`).
 
 </details>
