@@ -45,7 +45,7 @@ export const ARQUITECTURA_MODULES: CourseModule[] = [
       '¿Qué diferencia existe entre consistencia fuerte y disponibilidad?',
       '¿Cómo impide la idempotencia que un reintento duplique un efecto?',
     ],
-    ['Python', 'Docker Compose', 'SQLite'],
+    ['Java 25', 'H2', 'HttpClient', 'Docker Compose'],
     'Inventario distribuido mínimo con outbox, consumidor idempotente, fallos inyectados, telemetría correlacionada, SLO medible, runbook y postmortem sin culpables.'),
   m(2, 'Diseño de sistemas distribuidos: borde, datos y capacidad', 'Sistemas distribuidos', 'Experto', '8 h', '#475569',
     'Diseña el borde, los datos y la capacidad de un sistema real: balanceo, proxy inverso, CDN, límites de tasa, índices, réplicas, sharding, CAP, idempotencia, elección de líder y presupuestos de error medidos.',['El borde: balanceo, proxy inverso, CDN y límites de tasa', 'Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL', 'CAP, consistencia e idempotencia: lo que se paga en cada decisión', 'Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga'],
