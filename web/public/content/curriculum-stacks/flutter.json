@@ -431,48 +431,70 @@
    "id": "5",
    "kind": "current",
    "title": null,
-   "topicCount": 4,
+   "topicCount": 6,
    "topics": [
     {
-     "title": "http vs dio",
+     "title": "package:http: pedir, revisar y poner un límite de tiempo",
      "status": "actual",
      "current": {
       "module": "5",
       "order": 1,
-      "fragment": "tema-1-http-vs-dio"
+      "fragment": "tema-1-package-http-pedir-revisar-y-poner-un-limite-de-tiempo"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "json_serializable",
+     "title": "JSON a objetos: patrones a mano o json_serializable",
      "status": "actual",
      "current": {
       "module": "5",
       "order": 2,
-      "fragment": "tema-2-json-serializable"
+      "fragment": "tema-2-json-a-objetos-patrones-a-mano-o-json-serializable"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Interceptores y estados explícitos",
+     "title": "dio: configuración común, interceptores y fallos traducidos",
      "status": "actual",
      "current": {
       "module": "5",
       "order": 3,
-      "fragment": "tema-3-interceptores-y-estados-explicitos"
+      "fragment": "tema-3-dio-configuracion-comun-interceptores-y-fallos-traducidos"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+     "title": "Un mensaje para cada fallo: diseño de errores de red",
      "status": "actual",
      "current": {
       "module": "5",
       "order": 4,
-      "fragment": "tema-4-flujo-de-autenticacion-con-tokens-login-almacenamiento-seguro-renovacion-y-cierre-de-sesion"
+      "fragment": "tema-4-un-mensaje-para-cada-fallo-diseno-de-errores-de-red"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Sesión con tokens: ingresar, renovar una sola vez y cerrar",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 5,
+      "fragment": "tema-5-sesion-con-tokens-ingresar-renovar-una-sola-vez-y-cerrar"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 22: la ruta del día desde el servidor",
+     "status": "actual",
+     "current": {
+      "module": "5",
+      "order": 6,
+      "fragment": "proyecto-22-la-ruta-del-dia-desde-el-servidor"
      },
      "sources": [],
      "courseSources": []

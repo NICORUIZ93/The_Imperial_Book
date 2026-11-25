@@ -2932,20 +2932,28 @@
     ],
     "5": [
       {
-        "title": "http vs dio",
-        "fragment": "tema-1-http-vs-dio"
+        "title": "package:http: pedir, revisar y poner un límite de tiempo",
+        "fragment": "tema-1-package-http-pedir-revisar-y-poner-un-limite-de-tiempo"
       },
       {
-        "title": "json_serializable",
-        "fragment": "tema-2-json-serializable"
+        "title": "JSON a objetos: patrones a mano o json_serializable",
+        "fragment": "tema-2-json-a-objetos-patrones-a-mano-o-json-serializable"
       },
       {
-        "title": "Interceptores y estados explícitos",
-        "fragment": "tema-3-interceptores-y-estados-explicitos"
+        "title": "dio: configuración común, interceptores y fallos traducidos",
+        "fragment": "tema-3-dio-configuracion-comun-interceptores-y-fallos-traducidos"
       },
       {
-        "title": "Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
-        "fragment": "tema-4-flujo-de-autenticacion-con-tokens-login-almacenamiento-seguro-renovacion-y-cierre-de-sesion"
+        "title": "Un mensaje para cada fallo: diseño de errores de red",
+        "fragment": "tema-4-un-mensaje-para-cada-fallo-diseno-de-errores-de-red"
+      },
+      {
+        "title": "Sesión con tokens: ingresar, renovar una sola vez y cerrar",
+        "fragment": "tema-5-sesion-con-tokens-ingresar-renovar-una-sola-vez-y-cerrar"
+      },
+      {
+        "title": "Proyecto 22: la ruta del día desde el servidor",
+        "fragment": "proyecto-22-la-ruta-del-dia-desde-el-servidor"
       }
     ],
     "6": [
