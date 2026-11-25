@@ -16,9 +16,8 @@ Al terminar este módulo podrás:
 
 **Esquema del módulo:** JDBC, `PreparedStatement` y DAO (Tema 1); transacciones, ACID y aislamiento (Tema 2).
 
-**Qué necesitas saber antes:** *conexión*, *tabla* y *clave primaria* (Fundamentos, Módulo 4, Tema 1); *consulta
-parametrizada*, *inyección SQL* y *cursor* (Fundamentos, Módulo 4, Tema 2); *transacción*, `BEGIN`, `COMMIT`,
-`ROLLBACK`, *ACID*, *modo autocommit*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4); try-with-resources
+**Qué necesitas saber antes:** *conexión*, *tabla* y *clave primaria* (SQL, Módulo 0, Tema 1); *consulta parametrizada* e *inyección SQL* (SQL, Módulo 0, Tema 2); *cursor* (SQL, Módulo 0, Tema 6); *transacción*, `BEGIN`, `COMMIT`,
+`ROLLBACK`, *ACID*, *modo autocommit*, *concurrencia* y *bloqueo* (SQL, Módulo 0, Tema 4); try-with-resources
 (Java, Módulo 3, Tema 2); `Optional` (Java, Módulo 4, Tema 2); `record` (Java, Módulo 1, Tema 5); JUnit (Java,
 Módulo 9, Tema 1); *ORM*, *JPA*, *Hibernate*, *JDBC*, *H2* y *entidad JPA* (Java, Módulo 16, Tema 1); *EntityManager*
 y *JPQL* (Java, Módulo 16, Tema 3); *bloqueo pesimista* (Java, Módulo 16, Tema 7).
@@ -170,8 +169,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** driver JDBC, URL JDBC, DriverManager, DataSource, Connection, Statement, PreparedStatement, ResultSet, executeQuery, executeUpdate, SQLException, DAO, mapeo de filas, pool de conexiones
 
-Ya los conoces y no se repiten: *JDBC* y *H2* (Java, Módulo 16, Tema 1); *conexión* (Fundamentos, Módulo 4,
-Tema 1); *consulta parametrizada* e *inyección SQL* (Fundamentos, Módulo 4, Tema 2); try-with-resources y
+Ya los conoces y no se repiten: *JDBC* y *H2* (Java, Módulo 16, Tema 1); *conexión* (SQL, Módulo 0, Tema 1); *consulta parametrizada* e *inyección SQL* (SQL, Módulo 0, Tema 2); try-with-resources y
 *AutoCloseable* (Java, Módulo 3, Tema 2); *excepción checked* (Java, Módulo 3, Tema 1); *puerto* (Java, Módulo 9,
 Tema 2).
 
@@ -992,7 +990,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** setAutoCommit, commit y rollback en JDBC, nivel de aislamiento, lectura sucia, lectura no repetible, lectura fantasma, READ COMMITTED, REPEATABLE READ y SERIALIZABLE, SELECT FOR UPDATE
 
 Ya los conoces y no se repiten: *transacción*, `BEGIN`, `COMMIT`, `ROLLBACK`, *atomicidad*, *ACID*, *modo
-autocommit*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4); *Connection* y *PreparedStatement*
+autocommit*, *concurrencia* y *bloqueo* (SQL, Módulo 0, Tema 4); *Connection* y *PreparedStatement*
 (Tema 1); *bloqueo pesimista* y *actualización perdida* (Java, Módulo 16, Tema 7); *deadlock* (Java, Módulo 5,
 Tema 4).
 

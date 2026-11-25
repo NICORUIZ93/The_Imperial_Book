@@ -19,8 +19,8 @@ los temas.
 
 **Qué necesitas saber antes:** *HTTP*, *petición*, *respuesta*, *código de estado*, *cabecera*, *JSON* e
 *idempotencia* (Fundamentos, Módulo 3, Tema 2); *puerto* y *localhost* (Fundamentos, Módulo 3, Tema 1);
-*autenticación*, *autorización* y *hash criptográfico* (Fundamentos, Módulo 6, Tema 2); *HMAC*, *cifrado simétrico* y
-*TLS* (Fundamentos, Módulo 6, Tema 3); excepciones y try-with-resources (Java, Módulo 3); `CompletableFuture` y timeouts
+*autenticación*, *autorización* y *hash criptográfico* (Seguridad, Módulo 0, Tema 2); *HMAC*, *cifrado simétrico* y
+*TLS* (Seguridad, Módulo 0, Tema 3); excepciones y try-with-resources (Java, Módulo 3); `CompletableFuture` y timeouts
 (Java, Módulo 5, Temas 2 y 7); `record` (Java, Módulo 1, Tema 5); Gradle (Java, Módulo 8).
 
 **Entorno de las salidas.** Las salidas del proyecto se capturaron el 2026-11-23 en macOS arm64 con JDK 27.0.1.0.2,
@@ -695,8 +695,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** token de acceso, esquema Bearer, JWT, Base64url, claim, HS256, comparación en tiempo constante, caducidad
 
-Ya los conoces y no se repiten: *autenticación*, *autorización*, *sesión* y *control de acceso por roles* (Fundamentos,
-Módulo 6, Tema 2); *HMAC*, *clave criptográfica* y *ataque de repetición* (Fundamentos, Módulo 6, Tema 3); `HttpServer`,
+Ya los conoces y no se repiten: *autenticación*, *autorización*, *sesión* y *control de acceso por roles* (Seguridad, Módulo 0, Tema 2); *HMAC*, *clave criptográfica* y *ataque de repetición* (Seguridad, Módulo 0, Tema 3); `HttpServer`,
 handler y `HttpClient` (Tema 1 de este módulo).
 
 #### El problema
@@ -1283,8 +1282,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** JCA, proveedor, `MessageDigest`, `Mac`, `Cipher`, AES-GCM, IV, tag de autenticación, `SecureRandom`
 
-Ya los conoces y no se repiten: *hash criptográfico*, *sal* y *función de derivación de claves* (Fundamentos, Módulo 6,
-Tema 2); *cifrado simétrico*, *clave criptográfica*, *HMAC*, *nonce* y *TLS* (Fundamentos, Módulo 6, Tema 3); HS256
+Ya los conoces y no se repiten: *hash criptográfico*, *sal* y *función de derivación de claves* (Seguridad, Módulo 0, Tema 2); *cifrado simétrico*, *clave criptográfica*, *HMAC*, *nonce* y *TLS* (Seguridad, Módulo 0, Tema 3); HS256
 (Tema 2 de este módulo).
 
 #### El problema

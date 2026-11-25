@@ -16,7 +16,7 @@ Al terminar este módulo podrás:
 
 **Esquema del módulo:** Tema 1, JUnit Jupiter y su ciclo de vida; Tema 2, Mockito; Tema 3, tests parametrizados y cobertura; Tema 4, pruebas basadas en propiedades.
 
-**Qué necesitas saber antes:** de Fundamentos, **prueba unitaria**, **prueba de integración**, **fixture**, **doble de prueba** y **cobertura** (Módulo 5, Tema 2) e **integración continua** (Módulo 5, Tema 4). Del curso Java: records e interfaces (Módulo 1), excepciones (Módulo 3) y **configuración de dependencias**, **BOM** y **tarea** (Módulo 8, Tema 2). Este módulo no repite esas fichas: las enlaza y explica lo propio de Java.
+**Qué necesitas saber antes:** de Fundamentos, **prueba unitaria**, **prueba de integración**, **preparación de cada prueba** (la *fixture*), **doble de prueba** y **cobertura** (Módulo 4, Tema 2) e **integración continua** (Módulo 4, Tema 4). Del curso Java: records e interfaces (Módulo 1), excepciones (Módulo 3) y **configuración de dependencias**, **BOM** y **tarea** (Módulo 8, Tema 2). Este módulo no repite esas fichas: las enlaza y explica lo propio de Java.
 
 ## Visual del módulo
 
@@ -73,18 +73,17 @@ Al terminar este tema podrás:
 
 #### El problema
 Tienda Aurora aplica un 10 % de descuento desde 5 unidades. La regla vive en `DescuentoService` y la usan los pedidos, la
-caja y los reportes. En Fundamentos escribiste pruebas con `pytest`; ahora la regla está en Java. ¿Cómo escribes y ejecutas
-esas pruebas con las herramientas del ecosistema Java, y cómo sabes que una prueba no contamina a la siguiente?
+caja y los reportes. En Fundamentos escribiste tus primeras pruebas JUnit para métodos sueltos; ahora la regla vive en un servicio de un proyecto real. ¿Cómo organizas y ejecutas esas pruebas con las herramientas del ecosistema Java, y cómo sabes que una prueba no contamina a la siguiente?
 
-Este tema usa **prueba unitaria**, **caso límite** y **fixture** (Fundamentos, Módulo 1, Tema 1 y Módulo 5, Tema 2), y
+Este tema usa **prueba unitaria**, **caso límite** y **fixture** (Fundamentos, Módulo 1, Tema 1 y Módulo 4, Tema 2), y
 `testImplementation`, `testRuntimeOnly` y **BOM** (Módulo 8, Tema 2).
 
 #### Glosario del tema
 
 **JUnit 5**
 - **Definición técnica:** framework de pruebas para Java formado por JUnit Platform (motor de ejecución), JUnit Jupiter (API de anotaciones y aserciones) y JUnit Vintage (compatibilidad con JUnit 4).
-- **En palabras sencillas:** el `pytest` de Java: tú escribes métodos de prueba y la herramienta los encuentra, los ejecuta y te reporta.
-- **Dónde se rompe la comparación:** JUnit no descubre por nombre (`test_*`) sino por anotación; un método sin `@Test` no se ejecuta.
+- **En palabras sencillas:** el revisor automático de Java: tú escribes métodos de prueba y la herramienta los encuentra, los ejecuta y te reporta.
+- **Dónde se rompe la comparación:** JUnit no descubre las pruebas por el nombre del método sino por anotación; un método sin `@Test` no se ejecuta.
 - **Ejemplo:** el build declara `org.junit:junit-bom:5.13.4` y la suite de `aurora-m9` registró 11 pruebas con 0 fallas.
 - **Error típico:** suponer la versión por el nombre comercial; la versión real está en el build, aquí `junit-bom:5.13.4`.
 
@@ -118,8 +117,8 @@ Este tema usa **prueba unitaria**, **caso límite** y **fixture** (Fundamentos, 
 
 **`@BeforeEach`**
 - **Definición técnica:** anotación de un método que JUnit ejecuta antes de cada `@Test` de la clase; `@AfterEach` es su pareja de limpieza.
-- **En palabras sencillas:** la fixture de Fundamentos en versión Java: alguien arma la mesa antes de cada prueba.
-- **Dónde se rompe la comparación:** no se pide por nombre como en `pytest`: corre para todas las pruebas de la clase, las use o no.
+- **En palabras sencillas:** la preparación de cada prueba que viste en Fundamentos: alguien arma la mesa antes de cada prueba.
+- **Dónde se rompe la comparación:** no lo pide cada prueba: corre para todas las pruebas de la clase, las use o no.
 - **Ejemplo:** `@BeforeEach void setUp() { service = new DescuentoService(); }`.
 - **Error típico:** meter en `@BeforeEach` preparación que solo usa una prueba: las demás pagan el costo y nadie entiende qué necesita cada una.
 
@@ -538,7 +537,7 @@ avisa a auditoría. En producción, el inventario es un servicio remoto y el rep
 unitaria no puede depender de que la red y la base estén arriba. ¿Cómo pruebas el servicio sin ellas, y cómo compruebas
 que llamó al repositorio y que **no** llamó a auditoría cuando no debía?
 
-Este tema usa **doble de prueba**, **prueba unitaria** y **prueba de integración** (Fundamentos, Módulo 5, Tema 2), interfaces
+Este tema usa **doble de prueba**, **prueba unitaria** y **prueba de integración** (Fundamentos, Módulo 4, Tema 2), interfaces
 (Módulo 1, Tema 3) y `@Test`, aserción y **ciclo de vida de la prueba** (Tema 1 de este módulo).
 
 #### Glosario del tema
@@ -984,7 +983,7 @@ La regla de descuento tiene bordes: 4 unidades no descuentan y 5 sí; `19.99` ob
 borde repite el mismo código cinco veces. Y aunque todas las pruebas pasen, no sabes qué partes de `DescuentoService` nunca
 se ejecutaron. ¿Cómo escribes muchos casos sin repetir código, y cómo encuentras lo que ninguna prueba tocó?
 
-Este tema usa **cobertura** y **caso límite** (Fundamentos, Módulo 5, Tema 2 y Módulo 1, Tema 1), **tarea** (Módulo 8, Tema 2)
+Este tema usa **cobertura** y **caso límite** (Fundamentos, Módulo 4, Tema 2 y Módulo 1, Tema 1), **tarea** (Módulo 8, Tema 2)
 y `@Test`, aserción y `assertThrows` (Tema 1 de este módulo).
 
 #### Glosario del tema

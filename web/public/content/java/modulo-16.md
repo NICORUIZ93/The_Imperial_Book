@@ -21,10 +21,9 @@ Al terminar este módulo podrás:
 (Tema 6), concurrencia (Tema 7) y migraciones con pruebas reales (Tema 8).
 
 **Qué necesitas saber antes:** *entidad*, *tabla*, *fila*, *clave primaria*, *clave foránea* y *conexión*
-(Fundamentos, Módulo 4, Tema 1); *JOIN*, *consulta parametrizada*, *inyección SQL* y *migración* (Fundamentos,
-Módulo 4, Tema 2); *restricción*, *UNIQUE* e *índice* (Fundamentos, Módulo 4, Tema 3); *transacción*, *ACID*,
-*modo autocommit*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4); *contenedor* e *imagen*
-(Fundamentos, Módulo 8, Tema 4); anotaciones como `@Override` (Java, Módulo 1, Tema 2) y `@Test` (Java, Módulo 9,
+(SQL, Módulo 0, Tema 1); *JOIN*, *consulta parametrizada*, *inyección SQL* y *migración* (SQL, Módulo 0, Tema 2); *restricción*, *UNIQUE* e *índice* (SQL, Módulo 0, Tema 3); *transacción*, *ACID*,
+*modo autocommit*, *concurrencia* y *bloqueo* (SQL, Módulo 0, Tema 4); *contenedor* e *imagen*
+(Fundamentos, Módulo 5, Tema 4); anotaciones como `@Override` (Java, Módulo 1, Tema 2) y `@Test` (Java, Módulo 9,
 Tema 1); *Proxy* (Java, Módulo 12, Tema 4); `Optional` (Java, Módulo 4, Tema 2); try-with-resources (Java, Módulo 3,
 Tema 2); Gradle y dependencias (Java, Módulo 8, Tema 1); JUnit (Java, Módulo 9, Tema 1).
 
@@ -307,8 +306,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** ORM, JPA, Hibernate, JDBC, H2, entidad JPA, @Entity y @Table, @Id y @GeneratedValue, @Column, asociación, lado dueño, @JoinColumn, cascada, unidad de persistencia
 
-Ya los conoces y no se repiten: *entidad*, *tabla*, *fila*, *clave primaria* y *clave foránea* (Fundamentos,
-Módulo 4, Tema 1); *anotación* (`@Override` en Java, Módulo 1, Tema 2; `@Test` en Java, Módulo 9, Tema 1);
+Ya los conoces y no se repiten: *entidad*, *tabla*, *fila*, *clave primaria* y *clave foránea* (SQL, Módulo 0, Tema 1); *anotación* (`@Override` en Java, Módulo 1, Tema 2; `@Test` en Java, Módulo 9, Tema 1);
 *reflexión profunda* (Java, Módulo 10, Tema 3).
 
 #### El problema
@@ -702,7 +700,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** cardinalidad, @OneToOne, @ManyToOne y @OneToMany, mappedBy, orphanRemoval, @ManyToMany y @JoinTable, entidad intermedia, herencia JPA, SINGLE_TABLE, discriminador, JOINED y TABLE_PER_CLASS
 
 Ya los conoces y no se repiten: *asociación*, *lado dueño*, `@JoinColumn` y *cascada* (Tema 1); *UNIQUE*
-(Fundamentos, Módulo 4, Tema 3); *JOIN* (Fundamentos, Módulo 4, Tema 2); *herencia*, *clase abstracta* y
+(SQL, Módulo 0, Tema 3); *JOIN* (SQL, Módulo 0, Tema 2); *herencia*, *clase abstracta* y
 *polimorfismo* (Java, Módulo 1, Temas 2 y 3).
 
 #### El problema
@@ -1278,7 +1276,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** EntityManagerFactory, EntityManager, contexto de persistencia, estado de la entidad, persist, flush, clear, find, merge, dirty checking, EntityTransaction, callback de ciclo de vida, JPQL, TypedQuery
 
 Ya los conoces y no se repiten: *entidad JPA* y *unidad de persistencia* (Tema 1); *transacción*, `COMMIT` y
-`ROLLBACK` (Fundamentos, Módulo 4, Tema 4); *consulta parametrizada* (Fundamentos, Módulo 4, Tema 2); interfaz
+`ROLLBACK` (SQL, Módulo 0, Tema 4); *consulta parametrizada* (SQL, Módulo 0, Tema 2); interfaz
 funcional y lambda (Java, Módulo 4, Tema 1); *identidad* frente a *igualdad* (Java, Módulo 2, Tema 2).
 
 #### El problema
@@ -1807,7 +1805,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** consulta dinámica, Criteria API, CriteriaBuilder, Root, Predicate, Querydsl, procesador de anotaciones, BooleanBuilder
 
 Ya los conoces y no se repiten: *JPQL* y *TypedQuery* (Tema 3); *inyección SQL* y *consulta parametrizada*
-(Fundamentos, Módulo 4, Tema 2); *Builder* e *interfaz fluida* (Java, Módulo 12, Tema 1).
+(SQL, Módulo 0, Tema 2); *Builder* e *interfaz fluida* (Java, Módulo 12, Tema 1).
 
 #### El problema
 La pantalla de búsqueda de pedidos de Tienda Aurora tiene dos filtros opcionales: fecha y SKU. Pueden venir los
@@ -2182,7 +2180,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** FetchType, LAZY, EAGER, proxy de Hibernate, problema N+1, join fetch, LazyInitializationException, StatementInspector, estadísticas de Hibernate
 
-Ya los conoces y no se repiten: *Proxy* (Java, Módulo 12, Tema 4); *JOIN* (Fundamentos, Módulo 4, Tema 2);
+Ya los conoces y no se repiten: *Proxy* (Java, Módulo 12, Tema 4); *JOIN* (SQL, Módulo 0, Tema 2);
 *contexto de persistencia* y *find* (Tema 3); `@ManyToOne` (Tema 2).
 
 #### El problema
@@ -2883,7 +2881,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** actualización perdida, bloqueo optimista, @Version, OptimisticLockException, bloqueo pesimista, LockModeType, propagación de transacciones
 
-Ya los conoces y no se repiten: *transacción*, *ACID*, *concurrencia* y *bloqueo* (Fundamentos, Módulo 4, Tema 4);
+Ya los conoces y no se repiten: *transacción*, *ACID*, *concurrencia* y *bloqueo* (SQL, Módulo 0, Tema 4);
 *EntityTransaction* y *flush* (Tema 3); *deadlock* (Java, Módulo 5, Tema 4).
 
 #### El problema
@@ -3167,8 +3165,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** Flyway, historial de migraciones, hbm2ddl.auto, Testcontainers, @Testcontainers y @Container, puerto efímero
 
-Ya los conoces y no se repiten: *migración* (Fundamentos, Módulo 4, Tema 2); *contenedor* e *imagen* (Fundamentos,
-Módulo 8, Tema 4); *H2*, *JDBC* y *unidad de persistencia* (Tema 1); JUnit, `@Test` y `@BeforeAll` (Java,
+Ya los conoces y no se repiten: *migración* (SQL, Módulo 0, Tema 2); *contenedor* e *imagen* (Fundamentos, Módulo 5, Tema 4); *H2*, *JDBC* y *unidad de persistencia* (Tema 1); JUnit, `@Test` y `@BeforeAll` (Java,
 Módulo 9, Tema 1).
 
 #### El problema

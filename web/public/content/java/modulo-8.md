@@ -19,7 +19,7 @@ Al terminar este módulo podrás:
 
 **Esquema del módulo:** Tema 1, `pom.xml` frente a `build.gradle.kts`; Tema 2, ciclo de vida y scopes; Tema 3, proyectos multi-módulo; Tema 4, Maven y Gradle lado a lado.
 
-**Qué necesitas saber antes:** paquetes y `main` (Módulo 0), records (Módulo 1, Tema 5), excepciones checked (Módulo 3, Tema 1) y Jackson (Módulo 6, Tema 2). De Fundamentos: terminal y rutas (Módulo 0) y prueba unitaria e integración continua (Módulo 5, Temas 2 y 4).
+**Qué necesitas saber antes:** paquetes y `main` (Módulo 0), records (Módulo 1, Tema 5), excepciones checked (Módulo 3, Tema 1) y Jackson (Módulo 6, Tema 2). De Fundamentos: terminal y rutas (Módulo 0) y prueba unitaria e integración continua (Módulo 4, Temas 2 y 4).
 
 ## Visual del módulo
 
@@ -612,8 +612,7 @@ para las pruebas. Las tres son dependencias, pero no se usan igual. Si todas van
 código de pruebas y cualquier clase puede importar cosas que no debería. ¿Cómo le dices al build **cuándo** se necesita
 cada una, y cómo compruebas que te hizo caso?
 
-Este tema usa **dependencia**, **classpath**, **plugin** y **repositorio Maven** (Tema 1) y **prueba unitaria** (Fundamentos,
-Módulo 5, Tema 2).
+Este tema usa **dependencia**, **classpath**, **plugin** y **repositorio Maven** (Tema 1) y **prueba unitaria** (Fundamentos, Módulo 4, Tema 2).
 
 #### Glosario del tema
 

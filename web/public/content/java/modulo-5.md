@@ -12,7 +12,7 @@ Al terminar este módulo podrás:
 - agrupar subtareas con `StructuredTaskScope` y propagar contexto con `ScopedValue`;
 - aplicar timeouts y cancelación cooperativa sin abandonar recursos abiertos.
 
-**Qué necesitas saber antes:** hilo, memoria compartida, concurrencia, paralelismo, condición de carrera, sección crítica y lock (Fundamentos, Módulo 8, Tema 2); interbloqueo, espera circular, orden global de recursos e hilo daemon (Fundamentos, Módulo 8, Tema 5); `record` (Java, Módulo 1); excepciones comprobadas, `AutoCloseable` y try-with-resources (Java, Módulo 3); lambdas, referencias a métodos y el `ForkJoinPool` común de los streams paralelos (Java, Módulo 4). Aquí esos términos se citan, no se redefinen: este módulo explica cómo los resuelve Java.
+**Qué necesitas saber antes:** hilo, memoria compartida, concurrencia, paralelismo, condición de carrera, sección crítica y lock (Fundamentos, Módulo 5, Tema 2); interbloqueo, espera circular, orden global de recursos e hilo daemon (Fundamentos, Módulo 5, Tema 5); `record` (Java, Módulo 1); excepciones comprobadas, `AutoCloseable` y try-with-resources (Java, Módulo 3); lambdas, referencias a métodos y el `ForkJoinPool` común de los streams paralelos (Java, Módulo 4). Aquí esos términos se citan, no se redefinen: este módulo explica cómo los resuelve Java.
 
 **Esquema del módulo:**
 1. ExecutorService y gestión de hilos.
@@ -64,7 +64,7 @@ Para cotizar un producto, Tienda Aurora pregunta el precio al catálogo (120 ms)
 En secuencia la respuesta tarda unos 210 ms, aunque las dos consultas no dependen una de la otra. ¿Cómo lanzas
 las dos a la vez en Java, recoges ambos resultados y te aseguras de que ningún hilo quede vivo al terminar?
 
-Este tema usa **hilo** y **concurrencia** tal como se definieron en Fundamentos (Módulo 8, Tema 2). Aquí ves las
+Este tema usa **hilo** y **concurrencia** tal como se definieron en Fundamentos (Módulo 5, Tema 2). Aquí ves las
 clases con las que Java los representa.
 
 #### Glosario del tema
@@ -972,7 +972,7 @@ Ejecuta `CienMil.java virtual 100000` y `CienMil.java plataforma 10000`. Compara
 #### Ejercicio verificable 1
 Básico. Agrega a `HiloVirtual.java` la línea `System.out.println(Thread.currentThread().isDaemon());` dentro de la tarea. ¿Qué imprime?
 
-Respuesta esperada: `true`. Los hilos virtuales siempre son daemon (Fundamentos, Módulo 8, Tema 5): no impiden que la JVM termine, por eso `main` debe esperarlos con `join()`.
+Respuesta esperada: `true`. Los hilos virtuales siempre son daemon (Fundamentos, Módulo 5, Tema 5): no impiden que la JVM termine, por eso `main` debe esperarlos con `join()`.
 
 #### Ejercicio verificable 2
 Intermedio. En `LoteBloqueante.java`, usa 100 tareas y cambia `Thread.sleep(100)` por un bucle que sume números durante 100 ms de CPU. ¿Sigue la ventaja de los hilos virtuales?
@@ -1011,9 +1011,8 @@ Al terminar este tema podrás:
 Cuatro cajas de Tienda Aurora registran ventas en el mismo contador. Cada caja vende 100 000 unidades, así que el
 total debe ser 400 000. El programa dice 373 820 en una corrida y 387 783 en la siguiente. Nadie cambió el código.
 
-Este tema usa **hilo**, **memoria compartida**, **condición de carrera**, **sección crítica** y **lock** (Fundamentos,
-Módulo 8, Tema 2), e **interbloqueo**, **espera circular**, **orden global de recursos** e **hilo daemon**
-(Fundamentos, Módulo 8, Tema 5). Aquí ves cómo los resuelve Java. También usa **Thread** y **ExecutorService**
+Este tema usa **hilo**, **memoria compartida**, **condición de carrera**, **sección crítica** y **lock** (Fundamentos, Módulo 5, Tema 2), e **interbloqueo**, **espera circular**, **orden global de recursos** e **hilo daemon**
+(Fundamentos, Módulo 5, Tema 5). Aquí ves cómo los resuelve Java. También usa **Thread** y **ExecutorService**
 (ficha en el Tema 1) e **hilo virtual** e **hilo portador** (ficha en el Tema 3).
 
 #### Glosario del tema

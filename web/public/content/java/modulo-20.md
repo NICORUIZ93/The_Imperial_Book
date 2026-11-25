@@ -41,7 +41,7 @@ referencia a constructor, stream paralelo, ForkJoinPool común, operación asoci
 Módulo 4, Tema 4); `record`, objeto de valor y copia defensiva (Java, Módulo 1, Tema 5); interfaz y método `default`
 (Java, Módulo 1, Tema 3); `HashMap`, `LinkedHashMap`, `TreeMap` y `TreeSet` (Java, Módulo 2, Tema 1); `Comparator`
 (Java, Módulo 2, Tema 5); `CompletableFuture` (Java, Módulo 5, Tema 2); estado mutable compartido y operación atómica
-(Java, Módulo 5, Tema 4); condición de carrera (Fundamentos, Módulo 8, Tema 2); escala de `BigDecimal` y Strategy
+(Java, Módulo 5, Tema 4); condición de carrera (Fundamentos, Módulo 5, Tema 2); escala de `BigDecimal` y Strategy
 (Java, Módulo 12, Tema 2).
 
 ## Visual del módulo
@@ -2795,7 +2795,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: stream paralelo, ForkJoinPool común, operación asociativa y efecto secundario (Java,
 Módulo 4, Tema 4); estado mutable compartido y operación atómica (Java, Módulo 5, Tema 4); condición de carrera
-(Fundamentos, Módulo 8, Tema 2); desbordamiento (Java, Módulo 0, Tema 4); `BinaryOperator` (Tema 5 de este módulo).
+(Fundamentos, Módulo 5, Tema 2); desbordamiento (Java, Módulo 0, Tema 4); `BinaryOperator` (Tema 5 de este módulo).
 
 #### El problema
 El cierre diario de Tienda Aurora suma un millón de valores. Alguien cambió `stream()` por `parallelStream()` y

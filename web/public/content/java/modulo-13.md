@@ -15,7 +15,7 @@ Al terminar este módulo podrás:
 (Tema 2). El código completo del proyecto está en la sección «Código completo, archivo por archivo», antes de los
 temas; cada tema lo usa en su Capa 2.
 
-**Qué necesitas saber antes:** *arquitectura*, *componente* y *dependencia* (Fundamentos, Módulo 7, Tema 2);
+**Qué necesitas saber antes:** *arquitectura*, *componente* y *dependencia* (Arquitectura, Módulo 0, Tema 2);
 *inversión de dependencias*, *Repository* y *Adapter* (Arquitectura, Módulo 0, Tema 3); `record` (Java, Módulo 1,
 Tema 5); `Optional` (Java, Módulo 4, Tema 2); `ExecutorService` (Java, Módulo 5, Tema 1); virtual threads (Java,
 Módulo 5, Tema 3); `sealed` y `switch` exhaustivo (Java, Módulo 7, Temas 1 y 2); wrapper y toolchain de Gradle
@@ -393,7 +393,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** arquitectura por capas, caso de uso, puerto, regla de dependencia, raíz de composición
 
-Ya los conoces y no se repiten: *arquitectura*, *componente* y *dependencia* (Fundamentos, Módulo 7, Tema 2);
+Ya los conoces y no se repiten: *arquitectura*, *componente* y *dependencia* (Arquitectura, Módulo 0, Tema 2);
 *inversión de dependencias*, *Repository* y *Adapter* (Arquitectura, Módulo 0, Tema 3); *Facade* (Java, Módulo 12,
 Tema 4); `record` (Java, Módulo 1, Tema 5); `sealed` (Java, Módulo 7, Tema 1).
 

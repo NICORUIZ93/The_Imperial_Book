@@ -868,7 +868,7 @@ cada retiro produzca **un** aviso y **un** despacho, aunque los procesos mueran 
 
 Este tema aplica la **cola FIFO** (Fundamentos, Módulo 2, Tema 2) y la **idempotencia** (Módulo 3, Tema 2), y
 continúa la **clave de idempotencia** del Tema 1 de este módulo. Las órdenes SQL (`CREATE TABLE`, `INSERT`, `UPDATE`,
-`SELECT`) y JDBC con H2 vienen del Módulo 4 de Fundamentos.
+`SELECT`) y JDBC vienen del curso SQL (Módulo 0, Temas 2 y 4).
 
 #### Glosario del tema
 
@@ -1356,7 +1356,7 @@ sale, y la app del repartidor se congela. En el registro solo aparece `ERROR fal
 jefe pregunta: «¿estamos bien esta semana?». Nadie sabe responder con un número. ¿Cómo dejas de esperar a quien no
 responde, cómo encuentras qué petición falló y cómo mides «bien»?
 
-Este tema usa el **registro** con `java.util.logging` (Fundamentos, Módulo 5, Tema 1), el **timeout** y la
+Este tema usa el **registro** con `java.util.logging` (SQL, Módulo 0, Tema 1), el **timeout** y la
 **latencia** del Tema 1, y la **cola FIFO** del Módulo 2, Tema 2.
 
 #### Glosario del tema

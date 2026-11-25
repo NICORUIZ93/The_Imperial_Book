@@ -556,7 +556,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** expresión regular, `Pattern`, `Matcher`, `matches` y `find`, ancla, clase de caracteres, cuantificador, grupo de captura, grupo con nombre, backtracking catastrófico
 
 Ya los conoces y no se repiten: `String` e inmutabilidad (Java, Módulo 0, Tema 5); lambda (Java, Módulo 4, Tema 1);
-*validación de entrada* (Fundamentos, Módulo 6, Tema 4); allowlist de `id` en `ApiCliente` (Java, Módulo 18, Tema 1).
+*validación de entrada* (Seguridad, Módulo 0, Tema 4); allowlist de `id` en `ApiCliente` (Java, Módulo 18, Tema 1).
 
 #### El problema
 Los mensajes de soporte de Tienda Aurora traen guías con la forma `ABC-1234` mezcladas con texto libre. Hay que validar

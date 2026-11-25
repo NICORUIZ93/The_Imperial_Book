@@ -413,7 +413,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** arquitectura, componente, dependencia, atributo de calidad, escenario de calidad, trade-off, modelo C4, fitness function
 
 Este tema usa **requisito no funcional** y **criterio de aceptación** (Tema 1 de este módulo), **módulo** (Módulo 1,
-Tema 4) y la restricción `UNIQUE` en H2 (Fundamentos, Módulo 4, Tema 3).
+Tema 4) y la restricción `UNIQUE` en H2 (SQL, Módulo 0, Tema 3).
 
 #### El problema
 El conductor de RutaFlow confirma una entrega en una zona con mala señal. La app no recibe respuesta y reintenta.
@@ -791,7 +791,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** cohesión, acoplamiento, interfaz, principios SOLID, inversión de dependencias, patrón de diseño, Repository, Adapter, refactorización, prueba caracterizadora
 
 Ya los conoces y no se repiten: **módulo** (Módulo 1, Tema 4); **composición**, **interfaz** como tipo y **polimorfismo**
-(Fundamentos, Módulo 1, Tema 7); **doble de prueba** (Módulo 5, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
+(Fundamentos, Módulo 1, Tema 7); **doble de prueba** (SQL, Módulo 0, Tema 2); **componente** y **dependencia** (Tema 2 de este módulo).
 El catálogo completo de patrones está en el Módulo 13, y la técnica completa de refactorización en el Módulo 14.
 
 #### El problema

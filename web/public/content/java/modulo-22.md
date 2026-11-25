@@ -807,7 +807,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: *copia superficial* (Fundamentos, Módulo 9, Tema 6); *Prototype*, *aliasing*, *copia
 profunda*, *constructor de copia* y *`Cloneable` y `clone()`* (Java, Módulo 12, Tema 5); *inmutabilidad superficial*
-(Java, Módulo 1, Tema 5) e *inmutabilidad profunda* (Fundamentos, Módulo 7, Tema 5); `enum` y `switch` (Java,
+(Java, Módulo 1, Tema 5) e *inmutabilidad profunda* (Arquitectura, Módulo 0, Tema 5); `enum` y `switch` (Java,
 Módulo 0, Tema 6); *switch con patrones* y exhaustividad (Java, Módulo 7, Tema 2); *copia de entrada y de salida*
 (Tema 1 de este módulo).
 

@@ -350,8 +350,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** modelo de memoria de Java, happens-before, reordenamiento, publicación segura
 
-Ya los conoces y no se repiten: *hilo*, *memoria compartida* y *condición de carrera* (Fundamentos, Módulo 8,
-Tema 2); *relación sucedió-antes* (Fundamentos, Módulo 10, Tema 5); `Thread`, `start` y `join` (Java, Módulo 5,
+Ya los conoces y no se repiten: *hilo*, *memoria compartida* y *condición de carrera* (Fundamentos, Módulo 5, Tema 2); *relación sucedió-antes* (Arquitectura, Módulo 1, Tema 5); `Thread`, `start` y `join` (Java, Módulo 5,
 Tema 1); `CountDownLatch` (Java, Módulo 5, Tema 3); `volatile`, `AtomicInteger` y operación atómica (Java, Módulo 5,
 Tema 4); compilador JIT (Java, Módulo 11, Tema 2).
 
@@ -657,8 +656,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** microbenchmark, eliminación de código muerto, JMH
 
 Ya los conoces y no se repiten: *compilador JIT*, *OSR*, *desoptimización*, *calentamiento* y *JFR* (Java, Módulo 11,
-Tema 2); *complejidad temporal* y *perf_counter* (Fundamentos, Módulo 2, Temas 2 y 4); *percentil* (Fundamentos,
-Módulo 10, Tema 4).
+Tema 2); *complejidad temporal* y `System.nanoTime` (Fundamentos, Módulo 2, Temas 4 y 2); *percentil* (Fundamentos, Módulo 7, Tema 6).
 
 #### El problema
 Un compañero cambia el cálculo de totales de Tienda Aurora y afirma que ahora es diez veces más rápido. Su prueba:
@@ -929,8 +927,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: *serialización*, *deserialización* y *JSON* (Java, Módulo 6, Tema 2);
 `serialVersionUID` (Java, Módulo 3, Tema 3); `record` (Java, Módulo 1, Tema 5); try-with-resources (Java, Módulo 3,
-Tema 2); *límite de confianza* (Fundamentos, Módulo 6, Tema 1); *validación de entrada* (Fundamentos, Módulo 6,
-Tema 4).
+Tema 2); *límite de confianza* (Seguridad, Módulo 0, Tema 1); *validación de entrada* (Seguridad, Módulo 0, Tema 4).
 
 #### El problema
 Un servicio antiguo de Tienda Aurora recibe mensajes entre procesos como bytes de `ObjectOutputStream`. El código
@@ -1216,9 +1213,9 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** shutdown hook, apagado ordenado, SIGTERM y SIGKILL
 
-Ya los conoces y no se repiten: *señal*, `kill` y *proceso en segundo plano* (Fundamentos, Módulo 8, Tema 1);
-*código de salida* (Fundamentos, Módulo 0, Tema 4); *usuario* (Fundamentos, Módulo 8, Tema 3); *contenedor*
-(Fundamentos, Módulo 8, Tema 4); `module-info.java` y módulo JPMS (Java, Módulo 10, Tema 1); *jlink*, *jdeps* y
+Ya los conoces y no se repiten: *señal*, `kill` y *proceso en segundo plano* (Fundamentos, Módulo 5, Tema 1);
+*código de salida* (Fundamentos, Módulo 0, Tema 4); *usuario* (Fundamentos, Módulo 5, Tema 3); *contenedor*
+(Fundamentos, Módulo 5, Tema 4); `module-info.java` y módulo JPMS (Java, Módulo 10, Tema 1); *jlink*, *jdeps* y
 *runtime personalizado* (Java, Módulo 10, Tema 2); *JFR* (Java, Módulo 11, Tema 2).
 
 #### El problema
@@ -1770,9 +1767,9 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** LTS, jdeprscan, `forRemoval`, matriz de versiones
 
-Ya los conoces y no se repiten: *deprecación* y *cambio compatible* (Fundamentos, Módulo 7, Tema 4); *versión de
+Ya los conoces y no se repiten: *deprecación* y *cambio compatible* (Arquitectura, Módulo 0, Tema 4); *versión de
 class file* (Java, Módulo 0, Tema 1); `--release` (Java, Módulo 0, Tema 9); *toolchain* (Java, Módulo 8, Tema 4);
-*jdeps* (Java, Módulo 10, Tema 2); *integración continua* (Fundamentos, Módulo 5, Tema 4).
+*jdeps* (Java, Módulo 10, Tema 2); *integración continua* (Fundamentos, Módulo 4, Tema 4).
 
 #### El problema
 Tienda Aurora corre en Java 17 y el soporte comercial de esa versión se acaba. El equipo quiere saltar a 21 o directo a

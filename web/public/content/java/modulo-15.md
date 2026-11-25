@@ -1635,7 +1635,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: *JUnit 5*, *JUnit Platform*, `@Test`, *aserción* y `assertThrows` (Java, Módulo 9,
 Tema 1); *Mockito*, *mock*, *stub*, `verify`, `@Mock` y `@ExtendWith` (Java, Módulo 9, Tema 2); *JaCoCo* y
-*cobertura* (Java, Módulo 9, Tema 3); *doble de prueba* (Fundamentos, Módulo 5, Tema 2); *lambda* e *interfaz
+*cobertura* (Java, Módulo 9, Tema 3); *doble de prueba* (Fundamentos, Módulo 4, Tema 2); *lambda* e *interfaz
 funcional* (Java, Módulo 4, Tema 1); `Optional` (Java, Módulo 4, Tema 2).
 
 #### El problema
@@ -1913,8 +1913,8 @@ Al terminar este tema podrás:
 **Conceptos clave:** JDBC, `DataSource`, base de datos embebida, aislamiento de datos de prueba
 
 Ya los conoces y no se repiten: *prueba unitaria*, *prueba de integración*, *pirámide de pruebas* y *doble de prueba*
-(Fundamentos, Módulo 5, Tema 2); *conexión*, *SQL*, *tabla* y *clave primaria* (Fundamentos, Módulo 4, Tema 1);
-*consulta parametrizada* (Fundamentos, Módulo 4, Tema 2); try-with-resources (Java, Módulo 3, Tema 2); *puerto*
+(Fundamentos, Módulo 4, Tema 2); *conexión*, *SQL*, *tabla* y *clave primaria* (SQL, Módulo 0, Tema 1);
+*consulta parametrizada* (SQL, Módulo 0, Tema 2); try-with-resources (Java, Módulo 3, Tema 2); *puerto*
 (Java, Módulo 13, Tema 1); *scope* y *configuración de dependencias* (Java, Módulo 8, Tema 2).
 
 #### El problema
@@ -2168,7 +2168,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** SLF4J, Logback, MDC, marcador de posición `{}`, encoder JSON
 
-Ya los conoces y no se repiten: *registro estructurado* e *ID de correlación* (Fundamentos, Módulo 10, Tema 4);
+Ya los conoces y no se repiten: *registro estructurado* e *ID de correlación* (Arquitectura, Módulo 1, Tema 4);
 `ThreadLocal` (Java, Módulo 5, Tema 6); `ExecutorService` y *pool de hilos* (Java, Módulo 5, Tema 1); `Logger` de
 `java.util.logging` (Java, Módulo 12, Tema 4); *JSON* (Java, Módulo 6, Tema 2); *configuración de dependencias*
 (Java, Módulo 8, Tema 2).

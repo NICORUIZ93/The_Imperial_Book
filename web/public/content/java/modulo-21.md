@@ -20,7 +20,7 @@ Al terminar este módulo podrás:
 Capa 2.
 
 **Qué necesitas saber antes:** *API* (Fundamentos, Módulo 3, Tema 2); *cambio compatible*, *deprecación* y *ADR*
-(Fundamentos, Módulo 7, Tema 4); *bytecode*, `javap` y *classpath* (Java, Módulo 0, Tema 1); `record` (Java, Módulo 1,
+(Arquitectura, Módulo 0, Tema 4); *bytecode*, `javap` y *classpath* (Java, Módulo 0, Tema 1); `record` (Java, Módulo 1,
 Tema 5); interfaces y *método `default`* (Java, Módulo 1, Tema 3); modificadores de acceso y sobrecarga (Java, Módulo 1,
 Tema 4); genéricos, *tipo crudo* y *type erasure* (Java, Módulo 2, Tema 4); excepciones (Java, Módulo 3, Tema 1);
 *proyecto multi-módulo* (Java, Módulo 8, Tema 3); JUnit (Java, Módulo 9, Tema 1); `exports` (Java, Módulo 10, Tema 1);
@@ -459,8 +459,7 @@ Al terminar este tema podrás:
 
 **Conceptos clave:** superficie pública, contrato de API, comportamiento observable, detalle de implementación
 
-Ya los conoces y no se repiten: *API* (Fundamentos, Módulo 3, Tema 2); *cambio compatible* (Fundamentos, Módulo 7,
-Tema 4); *bytecode* y `javap` (Java, Módulo 0, Tema 1); modificadores de acceso (Java, Módulo 1, Tema 4); *proyecto
+Ya los conoces y no se repiten: *API* (Fundamentos, Módulo 3, Tema 2); *cambio compatible* (Arquitectura, Módulo 0, Tema 4); *bytecode* y `javap` (Java, Módulo 0, Tema 1); modificadores de acceso (Java, Módulo 1, Tema 4); *proyecto
 multi-módulo* (Java, Módulo 8, Tema 3); `exports` (Java, Módulo 10, Tema 1).
 
 #### El problema
@@ -752,7 +751,7 @@ Al terminar este tema podrás:
 
 Ya los conoces y no se repiten: *superficie pública* y *contrato de API* (Tema 1 de este módulo); *bytecode*,
 `javap` y *classpath* (Java, Módulo 0, Tema 1); sobrecarga (Java, Módulo 1, Tema 4); excepciones comprobadas (Java,
-Módulo 3, Tema 1); *cambio compatible* (Fundamentos, Módulo 7, Tema 4).
+Módulo 3, Tema 1); *cambio compatible* (Arquitectura, Módulo 0, Tema 4).
 
 #### El problema
 El equipo de logística de Tienda Aurora usa `aurora-api` 1.0 desde un JAR que compiló hace meses y no va a
@@ -1136,7 +1135,7 @@ Al terminar este tema podrás:
 **Conceptos clave:** `@Deprecated`, `forRemoval`, etiqueta `@deprecated` de Javadoc, ciclo de retirada, versionado semántico, conflicto de métodos default
 
 Ya los conoces y no se repiten: *método `default`* e *interfaz* (Java, Módulo 1, Tema 3); *deprecación*, *cambio
-compatible* y *ADR* (Fundamentos, Módulo 7, Tema 4); *compatibilidad binaria*, *compatibilidad de fuente* y *error de
+compatible* y *ADR* (Arquitectura, Módulo 0, Tema 4); *compatibilidad binaria*, *compatibilidad de fuente* y *error de
 enlace* (Tema 2 de este módulo); `switch` exhaustivo sobre un `enum` (Java, Módulo 7, Tema 2).
 
 #### El problema
@@ -1511,7 +1510,7 @@ borra estado(id)           1.4.2 -> 2.0.0
 > Migra a la firma nueva. Si debes mantener la llamada vieja (como `App` del proyecto), declara
 > `@SuppressWarnings("deprecation")` o `"removal"` en el método más pequeño posible.
 
-> **Buena práctica.** Registra cada retirada en un ADR (Fundamentos, Módulo 7, Tema 4): qué se depreca, desde qué
+> **Buena práctica.** Registra cada retirada en un ADR (Arquitectura, Módulo 0, Tema 4): qué se depreca, desde qué
 > versión, cuál es el reemplazo y en qué versión mayor se borra.
 
 > **Ingeniería de software.** Un `default` debe ser correcto para toda implementación existente. `tipo()` devuelve
