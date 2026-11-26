@@ -3530,38 +3530,46 @@
     ],
     "1": [
       {
-        "title": "El protocolo View y composición",
-        "fragment": "tema-1-el-protocolo-view-y-composicion"
+        "title": "El protocolo View y la composición",
+        "fragment": "tema-1-el-protocolo-view-y-la-composicion"
       },
       {
-        "title": "Orden de modificadores y layout con stacks",
-        "fragment": "tema-2-orden-de-modificadores-y-layout-con-stacks"
+        "title": "El orden de los modificadores",
+        "fragment": "tema-2-el-orden-de-los-modificadores"
       },
       {
-        "title": "Previews, LazyVGrid/ScrollView y property wrappers",
-        "fragment": "tema-3-previews-lazyvgrid-scrollview-y-property-wrappers"
+        "title": "Pilas, Spacer, frame y padding: filas que no se rompen",
+        "fragment": "tema-3-pilas-spacer-frame-y-padding-filas-que-no-se-rompen"
+      },
+      {
+        "title": "ScrollView, pilas perezosas, LazyVGrid y vistas previas",
+        "fragment": "tema-4-scrollview-pilas-perezosas-lazyvgrid-y-vistas-previas"
+      },
+      {
+        "title": "Proyecto 38: la pantalla «Ruta de hoy», maquetada y comprobada",
+        "fragment": "proyecto-38-la-pantalla-ruta-de-hoy-maquetada-y-comprobada"
       }
     ],
     "10": [
       {
-        "title": "Instruments",
-        "fragment": "tema-1-instruments"
+        "title": "Medir antes de optimizar: reloj, `measure` y signposts",
+        "fragment": "tema-1-medir-antes-de-optimizar-reloj-measure-y-signposts"
       },
       {
-        "title": "Accesibilidad con VoiceOver",
-        "fragment": "tema-2-accesibilidad-con-voiceover"
+        "title": "VoiceOver: etiquetas, elementos combinados y auditoría automática",
+        "fragment": "tema-2-voiceover-etiquetas-elementos-combinados-y-auditoria-automatica"
       },
       {
-        "title": "Human Interface Guidelines, Dynamic Type e interop con UIKit",
-        "fragment": "tema-3-human-interface-guidelines-dynamic-type-e-interop-con-uikit"
+        "title": "Dynamic Type: un diseño que crece con el texto",
+        "fragment": "tema-3-dynamic-type-un-diseno-que-crece-con-el-texto"
       },
       {
-        "title": "Localización con String Catalogs: textos, plurales y formatos por idioma",
-        "fragment": "tema-4-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
+        "title": "Contraste, modo oscuro y las guías de interfaz de Apple",
+        "fragment": "tema-4-contraste-modo-oscuro-y-las-guias-de-interfaz-de-apple"
       },
       {
-        "title": "UIKit desde cero para mantener aplicaciones reales",
-        "fragment": "tema-5-uikit-desde-cero-para-mantener-aplicaciones-reales"
+        "title": "Proyecto 47: la ruta, rápida y para todas las personas",
+        "fragment": "proyecto-47-la-ruta-rapida-y-para-todas-las-personas"
       }
     ],
     "11": [
@@ -3632,134 +3640,138 @@
     ],
     "14": [
       {
-        "title": "Animaciones y matchedGeometryEffect",
-        "fragment": "tema-1-animaciones-y-matchedgeometryeffect"
+        "title": "Animaciones: resortes, fotogramas clave y cómo probarlas",
+        "fragment": "tema-1-animaciones-resortes-fotogramas-clave-y-como-probarlas"
       },
       {
-        "title": "Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos",
-        "fragment": "tema-2-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+        "title": "Un `Layout` propio: etiquetas que pasan de fila",
+        "fragment": "tema-2-un-layout-propio-etiquetas-que-pasan-de-fila"
       },
       {
-        "title": "Swift Testing y pruebas asíncronas",
-        "fragment": "tema-3-swift-testing-y-pruebas-asincronas"
+        "title": "`UIViewRepresentable`: un `UITextView` con coordinador",
+        "fragment": "tema-3-uiviewrepresentable-un-uitextview-con-coordinador"
       },
       {
-        "title": "ViewInspector con criterio",
-        "fragment": "tema-4-viewinspector-con-criterio"
+        "title": "UIKit y SwiftUI en las dos direcciones",
+        "fragment": "tema-4-uikit-y-swiftui-en-las-dos-direcciones"
       },
       {
-        "title": "Combine avanzado",
-        "fragment": "tema-5-combine-avanzado"
-      },
-      {
-        "title": "UIViewRepresentable",
-        "fragment": "tema-6-uiviewrepresentable"
-      },
-      {
-        "title": "UIViewControllerRepresentable y Coordinator",
-        "fragment": "tema-7-uiviewcontrollerrepresentable-y-coordinator"
-      },
-      {
-        "title": "Core ML y Vision — inferencia en el dispositivo",
-        "fragment": "tema-8-core-ml-y-vision-inferencia-en-el-dispositivo"
-      },
-      {
-        "title": "WidgetKit: un widget con las entregas pendientes del día",
-        "fragment": "tema-9-widgetkit-un-widget-con-las-entregas-pendientes-del-dia"
-      },
-      {
-        "title": "App Intents: acciones de la app en Siri, Atajos y Spotlight",
-        "fragment": "tema-10-app-intents-acciones-de-la-app-en-siri-atajos-y-spotlight"
+        "title": "Proyecto 51: la entrega, animada, con etiquetas y con UIKit integrado",
+        "fragment": "proyecto-51-la-entrega-animada-con-etiquetas-y-con-uikit-integrado"
       }
     ],
     "2": [
       {
-        "title": "@State y @Binding",
-        "fragment": "tema-1-state-y-binding"
+        "title": "@State: el estado que pertenece a una vista",
+        "fragment": "tema-1-state-el-estado-que-pertenece-a-una-vista"
       },
       {
-        "title": "@Observable",
-        "fragment": "tema-2-observable"
+        "title": "@Binding: editar el estado de otra vista",
+        "fragment": "tema-2-binding-editar-el-estado-de-otra-vista"
       },
       {
-        "title": "@Environment y identidad vs valor",
-        "fragment": "tema-3-environment-y-identidad-vs-valor"
+        "title": "@Observable y @Bindable: un modelo compartido que avisa con precisión",
+        "fragment": "tema-3-observable-y-bindable-un-modelo-compartido-que-avisa-con-precision"
+      },
+      {
+        "title": "@Environment y cuándo se redibuja una vista",
+        "fragment": "tema-4-environment-y-cuando-se-redibuja-una-vista"
+      },
+      {
+        "title": "Proyecto 39: el tablero de carga con el estado bien repartido",
+        "fragment": "proyecto-39-el-tablero-de-carga-con-el-estado-bien-repartido"
       }
     ],
     "3": [
       {
-        "title": "NavigationStack y NavigationPath",
-        "fragment": "tema-1-navigationstack-y-navigationpath"
+        "title": "NavigationStack con un camino tipado",
+        "fragment": "tema-1-navigationstack-con-un-camino-tipado"
       },
       {
-        "title": "Sheets, full screen covers y TabView",
-        "fragment": "tema-2-sheets-full-screen-covers-y-tabview"
+        "title": "Hojas, alertas y diálogos de confirmación",
+        "fragment": "tema-2-hojas-alertas-y-dialogos-de-confirmacion"
       },
       {
-        "title": "Deep linking y controles de formulario",
-        "fragment": "tema-3-deep-linking-y-controles-de-formulario"
+        "title": "TabView: una pila por pestaña",
+        "fragment": "tema-3-tabview-una-pila-por-pestana"
+      },
+      {
+        "title": "Enlaces profundos con URL y restauración de la pila",
+        "fragment": "tema-4-enlaces-profundos-con-url-y-restauracion-de-la-pila"
+      },
+      {
+        "title": "Proyecto 40: la navegación completa de la app de reparto",
+        "fragment": "proyecto-40-la-navegacion-completa-de-la-app-de-reparto"
       }
     ],
     "4": [
       {
-        "title": "async/await y Task",
-        "fragment": "tema-1-async-await-y-task"
+        "title": "`async`/`await` y `Task`: esperar sin bloquear",
+        "fragment": "tema-1-async-await-y-task-esperar-sin-bloquear"
       },
       {
-        "title": "Actors para estado mutable seguro",
-        "fragment": "tema-2-actors-para-estado-mutable-seguro"
+        "title": "Concurrencia estructurada: grupos, cancelación y tiempo límite",
+        "fragment": "tema-2-concurrencia-estructurada-grupos-cancelacion-y-tiempo-limite"
       },
       {
-        "title": "TaskGroup y MainActor",
-        "fragment": "tema-3-taskgroup-y-mainactor"
+        "title": "Actores: carreras de datos, ThreadSanitizer y reentrancia",
+        "fragment": "tema-3-actores-carreras-de-datos-threadsanitizer-y-reentrancia"
       },
       {
-        "title": "Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
-        "fragment": "tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red"
+        "title": "`Sendable`, `@MainActor` y la concurrencia estricta de Swift 6",
+        "fragment": "tema-4-sendable-mainactor-y-la-concurrencia-estricta-de-swift-6"
       },
       {
-        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
-        "fragment": "tema-5-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
+        "title": "`AsyncSequence` y `AsyncStream`: valores que llegan con el tiempo",
+        "fragment": "tema-5-asyncsequence-y-asyncstream-valores-que-llegan-con-el-tiempo"
       },
       {
-        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
-        "fragment": "tema-6-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+        "title": "Proyecto 41: el tablero de la ruta en vivo",
+        "fragment": "proyecto-41-el-tablero-de-la-ruta-en-vivo"
       }
     ],
     "5": [
       {
-        "title": "URLSession con async/await y Codable",
-        "fragment": "tema-1-urlsession-con-async-await-y-codable"
+        "title": "Una petición GET con async/await y Codable",
+        "fragment": "tema-1-una-peticion-get-con-async-await-y-codable"
       },
       {
-        "title": "Errores tipados",
-        "fragment": "tema-2-errores-tipados"
+        "title": "Errores de red y HTTP como un tipo propio",
+        "fragment": "tema-2-errores-de-red-y-http-como-un-tipo-propio"
       },
       {
-        "title": "Reintentos y cancelación",
-        "fragment": "tema-3-reintentos-y-cancelacion"
+        "title": "Tiempo de espera, reintentos y cancelación",
+        "fragment": "tema-3-tiempo-de-espera-reintentos-y-cancelacion"
+      },
+      {
+        "title": "La pantalla con estados, en el simulador",
+        "fragment": "tema-4-la-pantalla-con-estados-en-el-simulador"
+      },
+      {
+        "title": "Proyecto 42: la ruta del día desde el servidor",
+        "fragment": "proyecto-42-la-ruta-del-dia-desde-el-servidor"
       }
     ],
     "6": [
       {
-        "title": "@Model y ModelContainer",
-        "fragment": "tema-1-model-y-modelcontainer"
+        "title": "@Model, ModelContainer y ModelContext",
+        "fragment": "tema-1-model-modelcontainer-y-modelcontext"
       },
       {
-        "title": "@Query y operaciones de escritura",
-        "fragment": "tema-2-query-y-operaciones-de-escritura"
+        "title": "Consultas con FetchDescriptor, #Predicate y @Query",
+        "fragment": "tema-2-consultas-con-fetchdescriptor-predicate-y-query"
       },
       {
-        "title": "Migraciones y SwiftData vs Core Data",
-        "fragment": "tema-3-migraciones-y-swiftdata-vs-core-data"
+        "title": "Relaciones y reglas de borrado",
+        "fragment": "tema-3-relaciones-y-reglas-de-borrado"
       },
       {
-        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
-        "fragment": "tema-4-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
+        "title": "Migraciones con VersionedSchema",
+        "fragment": "tema-4-migraciones-con-versionedschema"
       },
       {
-        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
-        "fragment": "tema-5-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+        "title": "Proyecto 43: la ruta del día guardada en el teléfono",
+        "fragment": "proyecto-43-la-ruta-del-dia-guardada-en-el-telefono"
       }
     ],
     "7": [
@@ -3778,30 +3790,46 @@
     ],
     "8": [
       {
-        "title": "De una vista \"gorda\" a MVVM",
-        "fragment": "tema-1-de-una-vista-gorda-a-mvvm"
+        "title": "El view model @Observable, probado sin vista",
+        "fragment": "tema-1-el-view-model-observable-probado-sin-vista"
       },
       {
-        "title": "Capas del proyecto e inyección por inicializador",
-        "fragment": "tema-2-capas-del-proyecto-e-inyeccion-por-inicializador"
+        "title": "Dominio: casos de uso y repositorios",
+        "fragment": "tema-2-dominio-casos-de-uso-y-repositorios"
       },
       {
-        "title": "Cuándo MVVM no alcanza",
-        "fragment": "tema-3-cuando-mvvm-no-alcanza"
+        "title": "Capas como módulos y una prueba de arquitectura",
+        "fragment": "tema-3-capas-como-modulos-y-una-prueba-de-arquitectura"
+      },
+      {
+        "title": "Composición y vistas, en el simulador",
+        "fragment": "tema-4-composicion-y-vistas-en-el-simulador"
+      },
+      {
+        "title": "Proyecto 45: la app de la ruta, por capas",
+        "fragment": "proyecto-45-la-app-de-la-ruta-por-capas"
       }
     ],
     "9": [
       {
-        "title": "XCTest clásico y Swift Testing",
-        "fragment": "tema-1-xctest-clasico-y-swift-testing"
+        "title": "Swift Testing y XCTest: la misma regla en los dos marcos",
+        "fragment": "tema-1-swift-testing-y-xctest-la-misma-regla-en-los-dos-marcos"
       },
       {
-        "title": "Testing de código async",
-        "fragment": "tema-2-testing-de-codigo-async"
+        "title": "Pruebas parametrizadas, rasgos y código asíncrono",
+        "fragment": "tema-2-pruebas-parametrizadas-rasgos-y-codigo-asincrono"
       },
       {
-        "title": "UI Tests con XCUITest",
-        "fragment": "tema-3-ui-tests-con-xcuitest"
+        "title": "Dobles de prueba: stub, fake, spy, mock y una red falsa",
+        "fragment": "tema-3-dobles-de-prueba-stub-fake-spy-mock-y-una-red-falsa"
+      },
+      {
+        "title": "Pruebas de vistas: capturas comparadas y XCUITest",
+        "fragment": "tema-4-pruebas-de-vistas-capturas-comparadas-y-xcuitest"
+      },
+      {
+        "title": "Proyecto 46: la app de la ruta, con red de seguridad",
+        "fragment": "proyecto-46-la-app-de-la-ruta-con-red-de-seguridad"
       }
     ]
   },
