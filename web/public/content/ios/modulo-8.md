@@ -24,8 +24,8 @@ importante, comprueba con una prueba que nadie rompa la separación.
 **Esquema del módulo:** Tema 1 (el view model probado sin vista) → Tema 2 (dominio: casos de uso y repositorios) →
 Tema 3 (capas como módulos y prueba de arquitectura) → Tema 4 (composición y vistas, en el simulador) → Proyecto 45.
 
-**Qué necesitas saber antes:** del Módulo 2, **`@Observable` y `@State`** (Temas 1 y 2); del Módulo 4, **`actor`,
-`@MainActor` y `Sendable`** (Temas 2, 3 y 6); del Módulo 5, **los errores tipados** (Tema 2); del Módulo 0, **los
+**Qué necesitas saber antes:** del Módulo 2, **`@State` y `@Observable`** (Temas 1 y 3); del Módulo 4, **`actor`,
+`@MainActor` y `Sendable`** (Temas 3 y 4); del Módulo 5, **los errores tipados** (Tema 2); del Módulo 0, **los
 protocolos** (Tema 3).
 
 **Qué no se repite:** cómo funciona `@Observable` por dentro (Módulo 2), la red (Módulo 5) ni SwiftData (Módulo 6).
@@ -98,8 +98,7 @@ Al terminar este tema podrás:
 - probar carga, error, filtro y acciones con un repositorio falso, sin ninguna vista;
 - comprobar con `withObservationTracking` qué cambios redibujarían una vista.
 
-**Conceptos clave:** view model, `@Observable`, `@MainActor`, estado derivado, doble de prueba, seguimiento de
-observación
+**Conceptos clave:** view model, `@Observable`, `@MainActor`, estado derivado, doble de prueba, seguimiento de observación
 
 #### El problema
 `PantallaEnvios` tiene en su `body` la carga del archivo, el filtro, el conteo del título y la regla «un frágil
@@ -107,8 +106,8 @@ necesita firma». Para probar que el título dice «1 pendiente» y no «1 pendi
 contar a ojo, y para probar la regla de la firma hay que tocar la pantalla. Cada cambio de diseño rompe la lógica y
 cada cambio de lógica obliga a revisar el diseño.
 
-Este tema usa **`@Observable`** (Módulo 2, Tema 2), **`actor`** (Módulo 4, Tema 2) y **`@MainActor`** (Módulo 4,
-Tema 3).
+Este tema usa **`@Observable`** (Módulo 2, Tema 3), **`actor`** (Módulo 4, Tema 3) y **`@MainActor`** (Módulo 4,
+Tema 4).
 
 #### Glosario del tema
 
@@ -147,10 +146,43 @@ Tema 3).
 - **Ejemplo:** `actor RepositorioFalso` con `guardados`.
 - **Error típico:** un doble que nunca falla, y por eso el estado de error nunca se prueba.
 
+**seguimiento de observación**
+- **Definición técnica:** `withObservationTracking(_:onChange:)` ejecuta un closure, anota las propiedades `@Observable` que lee y llama a `onChange` **una vez**, antes del primer cambio de cualquiera de ellas; SwiftUI lo usa al evaluar cada `body`.
+- **En palabras sencillas:** una lista de «a quién avisar» que se arma leyendo y se usa una sola vez.
+- **Dónde se rompe la comparación:** el aviso no se repite solo: para enterarse del siguiente cambio hay que volver a leer dentro de otro seguimiento.
+- **Ejemplo:** se lee `lista.titulo` dentro del seguimiento y después se asigna dos veces: el aviso sale una sola vez.
+- **Error típico:** esperar en una prueba un aviso por cada cambio y contar dos; con un solo seguimiento llega uno.
+
 #### ► CÓMO FUNCIONA
-La vista lee propiedades del view model dentro de su `body`; Observation anota cuáles. El view model llama al
-repositorio (un protocolo del dominio) y cambia `envios`, `estado` o `aviso`; Observation avisa solo a las vistas
-que leyeron esas propiedades. En las pruebas, en lugar de la vista, `withObservationTracking` hace la lectura.
+
+##### 1. La idea en lenguaje sencillo
+En una obra de teatro, el guion dice qué pasa en cada escena y qué responde cada personaje. Los actores lo
+interpretan con su voz y sus gestos. Puedes cambiar de actor sin reescribir el guion, y leer el guion sin montar la
+obra.
+
+Una pantalla bien separada tiene esas dos partes. El **view model** es el guion: qué envíos hay, qué título se
+muestra, qué pasa al marcar uno como entregado. La vista de SwiftUI es la actuación: filas, colores, botones.
+
+Hasta ahora, `PantallaEnvios` mezclaba las dos cosas en su `body`. Para comprobar que el título dice «1 pendiente» y
+no «1 pendientes» había que abrir el simulador. Este tema saca el guion a una clase que se prueba en Linux, en
+milisegundos, sin ninguna vista.
+
+##### 2. Definición formal y vocabulario
+Un **view model** es una clase que expone el estado de una pantalla y sus acciones, sin depender de SwiftUI. La
+vista lee su estado y le envía los eventos del usuario.
+
+**`@Observable`** es una macro del módulo `Observation`, disponible desde Swift 5.9 e iOS 17. Hace que cada lectura
+de una propiedad almacenada quede registrada y que cada escritura avise solo a quien la leyó.
+
+**`@MainActor`** aísla la clase en el **actor principal**, el mismo donde SwiftUI dibuja. Así sus propiedades se
+leen y escriben desde un solo lugar, sin carreras de datos.
+
+El **estado derivado** es una propiedad calculada a partir de otras, como `titulo` o `visibles`. Un **doble de
+prueba** es una implementación del protocolo hecha para las pruebas, como `RepositorioFalso`. El **seguimiento de
+observación** es el mecanismo de `withObservationTracking`, la misma función que usa SwiftUI por dentro.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra quién lee, quién escribe y a quién se avisa.
 
 ```mermaid
 flowchart LR
@@ -161,6 +193,65 @@ flowchart LR
     R -.->|"en las pruebas"| F["RepositorioFalso"]
     VM -->|"avisa solo a quien leyó lo que cambió"| V
 ```
+
+1. **La macro reescribe la clase.** `@Observable` convierte cada propiedad almacenada en un par de accesos. El
+   acceso de lectura registra «alguien leyó `envios`»; el de escritura avisa «`envios` va a cambiar».
+2. **La vista lee dentro de un seguimiento.** SwiftUI ejecuta `body` dentro de `withObservationTracking`. Todo lo que
+   `body` lee queda anotado como dependencia de esa vista.
+3. **Las propiedades calculadas se rastrean por dentro.** `titulo` no tiene almacenamiento propio. Al leerlo se lee
+   `envios`, y es `envios` lo que queda anotado.
+4. **Una acción cambia el estado.** `marcar(_:firma:)` llama al caso de uso con `await` y, al volver al actor
+   principal, quita la guía de `envios`.
+5. **Observation avisa solo a los interesados.** El cambio de `envios` dispara el `onChange` de las vistas que lo
+   leyeron. Una vista que solo leyó `aviso` no se entera.
+
+La prueba `quePropiedadesObservaLaVista` reproduce los pasos 2 y 5 sin SwiftUI:
+
+```swift
+withObservationTracking {
+    _ = modelo.titulo
+} onChange: {
+    soloTitulo.withLock { $0 += 1 }
+}
+```
+
+Cambiar `filtro` no avisó a esa lectura: `titulo` no depende de `filtro`. Marcar `EN-4471` sí avisó, porque cambió
+`envios`. La salida real lo dice: 0 avisos tras el filtro y 1 tras marcar.
+
+El paso 4 tiene un detalle de concurrencia. `RepositorioFalso` es un `actor`, así que `await
+repositorio.pendientes()` sale del actor principal. Cuando el resultado vuelve, la asignación a `envios` ocurre otra
+vez en el actor principal, porque `cargar()` pertenece a una clase `@MainActor`.
+
+##### 4. Reglas, variantes y casos límite
+- **`onChange` avisa una sola vez.** Tras el primer cambio, ese seguimiento termina. SwiftUI vuelve a registrar las
+  dependencias en cada ejecución de `body`.
+- **Avisa antes del cambio.** `onChange` se llama cuando la propiedad está a punto de cambiar, como un `willSet`.
+  Dentro de él, el valor nuevo todavía no está.
+- **Propiedades ignoradas.** `@ObservationIgnored` excluye una propiedad del seguimiento. Sirve para cachés o
+  dependencias que no afectan al dibujo.
+- **Solo clases.** `@Observable` se aplica a clases. Un `struct` se copia, y no tendría una identidad a la que
+  suscribirse.
+- **Escrituras protegidas.** `public private(set) var estado` deja leer desde la vista y escribir solo desde el view
+  model. `filtro` es escribible porque lo cambia la caja de búsqueda.
+- **Pruebas en el mismo actor.** La suite lleva `@MainActor`; si no, cada acceso al view model exigiría `await`.
+- **Sin SwiftUI.** El view model importa `Observation` y `Foundation`, nunca `SwiftUI`. Si devolviera `Color` o
+  `Text`, ya no se probaría en Linux.
+
+En cuanto al estado derivado, la regla es simple. Lo que se puede calcular a partir de otro dato no se guarda dos
+veces; así `titulo` nunca contradice a `envios`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`@Observable` es la macro del Módulo 2, Tema 3. Allí la usaste en un modelo compartido entre vistas; aquí la usas
+para sacar la lógica de la pantalla y probarla aparte.
+
+El `actor` del doble y el `@MainActor` del view model son los del Módulo 4, Temas 3 y 4. El paso de uno al otro con
+`await` es el salto entre dominios de aislamiento que estudiaste allí.
+
+Compara este view model con `BuscadorCombine` del Módulo 7, Tema 3. Los dos guardan el estado de una pantalla. El
+`ObservableObject` avisa ante cualquier `@Published`; el `@Observable` solo por lo que cada vista leyó.
+
+El Tema 2 explica `MarcarEntregado` y el protocolo `RepositorioEnvios`, que aquí se usan sin explicar. El Tema 4
+conecta el view model con las vistas reales. El Módulo 9, Tema 3, profundiza en los dobles de prueba.
 
 #### Problema resuelto 1.1
 Escribe el view model de la lista de envíos y pruébalo sin vista: carga con datos, sin datos y con error; el filtro
@@ -558,7 +649,7 @@ olvida la de la lista. Además, `ListaEnviosViewModel` crea su propio `Repositor
 que escribir archivos.
 
 Este tema usa **los protocolos** (Módulo 0, Tema 3), **los errores tipados** (Módulo 5, Tema 2) y **los actores**
-(Módulo 4, Tema 2).
+(Módulo 4, Tema 3).
 
 #### Glosario del tema
 
@@ -598,8 +689,34 @@ Este tema usa **los protocolos** (Módulo 0, Tema 3), **los errores tipados** (M
 - **Error típico:** una `class` con un `var` cache y llamadas desde varias tareas.
 
 #### ► CÓMO FUNCIONA
-Los dos view models crean su `MarcarEntregado` con el mismo repositorio. El caso de uso valida la firma y, si pasa,
-pide al repositorio que guarde. El repositorio JSON traduce entre `Envio` y `EnvioDTO` y escribe el archivo.
+
+##### 1. La idea en lenguaje sencillo
+En una empresa, el procedimiento para entregar un paquete frágil está escrito una sola vez en el manual. Lo siguen el
+repartidor en la calle, el supervisor en la oficina y la persona que atiende reclamos. Si el procedimiento cambia,
+se corrige el manual, no cada copia en cada escritorio.
+
+En la app, la regla «un frágil solo se entrega con firma» estaba copiada en dos pantallas. Una copia cambió y la
+otra no. Este tema escribe la regla una vez, como **caso de uso**, y hace que las dos pantallas la llamen.
+
+También separa la regla del lugar donde se guardan los datos. Al caso de uso no le importa si los envíos están en
+un archivo, en un servidor o en SwiftData. Pide «guarda este envío» a un **repositorio** y confía en el contrato.
+
+##### 2. Definición formal y vocabulario
+El **dominio** es la capa que contiene los modelos y las reglas del negocio, sin interfaz ni almacenamiento. Un
+**caso de uso** es un tipo del dominio que ejecuta una operación completa: validar, cambiar y guardar.
+
+La **inversión de dependencias** es el principio que decide quién define el contrato. La capa de alto nivel, el
+dominio, declara el protocolo; la de bajo nivel, los datos, lo implementa. Así el dominio no importa a los datos.
+
+Un **repositorio** implementa el contrato de datos. Esconde de dónde vienen los datos y entrega modelos del dominio.
+Un **DTO** (*data transfer object*, objeto de transferencia de datos) es la forma exacta del dato en el borde.
+Aquí es el JSON con `firmado_por`, junto con su traducción al modelo.
+
+Un **`actor` como repositorio** aprovecha que un actor atiende una llamada a la vez: dos `guardar` simultáneos no
+leen y escriben el archivo al mismo tiempo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama sigue una entrega desde cualquiera de las dos pantallas hasta el archivo.
 
 ```mermaid
 flowchart TB
@@ -610,6 +727,60 @@ flowchart TB
     P --> J["RepositorioEnviosJSON (Datos)"]
     J --> T["Envio → EnvioDTO → envios.json (.atomic)"]
 ```
+
+1. **Dos puertas, una regla.** `ListaEnviosViewModel.marcar` y `DetalleEnvioViewModel.confirmar` crean su propio
+   `MarcarEntregado` con el repositorio que recibieron. El código de la regla existe una sola vez.
+2. **Validar.** `ejecutar(_:firma:)` limpia los espacios de la firma. Si el envío es frágil y la firma queda vacía,
+   lanza `.requiereFirma` antes de tocar el repositorio.
+3. **Cambiar el valor.** `Envio` es un `struct`, así que el caso de uso hace una copia, cambia su estado y su firma,
+   y trabaja con esa copia.
+4. **Cruzar al actor.** `try await repositorio.guardar(entregado)` entra en el actor `RepositorioEnviosJSON`.
+   Mientras dentro se ejecuta un `guardar`, otra llamada espera su turno.
+5. **Traducir en el borde.** El repositorio lee el archivo como `[EnvioDTO]`, convierte cada uno con `aDominio()`,
+   reemplaza el envío y vuelve a escribir todo con `.atomic`.
+
+El paso 2 es todo el caso de uso que importa al negocio:
+
+```swift
+let firmaLimpia = firma?.trimmingCharacters(in: .whitespaces) ?? ""
+if envio.fragil && firmaLimpia.isEmpty { throw .requiereFirma(guia: envio.guia) }
+```
+
+La vista del detalle también revisa la firma con `puedeConfirmar`, para deshabilitar el botón. Pero esa revisión es
+comodidad, no seguridad. La prueba `confirmarUnFragil` llama a `confirmar()` con una firma de espacios, y el caso de
+uso igual la rechaza.
+
+El paso 5 explica el DTO. `aDominio()` puede fallar: un estado `"devuelto"` en el archivo no existe en
+`EstadoEnvio`. El error sale como `.almacenamiento("estado desconocido «devuelto» en EN-4471")`, con la guía para
+encontrarlo.
+
+##### 4. Reglas, variantes y casos límite
+- **Contrato `Sendable`.** `RepositorioEnvios` hereda de `Sendable` porque se comparte entre el actor principal y
+  otros dominios. Un actor lo cumple sin más; una clase con estado mutable no.
+- **Reentrada.** `guardar` no tiene ningún `await` entre leer y escribir. Si lo tuviera, otra llamada podría entrar
+  en medio y leer un archivo viejo, aunque sea un actor.
+- **Miembros estáticos.** `sembrar` es `static`, así que no está aislada en el actor y se llama sin `await`.
+- **Un proceso, no varios.** El actor serializa las llamadas dentro de la app. Otro proceso que escriba el mismo
+  archivo no lo respeta.
+- **Errores tipados en closures.** `dtos.map { dto throws(ErrorEnvios) in try dto.aDominio() }` declara el tipo en
+  el closure. Así el error conserva su tipo al salir de `map`.
+- **No todo necesita un caso de uso.** Si una pantalla solo lee y muestra, el view model llama directo al
+  repositorio. El caso de uso aparece cuando hay una regla que proteger.
+- **No todo necesita un protocolo.** Un protocolo vale la pena cuando hay al menos dos implementaciones, aquí el
+  archivo y el doble de prueba.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Los protocolos del Módulo 0, Tema 3, son la herramienta de la inversión de dependencias. El dominio declara qué
+necesita; cualquier tipo que lo cumpla puede servirle.
+
+`ErrorEnvios` sigue el patrón de `ErrorRed` del Módulo 5, Tema 2: un enum con los fallos posibles y `throws` tipado.
+El texto para la persona vive en la presentación, en `MensajesError.swift`, igual que `mensajeParaPersona`.
+
+Compara el DTO con `Envio` del Módulo 5, que era `Codable`. Allí el modelo de red y el de la app eran el mismo tipo.
+Aquí se separan porque el archivo y el dominio cambian por razones distintas.
+
+El Tema 3 convierte estas capas en módulos y prueba que el dominio no importe a los datos. El Tema 4 crea el
+repositorio real una sola vez y lo inyecta en los view models.
 
 #### Problema resuelto 2.1
 Extrae la regla de la firma a un caso de uso, úsala desde la lista y desde un view model de detalle, e implementa el
@@ -1012,8 +1183,7 @@ Al terminar este tema podrás:
 - escribir una prueba de arquitectura que revise los `import` de cada capa;
 - revisar las vistas de una app de un solo módulo, donde no hay `import` entre carpetas.
 
-**Conceptos clave:** módulo, dependencia declarada, regla de dependencia, prueba de arquitectura, app de un solo
-módulo
+**Conceptos clave:** módulo, dependencia declarada, regla de dependencia, prueba de arquitectura, app de un solo módulo
 
 #### El problema
 El equipo acordó que la presentación no conoce los datos. Tres semanas después, alguien agrega a
@@ -1061,9 +1231,34 @@ Este tema usa **los módulos y `import`** (Módulo 0) y **las pruebas con Swift 
 - **Error típico:** creer que las carpetas de Xcode separan algo.
 
 #### ► CÓMO FUNCIONA
-La prueba recorre `Sources/<Capa>/` y compara cada `import` con la tabla de permitidos. Para las vistas de la app,
-como no hay `import` entre carpetas, reúne los nombres declarados en `Datos` (más una lista de tipos de
-infraestructura) y busca cada uno como palabra completa en los archivos de `app/App/Vistas/`.
+
+##### 1. La idea en lenguaje sencillo
+Un edificio de oficinas tiene puertas con tarjeta. Contabilidad entra a su piso y al archivo; no entra a la sala de
+servidores. La regla está en el reglamento, pero la hace cumplir la cerradura. Además, alguien revisa los
+registros por si una puerta quedó abierta.
+
+Las capas del Tema 2 son esos pisos. La presentación puede usar el dominio, pero no los datos. Escrita en un
+documento, la regla dura hasta que alguien tiene prisa y agrega un `import Datos` «temporal».
+
+Este tema convierte cada capa en un **módulo** de Swift, con dependencias declaradas, y escribe una prueba que
+revisa los `import` en cada ejecución. Además descubre una sorpresa: la cerradura del compilador no siempre está
+cerrada.
+
+##### 2. Definición formal y vocabulario
+Un **módulo** es la unidad de compilación de Swift: un *target* de SwiftPM o de Xcode. Lo declarado `internal` solo
+se ve dentro del módulo. Para usar lo `public` de otro módulo hace falta `import`.
+
+Una **dependencia declarada** es la entrada en `dependencies:` de un *target* en `Package.swift`. Define el orden de
+compilación y con qué módulos se enlaza el resultado.
+
+La **regla de dependencia** dice qué capa puede importar a cuál. Aquí, el dominio no importa a nadie salvo
+Foundation; datos y presentación importan al dominio; solo la composición conoce a todos.
+
+Una **prueba de arquitectura** lee el código fuente y falla si una capa usa algo prohibido. Una **app de un solo
+módulo** es un *target* de Xcode con todos sus archivos juntos: entre sus carpetas no hay `import`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra las flechas permitidas y las dos que la prueba prohíbe.
 
 ```mermaid
 flowchart TB
@@ -1077,6 +1272,67 @@ flowchart TB
     V -. "prohibido" .-> DA
     PR -. "prohibido" .-> DA
 ```
+
+Primero, qué hace SwiftPM con las dependencias declaradas:
+
+1. **Ordenar.** Lee `Package.swift` y arma un grafo: `Dominio` primero, luego `Datos` y `Presentacion`, que lo
+   necesitan.
+2. **Compilar cada módulo.** Al compilar `Presentacion`, el compilador busca los módulos importados entre los que ya
+   están compilados. De cada uno lee su interfaz, la lista de declaraciones `public`.
+3. **Enlazar.** Al construir un ejecutable o un paquete de pruebas, el enlazador une el código de cada módulo
+   declarado.
+
+Ahí está la sorpresa medida en este tema. Con `Datos` ya compilado, `swift build` aceptó el `import Datos` en la
+presentación: el paso 2 encontró el módulo aunque nadie lo había declarado. El fallo apareció en el paso 3, al
+enlazar las pruebas: «undefined reference to … RepositorioEnviosJSON». Y desde cero, sin `.build`, el paso 2 falló
+con «no such module 'Datos'».
+
+Como el compilador no es una cerradura fiable, la prueba de arquitectura hace de inspector:
+
+1. **Ubicar el código.** Calcula la ruta de `Sources/` a partir de `#filePath`, la ruta del archivo de la prueba.
+2. **Leer los `import`.** Por cada archivo de cada capa, extrae el módulo de cada línea `import`.
+3. **Comparar con la tabla.** Si un módulo no está entre los permitidos de esa capa, anota una violación.
+4. **Revisar las vistas por nombres.** En la app no hay `import` entre carpetas. Por eso reúne los tipos declarados
+   en `Datos` y busca cada uno como palabra completa en `app/App/Vistas/`.
+
+La tabla vive en la prueba, al lado de su espejo en `Package.swift`:
+
+```swift
+let permitidos: [String: Set<String>] = [
+    "Dominio": ["Foundation"],
+    "Datos": ["Foundation", "Dominio"],
+    "Presentacion": ["Foundation", "Observation", "Dominio"],
+]
+```
+
+##### 4. Reglas, variantes y casos límite
+- **Compilación incremental.** Un `import` no declarado de un módulo ya compilado puede pasar en `swift build`. No
+  confíes en que «compila en mi computador».
+- **Lo que solo existe en Apple.** En Linux, `import SwiftUI` en un view model ni siquiera compila. En la Mac sí, y
+  solo la prueba lo detectó: «importa SwiftUI».
+- **Niveles de acceso.** `public` abre a otros módulos; `internal`, el valor por defecto, cierra. Desde Swift 5.9
+  existe `package`, visible solo para los módulos del mismo paquete.
+- **`import` con nivel de acceso.** Swift 6 permite escribir `internal import Datos`. Así el módulo importado no se
+  filtra a quien importe tu módulo.
+- **Lo que la prueba no ve.** Revisa nombres y `import`, no comportamiento. Una vista que usa `URLSession` con otro
+  nombre, por ejemplo mediante un `typealias`, la engañaría.
+- **Comentarios.** La prueba salta las líneas que empiezan con `//`. Un nombre prohibido en un comentario no cuenta.
+- **Carpetas de Xcode.** En una app de un solo módulo, las carpetas ordenan archivos pero no separan nada: todo lo
+  `internal` se ve desde cualquier parte.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las capas son las del Tema 2. Lo que cambia es quién vigila la regla: antes, la disciplina del equipo; ahora, el
+compilador cuando puede y la prueba siempre.
+
+El `public init(texto:pausaMs:)` de `Tecla`, en el Módulo 7, Tema 4, fue un primer encuentro con los módulos: el
+inicializador automático era `internal` y otro módulo no lo veía.
+
+Compara esta prueba con una prueba normal. Una prueba de `ListaEnviosViewModel` comprueba lo que hace el código.
+Una prueba de arquitectura comprueba cómo está organizado, y protege a las demás pruebas: sin capas, no habría un
+view model que probar sin vista.
+
+El Tema 4 escribe la única pieza que puede conocer todas las capas, la raíz de composición. El Módulo 12, Tema 1,
+lleva el dominio a un paquete propio en el proyecto integrador.
 
 #### Problema resuelto 3.1
 Escribe la prueba de arquitectura y ejecútala. Después provoca tres violaciones: el dominio importando
@@ -1608,8 +1864,7 @@ Al terminar este tema podrás:
 - crear el view model del detalle con una fábrica, sin que la vista conozca el repositorio;
 - capturar cada estado de la pantalla con view models alimentados por un doble.
 
-**Conceptos clave:** raíz de composición, `@State` con un `@Observable`, enlace a un view model, fábrica de view
-models
+**Conceptos clave:** raíz de composición, `@State` con un `@Observable`, enlace a un view model, fábrica de view models
 
 #### El problema
 Con todo separado, falta quién lo une: alguien tiene que crear el repositorio con su archivo, el view model con ese
@@ -1657,9 +1912,34 @@ con estados** (Módulo 5, Tema 4).
 - **Error típico:** un `if envio.fragil && firma.isEmpty` en la vista.
 
 #### ► CÓMO FUNCIONA
-`EnviosApp` crea el repositorio y el view model de la lista, y una fábrica de detalles que captura el repositorio.
-La vista recibe el view model y la fábrica; al tocar una fila, llama a la fábrica. En las capturas, la composición
-es otra: un `RepositorioFalso` por estado.
+
+##### 1. La idea en lenguaje sencillo
+En una casa, cada electrodoméstico tiene su enchufe y cada pared su toma. Pero alguien tuvo que decidir qué circuito
+alimenta cada toma: eso está en el tablero eléctrico, en un solo lugar. Si quieres saber de dónde sale la corriente
+de la cocina, no recorres las paredes; abres el tablero.
+
+Las capas de los temas anteriores son electrodomésticos sin cable. El view model espera «algún repositorio»; el
+repositorio espera «algún archivo». Falta el tablero que diga: este archivo, este repositorio, este view model.
+
+Ese tablero es la **raíz de composición**, y en una app SwiftUI vive en el tipo `App`. Las vistas, por su parte,
+quedan reducidas a lo que son: dibujar el estado del view model y avisarle de los toques.
+
+##### 2. Definición formal y vocabulario
+La **raíz de composición** es el único punto del programa que conoce las implementaciones concretas y las conecta.
+Puede importar todas las capas, y por eso debe ser pequeña y sin reglas.
+
+**`@State` con un `@Observable`** guarda un objeto en el almacenamiento de SwiftUI. El objeto sobrevive a las muchas
+evaluaciones de `body` mientras la vista exista en la jerarquía.
+
+Un **enlace a un view model** es un `Binding` hacia una propiedad escribible del objeto, como `$modelo.filtro`.
+SwiftUI lo construye por *key path* a partir del `@State` o de `@Bindable`.
+
+Una **fábrica de view models** es una función que recibe lo que solo la vista conoce, como el envío tocado.
+Devuelve un view model ya conectado. Una **vista pasiva** solo transforma estado en interfaz y gestos en
+acciones.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra las dos composiciones del tema: la de la app y la de las capturas.
 
 ```mermaid
 flowchart TB
@@ -1675,6 +1955,63 @@ flowchart TB
       RF["RepositorioFalso (datos, vacío, error)"] --> L2["ListaEnviosViewModel"] --> P2["PantallaEnvios"]
     end
 ```
+
+1. **Arranca la app.** El sistema crea `EnviosApp` y ejecuta su `init()`. Es el primer código tuyo que corre.
+2. **Decidir el archivo.** La composición calcula `URL.applicationSupportDirectory/envios.json`. Si no existe, o si
+   el argumento `-escena sembrar` lo pide, lo siembra con las muestras.
+3. **Crear las piezas una vez.** Crea un `RepositorioEnviosJSON` y un `ListaEnviosViewModel` con él. Los dos quedan
+   guardados en propiedades de `EnviosApp`.
+4. **Entregar a la vista.** `body` crea `PantallaEnvios` con el view model y una fábrica de detalles. La fábrica es
+   un closure que captura el repositorio con `[repositorio]`.
+5. **Conservar el view model.** `PantallaEnvios` lo guarda en `@State`. SwiftUI lo mantiene aunque `body` se evalúe
+   muchas veces.
+6. **Tocar una fila.** `NavigationLink` llama a `detalle(envio)`. La vista recibe un `DetalleEnvioViewModel` listo
+   sin haber visto nunca el repositorio.
+
+El paso 4 es lo que mantiene limpia la vista. Así se ve la conexión en `EnviosApp`:
+
+```swift
+PantallaEnvios(modelo: lista) { [repositorio] envio in
+    DetalleEnvioViewModel(envio: envio, repositorio: repositorio)
+}
+```
+
+La vista declara la fábrica como `@MainActor (Envio) -> DetalleEnvioViewModel`. El atributo es necesario: el
+closure crea un objeto aislado al actor principal, y Swift 6 exige que se llame desde ahí.
+
+Las capturas hacen otra composición con la misma vista. Cada prueba crea un `RepositorioFalso` con datos, vacío o
+con fallo, carga el view model y fotografía la pantalla. Ningún archivo real participa.
+
+##### 4. Reglas, variantes y casos límite
+- **`@State` conserva el primero.** Si quien crea la vista le pasa otro view model después, `@State` lo ignora.
+  Sigue con el que guardó la primera vez.
+- **No crear dentro de `body`.** Un view model creado en `body` se recrearía en cada evaluación y perdería su
+  estado.
+- **`@Bindable` para objetos recibidos.** Si una vista recibe el objeto sin poseerlo, `@Bindable var modelo` le da
+  enlaces como `$modelo.firma` sin guardarlo en `@State`.
+- **Solo propiedades escribibles.** `$modelo.filtro` funciona porque `filtro` tiene `set` público. `estado` es
+  `private(set)` y no se puede enlazar, a propósito.
+- **Tareas de los botones.** Un `Button` no acepta acciones `async`. Por eso crea `Task { await modelo.marcar(envio) }`,
+  que hereda el actor principal de la vista.
+- **App de un solo módulo.** En la Mac, las capas se copian como carpetas de la app, y `mac.sh` quita los `import`
+  entre capas. La prueba del Tema 3 vigila los nombres porque ahí no hay `import`.
+- **Versiones.** `@Observable` en `@State` y `@Bindable` requieren iOS 17.
+
+La regla de la vista pasiva se nota en `DetalleEnvio`. El botón usa `.disabled(!modelo.puedeConfirmar)` y no repite
+la condición de la firma. Si mañana la regla cambia, la vista no se entera.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`@State` y los enlaces vienen del Módulo 2, Temas 1 y 2, y `@Bindable` del Tema 3. Allí guardaban valores simples;
+aquí guardan el view model completo de la pantalla.
+
+La estructura de `PantallaEnvios`, con un `switch` sobre `estado` y `ContentUnavailableView`, es la del Módulo 5,
+Tema 4. La diferencia es quién decide el estado: antes la vista llamaba a la red; ahora solo lee.
+
+Compara la fábrica con pasar el repositorio a la vista. Con el repositorio, la vista podría crear lo que quisiera, y
+la prueba del Tema 3 fallaría. Con la fábrica, solo puede pedir un detalle.
+
+El Módulo 9, Tema 4, compara estas capturas píxel a píxel y recorre la app con XCUITest. El Módulo 12, Tema 3, repite
+este esquema en el proyecto integrador.
 
 #### Problema resuelto 4.1
 Escribe las dos vistas y la raíz de composición. Captura la lista con datos, vacía, con error, con el aviso del

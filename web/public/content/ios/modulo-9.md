@@ -66,7 +66,7 @@ La tarifa de envío cobra la base de la zona por el primer kilo y 1 500 pesos po
 paquete de 1,2 kg paga un kilo adicional. Alguien «simplifica» el redondeo y cambia `rounded(.up)` por `rounded()`.
 Compila, la app funciona y el paquete de 1,2 kg deja de cobrar 1 500 pesos. Nadie lo nota hasta el cierre de caja.
 
-Este tema usa **los errores con `throws`** (Módulo 0) y **los paquetes de Swift** (Módulo 12).
+Este tema usa **los errores con `throws`** (Módulo 0) y **los paquetes de Swift con `swift test`** (Módulo 0, «Prepara el proyecto»).
 
 #### Glosario del tema
 
@@ -98,7 +98,7 @@ Este tema usa **los errores con `throws`** (Módulo 0) y **los paquetes de Swift
 - **Ejemplo:** `XCTAssertEqual(try Tarifa.costo(pesoKg: 1.2, zona: .centro), 7_500)`.
 - **Error típico:** usar `XCTAssert…` dentro de una función `@Test`: el fallo se convierte en un aviso y la prueba **pasa**.
 
-**prueba alojada (*hosted test*)**
+**pruebas alojadas (hosted tests)**
 - **Definición técnica:** un paquete de pruebas que se carga dentro del proceso de la app (la app anfitriona) en el simulador, con `@testable import` para ver lo `internal`.
 - **En palabras sencillas:** las pruebas viajan dentro de la app y la usan por dentro.
 - **Dónde se rompe la comparación:** la app arranca de verdad (su `App`, su primera pantalla) antes de las pruebas.
@@ -106,9 +106,34 @@ Este tema usa **los errores con `throws`** (Módulo 0) y **los paquetes de Swift
 - **Error típico:** hacer trabajo pesado o de red al arrancar la app: retrasa (o rompe) todas las pruebas alojadas.
 
 #### ► CÓMO FUNCIONA
-El mismo código de pruebas corre en dos sitios. En el paquete, `swift test` compila el núcleo y un ejecutable de
-pruebas que corre primero las de XCTest y después las de Swift Testing (estas, en paralelo). En la app, `xcodebuild`
-compila la app y el paquete de pruebas, abre la app en el simulador y carga las pruebas dentro de ella.
+
+##### 1. La idea en lenguaje sencillo
+Antes de cerrar la caja del día, alguien cuenta los billetes con una lista de control: «el paquete de 1,2 kg cobró
+7 500». Si la cuenta no cuadra, lo sabes esa noche y no a fin de mes. Una prueba automática es esa lista,
+ejecutada por la máquina cada vez que cambias el código.
+
+El cambio de `rounded(.up)` por `rounded()` compila y la app funciona. Solo una comprobación explícita del caso de
+1,2 kg lo delata. Este tema escribe esas comprobaciones con los dos marcos de pruebas de Apple: Swift Testing, el
+nuevo, y XCTest, el que encontrarás en casi todo el código existente.
+
+Lo importante no es solo que una prueba falle. Es cuánto te dice al fallar, y ahí los dos marcos son muy distintos.
+
+##### 2. Definición formal y vocabulario
+Un **marco de pruebas** es una biblioteca que descubre funciones de prueba, las ejecuta y genera un informe. Swift
+Testing llegó con Swift 6 y Xcode 16, en 2024; XCTest existe desde 2013.
+
+En Swift Testing, **`@Test`** marca una función como prueba y **`@Suite`** marca un tipo como grupo. **`#expect`**
+comprueba una condición: si es falsa, registra un fallo y la prueba continúa. **`#require`** comprueba o desenvuelve
+un opcional, y si falla, registra el fallo y lanza un error que termina esa prueba.
+
+En XCTest, una prueba es un método cuyo nombre empieza por `test`, dentro de una subclase de **`XCTestCase`**. Cada
+comparación tiene su función: `XCTAssertEqual`, `XCTAssertThrowsError`, `XCTUnwrap`.
+
+Una **prueba alojada** se carga dentro del proceso de la app, en el simulador. Con `@testable import` ve también lo
+`internal` del módulo probado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra los dos lugares donde corre el mismo código de pruebas.
 
 ```mermaid
 flowchart LR
@@ -121,6 +146,63 @@ flowchart LR
     A --> XB["xcodebuild test<br/>simulador iPhone 17"]
     H --> XB
 ```
+
+Con `swift test`, el camino es este:
+
+1. **Compilar.** SwiftPM compila el módulo `Nucleo` y el *target* de pruebas. `@testable import Nucleo` pide que el
+   módulo se compile con permiso para ver lo `internal`.
+2. **Expandir las macros.** Cada `@Test` genera código que registra la función en el catálogo de Swift Testing. Cada
+   `#expect` se expande en código que evalúa por separado las partes de la expresión.
+3. **Ejecutar XCTest.** El ejecutable de pruebas busca las subclases de `XCTestCase` y sus métodos `test…`. En Linux
+   se ejecutaron primero, como muestra la salida.
+4. **Ejecutar Swift Testing.** Después recorre el catálogo de `@Test`. Por defecto las ejecuta en paralelo, y por eso
+   terminan en otro orden que el del archivo.
+5. **Informar.** Cada marco escribe sus líneas: `Test Case … passed` en XCTest, `✔ Test … passed` en Swift Testing.
+
+La diferencia de informes nace en el paso 2. Observa la prueba del kilo adicional:
+
+```swift
+let costo = try Tarifa.costo(pesoKg: 1.2, zona: .centro)
+#expect(costo == 7_500)
+```
+
+La macro ve la expresión `costo == 7_500` y guarda cada lado antes de compararlos. Por eso el fallo dice `costo →
+6000` y `7_500 → 7500`. `XCTAssertEqual` es una función normal: recibe dos valores y solo puede decir «("6000") is
+not equal to ("7500")».
+
+En la app, `xcodebuild test` hace algo más: instala la app, la abre en el simulador y carga el paquete de pruebas
+dentro de su proceso. La app arranca de verdad antes de la primera prueba.
+
+##### 4. Reglas, variantes y casos límite
+- **`try` dentro de `#expect`.** Si la expresión contiene `try`, la macro no siempre puede evaluar sus partes. La
+  salida real lo mostró: `→ <not evaluated>`. Guarda el resultado en una constante y compara la constante.
+- **Instancia nueva por prueba.** En una `@Suite`, cada `@Test` recibe una instancia nueva del tipo. El estado no se
+  comparte, salvo lo `static`.
+- **Sin macro no hay prueba.** Una `func testAlgo()` dentro de una `struct` sin `@Test` no se ejecuta. Swift Testing
+  no busca por nombre, como XCTest.
+- **No mezclar marcos.** Un `XCTAssertEqual` dentro de `@Test` no hizo fallar la prueba. Swift Testing lo registró
+  como dos avisos y la marcó como pasada.
+- **Errores exactos.** `#expect(throws: ErrorTarifa.pesoInvalido(0))` exige ese error con ese valor, gracias a que
+  `ErrorTarifa` es `Equatable`.
+- **Lo que XCTest sigue haciendo solo.** XCUITest y `measure` siguen siendo de XCTest. Por eso los dos marcos
+  conviven en un mismo proyecto.
+- **XCTest en Linux.** Es la versión de código abierto: tiene `XCTestCase` y las aserciones, pero no XCUITest.
+
+Los dos marcos pueden vivir en el mismo *target*, incluso en el mismo archivo. Lo que no se mezcla son las
+aserciones dentro de una misma prueba.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Ya ejecutaste pruebas de Swift Testing en todos los módulos anteriores, desde el Módulo 5. Aquí aprendes a leer su
+informe y a compararlo con el de XCTest.
+
+`ErrorTarifa` y `throws(ErrorTarifa)` repiten el patrón de `ErrorRed` del Módulo 5, Tema 2. El tipo exacto del
+error permite que una prueba exija «este error» y no «algún error».
+
+Compara una prueba con un `print` en la consola. El `print` muestra un valor y tú decides si está bien. La prueba
+decide por ti, cada vez, y falla en voz alta.
+
+El Tema 2 convierte varios casos en una prueba parametrizada y prueba código `async`. El Tema 3 reemplaza la red por
+dobles. El Módulo 10, Tema 1, usa `measure` de XCTest para medir rendimiento.
 
 #### Problema resuelto 1.1
 Escribe la tarifa y cuatro pruebas con cada marco: base, kilo adicional, pesos imposibles y la primera entrega de
@@ -497,7 +579,7 @@ Al terminar este tema podrás:
 - organizar pruebas con rasgos: etiquetas, límite de tiempo y ejecución en serie;
 - probar funciones `async`, la cancelación y las API con *callbacks* con `confirmation`.
 
-**Conceptos clave:** prueba parametrizada, `zip`, rasgos (*traits*), `confirmation`, `XCTestExpectation`
+**Conceptos clave:** prueba parametrizada, `zip`, rasgos (traits), `confirmation`, `XCTestExpectation`
 
 #### El problema
 La validación de guías tiene que aceptar `EN-4471` y ` en-4472 ` y rechazar `EN-447`, `EX-4471` o `EN-+447`. Escribir
@@ -523,7 +605,7 @@ Este tema usa **`async`/`await`, `Task` y la cancelación** (Módulo 4) y **las 
 - **Ejemplo:** `zip(["EN-4471", …], [4471, …])`: 4 casos, no 16.
 - **Error típico:** pasar entradas y resultados esperados como dos colecciones sin `zip`: se prueban parejas que no van juntas.
 
-**rasgo (*trait*)**
+**rasgos (traits)**
 - **Definición técnica:** un valor que se pasa a `@Test` o `@Suite` para cambiar cómo se ejecuta o se filtra: `.tags(…)`, `.timeLimit(.minutes(1))`, `.serialized`, `.disabled("motivo")`, `.enabled(if:)`, `.bug(…)`.
 - **En palabras sencillas:** las instrucciones pegadas en la carpeta de la prueba.
 - **Dónde se rompe la comparación:** `.serialized` solo afecta a las pruebas de esa suite, no a todo el proceso.
@@ -545,9 +627,34 @@ Este tema usa **`async`/`await`, `Task` y la cancelación** (Módulo 4) y **las 
 - **Error típico:** usar `wait(for:)` (síncrono) dentro de una prueba `async`; en Swift 6 se usa `await fulfillment(of:)`.
 
 #### ► CÓMO FUNCIONA
-Swift Testing descubre cada función `@Test` y, si tiene argumentos, crea un caso por argumento. Los casos y las pruebas
-se ejecutan en paralelo, salvo en las suites `.serialized`. Una prueba `async` se espera hasta que termina; dentro,
-`confirmation` cuenta los avisos y la cancelación se prueba creando una `Task` y cancelándola.
+
+##### 1. La idea en lenguaje sencillo
+Un inspector de calidad no escribe un informe distinto para cada paquete que revisa. Usa una planilla con columnas
+(peso, zona, costo esperado) y una fila por paquete. Al final, la planilla dice exactamente qué fila no cuadró.
+
+Una **prueba parametrizada** es esa planilla. Escribes la comprobación una sola vez y le das la tabla de casos. Cada
+fila se ejecuta como un caso independiente, con su propio resultado.
+
+El tema tiene una segunda parte: el código que no termina de inmediato. La carga de la ruta es `async`, se puede
+cancelar, y el sincronizador avisa con un *callback*. Para probarlos hay que esperar, cancelar y contar avisos, y
+Swift Testing trae herramientas para cada cosa.
+
+##### 2. Definición formal y vocabulario
+Una **prueba parametrizada** es una función `@Test(arguments: …)` con parámetros. Swift Testing la ejecuta una vez por
+argumento, y cada ejecución es un **caso de prueba** con su propio informe.
+
+Con dos colecciones, Swift Testing prueba el **producto cartesiano**: todas las combinaciones. Con **`zip`**, solo los
+pares en la misma posición.
+
+Un **rasgo** (*trait*) es un valor que se pasa a `@Test` o a `@Suite` para cambiar cómo se ejecuta o se filtra la
+prueba. Ejemplos: `.tags(…)`, `.timeLimit(.minutes(1))`, `.serialized` y `.disabled("motivo")`.
+
+**`confirmation`** da un objeto que la prueba llama cada vez que ocurre un evento. Al terminar el bloque, falla si
+el número de llamadas no es `expectedCount`. **`XCTestExpectation`** es la versión de XCTest: `fulfill()` cuando
+ocurre y `await fulfillment(of:timeout:)` para esperar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra cómo se multiplican los casos y cómo se cuentan los avisos.
 
 ```mermaid
 flowchart TB
@@ -560,6 +667,64 @@ flowchart TB
     G -->|"avisos == 2"| OK["✔"]
     G -->|"avisos != 2"| KO["✘ confirmed N times"]
 ```
+
+Primero, lo que hace Swift Testing con los argumentos:
+
+1. **Descubrir.** Encuentra `nuncaMenosQueBase` y lee sus dos colecciones: 3 zonas y 4 pesos.
+2. **Expandir.** Calcula el producto: 12 casos. Con `zip`, en `guiasValidas`, solo 4.
+3. **Ejecutar en paralelo.** Lanza los casos como tareas independientes. Por eso los argumentos deben ser
+   `Sendable`: varias tareas los leen a la vez.
+4. **Informar por caso.** Si uno falla, el informe nombra su argumento. La salida real lo muestra: `recorded an
+   issue with 1 argument texto → "EN-4473` seguido del salto de línea.
+
+La diferencia con un `for` dentro de una prueba es el paso 4. En el `for`, el primer `#require` fallido detiene todo
+y los demás casos nunca se ejecutan. Aquí cada caso corre aunque otro falle.
+
+Ahora, el código asíncrono. Una función `@Test` puede ser `async`, y Swift Testing espera a que termine. Así se
+cuentan los avisos del sincronizador:
+
+```swift
+await confirmation("aviso por entrega", expectedCount: 2) { avisar in
+    await sincronizador.sincronizar(entregas) { _ in avisar() }
+}
+```
+
+1. **Abrir el contador.** `confirmation` crea `avisar` con la cuenta en cero.
+2. **Ejecutar el bloque.** `sincronizar` envía las dos entregas cerradas y llama al *callback* dos veces; cada
+   llamada suma uno.
+3. **Comparar al salir.** Cuando el bloque termina, la cuenta debe ser 2. Si no, falla con «confirmed N times».
+
+La cancelación se prueba al revés: creas una `Task`, la cancelas y exiges que lance `CancellationError`. Si el
+cargador ignorara la cancelación, la `FuenteLenta` de 60 s chocaría con el `.timeLimit(.minutes(1))` de la suite.
+
+##### 4. Reglas, variantes y casos límite
+- **Máximo dos colecciones.** `@Test(arguments:)` combina como mucho dos colecciones. Para más dimensiones, usa una
+  sola colección de tuplas, como la tabla de costos.
+- **El producto crece.** 3 × 4 son 12 casos; 10 × 10 serían 100. `zip` evita combinaciones que no tienen sentido.
+- **`confirmation` no espera.** Cuenta lo que ocurrió dentro del bloque. Un *callback* que llega después, en otra
+  tarea, no se cuenta. `fulfillment(of:timeout:)` sí espera hasta el límite.
+- **`wait` en pruebas `async`.** En XCTest, dentro de una prueba `async` se usa `await fulfillment(of:)`. El
+  `wait(for:)` síncrono bloquea el hilo.
+- **`.timeLimit` en minutos.** El límite se expresa con `.minutes(_:)`. Es una red de seguridad, no una medición.
+- **`.serialized`.** Hace que las pruebas de esa suite corran una tras otra. No afecta a las demás suites.
+- **Etiquetas.** `@Tag static var tarifa: Self` declara una etiqueta. Con ella puedes filtrar ejecuciones por tema en
+  vez de por nombre.
+
+Un detalle de la tabla de guías: `"EN-4४71"` lleva un dígito devanagari. `Character.isNumber` lo acepta, por eso
+`Guia` exige además `isASCII`. Las tablas de casos son el lugar para esos bordes.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La cancelación que pruebas aquí es la del Módulo 4, Tema 2. El `CargadorRuta` la trata como en el Módulo 5, Tema 4:
+cancelar no es un error que se muestre, y no debe activar la copia local.
+
+`.serialized` ya apareció en las pruebas del Módulo 5, donde varias pruebas compartían un puerto. Ahora sabes que es
+un rasgo y que hay otros.
+
+Compara una tabla de casos con varias funciones de prueba. Las funciones repiten código y cada una necesita nombre.
+La tabla concentra los datos y deja la regla escrita una vez.
+
+El Tema 3 reemplaza `FuenteEntregas` y `AlmacenRuta` por dobles, incluido un servidor HTTP falso. El Módulo 13,
+Tema 4, usa estas técnicas para probar una cola con reintentos.
 
 #### Problema resuelto 2.1
 Escribe la validación de guías y pruebas parametrizadas para guías y tarifas. Después prueba la carga cancelada y el
@@ -1036,10 +1201,41 @@ Este tema usa **los protocolos** (Módulo 0), **los actores y `Sendable`** (Mód
 - **Ejemplo:** `AlmacenQueNoDebeGuardar` y su `verificar()`.
 - **Error típico:** usar mocks para todo: las pruebas describen la implementación y no el resultado.
 
+**`URLProtocol`**
+- **Definición técnica:** clase abstracta de Foundation que atiende peticiones de URL; una subclase con `canInit(with:)` y `startLoading()`, puesta en `URLSessionConfiguration.protocolClasses`, responde en lugar de la red.
+- **En palabras sencillas:** un falso servidor dentro del propio proceso, que contesta lo que la prueba preparó.
+- **Dónde se rompe la comparación:** la sesión es real (cabeceras, códigos, decodificación); solo el transporte es falso, así que no prueba la red ni el servidor de verdad.
+- **Ejemplo:** `configuracion.protocolClasses = [ProtocoloFalso.self]` antes de crear `URLSession(configuration: configuracion)`.
+- **Error típico:** cambiar `protocolClasses` después de crear la sesión: la sesión copia la configuración al crearse y la petición sale a la red real.
+
 #### ► CÓMO FUNCIONA
-`CargadorRuta` solo conoce dos protocolos. En la app recibe la fuente HTTP y el almacén real; en la prueba, dobles. La
-fuente HTTP también se prueba sin red: `URLSession` permite registrar clases `URLProtocol` que atienden las peticiones
-antes de que salgan, y el doble responde con el código y el cuerpo que la prueba preparó.
+
+##### 1. La idea en lenguaje sencillo
+En un simulacro de evacuación no se prende fuego al edificio. Se usa humo artificial, una alarma de prueba y una
+persona que hace de herido. Todo se comporta lo bastante parecido a lo real como para entrenar, sin el peligro ni el
+costo de lo real.
+
+Probar `CargadorRuta` contra el servidor real es como hacer el simulacro con fuego. Es lento, necesita red y no
+puedes provocar un «sin conexión» o un 503 cuando quieras. Un **doble de prueba** es el humo artificial: reemplaza
+la dependencia por algo que tú controlas.
+
+Hay varios tipos de doble, según lo que quieras comprobar. Este tema los distingue y además engaña a `URLSession`
+para que responda sin salir a internet.
+
+##### 2. Definición formal y vocabulario
+Un **doble de prueba** es cualquier objeto que reemplaza a una dependencia real durante una prueba, cumpliendo el
+mismo protocolo. Los nombres de cada tipo vienen del libro *xUnit Test Patterns*, de Gerard Meszaros (2007).
+
+Un **stub** devuelve respuestas fijas, sin memoria. Un **fake** funciona de verdad pero con un atajo, como guardar en
+memoria en lugar de en disco. Un **spy** responde y además registra cómo lo llamaron, para que la prueba lo consulte.
+Un **mock** lleva dentro sus expectativas y las verifica él mismo.
+
+**`URLProtocol`** es una clase abstracta de Foundation que atiende peticiones de URL. `URLSession` consulta sus
+subclases registradas antes de abrir una conexión. Si una acepta la petición, la respuesta sale de ella y no de la
+red.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama compara las dependencias de la app con las de las pruebas.
 
 ```mermaid
 flowchart LR
@@ -1054,6 +1250,67 @@ flowchart LR
       U --> R["respuestas preparadas: 200, 503, JSON roto"]
     end
 ```
+
+Los dobles funcionan por una decisión de diseño anterior: `CargadorRuta` recibe sus dependencias en el
+inicializador, como `any FuenteEntregas` y `any AlmacenRuta`. Si las creara dentro, no habría forma de cambiarlas.
+
+Con eso, la prueba `sinRedUsaCopia` recorre estos pasos:
+
+1. **Preparar.** Crea un stub que siempre falla con `.sinConexion` y un fake con una copia guardada.
+2. **Inyectar.** Construye `CargadorRuta(fuente:almacen:)` con los dos dobles.
+3. **Ejecutar.** `cargar(ruta:)` pide a la fuente; el stub lanza; el cargador lee la copia del fake.
+4. **Comprobar el resultado.** La prueba mira el `ResumenRuta`: origen `.copiaLocal`, 2 pendientes y 18 500 por
+   cobrar.
+
+El spy y el mock cambian el paso 4. En vez de mirar solo el resultado, preguntan cómo se usó la dependencia: qué ruta
+se pidió o si alguien llamó a `guardar` cuando no debía.
+
+`FuenteHTTP` se prueba un nivel más abajo, con `URLSession` real y un `URLProtocol` falso:
+
+1. **Configurar la sesión.** `configuracion.protocolClasses = [ProtocoloFalso.self]` pone la clase falsa en la lista
+   de la sesión.
+2. **Preguntar.** Al pedir una URL, la sesión llama a `canInit(with:)`. El doble responde `true` a todo.
+3. **Cargar.** La sesión crea una instancia y llama a `startLoading()`. El doble busca la respuesta preparada para esa
+   ruta.
+4. **Responder.** El doble entrega a `client` la respuesta HTTP, los datos y el fin. `URLSession` los devuelve como si
+   vinieran de un servidor.
+
+El paso 4 son tres llamadas al cliente, siempre en este orden:
+
+```swift
+client?.urlProtocol(self, didReceive: respuesta, cacheStoragePolicy: .notAllowed)
+client?.urlProtocol(self, didLoad: cuerpo)
+client?.urlProtocolDidFinishLoading(self)
+```
+
+Así `FuenteHTTP` ejecuta su código real: revisa el código, decodifica y lanza sus errores. Solo la red es falsa.
+
+##### 4. Reglas, variantes y casos límite
+- **Dobles `Sendable`.** Los protocolos heredan de `Sendable`. Una clase con una `var` no lo cumple: Swift 6 respondió
+  «stored property 'rutasPedidas' of 'Sendable'-conforming class 'EspiaClase' is mutable».
+- **Actor o `Mutex`.** El spy es un `actor` y su lista se lee con `await`. El protocolo falso usa `Mutex` en
+  propiedades `static`, porque `URLSession` crea sus instancias y no puedes pasarles nada.
+- **Estado estático compartido.** Las respuestas del protocolo falso son `static`. Por eso su suite es `.serialized`:
+  dos pruebas en paralelo se pisarían las respuestas.
+- **Stubs sin lógica.** Si un stub necesita condiciones complejas, ya es otra implementación que habría que probar.
+- **Fakes que difieren.** Un almacén en memoria nunca se llena ni pierde permisos. El almacén real necesita sus
+  propias pruebas.
+- **Mocks con medida.** Un mock fija cómo se usa una dependencia. Si lo usas para todo, cada refactorización rompe
+  pruebas aunque el resultado no cambie.
+- **Linux.** `URLProtocol` también existe en FoundationNetworking: estas pruebas pasaron en Linux, sin red.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La inyección por inicializador es la de la raíz de composición del Módulo 8, Tema 4. Allí la usaste para conectar la
+app; aquí la misma costura deja entrar a los dobles.
+
+`RepositorioFalso`, del Módulo 8, Tema 1, era un fake con algo de spy: guardaba de verdad y anotaba `guardados`. Ahora
+tienes el nombre preciso para cada papel.
+
+Compara el protocolo falso con el servidor de desarrollo del Módulo 5. El servidor prueba la red real por sockets y
+detecta problemas de HTTP. El protocolo falso es más rápido y controla cada respuesta, pero no abre ninguna conexión.
+
+El Tema 4 sube un nivel más: prueba las vistas con capturas y la app completa con XCUITest. El Módulo 13, Tema 2,
+vuelve a `URLSession` para fijar certificados.
 
 #### Problema resuelto 3.1
 Prueba `CargadorRuta` en cuatro situaciones (con red, sin red con copia, sin red sin copia, y que no sobrescriba la
@@ -1534,8 +1791,7 @@ Al terminar este tema podrás:
 - escribir una prueba de interfaz con XCUITest que abre la app, toca y comprueba;
 - compilar una vez y ejecutar las pruebas varias veces con `build-for-testing` y `test-without-building`.
 
-**Conceptos clave:** captura comparada (*golden*), imagen de referencia, umbral, XCUITest, identificador de
-accesibilidad, `build-for-testing`
+**Conceptos clave:** captura comparada (golden), imagen de referencia, umbral, XCUITest, identificador de accesibilidad, `build-for-testing`
 
 #### El problema
 Las pruebas de los temas anteriores no ven la pantalla. Alguien cambia el espaciado de la tarjeta de 4 a 6 puntos
@@ -1547,7 +1803,7 @@ Este tema usa **las pruebas alojadas** (Tema 1), **`@Observable`** (Módulo 2) y
 
 #### Glosario del tema
 
-**captura comparada (*golden*, *snapshot*)**
+**captura comparada (golden) o snapshot**
 - **Definición técnica:** prueba que dibuja una vista con datos y tamaño fijos, la convierte en imagen y la compara con una imagen de referencia aprobada antes; falla si difieren más que un umbral.
 - **En palabras sencillas:** una foto de cómo debe verse, comparada cada vez.
 - **Dónde se rompe la comparación:** detecta **cualquier** cambio, querido o no; alguien tiene que decidir si se actualiza la referencia.
@@ -1582,11 +1838,44 @@ Este tema usa **las pruebas alojadas** (Tema 1), **`@Observable`** (Módulo 2) y
 - **Ejemplo:** `.accessibilityIdentifier("fila-EN-4472")`.
 - **Error típico:** repetir el mismo identificador en todas las filas.
 
+**`build-for-testing`**
+- **Definición técnica:** acción de `xcodebuild` que compila la app y sus paquetes de pruebas sin ejecutarlos; `test-without-building` ejecuta después esas pruebas, las veces que haga falta, sin recompilar.
+- **En palabras sencillas:** preparar la cocina una vez y servir varios platos sin volver a encender el horno.
+- **Dónde se rompe la comparación:** si cambias el código, lo ya compilado queda viejo: hay que volver a ejecutar `build-for-testing`.
+- **Ejemplo:** `xcodebuild build-for-testing -scheme RutaPruebas -destination "$DESTINO"` y luego `xcodebuild test-without-building` con los mismos argumentos.
+- **Error típico:** editar una prueba y ejecutar solo `test-without-building`: corre la versión anterior y el cambio no se ve.
+
 #### ► CÓMO FUNCIONA
-La prueba de captura corre dentro de la app: crea una ventana, le pone la vista, deja que se dibuje y la convierte en
-PNG con escala y color fijos. Si no hay referencia, la graba y falla para que alguien la revise. Si hay, compara los
-píxeles con el comparador del núcleo (probado en Linux) y, si difieren, deja la imagen actual y un mapa en rojo.
-XCUITest, en cambio, corre en un proceso aparte que lanza la app y la maneja desde fuera.
+
+##### 1. La idea en lenguaje sencillo
+Una imprenta guarda una hoja aprobada de cada folleto. Cada tiraje nuevo se pone encima, a contraluz, y cualquier
+letra corrida salta a la vista. Además, alguien abre un folleto y prueba que el cupón se pueda recortar: no basta con
+que se vea bien, tiene que funcionar.
+
+Las pruebas de los temas anteriores no ven la pantalla. Un cambio de espaciado de 4 a 6 puntos pasa todas. Este tema
+agrega las dos comprobaciones de la imprenta. La **captura comparada** pone la vista nueva sobre una imagen
+aprobada, píxel a píxel. **XCUITest** abre la app y la usa como una persona.
+
+Las dos son caras y lentas comparadas con una prueba de lógica. Por eso se usan para lo que solo ellas pueden ver: el
+aspecto y el recorrido completo.
+
+##### 2. Definición formal y vocabulario
+Una **captura comparada**, también llamada *golden* o *snapshot*, dibuja una vista con datos y tamaño fijos y la
+compara con una **imagen de referencia** aprobada antes. La referencia es un PNG que vive en el repositorio y se revisa
+como el código.
+
+El **umbral** define cuánto puede diferir un canal de color para que el píxel cuente como igual. Aquí es 2 de 255,
+para tolerar el suavizado de bordes (*antialiasing*).
+
+**XCUITest** es la parte de XCTest para pruebas de interfaz. Corre en un proceso distinto del de la app y la maneja a
+través del **árbol de accesibilidad**: la descripción de cada elemento que el sistema expone también a VoiceOver.
+
+Un **identificador de accesibilidad** (`accessibilityIdentifier`) es una cadena para las pruebas. VoiceOver no la lee
+y no cambia con el idioma. **`build-for-testing`** compila la app y sus pruebas una vez; **`test-without-building`**
+las ejecuta sin recompilar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama separa las dos pruebas por el proceso donde corren.
 
 ```mermaid
 flowchart TB
@@ -1603,6 +1892,66 @@ flowchart TB
       T --> E["leer estado y contador"]
     end
 ```
+
+La captura comparada corre dentro de la app, como prueba alojada:
+
+1. **Montar la vista.** Crea un `UIHostingController` con `TarjetaEntrega` y lo pone en una `UIWindow` de tamaño fijo:
+   390 × 110 puntos.
+2. **Dibujar.** Deja que SwiftUI calcule el diseño y pinte. Después convierte la ventana en un PNG con escala 2 y
+   color sRGB de 8 bits: 780 × 220 píxeles.
+3. **Buscar la referencia.** La ubica en `app/Referencias` con `#filePath`. Si no existe, la graba y falla a
+   propósito, para obligar a alguien a mirarla.
+4. **Comparar.** Lee los dos PNG como bytes RGBA y llama a `ComparadorPixeles.comparar`. Un píxel es distinto si
+   algún canal difiere más de 2.
+5. **Informar.** Si hay píxeles distintos, guarda la imagen actual y un mapa con los distintos en rojo, y registra el
+   fallo con el porcentaje.
+
+El corazón del paso 4 es un bucle sobre grupos de 4 bytes, uno por canal:
+
+```swift
+for c in 0..<4 where (a[i + c] > b[i + c] ? a[i + c] - b[i + c] : b[i + c] - a[i + c]) > umbralCanal {
+    difiere = true
+}
+```
+
+La resta se escribe en los dos sentidos porque `UInt8` no admite negativos: restar al revés detendría el programa.
+
+XCUITest sigue otro camino:
+
+1. **Lanzar.** `XCUIApplication().launch()` instala y abre la app en su propio proceso.
+2. **Consultar el árbol.** `app.buttons["Marcar entregada"]` pregunta al sistema por un elemento con ese texto o
+   identificador. La prueba nunca ve los objetos de Swift.
+3. **Actuar y comprobar.** Toca, espera a que el árbol cambie y lee la etiqueta del elemento `estado`.
+
+##### 4. Reglas, variantes y casos límite
+- **Mismo entorno.** Una referencia solo vale para el simulador, la versión de iOS y la escala con que se grabó. Otro
+  modelo cambia las fuentes unos píxeles.
+- **Determinismo.** Dos ejecuciones dieron exactamente 0 de 171 600 píxeles distintos. Sin eso, la prueba fallaría al
+  azar.
+- **Revisar la primera imagen.** La primera referencia salió cortada por el área segura, y la segunda ejecución la
+  confirmó con 0 diferencias. Una referencia mal grabada protege el error.
+- **No subir el umbral para pasar.** Con el espaciado en 6, la prueba vio 4,71 % de píxeles distintos. Un umbral alto
+  habría escondido ese cambio real.
+- **Elementos combinados.** `LabeledContent` une título y valor en un solo elemento de accesibilidad. Por eso la
+  prueba lee «Estado, Pendiente» y no «Pendiente».
+- **XCUITest es lento.** La prueba de interfaz duró 15,8 s; las 28 alojadas, 1,6 s juntas. Úsalo para pocos flujos
+  críticos.
+- **Compilar una vez.** `build-for-testing` tardó 9 s; cada `test-without-building` reutilizó ese resultado.
+
+XCUITest existe desde Xcode 7, en 2015, y sigue siendo de XCTest: Swift Testing no tiene pruebas de interfaz.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las capturas del Módulo 5 al 8 eran imágenes para el libro: alguien las miraba. Aquí la misma técnica se vuelve una
+prueba: la máquina las compara y falla sola.
+
+El hallazgo de XCUITest conecta con el Módulo 5, Tema 4: `.task` se ejecuta cada vez que la vista aparece. Al volver
+del detalle, la lista recargó y borró la marca. Las pruebas del modelo no podían verlo; el recorrido completo sí.
+
+Compara las cuatro capas de este módulo. Las pruebas de lógica son rápidas y precisas. Los dobles aíslan
+dependencias. Las capturas vigilan el aspecto. XCUITest vigila el recorrido, a cambio de ser lento.
+
+El Módulo 10, Tema 2, usa el mismo árbol de accesibilidad para VoiceOver y la auditoría automática. El Módulo 14,
+Tema 1, retoma las pruebas visuales para animaciones.
 
 #### Problema resuelto 4.1
 Protege la tarjeta con dos capturas comparadas (pendiente en modo claro, entregada en modo oscuro) y el flujo «marcar

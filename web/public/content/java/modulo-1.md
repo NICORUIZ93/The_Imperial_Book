@@ -1770,29 +1770,118 @@ se propaga hasta la factura. ¿Cómo haces que un producto **no pueda existir** 
 - **Error típico:** comparar dos `String` con `==`; puede dar `false` con el mismo contenido. Usa `equals`.
 
 #### ► CÓMO FUNCIONA
-Conviene separar tres ideas que el lenguaje esconde bajo la misma palabra. Una clase es un tipo: declara qué estado y qué operaciones existen. Un objeto es una instancia concreta de ese tipo, con su propio estado en el heap. Una referencia es el valor que permite llegar a ese objeto; vive en una variable o en un campo y se copia al pasar de un método a otro. Cuando escribes `new Producto(...)`, la JVM reserva memoria para el objeto, ejecuta el constructor y devuelve la referencia. La variable no contiene el producto: contiene la dirección donde está. Por eso dos variables pueden apuntar al mismo objeto y por eso `==` entre objetos compara direcciones, no contenidos.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una caja fuerte de una tienda. Nadie mete la mano directamente: hay una ranura para depositar y un
+procedimiento para retirar. Si alguien intenta guardar un billete falso, la máquina lo rechaza en la entrada. Lo que
+queda dentro siempre es válido, porque el único camino pasa por el control.
+
+Un objeto bien diseñado funciona igual. Sus datos están ocultos y el único camino para crearlos o cambiarlos pasa por
+operaciones que revisan las reglas. Si el dato no cumple, el objeto no llega a existir.
+
+En Tienda Aurora, un producto con precio negativo o sin nombre no debería poder existir. Si existe, el error viaja
+hasta el recibo y la contabilidad. Este tema explica cómo una clase impide ese estado desde el primer momento.
+
+##### 2. Definición formal y vocabulario
+
+Una **clase** declara un tipo nuevo: qué **campos** tiene cada objeto, qué **constructores** lo crean y qué métodos
+admite. Un **objeto** es una instancia de esa clase, creada en ejecución y guardada en el heap. Una **referencia** es
+el valor que permite llegar a ese objeto; es lo que guarda una variable de tipo clase.
+
+El operador **`new`** crea el objeto y devuelve su referencia. El constructor lo inicializa; dentro de él, **`this`**
+es la referencia al objeto que se está creando. Un **método de instancia** se invoca sobre un objeto concreto y lee
+sus campos a través de `this`.
+
+Los modificadores **`private` y `public`** controlan el acceso. `private` limita un miembro a su clase y `public` lo
+abre a todas. La **encapsulación** usa ese control para ocultar el estado y exponer solo operaciones seguras. Un
+**accesor**, como `nombre()`, devuelve un dato sin permitir cambiarlo.
+
+Un **invariante** es una condición sobre el estado que se cumple desde que termina el constructor hasta que el objeto
+deja de usarse. Un campo **`final`** se asigna exactamente una vez. Un miembro **`static`** pertenece a la clase, no
+a cada objeto. **`toString`** devuelve el objeto como texto. Y **identidad e igualdad** son dos preguntas distintas:
+ser el mismo objeto o representar el mismo valor.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la línea `Producto cafe = new Producto("CAF-0001", "Café Aurora", 1250);` del Problema resuelto 1.1:
 
 ```mermaid
 flowchart LR
-    C["class Producto<br/>campos private final<br/>constructor · métodos"]
-    C -->|"new Producto('CAF-0001', ...)"| O1["objeto en el heap<br/>CAF-0001 · 1250"]
-    C -->|"new Producto('TAZ-0002', ...)"| O2["objeto en el heap<br/>TAZ-0002 · 800"]
+    C["class Producto<br/>campos private final<br/>constructor y métodos"]
+    C -->|"new Producto CAF-0001"| O1["objeto en el heap<br/>CAF-0001 · 1250"]
+    C -->|"new Producto TAZ-0002"| O2["objeto en el heap<br/>TAZ-0002 · 800"]
     V1["variable cafe"] -->|"referencia"| O1
     V2["variable mismo = cafe"] -->|"la misma referencia"| O1
     V3["variable taza"] -->|"referencia"| O2
 ```
 
-El constructor es el único punto de entrada legítimo a ese estado. Si el objeto nace válido y ningún método lo puede romper, el resto del sistema puede confiar en él sin repetir comprobaciones. Esa confianza es lo que se llama un invariante: una condición que se cumple desde que el objeto nace hasta que desaparece. En `Producto`, el invariante es que el SKU no es nulo, el nombre no está en blanco y el precio es estrictamente positivo. La comprobación se escribe una vez, en el constructor, y se asume en todos los demás métodos. Un `if (producto.precio() <= 0)` repartido por la aplicación es la señal de que el invariante no está donde debería.
+1. **Reserva.** `new` pide a la JVM memoria para un objeto `Producto`. Todos sus campos empiezan con el valor por
+   defecto: `null` para `sku` y `nombre`, 0 para `precioCentavos`.
+2. **Constructor de la superclase.** Antes del cuerpo, se ejecuta el constructor de `Object`. `javac` inserta esa
+   llamada, `super()`, aunque no la escribas.
+3. **Cuerpo del constructor.** Se ejecuta en orden. En `ProductoSeguro`, primero vienen las validaciones. Si una
+   falla, se lanza `IllegalArgumentException` y `new` no devuelve nada.
+4. **Asignación de campos.** `this.sku = sku;` copia el parámetro en el campo. `this.sku` es el campo del objeto;
+   `sku` solo es el parámetro, que oculta al campo con el mismo nombre.
+5. **Entrega de la referencia.** `new` devuelve la referencia y la asignación la guarda en `cafe`. La variable no
+   contiene el producto: contiene el camino hacia él.
 
-`final` en los campos no es decorativo. Le dice al compilador que la asignación ocurre exactamente una vez, en el constructor, y le permite garantizar que ningún método de la clase puede cambiar la referencia después. En un objeto compartido entre hilos, un campo `final` correctamente construido además tiene garantías de visibilidad: cualquier hilo que vea la referencia ve los valores asignados en el constructor. Los campos mutables no tienen esa garantía y necesitan sincronización.
+Observa ahora una llamada a método de instancia:
 
-La diferencia entre clase y objeto es la misma que entre plano y edificio. La clase describe qué datos y comportamientos tendrá un producto; el objeto es cada producto concreto en memoria. Dos productos con el mismo SKU son dos objetos distintos; si quieres compararlos por identidad de negocio, implementas `equals` y `hashCode`, como hace `Sku`.
+```java
+public long precioPor(int cantidad) {
+    return precioCentavos * cantidad;
+}
+```
 
-Hay una tercera distinción que suele morder al principio: identidad e igualdad no son lo mismo. `producto == otroProducto` pregunta si ambas referencias apuntan al mismo objeto. `producto.equals(otroProducto)` pregunta si representan el mismo valor. Para una entidad como un pedido, la identidad importa: dos pedidos con las mismas líneas siguen siendo pedidos distintos porque tienen número distinto. Para un objeto de valor como `Dinero`, la identidad no importa: dos instancias con 10470 centavos son el mismo importe. `Producto` cae en un terreno intermedio; en este módulo se compara por referencia porque no se guarda en colecciones, pero en el siguiente se convertirá en clave de mapa y necesitará una igualdad explícita.
+Cuando escribes `cafe.precioPor(3)`, la JVM pasa la referencia de `cafe` como un parámetro oculto, `this`. Dentro,
+`precioCentavos` significa `this.precioCentavos`. Por eso el mismo código devuelve 3750 con el café y otro valor con
+la taza.
 
-`toString()` tampoco es un método de lógica. Su contrato dice que devuelve una representación legible, y por eso `Producto` lo usa para el catálogo y `Dinero` para el recibo. Nunca conviene parsear su salida ni comparar dos objetos a través de ella; para eso están `equals` y los accesores. Si un `toString` necesita formato estable, se le pasa un `Locale` explícito, como hace `Dinero` con `Locale.ROOT`.
+La encapsulación se comprueba al compilar. Si otra clase escribe `cafe.precioCentavos = -10;`, `javac` rechaza la
+línea con `has private access in Producto`. No hay comprobación en ejecución porque no hace falta: el código
+inválido nunca llega a existir.
 
-Los métodos `static` pertenecen a la clase, no al objeto. `Producto.normalizarNombre` es `protected static` por dos razones: no necesita leer estado de la instancia y las subclases lo necesitan antes de llamar a `super(...)`. Un método `static` no puede usar `this` ni acceder a campos de instancia, y no participa del polimorfismo: si lo llamas a través de una referencia, el compilador decide con el tipo declarado, no con el objeto real. Esa diferencia se retoma en el tema de sobrecarga y sobreescritura.
+##### 4. Reglas, variantes y casos límite
+
+Si una clase no declara ningún constructor, `javac` añade uno sin parámetros, el **constructor por defecto**. En
+cuanto declaras uno propio, ese constructor implícito desaparece. Por eso `new Producto()` deja de compilar cuando
+`Producto` solo tiene el constructor de tres parámetros.
+
+Un campo `final` debe recibir valor exactamente una vez en cada camino del constructor. Si olvidas uno, o escribes
+`sku = sku;`, `javac` responde `variable sku might not have been initialized`. Si lo reasignas en un método, el error
+es `cannot assign a value to final variable`.
+
+`final` tiene un efecto adicional según el modelo de memoria de Java. Si el constructor termina sin filtrar `this`,
+cualquier hilo que vea la referencia ve los campos `final` ya asignados. Los campos no `final` no tienen esa garantía.
+
+`final` en una referencia no congela el objeto apuntado. Un campo `private final int[] stock` no puede apuntar a otro
+arreglo, pero sus casillas sí cambian. Para eso sigue siendo necesaria la copia defensiva.
+
+Los métodos `static` no tienen `this`. No pueden leer campos de instancia: el error es `non-static variable … cannot
+be referenced from a static context`. Además, no participan del polimorfismo: el compilador elige cuál llamar según
+el tipo declarado, no según el objeto real.
+
+Sobre `equals`: si la clase no lo redefine, hereda el de `Object`, que compara identidad. Por eso dos productos con
+los mismos datos dan `false` tanto con `==` como con `equals`, como mostró el Problema resuelto 1.2.
+
+`toString` es para leer, no para procesar. Nunca extraigas datos de su texto ni compares objetos a través de él;
+para eso existen los accesores y `equals`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0 viste clases, `new` y referencias con un `Producto` de campos abiertos. También viste copias
+defensivas en `Catalogo`. Este tema convierte esas piezas en una regla de diseño: el objeto protege sus propios
+datos.
+
+La diferencia entre identidad e igualdad ya apareció con `String` y con los wrappers. Aquí se extiende a tus propias
+clases. Un pedido es una entidad: dos pedidos con las mismas líneas siguen siendo distintos. `Dinero` es un valor: dos
+instancias con 10470 centavos son el mismo importe.
+
+El Tema 2 de este módulo crea subclases de `Producto` y explica la cadena de constructores con `super(...)`. El Tema
+5 presenta los `record`, que generan accesores, `equals` y `toString` por ti. El Módulo 2 estudia el contrato de
+`equals` y `hashCode`, necesario cuando los objetos se guardan en colecciones.
 
 #### Problema resuelto 1.1
 Declara la clase `Producto` con SKU, nombre y precio en centavos. Crea dos productos, calcula el precio de tres cafés y
@@ -2243,14 +2332,50 @@ nuevo sin tocar el catálogo, el carrito ni la factura?
 - **Error típico:** sobrescribir un método para que lance `UnsupportedOperationException`: quien usa la base no lo espera.
 
 #### ► CÓMO FUNCIONA
-Herencia significa que una clase declara ser un subtipo de otra y hereda sus miembros accesibles. `ProductoFisico` recibe de `Producto` el SKU, el nombre, el precio y los métodos que los leen; añade el peso y decide cómo se describe y cuánto cuesta enviarlo. `ServicioDigital` recibe lo mismo y añade la duración de la licencia. En ambos casos la relación es “es un”: un producto físico es un producto, un servicio digital es un producto. Si la frase no se sostiene —un descuento no es un producto— la herencia es la herramienta equivocada.
+
+##### 1. La idea en lenguaje sencillo
+
+En una empresa de mensajería, todos los envíos pasan por la misma ventanilla: se pesan, se etiquetan y se cobran. Un
+sobre y una caja refrigerada comparten ese trámite básico. Cada uno añade lo suyo: la caja necesita un recargo por
+frío. La ventanilla no pregunta «¿qué eres?» en cada paso; aplica el trámite y cada envío aporta su detalle.
+
+La **herencia** permite escribir así el código. Una clase base reúne lo común y cada subclase añade o cambia lo
+particular. El código que usa los objetos trabaja con la base y obtiene, sin preguntar, el comportamiento correcto.
+
+En Tienda Aurora, un producto físico y un curso digital son productos: tienen SKU, nombre y precio. Pero solo el
+físico paga envío según su peso. Con herencia, el catálogo llama a `costoEnvio()` y cada objeto responde por sí
+mismo. Añadir un tipo nuevo no obliga a tocar el catálogo.
+
+##### 2. Definición formal y vocabulario
+
+La **herencia** es el mecanismo por el que una clase declara con **`extends`** ser subtipo de otra. La clase de
+después de `extends` es la **superclase**; la que extiende es la **subclase**. La subclase hereda los miembros
+accesibles de la superclase. En Java, cada clase extiende exactamente una; si no escribes `extends`, extiende
+**`Object`**, la raíz de toda jerarquía.
+
+**`super(...)`** invoca un constructor de la superclase para inicializar la parte base del objeto.
+**`super.metodo()`** ejecuta la versión de la superclase de un método. La **sobreescritura** consiste en declarar en
+la subclase un método de instancia con la misma firma que uno heredado. La anotación **`@Override`** pide al
+compilador que compruebe que de verdad sobrescribes algo.
+
+Toda expresión tiene un **tipo declarado**, el que escribes en el código. Todo objeto tiene un **tipo real**, la
+clase usada en `new`. El **polimorfismo** es usar objetos de clases distintas a través de un mismo tipo. El
+**despacho dinámico** es el mecanismo que elige, en ejecución, el método según el tipo real.
+
+Tres ideas de diseño completan el vocabulario. **`final` en clases y métodos** impide extender o sobrescribir. La
+**composición** guarda un objeto en un campo en lugar de heredar de él. El **principio de sustitución de Liskov**
+exige que la subclase pueda usarse donde se espera la base sin romper sus promesas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra la jerarquía de `JerarquiaProductos.java` y cómo se elige cada método:
 
 ```mermaid
 flowchart TB
     O["java.lang.Object<br/>toString · equals · hashCode"]
-    P["Producto<br/>tipo() · descripcion() · costoEnvio() = 0"]
-    F["ProductoFisico (final)<br/>pesoGramos · sobrescribe los tres"]
-    S["ServicioDigital (final)<br/>diasLicencia · sobrescribe tipo()"]
+    P["Producto<br/>tipo · descripcion · costoEnvio = 0"]
+    F["ProductoFisico final<br/>pesoGramos · sobrescribe los tres"]
+    S["ServicioDigital final<br/>diasLicencia · sobrescribe tipo"]
     P -->|"extends implícito"| O
     F -->|"extends"| P
     S -->|"extends"| P
@@ -2259,15 +2384,65 @@ flowchart TB
     D -->|"ServicioDigital: no sobrescribe, usa la base"| P
 ```
 
-`super(...)` no es una llamada opcional ni un detalle de estilo: es la construcción de la parte base del objeto. La JVM no crea dos objetos, crea uno solo que contiene los campos de la base y los de la subclase. El orden de inicialización es fijo. Primero los campos toman su valor por defecto (cero, `false`, `null`). Después se ejecuta el constructor de la base, que asigna los campos heredados y valida sus invariantes. Luego se asignan los campos declarados en la subclase y se ejecuta el resto de su constructor. Por eso, cuando el constructor de la base termina, los campos propios de la subclase todavía valen cero: si la base llamara a un método sobrescrito desde su constructor, ese método vería el peso o la licencia sin inicializar. Es una de las razones por las que un constructor no debería invocar métodos que las subclases puedan sobrescribir.
+Primero, la construcción. `new ProductoFisico(...)` crea **un solo objeto** con los campos de la base y los de la
+subclase. El orden es fijo:
 
-Vale la pena entender cómo se elige el método en tiempo de ejecución, porque de ahí salen casi todas las sorpresas. Cada clase tiene una tabla de métodos virtuales; cuando la JVM ve `producto.descripcion()`, mira el tipo real del objeto, busca la entrada `descripcion` en su tabla y llama a la implementación de la clase más específica. El tipo declarado de la variable solo sirve para que el compilador valide que el método existe. Por eso una variable de tipo `Producto` puede ejecutar el código de `ProductoFisico` sin un cast. Y por eso los métodos `private`, `static` y `final` no son polimórficos: no entran en esa tabla, se resuelven en compilación.
+1. Todos los campos, heredados y propios, toman su valor por defecto: 0, `false` o `null`.
+2. El constructor de `ProductoFisico` llama a `super(sku, nombre, precioCentavos)`.
+3. Se ejecuta el constructor de `Producto`, que antes llama al de `Object`, y asigna los campos heredados.
+4. Al volver, se asignan los campos propios de la subclase, como `pesoGramos`, y se ejecuta el resto del cuerpo.
 
-Esa resolución dinámica es la que permite que el catálogo no sepa qué tipos existen. El bucle llama a `descripcion()` y `costoEnvio()` y obtiene la respuesta correcta para cada objeto. El acoplamiento va en una sola dirección: la subclase conoce la base, la base no conoce a sus subclases. Si mañana aparece `SuscripcionMensual`, se agrega una clase nueva y el bucle sigue igual; lo único que hay que revisar es si la nueva subclase respeta el contrato de la base.
+El Problema resuelto 2.2 muestra la consecuencia. Si `Base()` llama a un método sobrescrito, ese método se ejecuta
+antes del paso 4. Por eso imprime `0 g`: el peso todavía tiene su valor por defecto.
 
-La herencia tiene reglas. Una subclase debe poder sustituir a su base sin romper el programa (principio de sustitución de Liskov): si `Producto` promete un precio positivo, `ProductoFisico` no puede aceptar uno negativo. Por eso los constructores validan antes de llamar a `super`. También conviene marcar las subclases como `final` si no están diseñadas para ser extendidas: `ProductoFisico` y `ServicioDigital` lo son, porque nadie debería especializar un producto físico concreto.
+Ahora, la llamada. En `p.costoEnvio()`, ocurren dos cosas en momentos distintos:
 
-También conviene distinguir herencia de composición. `Producto` no hereda de `Dinero`: contiene un `Dinero`. Esa composición es más flexible porque el precio se puede reemplazar sin arrastrar toda la jerarquía de `Dinero`, y evita el error clásico de “extender solo para reutilizar un método”. La regla práctica es preguntarse si la subclase puede sustituir a la base en cualquier lugar donde la base se use. Si la respuesta es no, la relación no es de herencia.
+1. **Al compilar**, `javac` mira el tipo declarado, `Producto`, y comprueba que tiene `costoEnvio()`. Genera la
+   instrucción `invokevirtual`, que significa «llama a este método según el objeto».
+2. **Al ejecutar**, la JVM toma el objeto real y busca la implementación más específica, empezando por su clase y
+   subiendo por la jerarquía. HotSpot acelera esa búsqueda con una tabla de métodos por clase.
+
+Para un `ProductoFisico` encuentra la versión que devuelve 495 o 795. Para un `ServicioDigital` no la encuentra en
+su clase, sube a `Producto` y usa la que devuelve 0.
+
+`super.descripcion()` funciona distinto. No usa despacho dinámico: invoca directamente la versión de la superclase.
+Así `ProductoFisico` reutiliza el texto base y le añade el peso.
+
+##### 4. Reglas, variantes y casos límite
+
+La JLS pone condiciones a la sobreescritura. El método nuevo debe tener el mismo nombre y los mismos tipos de
+parámetros. Su tipo de retorno puede ser el mismo o un subtipo. No puede reducir la visibilidad: un método `public`
+no puede volverse `private`. Tampoco puede declarar excepciones comprobadas más amplias que el original.
+
+Si cambias un tipo de parámetro, no sobrescribes: creas un método nuevo, una sobrecarga. Sin `@Override` compila sin
+aviso y el código sigue llamando a la versión de la base. Con `@Override`, el error aparece al compilar.
+
+No todos los miembros son polimórficos. Los métodos `private` no se heredan, así que no pueden sobrescribirse. Los
+métodos `static` se ocultan en lugar de sobrescribirse: se eligen por el tipo declarado. Los campos tampoco participan
+del despacho dinámico.
+
+Si el constructor de la subclase no escribe `super(...)`, `javac` inserta `super()` sin argumentos. Si la base no
+tiene ese constructor, el error es `constructor Producto in class Producto cannot be applied to given types`.
+
+`final` corta la herencia donde tú decides. Una clase `final` no admite subclases. Un método `final` no admite
+sobreescritura. Desde Java 17 existe una variante intermedia, las clases `sealed`, que enumeran las subclases
+permitidas. Las verás cuando el curso modele jerarquías cerradas.
+
+El principio de Liskov no lo comprueba el compilador; es responsabilidad tuya. Si `Producto` promete un precio
+positivo, `ProductoFisico` no puede aceptar uno negativo. Y si una subclase lanza `UnsupportedOperationException` en
+un método heredado, rompe la promesa de la base.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 encapsuló `Producto` y validó sus invariantes en el constructor. La herencia extiende esa idea: la
+subclase construye primero la parte base con `super(...)`, y la base sigue protegiendo sus reglas.
+
+La diferencia con la composición es importante. `Producto` contiene un `Dinero`; no extiende `Dinero`. Hereda solo
+cuando la frase «X es un Y» se sostiene en todos los usos. Si no, guarda el objeto en un campo y delégale el trabajo.
+
+El Tema 3 presenta interfaces y clases abstractas, otras formas de declarar un tipo común. El Tema 4 separa con
+precisión sobreescritura y sobrecarga. El Tema 6 muestra cómo Java 25 permite asignar campos antes de `super(...)`,
+lo que elimina el `0 g` del Problema resuelto 2.2.
 
 #### Problema resuelto 2.1
 Crea una jerarquía con `Producto`, `ProductoFisico` y `ServicioDigital`. Recorre un catálogo mixto e imprime la
@@ -2725,7 +2900,40 @@ eje, y cómo consigues que la calculadora no tenga un `switch` por cada regla?
 - **Error típico:** devolver `null` cuando no hay descuento y obligar a cada llamador a escribir `if (descuento != null)`.
 
 #### ► CÓMO FUNCIONA
-Una interfaz es un contrato de comportamiento. Declara métodos que un tipo promete implementar, pero no dice cómo. `Descuento` afirma que cualquier descuento sabe aplicarse a un importe y sabe etiquetarse; no afirma nada sobre su estado interno. Esa separación permite que `DescuentoPorcentual` guarde un porcentaje y `DescuentoFijo` guarde un importe sin que el carrito lo sepa. El carrito solo tiene una variable de tipo `Descuento` y llama a `aplicar`. El tipo de la variable es el contrato; el objeto real es la implementación.
+
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de transporte puede contratar con dos tipos de acuerdo. Uno es un contrato de servicio: «quien firme debe
+recoger y entregar paquetes». No dice cómo; cada transportista usa su furgoneta. El otro es una franquicia: la central
+entrega el local, el uniforme y el procedimiento de cobro, y el franquiciado solo decide su tarifa local.
+
+Java ofrece las dos formas. Una **interfaz** es el contrato: promete operaciones sin decir cómo se hacen ni guardar
+datos. Una **clase abstracta** es la franquicia: aporta estado y un procedimiento común, y deja huecos que cada
+subclase completa.
+
+Tienda Aurora tiene un caso de cada tipo. Los descuentos son reglas sin estado compartido: un porcentaje, un importe
+fijo o ninguno. Los medios de pago comparten un nombre y un cálculo, `total = base + recargo`, y solo cambia el
+recargo. Elegir bien la herramienta evita un `switch` por cada regla en la calculadora.
+
+##### 2. Definición formal y vocabulario
+
+Una **interfaz** es un tipo declarado con `interface`. Lista métodos que una clase promete implementar. No tiene
+campos de instancia ni constructores. Una clase la adopta con **`implements`**, y el compilador exige que implemente
+todos sus métodos abstractos.
+
+Un **método `default`** es un método de interfaz con cuerpo. Las clases que implementan la interfaz lo heredan y
+pueden sobrescribirlo. Así una interfaz puede crecer sin romper a quienes ya la implementan.
+
+Una **clase abstracta** se marca con `abstract` y no se puede instanciar. Puede tener campos, constructores, métodos
+concretos y **métodos abstractos**: métodos sin cuerpo que toda subclase concreta debe sobrescribir.
+
+Dos patrones de diseño aparecen en el código. El **método plantilla** (*template method*) es un método `final` de la
+base que fija los pasos de un algoritmo. Delega el paso variable en un método abstracto. El **objeto nulo** (*null
+object*) es una implementación real del contrato que no hace nada, usada en lugar de `null`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra los dos ejes de variación de Tienda Aurora:
 
 ```mermaid
 flowchart LR
@@ -2744,15 +2952,87 @@ flowchart LR
     C -->|"solo conoce la base"| M
 ```
 
-Desde Java 8 una interfaz puede tener métodos `default` con implementación y métodos `static`; desde Java 9, métodos `private` para compartir código entre los `default`. Eso difumina un poco la frontera con las clases abstractas, pero no la elimina: una interfaz no tiene campos de instancia ni constructor, así que no puede guardar estado. Sus campos, si los hay, son constantes implícitas (`public static final`). Y una clase puede implementar varias interfaces, mientras que solo puede extender una clase. Esa es la razón por la que las capacidades transversales —`Comparable`, `Runnable`, `Descuento`— se modelan como interfaces.
+Sigue una llamada a `total` sobre una tarjeta:
 
-`MedioPago` es un ejemplo del patrón *template method*: `total` define el esqueleto del cálculo —sumar el recargo a la base— y deja un paso variable, `recargo`, en manos de la subclase. El método `total` es `final` para que nadie pueda romper el esqueleto; `recargo` es abstracto porque cada medio tiene su propia regla. El constructor es `protected` porque solo las subclases deben poder construir un medio de pago con nombre; no tiene sentido instanciar `MedioPago` directamente, y el compilador lo impide porque es abstracta.
+1. **Compilación.** La variable tiene tipo `MedioPago`. `javac` comprueba que `MedioPago` declara `total(long)` y
+   genera una llamada virtual.
+2. **Ejecución de la plantilla.** La JVM encuentra `total` en `MedioPago`. Como es `final`, ninguna subclase lo
+   sustituye. Su cuerpo ejecuta `base + recargo(base)`.
+3. **Paso variable.** `recargo(base)` es abstracto en la base. El despacho dinámico del Tema 2 busca la versión del
+   tipo real, `Tarjeta`, y la ejecuta.
+4. **Resultado.** `total` suma el recargo a la base. El esqueleto nunca cambia; solo cambia el paso delegado.
 
-Esa combinación de estado compartido más algoritmo fijo es exactamente lo que una interfaz no puede ofrecer. Si `MedioPago` fuera una interfaz, cada implementación tendría que repetir el campo `nombre` y la suma final, o delegar en una clase auxiliar. La clase abstracta concentra lo común y obliga a implementar solo lo que varía.
+Este es el núcleo de la plantilla en el Problema resuelto 3.1:
 
-`SinDescuento` merece una nota aparte porque suele generar dudas. Es una implementación sin estado, por eso puede existir una única instancia (`INSTANCIA`) y compartirse entre hilos sin sincronización: no hay campos que cambien. El constructor es `private` para que nadie cree otra. Ese patrón se llama *null object* y evita repartir `if (descuento != null)` por toda la aplicación. La alternativa —devolver `null`— obliga a cada llamador a recordar la comprobación, y el día que uno la olvida aparece un `NullPointerException` en el recibo.
+```java
+public abstract long recargo(long base);
 
-La regla de decisión es concreta. Usa una interfaz cuando quieras definir una capacidad que varias clases no relacionadas pueden implementar (`Comparable`, `Descuento`, `Runnable`). Usa una clase abstracta cuando varias clases comparten estado o un esqueleto de algoritmo y quieres evitar duplicarlo (`MedioPago`). Y puedes combinar: una clase abstracta puede implementar una interfaz y dejar métodos abstractos para las subclases.
+public final long total(long base) {
+    return base + recargo(base);
+}
+```
+
+Con las interfaces, el recorrido es parecido. Una variable de tipo `Descuento` puede guardar un `Porcentual`, un
+`Fijo` o el objeto nulo. La JVM usa la instrucción `invokeinterface` y busca la implementación en la clase real. Si
+la clase no define `ahorro`, la JVM usa el cuerpo `default` de la interfaz.
+
+`SinDescuento.INSTANCIA` resuelve el caso «no hay descuento». En vez de `null`, la calculadora recibe un objeto que
+devuelve la base intacta. No hace falta ningún `if (descuento != null)`. Como no tiene campos que cambien, una única
+instancia puede compartirse en todo el programa.
+
+##### 4. Reglas, variantes y casos límite
+
+Las interfaces tienen reglas implícitas. Sus métodos sin cuerpo son `public abstract` aunque no lo escribas. Sus
+campos son `public static final`: constantes, no estado. Por eso, al implementar un método sin `public`, `javac`
+responde `attempting to assign weaker access privileges; was public`.
+
+La historia de versiones explica lo que puede contener una interfaz. Desde Java 8 admite métodos `default` y
+`static`. Desde Java 9 admite métodos `private`, útiles para compartir código entre varios `default`.
+
+Una clase puede implementar varias interfaces, pero solo extender una clase. Esa libertad trae un caso límite: dos
+interfaces con el mismo método `default`.
+
+```java
+interface Rastreable {
+    default String estado() { return "en ruta"; }
+}
+interface Facturable {
+    default String estado() { return "pendiente de pago"; }
+}
+class Envio implements Rastreable, Facturable {
+}
+```
+
+```text
+$ javac Conflicto.java
+Conflicto.java:7: error: types Rastreable and Facturable are incompatible;
+class Envio implements Rastreable, Facturable {
+^
+  class Envio inherits unrelated defaults for estado() from types Rastreable and Facturable
+1 error
+```
+
+El compilador no elige por ti. Debes sobrescribir `estado()` en `Envio`. Dentro puedes llamar a una versión concreta
+con `Rastreable.super.estado()`.
+
+Una clase abstracta sí tiene constructor, aunque nadie pueda hacer `new` sobre ella. Lo invocan las subclases con
+`super(...)`. Por eso el constructor de `MedioPago` es `protected`: solo las subclases lo necesitan. Si una subclase
+concreta olvida un método abstracto, el error es `is not abstract and does not override abstract method`.
+
+Una clase abstracta puede implementar una interfaz y dejar algunos de sus métodos sin cuerpo. La primera subclase
+concreta tendrá que completarlos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 2 explicó el despacho dinámico con `Producto` y sus subclases. Aquí funciona igual, pero el tipo común puede
+ser un contrato sin estado. La pregunta de diseño cambia de «¿es un?» a «¿sabe hacer?».
+
+La regla de decisión es concreta. Usa una interfaz para una capacidad que clases no relacionadas pueden ofrecer,
+como `Descuento` o `Comparable`. Usa una clase abstracta cuando varias clases comparten estado o el esqueleto de un
+algoritmo, como `MedioPago`.
+
+El Tema 4 explica `protected` y los demás modificadores de acceso. El Módulo 2 usa interfaces del JDK como `List`,
+`Map` y `Comparator`. Allí verás que casi todo el código depende de la interfaz, no de la clase concreta.
 
 #### Problema resuelto 3.1
 Modela los descuentos con una interfaz y los medios de pago con una clase abstracta. Combina tres descuentos con dos
@@ -3253,7 +3533,41 @@ otro paquete debería usar. ¿Quién elige qué método se ejecuta, y cómo esco
 - **Error típico:** anotarlo con `@Override`: `error: static methods cannot be annotated with @Override`.
 
 #### ► CÓMO FUNCIONA
-La **sobrecarga** ocurre en la misma clase (o en una jerarquía) cuando hay varios métodos con el mismo nombre y distinta lista de parámetros. El compilador elige cuál llamar según los argumentos. La **sobreescritura** ocurre entre una clase base y una subclase, con la misma firma exacta. La llamada se resuelve en tiempo de ejecución según el objeto real.
+
+##### 1. La idea en lenguaje sencillo
+
+En una oficina de envíos hay una ventanilla con el cartel «Enviar». Si llegas con un sobre, te atienden de una forma;
+con una caja y un seguro, de otra. El empleado decide al ver lo que traes en la mano. En cambio, cuál de las sucursales
+hace la entrega final se decide después, según adónde va el paquete.
+
+Java tiene esas dos decisiones con el mismo nombre de método. La **sobrecarga** se parece a la ventanilla: el
+compilador mira los argumentos y elige. La **sobreescritura** se parece a la sucursal: la JVM mira el objeto real al
+ejecutar y elige.
+
+Hay una tercera pregunta en la oficina: quién puede entrar a cada sala. En código, los **modificadores de acceso**
+deciden qué clases ven cada miembro. En Tienda Aurora, `CalculadoraPrecio` ofrece `calcular` con varias listas de
+parámetros, `ProductoFisico` redefine `costoEnvio` y `Pedido` usa un método que ningún otro paquete debería ver.
+
+##### 2. Definición formal y vocabulario
+
+La **firma** de un método es su nombre más la lista ordenada de los tipos de sus parámetros. El tipo de retorno y
+los nombres de los parámetros no forman parte de ella. La **sobrecarga** consiste en tener varios métodos con el
+mismo nombre y distinta firma. La **resolución de sobrecarga** es el proceso con el que el compilador elige uno.
+
+La **ligadura estática** es decidir qué método llamar al compilar, con los tipos declarados. La **ligadura
+dinámica** es decidirlo al ejecutar, con el tipo real del objeto. La sobrecarga usa la primera; la sobreescritura, la
+segunda.
+
+Un **paquete** es un espacio de nombres declarado con `package`. También es la unidad de visibilidad del acceso por
+defecto. Un **modificador de acceso** fija desde dónde se usa un miembro: `private`, sin modificador
+(**package-private**), **`protected`** o `public`.
+
+La **ocultación de métodos** ocurre cuando una subclase declara un método `static` con la misma firma que uno
+`static` de la base. No lo sobrescribe: lo oculta, y la llamada se decide con el tipo declarado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama separa los dos caminos de decisión:
 
 ```mermaid
 flowchart TB
@@ -3261,18 +3575,36 @@ flowchart TB
     Q -->|"varios métodos, mismo nombre,<br/>distintos parámetros"| S["SOBRECARGA · javac<br/>mira tipos declarados de los argumentos"]
     S --> S1["1 · exacto o widening"] --> S2["2 · boxing"] --> S3["3 · varargs"] --> S4["el más específico<br/>o error: ambiguous"]
     Q -->|"misma firma en base y subclase"| R["SOBREESCRITURA · JVM<br/>mira el tipo real del objeto"]
-    R --> R1["tabla de métodos de la clase real"]
+    R --> R1["busca en la clase real y sube por la jerarquía"]
 ```
 
-La elección de sobrecarga ocurre en compilación y sigue un orden preciso. Primero se buscan métodos aplicables sin conversiones implícitas (coincidencia exacta o widening de primitivos). Si no hay, se permite boxing y unboxing. Si tampoco, se permiten varargs. Finalmente se elige el más específico: entre `f(int)` y `f(long)`, una llamada con `10` prefiere `f(int)` porque es más específico. Si dos candidatos quedan empatados, el compilador falla con “reference to f is ambiguous” en lugar de elegir uno al azar. Esa es una diferencia importante con la sobreescritura: aquí no hay objeto real que consultar, solo tipos declarados.
+La resolución de sobrecarga sigue las fases que define la JLS. Observa la llamada `cantidad(10)` del Problema resuelto
+4.1:
 
-El tipo de retorno no participa de la sobrecarga. No puedes declarar `int calcular()` y `Dinero calcular()` en la misma clase: para el compilador ambas firmas son `calcular()`, y el cuerpo no se puede elegir por lo que el llamador espera recibir. Tampoco alcanza con cambiar los nombres de los parámetros: la firma son los tipos, no los nombres.
+1. **Candidatos.** `javac` reúne los métodos accesibles llamados `cantidad`: `long`, `Integer` e `int...`.
+2. **Fase 1: sin boxing ni varargs.** Busca métodos aplicables con coincidencia exacta o con *widening* de
+   primitivos. `int` se ensancha a `long`, así que `cantidad(long)` es aplicable. La búsqueda termina aquí.
+3. **Fase 2: con boxing.** Solo se usaría si la fase 1 no encontrara nada. Por eso `cantidad(Integer)` pierde,
+   aunque `Integer` parezca más cercano a `10`.
+4. **Fase 3: con varargs.** Es el último recurso. Solo `cantidad()` sin argumentos llega hasta `int...`.
+5. **El más específico.** Si una fase encuentra varios aplicables, gana el más específico. Si ninguno lo es, el
+   error es `reference to f is ambiguous`.
 
-La diferencia práctica: si llamas a un método sobrecargado, el compilador decide con el tipo declarado del argumento; si llamas a uno sobrescrito, la JVM decide con el tipo real del objeto. Un error típico es creer que una sobrecarga “gana” por el tipo en tiempo de ejecución; no es así. Otra confusión es cambiar solo el tipo de retorno: eso no es sobrecarga ni sobreescritura, es un error de compilación.
+El resultado queda grabado en el bytecode: la instrucción ya nombra `cantidad(J)V`, la versión `long`. En ejecución
+no se vuelve a decidir nada.
 
-Hay una consecuencia de esta distinción que aparece en cuanto se usan genéricos. Cuando una subclase especializa un tipo genérico, el compilador puede generar un método *bridge*: una versión con la firma borrada que delega en la implementación real. `javap -p` los muestra como métodos extra con nombres como `compareTo(Object)`. No son código tuyo y no deberías llamarlos; existen para que el despacho dinámico siga funcionando después del borrado de tipos. En el módulo de colecciones se ve el mecanismo completo.
+La sobreescritura deja la decisión abierta. En `p.tipo()`, `javac` solo graba «llama a `tipo()`» con
+`invokevirtual`. La JVM, al ejecutar, mira el objeto real. Por eso `etiquetar(p)` elige `etiquetar(Producto)` y
+`p.tipo()` ejecuta `ProductoFisico.tipo()` en la misma línea de código.
 
-Los **modificadores de acceso** controlan quién puede ver cada miembro. La tabla completa aclara una confusión frecuente: `protected` no significa “solo subclases”, sino “subclases y mismo paquete”.
+El acceso también se comprueba al compilar. Cuando una clase usa un miembro, `javac` mira su modificador y desde qué
+clase y paquete se usa. Si no está permitido, el mensaje nombra el nivel. Verás `has private access`, `is not public …
+cannot be accessed from outside package` o `has protected access`.
+
+##### 4. Reglas, variantes y casos límite
+
+La tabla resume los cuatro niveles. Fíjate en que `protected` no significa «solo subclases», sino «subclases y mismo
+paquete»:
 
 | Modificador | Misma clase | Mismo paquete | Subclase en otro paquete | Cualquier paquete |
 | --- | --- | --- | --- | --- |
@@ -3281,11 +3613,38 @@ Los **modificadores de acceso** controlan quién puede ver cada miembro. La tabl
 | `protected` | sí | sí | sí | no |
 | `public` | sí | sí | sí | sí |
 
-Elegir visibilidad es diseñar la superficie del módulo. Un paquete no es solo una carpeta: es una unidad de encapsulación. `servicio` expone `CalculadoraPrecio` y `Pedido`, pero esconde cómo suma los subtotales. Si mañana ese cálculo cambia —por ejemplo, para aplicar redondeo por línea—, el cambio queda dentro del paquete y ningún cliente se entera. Esa libertad es la que se pierde cuando todo es `public` por comodidad.
+`protected` tiene un matiz para las subclases de otro paquete. Pueden usar el miembro a través de la herencia, sobre
+su propio objeto. No pueden usarlo sobre cualquier otro `Producto` que reciban como parámetro.
 
-`final` completa el control. `MedioPago.total` es `final` para que ninguna subclase altere la fórmula; `ProductoFisico` y `ServicioDigital` son `final` para que no se especialicen más. `final` en un método o clase es una promesa de estabilidad que el compilador hace cumplir. En un campo, `final` garantiza una única asignación; en un parámetro o variable local, permite usarlo dentro de una lambda sin que el compilador se queje de que “no es efectivamente final”.
+El tipo de retorno no participa de la sobrecarga. `int calcular()` y `long calcular()` en la misma clase son el mismo
+método dos veces: `already defined in class`. Cambiar solo los nombres de los parámetros tampoco crea otra firma.
 
-No todo lo que parece sobrescritura lo es. Un método `private` no se hereda, así que una subclase que declara otro con el mismo nombre lo está ocultando, no sobrescribiendo: si alguien llama a través de la base, ejecuta el de la base. Un método `static` tampoco participa del despacho dinámico; se resuelve con el tipo declarado. La anotación `@Override` en cualquiera de esos casos produce un error de compilación, y esa es justamente su utilidad: convierte una falsa sobrescritura en un aviso inmediato.
+Al sobrescribir no puedes reducir la visibilidad. Un método `public` debe seguir siendo `public`, porque quien usa la
+base espera poder llamarlo. El error dice `attempting to assign weaker access privileges; was public`.
+
+Los métodos `private` no se heredan. Si la subclase declara uno con el mismo nombre, es un método nuevo e
+independiente. Los métodos `static` se ocultan. En ambos casos `@Override` produce un error de compilación, y esa es
+su utilidad: delatar una falsa sobreescritura.
+
+Con genéricos aparece un detalle que verás en `javap`. Cuando una clase implementa `Comparable<Producto>`, el
+compilador genera un método puente, `compareTo(Object)`, que delega en el tuyo. Existe para que el despacho dinámico
+funcione tras el borrado de tipos del Módulo 2.
+
+`final` completa el control. `MedioPago.total` es `final` para que ninguna subclase altere la fórmula. En un campo,
+`final` garantiza una única asignación.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 2 explicó el despacho dinámico. Este tema lo contrasta con la resolución de sobrecarga, que ocurre antes, al
+compilar. La regla para no confundirlos es corta: sobrecarga mira los argumentos declarados; sobreescritura mira el
+objeto real.
+
+En el Módulo 0 viste *widening* y *boxing* por separado. Aquí descubres su orden de preferencia cuando compiten. También
+viste paquetes como carpetas; ahora son además fronteras de visibilidad.
+
+Elegir visibilidad es diseñar la superficie de tu código. `servicio` expone `CalculadoraPrecio` y `Pedido`, pero
+esconde cómo suma subtotales. El Tema 5 aplica estas reglas a los `record`, cuyos accesores son siempre públicos. El
+Módulo 2 vuelve a la sobrecarga con genéricos, donde el borrado de tipos impone restricciones nuevas.
 
 #### Problema resuelto 4.1
 Escribe un programa que muestre, en la misma ejecución, una sobrecarga elegida por el compilador y una sobreescritura
@@ -3758,26 +4117,139 @@ escribir ese código a mano y sin perder la validación?
 - **Error típico:** poner los componentes en otro orden o con otro tipo: el patrón deja de coincidir con la cabecera del record.
 
 #### ► CÓMO FUNCIONA
-Un record no es azúcar sobre una clase cualquiera. El compilador genera una clase `final` que extiende `java.lang.Record`, con un campo privado y final por componente, un constructor canónico con la lista completa de componentes, un accesor por componente y las implementaciones de `equals`, `hashCode` y `toString`. No puedes agregar campos de instancia: si necesitas estado adicional, no es un record. Sí puedes agregar campos `static`, métodos, constructores adicionales y implementar interfaces. Un constructor adicional está obligado a delegar en el canónico con `this(...)`, porque es el único que asigna los componentes.
+
+##### 1. La idea en lenguaje sencillo
+
+Una etiqueta de envío impresa no se corrige con bolígrafo. Si la dirección cambia, se imprime otra etiqueta. Dos
+etiquetas con la misma calle y la misma ciudad son, a efectos prácticos, la misma dirección, aunque sean papeles
+distintos.
+
+Muchos datos de un programa funcionan así: no tienen identidad propia y no cambian; se reemplazan completos. Java
+ofrece el **`record`** para declararlos en una línea. El compilador escribe por ti el constructor, los accesores, la
+comparación y el texto.
+
+En Tienda Aurora, `Direccion`, `LineaPedido` y `ResultadoPrecio` son de este tipo. Antes de los records, cada uno
+exigía unas treinta líneas repetitivas, con el riesgo de olvidar `hashCode` o un campo en `equals`. Con un record
+solo escribes lo que importa: los componentes y las reglas de validación.
+
+##### 2. Definición formal y vocabulario
+
+Un **record** es una declaración `record Nombre(componentes) { ... }`. Define una clase `final` que extiende
+`java.lang.Record`. Cada **componente** de la cabecera produce un campo `private final` y un accesor público con el
+mismo nombre: `ciudad()`, sin el prefijo `get`.
+
+El **constructor canónico** es el que recibe los componentes en orden y asigna los campos. Si no lo escribes, el
+compilador lo genera. El **constructor compacto** es una forma abreviada del canónico, sin lista de parámetros, que
+sirve para validar y normalizar.
+
+Un record está pensado para modelar un **objeto de valor**: se identifica por su contenido, no por su identidad. Por
+eso el compilador genera **`equals` y `hashCode`** a partir de todos los componentes, junto con `toString`.
+
+La protección tiene un límite. Un record ofrece **inmutabilidad superficial**: sus campos no se reasignan, pero un
+componente mutable, como una lista, puede cambiar por fuera. La **copia defensiva** cierra ese hueco. Por último, un
+**patrón de record** permite comprobar el tipo y extraer los componentes en una sola expresión.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra qué genera el compilador y cuándo actúa el constructor compacto:
 
 ```mermaid
 flowchart LR
-    R["record Direccion(String calle, String ciudad)"] --> G["el compilador genera"]
+    R["record Direccion con calle y ciudad"] --> G["el compilador genera"]
     G --> F["private final calle, ciudad"]
-    G --> A["accesores calle() y ciudad()"]
+    G --> A["accesores calle y ciudad"]
     G --> E["equals · hashCode · toString"]
-    N["new Direccion('  Calle Mayor 12 ', ' Madrid ')"] --> K["constructor compacto<br/>strip + validación"]
+    N["new Direccion con espacios"] --> K["constructor compacto<br/>strip + validación"]
     K -->|"luego asigna los campos"| F
     K -->|"si falla"| X["IllegalArgumentException:<br/>el objeto no existe"]
 ```
 
-El constructor compacto es una forma del canónico, no un constructor distinto. Su cuerpo se inserta al principio del constructor generado: primero se ejecuta tu validación y normalización, y después el compilador asigna los componentes ya transformados. Por eso `Direccion` puede rechazar un código postal inválido antes de que exista un objeto a medio construir. Si declaras un constructor canónico completo —con la lista de parámetros— pierdes la forma compacta, pero puedes hacer lo mismo escribiendo las asignaciones a mano.
+Sigue `new Direccion("  Calle Mayor 12 ", " Madrid ")` del Problema resuelto 5.1:
 
-La igualdad que genera el compilador es la que espera un objeto de valor: dos records del mismo tipo son iguales si todos sus componentes son iguales, usando `Objects.equals` para las referencias y `==` para los primitivos. `hashCode` combina los mismos componentes, de modo que se cumple el contrato que los mapas y conjuntos necesitan: si dos objetos son iguales, tienen el mismo hash. `toString` incluye el nombre del record y cada componente con su nombre, lo que hace legible un log sin escribir un método extra.
+1. **Entrada al constructor canónico.** Los parámetros `calle` y `ciudad` llegan con espacios.
+2. **Cuerpo compacto.** Se ejecuta tu código. Las asignaciones `calle = calle.strip();` cambian los **parámetros**,
+   no los campos.
+3. **Validación.** Si la calle o la ciudad quedan vacías, se lanza la excepción y el objeto no llega a existir.
+4. **Asignación implícita.** Al final del cuerpo, el compilador añade `this.calle = calle; this.ciudad = ciudad;` con
+   los valores ya limpios.
 
-Un record es inmutable en su capa superficial, no en profundidad. Si un componente es una lista mutable, el record guarda la referencia y la lista puede cambiar por fuera. Para valores realmente inmutables, el constructor compacto debe copiar los componentes mutables (`List.copyOf`, `Arrays.copyOf`) y el accesor debe devolver otra copia. En este proyecto, `Dinero` y `Producto` ya son inmutables en lo que importa, así que los records pueden compartirlos sin defensas adicionales.
+Este es el constructor compacto del ejemplo:
 
-Los records tienen otra ventaja que se aprecia cuando el código crece: la deconstrucción por patrones. Desde Java 21, un `record` se puede desempaquetar en un `instanceof` o en un `switch` sin llamar a cada accesor. El compilador comprueba el tipo y extrae los componentes en una sola expresión. Esa forma de trabajar reemplaza muchos `instanceof` seguidos de casts y getters, y encaja con la idea de que el record es una estructura de datos con forma conocida.
+```java
+record Direccion(String calle, String ciudad) {
+    Direccion {
+        calle = calle.strip();
+        ciudad = ciudad.strip();
+        if (calle.isBlank() || ciudad.isBlank()) {
+            throw new IllegalArgumentException("la dirección necesita calle y ciudad");
+        }
+    }
+}
+```
+
+Por el paso 4, `r1` y `r2` terminan con los mismos datos. `equals` compara componente a componente y devuelve
+`true`. `hashCode` combina los mismos componentes, así que también coincide, como mostró la salida real.
+
+Los patrones de record hacen el camino inverso: desarman el objeto. En un `switch` pueden anidarse y combinarse con
+`when`. Este método recibe un `Envio`, que contiene una `Direccion`:
+
+```java
+static String zona(Object o) {
+    return switch (o) {
+        case Envio(Direccion(_, var ciudad), int peso) when peso > 1000 ->
+                "pesado a " + ciudad;
+        case Envio(Direccion(_, var ciudad), _) -> "normal a " + ciudad;
+        default -> "no es un envío";
+    };
+}
+```
+
+Llamado con un envío de 1200 g a Madrid, uno de 300 g a Bogotá y el texto `"CAF-0001"`, imprime:
+
+```text
+$ java Patrones.java
+pesado a Madrid
+normal a Bogotá
+no es un envío
+```
+
+El `_` indica un componente que no te interesa. `var` deja que el compilador deduzca el tipo del componente.
+
+##### 4. Reglas, variantes y casos límite
+
+Un record no admite campos de instancia fuera de la cabecera. El error es `field declaration must be static`. Sí
+admite campos `static`, métodos, constructores adicionales e interfaces implementadas. No puede extender otra clase,
+porque ya extiende `java.lang.Record`.
+
+Un constructor adicional debe delegar en el canónico con `this(...)`. Solo el canónico asigna los componentes. Dentro
+del constructor compacto no puedes escribir `this.calle = …`; modificas el parámetro y el compilador asigna después.
+
+Puedes escribir tú un accesor, por ejemplo para devolver una copia. Debe ser `public`, tener el mismo nombre y el
+mismo tipo de retorno que el componente.
+
+La igualdad generada usa `Objects.equals` en los componentes de referencia. En los primitivos usa la comparación de
+su wrapper, como `Integer.compare`. Si un componente es un arreglo, `equals` compara referencias, no contenido: dos
+records con arreglos equivalentes resultan distintos.
+
+La inmutabilidad superficial causa el fallo más sutil. Sin `List.copyOf` en el constructor compacto de `Carrito`,
+cambiar la lista original habría cambiado el record. Si ese record fuera clave de un `HashMap`, su hash cambiaría y la
+entrada se perdería. `List.copyOf` devuelve una lista inmodificable, así que el accesor puede entregarla sin riesgo.
+
+En cuanto a versiones: los records son estándar desde Java 16. Los patrones de record lo son desde Java 21. El
+patrón sin nombre `_` es estándar desde Java 22. Los records anidados son implícitamente `static`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 escribió a mano lo que un record genera: campos `private final`, accesores y validación en el
+constructor. El record no cambia esas ideas; elimina el código repetitivo. La diferencia entre identidad e igualdad
+del Tema 1 explica por qué la clase escrita a mano da `false` y el record da `true`.
+
+No todo debe ser record. Un `Producto` cuyo stock cambia es una entidad, no un valor. Tampoco sirve un record si
+necesitas herencia entre tipos de datos; ahí siguen las clases del Tema 2.
+
+En el Módulo 0 viste un `record` en el archivo compacto del inventario. El Tema 6 compara el constructor compacto
+con los constructores flexibles de Java 25. El Módulo 2 explica el contrato de `equals` y `hashCode` que los records
+cumplen, y por qué una clave mutable rompe un mapa.
 
 #### Problema resuelto 5.1
 Compara una clase de valor escrita a mano con un record equivalente. El record debe normalizar espacios, rechazar
@@ -4134,24 +4606,118 @@ El problema no era solo estético. Si querías que `ProductoFisico` recibiera un
 - **Error típico:** probar solo con el JDK local más nuevo y descubrir el fallo en un servidor con Java 21.
 
 #### ► CÓMO FUNCIONA
-Java 25 permite sentencias antes de la invocación explícita al constructor, tanto en `super(...)` como en `this(...)`. El constructor queda dividido en dos zonas: el prólogo, antes de la invocación, y el epílogo, después.
+
+##### 1. La idea en lenguaje sencillo
+
+Antes de entregar un paquete a la empresa de transporte, revisas la dirección, pesas la caja y escribes la etiqueta
+en mayúsculas. No tiene sentido entregar la caja primero y revisar después: si algo está mal, ya viaja.
+
+Hasta Java 24, el constructor de una subclase estaba obligado a entregar primero. Su primera línea tenía que ser
+`super(...)` o `this(...)`, sin preparación previa. Java 25 cambia la regla: ahora puedes validar y preparar los
+datos antes de construir la parte base.
+
+En Tienda Aurora, `ProductoFisico` recibe el SKU como texto sucio, el precio como texto y un peso. Con Java 25,
+convierte y valida todo en su propio constructor y solo entonces llama a `super(...)`. Si el peso es cero, la base ni
+siquiera llega a ejecutarse.
+
+##### 2. Definición formal y vocabulario
+
+Un **constructor flexible** es un constructor con sentencias antes de la invocación explícita `super(...)` o
+**`this(...)`**. La JEP 513, estándar desde Java 25, los define. `this(...)` invoca otro constructor de la misma
+clase; la cadena siempre termina en uno que llama a `super(...)`.
+
+La invocación divide el cuerpo en dos zonas. El **prólogo del constructor** son las sentencias anteriores. La JLS lo
+llama contexto de construcción temprana: el objeto todavía no es utilizable. El **epílogo del constructor** son las
+sentencias posteriores; ahí `this` ya funciona sin restricciones.
+
+Antes de Java 25, la alternativa habitual era una **fábrica estática**: un método `static` que valida y convierte, y
+después llama a un constructor `private`. `Sku.de("caf-0001")` es un ejemplo. Sigue siendo útil, pero ya no es la
+única salida.
+
+Como la característica es nueva, la opción **`--release`** de `javac` cobra importancia. Compilar con `--release 21`
+rechaza el prólogo; con Java 25 se acepta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra el recorrido de `new ProductoFisico(" caf-0001 ", "Café Aurora", 1250, 340)`:
 
 ```mermaid
 flowchart LR
-    N["new ProductoFisico(' caf-0001 ', ..., 340)"] --> P["PRÓLOGO<br/>valida peso · normaliza SKU<br/>asigna this.pesoGramos"]
+    N["new ProductoFisico con SKU sucio y 340 g"] --> P["PRÓLOGO<br/>valida peso · normaliza SKU<br/>asigna this.pesoGramos"]
     P -->|"si falla"| X["excepción:<br/>la base nunca se ejecuta"]
-    P --> S["super(sku, nombre, precio)<br/>constructor de Producto"]
+    P --> S["super con sku, nombre, precio<br/>constructor de Producto"]
     S --> E["EPÍLOGO<br/>this ya se puede usar"]
     E --> O["objeto completo"]
 ```
 
-La zona previa a `super` se llama contexto de construcción temprana y tiene reglas precisas. Puedes leer y escribir parámetros, declarar variables locales, usar métodos y campos `static` de la clase, crear objetos y lanzar excepciones. También puedes asignar los campos propios de la clase que no tengan inicializador. No puedes leer campos de instancia, llamar a métodos de instancia, usar `this` como valor —ni siquiera para pasarlo a un método— ni referirte a clases internas que capturen la instancia. La razón es que la parte base del objeto todavía no está construida: cualquier lectura de un campo vería el valor por defecto, y cualquier llamada a un método virtual podría ejecutar código de la subclase con el estado a medio inicializar.
+1. **Reserva.** `new` crea el objeto con todos sus campos en valores por defecto, igual que en el Tema 2.
+2. **Prólogo.** Se ejecutan las sentencias previas. `if (pesoGramos <= 0)` valida. La variable local `sku` guarda el
+   texto limpio. `this.pesoGramos = pesoGramos;` asigna un campo propio.
+3. **Construcción de la base.** `super(sku, nombre, precioCentavos)` ejecuta el constructor de `Producto` con datos
+   ya preparados.
+4. **Epílogo.** Al volver, se ejecuta el resto del cuerpo. En el ejemplo está vacío.
 
-Esa restricción convierte al compilador en un aliado. Un constructor que intenta leer `this.pesoGramos` antes de `super` no compila, en lugar de producir un objeto con peso cero y un bug intermitente. La regla es simple: antes de `super` solo existe lo que vino por parámetros y lo que es estático, más los campos propios que asignes ahí. Si necesitas más, es una señal de que la lógica debería vivir en un método estático de apoyo o en un objeto de valor que se construye primero.
+El paso 2 resuelve el `0 g` del Problema resuelto 2.2. Este es el prólogo de `ConstructorFlexible.java`:
 
-La misma libertad existe en el encadenamiento con `this(...)`. Un constructor puede calcular o validar antes de delegar en otro constructor de la misma clase, y ese otro puede a su vez delegar en `super(...)`. La regla se mantiene: la cadena termina en una invocación a la base, cada constructor de la cadena se ejecuta una sola vez y ningún campo de la instancia se lee antes de que la base esté construida. Eso permite tener un constructor público que recibe texto y delega en otro que recibe objetos de valor, sin duplicar la validación ni exponer la representación interna.
+```java
+ProductoFisico(String skuCrudo, String nombre, long precioCentavos, int pesoGramos) {
+    if (pesoGramos <= 0) {
+        throw new IllegalArgumentException("el peso debe ser mayor que cero");
+    }
+    String sku = skuCrudo.strip().toUpperCase();
+    this.pesoGramos = pesoGramos;
+    super(sku, nombre, precioCentavos);
+}
+```
 
-La interacción con records es natural. Un constructor compacto ya permitía validar y normalizar; los constructores flexibles extienden esa comodidad a las clases con herencia. Juntos cubren los dos casos: valores inmutables con `record` y jerarquías con estado compartido y validación previa.
+Como `pesoGramos` ya tiene valor cuando corre `Producto(...)`, la llamada a `resumen()` desde la base ve `340 g`. La
+salida real lo confirma: `Producto(...) recibe CAF-0001 Café Aurora 1250 (340 g)`.
+
+Si la validación falla, la excepción sale del prólogo y el paso 3 nunca ocurre. Por eso el contador `construidos`
+termina en 1: el producto rechazado no ejecutó el constructor de `Producto`.
+
+Con `this(...)` el mecanismo es el mismo. En `EncadenarConThis.java`, el constructor de texto convierte `"49.00"` en
+4900 centavos en su prólogo y delega. El constructor de centavos valida la licencia y termina la cadena en `super`.
+
+##### 4. Reglas, variantes y casos límite
+
+El prólogo tiene reglas precisas. Puedes leer parámetros, declarar variables locales, crear objetos, lanzar
+excepciones y usar miembros `static`. También puedes asignar campos propios de la clase, siempre que no tengan
+inicializador en su declaración.
+
+Lo que no puedes hacer es usar el objeto en construcción:
+
+- Leer un campo, incluso uno que acabas de asignar: `cannot reference this before supertype constructor has been
+  called`.
+- Llamar a un método de instancia, aunque sea de la propia clase. Márcalo `static` si solo transforma argumentos.
+- Usar `super.algo` para acceder a miembros de la base.
+- Asignar un campo con inicializador: `cannot assign initialized field 'pesoGramos' before supertype constructor has
+  been called`.
+- Escribir `return`. Solo se permite en el epílogo, y sin valor.
+
+La razón es la misma del Tema 2. La parte base aún no existe. Una lectura vería valores por defecto y un método
+virtual podría ejecutar código de la subclase sobre un objeto a medio hacer. El compilador convierte ese riesgo en un
+error.
+
+Los records y los enums también se benefician. En un record, los constructores no canónicos deben usar `this(...)` y
+ahora pueden preparar datos antes. El constructor canónico de un record no admite invocación explícita.
+
+En cuanto a versiones: la característica fue vista previa en Java 22, 23 y 24, y es estándar desde Java 25. Por eso
+`javac --release 21` responde `flexible constructors is not supported in -source 21`. En un proyecto, el toolchain de
+Gradle debe fijar Java 25.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 2 explicó el orden de construcción y su trampa: la base podía ver campos de la subclase sin inicializar. Este
+tema no cambia el orden; te deja actuar antes. El Tema 1 puso la validación en el constructor; ahora también cabe en
+las subclases, antes de `super`.
+
+El constructor compacto del Tema 5 ya permitía validar en records. Los constructores flexibles extienden esa
+comodidad a las jerarquías de clases. Juntos cubren los dos casos: valores inmutables y entidades con herencia.
+
+La fábrica estática no desaparece. Sigue siendo la mejor opción cuando quieres un nombre expresivo, como `Sku.de`, o
+devolver un objeto ya existente. El Módulo 3 retoma la validación en constructores desde el lado de las excepciones:
+qué tipo lanzar y cómo informar del error.
 
 #### Problema resuelto 6.1
 Haz que `ProductoFisico` valide el peso y normalice el SKU antes de construir la base. Comprueba que un peso inválido

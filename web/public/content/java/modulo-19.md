@@ -234,11 +234,36 @@ un solo validador que funcione con clases que todavía no existen?
 - **Error típico:** olvidarlo con campos `private`: `IllegalAccessException: ... with modifiers "private final"`.
 
 #### ► CÓMO FUNCIONA
-La reflexión es la capacidad del programa para inspeccionar su propia estructura en tiempo de ejecución: clases, campos, métodos, constructores y anotaciones. En vez de llamar `pedido.getId()` directamente, puedes pedirle a la clase `Pedido` qué campos tiene, qué anotaciones llevan y leer sus valores dinámicamente. Esto es poderoso porque permite construir herramientas genéricas —serializadores, validadores, frameworks de inyección, ORMs— que trabajan sobre tipos que no conocían al compilar.
 
-El costo también es real. La reflexión rompe encapsulación si se usa sin cuidado (`setAccessible`), es más lenta que una llamada directa, mueve errores de compilación a runtime, y hace más difícil refactorizar: renombrar un campo privado no rompe un `getDeclaredField("nombre")` en compilación. Por eso se usa en bordes de infraestructura/framework, no como reemplazo normal de diseño orientado a objetos.
+##### 1. La idea en lenguaje sencillo
 
-Las anotaciones completan el modelo. Una anotación por sí sola es metadata; no hace nada. Su utilidad depende de quién la lea. `@Retention(RetentionPolicy.RUNTIME)` indica que la anotación estará disponible en runtime para que la reflexión la consulte. `@Target` limita dónde puede aplicarse.
+Piensa en un revisor de bodega que no conoce los formularios de antemano. En cada formulario, las casillas
+obligatorias llevan un adhesivo rojo. El revisor no necesita saber qué formulario tiene enfrente: recorre las
+casillas, busca los adhesivos rojos y revisa que esas estén llenas.
+
+Ese revisor es un programa que examina su propia estructura mientras corre. En Tienda Aurora hay formularios de
+envío, devolución y reclamo. Con un `if` por campo, cada clase nueva exige código nuevo, y cualquier olvido pasa sin
+aviso.
+
+Con reflexión y anotaciones, escribes un solo validador. Lee las clases en tiempo de ejecución, encuentra los
+campos marcados y comprueba sus valores, incluso en clases que todavía no existen.
+
+##### 2. Definición formal y vocabulario
+
+La **reflexión** es la API de `java.lang.reflect` con la que un programa examina y usa su estructura en tiempo de
+ejecución. Su puerta de entrada es **`Class`**, el objeto que representa un tipo cargado. Desde él obtienes un
+**`Field`** por campo y un **`Method`** por método.
+
+Una **anotación** es un metadato declarado con `@interface`. No ejecuta nada: otro código debe leerla. Dos
+meta-anotaciones la configuran. **`@Retention`** fija hasta cuándo vive: `SOURCE`, `CLASS` o `RUNTIME`.
+**`@Target`** fija dónde se puede aplicar: campo, método, tipo y otros.
+
+Para leer un campo `private`, la reflexión debe saltarse el control de acceso. **`setAccessible(true)`** lo pide,
+y el sistema de módulos puede negarlo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue el validador `faltantes` desde el objeto hasta cada valor:
 
 ```mermaid
 flowchart LR
@@ -250,6 +275,67 @@ flowchart LR
   A -->|no| X["se ignora"]
   M -->|"invoke(objeto)"| R["resultado"]
 ```
+
+1. Al compilar, `javac` lee `@Retention(RetentionPolicy.RUNTIME)` en `Obligatorio`. Por eso guarda la anotación en
+   el `.class` como atributo visible para la JVM.
+2. Al cargar `Envio`, la JVM crea su objeto `Class`. `obj.getClass()` lo devuelve desde cualquier instancia.
+3. `getDeclaredFields()` crea un arreglo de `Field` con todos los campos declarados en esa clase, privados
+   incluidos.
+4. `isAnnotationPresent(Obligatorio.class)` consulta las anotaciones visibles del campo. Con `CLASS`, la anotación
+   está en el archivo, pero la JVM no la entrega.
+5. `setAccessible(true)` desactiva el control de acceso de ese `Field`. La JVM lo permite si la clase está en un
+   paquete abierto a quien llama.
+6. `f.get(obj)` devuelve el valor del campo en ese objeto. Un primitivo llega envuelto, por ejemplo como `Integer`.
+
+Este es el núcleo del validador:
+
+```java
+for (Field f : obj.getClass().getDeclaredFields()) {
+    if (!f.isAnnotationPresent(Obligatorio.class)) continue;
+    f.setAccessible(true);
+    Object valor = f.get(obj);
+    if (valor == null || valor.toString().isBlank()) errores.add(f.getName());
+}
+```
+
+Observa que el validador no menciona `Envio` en ningún lugar. Funciona con cualquier clase que marque sus campos.
+Esa independencia es lo que aprovechan frameworks como JPA, JUnit o los serializadores JSON.
+
+`Method` sigue el mismo patrón. `getMethod("resumen")` busca un método público por nombre y tipos de parámetro.
+`m.invoke(bueno)` lo ejecuta sobre un objeto concreto y devuelve el resultado como `Object`.
+
+##### 4. Reglas, variantes y casos límite
+
+- Sin `@Retention`, la política es `CLASS`. La anotación compila sin aviso y la reflexión no la ve:
+  `SinRetencion.java` imprime `anotaciones visibles = 0`.
+- `@Target` sí se comprueba al compilar. Aplicar una anotación de campo sobre un método es un error de compilación.
+- `getFields()` y `getMethods()` devuelven solo miembros públicos, heredados incluidos. `getDeclaredFields()` y
+  `getDeclaredMethods()` devuelven los de esa clase, de cualquier visibilidad, sin los heredados.
+- La documentación de `getDeclaredFields` no garantiza ningún orden. Que salgan en orden de declaración es un
+  detalle de la JVM actual; no lo uses como contrato.
+- Los métodos de búsqueda lanzan excepciones checked: `NoSuchFieldException`, `NoSuchMethodException` e
+  `IllegalAccessException`. Si el método invocado lanza algo, llega envuelto en `InvocationTargetException`.
+- Los elementos de una anotación solo admiten primitivos, `String`, `Class`, enumeraciones, otras anotaciones y
+  arreglos de esos tipos.
+- Desde Java 16 y 17 (JEP 396 y 403), el JDK encapsula fuertemente sus paquetes internos. `setAccessible` sobre
+  ellos falla con `InaccessibleObjectException`, salvo con `opens` o `--add-opens`.
+- Desde Java 18 (JEP 416), la reflexión del núcleo se implementa con *method handles*. Tu código no cambia.
+
+La reflexión cuesta. Cada búsqueda por nombre es más lenta que una llamada directa, y un renombre no rompe la
+compilación. Guarda los `Field` y `Method` que reutilices, y limita la reflexión a los bordes de infraestructura.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Ya leíste anotaciones sin saberlo: `@Override` (Java, Módulo 1, Tema 2) es `SOURCE` y solo la usa el compilador.
+`@Test` (Java, Módulo 9, Tema 1) es `RUNTIME` y JUnit la busca por reflexión. La reflexión profunda y `opens` vienen
+del Módulo 10 (Java, Módulo 10, Tema 3). El ORM de juguete de JPA usó esta misma técnica (Java, Módulo 16, Tema 1).
+
+Compara reflexión con polimorfismo. Con una interfaz, el compilador garantiza que el método existe. Con reflexión,
+lo descubres al ejecutar. Usa interfaces cuando conoces los tipos; usa reflexión cuando escribes herramientas para
+tipos que no conoces.
+
+El Tema 7 usa `Method` e `invoke` dentro de un proxy dinámico. El Tema 8 explica por qué hay un objeto `Class` por
+tipo y por cargador. El Tema 9 presenta `MethodHandle`, una alternativa tipada y más rápida a `invoke`.
 
 #### Problema resuelto 1.1
 Escribe un validador que reciba cualquier objeto y devuelva los campos marcados con `@Obligatorio` que están vacíos.
@@ -636,9 +722,36 @@ mensaje en los logs. Con `indexOf` y `substring` cada regla son diez líneas fr�
 - **Error típico:** aceptar regex escritas por usuarios o aplicar patrones ambiguos a textos largos sin límite de tamaño.
 
 #### ► CÓMO FUNCIONA
-Una expresión regular describe un patrón de texto. En Java, `Pattern` representa la regex compilada y `Matcher` aplica ese patrón a una entrada concreta. Separarlos importa: compilar una regex tiene costo; si vas a validar miles de strings con el mismo patrón, compilas una vez y reutilizas el `Pattern`.
 
-La regex es útil para formatos bien definidos: códigos, placas, identificadores, fechas con forma conocida. No es buena herramienta para todo lo que parezca texto: no parsees HTML complejo con regex, no la uses como único validador de emails RFC-completos si el negocio no lo necesita, y no escribas patrones opacos sin tests. Otro riesgo es la complejidad catastrófica (ReDoS) en patrones ambiguos sobre input no confiable; en validaciones simples con anclas y clases acotadas, el riesgo es menor, pero conviene conocerlo.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un clasificador de paquetes que recibe una plantilla: «tres letras mayúsculas, un guion y cuatro
+números». Con ella puede hacer tres trabajos. Revisar si una etiqueta entera cumple la forma. Encontrar etiquetas
+válidas dentro de una nota escrita a mano. Y tachar los números de cada etiqueta antes de archivar la nota.
+
+Una expresión regular es esa plantilla escrita en un lenguaje compacto. En Tienda Aurora, las guías tienen la forma
+`ABC-1234` y aparecen en formularios y en mensajes de soporte. Sin regex, cada regla son varias líneas con
+`indexOf` y `substring`, fáciles de romper.
+
+Con un solo patrón describes la forma una vez. Después lo usas para validar, buscar, extraer y enmascarar.
+
+##### 2. Definición formal y vocabulario
+
+Una **expresión regular** es un texto que describe un conjunto de cadenas. En Java la compilas en un **`Pattern`**,
+inmutable y seguro entre hilos. Para aplicarlo a una entrada concreta creas un **`Matcher`**, que guarda la
+posición y los grupos de la búsqueda.
+
+El `Matcher` ofrece dos preguntas distintas: **`matches` y `find`**. La primera exige que toda la entrada cumpla el
+patrón; la segunda busca la siguiente subcadena que lo cumpla.
+
+El patrón se arma con piezas. Una **ancla** exige una posición sin consumir caracteres. Una **clase de caracteres**
+acepta uno de varios caracteres. Un **cuantificador** indica cuántas veces se repite algo. Un **grupo de captura**
+guarda lo encontrado; un **grupo con nombre** lo guarda con etiqueta. Un patrón ambiguo puede sufrir
+**backtracking catastrófico**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra el ciclo de vida de un patrón, desde el texto hasta cada uso:
 
 ```mermaid
 flowchart LR
@@ -649,6 +762,66 @@ flowchart LR
   F --> G["group(letras)<br/>group(numero)"]
   M -->|"replaceAll con lambda"| E["texto enmascarado"]
 ```
+
+1. `Pattern.compile` analiza el texto del patrón y construye un árbol de nodos: literales, clases, repeticiones y
+   grupos. Si hay un error de sintaxis, lanza `PatternSyntaxException` aquí.
+2. `GUIA.matcher(texto)` crea un `Matcher` ligero que apunta al árbol y a la entrada.
+3. `matches()` intenta que el árbol cubra desde la posición 0 hasta el final. Las anclas de inicio y fin son
+   implícitas.
+4. `find()` prueba el árbol desde la posición actual. Si falla, avanza un carácter y vuelve a probar. Si acierta,
+   guarda inicio, fin y grupos, y deja la posición después de la coincidencia.
+5. Cuando una repetición como `\d+` no permite completar el resto, el motor devuelve caracteres y prueba otro
+   reparto. Ese retroceso es el **backtracking**.
+6. `group("letras")`, `start()` y `end()` leen lo guardado en el paso 4. Sin coincidencia previa, no hay nada que
+   leer.
+
+Observa el patrón del tema y una búsqueda en bucle:
+
+```java
+private static final Pattern GUIA = Pattern.compile("(?<letras>[A-Z]{3})-(?<numero>\\d{4})");
+
+Matcher m = GUIA.matcher(texto);
+while (m.find()) {
+    System.out.println(m.group("letras") + " " + m.group("numero"));
+}
+```
+
+En Java, la barra invertida se escribe doble dentro del literal: `"\\d"` llega al motor como `\d`. Cada `find()`
+continúa donde terminó el anterior; por eso el bucle recorre las tres guías del mensaje una sola vez.
+
+El paso 5 explica `Retroceso.java`. En `(\w+)*\1z`, cada reparto de las letras entre repeticiones es una opción
+distinta. Como la entrada nunca termina en `z`, el motor prueba muchísimas opciones antes de fallar.
+
+##### 4. Reglas, variantes y casos límite
+
+- `String.matches(regex)` compila un `Pattern` nuevo en cada llamada. Para uso repetido, guarda el `Pattern` en una
+  constante.
+- `Pattern` es seguro entre hilos; `Matcher` no. Crea un `Matcher` por entrada y por hilo.
+- Por defecto, `\d` y `\w` solo cubren ASCII, y `[A-Z]` no incluye `Ñ`. La bandera `UNICODE_CHARACTER_CLASS`
+  amplía las clases predefinidas a Unicode.
+- Con la bandera `MULTILINE`, `^` y `$` marcan inicio y fin de cada línea, no de todo el texto.
+- En el texto de reemplazo de `replaceAll(String)`, `$` y `\` son especiales. `Matcher.quoteReplacement` los
+  escapa; `Pattern.quote` convierte un texto cualquiera en patrón literal.
+- Los cuantificadores son codiciosos por defecto. Con `?` detrás (`+?`) son perezosos; con `+` detrás (`++`) son
+  posesivos y no retroceden. Los posesivos y los grupos atómicos `(?>...)` reducen el riesgo de retroceso.
+- El nombre de un grupo solo admite letras y dígitos y empieza por letra.
+
+Las versiones del JDK fueron ampliando la API. Los grupos con nombre llegaron en Java 7. `replaceAll` con una
+función sobre `MatchResult` llegó en Java 9. `Pattern.asMatchPredicate()`, que valida con `matches`, llegó en Java
+11.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La inmutabilidad de `String` (Java, Módulo 0, Tema 5) explica por qué `replaceAll` devuelve un texto nuevo. La
+función de enmascarado es una lambda (Java, Módulo 4, Tema 1). La validación de entrada viene de Seguridad
+(Seguridad, Módulo 0, Tema 4).
+
+Ya usaste una regex sin explicarla: la lista blanca `[A-Za-z0-9_-]{1,32}` de `ApiCliente` (Java, Módulo 18, Tema 1).
+Allí `String.matches` validaba el id completo. Compara la regex con un analizador sintáctico: la regex sirve para
+formatos planos y bien definidos; no sirve para HTML ni para JSON anidado.
+
+El Tema 6 vuelve sobre el texto desde otro ángulo: cómo se escribe y se ordena según el idioma del usuario. Allí
+verás por qué una clase como `[A-Z]` no basta para nombres en español.
 
 #### Problema resuelto 2.1
 Con un solo patrón, valida cuatro entradas, encuentra las tres guías de un mensaje con su posición, enmascara sus
@@ -943,12 +1116,35 @@ decides qué hacer con los decimales que sobran?
 - **Error típico:** `divide(divisor)` sin argumentos: `Non-terminating decimal expansion; no exact representable decimal result.`
 
 #### ► CÓMO FUNCIONA
-`double` y `float` son tipos binarios de punto flotante. Representan eficientemente muchos valores, pero no pueden representar exactamente todos los decimales. `0.1 + 0.2` en binario no es exactamente `0.3`. Para gráficos o física eso puede ser aceptable; para dinero, no. Un centavo perdido o generado por redondeo binario se convierte en inconsistencia contable.
 
-`BigDecimal` representa decimales con precisión arbitraria. El punto clave es construirlo desde `String` cuando el valor viene de un literal decimal: `new BigDecimal("0.10")` preserva la intención decimal; `new BigDecimal(0.10)` captura la aproximación binaria del double. También hay que definir escala y modo de redondeo al dividir o al presentar totales. `RoundingMode.HALF_UP` es común en cálculos comerciales, pero la regla depende del dominio; lo importante es que sea explícita.
+##### 1. La idea en lenguaje sencillo
 
-**Mecanismo.** Sumar conserva la mayor escala; multiplicar suma las escalas. Por eso el total crece en decimales
-hasta que tú decides cortarlo con `setScale`.
+Piensa en la caja de una oficina de envíos. El cajero suma tarifas en papel, con todos los decimales, y al final
+redondea el total al peso según una regla escrita. Si su calculadora perdiera un poquito en cada suma, al cierre del
+mes la caja no cuadraría con el banco.
+
+`double` es esa calculadora imprecisa. Guarda los números en binario, y fracciones como `0.1` no tienen
+representación binaria exacta. Para física o gráficos el error es tolerable; para dinero, cada centavo cuenta.
+
+En Tienda Aurora, tres unidades de `0.10` con IVA del 19% deben costar `0.36`. Con `BigDecimal` haces la cuenta en
+decimal, ves todos los dígitos y decides tú, con una regla explícita, dónde cortar.
+
+##### 2. Definición formal y vocabulario
+
+**`BigDecimal`** es una clase inmutable de `java.math`. Representa un número como un entero sin límite, el
+**valor sin escala**, y una **escala**: cuántos dígitos van después del punto. `23.80` es el entero `2380` con
+escala 2.
+
+Hay dos formas seguras de crearlo: desde texto, `new BigDecimal("0.10")`, o con **`BigDecimal.valueOf`**, que usa
+la forma impresa de un `double`. **`setScale`** fija los decimales de un resultado y exige un **`RoundingMode`**
+cuando sobran dígitos.
+
+Para comparar cantidades usas **`compareTo`**, que ignora la escala; `equals` no la ignora. Una **división no
+exacta**, como 100 entre 3, exige indicar escala y modo de redondeo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue el cálculo del problema, con la escala de cada resultado:
 
 ```mermaid
 flowchart LR
@@ -958,6 +1154,61 @@ flowchart LR
   I --> T
   T -->|"setScale(2, HALF_UP)"| R["0.36"]
 ```
+
+1. `new BigDecimal("0.10")` lee el texto: valor sin escala `10`, escala 2. Ningún paso binario interviene.
+2. `multiply(BigDecimal.valueOf(3))` multiplica los valores sin escala (`10 × 3 = 30`) y suma las escalas
+   (`2 + 0`). El subtotal es `0.30`.
+3. `multiply(new BigDecimal("0.19"))` da `30 × 19 = 570` con escala `2 + 2 = 4`: el IVA es `0.0570`.
+4. `add` alinea ambos operandos a la mayor escala y suma: `0.3000 + 0.0570 = 0.3570`.
+5. `setScale(2, RoundingMode.HALF_UP)` descarta los dos últimos dígitos. Como el primero descartado es `7`, sube:
+   `0.36`.
+
+Cada operación devuelve un objeto nuevo. Este fragmento es la calculadora del proyecto:
+
+```java
+BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
+BigDecimal total = subtotal.add(subtotal.multiply(iva));
+return total.setScale(2, RoundingMode.HALF_UP);
+```
+
+Observa que el redondeo ocurre una sola vez, al final. Si redondearas el IVA y luego el total, podrías acumular dos
+errores de redondeo distintos.
+
+El problema de `new BigDecimal(0.1)` está antes del paso 1. El literal `0.1` ya es un `double` aproximado, y ese
+constructor copia su valor binario exacto. Por eso imprime `0.1000000000000000055511151231257827021181583404541015625`.
+`BigDecimal.valueOf(0.1)` usa `Double.toString`, que devuelve `"0.1"`.
+
+##### 4. Reglas, variantes y casos límite
+
+- Las reglas de escala son fijas. Suma y resta: la mayor escala. Multiplicación: la suma de escalas. División
+  exacta: se prefiere la escala del dividendo menos la del divisor.
+- `setScale(2)` sin modo usa `RoundingMode.UNNECESSARY`. Si hay que descartar dígitos distintos de cero, lanza
+  `ArithmeticException: Rounding necessary`.
+- `divide(divisor)` sin escala lanza `ArithmeticException` cuando el resultado no termina. Pasa escala y modo, o un
+  `MathContext` con la precisión total, como `MathContext.DECIMAL128`.
+- `equals` y `hashCode` consideran la escala. En un `HashSet`, `1.0` y `1.00` son dos elementos. `stripTrailingZeros`
+  normaliza la escala antes de guardar.
+- `toString` puede usar notación científica: `new BigDecimal("0.0000001")` imprime `1E-7`. `toPlainString` siempre
+  imprime los dígitos.
+- `HALF_UP` sube el 5; `HALF_EVEN`, el redondeo bancario, lo lleva al dígito par; `DOWN` trunca hacia cero. La regla
+  la fija el negocio o la ley, no Java.
+- Las constantes enteras como `BigDecimal.ROUND_HALF_UP` están obsoletas desde Java 9. Usa el enum `RoundingMode`.
+
+Repartir un monto exige una decisión más. Tres cuotas de `33.33` suman `99.99`: el centavo que falta debe ir a
+alguna cuota, normalmente la última.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El problema del **punto flotante** viene del Módulo 0 (Java, Módulo 0, Tema 4); aquí ves su solución para dinero.
+La escala apareció en el Módulo 12 (Java, Módulo 12, Tema 2). Como `String`, `BigDecimal` es un **objeto
+inmutable** (Java, Módulo 2, Tema 3): `total.add(iva)` sin asignar no cambia nada.
+
+Compara con guardar centavos en un `long`. Es rápido y exacto para sumar, pero los porcentajes y las divisiones
+obligan a redondear a mano. `BigDecimal` hace visible cada decisión. La diferencia entre `equals` y `compareTo`
+refina lo que viste sobre igualdad (Java, Módulo 2, Tema 2).
+
+El Tema 4 protege `CalculadoraPrecio` con precondiciones y postcondiciones. El Tema 6 formatea estos montos según el
+país del usuario. En JPA, el `monto` de `Pago` ya era un `BigDecimal` mapeado a `NUMERIC` (Java, Módulo 16, Tema 2).
 
 #### Problema resuelto 3.1
 Compara `double` y `BigDecimal`, calcula el total de 3 unidades de 0.10 con IVA del 19%, prueba tres modos de
@@ -1171,9 +1422,35 @@ siempre cierto. ¿Cómo escribes esa expectativa dentro del código para que fal
 - **Error típico:** documentar el contrato solo en un comentario que nadie comprueba.
 
 #### ► CÓMO FUNCIONA
-Una assertion (`assert condición : mensaje`) expresa una invariante interna: algo que debería ser cierto si el código está bien. En Java, las assertions se habilitan con `-ea` (enable assertions) en la JVM. Si no las habilitas, no se ejecutan. Esa característica define su límite: **nunca uses `assert` para validar entrada externa** de usuario, red o archivo. Para eso usa excepciones explícitas como `IllegalArgumentException`.
 
-El diseño por contrato va más allá de la palabra clave `assert`. Es la disciplina de definir precondiciones (lo que el llamador debe cumplir), postcondiciones (lo que el método garantiza) e invariantes (lo que siempre debe ser cierto en el estado válido). En Java no hay sintaxis nativa completa de DbC como en Eiffel, pero puedes expresarlo con validaciones, assertions, tipos, tests y documentación.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en el contrato entre una tienda y una transportadora. La tienda promete entregar paquetes bien embalados y
+con dirección. La transportadora promete entregarlos en 48 horas. Si llega un paquete sin dirección, la culpa es de
+la tienda. Si un paquete bien embalado llega tarde, la culpa es de la transportadora.
+
+Un método tiene el mismo tipo de contrato. Quien lo llama debe pasar datos válidos. El método, a cambio, promete un
+resultado correcto. Cuando algo falla, el contrato dice quién se equivocó.
+
+En Tienda Aurora, el porcentaje de entregas a tiempo debe estar entre 0 y 100. Un bug produjo 250% y nadie lo vio.
+Este tema escribe esa promesa dentro del código, para que el error aparezca en las pruebas y no en el informe.
+
+##### 2. Definición formal y vocabulario
+
+El **diseño por contrato** especifica cada método con tres tipos de condiciones. Una **precondición** es lo que el
+llamador debe cumplir antes de invocar. Una **postcondición** es lo que el método garantiza al terminar. Un
+**invariante** es lo que siempre se cumple en un objeto válido.
+
+Java ofrece la sentencia **`assert`**: `assert condición : mensaje;`. Si la condición es falsa, lanza
+**`AssertionError`**, una subclase de `Error`. Pero solo se evalúa cuando las assertions están activas para esa
+clase, y la JVM las activa con la opción **`-ea`**.
+
+La regla del tema sale de esa última frase. Las precondiciones de métodos públicos se verifican con excepciones,
+que siempre corren. Las postcondiciones internas, con `assert`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama reparte la responsabilidad entre llamador y método:
 
 ```mermaid
 flowchart LR
@@ -1184,6 +1461,64 @@ flowchart LR
   POST -->|"falla"| E2["AssertionError<br/>bug del método"]
   POST -->|"ok"| R["resultado"]
 ```
+
+1. Al compilar una clase con `assert`, `javac` agrega un campo estático sintético, `$assertionsDisabled`. Cada
+   `assert` se compila como un `if` que primero consulta ese campo.
+2. Al inicializar la clase, la JVM calcula ese campo con `desiredAssertionStatus()`. El valor depende de `-ea`, `-da`
+   y sus variantes en la línea de órdenes.
+3. Con las assertions desactivadas, el `if` salta la condición entera. La condición no se evalúa y el mensaje
+   tampoco.
+4. Con las assertions activas, la JVM evalúa la condición. Si es `true`, sigue.
+5. Si es `false`, evalúa la expresión del mensaje y lanza `AssertionError` con ese texto. El stack trace señala la
+   línea del `assert`.
+
+Fíjate en cómo se reparte el trabajo en `Contratos.porcentaje`:
+
+```java
+if (total <= 0) throw new IllegalArgumentException("total debe ser > 0"); // validación externa
+if (parte < 0 || parte > total) throw new IllegalArgumentException("parte fuera de rango");
+int r = (parte * 100) / total;
+assert r >= 0 && r <= 100 : "invariante roto: porcentaje=" + r; // invariante interna
+return r;
+```
+
+Las dos primeras líneas protegen al método de un llamador equivocado y corren siempre. El `assert` vigila la
+fórmula. Si alguien cambia `100` por `1000`, las pruebas con `-ea` lo detectan con el valor exacto: `porcentaje=250`.
+
+El paso 3 tiene una consecuencia peligrosa. Una condición con efectos, como `assert contador++ >= 0`, cambia el
+estado solo cuando las assertions están activas. El programa se comporta distinto en pruebas y en producción.
+
+##### 4. Reglas, variantes y casos límite
+
+- Las assertions vienen desactivadas por defecto. `-ea` las activa en las clases de la aplicación; `-esa`, en las
+  del sistema.
+- `-ea:com.aurora...` las activa en un paquete y sus subpaquetes. `-ea:Contrato` las activa en una clase. `-da` con
+  los mismos argumentos las desactiva, y la opción más específica gana.
+- El estado se fija al inicializar la clase. Cambiarlo después con `ClassLoader.setClassAssertionStatus` no afecta a
+  clases ya inicializadas.
+- `AssertionError` extiende `Error`, no `Exception`. No se captura para continuar: indica un bug que se corrige.
+- La guía oficial de Oracle sobre assertions desaconseja usarlas para comprobar argumentos de métodos públicos. Esa
+  comprobación forma parte del contrato público y debe ocurrir siempre.
+- `Objects.requireNonNull` (Java 7) y `Objects.checkIndex` (Java 9) son precondiciones listas para usar. Lanzan
+  `NullPointerException` e `IndexOutOfBoundsException`.
+- La sentencia `assert` existe desde Java 1.4. Antes, `assert` podía ser un nombre de variable; hoy es palabra
+  reservada.
+
+La tarea `test` del proyecto declara `jvmArgs("-ea")`. Sin esa línea, las pruebas pasarían aunque la postcondición
+estuviera rota.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La idea de **invariante** ya apareció al diseñar clases (Java, Módulo 1, Tema 1). También en las pruebas basadas
+en propiedades (Java, Módulo 9, Tema 4). `IllegalArgumentException` y las excepciones unchecked vienen del Módulo 3
+(Java, Módulo 3, Tema 1). El `jvmArgs` de Gradle viene del Módulo 8.
+
+Compara un `assert` con una prueba unitaria. La prueba revisa casos que tú eliges desde fuera. El `assert` revisa
+cada ejecución real desde dentro, mientras esté activo. Se complementan: las pruebas activan los `assert` y los
+`assert` hacen más estrictas las pruebas.
+
+Los `record` con constructor compacto aplican precondiciones al crear objetos, como `Guia` en el Módulo 17 (Java,
+Módulo 17, Tema 1). En este módulo, `CalculadoraPrecio` del Tema 3 aplica la misma disciplina con montos.
 
 #### Problema resuelto 4.1
 Escribe el cálculo de porcentaje con su contrato y una versión con un bug (`1000` en vez de `100`). Ejecuta el mismo
@@ -1384,11 +1719,34 @@ recompilarlo. ¿Cómo descubre el publicador los canales disponibles sin conocer
 - **Error típico:** capturar `Exception` para protegerse: `ServiceConfigurationError` es un `Error` y no entra en ese `catch`.
 
 #### ► CÓMO FUNCIONA
-`ServiceLoader` es el mecanismo estándar del JDK para descubrir implementaciones de una interfaz en tiempo de ejecución. En vez de hacer `new EmailNotificador()` dentro del núcleo, el núcleo depende de la interfaz `Notificador` y `ServiceLoader` busca implementaciones disponibles en el classpath/module path. Esto reduce acoplamiento: puedes agregar un notificador nuevo sin modificar el código que itera notificaciones.
 
-El contrato tiene dos partes. La parte Java: una interfaz o clase abstracta, y una o más implementaciones con constructor público sin argumentos (o un proveedor estático en el modelo modular moderno). La parte de recursos: un archivo en `META-INF/services/` cuyo nombre es el nombre completo de la interfaz, y cuyo contenido lista las clases implementadoras, una por línea.
+##### 1. La idea en lenguaje sencillo
 
-No es un contenedor de dependencias completo. No resuelve ciclos, scopes, inyección por constructor compleja, ni configuración avanzada. Para eso existen frameworks como Spring/CDI. `ServiceLoader` es útil cuando quieres extensibilidad simple y estándar.
+Piensa en un centro de despacho con una regleta de enchufes estándar. Cada mañana llegan equipos distintos:
+básculas, impresoras de etiquetas, lectores. El jefe no reescribe el manual cada vez que llega uno nuevo. Basta con
+que el equipo use el enchufe estándar y figure en la lista de la pared.
+
+`ServiceLoader` funciona así. Tu núcleo define una interfaz, el enchufe. Cada implementación es un equipo, y un
+archivo de texto es la lista de la pared. En tiempo de ejecución, el núcleo lee la lista y conecta lo que encuentre.
+
+En Tienda Aurora, el publicador avisa por email y SMS. Mañana llegará WhatsApp. Con `ServiceLoader`, agregar un
+canal es compilar una clase nueva y añadir una línea al archivo. El publicador no cambia.
+
+##### 2. Definición formal y vocabulario
+
+La **interfaz de servicio** es el contrato que conoce el núcleo: aquí, `Notificador`. Un **proveedor de servicio**
+es una clase concreta que la implementa. En el classpath, cada proveedor necesita un constructor público sin
+argumentos.
+
+El **archivo de configuración del proveedor** es un recurso `META-INF/services/<nombre completo de la interfaz>`.
+Contiene un nombre completo de clase por línea, codificado en UTF-8.
+
+`ServiceLoader` aplica **carga perezosa**: instancia cada proveedor cuando el iterador llega a él. Si la
+configuración es inválida, lanza **`ServiceConfigurationError`**, que es un `Error`, no una `Exception`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue `Publicador` desde la llamada a `load` hasta cada proveedor:
 
 ```mermaid
 flowchart LR
@@ -1399,6 +1757,65 @@ flowchart LR
   L2 -->|"al iterar: new"| S["SmsNotificador"]
   CP -->|"archivo ausente"| Z["0 proveedores<br/>sin error"]
 ```
+
+1. `ServiceLoader.load(Notificador.class)` crea el cargador de servicios. No busca nada todavía. Usa el cargador de
+   clases de contexto del hilo actual.
+2. Al empezar a iterar, pide al cargador de clases todos los recursos llamados
+   `META-INF/services/com.aurora.notif.Notificador`. Puede haber uno por cada JAR o carpeta del classpath.
+3. Lee cada archivo línea por línea. Ignora espacios, líneas vacías y lo que siga a `#`.
+4. Para el siguiente nombre, carga la clase y comprueba que implementa la interfaz. Si no existe, lanza
+   `ServiceConfigurationError` con `Provider ... not found`.
+5. Busca el constructor público sin argumentos y crea la instancia. Si falta, el error dice
+   `Unable to get public no-arg constructor`.
+6. Entrega el objeto al bucle y guarda la instancia en caché. Una segunda iteración del mismo `ServiceLoader` reusa
+   las instancias ya creadas.
+
+El código del publicador solo nombra la interfaz:
+
+```java
+ServiceLoader<Notificador> cargador = ServiceLoader.load(Notificador.class);
+for (Notificador n : cargador) {                       // instancia cada proveedor al iterar
+    System.out.println(n.canal() + " -> " + n.enviar("Guía RF-1 en reparto"));
+}
+System.out.println("tipos=" + cargador.stream().map(p -> p.type().getSimpleName()).toList());
+```
+
+Los pasos 4 y 5 ocurren dentro del bucle. Por eso, con un nombre mal escrito en la segunda línea, el email ya se
+envió cuando aparece el error.
+
+`stream()` cambia el paso 5. Entrega objetos `ServiceLoader.Provider`, cuyo `type()` devuelve la clase sin
+instanciarla. Solo `get()` llama al constructor. Así puedes filtrar proveedores antes de crearlos.
+
+##### 4. Reglas, variantes y casos límite
+
+- Si no hay ningún archivo de configuración, no hay error: el bucle no itera y el resultado es `proveedores=0`.
+- El nombre del archivo es el nombre completo de la interfaz, con su paquete. Con el nombre simple, no se encuentra.
+- Un mismo proveedor listado dos veces se instancia una sola vez.
+- El orden sigue el classpath y, dentro de cada archivo, el orden de las líneas. No lo uses como prioridad de
+  negocio.
+- `ServiceLoader` no es seguro entre hilos. Crea uno por uso o protégelo.
+- `reload()` borra la caché y obliga a leer de nuevo la configuración.
+- `load(Clase, ClassLoader)` usa un cargador explícito. `loadInstalled` usa el cargador de plataforma e ignora el
+  classpath de la aplicación.
+
+Java 9 cambió `ServiceLoader` en tres frentes. Agregó `stream()` y la interfaz `Provider`. Agregó las cláusulas
+`uses` y `provides ... with` para módulos. Y permitió, en módulos, un método estático público `provider()` en lugar
+del constructor sin argumentos.
+
+`ServiceLoader` tampoco es un contenedor de dependencias. No inyecta parámetros, no gestiona ciclos de vida ni
+resuelve dependencias entre proveedores. Para eso existen Spring o CDI.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 10 usaste `ServiceLoader` con módulos, mediante `uses` y `provides` (Java, Módulo 10, Tema 1). Aquí ves
+el modelo del classpath, que sigue siendo el más común. El archivo de configuración es un recurso del classpath
+(Java, Módulo 6, Tema 3). El patrón aplica la idea de puerto y raíz de composición (Java, Módulo 13, Tema 1).
+
+Ya te beneficiaste de este mecanismo. JDBC descubre su driver con `META-INF/services/java.sql.Driver`, como viste
+en el Módulo 17. Sin el JAR de H2 en el classpath, `SinDriver.java` encontraba cero drivers.
+
+El Tema 8 da el siguiente paso: cargar un plugin desde un JAR que no estaba en el classpath al arrancar, con
+`URLClassLoader`. Ambos temas comparten la idea central: el núcleo conoce la interfaz y descubre la implementación.
 
 #### Problema resuelto 5.1
 Publica un aviso por todos los canales disponibles sin nombrar ninguna implementación en el publicador. Compila y
@@ -1666,11 +2083,35 @@ lo escribe, las fechas también, y el catálogo debe ordenarse como en un diccio
 - **Error típico:** buscar duplicados con `equals` en vez de un `Collator` `PRIMARY`: «Árbol» y «arbol» pasan como distintos.
 
 #### ► CÓMO FUNCIONA
-Internacionalizar no es solo traducir strings. Un número, una moneda, una fecha o el orden alfabético cambian según la región. `1,234.50` en EE. UU. puede escribirse `1.234,50` en otros locales; una fecha `May 23, 2026` no se presenta igual en español; y ordenar texto requiere reglas de collation, no solo comparar bytes.
 
-El JDK ofrece `Locale` para representar región/idioma, `NumberFormat` para números y monedas, `DateTimeFormatter` con `FormatStyle` y locale para fechas, y `Collator` para ordenamiento sensible a idioma. `Collator` es especialmente importante: comparar strings con `compareTo()` usa orden Unicode, que no coincide con las expectativas humanas de todos los idiomas. En español, `ñ` se considera letra propia entre `n` y `o`; el `Collator` del locale aplica reglas lingüísticas.
+##### 1. La idea en lenguaje sencillo
 
-**Mecanismo.** Los formatos salen de los datos CLDR que trae el JDK. Tu código no los escribe: elige el `Locale` y el estilo.
+Piensa en una guía de envío internacional. El mismo paquete pesa lo mismo y cuesta lo mismo en cualquier país, pero
+cada oficina lo escribe distinto. Una pone la coma para los decimales; otra, el punto. Una escribe el día antes del
+mes; otra, al revés. Y cada una ordena su lista de clientes según su alfabeto.
+
+El valor no cambia; cambia su presentación. Un programa que escribe `"$" + monto` o que ordena nombres por códigos
+de carácter acierta en un país y falla en los demás.
+
+En Tienda Aurora, el monto `1234.5` debe verse distinto en Colombia, Estados Unidos y Alemania. El catálogo debe
+poner «ñame» después de «nube». La internacionalización consiste en guardar datos neutros y delegar la presentación
+a las reglas de cada región.
+
+##### 2. Definición formal y vocabulario
+
+La **internacionalización**, abreviada i18n, es el diseño que hace depender formatos, textos y reglas de un
+`Locale`. Ese `Locale` se crea a partir de una **etiqueta de idioma** BCP 47, como `es-CO`.
+
+Tres herramientas aplican el `Locale`. **`NumberFormat`** formatea y lee números, monedas y porcentajes.
+`DateTimeFormatter` formatea fechas, y **`FormatStyle`** elige su largo sin escribir patrones: `SHORT`, `MEDIUM`,
+`LONG` o `FULL`.
+
+**`Collator`** es un `Comparator` que ordena texto con las reglas de un idioma. Su **intensidad** decide qué
+diferencias cuentan: solo la letra base, también las tildes o también las mayúsculas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue la etiqueta `es-CO` hasta cada salida del Problema resuelto 6.1:
 
 ```mermaid
 flowchart LR
@@ -1682,6 +2123,62 @@ flowchart LR
   DF --> S2["23/05/2026"]
   CO --> S3["árbol, nube, ñame, Oso, zapato"]
 ```
+
+1. `Locale.forLanguageTag("es-CO")` analiza la etiqueta y crea un `Locale` con idioma `es` y región `CO`. No consulta
+   ningún dato todavía.
+2. `NumberFormat.getCurrencyInstance(locale)` busca los datos de esa región. Desde Java 9, la fuente por defecto es
+   CLDR, el repositorio de datos regionales de Unicode. De ahí salen el símbolo, los separadores y su posición.
+3. `format(monto)` aplica esos datos al número. En `es-CO` resulta `$·1.234,50`, donde `·` marca un espacio duro.
+4. `DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)` toma de CLDR el patrón medio de fecha
+   de esa región. Para Colombia, el resultado es `23/05/2026`.
+5. `Collator.getInstance(locale)` crea un comparador con las reglas del español. Compara primero la letra base,
+   luego las tildes y luego las mayúsculas, según la intensidad.
+6. `palabras.sort(es)` usa ese comparador. La `ñ` queda como letra propia entre `n` y `o`.
+
+Observa la diferencia entre ordenar por códigos y por idioma:
+
+```java
+List<String> unicode = new ArrayList<>(palabras);
+unicode.sort(null);                       // orden natural: códigos Unicode
+Collator es = Collator.getInstance(Locale.forLanguageTag("es-CO"));
+palabras.sort(es);                        // orden del español
+```
+
+El orden natural de `String` compara códigos de carácter. `O` mayúscula (U+004F) va antes que `n` (U+006E), y
+`á` (U+00E1) va después de `z`. Por eso `compareTo` da `[Oso, nube, zapato, árbol, ñame]`.
+
+Leer es más delicado que escribir. `parse` avanza mientras entiende el texto y se detiene sin error en el primer
+carácter que no encaja. En `es-CO`, `"1,234.5"` se lee como `1,234` y queda en `1.234`, mil veces menos.
+
+##### 4. Reglas, variantes y casos límite
+
+- `Locale.of` llegó en Java 19, y los constructores de `Locale` quedaron obsoletos en esa misma versión. Usa
+  `Locale.of` o `Locale.forLanguageTag`.
+- `forLanguageTag` no lanza excepción con etiquetas mal formadas: ignora lo que no entiende. Valida la etiqueta si
+  viene del usuario.
+- `NumberFormat` no es seguro entre hilos; su documentación recomienda una instancia por hilo. `DateTimeFormatter`
+  es inmutable y sí se puede compartir.
+- Desde Java 23, `NumberFormat.setStrict(true)` activa la lectura estricta. Con ella, `"1,234.5"` en `es-CO`
+  lanza `ParseException: Unparseable number` en lugar de devolver `1.234`.
+- `parse` devuelve un `Number`: un `Long` si el valor es entero y un `Double` si no. Para montos, conviértelo a
+  `BigDecimal` con cuidado o usa `DecimalFormat.setParseBigDecimal(true)`.
+- Los textos exactos vienen de CLDR y pueden cambiar entre versiones del JDK. En pruebas, compara partes estables.
+- La intensidad por defecto del `Collator` es `TERTIARY`. Con `PRIMARY`, `arbol` y `Árbol` son iguales; la `ñ`
+  sigue siendo distinta de la `n` en español.
+- El `Locale` por defecto de la JVM depende del sistema operativo. No lo uses para formatear datos de un usuario
+  remoto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`Locale` apareció en el Módulo 0 (Java, Módulo 0, Tema 5), y `DateTimeFormatter` en el mismo módulo (Java, Módulo 0,
+Tema 8). Aquí los combinas con formatos regionales completos. `Collator` es un `Comparator` (Java, Módulo 2, Tema 5),
+así que encaja en `sort` y en las colecciones ordenadas.
+
+La regla de oro une este tema con el Tema 3. Calcula con `BigDecimal` en formato neutro y formatea solo al mostrar.
+Si guardas `"$ 1.234,50"` como texto, ya no puedes sumarlo ni compararlo.
+
+Compara también con la regex del Tema 2. Una clase como `[A-Z]` trabaja con códigos de carácter y no conoce la
+`ñ` ni las tildes. Cuando el idioma importa, necesitas herramientas que conozcan sus reglas, como `Collator`.
 
 #### Problema resuelto 6.1
 Formatea `1234.5` y el 23 de mayo de 2026 para `es-CO`, `en-US` y `de-DE`. Lee dos textos numéricos con el formato de
@@ -1945,11 +2442,35 @@ exige una clase proxy por interfaz. ¿Cómo envuelves todos los métodos de cual
 - **Error típico:** anotar con `@Transactional` un método que solo se llama desde la misma clase y esperar una transacción nueva.
 
 #### ► CÓMO FUNCIONA
-Un proxy dinámico es un objeto creado en runtime que implementa una o más interfaces y delega cada invocación a un `InvocationHandler`. No escribes la clase proxy a mano: la JVM la genera. Cuando llamas un método en el proxy, la JVM entra al handler, te da el método, los argumentos y el objeto proxy, y tú decides qué hacer: registrar, validar, abrir transacción, devolver un mock, o delegar al objeto real.
 
-Este mecanismo está detrás de muchas herramientas. Spring AOP usa proxies JDK para interceptar métodos de beans con interfaces; para clases sin interfaz genera subclases en tiempo de ejecución (CGLIB). Mockito crea sus mocks con ByteBuddy, que genera bytecode con la misma idea: registrar llamadas y devolver valores configurados. Entenderlo quita la sensación de magia: `@Transactional` no “modifica” tu método, normalmente hay un proxy alrededor que abre/commitea/rollbackea la transacción.
+##### 1. La idea en lenguaje sencillo
 
-El límite es importante: `java.lang.reflect.Proxy` solo funciona con **interfaces**. No puede proxyear una clase concreta sin interfaz. Para eso se usan otras técnicas como CGLIB/ByteBuddy. También hay que manejar bien `toString`, `equals`, `hashCode` si el proxy los intercepta.
+Piensa en la recepción de una empresa de envíos. Los clientes no hablan con el despachador: hablan con la
+recepcionista. Ella anota cada pedido en el libro, lo pasa al despachador y, al volver la respuesta, la sella. Si el
+despachador falla, ella anula el registro. El cliente no nota la diferencia: cree que habló con el despachador.
+
+Un proxy dinámico es esa recepcionista, creada por la JVM en tiempo de ejecución. Se hace pasar por tu servicio,
+recibe cada llamada y decide qué hacer antes y después de pasarla al objeto real.
+
+En Tienda Aurora, cada operación de envíos debe abrir una transacción, confirmarla o deshacerla. Con un proxy
+escribes ese código una sola vez y lo aplicas a cualquier interfaz. Así funcionan `@Transactional` y los mocks.
+
+##### 2. Definición formal y vocabulario
+
+Un **proxy dinámico** es una instancia de una clase que la JVM genera en ejecución. Esa clase implementa las
+interfaces que pidas y envía cada llamada a un **`InvocationHandler`**. Lo creas con
+**`Proxy.newProxyInstance`**, que recibe un cargador de clases, las interfaces y el handler.
+
+Dentro del handler, delegas al objeto real con `Method.invoke`. Si el método real lanza, `invoke` envuelve el
+error en una **`InvocationTargetException`**. Si el handler deja escapar una excepción checked que la interfaz no
+declara, el proxy la envuelve en una **`UndeclaredThrowableException`**.
+
+La **auto-invocación** es una llamada del objeto real a sí mismo mediante `this`. No pasa por el proxy, y el
+handler no la ve.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue `servicio.despachar("RF-1")` en `ProxyTransaccion.java`:
 
 ```mermaid
 sequenceDiagram
@@ -1966,6 +2487,68 @@ sequenceDiagram
   H->>H: COMMIT
   H-->>C: resultado
 ```
+
+1. `Proxy.newProxyInstance` genera, la primera vez, una clase final que extiende `java.lang.reflect.Proxy` e
+   implementa `ServicioEnvios`. La JVM la nombra `$Proxy0` y la reutiliza para las mismas interfaces.
+2. Cada método de esa clase hace lo mismo: llama a `handler.invoke(this, metodo, args)` con el `Method`
+   correspondiente.
+3. El llamador ejecuta `servicio.despachar("RF-1")`. Para él es un `ServicioEnvios` normal.
+4. El handler imprime `BEGIN`, delega con `metodo.invoke(real, args)` y espera.
+5. Dentro del real, `despachar` llama a `registrar` con `this`. Ese `this` es el objeto real, no el proxy, así que
+   el handler no se entera.
+6. Al volver, el handler imprime `COMMIT` y devuelve el resultado, que el proxy entrega al llamador.
+
+El handler completo cabe en pocas líneas:
+
+```java
+InvocationHandler handler = (Object proxy, Method metodo, Object[] args) -> {
+    System.out.println("  BEGIN  " + metodo.getName());
+    try {
+        Object resultado = metodo.invoke(real, args);
+        System.out.println("  COMMIT " + metodo.getName());
+        return resultado;
+    } catch (InvocationTargetException e) {
+        System.out.println("  ROLLBACK " + metodo.getName() + " por " + e.getCause());
+        throw e.getCause();
+    }
+};
+```
+
+El `catch` es esencial. Sin él, la `InvocationTargetException` escaparía del handler. Como es checked y
+`despachar` no la declara, el proxy la envolvería otra vez, y el llamador recibiría
+`UndeclaredThrowableException`, como en `ProxySinDesenvolver.java`.
+
+##### 4. Reglas, variantes y casos límite
+
+- `Proxy` solo acepta interfaces. Con una clase concreta lanza `IllegalArgumentException: ... is not an interface`.
+- Las interfaces deben ser visibles desde el cargador que pasas. Normalmente usas el de la propia interfaz.
+- El handler recibe los métodos de las interfaces y también `hashCode`, `equals` y `toString` de `Object`. Los
+  demás métodos de `Object`, como `getClass`, no pasan por él.
+- Si el método devuelve un primitivo y el handler devuelve `null`, el proxy lanza `NullPointerException`. Si devuelve
+  un tipo incompatible, lanza `ClassCastException`.
+- Llamar a un método del parámetro `proxy` dentro del handler vuelve a entrar al handler. Sin cuidado, es una
+  recursión infinita.
+- Desde Java 16, `InvocationHandler.invokeDefault` permite ejecutar el método `default` de una interfaz desde el
+  handler.
+- Para clases sin interfaz se usan generadores de bytecode, como ByteBuddy o CGLIB, que crean subclases. Mockito
+  usa ByteBuddy.
+
+En Spring, el mismo límite de la auto-invocación vale para `@Transactional`, `@Cacheable` y `@Async`. Spring
+Framework usa proxies del JDK cuando el bean tiene interfaz. Spring Boot, por defecto, prefiere subclases CGLIB, y el
+límite de `this` es idéntico.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El patrón **Proxy** del Módulo 12 (Java, Módulo 12, Tema 4) exigía escribir una clase proxy por interfaz. Aquí la
+JVM la genera, y el handler concentra el comportamiento común. `Method` e `invoke` vienen del Tema 1. El handler es
+una lambda porque `InvocationHandler` es una interfaz funcional (Java, Módulo 4, Tema 1).
+
+Ya viste proxies en acción sin crearlos. Los mocks del Módulo 9 (Java, Módulo 9, Tema 2) son objetos de este tipo.
+Los proxies `LAZY` de Hibernate (Java, Módulo 16, Tema 5) son subclases generadas con la misma idea. `NMasUno.java`
+usó `Proxy.newProxyInstance` para contar sentencias JDBC.
+
+El Tema 8 explica el primer argumento de `newProxyInstance`: el cargador de clases. El Tema 9 presenta
+`MethodHandle`, una forma más rápida y tipada de hacer lo que aquí hace `Method.invoke`.
 
 #### Problema resuelto 7.1
 Envuelve un servicio de envíos con un proxy «transaccional». Llama a dos métodos, provoca un fallo y observa qué ve el
@@ -2339,11 +2922,36 @@ nombre falló con un mensaje desconcertante. ¿Quién decide de dónde sale cada
 - **Error típico:** el `ClassCastException` de «`X` cannot be cast to class `X`»: lee los cargadores entre paréntesis.
 
 #### ► CÓMO FUNCIONA
-Un `ClassLoader` carga bytes de clase y los define como `Class<?>` en la JVM. La identidad de una clase no es solo su nombre completamente calificado: también importa el class loader que la definió. La misma clase cargada por dos loaders distintos puede ser incompatible en runtime (`ClassCastException`).
 
-El modelo clásico usa delegación padre-hijo. Cuando un loader recibe una petición, normalmente delega primero a su padre antes de intentar cargar él mismo. Esto evita que código de aplicación reemplace clases fundamentales como `java.lang.String`. En JDKs modernos el bootstrap loader está representado de forma particular y `getParent()` puede devolver `null`; el platform class loader y el application/system class loader son visibles.
+##### 1. La idea en lenguaje sencillo
 
-`URLClassLoader` permite cargar clases desde JARs o directorios en rutas indicadas. Es la base histórica de muchos sistemas de plugins. En producción, los plugins traen retos: aislamiento, versiones, cierre de recursos, y seguridad.
+Piensa en un centro de distribución con tres niveles de bodega. La bodega central guarda los repuestos básicos; la
+regional, los equipos comunes; la local, el material de cada proyecto. Cuando el operario local necesita una pieza,
+primero pregunta a la regional, que primero pregunta a la central. Solo si nadie la tiene, la busca él.
+
+La JVM organiza la carga de clases igual. Cada clase llega por un **cargador**, y los cargadores forman una cadena
+que siempre consulta primero hacia arriba. Así nadie reemplaza por accidente una clase básica como `String`.
+
+En Tienda Aurora, un socio entrega una regla de tarifas en un JAR que no estaba en el classpath al arrancar. Para
+cargarlo necesitas un cargador nuevo, y debes entender una consecuencia sorprendente: la misma clase cargada dos
+veces son dos clases distintas.
+
+##### 2. Definición formal y vocabulario
+
+Un **class loader** es un objeto `java.lang.ClassLoader` que encuentra los bytes de una clase y los define como
+`Class` en la JVM. Los cargadores aplican **delegación al padre**: piden primero la clase a su padre.
+
+La JVM trae tres cargadores encadenados. El **cargador bootstrap** es interno y carga `java.base`; en Java se ve
+como `null`. El **cargador de plataforma** carga otros módulos del JDK. El **cargador de aplicación** lee tu
+classpath y tu module path.
+
+Para JARs que llegan después, usas **`URLClassLoader`**, que busca en una lista de URL. **`Class.forName`** con un
+cargador explícito carga una clase por su nombre. Todo esto apoya una regla de la JVM: la **identidad de clase** es
+su nombre completo más el cargador que la definió.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra la cadena de `Cargadores.java`, con sus dos cargadores de plugin:
 
 ```mermaid
 flowchart BT
@@ -2352,6 +2960,64 @@ flowchart BT
   APP -->|"padre"| PL["platform<br/>java.sql, …"]
   PL -->|"padre"| BS["bootstrap (null)<br/>java.base"]
 ```
+
+1. `Class.forName("com.aurora.plugin.TarifaNocturna", true, l1)` llama a `l1.loadClass` con ese nombre.
+2. `loadClass` revisa si `l1` ya cargó esa clase. Si no, pide la clase a su padre, `app`.
+3. `app` pregunta a `platform`, y `platform` al bootstrap. Ninguno la tiene, así que la petición vuelve hacia abajo.
+4. `l1` busca en su JAR el archivo `com/aurora/plugin/TarifaNocturna.class` y lee sus bytes.
+5. `defineClass` convierte esos bytes en un objeto `Class`. La JVM verifica el bytecode y lo enlaza.
+6. Al definirla, la JVM necesita su interfaz `Complemento`. `l1` la pide de nuevo hacia arriba, y `app` la
+   encuentra en el núcleo. Por eso el contrato es el mismo para el núcleo y el plugin.
+7. Con el tercer argumento en `true`, la clase se inicializa: se ejecutan sus bloques `static`.
+
+Observa el núcleo de la carga en el programa del tema:
+
+```java
+URL jar = Path.of(args[0]).toUri().toURL();
+try (URLClassLoader l1 = new URLClassLoader(new URL[] {jar}, app);
+     URLClassLoader l2 = new URLClassLoader(new URL[] {jar}, app)) {
+    Class<?> c1 = Class.forName("com.aurora.plugin.TarifaNocturna", true, l1);
+    Class<?> c2 = Class.forName("com.aurora.plugin.TarifaNocturna", true, l2);
+    Complemento plugin = (Complemento) c1.getDeclaredConstructor().newInstance();
+}
+```
+
+`l1` y `l2` repiten los pasos 4 y 5 por separado. Hay dos objetos `Class` con el mismo nombre, y `c1 == c2` da
+`false`. El cast a `Complemento` funciona porque, gracias al paso 6, solo existe un `Complemento`.
+
+El `ClassCastException` de `CastFallido.java` es el caso contrario. Su cargador tiene como padre a `platform`, que no
+ve el núcleo. El JAR trae su propia copia de `Complemento`, y ahora hay dos interfaces con el mismo nombre.
+
+##### 4. Reglas, variantes y casos límite
+
+- `Class.forName(nombre)`, con un solo argumento, usa el cargador de la clase que llama y la inicializa.
+  `loadClass` carga sin inicializar.
+- Un cargador propio normalmente sobrescribe `findClass`, no `loadClass`. Así conserva la delegación al padre.
+- Algunos sistemas invierten la delegación a propósito. Los servidores web buscan primero en la aplicación para
+  aislar sus librerías, pero nunca para clases de `java.*`.
+- Una clase solo se descarga cuando su cargador y todas sus clases e instancias dejan de ser alcanzables. Cerrar un
+  `URLClassLoader` libera los JAR abiertos, pero no descarga las clases en uso.
+- `URLClassLoader.close` existe desde Java 7. Sin cerrarlo, el JAR queda abierto y en Windows no se puede reemplazar.
+- El cargador de contexto del hilo es el que usan por defecto `ServiceLoader` y muchos frameworks. Si no lo
+  cambias, no ve los JAR de tus plugins.
+- El mensaje de `ClassCastException` nombra el cargador de cada clase entre paréntesis. Es la pista principal.
+
+Java 9 cambió la jerarquía. El antiguo cargador de extensiones desapareció y lo reemplazó el de plataforma. El
+cargador de aplicación dejó de ser un `URLClassLoader`, así que el viejo truco de convertirlo y agregarle URL ya no
+funciona. También llegó `ClassLoader.getName()`, que imprime `app` y `platform`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El archivo `.class`, el classpath y la JVM vienen del Módulo 0 (Java, Módulo 0, Tema 1). El objeto `Class` del
+Tema 1 de este módulo es el resultado de cargar una clase. El try-with-resources (Java, Módulo 3, Tema 2) cierra
+cada `URLClassLoader` como cualquier recurso.
+
+Compara este tema con `ServiceLoader` (Tema 5). `ServiceLoader` descubre implementaciones en el classpath existente.
+`URLClassLoader` agrega un lugar nuevo de donde cargar. Combinados, `ServiceLoader.load(Notificador.class, loader)`
+descubre proveedores dentro de un plugin recién cargado.
+
+El primer argumento de `Proxy.newProxyInstance` (Tema 7) era un cargador por esta razón: la clase del proxy debe
+ver sus interfaces. El Tema 9 usa `MethodHandles.Lookup`, cuyo acceso también depende de qué clases ve quien busca.
 
 #### Problema resuelto 8.1
 Carga la clase `TarifaNocturna` de un JAR externo dos veces, con dos cargadores distintos. Muestra la cadena de
@@ -2672,11 +3338,35 @@ dinámico con tipos comprobados y atomicidad?
 - **Error típico:** ignorar el `false` que devuelve: la actualización no ocurrió y nadie se entera.
 
 #### ► CÓMO FUNCIONA
-`MethodHandles` y `VarHandles` son APIs modernas introducidas para acceso más controlado y optimizable que la reflexión tradicional. `MethodHandle` es una referencia invocable a un método, constructor o campo; se obtiene mediante `Lookup` y `MethodType`, y puede ser optimizada por la JVM. `VarHandle` da acceso a variables/campos con semánticas claras, incluyendo modos de acceso atómico/volátil cuando aplica.
 
-La diferencia práctica con reflexión es de modelo. Reflexión inspecciona y opera con objetos `Method/Field` de forma muy general; MethodHandles/VarHandles están diseñados para ser más eficientes y expresivos en semántica de bajo nivel. Aun así, siguen siendo APIs avanzadas: si puedes resolver con una llamada normal, hazlo normal.
+##### 1. La idea en lenguaje sencillo
 
-Para acceder a un miembro privado, `privateLookupIn` permite obtener un lookup con privilegios adecuados, sujeto a reglas de módulos.
+Piensa en dos formas de pedir un paquete en una bodega. En la primera, cada vez llenas un formulario: buscas el
+pasillo, el portero revisa tu credencial y alguien trae el paquete. En la segunda, el primer día te dan una llave de
+un casillero concreto. Después abres directo, sin formulario ni revisión.
+
+La reflexión del Tema 1 se parece al formulario: busca y comprueba en cada llamada. Un `MethodHandle` es la llave:
+se busca y se autoriza una vez, y después se usa como una llamada directa. Un `VarHandle` es una llave a un campo,
+con cerraduras especiales para cuando varios hilos lo tocan a la vez.
+
+En Tienda Aurora, un componente de reglas invoca métodos elegidos en ejecución miles de veces por segundo. El
+contador de entregas, además, lo actualizan varios hilos. Este tema resuelve ambas cosas con tipos comprobados.
+
+##### 2. Definición formal y vocabulario
+
+Un **`MethodHandle`** es una referencia tipada, inmutable y ejecutable a un método, constructor o campo. Lo obtienes
+de un **`MethodHandles.Lookup`**, una fábrica que lleva los permisos de acceso de la clase que la creó.
+
+Para buscar, describes la firma con un **`MethodType`**: tipo de retorno y parámetros. Para ejecutar, usas
+**`invokeExact`**, que exige que el tipo en el punto de llamada coincida exactamente, o `invoke`, que adapta tipos.
+
+Un **`VarHandle`** es una referencia tipada a una variable, como un campo o un elemento de arreglo. Ofrece modos de
+acceso simples, volátiles y atómicos, como **`compareAndSet`**. Para campos privados de otra clase usas
+**`privateLookupIn`**, si el sistema de módulos lo permite.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra las dos ramas del tema: invocar métodos y acceder a campos:
 
 ```mermaid
 flowchart LR
@@ -2687,6 +3377,70 @@ flowchart LR
   PL -->|"findVarHandle"| VH["VarHandle<br/>Contador.entregas"]
   VH -->|"get / set / compareAndSet / getAndAdd"| C["campo"]
 ```
+
+1. `MethodHandles.lookup()` crea un `Lookup` con los permisos de la clase que lo llama. No puede ver más de lo que
+   esa clase vería en código normal.
+2. `findVirtual(String.class, "length", MethodType.methodType(int.class))` busca el método. Aquí se comprueban los
+   permisos, una sola vez. Si el tipo no coincide, lanza `NoSuchMethodException`.
+3. El handle resultante agrega el receptor como primer parámetro. Su tipo es `(String)int`.
+4. En `(int) length.invokeExact("RF-4471")`, el compilador no busca un método fijo. Registra el tipo exacto de la
+   llamada, `(String)int`, construido con el argumento y el cast.
+5. Al ejecutar, la JVM compara ese tipo con `length.type()`. Si coinciden, llama al método. Si no, lanza
+   `WrongMethodTypeException`.
+6. Si el handle está en un campo `static final`, el compilador JIT lo trata como constante y puede convertir la
+   llamada en una llamada directa.
+
+El acceso a campos sigue la misma idea:
+
+```java
+private static final VarHandle ENTREGAS;
+static {
+    try {
+        ENTREGAS = MethodHandles.privateLookupIn(Contador.class, MethodHandles.lookup())
+                .findVarHandle(Contador.class, "entregas", int.class);
+    } catch (ReflectiveOperationException e) {
+        throw new ExceptionInInitializerError(e);
+    }
+}
+```
+
+`privateLookupIn` devuelve un `Lookup` con acceso privado sobre `Contador`. `findVarHandle` busca el campo `entregas`
+de tipo `int`. Después, `ENTREGAS.getAndAdd(c, 1)` suma de forma atómica sobre el objeto `c`.
+
+El paso 4 explica el cast. `invokeExact` y los métodos de acceso de `VarHandle` son **polimórficos en la firma**: su
+tipo real lo fija cada llamada. Por eso `(int)` delante de la llamada no es decoración, sino parte del tipo.
+
+##### 4. Reglas, variantes y casos límite
+
+- `invokeExact` no convierte nada. `(long) length.invokeExact("hola")` falla porque pide `(String)long`. `invoke`
+  aplica conversiones como la ampliación de `int` a `long` o el empaquetado a `Object`.
+- Al buscar, el `MethodType` describe el método sin el receptor. El handle virtual sí lo incluye en su `type()`.
+- `MethodHandles.insertArguments` crea un handle nuevo con argumentos fijados. Hay otras combinaciones, como
+  `dropArguments` y `filterReturnValue`.
+- `VarHandle` ofrece modos de memoria de menor a mayor garantía: simple, opaco, adquisición y liberación, y volátil.
+  `getAndAdd` y `compareAndSet` son atómicos.
+- `compareAndSet` devuelve `false` si el valor cambió. Ignorar ese `false` pierde la actualización.
+- `privateLookupIn` exige que el paquete de la clase destino esté abierto al módulo que llama. Sobre clases
+  internas del JDK falla.
+- Guarda los handles en campos `static final`. Buscarlos es la parte cara; usarlos es barato.
+
+Las versiones importan aquí. `java.lang.invoke` llegó en Java 7 con `invokedynamic`. `VarHandle` (JEP 193) y
+`privateLookupIn` llegaron en Java 9. Desde Java 18 (JEP 416), la propia reflexión del JDK usa method
+handles por dentro.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema completa el Tema 1. `Method.invoke` y `Field.get` buscan con nombres y comprueban acceso en cada llamada.
+`MethodHandle` y `VarHandle` comprueban al buscar y después se comportan como código normal. La regla
+`setAccessible` frente a `opens` (Java, Módulo 10, Tema 3) reaparece como `privateLookupIn`.
+
+`getAndAdd` hace lo mismo que `AtomicInteger.incrementAndGet` (Java, Módulo 5, Tema 4). De hecho, clases del JDK
+como `AtomicReference` usan `VarHandle` por dentro. Prefiere `AtomicInteger` para un contador propio; usa `VarHandle`
+cuando el campo pertenece a otra clase o necesitas un modo de acceso concreto.
+
+Ya usas method handles sin verlos. Cada lambda (Java, Módulo 4, Tema 1) se enlaza en ejecución con `invokedynamic`
+y un method handle. Los frameworks que viste en este módulo, de validadores a proxies, usan estas APIs cuando
+necesitan velocidad.
 
 #### Problema resuelto 9.1
 Invoca `length` y `concat` de `String` con handles, crea un handle con prefijo fijo y actualiza un contador privado

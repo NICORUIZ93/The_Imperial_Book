@@ -25,7 +25,7 @@ entender cómo se usa sin invadir a nadie y asegurarse de hablar con el servidor
 
 **Qué necesitas saber antes:** el Módulo 12 (la arquitectura por capas); del Módulo 11, **versión, entornos y
 símbolos** (Temas 1 y 2) y **la app de escritorio en pantalla virtual**; del Módulo 5, **`http`** (Tema 1); del
-Módulo 0, **`Future`, zonas y errores asíncronos** (Tema 8).
+Módulo 0, **`Future` y errores asíncronos** (Tema 3).
 
 **Qué no se repite:** traducir trazas ofuscadas (Módulo 11, Tema 1), los secretos en el binario (Módulo 11, Tema 2) y
 la medición de cuadros en profile (Módulo 8). Aquí se trata de lo que la app envía desde producción.
@@ -58,15 +58,14 @@ Al terminar este tema podrás:
 - enviar cada error con versión, entorno, pila y migas de pan;
 - reemplazar la caja gris de release por un mensaje útil.
 
-**Conceptos clave:** `FlutterError.onError`, `PlatformDispatcher.onError`, `ErrorWidget`, migas de pan, reporte de
-error
+**Conceptos clave:** `FlutterError.onError`, `PlatformDispatcher.onError`, `ErrorWidget`, migas de pan, reporte de error
 
 #### El problema
 Un repartidor dice que «a veces la tarjeta de una guía sale en gris». En debug nunca pasa porque los datos de
 prueba están completos. En release, el error de esa tarjeta se registra en una consola que nadie ve, y un error en una
 sincronización en segundo plano desaparece sin rastro. El equipo se entera por las reseñas.
 
-Este tema usa **los errores asíncronos y `Future`** (Módulo 0, Tema 8), **`http`** (Módulo 5) y **la versión y el
+Este tema usa **los errores asíncronos y `Future`** (Módulo 0, Tema 3), **`http`** (Módulo 5) y **la versión y el
 entorno** (Módulo 11).
 
 #### Glosario del tema
@@ -107,20 +106,126 @@ entorno** (Módulo 11).
 - **Error típico:** reportes sin versión: no se sabe si el error ya se corrigió.
 
 #### ► CÓMO FUNCIONA
-`main` instala los tres puntos antes de `runApp`. Cuando algo falla en un `build`, Flutter llama a `onError` y dibuja
-el `ErrorWidget`; cuando falla un `Future` que nadie esperaba, llega a `PlatformDispatcher`. Los dos casos terminan en
-el mismo `Reportador`.
+
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de envíos no espera a que el cliente llame para saber que un paquete se dañó. Cada bodega tiene un
+formulario de incidentes, y el formulario pide lo mismo siempre: qué pasó, dónde, en qué turno y qué se hizo justo
+antes. Sin ese formulario, el daño se descubre por una queja semanas después.
+
+Una app publicada vive igual. Corre en teléfonos que no son el tuyo, con datos que tus pruebas no tenían. En modo
+release, un error en la tarjeta de una guía deja una caja gris y un registro en una consola que nadie mira. Un error
+en una sincronización de fondo ni siquiera deja eso.
+
+Este tema instala los formularios de incidentes de la app. Encuentra los puntos por donde salen los errores, los
+dirige a un solo reportador y adjunta el contexto que permite reproducirlos: versión, entorno, pila y lo que hizo la
+persona antes.
+
+##### 2. Definición formal y vocabulario
+
+Un error que nadie captura en una app Flutter sale por uno de dos caminos. El primero es **`FlutterError.onError`**:
+Flutter lo llama con un `FlutterErrorDetails` cuando falla algo que el framework ejecuta. Eso incluye `build`,
+*layout*, pintura y los *callbacks* de gestos y animaciones.
+
+El segundo es **`PlatformDispatcher.onError`**: recibe los errores que nadie capturó fuera del framework. Son, por
+ejemplo, un `Future` que falla sin que nadie lo espere, un `Timer` o un *stream* sin manejador de errores. Si la
+función devuelve `true`, el error se da por atendido.
+
+Además, cuando un widget lanza al construirse, Flutter necesita dibujar algo en su lugar. Ese algo es un
+**`ErrorWidget`**, y `ErrorWidget.builder` decide cuál. Por defecto es la pantalla roja con el mensaje en debug y una
+caja gris sin texto en release.
+
+Cada error se convierte en un **reporte de error**: origen, tipo, mensaje, primeras líneas de la pila, versión y
+entorno. El reporte lleva también las **migas de pan**, una lista acotada de las últimas acciones. En sencillo: la
+ficha del incidente y el rastro de lo que pasó justo antes.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el arranque de la app y después los dos errores de la demostración.
+
+1. `WidgetsFlutterBinding.ensureInitialized()` crea el enlace entre el framework y el motor. A partir de ahí existen
+   `PlatformDispatcher.instance` y el resto de servicios.
+2. `instalarCapturaDeErrores` reemplaza los tres puntos. El orden importa: se instalan antes de `runApp`, para que el
+   primer frame ya esté cubierto.
+3. `runApp` construye el árbol. Cada `build` corre dentro de un `try` del propio framework.
+
+Ahora el primer error. `TarjetaRota.build` aplica `!` a un `peso` nulo y lanza un `TypeError`:
+
+4. El framework captura la excepción en `ComponentElement.performRebuild`, como muestra la pila del reporte 1. Arma un
+   `FlutterErrorDetails` y llama a `FlutterError.reportError`, que a su vez llama a `FlutterError.onError`.
+5. Tu función llama primero a `presentError` para conservar el registro en consola y después al reportador:
+
+```dart
+FlutterError.onError = (detalles) {
+  FlutterError.presentError(detalles); // conserva el registro en consola
+  reportador.reportar(detalles.exception, detalles.stack, origen: 'flutter');
+};
+```
+
+6. En lugar del widget roto, el framework construye lo que devuelve `ErrorWidget.builder`. Como `kDebugMode` es una
+   constante, el compilador elimina en release la rama que no se usa.
+
+El segundo error sigue otro camino. Un `Future.delayed` lanza `StateError` y nadie espera ese `Future`:
+
+7. El error no tiene quien lo maneje, así que la zona raíz lo trata como error no capturado.
+8. La zona raíz lo entrega a `PlatformDispatcher.instance.onError`. Tu función lo reporta con origen `plataforma` y
+   devuelve `true`.
+9. `ReportadorHttp.reportar` arma un JSON y hace el `POST` dentro de un `try` vacío. Si el colector no responde, el
+   reporte se pierde, pero no nace un error nuevo.
 
 ```mermaid
 flowchart LR
     B["error en build,<br/>layout o gesto"] --> FE["FlutterError.onError"]
-    B --> EW["ErrorWidget.builder<br/>(lo que se dibuja)"]
-    A["Future / Timer<br/>sin capturar"] --> PD["PlatformDispatcher.onError"]
+    B -->|"solo si falló al construirse"| EW["ErrorWidget.builder<br/>(lo que se dibuja)"]
+    A["Future / Timer<br/>sin capturar"] --> Z["zona raíz"] --> PD["PlatformDispatcher.onError"]
     FE --> R["Reportador"]
     PD --> R
     M["migaDePan(...)"] --> R
-    R -->|"POST JSON"| C["colector"]
+    R -->|"POST JSON, sin lanzar"| C["colector"]
 ```
+
+Las migas viven en una `ListQueue` de `dart:collection`. Agregar al final y quitar del principio cuesta tiempo
+constante, así que mantener las últimas 20 no depende del tamaño. Cada reporte copia la lista en ese instante; por eso
+«tocó «Marcar todas»» no aparece en ninguno.
+
+##### 4. Reglas, variantes y casos límite
+
+`PlatformDispatcher.onError` existe desde Flutter 3.3 y es la forma recomendada. Antes se envolvía la app en
+`runZonedGuarded`. Si mezclas las dos, la zona propia atrapa los errores asíncronos antes que el despachador. Además,
+la zona debe ser la misma en `ensureInitialized` y en `runApp`; si no, Flutter advierte de un *zone mismatch*.
+
+Si `PlatformDispatcher.onError` devuelve `false`, el error sigue al manejo por defecto del motor, que lo imprime.
+Devolver `true` es afirmar que ya lo atendiste. No devuelvas `true` si tu función no hizo nada con el error.
+
+`ErrorWidget` solo aparece cuando un widget falla al **construirse**. Una excepción en un `onPressed` llega a
+`FlutterError.onError`, porque el reconocedor de gestos la captura, pero la pantalla no cambia. Un error de *layout*,
+como un desbordamiento, también se reporta y dibuja sus propias marcas en debug.
+
+Estos manejadores solo ven errores de Dart en el *isolate* principal. Un *isolate* creado con `Isolate.spawn` tiene
+sus propios errores; se escuchan con `addErrorListener`. Un fallo del código nativo de Android o iOS tampoco pasa por
+aquí: lo capturan SDK nativos, como el de Sentry para Flutter.
+
+El reportador tiene una regla dura: nunca lanza. Si `reportar` lanzara dentro de `onError`, ese error volvería a
+`onError`, y así sin fin. Por eso el `catch (_)` vacío no es descuido: es la decisión de perder un reporte antes que
+colgar la app.
+
+Las pilas del reporte traen nombres y líneas porque la compilación no estaba ofuscada. Con `--obfuscate`, los nombres
+se vuelven códigos y hace falta el archivo de símbolos de esa versión para leerlos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los `Future` y los errores asíncronos son del Módulo 0, Tema 3: allí viste que el `try` solo captura el error de un
+`Future` que esperas con `await`. Un `Future` que nadie espera escapa de todo `try`, y por eso llega a
+`PlatformDispatcher.onError`. La versión y el entorno que viajan en cada reporte salen del Módulo 11, y traducir
+trazas ofuscadas es del Módulo 11, Tema 1.
+
+Compara esta captura con el `Resultado` del Módulo 12, Tema 2. `Resultado` trata los errores que esperas, como la
+falta de red, y les da un mensaje. La captura global atrapa los que no esperabas, que son errores de programación o
+datos imprevistos. Las dos se complementan: ninguna reemplaza a la otra.
+
+El Tema 2 cambia el colector propio por Sentry, que agrupa errores iguales, avisa de los nuevos y mide tiempos. El
+Paso 5 de ese tema conecta la interfaz `Reportador` de este tema con el SDK. El Tema 3 aplica la misma prudencia a la
+analítica: qué sale del teléfono y con qué datos.
 
 #### Problema resuelto 1.1
 Instala la captura global en la app de la ruta y haz que, en release, una tarjeta falle al construirse con un dato
@@ -224,7 +329,7 @@ import 'errores/instalar.dart';
 import 'errores/reportador.dart';
 
 const _colector = String.fromEnvironment('COLECTOR', defaultValue: 'http://127.0.0.1:8095/reportes');
-const _demo = bool.fromEnvironment('DEMO'); // dispara los tres errores solo
+const _demo = bool.fromEnvironment('DEMO'); // provoca los dos errores sola
 
 late final Reportador reportador;
 
@@ -471,14 +576,14 @@ Este tema usa **el reportador del Tema 1**, **la versión del Módulo 11** y **e
 - **Ejemplo:** `http://clave-publica@127.0.0.1:8096/1`, el servidor local de este tema.
 - **Error típico:** enviar los eventos de desarrollo al mismo proyecto que producción, sin `environment`.
 
-***envelope***
+**envelope**
 - **Definición técnica:** formato de envío de Sentry: una cabecera JSON y, después, pares «cabecera de ítem + contenido» (`event`, `transaction`, adjuntos), separados por líneas, a `POST /api/<id>/envelope/`.
 - **En palabras sencillas:** el sobre con uno o varios documentos dentro.
 - **Dónde se rompe la comparación:** el SDK decide cuándo enviarlos; `Sentry.close()` espera a que salgan los pendientes.
 - **Ejemplo:** el servidor local imprime `ítem: event` e `ítem: transaction`.
 - **Error típico:** terminar el proceso sin `close()` y perder lo último.
 
-**alcance (*scope*)**
+**alcance (scope)**
 - **Definición técnica:** contexto que el SDK añade a todo lo que se envía: usuario, etiquetas, migas, extras; se cambia con `Sentry.configureScope`.
 - **En palabras sencillas:** la etiqueta que se pega a todos los sobres que salen.
 - **Dónde se rompe la comparación:** lo que pones en el alcance se envía con **todos** los eventos siguientes.
@@ -507,9 +612,79 @@ Este tema usa **el reportador del Tema 1**, **la versión del Módulo 11** y **e
 - **Error típico:** dejar 1.0 en producción con miles de personas usuarias.
 
 #### ► CÓMO FUNCIONA
-`Sentry.init` configura el SDK. Cada `captureException` arma un evento con el alcance, pasa por `beforeSend` y sale
-en un *envelope*. Cada transacción terminada sale en otro. Un servidor local que habla el mismo protocolo permite
-ver exactamente qué sale del dispositivo.
+
+##### 1. La idea en lenguaje sencillo
+
+El formulario de incidentes del Tema 1 funciona, pero alguien tiene que leer cien formularios iguales para darse
+cuenta de que son el mismo problema. Una empresa grande usa una central: agrupa los incidentes repetidos, avisa cuando
+aparece uno nuevo y además cronometra cuánto tarda cada despacho.
+
+Sentry es una central de ese tipo para apps. Recibe errores y mediciones, los agrupa y los muestra por versión. Para
+usarlo, la app incluye su SDK: una biblioteca que arma los envíos, les agrega contexto y los manda en segundo plano.
+
+Hay un riesgo nuevo. Todo lo que pongas en el contexto viaja con cada error, desde miles de teléfonos. Si alguien
+agrega el correo del repartidor «para poder llamarlo», ese correo sale en cada falla. Por eso este tema enseña también
+a limpiar los datos antes de que salgan del dispositivo.
+
+##### 2. Definición formal y vocabulario
+
+El **DSN** (*Data Source Name*) es la URL que identifica tu proyecto y dice a dónde enviar. Tiene la forma
+`https://<clave pública>@<servidor>/<id de proyecto>`. La clave es pública: solo permite enviar eventos, no leerlos.
+Aun así, filtrarla permite llenar tu proyecto de basura.
+
+Cada envío viaja en un ***envelope***, el formato de transporte de Sentry. Es texto con una cabecera JSON y después
+pares de líneas: la cabecera de un ítem y su contenido. Un ítem puede ser un `event` (un error) o una `transaction`
+(una medición). Se envía con `POST` a `/api/<id>/envelope/`.
+
+El **alcance** (*scope*) es el contexto que el SDK agrega a lo que envía: usuario, etiquetas, migas y datos extra. Lo
+cambias con `Sentry.configureScope`, y desde ese momento acompaña a todos los envíos siguientes. En sencillo: la
+etiqueta pegada a todos los sobres.
+
+**`beforeSend`** es una función que recibe cada evento de error ya armado y puede modificarlo o devolver `null` para
+descartarlo. Corre en el dispositivo, antes del envío. Para las mediciones existe una función aparte,
+`beforeSendTransaction`.
+
+Una **transacción** mide una operación completa, como «cargar ruta». Contiene **tramos** (*spans*), cada uno con
+operación, descripción, duración y estado. El **muestreo** decide qué fracción de transacciones se envía:
+`tracesSampleRate` va de 0 a 1. Los errores tienen su propia tasa, `sampleRate`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que hace el SDK desde `Sentry.init` hasta que el servidor local imprime cada ítem.
+
+1. `Sentry.init` guarda las opciones y crea el cliente que arma y envía. Desde ese momento, las llamadas estáticas
+   como `Sentry.captureException` usan esa configuración.
+2. `configureScope` y `addBreadcrumb` escriben en el alcance. Todavía no se envía nada.
+3. `startTransaction('cargar ruta', 'ui.load')` crea la medición y empieza a contar. Cada `startChild` abre un tramo
+   dentro de ella.
+4. `finish` cierra el tramo con su hora de fin y su estado. Al cerrar la transacción, el SDK la empaqueta con sus
+   tramos en un *envelope*.
+
+```dart
+final red = carga.startChild('http.client', description: 'GET /entregas');
+await Future<void>.delayed(const Duration(milliseconds: 180));
+await red.finish(status: const SpanStatus.ok());
+```
+
+El primer argumento de `startChild` es la operación, una categoría con puntos (`http.client`, `file.write`). Sentry
+agrupa los tramos por operación para comparar tiempos entre muchas ejecuciones.
+
+5. `captureException` arma un evento con el tipo, el mensaje y la pila. Después le aplica el alcance: usuario,
+   etiquetas, migas, `release` y `environment`.
+6. El evento pasa por `beforeSend`. Aquí la función reemplaza el usuario por uno con solo el `id`:
+
+```dart
+o.beforeSend = (evento, pista) {
+  final usuario = evento.user;
+  if (usuario != null) evento.user = SentryUser(id: usuario.id); // fuera correo, IP y nombre
+  return evento;
+};
+```
+
+7. El transporte serializa el evento en un *envelope*, puede comprimirlo con gzip y hace el `POST`. Las cabeceras
+   llevan la clave pública del DSN.
+8. `Sentry.close()` espera a que salgan los envíos pendientes y libera el SDK. Si el proceso termina antes, lo último
+   se pierde.
 
 ```mermaid
 flowchart LR
@@ -517,11 +692,58 @@ flowchart LR
     SC["configureScope: usuario,<br/>etiquetas · addBreadcrumb"] --> H
     E["captureException"] --> H
     T["startTransaction → startChild → finish"] --> H
-    H -->|"beforeSend"| EV["envelope: event"]
-    H --> TR["envelope: transaction"]
+    H -->|"alcance + beforeSend"| EV["envelope: event"]
+    H -->|"muestreo + beforeSendTransaction"| TR["envelope: transaction"]
     EV --> L["servidor (Sentry o local)"]
     TR --> L
 ```
+
+El servidor local de la demostración hace el trabajo inverso. Descomprime si llega gzip, separa las líneas y lee cada
+par cabecera más contenido. Así ves, campo por campo, lo que sale del dispositivo.
+
+##### 4. Reglas, variantes y casos límite
+
+El cambio más traicionero está en la propia salida del tema. En `sentry` 10, el valor por defecto de `traceLifecycle`
+es `SentryTraceLifecycle.stream`, pensado para la API `Sentry.startSpan`. Con ese valor, `startTransaction` devuelve
+un `NoOpSentrySpan` y nada se mide, sin ningún error. Por eso el código fija `SentryTraceLifecycle.static`.
+
+Esa línea muestra una regla general: comprueba que lo medido llega. Un SDK de monitoreo está diseñado para no romper
+la app, así que sus fallos de configuración son silenciosos. La línea `transacción: NO se mide` de la demostración
+existe para hacer visible ese silencio.
+
+Los datos personales tienen dos defensas. La opción `sendDefaultPii` viene desactivada y controla lo que el SDK recoge
+solo, como la IP. Pero lo que tú pones a mano, como un correo en `setUser`, sale igual. Para eso está `beforeSend`,
+que filtra en el dispositivo.
+
+Filtrar en el servidor de Sentry llega tarde: el dato ya viajó y quedó en registros intermedios. Y recuerda que
+`beforeSend` no ve las transacciones. Un correo puesto en una etiqueta de la transacción solo se quita con
+`beforeSendTransaction`.
+
+El muestreo cambia el costo, no la lógica. Con `tracesSampleRate = 1.0` se envía cada transacción: útil en pruebas,
+caro con miles de personas. Con 0.2 llega una de cada cinco, al azar. `tracesSampleRate` no afecta a los errores; solo
+`sampleRate` los reduce.
+
+Sentry agrupa los eventos en *issues* por una huella que calcula sobre todo con la pila. Si la pila está ofuscada y no
+subiste los símbolos, errores distintos pueden agruparse mal. Por eso `release` debe coincidir con la versión
+publicada, en la forma recomendada `paquete@versión+compilación`.
+
+En Android e iOS se usa `sentry_flutter`, que agrega integraciones nativas sobre este mismo núcleo en Dart. Captura
+también fallos del código nativo e instala por su cuenta los manejadores del Tema 1. Las opciones que viste aquí son
+las mismas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 te dio el formato del reporte: origen, versión, entorno, pila y migas. Sentry recibe esos mismos campos con
+otros nombres: `release`, `environment`, `stacktrace` y `breadcrumbs`. La versión `1.3.0+12` sale del Módulo 11, y los
+tiempos de red y disco que mides son los de los Módulos 5 y 6.
+
+Diferencia la medición de este tema de la del Módulo 8. Allí mediste cuadros en modo profile, en tu equipo. Aquí mides
+operaciones en los teléfonos de las personas, ya publicados. Una te dice por qué algo va lento; la otra te dice que va
+lento y para cuántos.
+
+El Paso 5 conecta la interfaz `Reportador` del Tema 1 con el SDK, sin tocar el resto de la app. El Tema 3 lleva la
+misma pregunta, qué sale del teléfono, a la analítica de uso. Allí la regla es más estricta: sin consentimiento, nada
+sale.
 
 #### Problema resuelto 2.1
 Configura Sentry con la versión `ruta@1.3.0+12` y el entorno `prod`, agrega un usuario con correo, una etiqueta y
@@ -842,8 +1064,74 @@ contraste** (Módulo 10, Tema 2).
 - **Error típico:** medir «cuántos aceptaron» con un aviso así y creer que ese número significa algo.
 
 #### ► CÓMO FUNCIONA
-Cada evento pasa por la validación; si es válido, va a la cola. La cola solo se envía con consentimiento aceptado, en
-lotes; si un lote falla, queda en la cola. Rechazar borra la cola y desactiva el registro.
+
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de envíos quiere saber cuánto tarda cada entrega para mejorar sus rutas. Puede anotar «entrega EN-4472, 42
+segundos» sin escribir el nombre del repartidor. Y si va a anotar algo más personal, primero le pregunta, le explica
+para qué y acepta un no.
+
+La analítica de una app hace esas anotaciones. Registra acciones como «abrió la ruta» o «marcó una entrega» para que
+el equipo sepa qué pantallas se usan y cuánto tardan. Bien hecha, describe lo que pasa, no a quién le pasa.
+
+Mal hecha, la primera versión del problema envía cada toque al instante, gasta datos y batería, incluye el correo y
+presenta un aviso con trampa. Este tema arregla las cuatro cosas: pedir permiso de verdad, no enviar nada sin él,
+rechazar datos personales y enviar por lotes.
+
+##### 2. Definición formal y vocabulario
+
+Un **evento de analítica** es un registro con un nombre, unas propiedades simples y una fecha. Describe una acción o
+una medida, no a una persona. El nombre sigue un formato fijo, aquí `snake_case`, para que los eventos iguales se
+puedan agrupar.
+
+El **consentimiento** es la decisión de la persona usuaria, y la app la guarda en uno de tres estados: `pendiente`,
+`aceptado` o `rechazado`. La Ley 1581 de 2012 de Colombia define la autorización como un consentimiento previo,
+expreso e informado. El RGPD europeo exige que retirarlo sea tan fácil como darlo.
+
+Un **dato personal** es información que identifica o permite identificar a alguien. Incluye nombre, correo, teléfono,
+documento, dirección, ubicación precisa e identificadores del dispositivo. La guía de una entrega no identifica al
+repartidor; la dirección de entrega sí identifica al destinatario.
+
+Un **lote** es un grupo de eventos enviados en una sola petición. Aquí se envía cuando la cola llega a 5 o cuando la
+vacías a propósito. Por último, un **patrón engañoso** es un diseño que empuja a una decisión que la persona no
+tomaría informada.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue un evento desde que la pantalla llama a `registrar` hasta que sale, o no sale, del dispositivo.
+
+1. Si el consentimiento es `rechazado`, `registrar` termina en la primera línea. El evento ni siquiera se guarda en
+   memoria.
+2. El nombre pasa por una expresión regular. `^[a-z][a-z0-9_]{2,39}$` exige una minúscula inicial y de 3 a 40
+   caracteres en total, solo minúsculas, dígitos y guion bajo.
+
+```dart
+static final _nombreValido = RegExp(r'^[a-z][a-z0-9_]{2,39}$');
+static const _clavesPersonales = {'email', 'correo', 'telefono', 'nombre', 'direccion', 'documento'};
+```
+
+3. Las claves de las propiedades se comparan con la lista de claves personales. Si alguna coincide, el evento se
+   rechaza y el motivo queda en `rechazados` para verlo en pruebas y en desarrollo.
+4. El evento válido se convierte en mapa con la fecha del reloj inyectado y entra a la cola.
+5. Si el consentimiento es `aceptado` y la cola llegó al tamaño del lote, `registrar` llama a `vaciar`. Con
+   `pendiente`, el evento espera.
+
+`vaciar` es donde se protege la información frente a una red que falla:
+
+```dart
+while (_cola.isNotEmpty) {
+  final lote = _cola.take(tamanoLote).toList();
+  if (!await _enviar(lote)) return;
+  _cola.removeRange(0, lote.length);
+}
+```
+
+6. Toma hasta cinco eventos del inicio de la cola sin quitarlos todavía.
+7. Llama al transporte. Si devuelve `false`, sale del ciclo y los eventos siguen en la cola para el próximo intento.
+8. Solo después de un envío confirmado, los quita. Así ningún evento se pierde por una caída de red.
+
+El consentimiento cambia el comportamiento completo. `decidir(aceptado)` vacía la cola acumulada; `decidir(rechazado)`
+la borra y bloquea los registros siguientes.
 
 ```mermaid
 stateDiagram-v2
@@ -852,10 +1140,48 @@ stateDiagram-v2
     pendiente --> rechazado: «No, gracias» → borra la cola
     aceptado --> rechazado: Ajustes → borra la cola
     rechazado --> aceptado: Ajustes
-    note right of pendiente: registra en la cola, no envía
-    note right of aceptado: envía por lotes de 5
+    note right of pendiente: valida y guarda en la cola, no envía
+    note right of aceptado: valida y envía por lotes de 5
     note right of rechazado: no registra nada
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+El aviso es parte del mecanismo, no decoración. Dos botones del mismo tipo y tamaño, uno al lado del otro, dan el
+mismo peso al sí y al no. La versión engañosa pone «continuar sin mejoras» con un contraste de 1,7:1, y la pauta de
+contraste exige 4,5:1 para texto normal.
+
+Un aviso engañoso tiene además un costo técnico. Si casi todos «aceptan» porque no vieron cómo rechazar, la tasa de
+aceptación no mide nada. Y sin consentimiento válido, los datos recogidos no deberían usarse.
+
+La lista de claves personales es una red, no una garantía. Detecta `email`, pero no `correo_cliente` ni un correo
+escrito dentro de otra propiedad. Por eso el catálogo de eventos se revisa como el código, y por eso la regla general
+es registrar lo mínimo.
+
+`vaciar` no admite dos ejecuciones a la vez. Si dos llamadas a `registrar` se lanzan sin esperar, ambas pueden tomar
+el mismo lote. Ese lote se enviaría dos veces. En el código del tema cada `registrar` se espera con `await`, así que
+no ocurre.
+
+La cola vive en memoria. Si la app se cierra antes de enviar, se pierde, y mientras el estado es `pendiente` crece sin
+límite. Las variantes habituales son guardarla en disco y vaciarla al pasar a segundo plano, como pide el Paso 5 con
+`AppLifecycleListener`.
+
+Rechazar después de aceptar borra la cola local, pero no lo que ya salió. Esos eventos están en el servicio de
+analítica. La persona tiene derecho a pedir que se eliminen, y tu política de privacidad debe decir cómo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los records y las colecciones del Módulo 0 sostienen la cola y los lotes. El reloj inyectado es el mismo recurso del
+Módulo 12, Tema 2: con una fecha fija, el primer evento enviado siempre dice `2026-11-24T08:00:00.000`. La pauta de
+contraste viene del Módulo 10, Tema 2.
+
+Compara la analítica con los reportes de los Temas 1 y 2. Un reporte de error sirve para arreglar un fallo. La
+analítica sirve para decisiones de producto, y aquí es opcional: sin consentimiento previo, nada sale. Las dos
+comparten una regla: filtrar en el dispositivo, antes de enviar.
+
+El Tema 4 cierra el recorrido de los datos: después de decidir qué sale, asegura a quién llega. Fijar el certificado
+evita que un intermediario lea los lotes de analítica o los reportes de error. En el Módulo 14, la ubicación del
+repartidor será un dato personal que viaja en tiempo real.
 
 #### Problema resuelto 3.1
 Implementa la analítica con consentimiento, validación y lotes, pruébala con un transporte falso y un reloj fijo, y
@@ -1242,8 +1568,7 @@ Al terminar este tema podrás:
 - probar la fijación contra un servidor legítimo y un impostor, con HTTPS real;
 - reconocer el error de `badCertificateCallback` que devuelve `true`.
 
-**Conceptos clave:** TLS, autoridad de certificación, ataque de intermediario, fijación de certificado,
-`badCertificateCallback`
+**Conceptos clave:** TLS, autoridad de certificación, ataque de intermediario, fijación de certificado, `badCertificateCallback`
 
 #### El problema
 La app viaja en teléfonos que se conectan a redes públicas. Una red preparada, o un teléfono con un certificado raíz
@@ -1292,18 +1617,117 @@ entornos** (Módulo 11, Tema 2).
 - **Error típico:** dejarlo en el código «solo para desarrollo» y que llegue a producción.
 
 #### ► CÓMO FUNCIONA
-La prueba levanta dos servidores HTTPS en `127.0.0.1`, con certificados distintos para el mismo host, y prueba tres
-clientes contra los dos.
+
+##### 1. La idea en lenguaje sencillo
+
+Un repartidor llega a recoger paquetes a una bodega. En la puerta, alguien con uniforme y carné le dice: «Soy de la
+empresa, entrégame la planilla». El carné parece válido, pero lo emitió una imprenta cualquiera. Un repartidor
+prudente no acepta cualquier carné: solo el que la empresa le mostró antes.
+
+HTTPS funciona con carnés llamados certificados. La app los acepta si los firmó una autoridad en la que el teléfono
+confía. El problema es que el teléfono confía en muchas autoridades, incluidas las que alguien instaló en él. Una red
+preparada puede presentar un certificado aceptable y hacerse pasar por tu servidor.
+
+Este tema hace que la app confíe solo en el certificado de tu servidor. Lo prueba con HTTPS real contra dos servidores
+en tu equipo: el legítimo y un impostor con un certificado igual de válido para la misma dirección.
+
+##### 2. Definición formal y vocabulario
+
+**TLS** (*Transport Layer Security*) es el protocolo bajo HTTPS. Cifra la conexión y autentica al servidor. El cliente
+comprueba tres cosas: que el certificado está vigente, que nombra al host y que lo firmó una autoridad de confianza.
+
+Una **autoridad de certificación** es una entidad cuyo certificado raíz está en ese almacén y que firma los
+certificados de los servidores. En sencillo: el notario que da fe de la identidad. Hay cientos, y basta con que una se
+equivoque o sea suplantada.
+
+Un **ataque de intermediario** ocurre cuando alguien en el camino de la red se hace pasar por el servidor ante la app.
+Lee y cambia lo que pasa. Con TLS bien verificado, el atacante necesita un certificado que la app acepte, así que
+ataca la confianza.
+
+La **fijación de certificado** (*certificate pinning*) reduce la confianza a un certificado o una clave concretos: los
+de tu servidor. En Dart se hace con un `SecurityContext` sin raíces del sistema y con tu certificado cargado por
+`setTrustedCertificatesBytes`.
+
+Por último, **`badCertificateCallback`** es una función de `HttpClient` que se llama cuando un certificado no se pudo
+verificar. Si devuelve `true`, la conexión se acepta igual. Bien usada, compara una huella concreta; devolviendo
+`true` sin mirar, anula TLS.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando el cliente fijado pide `https://127.0.0.1:<puerto>/entregas`.
+
+1. `HttpClient` abre una conexión TCP con el puerto del servidor. Todavía no se ha enviado nada de HTTP.
+2. Empieza el saludo TLS (*handshake*). El servidor envía su cadena de certificados; aquí es un solo certificado
+   autofirmado.
+3. La biblioteca TLS del motor de Dart, BoringSSL, intenta construir una cadena desde ese certificado hasta uno de
+   confianza. El `handshake.cc` de la salida es un archivo de BoringSSL.
+4. El almacén de confianza es el del `SecurityContext` del cliente:
+
+```dart
+final contexto = SecurityContext(withTrustedRoots: false)..setTrustedCertificatesBytes(certificadoPem);
+return IOClient(HttpClient(context: contexto));
+```
+
+`withTrustedRoots: false` deja el almacén vacío de autoridades del sistema. `setTrustedCertificatesBytes` agrega solo
+`servidor.crt`. El valor por defecto de ese parámetro ya es `false`; escribirlo deja la intención a la vista.
+
+5. Con el servidor legítimo, el certificado presentado está en el almacén y la verificación pasa. Además se comprueba
+   que el certificado sea válido para `127.0.0.1`, gracias a su `subjectAltName`.
+6. Durante el saludo, el servidor demuestra que tiene la clave privada del certificado. Un impostor que copiara
+   `servidor.crt` sin su `servidor.key` no podría completar este paso.
+7. Con el impostor, el certificado no está en el almacén. La verificación falla, el cliente corta el saludo y lanza
+   `HandshakeException` con `CERTIFICATE_VERIFY_FAILED`.
+8. Solo si la verificación pasa, `IOClient` envía la petición HTTP cifrada y recibe `3 entregas`.
+
+El cliente que acepta todo cambia el paso 7. Cuando la verificación falla, `HttpClient` llama a
+`badCertificateCallback`; si devuelve `true`, sigue como si nada. Por eso recibe `entregas falsas` del impostor.
 
 ```mermaid
 flowchart LR
     C1["cliente por defecto<br/>(autoridades del sistema)"] -->|"✗ no firmado"| L["legítimo<br/>servidor.crt"]
     C1 -->|"✗ no firmado"| I["impostor<br/>impostor.crt"]
-    C2["cliente fijado<br/>(solo servidor.crt)"] -->|"✓"| L
+    C2["cliente fijado<br/>(solo servidor.crt)"] -->|"✓ está en su almacén"| L
     C2 -->|"✗ no coincide"| I
     C3["badCertificateCallback<br/>=> true"] -->|"✓"| L
     C3 -->|"✓ ¡acepta!"| I
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+`badCertificateCallback` solo se llama cuando la verificación normal falla. Si un certificado está firmado por una
+autoridad de confianza, la función nunca corre. Por eso, para fijar por huella como pide el Paso 3, el `HttpClient`
+necesita un contexto sin raíces del sistema. Si no, un impostor con un certificado de autoridad pasaría sin revisión.
+
+Hay dos objetos que se pueden fijar. Fijar el certificado completo es lo más simple, pero cambia en cada renovación.
+Fijar la clave pública sobrevive a una renovación si el servidor conserva la misma clave. En los dos casos, fija
+también uno de respaldo.
+
+La rotación es el riesgo principal. Los certificados del tema vencen a los 30 días, por `-days 30`. Cuando el
+certificado fijado vence o cambia, todas las versiones publicadas que solo lo conocen dejan de conectar. Se planea al
+revés: primero publicas una versión que ya confía en el nuevo.
+
+`setTrustedCertificatesBytes` agrega certificados al almacén; puedes llamarla varias veces. Así, el certificado actual
+y el de respaldo conviven. Eso es lo que comprueba el Ejercicio verificable 3.
+
+La fijación depende de `dart:io`, que no existe en la web. En el navegador, la conexión TLS la maneja el propio
+navegador y la app no puede fijar nada.
+
+La guía MASVS de OWASP trata estos controles en su categoría de red, MASVS-NETWORK, que incluye la fijación de
+identidad. Las auditorías de seguridad de apps de banca, salud y logística suelen revisarla.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`http` e `IOClient` son del Módulo 5: allí usaste el cliente sin configurar su seguridad. La técnica de levantar
+servidores reales en `127.0.0.1` con puerto libre es la del Módulo 12, Tema 2; aquí `HttpServer.bindSecure` agrega
+HTTPS. Los entornos del Módulo 11, Tema 2 deciden cuándo activar la fijación.
+
+Distingue fijar de cifrar. HTTPS sin fijación ya cifra la conexión: nadie en la red lee su contenido. Lo que no
+garantiza es con quién hablas, porque confía en todas las autoridades del dispositivo. La fijación responde a esa
+pregunta.
+
+El Paso 5 pone `clienteFijado` en `dependencias.dart`, la raíz de composición del Módulo 12, solo en producción.
+Ningún otro archivo cambia, porque el cliente HTTP llega por el constructor de `ApiEntregas`. En el Módulo 14, el
+seguimiento abre una conexión WebSocket; en producción, esa conexión también va sobre TLS, con `wss://`.
 
 #### Problema resuelto 4.1
 Crea dos certificados autofirmados para `127.0.0.1` (el del servidor y el de un impostor), levanta los dos servidores
@@ -1350,7 +1774,7 @@ http.Client clienteFijado(List<int> certificadoPem) {
 ```
 
 ```dart
-// test/tls_test.dart — HTTPS real en 127.0.0.1: el servidor legítimo, un impostor y cuatro clientes
+// test/tls_test.dart — HTTPS real en 127.0.0.1: el servidor legítimo, un impostor y tres clientes
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';

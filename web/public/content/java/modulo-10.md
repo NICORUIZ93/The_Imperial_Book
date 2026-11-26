@@ -123,23 +123,96 @@ cualquier jar podría importarla. ¿Cómo publicas el catálogo y escondes `Toke
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** `module-info.java` declara nombre, `requires`, `exports`, `opens`, `uses` y `provides`. En compilación, `javac` resuelve tipos solo desde paquetes exportados por módulos que el módulo actual lee. En ejecución, la JVM aplica el mismo grafo. `requires transitive` añade una arista indirecta: si A requiere transitivamente B, quien requiere A también lee B. La combinación `provides ... with ...` en el proveedor y `uses` en el consumidor es la interfaz de ServiceLoader.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** Un classpath plano trata todo `public` como accesible; JPMS permite que un tipo público sea invisible fuera de su módulo. `requires transitive` existe para APIs cuyo tipo de retorno o parámetro pertenece a otra dependencia: los consumidores necesitan leer ese tipo para usar la API. ServiceLoader existe para desacoplar la interfaz de sus implementaciones.
+Una bodega de envíos tiene áreas con puertas. El mostrador de atención está abierto al público. La oficina donde se guardan las claves de las cajas fuertes también tiene empleados «públicos» dentro, pero su puerta no da a la calle. Ser empleado no te da acceso a cualquier oficina: depende de qué puertas tiene el edificio.
 
-Para cada `import` entre módulos, el compilador hace dos preguntas en orden. Primero: ¿mi módulo **lee** al módulo
-dueño del paquete? Después: ¿ese módulo **exporta** el paquete? Si falla la primera, el mensaje dice `does not read it`
-o `not in the module graph`. Si falla la segunda, dice `does not export it`.
+En Java, `public` siempre significó «cualquiera puede usarme». Con el classpath, si `TokenInterno` es `public`, cualquier jar puede importarlo. El Java Platform Module System, JPMS, añade un nivel por encima de la clase: el módulo decide qué paquetes tienen puerta hacia afuera.
+
+Así, `core` publica el paquete del catálogo y deja `com.aurora.jpms.internal` sin puerta. Las clases de `core` siguen usando `TokenInterno` entre ellas, pero ningún otro módulo puede importarlo.
+
+##### 2. Definición formal y vocabulario
+
+Un **módulo JPMS** es un conjunto de paquetes con nombre y un descriptor. Lo introdujo Java 9, con la especificación JSR 376 y la JEP 261. El descriptor es **`module-info.java`**, que se compila a `module-info.class` en la raíz del jar.
+
+El descriptor usa directivas. **`requires`** declara que el módulo lee a otro. **`exports`** publica un paquete. **`requires transitive`** pasa la lectura a quien lea a este módulo. **`provides … with`** y **`uses`** conectan proveedores y consumidores de **ServiceLoader**. `opens` se estudia en el Tema 3.
+
+Los módulos se buscan en el **module path**, el equivalente modular del classpath. Al compilar o arrancar, el sistema arma el **grafo de módulos**: los módulos resueltos y sus aristas de lectura. Sobre ese grafo se aplica la **encapsulación fuerte**: un tipo `public` de un paquete no exportado es inaccesible fuera de su módulo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando ejecutas `java --module-path out -m com.aurora.jpms.app/…`, la JVM hace esto antes de correr tu `main`:
+
+1. Toma como **módulo raíz** el que indicaste con `-m`.
+2. Lee su descriptor y busca cada `requires` en el module path y en los módulos del JDK.
+3. Repite con cada módulo encontrado, hasta que no queden dependencias sin resolver. Si falta uno, falla con `module not found`.
+4. Agrega las aristas implícitas: todo módulo lee `java.base`, y cada `requires transitive` añade lecturas indirectas.
+5. Verifica que dos módulos del grafo no contengan el mismo paquete. Ese conflicto se llama **paquete dividido** y es un error.
+6. Fija el grafo. Desde ahí, cada acceso de un módulo a otro se comprueba contra las aristas y los exports.
+
+Para cada `import` entre módulos, el compilador hace dos preguntas en orden. Primero: ¿mi módulo **lee** al módulo dueño del paquete? Después: ¿ese módulo **exporta** el paquete? Si falla la primera, el mensaje dice `does not read it` o `not in the module graph`. Si falla la segunda, dice `does not export it`.
 
 ```mermaid
 flowchart LR
   APP["com.aurora.jpms.app"] -- "requires" --> CORE["com.aurora.jpms.core"]
   CORE -- "exports" --> API["paquete com.aurora.jpms.core<br/>Catalogo, Producto"]
-  CORE -. "sin exports" .-> INT["paquete com.aurora.jpms.internal<br/>TokenInterno (public)"]
+  CORE -. "sin exports" .-> INT["paquete com.aurora.jpms.internal<br/>TokenInterno public"]
   APP -- "import permitido" --> API
   APP -. "import rechazado:<br/>is not visible" .-> INT
   CORE -- "requires java.base mandated" --> BASE["java.base"]
+  APP -- "requires java.base mandated" --> BASE
 ```
+
+El grafo también se puede consultar desde el código, con la clase `java.lang.Module`:
+
+```java
+Module base = String.class.getModule();
+System.out.println("String vive en: " + base.getName());
+System.out.println("exporta java.lang: " + base.isExported("java.lang"));
+System.out.println("exporta jdk.internal.misc: " + base.isExported("jdk.internal.misc"));
+System.out.println("Fronteras tiene nombre de módulo: " + Fronteras.class.getModule().isNamed());
+```
+
+Dentro de una clase `Fronteras` ejecutada con `java Fronteras.java`, imprime:
+
+```text
+String vive en: java.base
+exporta java.lang: true
+exporta jdk.internal.misc: false
+Fronteras tiene nombre de módulo: false
+```
+
+El JDK aplica a sí mismo la regla que aplicas a `core`: `jdk.internal.misc` tiene clases `public`, pero `java.base` no lo exporta. La última línea muestra que una clase sin descriptor vive en el **módulo sin nombre**, que el Tema 2 explica.
+
+Con `requires transitive`, el paso 4 hace el trabajo. `demo.fachada` lee `demo.api` y lo marca como transitivo. Entonces `demo.app`, que lee `demo.fachada`, recibe también la arista hacia `demo.api`, sin escribir ningún `requires`.
+
+ServiceLoader funciona sobre el grafo ya resuelto. `ServiceLoader.load(Saludo.class)` recorre los módulos que declaran `provides demo.api.Saludo with …` y crea una instancia de cada proveedor. Solo puede llamarlo un módulo que declare `uses`.
+
+##### 4. Reglas, variantes y casos límite
+
+El nombre de un módulo sigue las reglas de los nombres de paquete: identificadores separados por puntos. Se recomienda el dominio invertido, como `com.aurora.jpms.core`. No se admiten guiones.
+
+`exports` trabaja por paquete, nunca por clase. No incluye subpaquetes: exportar `com.aurora.jpms` no exporta `com.aurora.jpms.core`.
+
+`exports paquete to módulo` es una exportación **calificada**: solo los módulos nombrados pueden acceder. El JDK la usa para compartir paquetes internos entre sus propios módulos.
+
+`requires static` declara una dependencia obligatoria al compilar y opcional al ejecutar. Sirve para anotaciones o integraciones que no siempre están presentes.
+
+Las dependencias entre módulos no pueden formar ciclos: `javac` rechaza un descriptor que cierre un ciclo de `requires`. Es la misma regla que viste con los proyectos multi-módulo de Gradle y Maven.
+
+Un proveedor de ServiceLoader debe tener un constructor público sin parámetros o un método `public static provider()`. Si ningún módulo provee el servicio, no hay error de compilación: `findFirst()` devuelve un `Optional` vacío.
+
+La encapsulación del propio JDK se endureció por etapas. Java 16 negó por defecto el acceso reflexivo a sus internos (JEP 396), y Java 17 retiró la opción `--illegal-access` (JEP 403).
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 1 viste paquetes y modificadores de acceso. JPMS no los reemplaza: añade una frontera más. Dentro de un módulo, `public`, `protected` y `private` funcionan igual que siempre.
+
+En el Módulo 8, Tema 3, los módulos de Gradle impedían importar lo que no estaba en el classpath. JPMS va más allá: aunque el jar esté presente, sus paquetes no exportados siguen cerrados. Las dos herramientas se combinan, y no son lo mismo.
+
+La configuración `api` de Gradle y `requires transitive` resuelven el mismo problema en capas distintas: ambas declaran que tu contrato expone tipos de otra dependencia.
+
+El Tema 2 explica qué pasa con los jars que no tienen descriptor y cómo `jlink` usa el grafo para armar un runtime a medida. El Tema 3 estudia `opens`, la directiva que deja entrar a la reflexión.
 
 #### Problema resuelto 1.1
 Publica el catálogo de Tienda Aurora desde `core` y úsalo desde `app`, sin publicar `com.aurora.jpms.internal`.
@@ -593,13 +666,55 @@ completo para un programa que solo usa `java.base`. ¿Cómo migras por partes y 
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** Una aplicación no modularizada se ejecuta en el *unnamed module*, que lee todos los módulos resueltos y no impone exports propios. Un jar sin `module-info.class` puede colocarse en el module path: la JVM deriva un automatic module a partir del nombre del archivo, como se observó con `aurora.util@1.2.3 automatic`. Esos módulos exportan todos sus paquetes, por lo que son un puente y no un estado final estricto.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** Migrar un proyecto grande de una vez suele ser inviable porque dependencias externas no están modularizadas. El unnamed module y los automatic modules permiten avanzar por partes sin detener el desarrollo.
+Una empresa de envíos que cambia a bodegas con áreas cerradas no puede detener la operación un mes. Ordena primero las áreas nuevas y deja funcionando las viejas, con un letrero provisional en la puerta. Las va cerrando una por una, cuando ya sabe qué entra y qué sale de cada una.
 
-La migración incremental sigue un orden de abajo arriba. Primero `jdeps` dice qué necesita cada jar. Luego los jars
-sin descriptor pasan al module path como automáticos. Después cada componente propio recibe su `module-info.java`.
-Cuando todo el grafo tiene nombre explícito, `jlink` puede enlazarlo en un runtime.
+Tienda Aurora vive lo mismo. `core` y `app` ya pueden tener descriptor, pero `aurora-util-1.2.3.jar` no lo tiene y nadie lo va a reescribir pronto. JPMS ofrece dos lugares de transición para ese código: el módulo sin nombre y los módulos automáticos.
+
+Al final del camino hay un premio concreto. Cuando todo el programa está en módulos con nombre, `jlink` puede armar un Java a medida que solo contiene lo que el programa usa. El servidor ya no necesita un JDK completo.
+
+##### 2. Definición formal y vocabulario
+
+Todo lo que la JVM carga desde el classpath va al **módulo sin nombre** (*unnamed module*). Ese módulo lee a todos los demás módulos del grafo y expone todos sus paquetes. Un módulo con nombre, en cambio, no puede declarar `requires` hacia él.
+
+Un jar sin descriptor colocado en el module path se convierte en un **módulo automático**. Recibe un nombre, lee a todos los módulos y exporta y abre todos sus paquetes. El atributo **`Automatic-Module-Name`** del manifiesto fija ese nombre de forma estable.
+
+**jdeps** analiza clases compiladas y reporta de qué módulos dependen. **jlink**, introducido en Java 9 con la JEP 282, enlaza módulos con nombre en una imagen de ejecución. El resultado es un **runtime personalizado**: una carpeta con su propia JVM y solo los módulos necesarios.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando pones un jar sin descriptor en el module path, el buscador de módulos le asigna un nombre así:
+
+1. Si el manifiesto tiene `Automatic-Module-Name`, usa ese valor y no mira el nombre del archivo.
+2. Si no, toma el nombre del archivo y le quita la extensión `.jar`.
+3. Busca un guion seguido de un dígito. Lo que sigue es la versión: `1.2.3`.
+4. En lo que queda, reemplaza cada carácter que no sea letra ni dígito por un punto y colapsa los puntos repetidos.
+
+La API `java.lang.module.ModuleFinder` aplica exactamente esas reglas. Este fragmento lista los módulos que encontraría en la carpeta `lib`:
+
+```java
+ModuleFinder.of(Path.of("lib")).findAll().stream()
+    .map(ref -> ref.descriptor())
+    .sorted((a, b) -> a.name().compareTo(b.name()))
+    .forEach(d -> System.out.println(d.toNameAndVersion() + " automatic=" + d.isAutomatic()));
+```
+
+Con `aurora-util-1.2.3.jar` y `mi_lib-core-2.0.jar` en `lib`, dentro de un `main`, imprime:
+
+```text
+aurora.util@1.2.3 automatic=true
+mi.lib.core@2.0 automatic=true
+```
+
+El guion y el guion bajo se volvieron puntos. Por eso renombrar el archivo cambia el nombre del módulo, y por eso conviene fijarlo en el manifiesto.
+
+La migración incremental sigue un orden de abajo arriba:
+
+1. `jdeps` dice qué módulos del JDK y qué jars necesita cada componente.
+2. Los jars ajenos sin descriptor pasan del classpath al module path, como automáticos.
+3. Cada componente propio recibe su `module-info.java`, empezando por los que no dependen de nadie.
+4. Cuando todo el grafo tiene descriptores explícitos, `jlink` puede enlazarlo.
 
 ```mermaid
 flowchart LR
@@ -609,6 +724,39 @@ flowchart LR
   EXP --> JL["jlink<br/>runtime personalizado"]
   AUTO -. "jlink no acepta<br/>automáticos" .-> JL
 ```
+
+Para el último paso, `jlink` hace esto:
+
+1. Toma los módulos de `--add-modules` como raíces y resuelve el grafo con las mismas reglas que la JVM al arrancar.
+2. Busca cada módulo del JDK en el propio JDK y los tuyos en `--module-path`.
+3. Copia en `--output` una JVM y solo los módulos resueltos.
+4. Aplica los complementos pedidos: quitar información de depuración, comprimir, crear el launcher.
+
+Por eso la imagen de Tienda Aurora lista tres módulos y no los 69 del JDK completo.
+
+##### 4. Reglas, variantes y casos límite
+
+Un módulo automático lee también al módulo sin nombre. Gracias a eso, un jar automático puede usar clases que siguen en el classpath. Un módulo explícito no tiene ese permiso.
+
+Un módulo automático no tiene descriptor real, así que no declara qué necesita. Por eso `jlink` lo rechaza con `automatic module cannot be used with jlink`. Es la razón de que el diagrama tenga una flecha punteada.
+
+Cuando el `main` vive en el classpath, la JVM elige raíces por defecto: los módulos del sistema que exportan alguna API. Por eso el código de siempre sigue funcionando sin cambios en un JDK modular.
+
+`jdeps` solo ve dependencias estáticas, escritas en el bytecode. Lo que el código carga con `Class.forName` o con `ServiceLoader` no aparece. Revisa esos casos a mano o agrega el módulo a `jlink` con `--add-modules`.
+
+`jlink` produce una imagen para una plataforma concreta. Una imagen generada en Linux x86_64 no corre en macOS arm64. Desde JDK 21, `--compress` admite niveles `zip-0` a `zip-9`; los valores numéricos antiguos quedaron obsoletos.
+
+La imagen no se actualiza sola. Cada parche de seguridad del JDK exige regenerarla y volver a desplegarla.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 mostró módulos explícitos con todas sus fronteras. Este tema muestra las dos zonas grises que permiten llegar a ellos. El modelo `Formato` del Problema resuelto 2.1 prueba los dos casos: `nombrado=false` en el classpath y `nombrado=true` en el module path.
+
+En el Módulo 8, Tema 1, el classpath se armaba a partir de coordenadas. JPMS no reemplaza al build tool: Gradle y Maven siguen resolviendo jars, y solo cambia si los pasan como classpath o como module path.
+
+No confundas `jlink` con `installDist` del Módulo 8, Tema 4. `installDist` copia tus jars y usa el Java instalado; `jlink` incluye su propia JVM. Con `jlink` desaparece el `UnsupportedClassVersionError` por un Java viejo en el servidor.
+
+El Tema 3 completa el módulo con `opens`. Los automáticos ya abren todo; un módulo explícito tiene que decidir qué paquetes abre a la reflexión.
 
 #### Problema resuelto 2.1
 Pon el jar heredado `aurora-util-1.2.3.jar` a convivir con módulos, sin reescribirlo.
@@ -899,23 +1047,85 @@ aplicación revienta en ejecución. ¿Qué permiso falta y cómo lo das sin abri
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** `exports` autoriza acceso compilado a los tipos públicos del paquete. `opens` autoriza reflexión profunda en runtime, incluida la modificación de accesibilidad con `setAccessible(true)`. `opens ... to Modulo` limita esa autorización a un módulo concreto. Las formas sin argumento (`open module`) abren todos los paquetes del módulo.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** Frameworks como Jackson, Hibernate o Spring inspeccionan campos, constructores y métodos privados. Un `exports` no basta para esa operación; sin `opens`, la JVM lanza `InaccessibleObjectException`.
+En una bodega, el mostrador atiende al público por la ventanilla. Un auditor, en cambio, necesita entrar a la trastienda y revisar cajones cerrados. Dejarlo pasar no significa abrir la trastienda al público: es un permiso distinto, para una persona y un propósito concretos.
 
-Cuando el código llama a `setAccessible(true)`, la JVM revisa si el paquete del miembro está abierto al módulo que
-llama. Puede estarlo por `opens`, por `opens ... to` con ese módulo, por `open module` o por `--add-opens` al arrancar.
-Si ninguna se cumple, lanza la excepción en esa línea.
+En JPMS, `exports` es la ventanilla: deja usar los tipos y miembros `public` de un paquete. Pero frameworks como Jackson, Hibernate o Spring hacen de auditor: leen campos privados, llaman constructores privados y crean objetos sin pasar por tu API. Eso se llama reflexión profunda, y necesita otro permiso.
+
+En Tienda Aurora, la aplicación llama por reflexión al método privado `etiquetaInterna()` de `Producto`. El paquete está exportado, pero si quitas `opens`, la aplicación compila y luego falla al ejecutar esa línea.
+
+##### 2. Definición formal y vocabulario
+
+La **reflexión profunda** es el uso de `java.lang.reflect` para acceder a miembros no públicos, tras llamar a `setAccessible(true)`. Antes de Java 9 bastaba esa llamada. Con módulos, el dueño del paquete tiene que autorizarla.
+
+La directiva **`opens`** autoriza, en tiempo de ejecución, la reflexión profunda sobre todos los tipos de un paquete. La **apertura calificada**, **`opens … to`**, la limita a los módulos nombrados. **`open module`** abre todos los paquetes del módulo. La opción **`--add-opens`** añade una apertura calificada al arrancar, sin tocar el descriptor.
+
+Si ningún permiso aplica, `setAccessible(true)` lanza **`InaccessibleObjectException`**, una excepción no comprobada del paquete `java.lang.reflect`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando `TiendaAuroraJpmsApp` ejecuta `m.setAccessible(true)`, la JVM decide así, según la documentación de `AccessibleObject`:
+
+1. Identifica dos módulos: el de la clase que llama (`app`) y el de la clase dueña del miembro (`core`).
+2. Si son el mismo módulo, concede el acceso.
+3. Si el miembro es `public`, su clase es `public` y el paquete está exportado al módulo que llama, concede el acceso.
+4. Si el paquete está abierto al módulo que llama, concede el acceso. Esta es la regla que cubre los miembros privados.
+5. Si ninguna regla aplica, lanza `InaccessibleObjectException`. El mensaje nombra el miembro y el `opens` que falta.
 
 ```mermaid
 flowchart TD
-  R["setAccessible(true) sobre<br/>Producto.etiquetaInterna()"] --> Q{"¿paquete abierto<br/>al módulo que llama?"}
-  Q -- "opens" --> OK["acceso concedido<br/>reflexion=CAF-100:Cafe Aurora"]
-  Q -- "opens ... to app" --> OK
+  R["setAccessible true sobre<br/>Producto.etiquetaInterna"] --> M{"¿mismo módulo?"}
+  M -- "sí" --> OK["acceso concedido<br/>reflexion=CAF-100:Cafe Aurora"]
+  M -- "no" --> Q{"¿paquete abierto<br/>al módulo que llama?"}
+  Q -- "opens" --> OK
+  Q -- "opens to app" --> OK
   Q -- "open module" --> OK
   Q -- "--add-opens al arrancar" --> OK
   Q -- "ninguna" --> KO["InaccessibleObjectException"]
 ```
+
+El JDK aplica la misma regla a sus propios paquetes. `java.base` exporta `java.lang`, pero no lo abre. Mira este programa, que intenta abrir el campo privado `value` de `String`:
+
+```java
+Field valor = String.class.getDeclaredField("value");
+System.out.println("java.base abre java.lang a mi módulo: "
+        + String.class.getModule().isOpen("java.lang", Llave.class.getModule()));
+System.out.println("trySetAccessible: " + valor.trySetAccessible());
+```
+
+`Module.isOpen` pregunta si un paquete está abierto a cierto módulo. `trySetAccessible` hace lo mismo que `setAccessible(true)`, pero devuelve `false` en vez de lanzar la excepción. Ejecutado con `java Llave.java`, imprime:
+
+```text
+java.base abre java.lang a mi módulo: false
+trySetAccessible: false
+```
+
+Con `java --add-opens java.base/java.lang=ALL-UNNAMED Llave.java`, las dos líneas cambian a `true`. `ALL-UNNAMED` significa «el módulo sin nombre», donde vive esta clase. La aplicación de Tienda Aurora, en cambio, es un módulo con nombre: por eso necesita `=com.aurora.jpms.app`.
+
+##### 4. Reglas, variantes y casos límite
+
+`opens` actúa solo en tiempo de ejecución. Un paquete abierto pero no exportado no se puede importar al compilar. Por eso `core` declara las dos directivas para el mismo paquete.
+
+Dentro de un `open module` no se permite escribir directivas `opens`: sería redundante, y `javac` lo rechaza. Las directivas `exports` sí siguen funcionando y controlan lo que se compila.
+
+Todos los paquetes del módulo sin nombre y de los módulos automáticos están abiertos. Por eso un programa en el classpath nunca ve esta excepción con sus propias clases.
+
+La misma regla vale para `MethodHandles.privateLookupIn`, la otra puerta de entrada a miembros privados desde Java 9.
+
+Elige la apertura más estrecha que funcione. En orden, de más estrecha a más amplia: `opens … to` un módulo, `opens` a todos, `open module`. `--add-opens` sirve como parche temporal mientras cambias el descriptor, sobre todo con librerías que no controlas.
+
+La protección del JDK se endureció por versiones. De Java 9 a Java 15, el acceso reflexivo a los internos que ya existían en JDK 8 se permitía con una advertencia. Java 16 lo negó por defecto (JEP 396) y Java 17 eliminó la opción `--illegal-access` (JEP 403). Desde entonces, `--add-opens` es la única salida.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 explicó `exports` y la encapsulación fuerte. `opens` es su pareja: `exports` controla el acceso público al compilar y al ejecutar; `opens` controla la reflexión profunda solo al ejecutar.
+
+En el Módulo 9, Tema 1, viste que JUnit encuentra tus pruebas por reflexión. En el Tema 2 viste que Mockito crea dobles en tiempo de ejecución. En un proyecto modular, esas herramientas necesitan acceso reflexivo a las clases que prueban, con las mismas reglas de este tema.
+
+No confundas `opens` con hacer público un miembro. `opens` no cambia ningún modificador: `etiquetaInterna()` sigue siendo `private`, y solo la reflexión autorizada puede llamarlo.
+
+El Módulo 11, Tema 4, vuelve a los permisos de arranque: la Foreign Function & Memory API necesita que habilites el acceso nativo de forma explícita.
 
 #### Problema resuelto 3.1
 Comprueba qué pasa si quitas `opens` del descriptor de `core` y la aplicación sigue usando reflexión.

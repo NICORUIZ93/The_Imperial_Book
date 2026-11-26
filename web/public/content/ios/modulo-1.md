@@ -111,9 +111,50 @@ Este tema usa **`struct` y valores** (Módulo 0, Tema 2), **protocolos con tipo 
 - **Error típico:** copiar y pegar el mismo trozo de interfaz en vez de extraerlo a una vista con parámetros.
 
 #### ► CÓMO FUNCIONA
-Escribes `struct`s que cumplen `View`. Cada `body` se arma con `@ViewBuilder` a partir de vistas del sistema y de las
-tuyas. El resultado es un árbol de valores con un tipo exacto que el compilador conoce; SwiftUI lo recorre, compara con
-el árbol anterior y dibuja solo lo que cambió.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en cómo se pide un mueble a un carpintero. No le dices qué movimientos hacer con el serrucho: le entregas un
+plano con medidas. Él decide cómo cortar, y si cambias una medida, rehace solo la pieza afectada.
+
+SwiftUI trabaja así. Tú no dibujas la tarjeta de un envío ni la borras cuando cambia. Escribes una descripción: «una
+columna con la guía, el destinatario, la dirección y la insignia del estado». SwiftUI lee esa descripción y se
+encarga de los píxeles. A este estilo se le llama **declarativo**: declaras qué se ve, no cómo pintarlo.
+
+La segunda idea del tema es la composición. Si la insignia del estado aparece en la tarjeta, en el detalle y en el
+historial, la escribes una vez como vista propia. Las tres pantallas la usan igual que usan un `Text` del sistema, y
+el color de «Fallido» se cambia en un solo lugar.
+
+##### 2. Definición formal y vocabulario
+La documentación de Apple define el **protocolo `View`** como un tipo que representa parte de la interfaz de tu app y
+proporciona modificadores para configurarla. Su único requisito es la propiedad **`body`**, cuyo tipo es el tipo
+asociado `Body`, que a su vez debe cumplir `View`.
+
+Esa definición es recursiva: una vista se describe con otras vistas. La recursión termina en las **vistas
+primitivas**, como `Text` o `Image`. Su `Body` es `Never`, un tipo sin valores, y SwiftUI las dibuja directamente.
+
+`body` se declara como **tipo opaco (`some View`)**. Su tipo real existe y el compilador lo conoce exacto, pero tú no
+lo escribes. La salida real del tema muestra por qué: el tipo de `InsigniaEstado.Body` ocupa varias líneas de
+`ModifiedContent`.
+
+**`@ViewBuilder`** es un **result builder**, una función especial de Swift que transforma las líneas de un closure en
+un solo valor. La **composición** es construir vistas grandes con vistas pequeñas, cada una con sus datos de entrada
+como propiedades `let`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el camino de `TarjetaEnvio` desde que la escribes hasta que aparece en el simulador:
+
+1. Al compilar, Swift ve que `body` de `View` lleva `@ViewBuilder`. Lo aplica también a tu `body`, aunque no lo
+   escribas.
+2. El result builder recorre las líneas del `VStack`. Cada expresión que es una vista se convierte en un argumento.
+   Al final llama a `buildBlock` con todas, y el resultado es un `TupleView` con un elemento por línea.
+3. Cada modificador, como `.padding()`, devuelve una vista nueva que envuelve a la anterior. El tipo resultante es
+   `ModifiedContent<VistaAnterior, Modificador>`.
+4. El compilador deduce el tipo completo y lo guarda como el tipo real de `some View`. Ese tipo describe la
+   estructura entera de la tarjeta.
+5. Al ejecutar, SwiftUI crea el `struct`, lee su `body` y recorre el árbol. Si la vista es tuya, lee su `body`; si es
+   primitiva, la dibuja.
+6. Cuando los datos cambian, SwiftUI vuelve a pedir el `body`, compara el árbol nuevo con el anterior y actualiza
+   solo lo distinto en pantalla.
 
 ```mermaid
 flowchart TD
@@ -127,6 +168,61 @@ flowchart TD
     F --> I["InsigniaEstado"]
     I --> LB["Label + font + padding + fondo en cápsula"]
 ```
+
+El paso 2 se puede hacer a mano con el juguete del tema, en Linux. Esta llamada es lo que el compilador escribe por
+ti cuando pones dos `Texto` dentro de un cuerpo:
+
+```swift
+let cuerpo = ConstructorDeVistas.buildBlock(Texto("EN-4471"), Texto("Ana Ruiz"))
+print(type(of: cuerpo))
+```
+
+```text
+TuplaDe2<Texto, Texto>
+```
+
+Con un `if`, el builder llama a `buildEither(first:)` o a `buildEither(second:)` según la rama. Las dos devuelven el
+mismo tipo, que guarda las dos ramas como parámetros genéricos. Así el `body` tiene un solo tipo, aunque el contenido
+cambie al ejecutar.
+
+¿Por qué tanto esfuerzo en los tipos? Porque el tipo le dice a SwiftUI la forma del árbol antes de ejecutar nada.
+Sabe que la tarjeta siempre tiene una fila, tres textos, un relleno y un fondo. Al comparar dos versiones, solo mira
+los valores dentro de esa forma fija.
+
+##### 4. Reglas, variantes y casos límite
+Una vista debe ser un tipo valor ligero. SwiftUI crea y descarta tus `struct` muchas veces por segundo. Lo que deba
+durar entre dibujos no va en propiedades normales: va en el estado del Módulo 2.
+
+`body` solo debe calcular la descripción. No llames a la red ni hagas trabajo pesado ahí, porque SwiftUI decide
+cuándo y cuántas veces lo evalúa. Con el SDK de iOS 18, el protocolo `View` está aislado al actor principal: `body`
+siempre se evalúa en el hilo de la interfaz.
+
+Dentro de un `@ViewBuilder` valen expresiones que producen vistas, declaraciones `let`, `if`, `if let`, `switch` e
+`if #available`. No vale un ciclo `for`: para repetir vistas usas `ForEach`. Una instrucción que no produce vista,
+como `print`, da el error `type '()' cannot conform to 'View'`.
+
+Un `if` sin `else` se convierte en un opcional de la vista con `buildOptional`. Un `if` con `else` usa `buildEither` y
+produce `_ConditionalContent`. Fuera de un builder, el `if` es una expresión normal y sus ramas deben tener el mismo
+tipo. De ahí el error `branches have mismatching types 'Image' and 'Text'`.
+
+Los result builders se formalizaron en Swift 5.4 (SE-0289); SwiftUI ya usaba una versión previa desde 2019. Hasta
+Xcode 14, `buildBlock` aceptaba como máximo diez vistas por bloque. Con Swift 5.9 y Xcode 15, los parameter packs
+(SE-0393) quitaron ese límite.
+
+Si necesitas tipos distintos en un mismo lugar sin builder, existe `AnyView`, que borra el tipo concreto. Úsalo con
+cuidado: SwiftUI pierde la forma del árbol y compara peor. Casi siempre es mejor `@ViewBuilder` o una vista nueva.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Todo este tema se apoya en el Módulo 0. Las vistas son `struct` porque son descripciones que se copian sin costo
+(Módulo 0, Tema 2). `some View` es el tipo opaco que conociste con `some Tarifable` (Módulo 0, Tema 3). Los
+`ModifiedContent<…>` son tipos genéricos anidados, y el contenido de cada pila es un closure (Módulo 0, Tema 4).
+
+Si vienes de UIKit o de Android con XML, la diferencia es de fondo. Allí creas objetos de interfaz que viven en
+memoria y los modificas tú. Aquí escribes valores que se descartan, y el sistema mantiene los objetos reales aparte.
+
+El Tema 2 de este módulo estudia la otra mitad de la tarjeta: cada modificador envuelve la vista. Por eso el orden
+cambia el resultado. En el Módulo 2 verás por qué partir en vistas pequeñas, como `InsigniaEstado`, hace que SwiftUI
+redibuje menos cuando cambian los datos.
 
 #### Problema resuelto 1.1
 Escribe la tarjeta de un envío con una insignia de estado reutilizable, muéstrala para los cuatro envíos de muestra y
@@ -670,9 +766,47 @@ Este tema usa **el `body` y la composición** (Tema 1) y **los genéricos** (Mó
 - **Error típico:** usar `offset` para maquetar y descubrir que se encima con otras vistas en pantallas más angostas.
 
 #### ► CÓMO FUNCIONA
-Cada modificador crea una capa alrededor de la anterior. El tamaño se negocia de afuera hacia adentro (la propuesta) y
-de adentro hacia afuera (la respuesta); el fondo se pinta del tamaño de lo que tiene dentro **en ese punto de la
-cadena**.
+
+##### 1. La idea en lenguaje sencillo
+Imagina que empacas un regalo. Si primero lo envuelves en papel amarillo y luego lo metes en una caja más grande, ves
+la caja por fuera. El papel queda escondido, con aire alrededor. Si primero lo metes en la caja y después la
+envuelves, el papel amarillo cubre todo, aire incluido. Las mismas dos operaciones, en distinto orden, dan dos
+paquetes distintos.
+
+Los modificadores de SwiftUI funcionan igual. `.padding()` agrega aire, `.background(Color.yellow)` pone papel
+amarillo, y cada uno se aplica sobre lo que ya había. Leer una cadena es leer cómo se empacó la vista, de adentro
+hacia afuera.
+
+En la app de la ruta, esto decide si la guía tiene el fondo con aire que pidió el diseño. La alternativa es un fondo
+pegado al texto. También explica por qué un `frame` de 200 puntos no estira el fondo amarillo cuando va después de él.
+
+##### 2. Definición formal y vocabulario
+Un **modificador** es un método de `View` que devuelve una vista nueva con un comportamiento o aspecto agregado. La
+vista original no cambia: queda dentro de la nueva. Por eso escribir `.padding()` no «configura» el texto; crea
+otra vista que lo contiene.
+
+El tipo de esa vista nueva es **`ModifiedContent`**, un genérico con dos parámetros: el contenido y el modificador.
+Una cadena de tres modificadores produce tres `ModifiedContent` anidados. El tipo que imprime la prueba deja ver el
+orden exacto.
+
+La **propuesta de tamaño** es la forma en que SwiftUI reparte el espacio. Cada padre le propone un tamaño a su hija,
+la hija decide el suyo y el padre la coloca. El **marco** es el rectángulo que la vista termina ocupando: su posición
+y su tamaño dentro del padre.
+
+Algunos modificadores participan en esa negociación, como `padding` y `frame`. Otros solo cambian el dibujo y no el
+marco. **`offset`** es el caso más claro: mueve los píxeles y deja el espacio reservado donde estaba.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la cadena A, `Text("EN-4471").padding().background(Color.yellow)`, cuando la fila le ofrece espacio:
+
+1. La fila le propone un tamaño a la capa más externa, el `background`. Un fondo no cambia la propuesta: se la pasa
+   igual a su contenido.
+2. El `padding` recibe la propuesta, le resta 16 puntos por lado y le ofrece el resto al texto.
+3. El texto decide su tamaño según su contenido y su fuente: 67,3 × 20,3 puntos, como mide G en la salida real.
+4. El `padding` responde hacia afuera con el tamaño del texto más 32 en cada eje: 99,3 × 52,3. Es el marco medido
+   para A.
+5. El `background` toma ese tamaño como el suyo y pinta el amarillo detrás, con ese mismo tamaño. Por eso el
+   amarillo incluye el relleno.
 
 ```mermaid
 flowchart LR
@@ -683,6 +817,68 @@ flowchart LR
         B1["Text 'EN-4471'"] --> B2["background amarillo: del tamaño del texto"] --> B3["padding: +16 por fuera del fondo"]
     end
 ```
+
+En la cadena B cambian los pasos 4 y 5. El fondo envuelve directamente al texto, así que se pinta de 67,3 × 20,3. El
+`padding` llega después y agrega el aire por fuera del amarillo. El marco final mide lo mismo, 99,3 × 52,3; solo
+cambia dónde quedó el color.
+
+Con `frame(width: 200)` pasa algo parecido. El `frame` le propone 200 de ancho al texto, el texto elige los 67,3 que
+necesita y el `frame` lo centra dentro de sus 200. Si el fondo va después del `frame`, como en D, se pinta de 200.
+Si va antes, como en E, se pinta del ancho del texto.
+
+El `offset` no participa en ninguno de esos pasos. Cuando SwiftUI ya colocó la vista, `offset` corre el dibujo. Por
+eso el marco de F mide 67,3 de ancho en x = 16,0, igual que G. El amarillo, en cambio, aparece 40 puntos más a la
+derecha.
+
+No todos los modificadores siguen esta lógica de capas de tamaño. Los que escriben en el **entorno**, como `font`,
+pasan un valor hacia todas las vistas de dentro. Observa este fragmento:
+
+```swift
+VStack {
+    Text("EN-4471")
+    Text("Ana Ruiz").font(.caption)
+}
+.font(.headline)
+```
+
+La guía sale en `.headline` porque recibe la fuente del `VStack`. El destinatario sale en `.caption`, porque el valor
+más cercano a la vista gana. Aquí el orden también importa, pero por cercanía, no por tamaño.
+
+##### 4. Reglas, variantes y casos límite
+La regla general es «la hija decide su tamaño». Un texto puede usar menos de lo que le ofrecen, como en D, o pedir
+más de lo que hay y partirse en varias líneas. `frame(width:)` fija la propuesta; no obliga al contenido a
+llenarla.
+
+Algunos métodos pertenecen a un tipo concreto y devuelven ese mismo tipo. `Image.resizable()` devuelve una `Image`, y
+`Text.bold()` devuelve un `Text`. Después de un modificador general ya no tienes una `Image`, sino un `some View`.
+De ahí el error real `value of type 'some View' has no member 'resizable'`.
+
+`background` tiene varias sobrecargas, es decir, varias versiones con el mismo nombre y distintos parámetros. Desde
+iOS 15, `background(Color.yellow)` usa la versión que recibe un estilo de relleno, y el tipo muestra
+`_BackgroundStyleModifier<Color>`. Para poner otra vista detrás existe `background { … }` con un closure.
+
+Hay una propuesta especial que vale conocer. Si el padre propone `nil` en un eje, pide el tamaño ideal de la hija. Si
+propone infinito, pregunta cuánto puede crecer. El protocolo `Layout`, de iOS 16, expone estas propuestas con el tipo
+`ProposedViewSize`.
+
+Para medir sin adivinar, el tema usa `onGeometryChange`. SwiftUI llama al primer closure con un `GeometryProxy` cada
+vez que cambia la geometría, y al segundo solo si el valor calculado cambió. Es más barato que envolver la vista en
+un `GeometryReader`, que además ocupa todo el espacio ofrecido.
+
+Por último, el borde rojo de `.border(Color.red)` también es un modificador. Dibuja sobre el marco de lo que tiene
+dentro en ese punto de la cadena. Por eso se pone al final, cuando quieres ver el marco de todo lo anterior.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te mostró que cada modificador añade una capa `ModifiedContent` al tipo de `InsigniaEstado`. Este tema
+explica qué hace cada capa al ejecutar. También vuelve la idea de genérico del Módulo 0, Tema 4:
+`ModifiedContent<Contenido, Modificador>` es un tipo genérico como `Pagina<Elemento>`.
+
+Si vienes de CSS, el `padding` te sonará conocido, pero el modelo es otro. En CSS las propiedades de una caja se
+aplican juntas y el orden de escritura no importa. En SwiftUI cada modificador es una caja nueva alrededor de la
+anterior.
+
+El Tema 3 usa esta negociación para repartir una fila entera con pilas, `Spacer`, `frame(maxWidth:)` y prioridad de
+diseño. El Tema 4 la aplica a listas largas. El entorno que escribe `.font` vuelve en el Módulo 2, Tema 4.
 
 #### Problema resuelto 2.1
 Arma un catálogo con las mismas piezas en distinto orden (A a F) y un texto solo (G) de referencia. Fotografíalo en el
@@ -903,7 +1099,7 @@ Al terminar este tema podrás:
 - cambiar de fila a columna con `AnyLayout` según el tamaño del texto;
 - fijar un botón abajo con `safeAreaInset` sin perder el desplazamiento.
 
-**Conceptos clave:** `HStack`/`VStack`, `Spacer`, `frame(maxWidth:)`, Dynamic Type, `AnyLayout`, `safeAreaInset`
+**Conceptos clave:** `HStack` y `VStack`, `Spacer`, `frame(maxWidth:alignment:)`, Dynamic Type, `AnyLayout`, `safeAreaInset`
 
 #### El problema
 La fila de una parada se ve bien en el iPhone de quien la diseñó. Una repartidora con el texto del sistema en tamaño
@@ -952,9 +1148,51 @@ Este tema usa **el orden de los modificadores y el marco** (Tema 2) y **la insig
 - **Error típico:** escribir un `if` con un `HStack` y un `VStack` con el mismo contenido duplicado.
 
 #### ► CÓMO FUNCIONA
-La fila ofrece su ancho a las hijas. La guía y la insignia, poco flexibles, toman lo suyo; el nombre, con
-`frame(maxWidth: .infinity)`, se queda con el resto y se recorta con `lineLimit(1)`. Cuando el texto crece tanto que
-no cabe, la fila se convierte en columna.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una repisa donde acomodas tres cajas: una pequeña, una mediana y una que se puede aplastar. Primero pones
+las cajas que no ceden, y la flexible se queda con el hueco que sobra. Si la repisa es demasiado corta, ninguna
+estrategia alcanza y tienes que poner las cajas una encima de otra.
+
+Una fila de SwiftUI reparte su ancho de la misma forma. La guía y la insignia tienen un tamaño natural y poco margen
+para ceder. El nombre del destinatario puede recortarse con puntos suspensivos. Cuando el texto crece por la
+configuración de accesibilidad, la fila ya no alcanza, y lo correcto es pasar a columna.
+
+El tema también resuelve un malentendido frecuente. Un `Spacer` empuja hacia el fondo solo si hay un fondo. Dentro de
+una lista que se desplaza, el alto no tiene final, y el botón «Confirmar entrega» sube pegado a la tarjeta.
+
+##### 2. Definición formal y vocabulario
+**`HStack` y `VStack`** son contenedores de disposición: colocan a sus hijas en fila o en columna. Reciben un
+`alignment`, que alinea en el eje contrario, y un `spacing`, que separa a las hijas. No estiran a nadie: cada hija
+decide su tamaño a partir de lo que le ofrecen.
+
+Un **`Spacer`** es una vista flexible que ocupa el espacio sobrante en el eje de la pila que lo contiene. Si no
+sobra nada, mide su mínimo. **`frame(maxWidth:alignment:)`** acepta cualquier ancho hasta el máximo dado; con
+`.infinity` se queda con todo lo que le ofrezcan y coloca el contenido según `alignment`.
+
+**Dynamic Type** es el sistema de tamaños de texto de iOS. La persona elige uno en Ajustes, y los estilos como
+`.body` o `.headline` escalan solos. Hay siete tamaños normales, de `xSmall` a `xxxLarge`, y cinco de
+accesibilidad, de `accessibility1` a `accessibility5`.
+
+**`AnyLayout`** envuelve una disposición, como `HStackLayout` o `VStackLayout`, para cambiarla sin reconstruir a
+las hijas. **`safeAreaInset(edge:)`** coloca una vista en un borde y reduce el área segura del contenido, que es la
+zona donde nada queda tapado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el reparto de una fila de `FilaParada` con texto normal:
+
+1. La fila recibe el ancho que le ofrece la lista, menos el `padding`. Resta los dos espacios de 8 puntos entre las
+   tres hijas.
+2. El `HStack` pregunta a cada hija qué tan flexible es. La guía y la insignia casi no cambian de ancho; el nombre,
+   con `frame(maxWidth: .infinity)`, acepta cualquier ancho.
+3. Ofrece espacio primero a las hijas menos flexibles. La guía toma 73,7 puntos y la insignia entre 78,0 y 99,3,
+   según la salida real.
+4. Lo que sobra va al nombre. El `frame` lo ocupa entero y alinea el texto a la izquierda. Si el nombre no cabe,
+   `lineLimit(1)` lo recorta con puntos suspensivos.
+5. El `HStack` coloca a las tres en fila y las centra en vertical, su alineación por defecto.
+
+Con `accessibility3`, el paso 3 fracasa. Las hijas «poco flexibles» necesitan más ancho del que existe y empiezan a
+partir su texto en renglones. Por eso la guía pasa a medir 99,0 × 96,0 y las insignias crecen hasta 164 de alto.
 
 ```mermaid
 flowchart TD
@@ -964,6 +1202,58 @@ flowchart TD
     H --> R["fila con fondo y padding"]
     V --> R
 ```
+
+La disposición adaptable lee `dynamicTypeSize` del entorno y elige `VStackLayout` cuando
+`isAccessibilitySize` es verdadero. Como el contenido está dentro de un solo `AnyLayout`, SwiftUI ve las mismas tres
+hijas en las dos disposiciones. Si cambias el tamaño con la app abierta, las hijas se mueven sin recrearse.
+
+El caso del botón se explica con la propuesta del Tema 2. Un `VStack` dentro de la pantalla recibe un alto finito, y
+el `Spacer` se queda con lo que sobra. El botón baja a y = 773,7. Un `ScrollView` vertical, en cambio, no limita el
+alto de su contenido. El `Spacer` no tiene sobrante que ocupar y mide su mínimo: el botón queda en y = 247,3.
+
+`safeAreaInset(edge: .bottom)` saca el botón del contenido desplazable. Lo coloca en el borde inferior y le dice al
+`ScrollView` que su área segura termina encima del botón. Así el último elemento de la lista nunca queda tapado.
+
+##### 4. Reglas, variantes y casos límite
+`Spacer` tiene un parámetro `minLength`. Si no lo das, usa el espaciado estándar del sistema como mínimo. Fuera de
+una pila, un `Spacer` se expande en los dos ejes.
+
+Puedes cambiar el orden del reparto con `.layoutPriority(_:)`. Una hija con prioridad mayor recibe su espacio antes
+que las demás. La prioridad por defecto es 0. Úsala para proteger lo que nunca debe recortarse, como la guía.
+
+`.fixedSize()` hace lo contrario de ceder: obliga a la vista a usar su tamaño ideal, aunque no quepa. Sirve para
+que un texto corto no se parta, pero puede desbordar la pantalla si lo aplicas a uno largo.
+
+`frame(width: 70)` y `frame(maxWidth: 70)` no son lo mismo. El primero ofrece exactamente 70 y mide 70 siempre. El
+segundo acepta menos si el contenido es más pequeño. La salida real muestra el costo del primero: «Entregado» se
+parte en «En-» / «tre…».
+
+`AnyLayout`, `HStackLayout`, `VStackLayout` y el protocolo `Layout` existen desde iOS 16. Para el mismo problema,
+iOS 16 también trae `ViewThatFits`, que prueba varias opciones y usa la primera que cabe:
+
+```swift
+ViewThatFits(in: .horizontal) {
+    HStack { Text(envio.guia); InsigniaEstado(estado: envio.estado) }
+    VStack(alignment: .leading) { Text(envio.guia); InsigniaEstado(estado: envio.estado) }
+}
+```
+
+`ViewThatFits` decide por el espacio real, no por el tamaño de texto. A cambio, cada opción es una vista distinta y
+no conserva la identidad al cambiar. `AnyLayout` decide por la regla que tú escribes y conserva a las hijas.
+
+`safeAreaInset` existe desde iOS 15. Para ignorar el área segura a propósito, como un fondo de color hasta el borde,
+se usa `ignoresSafeArea()`, que es otra herramienta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema aplica la propuesta de tamaño del Tema 2 a contenedores con varias hijas. Allí un `padding` restaba y
+sumaba; aquí un `HStack` divide. La `InsigniaEstado` y la `TarjetaEnvio` del Tema 1 son las piezas que se acomodan.
+
+Si vienes de la web, `HStack` y `Spacer` recuerdan a flexbox con `flex-grow`. La diferencia es que en SwiftUI la hija
+siempre tiene la última palabra sobre su tamaño. Ningún contenedor la estira sin que ella lo acepte.
+
+El `@Environment(\.dynamicTypeSize)` de la fila es tu primer contacto con el entorno, que el Módulo 2, Tema 4 explica
+a fondo. El Tema 4 de este módulo lleva las pilas a listas largas con `ScrollView` y pilas perezosas. Allí el alto
+ilimitado que viste con el botón vuelve a importar.
 
 #### Problema resuelto 3.1
 Maqueta la fila de una parada y fotografíala con el texto normal y con `accessibility3`, sin y con la disposición
@@ -1258,7 +1548,7 @@ Al terminar este tema podrás:
 - comparar un modelo del reparto de columnas con lo que hace SwiftUI de verdad;
 - preparar vistas previas con datos de muestra, en claro, en oscuro y con tamaño ajustado.
 
-**Conceptos clave:** `ScrollView`, `LazyVStack`, `LazyVGrid`, `GridItem`, `#Preview`
+**Conceptos clave:** `ScrollView`, `LazyVStack`, `LazyVGrid`, `GridItem(.adaptive(minimum:))`, `#Preview`
 
 #### El problema
 El jefe de bodega carga 300 envíos en la pantalla de la ruta y la app tarda en abrir. El encabezado tiene cuatro cifras
@@ -1306,8 +1596,50 @@ Este tema usa **la tarjeta** (Tema 1), **el medidor** (Tema 2) y **las pilas y e
 - **Error típico:** vistas previas que dependen de la red o de una base de datos real y nunca cargan.
 
 #### ► CÓMO FUNCIONA
-Dentro de un `ScrollView`, una `VStack` crea todas sus hijas al mostrarse; una `LazyVStack` solo las que caben (y unas
-pocas de reserva) y crea más al desplazar. La `LazyVGrid` calcula cuántas columnas caben y llena filas.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un restaurante con un menú de trescientos platos. Ninguna cocina prepara los trescientos al abrir por si
+alguien los pide. Cocina lo que se ordena, cuando se ordena. El cliente no nota la diferencia, y la cocina no se
+llena de platos que nadie va a comer.
+
+Una pila normal dentro de un `ScrollView` se comporta como la cocina que lo prepara todo. Con 300 envíos, crea 300
+tarjetas al abrir la pantalla, aunque solo quepan seis. Una pila **perezosa** es la cocina sensata: crea las tarjetas
+visibles y las demás a medida que la persona desplaza.
+
+El tema suma dos herramientas más. La cuadrícula adaptativa decide sola cuántas columnas de métricas caben en un
+iPhone o en un iPad. Las vistas previas te muestran la tarjeta mientras la escribes, sin ejecutar la app ni navegar
+hasta la pantalla.
+
+##### 2. Definición formal y vocabulario
+Un **`ScrollView`** es un contenedor que permite desplazar su contenido en uno o en los dos ejes. En el eje de
+desplazamiento le ofrece a su contenido un tamaño ilimitado. Él mismo no decide cuántas vistas se crean: eso depende
+de la pila que lleve dentro.
+
+Una **`LazyVStack`** es una pila vertical que crea y evalúa a sus hijas solo cuando están por aparecer en pantalla.
+La palabra técnica es **perezosa** (lazy): no hace un trabajo hasta que alguien lo necesita.
+
+Una **`LazyVGrid`** es una cuadrícula vertical perezosa. Sus columnas se describen con un arreglo de **`GridItem`**,
+y las filas salen solas según cuántos elementos haya. `GridItem(.adaptive(minimum:))` no es una columna: es una
+instrucción para crear tantas columnas de ese ancho mínimo como quepan.
+
+**`#Preview`** es una macro, es decir, código que el compilador expande en más código. Registra una vista previa que
+Xcode muestra en su lienzo. Puede llevar un nombre y **rasgos** (traits), como `.sizeThatFitsLayout`, que ajusta el
+lienzo al tamaño de la vista.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa al mostrar `ListaLarga` con 300 envíos y `perezosa` en verdadero:
+
+1. El `ScrollView` le ofrece a la `LazyVStack` el ancho de la pantalla y un alto ilimitado.
+2. La `LazyVStack` recibe el `ForEach` con 300 elementos. Gracias a que `Envio` es `Identifiable`, conoce la
+   identidad de cada uno sin crear ninguna vista.
+3. Calcula qué parte del contenido es visible y crea solo esas tarjetas, más alguna de reserva. La prueba cuenta 6
+   evaluaciones de `body`.
+4. Para estimar el alto total, y así dibujar la barra de desplazamiento, usa las tarjetas que ya midió.
+5. Al desplazar 6 000 puntos, crea las tarjetas que entran en pantalla en la posición nueva. La cuenta sube a 13.
+
+Con una `VStack`, el paso 3 no existe. La pila necesita medir a todas sus hijas para calcular su propio alto, así que
+evalúa las 300 de entrada. Desplazar después no cuesta nada más, porque ya estaban todas: 300 al mostrarse y 300
+tras desplazar.
 
 ```mermaid
 flowchart LR
@@ -1318,6 +1650,56 @@ flowchart LR
     C -->|"358 puntos"| C2["2 columnas"]
     C -->|"712 puntos"| C4["4 columnas"]
 ```
+
+La cuadrícula sigue otro cálculo. Cada columna necesita su mínimo más el espaciado, salvo la última. El modelo del
+núcleo lo escribe así:
+
+```swift
+let columnas = max(1, Int((ancho + espaciado) / (minimo + espaciado)))
+let anchoColumna = (ancho - Double(columnas - 1) * espaciado) / Double(columnas)
+```
+
+Con 358 puntos, (358 + 12) / (150 + 12) da 2,28, y caben 2 columnas. El sobrante se reparte: cada una mide 173. Con
+712 puntos caben 4 de 169. Son los valores que SwiftUI puso en el simulador, según la salida real.
+
+Las vistas previas funcionan por compilación. La macro `#Preview` genera un tipo que Xcode encuentra en tu app
+compilada. Xcode ejecuta solo ese fragmento y lo dibuja en el lienzo, con los datos que tú le pasas. Por eso una vista
+previa debe usar datos de muestra, como `Muestras.envios`, y no depender de la red.
+
+##### 4. Reglas, variantes y casos límite
+`GridItem` tiene tres tamaños. `.fixed(ancho)` es una columna de ancho exacto. `.flexible(minimum:maximum:)` es una
+columna que crece entre dos límites. `.adaptive(minimum:maximum:)` es un grupo de columnas que se multiplican según
+el espacio.
+
+El error frecuente es confundir los dos últimos. `[GridItem(.flexible()), GridItem(.flexible())]` siempre son dos
+columnas, también en un iPad. `[GridItem(.adaptive(minimum: 150))]` son tantas como quepan.
+
+El mínimo adaptativo no depende del tamaño del texto. Con `accessibility-extra-large`, la cuadrícula siguió en dos
+columnas y «Entregados» se partió en dos renglones. El arreglo es el del Tema 3: cambiar la regla cuando
+`isAccessibilitySize` es verdadero.
+
+`LazyVStack`, `LazyHStack`, `LazyVGrid` y `LazyHGrid` existen desde iOS 14. `List` también es perezosa y añade
+separadores, selección y acciones al deslizar. Desde iOS 16, SwiftUI también ofrece `Grid`, una cuadrícula no
+perezosa que alinea celdas por filas y columnas; sirve para tablas pequeñas.
+
+Perezosa no significa gratis. Cada tarjeta nueva se evalúa mientras la persona desplaza. Si su `body` es caro, se nota
+como tirones. Con cinco filas fijas, una pila normal es más simple y no pierde nada.
+
+La macro `#Preview` llegó con Swift 5.9 y Xcode 15. Antes se escribía un tipo que cumplía el protocolo
+`PreviewProvider`, que todavía funciona. En Xcode 16, la macro `@Previewable` permite declarar estado dentro de una
+vista previa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `ScrollView` es el mismo que rompió el `Spacer` del Tema 3. El alto ilimitado que allí impedía empujar el botón
+es el que aquí permite que la lista crezca. `TarjetaContada` es la `TarjetaEnvio` del Tema 1, y las celdas se miden con
+el `medir` del Tema 2.
+
+Si vienes de UIKit, `LazyVStack` recuerda a `UITableView` y `UICollectionView`, que también crean celdas a demanda. La
+diferencia es que no administras celdas reutilizables: describes la lista entera y SwiftUI decide qué crear.
+
+La fórmula de columnas se probó en Linux como una función pura del Módulo 0, sin SwiftUI. Ese patrón, núcleo probado y
+vista que dibuja, sigue en todo el curso. En el Módulo 2, cuando las tarjetas cambien con los datos, la identidad del
+`ForEach` decidirá qué filas se redibujan.
 
 #### Problema resuelto 4.1
 Arma la pantalla «Ruta de hoy»: un resumen, un tablero de métricas en `LazyVGrid` y las paradas. Cuenta cuántas

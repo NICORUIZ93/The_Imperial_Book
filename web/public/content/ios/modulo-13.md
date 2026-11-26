@@ -120,8 +120,41 @@ Este tema usa **protocolos y `Sendable`** (Módulos 0 y 4) y **los errores tipad
 - **Error típico:** declararlo `Sendable` con un `var` sin protección (error de compilación de abajo).
 
 #### ► CÓMO FUNCIONA
-`Sesion` solo conoce el protocolo. En la app, el protocolo lo cumple `AlmacenLlavero`; en las pruebas de Linux,
-`AlmacenEnMemoria`. Guardar intenta agregar y, si ya existe, actualiza.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en la llave de la bodega de la empresa. No la dejas pegada con cinta en la puerta ni en una nota del
+escritorio. La guardas en una caja fuerte que solo abre quien conoce la combinación. Y si la cambias por una nueva,
+reemplazas la vieja en la misma gaveta, no agregas una segunda.
+
+El **token de sesión** es esa llave en la app de reparto. Quien lo tiene puede marcar entregas a nombre del
+repartidor. El problema del tema lo encontró en `UserDefaults`, un archivo de texto que se copia tal cual en los
+respaldos del computador. Cualquiera con acceso a un respaldo podía leerlo.
+
+iOS ofrece la caja fuerte: el **llavero**. Este tema mueve el token allí, detrás de un protocolo que permite
+probar la lógica en Linux. También explica el código `-25299` que hizo fallar el segundo inicio de sesión.
+
+##### 2. Definición formal y vocabulario
+
+El **llavero** (Keychain) es una base de datos cifrada del sistema para secretos pequeños: contraseñas, tokens y
+claves. Se accede con las funciones `SecItem…` del framework Security, y cada app ve solo sus propios elementos.
+
+Un **elemento de contraseña genérica** es un registro de clase `kSecClassGenericPassword`. Se identifica por dos
+atributos, el servicio (`kSecAttrService`) y la cuenta (`kSecAttrAccount`), y guarda los bytes en
+`kSecValueData`.
+
+La **accesibilidad** es el atributo `kSecAttrAccessible`. Dice desde cuándo se puede leer el elemento y si puede
+salir del dispositivo. La app usa `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`.
+
+**`OSStatus`** es el entero que devuelve cada función de Security. `errSecSuccess` vale 0, `errSecDuplicateItem`
+vale −25299 y `errSecItemNotFound` vale −25300. `SecCopyErrorMessageString` da su descripción.
+
+El **almacén en memoria** es otra implementación del mismo protocolo, `AlmacenEnMemoria`. Guarda un diccionario
+protegido por `Mutex` y sirve para probar en Linux, donde no hay llavero.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La sesión solo conoce el protocolo; la implementación decide dónde vive el secreto:
 
 ```mermaid
 flowchart LR
@@ -134,6 +167,76 @@ flowchart LR
     L["Sesion.autorizacion()"] --> CM["SecItemCopyMatching"]
     CM -->|"-25300"| NIL["nil: no hay sesión"]
 ```
+
+1. **Declaras el contrato.** `AlmacenSecretos` es un protocolo `Sendable` con `guardar`, `leer` y `borrar`. Cada
+   uno lanza solo `ErrorAlmacen`, que envuelve el `OSStatus`.
+2. **Armas la consulta.** Para el llavero, un elemento es un diccionario de atributos. La consulta que lo identifica
+   lleva solo tres claves: clase, servicio y cuenta.
+3. **Agregas.** `SecItemAdd` recibe la consulta más los datos y la accesibilidad. El sistema cifra los bytes con una
+   clave de la clase de protección elegida. Los guarda en su propia base de datos, fuera del contenedor de la app.
+4. **Manejas el duplicado.** Servicio y cuenta forman la clave única. Si ya existe un elemento con esas etiquetas,
+   `SecItemAdd` no reemplaza: devuelve −25299. Por eso `guardar` hace esto.
+
+```swift
+var estado = SecItemAdd(nuevo as CFDictionary, nil)
+if estado == errSecDuplicateItem {
+    let cambios = [kSecValueData as String: datos]
+    estado = SecItemUpdate(consulta(cuenta) as CFDictionary, cambios as CFDictionary)
+}
+guard estado == errSecSuccess else { throw .estado(estado) }
+```
+
+   La primera llamada intenta agregar. Si el elemento existía, `SecItemUpdate` cambia solo sus datos. Cualquier
+   otro código se convierte en un error tipado.
+5. **Lees.** `SecItemCopyMatching` recibe la consulta más `kSecReturnData` y `kSecMatchLimitOne`. Si encuentra el
+   elemento, descifra los bytes y los devuelve en un `CFTypeRef`, que conviertes a `Data`. Si no, devuelve −25300,
+   y `leer` responde `nil`.
+6. **Borras.** `SecItemDelete` con la misma consulta. «No encontrado» tampoco es error aquí: cerrar sesión dos
+   veces debe funcionar.
+
+La salida real del simulador muestra la secuencia cruda: 0 la primera vez, −25299 la segunda, 0 al borrar y −25300
+al buscar lo borrado.
+
+##### 4. Reglas, variantes y casos límite
+
+**La accesibilidad por defecto.** Si no fijas `kSecAttrAccessible`, la documentación de Apple dice que el valor es
+`kSecAttrAccessibleWhenUnlocked`. Con él, una tarea en segundo plano con la pantalla bloqueada no puede leer el
+token. La cola del Tema 4 necesita leerlo así, por eso la app elige `AfterFirstUnlock`.
+
+**`ThisDeviceOnly`.** Los valores con ese sufijo nunca salen del dispositivo: no viajan a otro teléfono en un
+respaldo ni en el llavero de iCloud. Para un token de sesión es lo correcto: en otro teléfono, la persona inicia
+sesión de nuevo.
+
+**Valores obsoletos.** `kSecAttrAccessibleAlways` y su variante `ThisDeviceOnly` quedaron obsoletos en iOS 12. No
+los uses en código nuevo.
+
+**Qué va en cada consulta.** La búsqueda y el borrado llevan solo lo que identifica el elemento. Los datos y la
+accesibilidad van solo al agregar o al actualizar; el glosario marca lo contrario como error típico.
+
+**El llavero sobrevive a la app.** En iOS, borrar la app no garantiza borrar sus elementos del llavero. Si
+necesitas empezar de cero tras reinstalar, detecta la primera ejecución y borra los elementos tú mismo.
+
+**Compartir entre apps.** Con un grupo de acceso (`kSecAttrAccessGroup`), apps del mismo equipo comparten
+elementos. Sin él, cada app ve solo los suyos.
+
+**Llamadas que bloquean.** Las funciones `SecItem…` son síncronas y pueden tardar. Evita llamarlas en bucle desde
+el hilo principal mientras se dibuja la interfaz.
+
+**El simulador no es un iPhone.** Su llavero no tiene Secure Enclave ni código de desbloqueo, como advierte la
+cabecera del módulo. Las clases de protección se comprueban de verdad solo en un dispositivo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El protocolo con una implementación real y otra de prueba repite el patrón de `FuenteRemota` del Módulo 12, Tema
+2. El `Mutex` de `AlmacenEnMemoria` aplica `Sendable` del Módulo 4, Tema 4: un `var` sin protección en una clase
+`Sendable` no compila. `throws(ErrorAlmacen)` usa los errores tipados del Módulo 5.
+
+No confundas este llavero con el de la Mac del Módulo 11, Tema 3. Aquel guarda la clave privada que firma la app;
+este guarda los secretos de la persona usuaria dentro de la app. Tampoco lo confundas con `UserDefaults`, del
+Módulo 6: allí van preferencias, nunca credenciales.
+
+El token guardado aquí viaja en la cabecera `Authorization`. El Tema 2 protege ese viaje con App Transport Security
+y fijación de certificados. El Tema 4 lo lee en segundo plano para enviar la cola.
 
 #### Problema resuelto 1.1
 Define el contrato del almacén de secretos y la sesión, pruébalos en Linux con el almacén en memoria y escribe la
@@ -517,8 +620,7 @@ Al terminar este tema podrás:
 - fijar certificados en el delegado de `URLSession`, después de la evaluación normal del sistema;
 - probar que la fijación acepta la cadena correcta y rechaza cualquier otra.
 
-**Conceptos clave:** App Transport Security, evaluación de confianza, huella de certificado, fijación, pin de
-respaldo
+**Conceptos clave:** App Transport Security, evaluación de confianza, huella de certificado, fijación, pin de respaldo
 
 #### El problema
 Un repartidor usa el wifi de un centro comercial que intercepta el tráfico con un certificado instalado por el
@@ -567,8 +669,44 @@ Este tema usa **`URLSession` y `URLError`** (Módulo 5), **`Info.plist`** (Módu
 - **Error típico:** fijar solo la hoja, que se renueva cada pocos meses.
 
 #### ► CÓMO FUNCIONA
-ATS decide antes de conectar si la URL está permitida. Si lo está y es HTTPS, el servidor presenta su cadena; el
-delegado recibe el desafío, deja que el sistema la evalúe y, solo si pasa, compara las huellas con los pines.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un mensajero que debe entregar un sobre en una oficina. Primero exige ir por una calle iluminada, no por
+un callejón. Al llegar, pide la cédula a quien recibe y revisa que sea auténtica, que esté vigente y que el nombre
+coincida. Y si la empresa le dio una lista de personas autorizadas, también comprueba que esté en ella.
+
+Una conexión de red tiene los mismos tres controles. **App Transport Security** (ATS) exige la calle iluminada:
+HTTPS en lugar de HTTP. La **evaluación de confianza** revisa la cédula del servidor, su certificado. La **fijación
+de certificados** agrega la lista propia: el certificado no solo debe ser válido, debe ser uno de los que tu app
+conoce.
+
+El problema del tema muestra por qué el tercer control existe. En un wifi que intercepta el tráfico con un
+certificado instalado por el administrador, la evaluación normal aprueba al intermediario. Solo la fijación lo
+detecta.
+
+##### 2. Definición formal y vocabulario
+
+**App Transport Security** es la política del sistema que exige TLS 1.2 o superior, certificados confiables y
+cifrados fuertes en las conexiones de `URLSession`. Las excepciones se declaran en la clave
+`NSAppTransportSecurity` del `Info.plist`.
+
+La **evaluación de confianza** es `SecTrustEvaluateWithError`. Comprueba que la cadena llegue a una autoridad de
+confianza, que las fechas sean válidas y que el nombre coincida con el servidor. Confía en todas las autoridades
+instaladas en el teléfono.
+
+La **huella de certificado** es el SHA-256 de su representación DER, codificado en base64. Tiene 44 caracteres y
+cambia si cambia un solo byte del certificado.
+
+La **fijación** (*pinning*) consiste en aceptar la conexión solo si alguna huella de la cadena está en una lista
+fija. Se hace en el delegado de `URLSession`, después de la evaluación normal.
+
+El **pin de respaldo** es una segunda huella que todavía no está en uso. Evita que la renovación del certificado
+deje a todas las versiones publicadas sin conexión.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+ATS decide antes de conectar; la fijación decide después de la evaluación del sistema:
 
 ```mermaid
 flowchart TB
@@ -583,6 +721,75 @@ flowchart TB
     P -->|"sí"| OK[".useCredential → respuesta 200"]
     P -->|"no"| C2["cancelAuthenticationChallenge → URLError -999"]
 ```
+
+1. **ATS revisa la URL.** Si es `http://` y no hay excepción, la petición falla antes de salir con `URLError`
+   −1022. La salida real del simulador lo muestra con `http://example.com/`.
+2. **El servidor presenta su cadena.** Durante el saludo TLS envía su certificado (la hoja) y los intermedios. La
+   raíz ya está en el almacén del sistema.
+3. **`URLSession` lanza un desafío.** Llama al delegado con un `URLAuthenticationChallenge` de tipo
+   `NSURLAuthenticationMethodServerTrust`, que trae un `SecTrust` con la cadena.
+4. **El delegado evalúa primero.** La fijación nunca reemplaza la evaluación del sistema; la endurece.
+
+```swift
+var error: CFError?
+guard SecTrustEvaluateWithError(confianza, &error) else {
+    return (.cancelAuthenticationChallenge, nil)
+}
+let cadena = (SecTrustCopyCertificateChain(confianza) as? [SecCertificate]) ?? []
+```
+
+   Si la cadena está vencida o es de otro dominio, se cancela aquí. Si pasa, `SecTrustCopyCertificateChain`
+   devuelve los certificados en orden: hoja, intermedio y raíz.
+5. **Calcula las huellas.** Para cada certificado obtiene sus bytes DER con `SecCertificateCopyData` y les aplica
+   SHA-256 con CryptoKit. El resultado en base64 es lo mismo que calcula `openssl` en la terminal.
+6. **Compara con la política.** `PoliticaFijacion.acepta(cadena:)` es una función pura que responde si alguna
+   huella está en `pines`. Si acepta, el delegado devuelve `.useCredential`; si no, `.cancelAuthenticationChallenge`,
+   y la tarea falla con `URLError` −999.
+
+En la salida real, con el intermedio de `www.apple.com` fijado, la respuesta es 200. Con dos pines ajenos, la misma
+petición termina en −999, «Operación cancelada».
+
+##### 4. Reglas, variantes y casos límite
+
+**Desde cuándo.** ATS existe desde iOS 9. `SecTrustEvaluateWithError` llegó en iOS 12, y
+`SecTrustCopyCertificateChain` y la versión `async` del delegado, en iOS 15.
+
+**Qué cubre ATS.** Según Apple, se aplica a `URLSession` y a las API que la usan, no a las de red de bajo nivel
+como Network. La documentación dice que desde iOS 17 tampoco exime direcciones IP. En el simulador de iOS 27.2,
+`http://127.0.0.1` pasó igual; no confíes en eso y declara `NSAllowsLocalNetworking`.
+
+**Excepciones con costo.** `NSAllowsArbitraryLoads` desactiva ATS para todo, y la revisión de la App Store exige
+justificarlo. Prefiere excepciones por dominio en `NSExceptionDomains`.
+
+**Qué nivel fijar.** La hoja se renueva cada pocos meses. El intermedio cambia menos, y la raíz todavía menos, pero
+fijar la raíz confía en todo lo que esa autoridad firme. El laboratorio fija el intermedio más un respaldo.
+
+**Huella del certificado o de la clave.** La huella del certificado cambia en cada renovación, aunque la clave sea
+la misma. Fijar la clave pública dura más, pero exige extraerla en el formato correcto.
+
+**Fijación declarativa.** Desde iOS 14, la clave `NSPinnedDomains` del `Info.plist` permite fijar sin código. Fija
+la clave pública de la autoridad o de la hoja. El delegado del tema es la variante programática, que además
+registra lo que rechaza.
+
+**Nunca `.useCredential` sin evaluar.** Esa respuesta acepta cualquier certificado, incluso vencido. Si desarrollo
+necesita un certificado propio, la excepción debe depender del entorno del Módulo 11.
+
+**Linux no es iOS.** En Linux, `FoundationNetworking` usa libcurl y devuelve −1 en lugar de −1202 ante un
+certificado propio. Por eso la fijación con `SecTrust` solo se prueba en la Mac.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema continúa `URLSession` y `URLError` del Módulo 5. Allí los errores venían de la red o del servidor; aquí
+vienen de decisiones de seguridad: −1022 de ATS y −999 de tu propio delegado.
+
+ATS ya apareció en el Módulo 12, Tema 4, cuando la app declaró `NSAllowsLocalNetworking` para el servidor embebido.
+El revisor del Módulo 11, Tema 4, avisaba de `NSAllowsArbitraryLoads`; aquí entiendes qué desactiva.
+
+No confundas cifrar con autenticar. TLS cifra el canal con cualquier certificado; la evaluación y la fijación
+deciden con quién hablas. Lo que protegen es el token del Tema 1.
+
+El delegado registra cada rechazo con un `fault` de `Registro.seguridad`. El Tema 3 explica ese registro y qué
+datos no deben aparecer en él.
 
 #### Problema resuelto 2.1
 En Linux, levanta un servidor HTTPS con un certificado propio, comprueba quién lo acepta y calcula su huella.
@@ -936,8 +1143,7 @@ Al terminar este tema podrás:
 - marcar la privacidad de cada valor interpolado (público, privado, con *hash*);
 - leer el registro del simulador y explicar qué entrega MetricKit, cuándo y dónde.
 
-**Conceptos clave:** registro unificado, subsistema y categoría, nivel de registro, privacidad de los valores,
-MetricKit
+**Conceptos clave:** registro unificado, subsistema y categoría, nivel de registro, privacidad de los valores, MetricKit
 
 #### El problema
 Un repartidor reporta que «a veces la entrega no se envía». En el teléfono de pruebas nunca pasa. El código tiene
@@ -986,9 +1192,40 @@ Este tema usa **la app y la cola del Tema 4** (lo que se registra), **las prueba
 - **Error típico:** registrar el suscriptor tarde, en una pantalla interna, y perder los informes de las sesiones que no llegaron ahí.
 
 #### ► CÓMO FUNCIONA
-La app escribe mensajes con nivel y privacidad. El sistema los guarda según el nivel, y al leerlos fuera del proceso
-oculta los valores privados. MetricKit trabaja aparte: el sistema mide la app y le entrega los informes a su
-suscriptor, que los guarda para enviarlos.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en la caja negra de un avión. Graba lo necesario para entender un incidente después, sin que nadie tenga que
+estar mirando en vivo. No graba las conversaciones privadas de los pasajeros, y cada dato tiene su prioridad: una
+alarma vale más que un cambio de altitud rutinario.
+
+Una app en el teléfono de otra persona necesita esa caja negra. Cuando un repartidor dice «a veces la entrega no se
+envía», tú no estás ahí para mirar la pantalla. El **registro unificado** guarda mensajes con nivel y categoría
+para leerlos después. **MetricKit** agrega el informe del propio sistema: fallos, bloqueos, memoria y batería.
+
+El problema del tema reúne los dos errores típicos. `print` por todas partes, que en un teléfono ajeno no ve nadie.
+Y un registro «arreglado» que escribe el nombre del cliente en un lugar que se puede extraer con un cable.
+
+##### 2. Definición formal y vocabulario
+
+El **registro unificado** es el sistema de registro de las plataformas de Apple. En Swift escribes con `Logger`,
+del módulo `os`, y lees con la app Consola, con `log show` o desde el mismo proceso con `OSLogStore`.
+
+El **subsistema y la categoría** son dos textos que identifican el origen de cada mensaje. El subsistema es, por
+convención, el identificador de la app; la categoría es el área, como `sync` o `seguridad`.
+
+El **nivel de registro** indica la gravedad: `debug`, `info`, `notice` (el predeterminado), `error` y `fault`. El
+nivel decide también si el mensaje se guarda en disco y por cuánto tiempo.
+
+La **privacidad de los valores** se declara en cada interpolación con `privacy:`: `.public`, `.private` o
+`.private(mask: .hash)`. Al leer fuera del proceso en un dispositivo, lo privado aparece oculto.
+
+**MetricKit** es el marco que entrega a la app informes medidos por el sistema. Hay métricas agregadas, como
+tiempo de arranque o memoria, y diagnósticos de fallos, bloqueos y uso excesivo de CPU o disco.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El registro y MetricKit son dos caminos independientes hacia el mismo objetivo:
 
 ```mermaid
 flowchart LR
@@ -998,6 +1235,76 @@ flowchart LR
     S["sistema: mide arranques, memoria,<br/>fallos, bloqueos"] -->|"métricas: ≤ 1 vez al día<br/>diagnósticos: de inmediato (iOS 15+)"| R["ReceptorMetricKit<br/>(MXMetricManagerSubscriber)"]
     R --> F["Application Support/diagnosticos/*.json"]
 ```
+
+1. **El compilador convierte la interpolación.** `Logger` no recibe un `String`, sino un `OSLogMessage`. El
+   compilador separa el texto fijo de los valores y anota la privacidad de cada uno.
+
+```swift
+let guia = "EN-4471"
+let cliente = "Ana Ruiz"
+Registro.sync.info("enviando \(guia, privacy: .public) para \(cliente)")
+```
+
+   El texto fijo queda en el binario como formato. En tiempo de ejecución solo viajan los dos valores,
+   cada uno con su marca. Por eso pasar un `String` ya armado no compila, como muestra la salida real.
+2. **El sistema recibe el mensaje.** Lo envía a un proceso del sistema que mantiene búferes en memoria. Escribir es
+   barato porque no se formatea el texto en ese momento.
+3. **El nivel decide si se guarda.** Según Apple, `debug` se queda en memoria y se descarta. `info` solo se guarda
+   cuando una herramienta lo está recogiendo, y desde `notice` se guarda en disco hasta un límite. En la salida
+   real, el mensaje de `debug` no apareció en ninguna lectura.
+4. **Lees desde fuera.** `log show` o la app Consola leen el almacén del sistema. En un iPhone, los valores
+   privados aparecen como `<private>`, o como un *hash* si pediste `.hash`.
+5. **Lees desde dentro.** `OSLogStore(scope: .currentProcessIdentifier)` devuelve las entradas del mismo proceso,
+   con el mensaje ya compuesto. La prueba `mensajesConPrivacidad` lo usa para comprobar que los mensajes existen.
+6. **MetricKit entrega informes.** La app registra un suscriptor al arrancar con `MXMetricManager.shared.add(_:)`.
+   El sistema mide la app en segundo plano y llama a `didReceive(_:)` con métricas o diagnósticos.
+7. **El receptor guarda y sigue.** `ReceptorMetricKit` escribe cada informe como JSON en `Application Support` y no
+   guarda estado. El sistema puede llamarlo desde cualquier hilo, y por eso es `Sendable`.
+
+##### 4. Reglas, variantes y casos límite
+
+**Privacidad por defecto.** Según Apple, los números y booleanos interpolados son públicos, y los textos dinámicos
+y los objetos son privados. El número de intento sale visible sin marcarlo; el nombre del cliente, no.
+
+**El simulador no oculta.** En la salida real, «Ana Ruiz» y el token aparecen legibles en las dos lecturas. La
+redacción de lo privado solo se comprueba en un iPhone.
+
+**`.hash` no es anonimizar.** Oculta el valor pero da el mismo *hash* para el mismo dato. Sirve para ver que dos
+mensajes hablan del mismo token; quien conozca el valor puede comprobarlo.
+
+**Nada de `.public` «para depurar».** Un dato personal marcado público queda legible en cualquier teléfono. Usa
+`.public` para identificadores internos, como la guía o un código HTTP.
+
+**Elegir el nivel.** `notice` para hitos normales, como un reintento. `error` para fallos que la app maneja.
+`fault` para algo que no debería pasar nunca, como una fijación rechazada. Todo en `error` hace imposible buscar.
+
+**Versiones.** `Logger` existe desde iOS 14; antes se usaba la función `os_log`. `OSLogStore` con alcance del
+proceso está disponible en iOS desde la versión 15. MetricKit llegó en iOS 13, los diagnósticos en iOS 14, y desde
+iOS 15 los diagnósticos llegan de inmediato.
+
+**Ritmo de MetricKit.** Las métricas llegan como mucho una vez al día. En el simulador no llega nada: la salida
+real muestra 0 informes de cada tipo. Para probar en un iPhone, Xcode permite simular informes desde el menú Debug.
+
+**La API de iOS 27.** El tema verifica que `MetricManager`, con informes como secuencias asíncronas, compila con el
+SDK de iOS 27.2. Mientras la app apoye versiones anteriores, el suscriptor clásico sigue siendo necesario.
+
+**Registra temprano.** El suscriptor va en el `init` de la app. Si lo registras en una pantalla interna, pierdes
+los informes de las sesiones que no llegaron ahí.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El `Logger` con subsistema ya apareció en el Módulo 10, Tema 1, junto a los signposts. Allí medía tiempos; aquí
+registra lo que pasa en teléfonos ajenos, con privacidad. MetricKit completa la medición del Módulo 10: allí medías
+en tu Mac, aquí recibes lo que miden los teléfonos de las personas.
+
+La privacidad conecta con el manifiesto del Módulo 11, Tema 4. Los informes guardados son datos que la app
+recoge, y deben ser coherentes con lo que declara.
+
+No confundas registrar con mostrar. `print` escribe en la salida estándar, que en un teléfono no ve nadie. El
+registro unificado se guarda con nivel y se consulta después.
+
+El `fault` de la fijación viene del Tema 2. El Tema 4 construye la cola de envíos. Sus reintentos son
+el tipo de evento que conviene registrar con `notice`, como «intento 3 de 6».
 
 #### Problema resuelto 3.1
 Define los registradores de la app, escribe cuatro mensajes con distintas privacidades (uno de ellos mal hecho a
@@ -1363,8 +1670,7 @@ Al terminar este tema podrás:
 - calcular la espera con retroceso exponencial, tope, azar y `Retry-After`;
 - usar una clave de idempotencia para que un reintento nunca aplique dos veces la misma entrega.
 
-**Conceptos clave:** cola de salida, error transitorio, retroceso exponencial con azar, clave de idempotencia,
-carta muerta
+**Conceptos clave:** cola de salida, error transitorio, retroceso exponencial con azar, clave de idempotencia, carta muerta
 
 #### El problema
 En el Módulo 12, marcar una entrega sin señal fallaba con un aviso y la persona tenía que acordarse de volver a
@@ -1414,9 +1720,41 @@ Este tema usa **actores y `Task.sleep`** (Módulo 4), **`URLSession`** (Módulo 
 - **Error típico:** borrar los fallidos sin avisar a nadie.
 
 #### ► CÓMO FUNCIONA
-El sincronizador recorre la cola en orden. Para cada envío que ya tocaba, lo manda y decide según la respuesta. Si
-no hubo respuesta, no sigue con los demás en esa pasada (también fallarían). `vaciar()` repite pasadas durmiendo
-hasta el próximo intento.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una carta certificada que no pudo entregarse porque no había nadie en casa. El cartero no la bota ni
+vuelve cada cinco minutos: deja un aviso, vuelve mañana y, si tampoco, pasado mañana. Si la dirección no existe, la
+devuelve al remitente con el motivo. Y el número de radicado impide que la misma carta se registre dos veces.
+
+La app de reparto necesita ese mismo comportamiento cuando marcas una entrega en un sótano sin señal. En el Módulo
+12 la acción simplemente fallaba. Ahora se guarda en una **cola de salida** y se envía sola cuando hay red.
+
+El problema del tema muestra que guardar y reintentar no basta. Si mil teléfonos reintentan cada segundo, tumban
+el servidor. Si la respuesta se pierde, el reintento duplica la entrega. Y un rechazo definitivo se reintentaría
+para siempre. Cada problema tiene su pieza: **retroceso** con azar, **clave de idempotencia** y **carta muerta**.
+
+##### 2. Definición formal y vocabulario
+
+La **cola de salida** es el actor `ColaSalida`. Guarda en un JSON atómico los `EnvioPendiente`, con guía, clave,
+intentos, próximo intento y último resultado, más la lista de fallidos.
+
+Un **error transitorio** es un fallo que puede desaparecer solo: sin respuesta, 408, 429 y cualquier 5xx. Los
+demás 4xx son definitivos: repetir la misma petición no cambiará la respuesta. `Decision.para` aplica esa regla.
+
+El **retroceso exponencial con azar** calcula la espera como `base·2^(intento−1)`, con un tope. La mitad de esa
+espera es fija y la otra mitad aleatoria, la variante llamada *equal jitter*. Si el servidor envía `Retry-After`, se
+espera al menos eso.
+
+La **clave de idempotencia** es el identificador único de la acción, `EnvioPendiente.id`. Viaja en la cabecera
+`Idempotency-Key` en todos los reintentos, y el servidor la usa para no aplicar dos veces lo mismo.
+
+La **carta muerta** es la lista `fallidos`. Allí van los envíos descartados o que agotaron los intentos, con su
+motivo, para que una persona decida.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El sincronizador recorre la cola y decide envío por envío:
 
 ```mermaid
 flowchart TB
@@ -1430,6 +1768,73 @@ flowchart TB
     R -->|"no"| W["próximo = ahora + espera(intento, Retry-After, azar)"]
     W --> Q
 ```
+
+1. **La acción entra a la cola.** `agregar` crea un `EnvioPendiente` con un `id` nuevo y guarda el archivo de
+   inmediato. Si el sistema cierra la app un segundo después, la entrega sigue ahí al volver.
+2. **Una pasada recorre lo que toca.** Toma, en orden, los envíos cuyo `proximoIntento` ya llegó. El orden se
+   conserva porque una entrega puede depender de otra.
+3. **El transporte envía con la clave.** `TransporteHTTP` arma un `POST` y agrega `Idempotency-Key` con el `id` del
+   envío y el token del Tema 1 en `Authorization`. Si no hay respuesta, devuelve `codigo: nil`.
+4. **La decisión es pura.** Este es el núcleo de la regla:
+
+```swift
+guard let codigo = r.codigo else { return .reintentar }
+switch codigo {
+case 200..<300: return .listo
+case 408, 429, 500..<600: return .reintentar
+default: return .descartar("el servidor rechazó el envío (\(codigo))")
+}
+```
+
+   Sin código significa que no hubo respuesta, así que se reintenta. Un 400 o un 404 van directo a la carta
+   muerta, porque repetirlos no los arregla.
+5. **La espera crece y se dispersa.** `espera` calcula el retroceso, aplica el tope y mezcla la parte fija con la
+   aleatoria. Con base 1 y tope 10, los máximos sin azar son 1, 2, 4, 8, 10 y 10 segundos.
+6. **Sin red, la pasada se detiene.** Si un envío no obtuvo respuesta, los siguientes también fallarían. La pasada
+   corta ahí y devuelve la fecha del próximo intento; `vaciar()` duerme hasta entonces con `Task.sleep`.
+7. **El servidor reconoce la clave.** En la demostración, el primer envío de EN-4472 se aplicó pero su respuesta
+   llegó tarde. El reintento llevó la misma clave, y el servidor respondió 200 sin aplicarlo otra vez.
+
+##### 4. Reglas, variantes y casos límite
+
+**Qué es idempotente.** Según la especificación de HTTP (RFC 9110), GET, PUT y DELETE son idempotentes y POST no.
+Marcar una entrega es un POST, así que la idempotencia la aporta la clave, no el método.
+
+**La clave nace con la acción.** Si generas un `UUID()` dentro de `enviar`, cada reintento parece una acción
+nueva. La clave se crea una vez, al agregar a la cola, y se guarda con el envío.
+
+**El servidor debe respetarla.** La cabecera `Idempotency-Key` es una propuesta del IETF en curso, no un estándar
+cerrado. La app sola no garantiza nada: el servidor debe recordar las claves durante un tiempo razonable.
+
+**`Retry-After`.** Puede venir en segundos o como fecha HTTP. Acompaña a 429 (demasiadas peticiones) y a 503. La
+política toma el mayor entre su propio cálculo y lo que pide el servidor: en la demostración, 1,00 s en vez de
+0,6 s.
+
+**Por qué el azar.** Si todos esperan exactamente lo mismo, los que perdieron la señal juntos vuelven juntos. El
+azar no acorta la espera promedio: la reparte en el tiempo.
+
+**El 401 es especial.** Un token vencido es definitivo para ese envío, pero se arregla renovando la sesión. Merece
+su propio manejo antes de llegar a la carta muerta.
+
+**Tope de intentos.** Tras `maximoIntentos`, un error transitorio también va a fallidos. Sin tope, un servidor
+caído durante días llenaría la cola de reintentos inútiles.
+
+**Cuándo lanzar una pasada.** El tema la ejecuta con `vaciar()`. En una app real se dispara al volver al primer
+plano, al recuperar la red o en una tarea de segundo plano. Esa parte depende de las API del sistema.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema completa la app del Módulo 12. Allí `RepositorioEntregas.marcarEntregada` fallaba sin conexión; aquí la
+acción espera en la cola. La cola usa el mismo JSON atómico que la copia local del Módulo 12, Tema 2.
+
+Los actores y `Task.sleep` vienen del Módulo 4. Los reintentos con tiempo de espera del Módulo 5, Tema 3, eran
+para una sola petición en curso. Aquí sobreviven a que la app se cierre y se coordinan para muchos teléfonos.
+
+No confundas `enviando` del Módulo 12, Tema 3, con la clave de idempotencia. `enviando` evita el doble toque en un
+teléfono; la clave evita la doble aplicación en el servidor, venga de donde venga.
+
+Las piezas del módulo se encuentran aquí. El token sale del llavero del Tema 1, en segundo plano gracias a
+`AfterFirstUnlock`. El transporte puede usar la sesión con fijación del Tema 2. El Proyecto 50 integra todo.
 
 #### Problema resuelto 4.1
 Escribe la cola, la política de reintentos y el sincronizador. Pruébalos con un transporte de guion y con el

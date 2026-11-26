@@ -27,7 +27,7 @@ ruta que comparten varias pantallas. Este módulo enseña dónde vive cada dato,
 
 **Qué necesitas saber antes:** el Módulo 1 completo (vistas, composición y el medidor del Tema 2); del Módulo 0,
 **`struct` frente a `class`** (Tema 2) y **closures** (Tema 4). Aparece `@MainActor`, que se estudia a fondo en el
-Módulo 4 (Tema 6); aquí basta saber que marca el código que corre en el hilo principal, donde vive la interfaz.
+Módulo 4, Tema 4; aquí basta saber que marca el código que corre en el hilo principal, donde vive la interfaz.
 
 **Qué no se repite:** maquetación y modificadores (Módulo 1); la navegación, que también es estado, es el Módulo 3, y
 la arquitectura de modelos de vista (MVVM) es el Módulo 8.
@@ -108,9 +108,50 @@ Este tema usa **las vistas como `struct`** (Módulo 1, Tema 1), **`struct` y `mu
 - **Error típico:** «guardar una copia por si acaso» en la vista hija.
 
 #### ► CÓMO FUNCIONA
-El `struct` de la vista es desechable. `@State` guarda el valor en el grafo de SwiftUI, junto a la identidad de la
-vista. Cuando el botón cambia el valor, SwiftUI marca a la vista dueña como pendiente, vuelve a evaluar su `body`, crea
-de nuevo los `struct` de sus hijas y solo evalúa el `body` de las hijas cuyos datos de entrada cambiaron.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una planilla de papel que alguien reimprime cada pocos segundos. Si anotas a lápiz «3 paquetes subidos»
+en una copia, la siguiente impresión sale en blanco y tu anotación se pierde. Para que el número sobreviva, necesitas
+guardarlo en otro lado, en un cuaderno que no se reimprime, y que la planilla lo lea de ahí.
+
+Una vista de SwiftUI es esa planilla. Es un `struct` que SwiftUI crea y descarta muchas veces. Una propiedad normal
+dentro de él no puede guardar un contador, porque el `struct` es inmutable desde `body` y además se reemplaza.
+`@State` es el cuaderno: SwiftUI guarda el valor aparte y se lo devuelve a la vista cada vez que la crea.
+
+En la pantalla de carga del camión, el número de paquetes subidos le pertenece a esa pantalla. Nadie más lo necesita,
+y debe sobrevivir mientras la pantalla esté visible. Ese es exactamente el caso de `@State`.
+
+##### 2. Definición formal y vocabulario
+**`@State`** es un **property wrapper**, un tipo que envuelve una propiedad y controla cómo se lee y se escribe.
+Apple lo describe como un tipo que lee y escribe un valor administrado por SwiftUI. El valor no vive en el `struct`:
+vive en un almacenamiento que SwiftUI asocia a la **identidad de una vista**.
+
+La identidad es lo que le permite a SwiftUI saber que una vista es «la misma» entre dos momentos. Por defecto es
+**estructural**: depende de la posición de la vista en el árbol. También puede ser **explícita**, con el modificador
+**`.id(_:)`** o con el identificador de cada elemento de un `ForEach`.
+
+La **evaluación de `body`** es cada llamada que SwiftUI hace a esa propiedad para obtener la descripción actual.
+Evaluar no es dibujar: SwiftUI compara el resultado con el anterior y solo cambia en pantalla lo distinto.
+
+La **fuente de verdad** es el único lugar donde vive un dato. En este tema, `@State private var actual` es la fuente
+de verdad de la parada. Una vista hija que copia ese valor en su propio `@State` crea una segunda fuente, y las dos
+se separan.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa en `PantallaCarga` desde que aparece hasta el tercer toque:
+
+1. SwiftUI crea el `struct` `PantallaCarga`. La propiedad `cargados` todavía no tiene almacenamiento: solo trae el
+   valor inicial `0`.
+2. Al insertar la vista en el árbol, SwiftUI reserva un espacio para ese `@State`, ligado a la identidad de la
+   pantalla. Guarda ahí el `0`.
+3. SwiftUI evalúa `body`. Cada lectura de `cargados` va al almacenamiento, no al `struct`. La prueba cuenta 1
+   evaluación de cada vista al montar.
+4. El botón ejecuta `cargados += 1`. La asignación escribe en el almacenamiento y marca a `PantallaCarga` como
+   pendiente de evaluar.
+5. En el siguiente ciclo de actualización, SwiftUI evalúa de nuevo el `body` de la pantalla. Se crean otra vez los
+   `struct` de `EncabezadoCarga` y de `ResumenCarga`.
+6. SwiftUI compara cada hija nueva con la anterior. `ResumenCarga` trae otro número y se evalúa. `EncabezadoCarga`
+   no trae datos distintos y se salta: por eso su cuenta se queda en 1 tras tres toques.
 
 ```mermaid
 flowchart TD
@@ -121,6 +162,63 @@ flowchart TD
     E -.->|"mismos datos: ¿se salta?"| X["se mide en la prueba"]
     R -->|"datos distintos"| RB["ResumenCarga.body se evalúa"]
 ```
+
+¿Por qué `cargados += 1` compila con `@State` y no sin él? Swift reescribe la propiedad envuelta. Esto es,
+aproximadamente, lo que genera el compilador:
+
+```swift
+private var _cargados = State(initialValue: 0)
+private var cargados: Int {
+    get { _cargados.wrappedValue }
+    nonmutating set { _cargados.wrappedValue = newValue }
+}
+```
+
+La clave es `nonmutating set`. Escribir en `cargados` no cambia el `struct`, sino el almacenamiento al que apunta
+`_cargados`. Por eso se permite dentro de un `body` que no es `mutating`, y el error
+`left side of mutating operator isn't mutable` desaparece.
+
+Ahora el error de la etiqueta copiada. `EtiquetaParadaCopiada` llama a `State(initialValue: parada)` en su `init`. Ese
+valor solo se usa en el paso 2, la primera vez que se reserva el almacenamiento. Cuando el padre avanza a la parada 3,
+crea un `struct` nuevo con `parada: 3`. Pero SwiftUI ve la misma identidad y devuelve el valor guardado: parada 1.
+
+Con `.id(actual)`, la identidad cambia en cada toque. SwiftUI descarta el almacenamiento viejo, reserva uno nuevo y
+usa el valor inicial otra vez. La etiqueta muestra la parada 3, a costa de perder cualquier otro estado.
+
+##### 4. Reglas, variantes y casos límite
+Declara `@State` como `private`. El valor le pertenece a la vista, y un `init` público invita a pasarle datos que no
+va a seguir. Apple recomienda esta regla en la documentación de `State`.
+
+Solo lee y escribe un `@State` mientras la vista está instalada en el árbol, es decir, desde `body` o desde acciones
+que corren después. Si lo lees en el `init`, todavía no hay almacenamiento. SwiftUI avisa en la consola que se accedió
+al estado fuera de una vista instalada.
+
+`@State` está pensado para tipos valor sencillos: números, textos, `struct` pequeños y `enum`. Desde iOS 17 también
+puede guardar una clase `@Observable`, que es lo que verás en el Tema 3. Una clase sin `@Observable` dentro de
+`@State` no avisa de sus cambios.
+
+La identidad estructural tiene un efecto que sorprende. Un `if`/`else` en el `body` crea dos ramas con identidades
+distintas. Si una vista con estado pasa de una rama a la otra, SwiftUI la trata como nueva y su estado vuelve al
+valor inicial.
+
+`.id(_:)` acepta cualquier valor `Hashable`. Nunca uses `.id(UUID())` en un `body`: genera un identificador distinto en
+cada evaluación y la vista se recrea siempre, con todo su estado.
+
+Los property wrappers llegaron en Swift 5.1 (SE-0258), el mismo año que SwiftUI. El prefijo `_` da acceso al
+envoltorio, y el prefijo `$` da su valor proyectado. Para `@State`, ese valor proyectado es un `Binding`, el tema
+siguiente.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El error del botón es el mismo que viste en el Módulo 0, Tema 2: un método no `mutating` no puede cambiar un `struct`.
+`@State` no rompe esa regla; la rodea guardando el valor fuera. El medidor `Medidor.cuerpo` es el del Módulo 1,
+Tema 2, ahora contando evaluaciones de `body`.
+
+En el Módulo 1 las vistas solo recibían datos con `let`. Ese sigue siendo el camino correcto cuando una vista solo
+muestra un valor: `EtiquetaParada` lo demuestra al seguir al padre sin ningún esfuerzo.
+
+El Tema 2 resuelve el caso que queda abierto: una hija que necesita **editar** el estado del padre, sin copiarlo. El
+Tema 3 lleva el estado fuera de las vistas, a un modelo compartido. El Tema 4 vuelve a la pregunta de este tema,
+cuándo se evalúa un `body`, con más herramientas para medirlo.
 
 #### Problema resuelto 1.1
 Construye la pantalla de carga con `@State` y mide cuántas veces se evalúa el `body` de la pantalla y de sus dos
@@ -496,7 +594,7 @@ Al terminar este tema podrás:
 - usar `.constant(…)` en vistas previas;
 - medir qué cuesta pasar enlaces en vez de valores.
 
-**Conceptos clave:** `@Binding`, `$` (valor proyectado), enlace a un campo, `ForEach($…)`, `.constant`
+**Conceptos clave:** `@Binding`, `$` (valor proyectado), enlace a un campo, `ForEach($…)`, `.constant(…)`
 
 #### El problema
 El formulario de entrega (quién recibe, cuántos paquetes, si firmó) se usa dentro de la pantalla de entrega, que
@@ -543,8 +641,50 @@ Este tema usa **`@State` y la fuente de verdad** (Tema 1) y **`struct` como valo
 - **Error típico:** usarlo fuera de vistas previas y preguntarse por qué el campo no deja escribir.
 
 #### ► CÓMO FUNCIONA
-El padre es dueño de la entrega en `@State`. Pasa `$entrega` al formulario. Cada control recibe un enlace a un campo;
-al escribir, el enlace modifica la entrega del padre, SwiftUI vuelve a evaluar al padre y el resumen se actualiza.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en el aire acondicionado de una oficina. El aparato está en la pared, pero cada persona puede tener un control
+remoto. El control no guarda la temperatura: solo sabe leerla y cambiarla en el aparato. Si alguien sube dos grados
+con su control, todos los demás ven el cambio, porque solo hay un aparato.
+
+Un **`@Binding`** es ese control remoto. El dato vive en una vista padre, en su `@State`. La vista hija recibe un
+enlace que le permite leer y escribir ese dato sin tener una copia propia. Cuando la hija escribe, el padre se entera,
+porque el cambio ocurrió en su propio estado.
+
+En la pantalla de entrega, el formulario es la hija y la pantalla es la dueña de la entrega. El formulario escribe
+«Portería» y 6 paquetes, y el resumen de abajo, que es del padre, cambia a «Falta: firma». No hace falta pasar una
+función por cada campo.
+
+##### 2. Definición formal y vocabulario
+**`@Binding`** es un property wrapper que no almacena el valor. Contiene dos operaciones: una para leer y otra para
+escribir en una fuente de verdad que vive en otro lugar. Su tipo es `Binding<Valor>`, un `struct` genérico de
+SwiftUI.
+
+El **`$` (valor proyectado)** es la forma de pedir ese enlace. Todo property wrapper puede ofrecer un valor
+proyectado, y para `@State` y `@Binding` es un `Binding`. Así, `entrega` es el valor actual y `$entrega` es el enlace
+hacia él.
+
+Un **enlace a un campo** sale de otro enlace. `Binding` usa **búsqueda dinámica de miembros** (dynamic member
+lookup), una función de Swift que traduce `$entrega.recibio` en una consulta por ruta de clave. El resultado es un
+`Binding<String>` que lee y escribe solo ese campo.
+
+**`ForEach($…)`** recorre un enlace a una colección y le entrega a cada fila un enlace a su elemento.
+**`.constant(…)`** crea un enlace fijo, que siempre devuelve el mismo valor e ignora las escrituras; sirve para
+vistas previas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa cuando la persona escribe en el campo «Quién recibe»:
+
+1. `PantallaEntrega` tiene `@State private var entrega`. Al crear el formulario pasa `$entrega`, un `Binding` cuyas
+   operaciones apuntan al almacenamiento de ese estado.
+2. El formulario guarda ese enlace en `@Binding var entrega`. Con `$entrega.recibio` deriva un enlace nuevo que
+   apunta al campo `recibio`.
+3. El `TextField` recibe el enlace al campo. Cuando la persona escribe, el campo llama a la operación de escritura con
+   el texto nuevo.
+4. Esa escritura toma la entrega completa del padre, cambia `recibio` y guarda el `struct` entero de vuelta. Como
+   `Entrega` es un tipo valor, cambiar un campo es reemplazar el valor.
+5. El estado del padre cambió, así que SwiftUI marca `PantallaEntrega` para evaluar. Su `body` recalcula
+   `faltantes` y vuelve a crear el formulario con un `$entrega` nuevo.
 
 ```mermaid
 sequenceDiagram
@@ -557,6 +697,59 @@ sequenceDiagram
     P-->>F: FormularioEntrega(entrega: $entrega)
     P-->>TF: muestra el texto nuevo
 ```
+
+La acción `llenar` de la prueba escribe dos campos seguidos, pero cada vista se evalúa una sola vez más. SwiftUI
+junta los cambios del mismo instante y actualiza en el siguiente ciclo. Por eso `t2-enlace.txt` muestra 1 y 2, no 1
+y 3.
+
+Un `Binding` es, en el fondo, dos closures. Puedes construir uno a mano cuando necesitas transformar el valor al
+escribir, por ejemplo para guardar el nombre en mayúsculas:
+
+```swift
+let enlaceMayusculas = Binding(
+    get: { entrega.recibio },
+    set: { entrega.recibio = $0.uppercased() }
+)
+```
+
+Los closures capturan el contexto de la vista, como viste en el Módulo 0, Tema 4. Úsalo solo cuando `$x.campo` no
+basta: un enlace hecho a mano es más difícil de leer y de comparar.
+
+La medición de las filas sale de ese detalle. Para decidir si salta una fila, SwiftUI compara sus datos de entrada con
+los anteriores. Dos `Envio` se pueden comparar campo por campo. Dos `Binding` recién creados no dicen si apuntan al
+mismo valor sin volver a leerlo. Por eso, con enlaces, se evaluaron las 3 filas; con valores, solo 1.
+
+##### 4. Reglas, variantes y casos límite
+Un `@Binding` no tiene valor inicial: siempre lo recibe del que crea la vista. El inicializador por miembros del
+`struct` espera un `Binding`, y pasar el valor sin `$` es un error de tipos.
+
+Los enlaces van hacia abajo, de padre a hija. La fuente debe vivir al menos tanto como la vista que la edita. Un
+enlace no extiende la vida del dato: solo sabe dónde está.
+
+`ForEach($envios) { $envio in … }` exige que los elementos sean `Identifiable` o que pases `id:`. Así cada fila sigue a
+su elemento aunque el arreglo cambie de orden o pierda elementos. Recorrer índices con `0..<envios.count` no tiene esa
+protección y puede salirse del rango al borrar.
+
+La sintaxis `$envio in` dentro del closure usa los property wrappers en parámetros de closures, de Swift 5.5
+(SE-0293). SwiftUI la admite en `ForEach` desde Xcode 13.
+
+Existen otras formas de derivar enlaces. `Binding(_:)` convierte un `Binding<Valor?>` en un `Binding<Valor>?`, útil
+para editar un opcional solo si existe. Un enlace a un elemento de un diccionario o a un índice concreto también es
+posible, con las mismas precauciones sobre el rango.
+
+`.constant(…)` es para vistas previas y pruebas. En la app, un control con un enlace constante parece funcionar, pero
+no guarda nada. El texto vuelve a su valor apenas se evalúa la vista.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te dejó una regla: un dato tiene una sola fuente de verdad. `@Binding` es la forma de cumplirla cuando la
+hija también escribe. Si la hija solo muestra, el `let` del Tema 1 sigue siendo mejor, como mide la lista de filas.
+
+Del Módulo 0, Tema 2 viene que `Entrega` es un tipo valor: escribir un campo por el enlace reemplaza el `struct` entero
+en el padre. Del Tema 4 de ese módulo vienen los closures que forman un `Binding` y las rutas de clave como `\.guia`.
+
+El Tema 3 cambia de herramienta cuando el dato lo comparten muchas pantallas: un modelo `@Observable`, del que
+`@Bindable` deriva enlaces a sus propiedades. En el Módulo 3, la navegación recibe un `Binding` a su camino. Las hojas
+se abren con un `Binding<Bool>` o con un enlace a un opcional.
 
 #### Problema resuelto 2.1
 Construye el formulario de entrega como vista hija sin estado propio, con la regla «más de 5 paquetes piden firma» en
@@ -800,7 +993,7 @@ Al terminar este tema podrás:
 - comparar con medidas el comportamiento de `@Observable` y el de `ObservableObject` con `@Published`;
 - obtener enlaces a un modelo con `@Bindable` y elegir dónde guardar el modelo (`@State`, `let`, `@StateObject`).
 
-**Conceptos clave:** `@Observable`, seguimiento de accesos, `ObservableObject`/`@Published`, `@Bindable`, `@MainActor`
+**Conceptos clave:** `@Observable`, seguimiento de accesos, `ObservableObject` y `@Published`, `@Bindable`, `@MainActor`
 
 #### El problema
 La ruta del día (conductor y envíos) la usan la tarjeta del conductor, el contador de pendientes y la lista de guías.
@@ -848,9 +1041,49 @@ Este tema usa **`@State` e identidad** (Tema 1), **enlaces** (Tema 2) y **clases
 - **Error típico:** cambiar el modelo desde `Task.detached`, que Swift 6 rechaza al compilar.
 
 #### ► CÓMO FUNCIONA
-Al evaluar el `body` de `TarjetaConductor`, SwiftUI hace un seguimiento: la vista lee `ruta.conductor` y queda
-registrada solo para `conductor`. `ContadorPendientes` lee `ruta.pendientes`, que por dentro lee `envios`, y queda
-registrada para `envios`. Cuando cambia `conductor`, solo la tarjeta recibe el aviso.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una cartelera de avisos en la bodega. El sistema antiguo tenía un timbre general. Cada vez que alguien
+cambiaba cualquier hoja, sonaba para todos, y todos iban a mirar. El sistema nuevo anota quién consultó cada hoja.
+Cuando una hoja cambia, solo avisa a quienes la leyeron.
+
+La ruta del día es esa cartelera, compartida por la tarjeta del conductor, el contador de pendientes y la lista de
+guías. Con el timbre general, que es `ObservableObject`, cambiar el nombre del conductor hacía que se evaluara la lista
+de 300 guías. Con `@Observable`, la lista no se entera, porque nunca leyó el conductor.
+
+El tema también resuelve dos preguntas prácticas. La primera es cómo sacar un enlace de un campo del modelo para
+un `TextField`. La segunda es dónde guardar el modelo para que no se pierda cuando SwiftUI recrea una vista.
+
+##### 2. Definición formal y vocabulario
+**`@Observable`** es una macro del módulo Observation, que forma parte de Swift y no de SwiftUI. Se aplica a una clase
+y convierte cada propiedad almacenada en una calculada. Esa calculada anota cada lectura y avisa de cada escritura a
+un `ObservationRegistrar`, el registro interno del objeto.
+
+El **seguimiento de accesos** es la otra mitad. La función `withObservationTracking(_:onChange:)` ejecuta un closure,
+anota qué propiedades observables leyó y llama a `onChange` una sola vez cuando cambia cualquiera de ellas. SwiftUI
+la usa cada vez que evalúa un `body`.
+
+**`ObservableObject` y `@Published`** son el mecanismo anterior, basado en el framework Combine. El objeto tiene un
+publicador, `objectWillChange`, que se dispara cuando cambia cualquier propiedad `@Published`. Quien observa el objeto
+recibe el aviso sin saber qué cambió.
+
+**`@Bindable`** es un property wrapper que da enlaces a las propiedades de un objeto `@Observable` con
+`$ruta.conductor`. **`@MainActor`** aísla el modelo al actor principal: su código corre en el hilo de la interfaz, y
+el compilador rechaza escrituras desde otros contextos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+La salida real de la expansión de la macro muestra qué pasa con `var conductor`. Con esa base, sigue un cambio de
+conductor en `PantallaObservable`:
+
+1. SwiftUI evalúa el `body` de `TarjetaConductor` dentro de un seguimiento. La vista lee `ruta.conductor`.
+2. El `get` generado llama a `access(keyPath: \.conductor)`. El registro anota: «esta evaluación depende de
+   `conductor`». `ContadorPendientes` lee `pendientes`, que lee `envios` por dentro, y queda anotada para `envios`.
+3. La prueba asigna `ruta.conductor = "Luis Pardo"`. El `set` generado compara con `shouldNotifyObservers`. Como el
+   valor es distinto, entra en `withMutation(keyPath: \.conductor)`.
+4. `withMutation` avisa antes del cambio a quienes registraron `conductor`. Solo `TarjetaConductor` está en esa
+   lista. SwiftUI la marca para evaluar.
+5. El registro de esa vista se consume con el aviso. Al evaluar de nuevo su `body`, SwiftUI vuelve a hacer el
+   seguimiento y la vista queda anotada otra vez.
 
 ```mermaid
 flowchart LR
@@ -863,6 +1096,55 @@ flowchart LR
     R -->|"avisa a"| CP
     R -->|"avisa a"| LG
 ```
+
+El paso 5 explica una línea del programa `Rastreo`. El segundo cambio de conductor, a «Marta Gil», no avisó a nadie.
+En Linux no había SwiftUI que volviera a registrar la tarjeta, así que la lista de avisos estaba vacía.
+
+El paso 3 explica otra. Asignar el mismo valor no avisa, porque `shouldNotifyObservers` compara los dos valores
+`Equatable`. En cambio, `envios[i].estado = …` modifica el arreglo en su lugar, por un camino que no compara. Por eso
+entregar una guía ya entregada sí avisó.
+
+`PantallaObservable` crea el modelo pero no lee ninguna propiedad en su `body`. Nunca queda anotada, y su cuenta se
+queda en 1. Con `ObservableObject`, la pantalla observa el objeto entero con `@StateObject` y se evalúa con cada
+cambio, igual que sus tres hijas.
+
+`@Bindable` resuelve el `TextField`. Una propiedad `let` no tiene property wrapper, así que no hay `$ruta`. Con
+`@Bindable var ruta`, el valor proyectado deriva un `Binding<String>` hacia `ruta.conductor`, como el `$entrega.recibio`
+del Tema 2.
+
+##### 4. Reglas, variantes y casos límite
+Observation llegó con Swift 5.9 (SE-0395). En las plataformas de Apple, `@Observable` y `@Bindable` exigen iOS 17 o
+posterior. Este curso usa iOS 18 como mínimo, así que no hay conflicto.
+
+`@Observable` solo se aplica a clases. Con un `struct` la macro da error, porque un tipo valor no tiene una identidad
+compartida a la que avisar. Para excluir una propiedad del seguimiento, márcala `@ObservationIgnored`.
+
+Las propiedades calculadas no se observan por sí mismas: se observa lo que leen. `pendientes` registra `envios`
+porque lo lee al calcular. Si una calculada lee tres propiedades, quien la lea depende de las tres.
+
+Para leer un modelo `@Observable` en una vista no necesitas ningún wrapper: basta con `let`. Solo el **dueño** debe
+guardarlo en `@State`, para que sobreviva a las recreaciones del `struct`. La tabla de dueños lo mide: con `let`, la
+hija creó 4 instancias y perdió el cambio.
+
+Con `ObservableObject`, el dueño usa `@StateObject` y los demás `@ObservedObject` o `@EnvironmentObject`. No mezcles
+los dos mundos: `@ObservedObject` sobre un modelo `@Observable` no compila, porque la clase no cumple
+`ObservableObject`.
+
+Swift 6 hace cumplir el aislamiento. Un modelo `@MainActor` no se puede escribir desde `Task.detached`. El error real
+del tema lo muestra, y la corrección es `Task { @MainActor in … }`. Desde Swift 6.2 existe además `Observations`
+(SE-0475), una secuencia asíncrona que entrega los cambios de valores observables.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Del Módulo 0, Tema 2 viene la razón de usar una clase: el modelo tiene identidad y varias vistas deben ver el mismo
+objeto. Del Tema 1 de este módulo viene `@State`, que aquí guarda una referencia en lugar de un valor. Del Tema 2
+viene el `Binding`, que `@Bindable` deriva igual que `$entrega.campo`.
+
+Comparado con `@Binding`, la diferencia es de alcance. Un enlace conecta una hija con un dato del padre. Un modelo
+`@Observable` se comparte entre muchas vistas, y cada una paga solo por lo que lee.
+
+El Tema 4 pone el modelo en el entorno para no pasarlo vista por vista. El `@MainActor` del modelo se estudia a fondo
+en el Módulo 4, Tema 4, junto con `Sendable` y la concurrencia estricta. En el Módulo 3, el camino de navegación
+también puede vivir en un modelo `@Observable`.
 
 #### Problema resuelto 3.1
 Crea el modelo de la ruta con `@Observable`. En Linux, sin SwiftUI, comprueba con `withObservationTracking` a quién
@@ -1542,8 +1824,48 @@ Este tema usa **`@Observable`** (Tema 3), **`@State` como dueño** (Tema 1) y **
 - **Error típico:** «optimizar» vistas que nunca se volvían a evaluar.
 
 #### ► CÓMO FUNCIONA
-La raíz pone la ruta y la unidad en el entorno. `SeccionResumen` no las nombra. `DetallePesos` las pide por tipo y
-por *key path*. Si un ancestro cambia la unidad, solo las vistas que la leen se vuelven a evaluar.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en las condiciones de una oficina: la luz, el idioma de los letreros, la temperatura. Nadie se las pasa de mano
+en mano a cada empleado. Están en el ambiente, y quien las necesita las consulta. Si un piso tiene otra luz, todos los
+de ese piso la ven distinta sin que nadie se lo diga uno por uno.
+
+El **entorno** de SwiftUI funciona así. Una vista raíz pone un valor, como la unidad de peso o el modelo de la ruta.
+Cualquier vista de esa rama del árbol puede leerlo. Las vistas intermedias no tienen que recibirlo ni pasarlo.
+
+En la pantalla de resumen, `DetallePesos` está tres niveles por debajo de la raíz. Sin entorno, `SeccionResumen` y la
+lista tendrían que recibir la ruta y la unidad solo para entregarlas. Con entorno, la raíz las deja disponibles y la
+vista profunda las toma.
+
+##### 2. Definición formal y vocabulario
+**`@Environment`** es un property wrapper que lee un valor del entorno de la vista. Tiene dos formas. Con una ruta de
+clave, como `\.colorScheme`, lee un valor de **`EnvironmentValues`**. Con un tipo, como `RutaDelDia.self`, lee un
+objeto `@Observable` que algún ancestro puso.
+
+**`EnvironmentValues`** es la colección de valores que SwiftUI propaga hacia abajo por el árbol. El sistema define
+muchos: el esquema de color, el idioma, el tamaño de texto, la acción `dismiss`. Tú puedes agregar los tuyos.
+
+**`@Entry`** es una macro que se escribe dentro de `extension EnvironmentValues`. Crea en una línea la clave y la
+propiedad de un valor propio, con su valor por defecto.
+
+**`.environment(objeto)`** pone un modelo `@Observable` en el entorno de una rama. A diferencia de los valores con
+clave, no tiene valor por defecto. El **diagnóstico de redibujos** es la práctica de medir cuándo se evalúa un `body`,
+con un contador o con `Self._printChanges()`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa al mostrar `PantallaEntorno`:
+
+1. La raíz guarda la ruta en `@State`, como dueña. Aplica `.environment(ruta)` y `.environment(\.unidadPeso, .libras)`
+   sobre el `NavigationStack`.
+2. Cada modificador escribe en una copia del entorno que solo ven las vistas de dentro. El entorno de la raíz y el de
+   sus hermanas no cambian.
+3. SwiftUI baja por el árbol: `NavigationStack`, `SeccionResumen`, `List`, `Section`. Ninguna lee esos valores, así
+   que ninguna depende de ellos.
+4. `DetallePesos` declara cuatro `@Environment`. Al evaluar su `body`, cada lectura busca el valor en el entorno que
+   recibió. Encuentra la ruta puesta por la raíz, la unidad `.libras` y los valores del sistema.
+5. SwiftUI anota que `DetallePesos` depende de esas claves. Si un ancestro cambia la unidad, se evalúa ella, no
+   `SeccionResumen`.
+6. La ruta además es `@Observable`. Leer `ruta.conductor` en el `body` también registra el seguimiento del Tema 3.
 
 ```mermaid
 flowchart TD
@@ -1553,6 +1875,66 @@ flowchart TD
     L --> D["DetallePesos: @Environment(RutaDelDia.self), @Environment(\.unidadPeso), \.colorScheme, \.dynamicTypeSize"]
     X["SeccionResumen sin .environment(ruta)"] -->|"DetallePesos pide la ruta"| F["la app se cierra"]
 ```
+
+El caso de la flecha de abajo es la escena `sin-entorno`. En el paso 4, la búsqueda de `RutaDelDia` no encuentra nada.
+Un valor con clave siempre tiene un valor por defecto; un objeto pedido por tipo no. SwiftUI detiene la app con
+`Fatal error: No Observable object of type RutaDelDia found`.
+
+`@Entry` genera el código que antes se escribía a mano. Este fragmento es el equivalente a la línea
+`@Entry var unidadPeso: UnidadPeso = .kilogramos`:
+
+```swift
+private struct ClaveUnidadPeso: EnvironmentKey {
+    static let defaultValue: UnidadPeso = .kilogramos
+}
+
+extension EnvironmentValues {
+    var unidadPeso: UnidadPeso {
+        get { self[ClaveUnidadPeso.self] }
+        set { self[ClaveUnidadPeso.self] = newValue }
+    }
+}
+```
+
+La clave es un tipo que cumple `EnvironmentKey` y declara el valor por defecto. La propiedad usa esa clave para leer y
+escribir en el entorno. `@Entry` produce lo mismo sin que tengas que nombrar la clave.
+
+##### 4. Reglas, variantes y casos límite
+El valor que lee una vista viene del ancestro más cercano que lo puso. Si la raíz pone `.libras` y una sección más
+abajo pone `.kilogramos`, las vistas de esa sección ven kilogramos. Es la misma regla de cercanía que viste con `.font`
+en el Módulo 1, Tema 2.
+
+`@Entry` llegó con Xcode 16. Como es una macro que genera código, funciona también en versiones anteriores del
+sistema. Con Swift 6, el valor por defecto de una clave debe ser `Sendable`, porque es una constante estática
+compartida.
+
+Si un objeto del entorno puede faltar a propósito, declara la propiedad opcional:
+`@Environment(RutaDelDia.self) private var ruta: RutaDelDia?`. Si nadie lo puso, recibes `nil` en vez de un cierre de
+la app. Úsalo solo cuando la ausencia sea un caso válido.
+
+El mensaje del cierre menciona `View.environmentObject(_:)`, que es la API de `ObservableObject`. Para un modelo
+`@Observable`, lo que falta es `.environment(ruta)`. Los dos mecanismos conviven: `@EnvironmentObject` lee un
+`ObservableObject` y `@Environment(Tipo.self)` lee un `@Observable`.
+
+El entorno también trae acciones, no solo datos. `@Environment(\.dismiss)` da una función para cerrar la vista
+actual. La usarás en el Módulo 3, Tema 2, para cerrar hojas.
+
+`Self._printChanges()` empieza con guion bajo porque no es una API pública estable. Sirve para depurar y no debe
+quedar en el código que se entrega. El contador propio del curso, `Medidor.cuerpo`, cumple la misma función en
+pruebas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Módulo 1, Tema 3 ya leyó `\.dynamicTypeSize` del entorno para cambiar la fila a columna. Ahora sabes de dónde viene
+ese valor y cómo crear los tuyos. El modelo que se pone en el entorno es el `RutaDelDia` del Tema 3, guardado en
+`@State` por su dueño como enseñó el Tema 1.
+
+Comparado con pasar parámetros, el entorno es implícito. Un parámetro se ve en el inicializador; una dependencia del
+entorno solo se ve leyendo el cuerpo de la vista. Por eso conviene reservarlo para lo transversal, como dice la buena
+práctica del tema.
+
+La tabla de medidas de este tema cierra el módulo y resume cuándo se evalúa una vista. En el Módulo 3, la navegación
+usa el entorno para cerrar hojas con `dismiss`. En el Módulo 8, la arquitectura MVVM retoma la pregunta de dónde
+vive cada dato, ahora con view models y una raíz de composición.
 
 #### Problema resuelto 4.1
 Crea una unidad de peso propia en el entorno, pon la ruta en el entorno y léelas en una vista profunda; fotografíala

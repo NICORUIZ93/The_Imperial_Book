@@ -185,13 +185,36 @@ mirar nada más. ¿Cómo llamas a un servicio HTTP desde Java sin quedarte colga
 - **Error típico:** creer que HTTP es «otra cosa»: el `HttpClient` del JDK 25 viaja sobre TCP, y un servidor caído aparece como `ConnectException`.
 
 #### ► CÓMO FUNCIONA
-`java.net.http.HttpClient` es el cliente HTTP estándar desde Java 11. Resuelve HTTP/1.1, HTTP/2, timeouts, headers y body handlers síncronos/asíncronos sin añadir dependencias. El error más caro es no definir límites: un cliente sin timeout bloquea un hilo indefinidamente; un cliente que no interpreta status convierte un 401 o un 503 en un bug silencioso; un cliente que sigue redirects automáticos puede enviar credenciales a otro host.
 
-El diseño mínimo sano tiene cinco piezas: timeout de conexión y de request, validación de entrada, mapeo explícito de status, política de redirect y reintento solo para operaciones idempotentes.
+##### 1. La idea en lenguaje sencillo
 
-**Mecanismo.** `send` abre (o reutiliza) una conexión TCP dentro del `connectTimeout`. Después espera la respuesta
-dentro del `timeout` de la petición. Si se pasa, lanza `HttpTimeoutException`. Con la respuesta en mano, tu código
-decide por el código de estado, no por el cuerpo.
+Piensa en llamar a la línea de atención de una transportadora para rastrear un paquete. A veces contestan al
+instante. A veces suena y suena. A veces te dicen «ese número no existe» o «llame a otra sede». Una persona sensata
+cuelga tras un rato y distingue un «no existe» de un «intente más tarde». Tampoco le da su clave a la otra sede.
+
+Un programa que llama a otro servicio necesita esas mismas reglas, escritas en código. Sin ellas, una espera
+infinita bloquea un hilo, un `404` se lee como dato válido y una credencial viaja a un servidor ajeno.
+
+En Tienda Aurora, el servicio del transportador es ese interlocutor. Este tema arma un cliente con cinco piezas:
+timeouts, validación de entrada, decisión por código de estado, política de redirección y reintento acotado.
+
+##### 2. Definición formal y vocabulario
+
+**`HttpClient`** es la clase de `java.net.http` para enviar peticiones HTTP/1.1 y HTTP/2. Se configura una vez y
+se reutiliza. Cada **`HttpRequest`** es inmutable y describe URI, método, cabeceras, cuerpo y su propio timeout.
+El resultado es una **`HttpResponse`**, con código de estado, cabeceras y cuerpo convertido por un `BodyHandler`.
+
+Para tener a quién llamar, el JDK incluye **`HttpServer`**, un servidor mínimo del módulo `jdk.httpserver`. Asocia
+cada ruta a un **handler**, que lee la petición y escribe la respuesta. Las rutas siguen el estilo **REST**: cada
+recurso tiene su URI y el código de estado comunica el resultado.
+
+Una **redirección** es una respuesta `3xx` con cabecera `Location`; la política del cliente decide si la sigue. El
+**reintento con backoff** repite una petición idempotente fallida, con esperas crecientes y un límite. Debajo de
+todo hay un **socket**: el extremo TCP o UDP de la comunicación.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama resume las decisiones que toma `ApiCliente` en cada llamada:
 
 ```mermaid
 flowchart LR
@@ -206,11 +229,71 @@ flowchart LR
   R --> E
 ```
 
-**Por qué existe.** Un servicio remoto falla de formas que tu código no controla. Sin límites, un fallo ajeno se
-convierte en un hilo bloqueado tuyo. El mapeo explícito hace que cada fallo tenga un nombre y una decisión.
+1. Antes de tocar la red, `validarId` compara el id con una lista blanca de caracteres. Un `../admin` se rechaza
+   aquí, sin enviar nada.
+2. `client.send(req, ...)` busca una conexión TCP abierta hacia ese host y puerto. Si no hay, abre una nueva y
+   aplica el `connectTimeout`. Si nadie escucha, el fallo llega como `ConnectException`.
+3. El cliente envía la línea de petición, las cabeceras y el cuerpo. Desde ese momento corre el `timeout` de la
+   petición.
+4. Si la respuesta no llega dentro de ese límite, `send` lanza `HttpTimeoutException`, una subclase de
+   `IOException`. Es lo que imprime `/lento` en `ClienteGuias.java`.
+5. Con la respuesta en mano, el `BodyHandler` convierte el cuerpo: `ofString` lo decodifica como texto y
+   `discarding` lo descarta.
+6. Tu código decide por `statusCode()`. Un `404` es una respuesta completa y válida, no una excepción del cliente.
+7. Si el estado es `503` y el método es `GET`, el bucle espera y repite. Si es `302`, con `Redirect.NEVER` el
+   cliente lo devuelve tal cual y tú lees `Location`.
 
-**Implicación.** Necesitas un servidor que falle a voluntad para probar el cliente. El JDK trae `HttpServer`, así que
-todo el módulo se prueba en `127.0.0.1` sin red externa ni dependencias.
+La decisión del paso 6 vive en un solo método:
+
+```java
+private static String interpretar(HttpResponse<String> res) {
+    return switch (res.statusCode()) {
+        case 200 -> res.body();
+        case 401 -> throw new ApiException(401, "no autenticado");
+        case 403 -> throw new ApiException(403, "sin permiso (403)");
+        case 404 -> throw new ApiException(404, "no encontrado");
+        default -> throw new ApiException(res.statusCode(), "error remoto: " + res.statusCode());
+    };
+}
+```
+
+Cada código tiene un nombre y una decisión. Quien llama recibe el cuerpo solo con `200`; cualquier otro caso es
+una `ApiException` con el número, para que decida por él.
+
+En el servidor, `HttpServer.create` con puerto `0` pide al sistema un puerto libre. Si no configuras un `Executor`,
+todos los handlers corren en el único hilo que crea `start()`. Por eso un handler lento retrasa a los demás.
+
+##### 4. Reglas, variantes y casos límite
+
+- `HttpClient` existe como API estándar desde Java 11. Desde Java 21 implementa `AutoCloseable`, con `close`,
+  `shutdown` y `awaitTermination`.
+- Sin `connectTimeout`, la espera de conexión depende del sistema operativo. Sin `timeout` en la petición, la
+  espera de respuesta no tiene límite propio.
+- La política por defecto de redirección es `NEVER`. `NORMAL` sigue redirecciones salvo de HTTPS a HTTP; `ALWAYS`
+  las sigue todas. Como muestra `RedirectReintento.java`, el JDK no reenvió `Authorization` al otro origen, pero sí
+  `X-Api-Key`.
+- Algunas cabeceras están restringidas, como `Host`, `Connection` y `Content-Length`. Si las fijas a mano,
+  `HttpRequest.Builder` lanza `IllegalArgumentException`.
+- Según RFC 9110, `GET`, `HEAD`, `PUT` y `DELETE` son idempotentes; `POST` no. Reintentar un `POST` de cobro puede
+  cobrar dos veces.
+- Un `503` puede traer la cabecera `Retry-After`, que indica cuánto esperar. Respétala si existe.
+- En un handler, `sendResponseHeaders(status, -1)` anuncia que no hay cuerpo. Con `0`, el cuerpo va por trozos y
+  su longitud se desconoce.
+- `send` es bloqueante; `sendAsync` devuelve un `CompletableFuture<HttpResponse<T>>` y no ocupa tu hilo mientras
+  espera.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los conceptos de HTTP, código de estado e idempotencia vienen de Fundamentos (Fundamentos, Módulo 3, Tema 2). El
+timeout como límite de espera y `CompletableFuture` vienen de concurrencia (Java, Módulo 5, Temas 2 y 7). La
+excepción con campo propio sigue lo visto en excepciones personalizadas (Java, Módulo 3, Tema 3).
+
+Compara HTTP con los sockets del Paso 3. Un socket TCP solo entrega bytes en orden; HTTP añade encima la forma de
+peticiones y respuestas. UDP ni siquiera garantiza la entrega. Por eso un servidor caído aparece como
+`ConnectException`: falló la capa TCP antes de que existiera HTTP.
+
+El Tema 2 agrega el token `Authorization: Bearer` que este cliente ya envía y explica el `401` y el `403`. El Tema 3
+construye la firma HMAC que valida ese token.
 
 #### Problema resuelto 1.1
 Consulta tres rutas de un servidor local: una guía que existe, una que no existe y una ruta que tarda 3 segundos.
@@ -762,15 +845,37 @@ puede listar todas. El servidor no guarda sesiones: cada petición debe traer la
 - **Error típico:** emitir tokens sin `exp` o con validez de meses: un token robado sirve todo ese tiempo.
 
 #### ► CÓMO FUNCIONA
-Un token es una credencial: no se loguea completo, se valida antes de usarse y se envía solo al destino esperado. Aquí el flujo es completo y local: `POST /login` devuelve un JWT HS256 firmado con HMAC-SHA256 de la JCA; `GET /guias/G1` exige token válido; `GET /admin/guias` exige rol `ADMIN` y responde `403` a un usuario con rol `LECTOR`.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en la entrada a un centro de distribución. En la portería revisan tu documento una vez. Te dan una
+credencial sellada por la empresa, con tu nombre, tu zona y la hora de vencimiento. Después, cada puerta interna
+solo revisa el sello, la hora y la zona. Nadie vuelve a llamar a la portería.
+
+Una API sin sesiones funciona igual. El servidor de Tienda Aurora autentica al usuario una vez en `/login` y le
+entrega un token firmado. En cada petición posterior, el cliente lo presenta y el servidor comprueba la firma, la
+caducidad y el rol. No consulta ninguna base de datos.
+
+El riesgo también se parece. Quien copia una credencial válida entra mientras no venza. Por eso este tema insiste en
+validar en un orden fijo, en vencimientos cortos y en no dejar el token en lugares visibles.
+
+##### 2. Definición formal y vocabulario
+
+Un **token de acceso** es la credencial que el servidor entrega tras autenticar y que el cliente presenta después.
+Con el **esquema Bearer** (RFC 6750) viaja en la cabecera `Authorization: Bearer <token>`.
+
+Un **JWT** (JSON Web Token, RFC 7519) tiene tres partes en **Base64url** unidas por puntos: header, payload y firma.
+El payload contiene **claims**, pares nombre-valor como `sub`, `rol` y `exp`. **HS256** es el algoritmo de firma que
+calcula HMAC-SHA256 sobre `header.payload` con una clave compartida.
+
+Al verificar, la firma recibida se compara con la esperada mediante **comparación en tiempo constante**. La
+**caducidad**, el claim `exp`, se compara con el reloj en cada validación.
+
+##### 3. Cómo funciona por dentro, paso a paso
 
 **Visual:** [Seguridad básica HTTP: validar antes de llamar](/visuals/temas/java/modulo-18-seguridad-http.html)
 
-Lectura: valida input y allowlist antes de llamar; aplica timeout; maneja status; reintenta solo si la operación es idempotente.
-
-**Mecanismo.** El servidor valida en un orden fijo. Primero la forma (tres partes); después la firma; después la
-caducidad; al final el rol. Los tres primeros fallos dicen «no sé quién eres» (`401`). El último dice «sé quién eres,
-pero no puedes» (`403`).
+El diagrama muestra el orden fijo en que el servidor valida cada petición:
 
 ```mermaid
 flowchart LR
@@ -785,11 +890,68 @@ flowchart LR
   R -->|sí| OK["200"]
 ```
 
-**Por qué existe.** Con la firma, el servidor confía en el payload sin guardar sesiones: cualquier instancia con la
-clave puede validar. Por eso la firma va antes que cualquier lectura de claims.
+**Emisión.** `TokenService.emitir` construye el token en cuatro pasos:
 
-**Implicación.** Un token emitido no se puede «cerrar» antes de `exp` sin una lista de revocación. Por eso la validez
-es corta (5 minutos en `ServidorLocal.login`).
+1. Codifica en Base64url, sin relleno, el header `{"alg":"HS256","typ":"JWT"}`.
+2. Arma el payload con `sub`, `rol` y `exp`, este último en segundos desde 1970, y lo codifica igual.
+3. Calcula HMAC-SHA256 sobre el texto `header.payload` con la clave del servidor.
+4. Codifica los 32 bytes de la firma y los agrega como tercera parte.
+
+**Validación.** `TokenService.verificar` y `ServidorLocal.autorizar` siguen el diagrama:
+
+1. `autorizar` exige que la cabecera empiece por `Bearer ` y toma el resto. Sin cabecera, `401`.
+2. `split("\\.", -1)` debe dar exactamente tres partes no vacías. Si no, `401 formato de token inválido`.
+3. El servidor recalcula la firma de las dos primeras partes y la compara con la recibida:
+
+```java
+byte[] esperada = CryptoUtil.hmacSha256(clave, partes[0] + "." + partes[1]);
+byte[] recibida = DEC.decode(partes[2]); // TokenService convierte un decode inválido en 401
+if (!MessageDigest.isEqual(esperada, recibida)) {
+    throw new ApiException(401, "firma inválida");
+}
+```
+
+4. Solo con la firma válida se leen los claims. Si `exp` ya pasó, `401 token expirado`.
+5. El handler compara el rol con el que exige la ruta. Si no alcanza, `403`.
+
+El orden tiene una razón. Antes del paso 3, el payload es una afirmación sin prueba: cualquiera puede escribir
+`"rol":"ADMIN"`, como muestra el token manipulado de `JwtPasoAPaso.java`. Los fallos 1 a 4 significan «no sé quién
+eres» (`401`); el 5 significa «sé quién eres, pero no puedes» (`403`).
+
+`MessageDigest.isEqual` recorre los dos arreglos completos. `Arrays.equals` se detiene en el primer byte distinto,
+y esa diferencia de tiempo permite adivinar una firma byte a byte.
+
+##### 4. Reglas, variantes y casos límite
+
+- RFC 7518 exige para HS256 una clave de al menos 256 bits, el tamaño de la salida de SHA-256. Por eso
+  `TokenService` rechaza claves de menos de 32 bytes.
+- No decidas el algoritmo leyendo el header. El ataque clásico envía `"alg":"none"` o cambia a otro algoritmo. Un
+  verificador seguro fija HS256 de antemano, como hace este.
+- Base64url usa `-` y `_` y en JWT va sin `=`. El decodificador estándar rechaza el `-` con `Illegal base64
+  character 2d`.
+- `exp` es un número de segundos epoch, no de milisegundos. Otros claims registrados son `iat`, `nbf`, `iss` y
+  `aud`; un servicio que recibe tokens de varios emisores debe validar `iss` y `aud`.
+- Entre servidores con relojes distintos se suele admitir un margen pequeño al comparar `exp`.
+- Un JWT no se puede revocar antes de `exp` sin una lista de bloqueo. Por eso `ServidorLocal.login` emite tokens de
+  5 minutos.
+- Según RFC 6750, una respuesta `401` a un token Bearer debería incluir la cabecera `WWW-Authenticate`.
+- Nunca pongas el token en la URL. Queda en historiales, proxies y registros de acceso.
+
+Las buenas prácticas actuales para JWT están reunidas en RFC 8725. Para firmas entre muchos servicios se prefieren
+algoritmos asimétricos como RS256 o ES256.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La diferencia entre autenticación y autorización viene de Seguridad (Seguridad, Módulo 0, Tema 2): el `401` falla
+la primera; el `403`, la segunda. El HMAC y la clave compartida vienen de Seguridad (Seguridad, Módulo 0, Tema 3).
+El servidor y el cliente son los del Tema 1; aquí `ApiCliente.interpretar` traduce esos dos códigos.
+
+Compara el token con una sesión clásica. La sesión guarda el estado en el servidor y el cliente solo lleva un
+identificador. El JWT lleva el estado dentro y el servidor solo guarda la clave. Ganas escalabilidad y pierdes la
+revocación inmediata.
+
+El Tema 3 abre la caja de `CryptoUtil.hmacSha256` y la compara con SHA-256 y AES-GCM. Allí verás por qué un hash
+solo no sirve como firma.
 
 #### Problema resuelto 2.1
 Emite un JWT para `ana` con rol `LECTOR`. Léelo sin la clave, intenta subirle el rol a `ADMIN`, valídalo en el año
@@ -1356,14 +1518,35 @@ herramienta del JDK resuelve cada necesidad sin escribir un algoritmo propio?
 - **Error típico:** generar claves con `new Random()` o con `Math.random()`.
 
 #### ► CÓMO FUNCIONA
-JCA es la API estándar de criptografía en Java. No inventes algoritmos, no implementes AES a mano, no uses MD5/SHA-1 para seguridad nueva y no reutilices IVs con la misma clave en AES-GCM. Cada primitiva tiene un propósito distinto:
 
-- **SHA-256**: hash e integridad. No cifra y no es password hashing.
-- **HMAC-SHA256**: autenticidad e integridad con clave compartida. Aquí firma cada JWT.
-- **AES-GCM**: cifrado autenticado. Detecta manipulación del ciphertext con `AEADBadTagException`.
+##### 1. La idea en lenguaje sencillo
 
-**Mecanismo.** Pides el algoritmo por nombre, inicializas con la clave cuando hace falta y procesas bytes. La JCA
-busca un proveedor que lo implemente.
+Piensa en tres formas de proteger una caja que viaja entre bodegas. Puedes anotar su peso exacto al salir: si al
+llegar pesa distinto, alguien la tocó. Puedes ponerle un sello que solo tu empresa fabrica: así sabes quién la cerró.
+O puedes meterla en un cofre con candado y precinto: nadie ve el contenido y cualquier golpe se nota.
+
+Son tres necesidades distintas: saber si cambió, saber quién lo hizo y que nadie lo lea. La liquidación de un
+repartidor de Tienda Aurora necesita las tres. Cada una tiene su herramienta, y confundirlas es el error más común.
+
+El JDK ya trae esas herramientas, revisadas por expertos. Tu trabajo no es escribir un algoritmo; es elegir el
+correcto, pedirlo por su nombre y manejar bien las claves.
+
+##### 2. Definición formal y vocabulario
+
+La **JCA** (Java Cryptography Architecture) es la API de `java.security` y `javax.crypto`. Entrega algoritmos por
+nombre con métodos `getInstance`. Detrás hay **proveedores**, paquetes de implementaciones como `SUN` o `SunJCE`.
+
+Tres clases cubren las tres necesidades. **`MessageDigest`** calcula un hash, la huella de tamaño fijo. **`Mac`**
+calcula un HMAC: una huella que exige clave. **`Cipher`** cifra y descifra según una transformación
+`algoritmo/modo/relleno`.
+
+**AES-GCM** es AES en modo Galois/Counter: cifra y autentica a la vez. Necesita un **IV** único por cifrado y
+produce un **tag de autenticación** que se verifica al descifrar. Las claves, los IV y las sales salen de
+**`SecureRandom`**, el generador aleatorio criptográfico.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama parte de la necesidad, no del algoritmo:
 
 ```mermaid
 flowchart TB
@@ -1375,11 +1558,66 @@ flowchart TB
   T -->|"1 bit cambiado"| X["AEADBadTagException"]
 ```
 
-**Por qué existe.** Implementar criptografía a mano falla en detalles invisibles. La JCA trae implementaciones
-revisadas y te deja cambiar de proveedor sin tocar el código.
+1. `MessageDigest.getInstance("SHA-256")` recorre los proveedores instalados, en el orden del archivo de
+   configuración `java.security`. Devuelve el primero que implementa el nombre pedido; en `CriptoJca.java` es `SUN`.
+2. `digest(bytes)` procesa los datos y devuelve 32 bytes. Es determinista: `SHA-256("Aurora")` siempre empieza por
+   `e9de098c7733`.
+3. `Mac` necesita un paso más: `init` con una `SecretKeySpec`. Sin `init`, `doFinal` lanza `IllegalStateException`.
+4. `Cipher` necesita modo, clave y parámetros. En GCM, el parámetro es un `GCMParameterSpec` con el tamaño del
+   tag en bits y el IV.
+5. Al cifrar, GCM genera un flujo de bytes a partir de clave e IV y lo combina con el texto mediante XOR. Luego
+   calcula el tag y lo agrega al final.
+6. Al descifrar, GCM recalcula el tag y lo compara antes de entregar nada. Si no coincide, lanza
+   `AEADBadTagException` y no devuelve texto.
 
-**Implicación.** Tu trabajo es elegir la primitiva correcta y manejar bien claves e IV. Por eso el diagrama empieza
-por la pregunta, no por el algoritmo.
+El cifrado del proyecto condensa los pasos 4 y 5:
+
+```java
+Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"), new GCMParameterSpec(128, iv));
+return cipher.doFinal(plain);
+```
+
+`NoPadding` es correcto porque GCM trabaja como flujo y no necesita relleno. Por eso 18 bytes de texto producen 34
+bytes: los 18 cifrados y 16 de tag.
+
+El paso 5 explica `IvRepetido.java`. Si clave e IV se repiten, el flujo se repite. Al hacer XOR de dos cifrados, el
+flujo se cancela y queda el XOR de los textos.
+
+##### 4. Reglas, variantes y casos límite
+
+- Pide siempre la transformación completa. Con `Cipher.getInstance("AES")`, el proveedor `SunJCE` usa ECB con
+  relleno PKCS5, un modo que revela patrones del texto.
+- El IV de GCM debe medir 12 bytes y no repetirse con la misma clave; no es secreto. NIST SP 800-38D recomienda ese
+  tamaño. Guárdalo junto al cifrado para poder descifrar.
+- La JCA rechaza reutilizar el IV en el mismo `Cipher` con `Cannot reuse iv for GCM encryption`. Entre objetos
+  `Cipher` distintos no puede detectarlo: es responsabilidad tuya.
+- GCM admite datos autenticados sin cifrar (AAD) con `updateAAD`. Sirven para atar al cifrado datos visibles, como
+  el id del repartidor.
+- MD5 y SHA-1 tienen colisiones prácticas. No los uses en diseños nuevos. SHA-3 (`SHA3-256`) existe en el JDK desde
+  Java 9.
+- Un hash solo no autentica: cualquiera recalcula `SHA-256` de un archivo alterado. Para autenticidad necesitas
+  `Mac` o una firma digital.
+- Para contraseñas, un hash rápido es un error. Usa una función lenta con sal, como `PBKDF2WithHmacSHA256` con
+  muchas iteraciones; `Pbkdf2.java` usa 600 000.
+- `java.util.Random` es predecible. Claves, IV y sales salen de `SecureRandom`.
+
+Las versiones recientes del JDK amplían la JCA. Java 17 agregó `HexFormat`, que usa `CryptoUtil`. Java 25
+finalizó la API de funciones de derivación de claves (JEP 510), con HKDF.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El hash, la sal y la derivación de claves vienen de Seguridad (Seguridad, Módulo 0, Tema 2). El cifrado
+simétrico, el nonce y el HMAC vienen de Seguridad (Seguridad, Módulo 0, Tema 3). Aquí los conviertes en llamadas
+concretas del JDK.
+
+El Tema 2 ya usó `Mac` sin explicarla: cada JWT HS256 se firma con `CryptoUtil.hmacSha256`. Ahora ves la diferencia
+con `MessageDigest`. El hash prueba que algo cambió; el HMAC prueba además quién lo produjo, siempre que la clave
+siga secreta.
+
+TLS, que protege cada petición HTTPS del Tema 1, usa AES-GCM por debajo. En el Módulo 19 encontrarás
+`ServiceLoader`, el mismo mecanismo de descubrimiento que permite instalar proveedores de la JCA sin cambiar tu
+código.
 
 #### Problema resuelto 3.1
 Calcula la huella de `"Aurora"`, el HMAC de `"mensaje"` con la clave `"clave"`, cifra una liquidación con AES-GCM,

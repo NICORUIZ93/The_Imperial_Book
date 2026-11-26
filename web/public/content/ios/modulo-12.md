@@ -134,8 +134,43 @@ Este tema usa **MVVM e inyección por inicializador** (Módulo 8), **`struct`, `
 - **Error típico:** crear `ClienteAPI(...)` dentro de una vista: ya no se puede probar esa vista sin red.
 
 #### ► CÓMO FUNCIONA
-Cada capa vive en su carpeta, y el paquete `Nucleo` agrupa las tres que no dependen de Apple. La interfaz (SwiftUI)
-queda en la app de Xcode. Las flechas son importaciones: nadie apunta hacia afuera.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un restaurante. La receta del plato no cambia si cambias de proveedor de verduras, ni si pintas el
+comedor. El cocinero no habla con el proveedor desde la mesa del cliente, y el mesero no decide cuánta sal lleva la
+sopa. Cada quien tiene su lugar, y por eso puedes cambiar a uno sin reentrenar a los demás.
+
+Una app que crece necesita esa misma separación. La primera versión del problema mete todo en una vista: red,
+decodificación, orden, peso y formato. Funciona, pero responder «¿por qué la guía pesada sale de última?» exige
+abrir el simulador y esperar a la red. La regla está enterrada entre detalles que no tienen nada que ver con ella.
+
+La **arquitectura por capas** reparte el código por responsabilidad. El **dominio** guarda las reglas del negocio
+de reparto; los datos traen y guardan; la presentación prepara lo que se ve; la interfaz lo dibuja. Este tema
+construye la capa central, el dominio, y la pone en un paquete que se prueba en milisegundos.
+
+##### 2. Definición formal y vocabulario
+
+Una **capa** es un grupo de tipos con una sola responsabilidad. La app del módulo tiene cuatro: dominio, datos,
+presentación e interfaz. Su frontera real no es la carpeta donde vive cada archivo, sino lo que cada archivo
+importa.
+
+El **dominio** son los tipos y reglas del negocio en Swift puro: `Entrega`, `ResumenRuta` y `Reglas`. Es lo que el
+negocio diría igual aunque la app no existiera: «más de 10 kg necesita carretilla».
+
+La **regla de dependencia** dice que las dependencias apuntan hacia adentro. La interfaz conoce la presentación,
+la presentación conoce los datos y el dominio, los datos conocen el dominio, y el dominio no conoce a nadie.
+
+Un **paquete local de Swift** es una carpeta con un `Package.swift` que declara módulos (*targets*) y sus
+dependencias. Lo compilas con `swift build`, lo pruebas con `swift test`, y Xcode lo agrega a la app como
+dependencia local.
+
+La **raíz de composición** es el único lugar que elige las implementaciones concretas y las conecta. En este
+módulo es `Composicion.modelo(escena:)`, del Tema 4.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Las flechas del diagrama son importaciones; ninguna apunta hacia afuera:
 
 ```mermaid
 flowchart TB
@@ -149,6 +184,71 @@ flowchart TB
     D -.->|"HTTP"| S["servidor"]
     D -.->|"archivo JSON"| F["disco"]
 ```
+
+1. **SwiftPM lee el manifiesto.** `Package.swift` es código Swift que construye un valor `Package`. Cada `.target`
+   es un módulo; cada `dependencies:` es una arista del grafo. SwiftPM rechaza los ciclos.
+2. **El compilador trata cada módulo como una unidad.** Dentro del módulo, todo lo `internal` se ve. Fuera, solo lo
+   `public`. Por eso `Entrega` y su inicializador llevan `public`.
+3. **Las importaciones fijan la frontera.** Si `Entrega.swift` escribe `import SwiftUI`, la compilación en Linux
+   falla: ese módulo no existe allí. El compilador, no la buena voluntad, hace cumplir la regla.
+4. **Las reglas son funciones puras.** No leen estado externo ni lo cambian, así que la misma entrada da la misma
+   salida.
+
+```swift
+public enum Reglas {
+    public static func kilos(_ gramos: Int) -> String {
+        let decimas = (gramos + 50) / 100
+        return "\(decimas / 10),\(decimas % 10) kg"
+    }
+}
+```
+
+   Sumar 50 antes de la división entera redondea la mitad hacia arriba. El texto se arma con enteros y una coma
+   fija, así que no depende del idioma del equipo. Por eso 20 600 g da «20,6 kg» en cualquier máquina.
+5. **Los valores son `Sendable`.** `Entrega` es un `struct` con propiedades `Sendable`, así que puede cruzar entre
+   actores sin copiarse a mano. `ResumenRuta` se recalcula desde la lista cada vez: no guarda estado que pueda
+   desincronizarse.
+6. **Las pruebas importan el módulo.** `@testable import Nucleo` da acceso también a lo `internal`. Como no hay red
+   ni disco, las cuatro pruebas del dominio terminan en milisegundos.
+7. **La app copia el paquete.** En la Mac, `mac.sh` copia las fuentes del núcleo a la app de Xcode. La interfaz
+   queda fuera del paquete porque SwiftUI solo existe en plataformas de Apple.
+
+##### 4. Reglas, variantes y casos límite
+
+**Niveles de acceso.** Swift tiene `open`, `public`, `package`, `internal` (el predeterminado), `fileprivate` y
+`private`. `package`, de Swift 5.9, deja ver un tipo a todos los módulos del mismo paquete pero no a quien lo
+importa desde fuera.
+
+**El inicializador automático es `internal`.** Un `struct` público recibe un inicializador por miembros, pero solo
+visible dentro del módulo. Si la app debe crear el valor, escribes un `init` público, como hace `Entrega`.
+
+**Qué va en el dominio.** Una regla del negocio va en el dominio aunque parezca visual. El formato «20,6 kg» es
+regla porque el negocio lo pide así. Si el formato dependiera del idioma de la persona, iría en la interfaz.
+
+**Qué no va.** `Color`, `Image`, `URLSession` y rutas de archivo no son dominio. Un `var color: Color` en `Entrega`
+rompe la compilación en Linux y esconde la regla «pesada» detrás de un detalle «rojo».
+
+**Protocolos para invertir dependencias.** Cuando una capa interna necesita algo de una externa, declara un
+protocolo y deja que otra capa lo cumpla. Así `RepositorioEntregas` pide una `FuenteRemota` sin conocer `ClienteAPI`.
+
+**Concurrencia estricta.** El paquete usa `swift-tools-version: 6.0`, así que compila en modo Swift 6. Un tipo que
+cruza actores y no es `Sendable` produce un error, no un aviso.
+
+**Orden de las pruebas.** Swift Testing ejecuta las pruebas en paralelo. Por eso la salida real no sigue el orden
+del archivo, y ninguna prueba debe depender de otra.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema reúne piezas anteriores. `Entrega` es un `struct` con `enum` del Módulo 0. La separación en capas
+continúa el Módulo 8: el Tema 1 probaba el modelo de vista sin vista, y el Tema 3 separaba capas en módulos con
+una prueba de arquitectura. Aquí el paso nuevo es que el núcleo entero compila en Linux, donde SwiftUI no existe.
+
+La prueba `pesoRedondeaALaDecima` usa los argumentos de Swift Testing del Módulo 9. La exigencia de `Sendable`
+viene del Módulo 4, Tema 4.
+
+Las capas siguientes se apoyan en esta. El Tema 2 escribe los datos, que devuelven `Entrega`. El Tema 3 escribe la
+presentación, que ordena con `Reglas.ordenar` y resume con `ResumenRuta`. El Tema 4 dibuja la interfaz y escribe la
+raíz de composición. El Módulo 13 continúa esta misma app con seguridad y sincronización.
 
 #### Problema resuelto 1.1
 Crea el paquete del núcleo y escribe el dominio de la ruta: la entrega, el resumen (pendientes, entregadas y peso
@@ -428,8 +528,7 @@ Al terminar este tema podrás:
 - decidir en un repositorio de dónde salen los datos: servidor primero, copia local si falla;
 - probar la capa de datos contra un servidor de desarrollo real, en cada modo de fallo.
 
-**Conceptos clave:** fuente remota, error de datos (`throws(ErrorDatos)`), copia local, repositorio, servidor de
-desarrollo
+**Conceptos clave:** fuente remota, error de datos (`throws(ErrorDatos)`), copia local, repositorio, servidor de desarrollo
 
 #### El problema
 El repartidor entra a un parqueadero subterráneo en Usaquén, abre la app y ve una pantalla en blanco: la petición
@@ -450,7 +549,7 @@ Este tema usa **`URLSession` con `async`/`await`** y **errores tipados** (Módul
 - **Ejemplo:** `FuenteFalsa` en las pruebas y `FuenteDemo` en la app (Tema 4) cumplen el mismo protocolo.
 - **Error típico:** un protocolo que devuelve `Data` o `HTTPURLResponse`: la capa de arriba termina sabiendo de HTTP.
 
-**error de datos**
+**error de datos (`throws(ErrorDatos)`)**
 - **Definición técnica:** `enum ErrorDatos: Error` con tres casos (`sinConexion`, `servidor(codigo:)`, `datosInvalidos`), usado con *typed throws* de Swift 6 (`throws(ErrorDatos)`).
 - **En palabras sencillas:** tres cajones para todos los problemas posibles.
 - **Dónde se rompe la comparación:** no dice qué texto mostrar: eso lo decide la presentación (Tema 3).
@@ -479,8 +578,42 @@ Este tema usa **`URLSession` con `async`/`await`** y **errores tipados** (Módul
 - **Error típico:** probar la capa de datos solo con el servidor real del equipo, que nunca falla cuando uno quiere.
 
 #### ► CÓMO FUNCIONA
-`cargar()` pide al servidor; si responde, ordena, guarda la copia y devuelve `origen: .servidor`. Si falla por
-cualquier motivo y hay copia, devuelve la copia con la fecha y el motivo. Solo si no hay copia el error sube.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un repartidor que sale cada mañana con la planilla del día. Si la oficina le envía la lista nueva al
+celular, trabaja con esa. Si la red se cae a mitad de la ruta, saca la copia impresa de la mañana y sigue. Sabe
+que puede estar un poco vieja. Lo que nunca hace es quedarse parado porque «no hay sistema».
+
+La **capa de datos** hace ese trabajo en la app. Pide la lista al servidor y guarda una copia en el teléfono. Si
+el servidor falla, entrega la copia y dice de cuándo es y por qué se usa. Las capas de arriba no saben de HTTP,
+de JSON ni de archivos: reciben entregas y su origen.
+
+En el problema del tema, la vista se quedaba en blanco con cualquier fallo de red. Y nadie podía provocar un fallo
+a voluntad para probarlo. Este tema separa tres piezas con un trabajo cada una: el cliente HTTP, la copia local y
+el **repositorio** que decide entre ellas.
+
+##### 2. Definición formal y vocabulario
+
+La **fuente remota** es el protocolo `FuenteRemota: Sendable`. Declara lo que la app necesita del servidor,
+`entregas()` y `marcarEntregada(id:)`, sin mencionar HTTP. `ClienteAPI` lo implementa con `URLSession`.
+
+El **error de datos** es `ErrorDatos`, un `enum` con tres casos: `sinConexion`, `servidor(codigo:)` y
+`datosInvalidos`. Se usa con *typed throws*, `throws(ErrorDatos)`, que fija en la firma el único tipo de error
+posible.
+
+La **copia local** es el actor `CopiaLocal`. Guarda una `Instantanea`, entregas más la fecha, en un archivo JSON, y
+la lee devolviendo `nil` si falta o está dañada.
+
+El **repositorio** es el actor `RepositorioEntregas`. Decide de dónde salen los datos y lo dice en el resultado:
+una `Carga` con `OrigenDatos.servidor` o `.copiaLocal(guardada:motivo:)`.
+
+El **servidor de desarrollo** es un servidor HTTP mínimo, `ServidorHTTP`, con las rutas de reparto. Sus modos
+`normal`, `vacio`, `error`, `roto` y `lento` permiten provocar cada fallo cuando quieras.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El repositorio prueba primero el servidor y solo baja a la copia si algo falla:
 
 ```mermaid
 flowchart LR
@@ -492,6 +625,74 @@ flowchart LR
     L -->|"hay copia"| CL["Carga(origen: .copiaLocal(guardada, motivo))"]
     L -->|"nil"| E["throw ErrorDatos"]
 ```
+
+1. **El cliente arma la petición.** Usa una sesión `ephemeral`, sin caché ni cookies en disco, con un tiempo límite
+   propio. Así una respuesta vieja no se cuela como si fuera nueva.
+2. **Traduce cada fallo a un cajón.** `pedir` tiene tres etapas, cada una con su `do`/`catch`. Si la petición no
+   llega, lanza `.sinConexion`. Si llega con un código fuera de `200..<300`, lanza `.servidor(codigo:)`. Si el JSON
+   no cumple el contrato, lanza `.datosInvalidos`. El orden importa: el código se revisa antes de decodificar.
+3. **El repositorio intenta el servidor.** Este es su método central.
+
+```swift
+do {
+    let entregas = Reglas.ordenar(try await remota.entregas())
+    try? await copia.guardar(entregas, en: ahora())
+    return Carga(entregas: entregas, origen: .servidor)
+} catch {
+    guard let instantanea = await copia.leer() else { throw error }
+    return Carga(
+        entregas: instantanea.entregas, origen: .copiaLocal(guardada: instantanea.guardada, motivo: error))
+}
+```
+
+   Con *typed throws*, el compilador sabe que dentro del `catch` la constante `error` es un `ErrorDatos`. Por eso
+   puede guardarla como `motivo` y relanzarla sin conversiones.
+4. **Guarda la copia sin arriesgar los datos frescos.** `try?` descarta un fallo del disco: la lista recién llegada
+   sirve aunque no se haya podido guardar.
+5. **La copia escribe de forma atómica.** `write(to:options: .atomic)` escribe primero en un archivo auxiliar y
+   después lo renombra. Si la app muere en ese instante, queda el archivo viejo o el nuevo, nunca uno a medias.
+6. **El actor ordena los accesos.** `CopiaLocal` atiende una llamada a la vez. Dos guardados simultáneos no pueden
+   mezclar sus bytes.
+7. **El resultado dice su origen.** La presentación recibe `.copiaLocal(guardada: 04:52, motivo: .servidor(codigo:
+   500))` y puede avisar a la persona. En la demostración, el caso 2 muestra exactamente eso.
+
+##### 4. Reglas, variantes y casos límite
+
+**Typed throws.** Llegó con Swift 6 (SE-0413). Una función `throws(ErrorDatos)` solo puede lanzar ese tipo. Un
+protocolo con esa firma obliga a toda implementación, real o falsa, a traducir sus errores antes de lanzarlos.
+
+**Cualquier fallo usa la copia.** Un servidor caído, un 500 o un JSON roto dejan a la persona igual de bloqueada que
+la falta de señal. Por eso el repositorio no distingue el motivo para decidir, solo para informarlo.
+
+**Una copia dañada no es un error.** `leer()` devuelve `nil` si el archivo no se puede decodificar. Una copia
+ilegible no debe tumbar la app; la prueba `unaCopiaDanadaSeIgnora` lo comprueba.
+
+**Dónde guardar.** `Application Support` persiste y entra en las copias de seguridad. `Caches` lo puede vaciar el
+sistema cuando falta espacio, justo cuando más necesitas la copia.
+
+**Reentrada del actor.** Un actor ejecuta un método a la vez solo entre `await`. Mientras `cargar()` espera al
+servidor, otra llamada puede entrar. Aquí no rompe nada, porque cada carga termina guardando una lista completa.
+
+**Marcar sin conexión falla.** `marcarEntregada` no tiene copia que la sustituya: el servidor debe confirmar. La
+cola de envíos sin conexión llega en el Módulo 13, Tema 4.
+
+**El servidor de desarrollo no es de producción.** Atiende una conexión a la vez y no cifra nada. Usa sockets POSIX,
+así que compila con Glibc en Linux y con Darwin en el simulador. Las pruebas que lo comparten van en una suite
+`.serialized` porque usan el mismo puerto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema aplica tres módulos anteriores. `ClienteAPI` usa `URLSession` con `async`/`await` y los errores tipados
+del Módulo 5, Temas 1 y 2. Los actores vienen del Módulo 4, Tema 3. La escritura atómica y las carpetas del contenedor
+vienen del Módulo 6.
+
+El repositorio ya apareció en el Módulo 8, Tema 2, como protocolo del dominio. Aquí es una implementación concreta
+con dos fuentes y una decisión entre ellas. No confundas la copia local con SwiftData. La copia se reemplaza entera
+y no se consulta; por eso basta un archivo JSON que se prueba en Linux.
+
+El Tema 3 consume la `Carga` y convierte el origen en un aviso legible. El Tema 4 arranca este mismo servidor
+dentro de una prueba del simulador. El Módulo 13 agrega la cola de envíos con reintentos y la fijación de
+certificados al cliente.
 
 #### Problema resuelto 2.1
 Escribe el cliente, la copia y el repositorio. Pruébalos contra el servidor de desarrollo en sus cinco modos y con
@@ -1336,8 +1537,42 @@ Este tema usa **`@Observable`** (Módulo 2), **`@MainActor` y `Task`** (Módulo 
 - **Error típico:** desactivar el botón en la vista pero dejar que el modelo acepte la segunda llamada.
 
 #### ► CÓMO FUNCIONA
-La vista solo llama a `cargar()` y `marcarEntregada(_:)` y lee `estado`, `entregas`, `aviso` y `enviando`. El modelo
-pide al repositorio (otro actor) y, de vuelta en el actor principal, cambia el estado. `@Observable` avisa a la vista.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en el tablero de salidas de un aeropuerto. Cada vuelo muestra un solo estado: «a tiempo», «demorado»,
+«abordando» o «cancelado». Nunca dos a la vez. Una persona del aeropuerto lo actualiza, y los pasajeros solo lo
+leen. Si cada pasajero escribiera en el tablero, aparecerían vuelos «cancelados y abordando».
+
+La **capa de presentación** es ese tablero para una pantalla. Un objeto, el modelo de la pantalla, guarda qué debe
+mostrarse ahora y lo cambia cuando llegan datos o cuando la persona toca algo. La vista solo lee y llama a sus
+acciones. Toda la lógica de la pantalla queda en un lugar que se prueba sin pantalla.
+
+El problema del tema tenía cinco `@State` sueltos en la vista. Una combinación imposible dejaba un indicador
+girando sobre un error, y un doble toque enviaba dos peticiones. `ModeloRuta` resuelve las dos cosas con un `enum`
+de estados y un conjunto de guías en curso.
+
+##### 2. Definición formal y vocabulario
+
+El **estado de pantalla** es un `enum` con un caso por cada forma de dibujarla: `cargando`, `vacio`, `error(String)`
+y `lista`. Como un valor de `enum` tiene un solo caso a la vez, los estados imposibles no se pueden escribir.
+
+**`@Observable`** es una macro del módulo `Observation`. Convierte una clase en observable: registra qué
+propiedades lee cada observador y le avisa cuando una de ellas cambia. `Observation` es parte de Swift, no de
+SwiftUI.
+
+**`@MainActor`** aísla un tipo al actor principal, el que dibuja la interfaz. Sus propiedades solo se leen y
+escriben desde ese actor, y el compilador lo comprueba en modo Swift 6.
+
+La **traducción de errores** es la función `texto(_:)`. Es el único lugar donde un `ErrorDatos` técnico se
+convierte en una frase para la persona.
+
+La **acción en curso** es el conjunto `enviando: Set<String>`. Guarda las guías que se están enviando, y una
+segunda llamada para la misma guía vuelve sin hacer nada.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Los estados y sus transiciones forman una máquina pequeña:
 
 ```mermaid
 stateDiagram-v2
@@ -1349,6 +1584,77 @@ stateDiagram-v2
     vacio --> cargando: Volver a consultar
     lista --> lista: recargar / marcar (aviso si falla)
 ```
+
+1. **La macro reescribe la clase.** `@Observable` agrega un registro de observación y convierte cada propiedad
+   almacenada en una calculada. La lectura avisa «me leyeron»; la escritura avisa «cambié».
+2. **SwiftUI rastrea las lecturas.** Al evaluar `body`, anota qué propiedades del modelo leyó. Si después cambia
+   `estado`, vuelve a evaluar solo las vistas que lo leyeron. Una propiedad que nadie leyó no provoca redibujo.
+3. **`cargar()` empieza en el actor principal.** Si ya hay datos, no vuelve a `.cargando`, para no borrar la lista
+   al recargar. Después espera al repositorio.
+
+```swift
+let carga = try await repositorio.cargar()
+entregas = carga.entregas
+estado = entregas.isEmpty ? .vacio : .lista
+```
+
+   El `await` suspende `cargar()` y libera el actor principal. Mientras el repositorio trabaja en su propio actor,
+   la interfaz sigue respondiendo. Al volver, las asignaciones ocurren otra vez en el actor principal.
+4. **El origen se vuelve un aviso.** Con `.copiaLocal(guardada:motivo:)`, el modelo arma una frase con
+   `texto(motivo)` y la hora de la copia. La hora sale de una función inyectada, así que en las pruebas siempre es
+   «07:42».
+5. **El doble toque se corta antes del primer `await`.** Este es el inicio de `marcarEntregada`.
+
+```swift
+guard !enviando.contains(id) else { return }
+enviando.insert(id)
+defer { enviando.remove(id) }
+```
+
+   Las dos tareas de la prueba corren en el actor principal, que ejecuta un fragmento a la vez. La primera revisa
+   e inserta sin suspenderse; cuando la segunda llega, ya ve la guía en `enviando`. `defer` la quita al salir, haya
+   error o no.
+6. **La vista solo lee y llama.** Lee `estado`, `entregas`, `aviso` y `enviando`, y llama a `cargar()` y a
+   `marcarEntregada(_:)`. No decide nada.
+
+##### 4. Reglas, variantes y casos límite
+
+**Datos que acompañan a varios estados.** El `aviso` puede aparecer sobre la lista, así que va en su propia
+propiedad. Meterlo dentro del `enum` obligaría a repetirlo en cada caso que lo admite.
+
+**`private(set)`.** Las propiedades son `public private(set)`: la vista las lee, pero solo el modelo las cambia. Así
+nadie salta una transición escribiendo `estado = .lista` desde fuera.
+
+**Versiones.** `@Observable` existe desde Swift 5.9 y, en plataformas de Apple, desde iOS 17. Antes se usaba
+`ObservableObject` con `@Published`, que avisa ante cualquier cambio del objeto. En código nuevo con iOS 17 o
+posterior, usa `@Observable`.
+
+**El código de nivel superior.** En un programa de terminal, el código de `main.swift` corre en el actor principal.
+Una función normal no, aunque esté en el mismo archivo. Por eso `mostrar()` necesita `@MainActor`; sin él aparecen
+los errores «main actor-isolated property» de la salida real.
+
+**Reentrada.** Durante el `await`, otra llamada puede entrar al modelo. `cargar()` lo tolera porque cada carga
+termina con un estado completo. `marcarEntregada` lo tolera gracias a `enviando`.
+
+**Qué no protege `enviando`.** Evita el doble envío desde un mismo teléfono. Dos teléfonos pueden marcar la misma
+guía a la vez; para eso el servidor necesita idempotencia.
+
+**No uses `localizedDescription`.** El texto del sistema cambia con el idioma y a veces no dice nada útil. La
+traducción propia es predecible y se prueba con `#expect`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema retoma `@Observable` del Módulo 2, Tema 3, y el modelo de vista probado sin vista del Módulo 8, Tema 1.
+La novedad es que el modelo vive en un paquete sin SwiftUI y se ejecuta desde un programa de terminal.
+
+`@MainActor` y las tareas vienen del Módulo 4, Temas 1 y 4. Aquí ves su efecto práctico: el compilador impide leer
+el modelo desde fuera del actor principal.
+
+No confundas el estado de pantalla con `ErrorDatos` del Tema 2. `ErrorDatos` describe qué falló en los datos; el
+estado describe qué dibujar. La traducción es el puente.
+
+El Tema 4 dibuja cada caso de `Estado` con un `switch` en SwiftUI y lo comprueba con capturas. El Módulo 13, Tema 4,
+lleva la protección contra envíos dobles al servidor con claves de idempotencia y una cola de reintentos.
 
 #### Problema resuelto 3.1
 Escribe `ModeloRuta` con sus cuatro estados, el aviso de copia local, la traducción de errores y la protección
@@ -1675,8 +1981,7 @@ Al terminar este tema podrás:
 - fotografiar cada estado desde pruebas alojadas en la app, incluidos el modo oscuro y el texto grande;
 - ejecutar todas las capas reales en el simulador contra un servidor embebido en la prueba.
 
-**Conceptos clave:** vista sin lógica, raíz de composición con escenas, `ContentUnavailableView`, captura desde una
-prueba, servidor embebido
+**Conceptos clave:** vista sin lógica, raíz de composición con escenas, `ContentUnavailableView`, captura desde una prueba, servidor embebido
 
 #### El problema
 El modelo ya está probado, pero nadie ha visto la pantalla de error, la de «sin entregas» ni el aviso de la copia
@@ -1725,9 +2030,41 @@ y 10) y **las pruebas alojadas en la app** (Módulo 9).
 - **Error típico:** probar la integración solo con fuentes falsas y descubrir en producción que el JSON real no coincide.
 
 #### ► CÓMO FUNCIONA
-`RutaApp` crea el modelo una vez (`@State`) con la raíz de composición. `PantallaRuta` lo lee y lo dibuja; su
-`.task` dispara la primera carga. Las pruebas en el simulador crean modelos con fuentes de demostración y fotografían
-la misma vista; la de integración usa las capas reales contra el servidor embebido.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en el ensayo de una obra de teatro. No basta con ensayar la escena feliz del final. El director pide repetir
+también la del apagón y la de la silla rota, porque son las que salen mal el día del estreno. Y para
+ensayarlas no espera a que se vaya la luz de verdad: la provoca.
+
+La **capa de interfaz** dibuja cada estado del modelo, y este tema la ensaya completa. Con el servidor funcionando,
+el simulador siempre muestra la lista. La pantalla de error, la vacía y el aviso de copia local casi nunca se ven.
+Por eso llegan rotas a producción: un texto cortado, un botón que no aparece, un aviso ilegible.
+
+La solución tiene dos partes. La primera es una vista sin lógica que solo traduce el estado a pantalla. La segunda es una
+forma de provocar cada estado: escenas de demostración en la app y capturas desde pruebas.
+
+##### 2. Definición formal y vocabulario
+
+Una **vista sin lógica** solo lee el estado del modelo y le avisa de los toques. No llama a la red, no decide
+textos de error y no calcula reglas. Sí decide lo visual: íconos, colores, disposición y accesibilidad.
+
+La **raíz de composición con escenas** es `Composicion.modelo(escena:)`. Arma el modelo con la fuente real o con
+una `FuenteDemo` según el argumento de arranque `-escena`. Es el único lugar que conoce las implementaciones
+concretas.
+
+**`ContentUnavailableView`** es la vista de SwiftUI para estados sin contenido. Muestra un título con ícono, una
+descripción y acciones, con el estilo del sistema.
+
+Una **captura desde una prueba** pone la vista en una `UIWindow` de la app y la dibuja en una imagen con
+`drawHierarchy`. La función `capturar` del laboratorio lo hace en una prueba alojada.
+
+El **servidor embebido** es el mismo `ServidorReparto` del Tema 2, arrancado dentro del proceso de pruebas del
+simulador. Permite probar todas las capas reales sin otro servidor.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La app y las pruebas comparten la misma vista y cambian solo el modelo que le pasan:
 
 ```mermaid
 flowchart LR
@@ -1741,6 +2078,78 @@ flowchart LR
     T["Pruebas en el simulador"] -->|"capturar(...)"| P
     T -->|"ServidorReparto :8244"| API
 ```
+
+1. **La app lee el argumento.** Los argumentos de arranque con forma `-clave valor` llegan a `UserDefaults`. Por
+   eso `UserDefaults.standard.string(forKey: "escena")` devuelve `"sin-conexion"` cuando lanzas la app con
+   `-escena sin-conexion`.
+2. **La raíz de composición elige.** Sin escena, crea `ClienteAPI` con la URL del `Info.plist`. Con escena, crea
+   una `FuenteDemo` que responde lo que esa escena necesita, y a veces siembra una copia local de las 07:42.
+3. **`RutaApp` guarda el modelo en `@State`.** Así el modelo vive mientras vive la escena, y SwiftUI observa sus
+   propiedades gracias a `@Observable`.
+4. **La vista elige qué dibujar con un `switch`.** Cada caso del `enum` del Tema 3 tiene su vista.
+
+```swift
+switch modelo.estado {
+case .cargando:
+    ProgressView("Cargando la ruta…")
+case .vacio:
+    ContentUnavailableView("Sin entregas hoy", systemImage: "shippingbox")
+case .error(let mensaje):
+    ContentUnavailableView(
+        "No se pudo cargar la ruta", systemImage: "exclamationmark.icloud", description: Text(mensaje))
+case .lista:
+    lista
+}
+```
+
+   Esta es una versión abreviada; la del tema agrega los botones de acción. El compilador exige cubrir todos los
+   casos: si mañana agregas uno, la vista no compila hasta dibujarlo.
+5. **`.task` dispara la primera carga.** El cierre de `.task` es asíncrono y se cancela solo cuando la vista
+   desaparece. `.onAppear` no admite `await`, y por eso la salida real muestra el error «'async' call in a
+   function that does not support concurrency».
+6. **La navegación usa valores.** `NavigationLink(value: e.id)` empuja la guía, un `String`. El destino busca la
+   entrega en el modelo, así que siempre muestra la versión actual.
+7. **Las pruebas fotografían.** Cada prueba crea un modelo con una fuente de demostración, espera a que cargue y
+   llama a `capturar`. La de integración arranca el servidor embebido en el puerto 8244 y usa `ClienteAPI` real.
+
+##### 4. Reglas, variantes y casos límite
+
+**Versiones.** `ContentUnavailableView` existe desde iOS 17. `NavigationStack` llegó en iOS 16, y `.task` y
+`.refreshable`, en iOS 15. La app del módulo pide iOS 18, así que puede usarlos todos.
+
+**`@State` con un objeto.** Con `@Observable`, el modelo se guarda en `@State`, no en `@StateObject`. SwiftUI
+conserva el primer valor durante la vida de la vista, aunque la expresión inicial se evalúe de nuevo si la
+estructura se recrea. Por eso el modelo se crea en `RutaApp`, que no se recrea.
+
+**Una acción principal.** En el estado de error, «Reintentar» usa `.borderedProminent`. En el vacío, «Volver a
+consultar» queda como enlace. La diferencia visual le dice a la persona qué se espera de ella.
+
+**Escenas sin `#if DEBUG`.** Las escenas viven en la raíz de composición, no repartidas por las vistas. La app
+publicada no recibe argumentos, así que siempre usa la fuente real.
+
+**Por qué no `ImageRenderer`.** Según el glosario del tema, dibuja `List` y `NavigationStack` como un símbolo de
+«prohibido». Una ventana real con `drawHierarchy` dibuja lo mismo que ve la persona.
+
+**HTTP local y ATS.** App Transport Security bloquea HTTP sin cifrar. Para hablar con `127.0.0.1`, la app declara
+`NSAllowsLocalNetworking`. Un iPhone real no ve el `127.0.0.1` de tu Mac: ahí el servidor embebido no sirve.
+
+**Lo que solo ven las capturas.** Ninguna prueba de lógica detectó el punto doble de «7:42 a.m..» ni las
+palabras partidas con texto grande. Aparecieron al mirar las imágenes, y por eso se corrigieron.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema cierra la app del módulo. La navegación con valores viene del Módulo 3, Tema 1. `ContentUnavailableView`
+y la pantalla con estados retoman el Módulo 5, Tema 4, ahora con un modelo que vive en otra capa. Las capturas desde
+pruebas alojadas vienen del Módulo 9, Tema 4.
+
+La corrección del texto grande aplica el Módulo 10, Tema 3: `isAccessibilitySize` con `AnyLayout`. Y `FilaEntrega`
+combina sus textos para VoiceOver como en el Módulo 10, Tema 2.
+
+No confundas `FuenteDemo` con `FuenteFalsa` del Tema 2. Las dos cumplen `FuenteRemota`. La falsa vive en las
+pruebas y cuenta llamadas; la de demostración vive en la app y simula un servidor con demoras.
+
+El Proyecto 49 te pide repetir este recorrido completo. El Módulo 13 continúa esta app. Su Tema 2 explica ATS
+y la fijación de certificados, y su Tema 4 agrega la cola de envíos sin conexión.
 
 #### Problema resuelto 4.1
 Construye la interfaz de la ruta con sus cuatro estados, el detalle de una guía y el aviso de copia local; arma la

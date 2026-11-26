@@ -440,14 +440,65 @@ datos y habrá que probar la regla sin consola. ¿Cómo organizas el código par
 - **Error típico:** hacer `new RepositorioPedidosEnMemoria()` dentro del caso de uso: ya no se puede sustituir.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Cuatro paquetes con una regla de dependencia: `app` compone; `aplicacion` orquesta el caso de uso; `dominio` define reglas y puertos; `infraestructura` implementa puertos. `ProcesarPedidosUseCase` recibe `PedidoRepositorio` (interfaz), nunca `RepositorioPedidosEnMemoria`.
 
-**Por qué existe.** Si negocio, IO y salida están en la misma clase, un cambio de almacenamiento rompe reglas y un test necesita levantar toda la aplicación. La separación permite cambiar el adaptador sin tocar la regla.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** Hay más archivos y una composición explícita en `App`. El beneficio se verifica con un mock del puerto: la prueba `procesaPedidosPendientesYReportaErrores` no necesita una base de datos. El criterio para aceptar la arquitectura es: ¿puedo sustituir `RepositorioPedidosEnMemoria` sin editar `ProcesarPedidosUseCase`?
+En un restaurante, el chef no sabe quién fabricó la nevera ni qué proveedor trae las verduras. Sabe qué necesita:
+«algo que conserve frío» y «tomates frescos». Si cambias de nevera, el menú no cambia. Si el chef cambia una receta,
+la nevera tampoco se entera.
 
-Las flechas del diagrama son `import`. Todas terminan en el dominio. La infraestructura implementa el puerto y la
-aplicación lo usa; la única pieza que conoce a todas es `app`, la raíz de composición.
+En Tienda Aurora, `ProcesadorAcoplado` hacía todo en el mismo bucle. Guardaba los pedidos en un `LinkedHashMap`,
+decidía que el total cero falla e imprimía con `println`. Para cambiar el almacenamiento o probar la regla sin
+consola, había que editar la misma clase.
+
+La arquitectura por capas reparte ese trabajo. La regla de negocio vive en un lugar que no sabe nada del exterior.
+Lo que guarda, lo que imprime y lo que conecta las piezas vive afuera.
+
+##### 2. Definición formal y vocabulario
+
+Una **arquitectura por capas** organiza el código en grupos con una responsabilidad cada uno y una dirección
+permitida para sus dependencias. En este proyecto hay cuatro paquetes: `dominio`, `aplicacion`, `infraestructura` y
+`app`.
+
+- El **dominio** contiene las reglas que no dependen de la tecnología: `Pedido`, `EstadoPedido`,
+  `ResultadoProcesamiento` y el puerto `PedidoRepositorio`.
+- Un **caso de uso** es la clase de aplicación que orquesta una operación del negocio. Aquí es
+  `ProcesarPedidosUseCase`: pide pendientes, aplica la regla y guarda.
+- Un **puerto** es una interfaz que el núcleo declara para lo que necesita del exterior. La infraestructura la
+  implementa con un **adaptador**, como `RepositorioPedidosEnMemoria`.
+- La **regla de dependencia** dice que el código interno nunca nombra tipos externos. Todas las dependencias de
+  código apuntan hacia el dominio.
+- La **raíz de composición** es el único lugar, cerca de `main`, donde se crean las clases concretas y se conectan.
+
+En lenguaje sencillo: el dominio pone el enchufe, la infraestructura fabrica el aparato y `App` decide qué aparato
+va en cada enchufe. Esta forma de organizar se conoce también como *puertos y adaptadores*, nombre que propuso
+Alistair Cockburn.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando ejecutas `App.main`:
+
+1. `App` crea `RepositorioPedidosEnMemoria` y guarda tres pedidos. Cada `new Pedido(...)` ejecuta el constructor
+   compacto del `record`, que rechaza `id` vacío o total negativo.
+2. `App` crea `ProcesarPedidosUseCase` y le pasa el repositorio. El constructor del caso de uso recibe el tipo
+   `PedidoRepositorio`, no la clase concreta.
+3. `ejecutar()` llama a `repositorio.pendientes()`. En bytecode es una llamada de interfaz; la JVM busca la
+   implementación en la clase real del objeto.
+4. Para cada pedido, el caso de uso aplica la regla y llama a `guardar` con el pedido procesado o fallido.
+5. El caso de uso devuelve una lista de `ResultadoProcesamiento`. No imprime nada.
+6. `App` recorre la lista y decide cómo mostrarla con un `switch` sobre el tipo sellado.
+
+```java
+public final class ProcesarPedidosUseCase {
+    private final PedidoRepositorio repositorio;          // puerto, no adaptador
+    public ProcesarPedidosUseCase(PedidoRepositorio repositorio) {
+        this.repositorio = Objects.requireNonNull(repositorio, "repositorio");
+    }
+}
+```
+
+Este fragmento es la regla de dependencia hecha código. El único campo es el puerto. La salida
+`depende de: [PedidoRepositorio (interfaz=true)]` de `PedidosPorCapas.java` lo confirma con reflexión.
 
 ```mermaid
 flowchart LR
@@ -458,11 +509,49 @@ flowchart LR
     INF -. "implementa" .-> DOM
 ```
 
-**Confusión común.** Tener carpetas por capas sin regla de dependencia. Si `infraestructura` importa `aplicacion` concreta y `aplicacion` importa `infraestructura` concreta, solo hay carpetas. Aquí la dirección es siempre hacia `dominio`.
+Las flechas del diagrama son `import`. Todas terminan en el dominio. Solo `app` conoce a todos, porque su trabajo es
+conectar. La prueba con Mockito arma otra composición: pone un mock donde `App` pone el repositorio en memoria.
 
-**Lo que cambia en Java.** Los paquetes son las capas y los `import` hacen visible cada dependencia. Un `record` con
-constructor compacto guarda los invariantes del dominio, y una interfaz `sealed` cierra los resultados posibles. Si
-quieres que el compilador impida importar infraestructura desde el dominio, JPMS (Java, Módulo 10) lo hace por módulos.
+##### 4. Reglas, variantes y casos límite
+
+Java no impone capas por sí mismo. Un paquete es un espacio de nombres y una frontera de visibilidad, pero cualquier
+clase `public` se puede importar desde otro paquete. La regla de dependencia la mantienes tú, con disciplina y
+comprobaciones.
+
+Según la especificación (JLS §7.5), un `import` solo permite usar un nombre corto. No carga nada en tiempo de
+ejecución. Por eso buscar `import` con `grep` es una comprobación útil, pero incompleta. Un nombre totalmente
+calificado, como `com.aurora.integrador.infraestructura.RepositorioPedidosEnMemoria`, crea la dependencia sin
+`import`.
+
+Para que el compilador la haga cumplir, existe JPMS, el sistema de módulos de Java 9 (JEP 261). Un módulo solo deja
+ver los paquetes que declara en `exports`. Si el dominio es un módulo que no `requires` la infraestructura, el
+compilador rechaza cualquier referencia a ella.
+
+Un adaptador debe implementar todos los métodos del puerto. Si olvida uno, `javac` falla con
+`is not abstract and does not override abstract method`, como en `PuertoIncompleto.java`. Ese error es una ventaja: el
+contrato no admite adaptadores a medias.
+
+El puerto se diseña con palabras del dominio: `pendientes()` y `guardar(Pedido)`. Si copias la API de la base de
+datos, como `ejecutarSql`, el dominio vuelve a depender del detalle aunque use una interfaz.
+
+Las capas tienen un costo. Hay más archivos y una composición explícita. Para un script de cincuenta líneas sin
+cambios previstos, esa estructura es sobre-ingeniería, como viste en el Módulo 12.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema aplica a escala de proyecto lo que viste en Arquitectura, Módulo 0, Temas 2 y 3: componentes, inversión de
+dependencias, Repository y Adapter. El puerto `PedidoRepositorio` es un Repository; cada implementación es un
+Adapter. La raíz de composición recuerda a la composición de `PagoFacade` en Java, Módulo 12, Tema 4.
+
+El `record Pedido` con constructor compacto viene de Java, Módulo 1, Tema 5. La interfaz sellada
+`ResultadoProcesamiento` y el `switch` exhaustivo vienen de Java, Módulo 7, Temas 1 y 2.
+
+No confundas capas con carpetas. Tener paquetes llamados `dominio` e `infraestructura` no basta si los `import`
+apuntan en ambos sentidos. Lo que define la arquitectura es la dirección de las dependencias.
+
+En el Tema 2 de este módulo, el caso de uso procesa pedidos en paralelo con virtual threads. Gracias a esta
+separación, esa mejora toca solo `ProcesarPedidosUseCase`, y la prueba con mock del puerto la verifica sin base de
+datos.
 
 #### Problema resuelto 1.1
 Antes. Procesa los tres pedidos de ejemplo con una clase que guarda, decide e imprime.
@@ -822,17 +911,66 @@ el build sea el mismo en cualquier máquina?
 - **Error típico:** declarar una dependencia sin versión o usar el `gradle` instalado: cada equipo compila con algo distinto.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo (concurrencia).** `ProcesarPedidosUseCase.ejecutar()` crea un `ExecutorService` con `Executors.newVirtualThreadPerTaskExecutor()`, convierte cada pedido en un `Callable`, usa `invokeAll` y recoge resultados con `future.get()`. El `try-with-resources` cierra el executor. `InterruptedException` restaura el flag de interrupción y se propaga como `IllegalStateException`.
 
-**Por qué existe (concurrencia).** Los pedidos pueden procesarse en paralelo sin compartir un pool limitado de platform threads. `RepositorioPedidosEnMemoria` usa `ConcurrentHashMap` porque varios virtual threads guardan resultados a la vez.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones (concurrencia).** El orden de las tres líneas de `run` puede variar; el contenido no: `P-2` falla por total cero y `P-1`/`P-3` terminan OK. La prueba no depende del orden: usa `anyMatch` sobre los resultados. No se usan virtual threads para CPU-bound puro; aquí simulan tareas que en producción serían IO o llamadas remotas.
+Imagina una oficina de correos con tres paquetes por despachar. Si un solo empleado los atiende en fila, cada espera
+en la báscula se suma. Si además un paquete mal rotulado hace que cierre la ventanilla, los demás se quedan sin
+enviar. Lo razonable es repartirlos, esperar a que todos terminen y anotar en cada recibo «enviado» o «rechazado».
 
-**Confusión común (concurrencia).** Creer que `ConcurrentHashMap` vuelve atómica una secuencia de varias operaciones. Cada operación del mapa es segura; la secuencia “leer, decidir, guardar” necesita diseño adicional si varios hilos compiten por el mismo id.
+`ProcesamientoAntes.java` muestra el caso malo: el lote tardó 206 ms, `P-2` lanzó una excepción y `P-3` quedó
+`PENDIENTE`. `ProcesamientoConcurrente.java` muestra el bueno: tardó 161 ms y cada pedido tiene su desenlace.
 
-**Por qué puede cambiar el orden de `run`.** `invokeAll` devuelve los resultados en el orden de la lista de tareas,
-no en el orden en que terminan. Esa lista sale de `repositorio.pendientes()`, que recorre un `ConcurrentHashMap`, y
-ese mapa no promete ningún orden. Por eso el orden se decide en el repositorio, y las pruebas comparan contenido.
+Este tema integra tres ideas con un objetivo común: confiar en el resultado. La concurrencia reparte el trabajo. El
+modelado convierte cada fallo en un dato. El build reproducible garantiza que ese mismo código se compile igual en
+cualquier equipo.
+
+##### 2. Definición formal y vocabulario
+
+**`invokeAll`** es un método de `ExecutorService`. Recibe una colección de `Callable`, las ejecuta y espera a que
+todas terminen. Devuelve una `List<Future>` en el mismo orden en que el iterador entregó las tareas. En palabras
+sencillas: recoges los recibos en el orden en que repartiste los paquetes, no en el orden en que volvieron.
+
+Un **resultado explícito** es un tipo que representa cada desenlace de una operación como un valor devuelto. Aquí es
+`ResultadoProcesamiento`, una interfaz `sealed` con dos variantes: `Ok` y `Error`. El fallo deja de ser un salto de
+control y pasa a ser un dato que el lote conserva.
+
+Un **build reproducible** produce lo mismo en cualquier máquina porque fija tres cosas: la versión de Gradle con el
+**wrapper**, la del JDK con el **toolchain** y la de cada dependencia en `build.gradle.kts`. En lenguaje sencillo, es
+una receta con marcas y cantidades exactas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `ProcesarPedidosUseCase.ejecutar()` con tres pedidos pendientes:
+
+1. `repositorio.pendientes()` devuelve la lista. Su orden lo decide el recorrido del `ConcurrentHashMap`, que no
+   promete ninguno.
+2. `Executors.newVirtualThreadPerTaskExecutor()` crea un executor que lanza un **virtual thread** nuevo por tarea.
+3. Cada pedido se convierte en un `Callable` con la lambda `() -> procesarUno(p)`.
+4. `invokeAll` envía las tres tareas y bloquea al hilo llamador hasta que todas terminan.
+5. Cuando una tarea espera, por ejemplo en `Thread.sleep` o una llamada de red, su virtual thread se **desmonta** de
+   su hilo portador. Ese hilo del sistema queda libre para otra tarea.
+6. Al terminar, cada `Future` ya está completo. `obtener` llama a `future.get()`, que devuelve el resultado sin
+   esperar.
+7. Al salir del bloque `try`, el executor se cierra y espera a cualquier tarea pendiente.
+
+```java
+private ResultadoProcesamiento procesarUno(Pedido pedido) {
+    try {
+        if (pedido.total().signum() == 0) {
+            throw new IllegalArgumentException("total cero no permitido");
+        }
+        repositorio.guardar(pedido.procesar());
+        return new ResultadoProcesamiento.Ok(pedido.id(), "procesado");
+    } catch (RuntimeException e) {
+        repositorio.guardar(pedido.fallar());
+        return new ResultadoProcesamiento.Error(pedido.id(), e.getMessage());
+    }
+}
+```
+
+Observa la frontera. La excepción existe dentro de `procesarUno`, pero no sale de él. Se convierte en un
+`Error` con su mensaje, y el resto del lote sigue.
 
 ```mermaid
 sequenceDiagram
@@ -854,29 +992,54 @@ sequenceDiagram
     Note over UC: mismo orden de la lista de entrada
 ```
 
-**Mecanismo (modelado).** `Pedido` es un `record` con invariantes en el constructor compacto y métodos `procesar()`/`fallar()` que devuelven nuevas instancias. `ResultadoProcesamiento` es un `sealed interface` con `Ok` y `Error`; el `switch` del `App` es exhaustivo sin `default`.
+El diagrama corresponde a `ProcesamientoConcurrente.java`. La salida `orden de término: [P-3, P-2, P-1]` muestra que
+las tareas acabaron al revés, pero los resultados salieron `P-1`, `P-2`, `P-3`.
 
-**Por qué existe (modelado).** El registro evita escribir getters, `equals`, `hashCode` y `toString` a mano; el constructor compacto centraliza las reglas. `sealed` convierte los casos posibles en una lista cerrada que el compilador comprueba.
+Del lado del build, `./gradlew` lee `gradle-wrapper.properties`, descarga la distribución indicada si falta y la
+ejecuta. Luego Gradle busca un JDK que cumpla `JavaLanguageVersion.of(25)` y compila con él, sin importar el `java`
+de tu terminal.
 
-**Implicaciones (modelado).** `procesar()` y `fallar()` no mutan el pedido original, lo que simplifica razonar sobre hilos y pruebas. Si se añade una variante a `ResultadoProcesamiento`, el compilador obliga a cubrirla en `App`.
+##### 4. Reglas, variantes y casos límite
 
-**Confusión común (modelado).** Pensar que `record` es solo azúcar sintáctico. El valor real está en los invariantes y en la inmutabilidad; un `record` con campos mutables no aporta esa garantía.
+Los virtual threads son estándar desde Java 21 (JEP 444). Que `ExecutorService` funcione en un try-with-resources
+depende de que implemente `AutoCloseable`, algo que ocurre desde Java 19. Hasta Java 23, un virtual thread que se
+bloqueaba dentro de `synchronized` quedaba **anclado** a su portador. Java 24 (JEP 491) eliminó ese caso.
 
-**Mecanismo (testing).** JUnit 5 comprueba el dominio sin mocks y el caso de uso con `@Mock PedidoRepositorio` más `MockitoExtension`. `when(repositorio.pendientes())` define la entrada y `verify(repositorio, atLeastOnce()).guardar(any(Pedido.class))` comprueba la interacción con el puerto.
+Según la documentación de `invokeAll`, si el hilo llamador se interrumpe mientras espera, las tareas sin terminar se
+cancelan y el método lanza `InterruptedException`. El caso de uso restaura la marca con
+`Thread.currentThread().interrupt()` antes de relanzar. Así no borra la señal para quien lo llamó.
 
-**Por qué existe (testing).** El dominio puro se prueba directamente; la orquestación se prueba con el puerto sustituido. Mockear el dominio produciría pruebas frágiles que no demuestran las reglas.
+Si una tarea lanza una excepción, `future.get()` la entrega envuelta en `ExecutionException`. La causa real está en
+`getCause()`. En este proyecto ese caso es interno, porque `procesarUno` ya captura las `RuntimeException`.
 
-**Implicaciones (testing).** Dos pruebas cubren el caso de uso y los invariantes. `Mockito` 5.18.0 y JUnit 5.13.4 están fijados en `build.gradle.kts`; el Gradle wrapper fija Gradle 9.9.1.
+Los virtual threads ayudan cuando las tareas esperan. Para cálculo puro, el límite son los núcleos, y un pool fijo es
+más predecible.
 
-**Confusión común (testing).** Mockear `Pedido` o `ResultadoProcesamiento`. Son tipos de dominio: se construyen y se comprueban, no se sustituyen.
+`ConcurrentHashMap` hace atómica cada operación, no una secuencia. «Leer, decidir y guardar» sobre el mismo id sigue
+necesitando diseño adicional.
 
-**Mecanismo (build reproducible).** `gradlew` fija Gradle; `build.gradle.kts` fija toolchain 25 y versiones de dependencias. El comando único local verificado es `cd ~/labs/aurora-m13 && ./gradlew -q test run`.
+El `switch` con patrones sobre un tipo sellado es estándar desde Java 21 (JEP 441). Sin `default`, el compilador exige
+cubrir cada variante de `permits`. Si agregas `Reintentar`, aparece
+`the switch statement does not cover all possible input values`.
 
-**Por qué existe (build reproducible).** “Funciona en mi máquina” desaparece cuando la versión de Gradle, el JDK y las dependencias quedan declarados.
+Sobre el toolchain: Gradle busca JDK instalados en el equipo. Si no encuentra uno compatible y no hay un repositorio de
+toolchains configurado, el build falla con un mensaje explícito, en vez de compilar con otra versión.
 
-**Implicaciones (build reproducible).** Quien clone el proyecto solo necesita el wrapper y los archivos de build de este módulo: con `./gradlew -q test run` obtiene la misma versión de Gradle, el mismo toolchain y las mismas dependencias, sin instalar nada a mano.
+##### 5. Relación con lo que ya sabes y lo que viene
 
-**Confusión común (build reproducible).** Confundir “wrapper” con “repositorio remoto”. El wrapper fija la herramienta; la clonada depende de un remoto que aquí no existe.
+Este tema reúne piezas de varios módulos: `ExecutorService` (Java, Módulo 5, Tema 1), virtual threads (Módulo 5,
+Tema 3), try-with-resources (Módulo 3, Tema 2), `sealed` y `switch` exhaustivo (Módulo 7, Temas 1 y 2), wrapper y
+toolchain (Módulo 8, Tema 1), JUnit y Mockito (Módulo 9, Temas 1 y 2).
+
+Se apoya directamente en el Tema 1 de este módulo. La concurrencia solo tocó el caso de uso, porque el dominio y el
+puerto ya estaban separados. Por la misma razón, la prueba sustituye el puerto con un mock y construye `Pedido`
+reales.
+
+No confundas resultado explícito con excepción. La excepción sigue siendo la herramienta para errores que nadie
+espera manejar en el lote. El resultado explícito es para desenlaces normales del negocio.
+
+En el Módulo 14 profundizarás lo que aquí das por hecho: la visibilidad de memoria entre hilos y la medición de
+tiempos en la JVM. En el Módulo 15 llevarás el build reproducible a Maven y Gradle avanzados.
 
 #### Problema resuelto 2.1
 Antes. Procesa los tres pedidos uno por uno, con un objeto mutable y una excepción para el total cero.

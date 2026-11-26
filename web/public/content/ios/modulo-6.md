@@ -27,7 +27,7 @@ borrado y cambian de versión sin perder lo que ya estaba guardado.
 (consultas y `@Query`) → Tema 3 (relaciones) → Tema 4 (migraciones) → Proyecto 43.
 
 **Qué necesitas saber antes:** del Módulo 5, **`Codable` y `JSONDecoder`** (Tema 1); del Módulo 4, **`@MainActor` y
-`Sendable`** (Temas 3 y 6); del Módulo 2, **`@State` y `@Environment`** (Temas 1 y 3); del Módulo 0, **`struct` y
+`Sendable`** (Tema 4); del Módulo 2, **`@State` y `@Environment`** (Temas 1 y 4); del Módulo 0, **`struct` y
 `class`** (Tema 2) y **los enums con valor bruto** (Tema 3).
 
 **Qué no se repite:** cómo se arma una lista en SwiftUI (Módulo 1) ni cómo se decodifica JSON (Módulo 5). Aquí se
@@ -139,9 +139,35 @@ Este tema usa **`Codable`** (Módulo 5, Tema 1) y **las clases** (Módulo 0, Tem
 - **Error típico:** esperar un error al insertar un duplicado: en la prueba, el segundo `save()` no falló y quedó 1 fila, con el destinatario de la segunda inserción.
 
 #### ► CÓMO FUNCIONA
-Con un archivo JSON, la app lee todo a memoria, cambia lo que necesita y vuelve a escribir todo. Con SwiftData, el
-contenedor abre una base de datos SQLite; el contexto lleva la cuenta de lo insertado y cambiado, y `save()` escribe
-solo eso. Al volver a abrir, un `FetchDescriptor` pide a la base lo que necesita.
+
+##### 1. La idea en lenguaje sencillo
+Imagina dos formas de llevar la planilla de la ruta. En la primera, cada vez que cambias una casilla pasas a limpio
+la planilla entera en una hoja nueva. En la segunda, tienes un archivador con una ficha por entrega y cambias solo
+la ficha que tocaste.
+
+Un archivo JSON es la primera forma. Es simple y funciona bien con pocas entregas, siempre que la hoja nueva
+reemplace a la vieja de un solo golpe. SwiftData es la segunda: una base de datos en el dispositivo, donde cada
+entrega es una fila y cada cambio toca solo lo necesario.
+
+Este tema hace las dos cosas, en ese orden. Primero mides lo que cuesta el archivo con 2 000 entregas. Después
+declaras el mismo dato como modelo de SwiftData y compruebas que sobrevive a un cierre de la app.
+
+##### 2. Definición formal y vocabulario
+Una **escritura atómica** reemplaza un archivo de forma indivisible. `Data.write(to:options: .atomic)` escribe en un
+archivo temporal y después lo renombra sobre el destino. Un lector ve el archivo viejo completo o el nuevo
+completo, nunca una mezcla.
+
+SwiftData es el marco de persistencia de Apple desde iOS 17. Tiene tres piezas. **`@Model`** es una macro que
+convierte una clase en un modelo persistente: la hace conformar `PersistentModel` y `Observable`. El
+**`ModelContainer`** une el **esquema**, es decir, la lista de tipos de modelo, con un almacén concreto: un archivo
+SQLite o la memoria.
+
+El **`ModelContext`** es el espacio de trabajo. Registra lo que insertas, cambias y borras, y lo escribe en el
+almacén al llamar a `save()`. Por último, **`@Attribute(.unique)`** declara que un atributo no se repite entre
+filas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama pone lado a lado los dos caminos que mide este tema.
 
 ```mermaid
 flowchart LR
@@ -155,6 +181,72 @@ flowchart LR
       X -->|"fetch(FetchDescriptor)"| C
     end
 ```
+
+El camino del JSON tiene tres pasos y siempre toca el archivo entero. Cambiar una entrega de 2 000 obliga a leer
+342 896 bytes y volver a escribirlos; la salida real midió 26,9 ms. El camino de SwiftData es más largo, pero cada
+paso hace menos:
+
+1. **La macro reescribe la clase.** Al compilar, `@Model` convierte cada propiedad almacenada en un acceso a un
+   almacenamiento interno. También agrega un inicializador `init(backingData:)` y los metadatos del esquema. El error
+   de `@Model` sobre un `struct` deja ver ese código generado.
+2. **El contenedor abre el almacén.** `ModelContainer(for:migrationPlan:configurations:)` compara el esquema con el
+   archivo. Si el archivo no existe, lo crea; si existe con otra versión, migra (Tema 4).
+3. **El contexto registra cambios.** `contexto.insert(entrega)` no escribe en disco. Marca el objeto como nuevo, y
+   `hasChanges` pasa a `true`.
+4. **`save()` escribe solo lo pendiente.** Traduce las inserciones y cambios a operaciones sobre SQLite dentro de una
+   transacción. Las demás filas no se tocan.
+5. **Otro arranque lee bajo demanda.** Un contenedor nuevo sobre el mismo archivo responde a `fetch` con las filas
+   pedidas, como mostró «segundo arranque» en la salida.
+
+El paso 3 y el 4 son los que más confunden. Observa esta secuencia:
+
+```swift
+let contexto = contenedor.mainContext
+contexto.insert(Entrega(guia: "EN-4471", destinatario: "Ana Ruiz", direccion: "Cra 7", ventanaInicio: .now))
+// hasChanges = true, pero nada está en disco todavía
+try contexto.save()
+```
+
+Sin la última línea, la prueba `sinLlamarASave` encontró 0 entregas al volver a abrir. El contexto tenía
+`autosaveEnabled = true`, pero el autoguardado no ocurrió antes de que el contenedor desapareciera.
+
+Fíjate también en los archivos del almacén. La salida muestra `entregas.store`, `entregas.store-shm` y
+`entregas.store-wal`. Los dos últimos son del **registro de escritura anticipada** de SQLite (*write-ahead log*):
+los cambios recientes van primero al `-wal` y luego se integran al archivo principal. Por eso copiar solo el
+`.store` puede perder datos.
+
+##### 4. Reglas, variantes y casos límite
+- **Solo clases.** `@Model` se aplica a clases. Un modelo tiene identidad: dos variables apuntan a la misma fila.
+  Sobre un `struct`, la macro falla con `'@Model' cannot be applied to struct type`.
+- **Qué se guarda.** Se guardan las propiedades almacenadas. Las calculadas, como `estado`, no existen para la base
+  de datos.
+- **Dónde vive.** Sin URL, `ModelConfiguration()` usa `Library/Application Support/default.store` dentro del
+  contenedor de la app.
+- **Memoria.** `ModelConfiguration(isStoredInMemoryOnly: true)` crea un almacén que desaparece con el contenedor. Es
+  el adecuado para pruebas y vistas previas.
+- **`.unique` reemplaza.** Insertar una guía repetida no lanza error. SwiftData actualiza la fila existente; por eso
+  la prueba terminó con 1 fila y el destinatario «Otra persona».
+- **Unicidad compuesta.** Desde iOS 18, la macro `#Unique` declara combinaciones únicas de varias propiedades. En
+  iOS 17 solo existe `.unique` sobre un atributo.
+- **Concurrencia.** `ModelContainer` es `Sendable`; `ModelContext` y los objetos `@Model` no lo son. Entre tareas
+  viaja el `PersistentIdentifier`, y otro contexto vuelve a buscar el objeto, como hace `@ModelActor`.
+
+Ese último punto merece cuidado. En la prueba de este tema, pasar un objeto `@Model` a `Task.detached` compiló sin
+avisos con Xcode 27.2. Que el compilador calle no lo vuelve seguro: sigue la regla del identificador.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`EntregaDatos` es una `struct Codable`, como `Envio` en el Módulo 5, Tema 1. Sirve para el archivo JSON y para
+sembrar la base. `Entrega`, en cambio, es una clase, y la diferencia es la del Módulo 0, Tema 2: un valor se copia;
+un objeto se comparte.
+
+`@Model` hace que la clase sea `Observable`, igual que la macro `@Observable` del Módulo 2, Tema 3. Por eso una
+vista que lee una `Entrega` se redibuja cuando cambia una de sus propiedades.
+
+Compara las dos opciones. El archivo JSON gana con pocos datos que se leen y escriben juntos, como una preferencia.
+SwiftData gana cuando buscas, ordenas o cambias elementos sueltos.
+
+El Tema 2 consulta este almacén con `#Predicate`. El Tema 3 explica la relación `ruta` que ya aparece en el código.
+El Tema 4 explica `EsquemaV1`, `EsquemaV2` y `PlanMigracion`.
 
 #### Problema resuelto 1.1
 Primero, en cualquier sistema: guarda la ruta en un archivo JSON, léela «en otro arranque», prueba un archivo que
@@ -1016,9 +1108,34 @@ Este tema usa **las *key paths*** (Módulo 0) y **las vistas que dependen de un 
 - **Error típico:** usar `@Query` en una clase o fuera de una vista: no tiene el contexto del entorno.
 
 #### ► CÓMO FUNCIONA
-El macro revisa el closure al compilar y produce un árbol de expresiones. En Linux (y en memoria), el árbol se
-evalúa elemento por elemento; en SwiftData, se traduce a una consulta SQL que solo devuelve lo que cumple. Las
-*key paths* deben ser de propiedades guardadas, y los valores de fuera (como `pendiente`) se capturan antes.
+
+##### 1. La idea en lenguaje sencillo
+En una bodega grande no pides «tráeme todo y yo busco». Llenas un formulario: «solo las cajas pendientes y frágiles,
+ordenadas por hora, máximo veinte». El bodeguero entiende ese formulario porque está escrito en su idioma, con
+casillas que él sabe revisar.
+
+Las consultas de SwiftData funcionan así. En vez de cargar las 2 000 entregas y filtrarlas con `filter`, escribes
+una condición que la base de datos puede ejecutar por su cuenta. Solo vuelven las filas que cumplen.
+
+El truco está en que la condición parece Swift normal. Pero no todo Swift cabe en el formulario: `lowercased()` no
+cabe, y una propiedad que no está guardada tampoco. Este tema explica qué cabe, por qué, y cómo conectar la consulta
+con una vista que se actualiza sola.
+
+##### 2. Definición formal y vocabulario
+**`#Predicate`** es una macro de Foundation. Recibe un closure y produce un valor `Predicate<T>`: una condición
+representada como datos, no como código ejecutable. Esa representación es un **árbol de expresiones**, donde cada
+nodo es una operación (comparar, unir con «y», leer una propiedad).
+
+Un **`FetchDescriptor<T>`** reúne todo lo que describe una consulta: el predicado, el orden, `fetchLimit` y
+`fetchOffset`. Un **`SortDescriptor`** es un criterio de orden basado en una *key path*, con dirección `.forward` o
+`.reverse`.
+
+**`fetchCount(_:)`** es el método de `ModelContext` que cuenta las filas que cumplen, sin crear objetos.
+**`@Query`** es una propiedad envolvente para vistas de SwiftUI. Ejecuta un descriptor sobre el contexto del entorno
+y vuelve a dibujar la vista cuando los datos cambian.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El mismo predicado recorre dos caminos según dónde se ejecute.
 
 ```mermaid
 flowchart TB
@@ -1027,6 +1144,65 @@ flowchart TB
     A -->|"SwiftData: fetch"| S["SQL: WHERE estadoBruto = ? AND fragil"]
     S --> R["solo las filas que cumplen"]
 ```
+
+1. **La macro analiza el closure al compilar.** Recorre la expresión y reconoce cada parte: el acceso a
+   `estadoBruto`, el `==`, el `&&` y el acceso a `fragil`. Si encuentra algo que no sabe representar, detiene la
+   compilación con un error propio.
+2. **Captura los valores de fuera.** `pendiente` se definió antes del predicado. La macro guarda su valor actual como
+   una constante dentro del árbol.
+3. **Construye el árbol.** El resultado es un `Predicate<Entrega>`, un valor que puedes guardar, pasar y combinar.
+4. **Camino en memoria.** En Linux, `ruta.filter(predicado)` evalúa el árbol con cada elemento. `predicado.evaluate`
+   hace lo mismo con uno solo.
+5. **Camino de SwiftData.** `contexto.fetch(descriptor)` traduce el árbol a una consulta SQL sobre las columnas
+   guardadas. SQLite filtra y ordena, y SwiftData crea objetos solo para las filas resultantes.
+
+El paso 2 explica la forma de este fragmento del problema resuelto:
+
+```swift
+let pendiente = EstadoEntrega.pendiente.rawValue
+let fragiles = FetchDescriptor<Entrega>(
+    predicate: #Predicate<Entrega> { $0.estadoBruto == pendiente && $0.fragil },
+    sortBy: [SortDescriptor(\.ventanaInicio)])
+```
+
+Si escribes `.pendiente` dentro, la macro no sabe a qué tipo pertenece ese miembro sin base explícita. El error
+literal es «Member access without an explicit base is not supported in this predicate».
+
+`@Query` añade una capa más. Al crear `ListaEntregas`, el `init` arma `Query(filter:sort:)` con los valores de los
+interruptores. SwiftUI toma el `modelContext` del entorno, ejecuta la consulta y observa los cambios del almacén.
+Cuando el interruptor cambia, la vista padre crea otra `ListaEntregas`, y con ella otra consulta.
+
+##### 4. Reglas, variantes y casos límite
+- **Una sola expresión.** El cuerpo del predicado debe ser una única expresión. Con dos sentencias, la macro
+  responde «Predicate body may only contain one expression».
+- **Funciones permitidas.** Solo valen las operaciones que la macro conoce. `lowercased()` no lo es; en las
+  plataformas de Apple, `localizedStandardContains` sí, y no distingue mayúsculas ni tildes.
+- **Diferencias entre plataformas.** En Linux, `localizedStandardContains` tampoco está permitido. El mismo código
+  compila en iOS y falla en Linux.
+- **Propiedades calculadas.** La macro acepta cualquier *key path*, así que compila. Pero SwiftData no tiene esa
+  columna y el proceso termina con «Fatal error: Couldn't find \Entrega.estado». No hay `catch` que lo detenga.
+- **Enums guardados.** Filtrar por un enum guardado funcionó en iOS 27.2, según el experimento del tema. Guardar el
+  texto (`estadoBruto`) sigue siendo la opción más predecible.
+- **Contar y limitar.** `fetchCount` contó 1 333 pendientes en 0,2 ms. `fetchLimit` corta el resultado en la base
+  de datos, no después.
+- **`@Query` solo en vistas.** Depende del `modelContext` del entorno, que pone `.modelContainer(_:)`. En una clase o
+  una función suelta no tiene de dónde leerlo.
+
+En cuanto a versiones, `#Predicate`, `FetchDescriptor` y `@Query` llegaron con iOS 17 y Swift 5.9, la versión que
+introdujo las macros.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las *key paths* como `\.ventanaInicio` son las del Módulo 0: una referencia a una propiedad, sin leerla todavía. Aquí
+sirven para que la base de datos sepa qué columna ordenar.
+
+`@Query` se parece a `@State` del Módulo 2, Tema 1: guarda datos fuera de la estructura y redibuja la vista. La
+diferencia es el origen. `@State` guarda un valor que la vista posee; `@Query` refleja lo que hay en el almacén.
+
+Compara `fetch` con el `filter` del archivo JSON del Tema 1. Con el archivo, filtrar exige leer todo (6,5 ms en la
+Mac). Con SwiftData, la base filtra y cuenta sin crear objetos (0,2 ms).
+
+El Tema 3 consulta a través de relaciones, como `entrega.ruta?.nombre`. El Módulo 8, Tema 2, oculta estas consultas
+detrás de un repositorio para que la vista no dependa de SwiftData.
 
 #### Problema resuelto 2.1
 En Linux, escribe predicados y órdenes de Foundation sobre `EntregaDatos` y provoca los errores del macro. En la
@@ -1611,9 +1787,32 @@ Este tema usa **las clases y las referencias** (Módulo 0, Tema 2) y **los model
 - **Error típico:** olvidar que los huérfanos siguen apareciendo en las consultas.
 
 #### ► CÓMO FUNCIONA
-`Ruta` y `Conductor` tienen cada uno una lista de entregas, y cada `Entrega` apunta a su ruta y a su conductor. Al
-borrar, SwiftData mira la regla de la relación del objeto borrado y la aplica a los relacionados; el inverso hace
-que nunca haya una entrega en la lista de una ruta que dice pertenecer a otra.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una carpeta de oficina con hojas dentro y en un directorio de empleados. Si tiras la carpeta de un
+proyecto cerrado, tiras también sus hojas: solo tenían sentido dentro de ella. Si un empleado se va, no quemas los
+documentos que firmó; tachas su nombre del directorio y los papeles siguen en su lugar.
+
+Una entrega vive esas dos situaciones a la vez. Pertenece a una ruta: sin la ruta, no tiene contexto. Y la hizo un
+conductor: si el conductor se va de la empresa, la entrega sigue siendo un hecho que pasó.
+
+Este tema enseña a declarar esas dos relaciones en SwiftData y a decirle qué hacer al borrar cada lado. Esa
+decisión es de negocio, no de programación: define qué historia conserva la empresa.
+
+##### 2. Definición formal y vocabulario
+Una **relación** es una propiedad de un modelo cuyo tipo es otro modelo. Puede apuntar a uno (`var ruta: Ruta?`) o a
+varios (`var entregas: [Entrega]`). La macro **`@Relationship`** añade opciones a esa propiedad: la regla de
+borrado, el inverso y límites de cantidad.
+
+La **relación inversa** es la otra punta del mismo vínculo. Si `Ruta.entregas` y `Entrega.ruta` son inversas,
+SwiftData las trata como un solo hecho visto desde dos lados.
+
+La **regla de borrado** dice qué pasa con los objetos relacionados cuando se borra el dueño. SwiftData ofrece cuatro.
+**`.nullify`**, la regla por defecto, pone en `nil` la referencia de los relacionados. **`.cascade`** los borra
+también. `.deny` impide el borrado si quedan relacionados, y `.noAction` no toca nada.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama muestra las dos relaciones de `Entrega` y el efecto de borrar cada dueño.
 
 ```mermaid
 flowchart LR
@@ -1624,6 +1823,68 @@ flowchart LR
     R -. "borrar ruta → se borran sus entregas" .-> X["0 entregas"]
     C -. "borrar conductor → conductor = nil" .-> Y["entregas sin conductor"]
 ```
+
+Así se declara la relación con dueño, tal como está en `EsquemaV2`:
+
+```swift
+@Model final class Ruta {
+    var nombre: String
+    var fecha: Date
+    @Relationship(deleteRule: .cascade, inverse: \Entrega.ruta) var entregas: [Entrega] = []
+    // init omitido
+}
+```
+
+La *key path* `\Entrega.ruta` señala la otra punta. En `Entrega` basta con `var ruta: Ruta?`, sin macro: el inverso
+se declara en un solo lado.
+
+Ahora sigue lo que hace SwiftData en la prueba `cascadaYNulificar`:
+
+1. **Asignar un lado.** La prueba escribe `entregas[0].conductor = conductor`. SwiftData sabe que
+   `Conductor.entregas` es el inverso y agrega la entrega a esa lista.
+2. **Guardar el vínculo.** En el almacén SQLite, la relación uno a muchos se guarda como una columna en la tabla de
+   las entregas. Esa columna apunta a la fila del conductor; la lista del conductor se reconstruye a partir de ella.
+3. **Borrar al conductor.** `contexto.delete(conductor)` marca el objeto para borrar. SwiftData consulta la regla de
+   `Conductor.entregas`: `.nullify`.
+4. **Aplicar `.nullify`.** Cada entrega relacionada recibe `conductor = nil`. Las cuatro siguen existiendo, como
+   muestra la línea «quedan 4 entregas».
+5. **Borrar la ruta.** La regla de `Ruta.entregas` es `.cascade`. SwiftData marca también cada entrega de esa ruta
+   para borrar.
+6. **Propagar.** Si una entrega borrada tuviera a su vez relaciones en cascada, el borrado seguiría por ellas. Aquí
+   termina: `Entrega.conductor` no tiene regla en cascada.
+
+El inverso también explica la prueba `moverDeRuta`. `sur.entregas.append(entrega)` cambió un solo lado, y SwiftData
+actualizó `entrega.ruta` y sacó la entrega de la lista de la ruta norte.
+
+##### 4. Reglas, variantes y casos límite
+- **Regla por defecto.** Si no escribes `deleteRule`, la relación usa `.nullify`. Es el caso de `Conductor.entregas`.
+- **Opcionalidad.** La punta «uno» se declara opcional (`Ruta?`). Con `.nullify` tiene que poder quedar en `nil`.
+- **Sin orden garantizado.** Una relación a muchos se guarda como un conjunto. El orden del arreglo al volver a
+  leer no está garantizado; ordena con un `SortDescriptor` o con `sorted`.
+- **`.deny` no mira condiciones.** Impide borrar si hay cualquier relacionado. No sabe distinguir «pendientes» de
+  «entregadas»; esa regla va en tu código.
+- **Consultas a través de relaciones.** Un predicado puede seguir una relación opcional: `$0.ruta?.nombre ==
+  nombreRuta` funcionó en la prueba.
+- **Límites.** `@Relationship` admite `minimumModelCount` y `maximumModelCount` para acotar cuántos relacionados
+  puede tener.
+- **CloudKit.** Si sincronizas con iCloud, todas las relaciones deben ser opcionales, como indica la sección «En el
+  trabajo».
+
+Sin el inverso, cada lado es una relación independiente. Cambiar `entrega.ruta` no actualiza `ruta.entregas` en
+memoria, y la pantalla puede mostrar conteos distintos según por dónde mire.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En el Módulo 0, Tema 2, viste que una clase se comparte por referencia. Una relación es esa misma idea llevada al
+disco: dos objetos se apuntan, y SwiftData guarda el puntero como un vínculo entre filas.
+
+Compara con el archivo JSON del Tema 1. En JSON, una entrega solo puede ir anidada dentro de su ruta o dentro de su
+conductor. La otra relación queda como un texto suelto, que nadie actualiza si el nombre cambia.
+
+La regla de borrado se parece al `puedePasar(a:)` de `EstadoEntrega`. Las dos son reglas del negocio escritas como
+código, y por eso las dos tienen pruebas.
+
+El Tema 4 agrega `Conductor` en la versión 2 del esquema y explica cómo migra un almacén que no lo tenía. En el
+Módulo 8, Tema 2, estas reglas quedan detrás de un repositorio del dominio.
 
 #### Problema resuelto 3.1
 Con 4 entregas en una ruta y 2 de ellas asignadas a un conductor, borra primero al conductor y después la ruta, y
@@ -1807,8 +2068,7 @@ Al terminar este tema podrás:
 - escribir un `SchemaMigrationPlan` con una etapa personalizada que calcula datos nuevos;
 - reconocer los cambios que SwiftData no puede migrar solo, y lo mismo en un archivo JSON.
 
-**Conceptos clave:** `VersionedSchema`, migración ligera, `@Attribute(originalName:)`, `SchemaMigrationPlan`,
-`MigrationStage.custom`
+**Conceptos clave:** `VersionedSchema`, migración ligera, `@Attribute(originalName:)`, `SchemaMigrationPlan`, `MigrationStage.custom`
 
 #### El problema
 La versión 1 de la app guardaba un `pin`; la 2 lo llama `codigoEntrega`, cuenta los `intentos` y ordena por
@@ -1855,9 +2115,33 @@ Este tema usa **los modelos del Tema 1** y **`Codable` con claves opcionales** (
 - **Error típico:** olvidar `try contexto.save()` al final del closure.
 
 #### ► CÓMO FUNCIONA
-Al abrir el almacén, el contenedor compara su esquema con el del archivo. Si son de versiones distintas, sigue el
-plan: aplica la etapa de la versión 1 a la 2, que primero hace la parte ligera (renombrar `pin`, agregar
-`intentos`, `prioridad` y `Conductor`) y después ejecuta `didMigrate`, que calcula la prioridad.
+
+##### 1. La idea en lenguaje sencillo
+Cuando una oficina se muda, las cajas viejas no se tiran: se abren en la oficina nueva y su contenido se acomoda en
+muebles distintos. Algunas cosas solo cambian de cajón. Otras necesitan que alguien las mire una por una, por
+ejemplo para ponerles una etiqueta nueva.
+
+Una app publicada vive esa mudanza en cada actualización. Los teléfonos guardan datos con la forma de la versión 1.
+La versión 2 llama `codigoEntrega` a lo que antes era `pin`, cuenta `intentos` y ordena por `prioridad`. Si la
+versión nueva no sabe leer lo viejo, el repartidor abre la app y su ruta desapareció.
+
+Una **migración** es esa mudanza hecha con reglas. Este tema enseña a describir cada versión, a decir qué cambió y
+a escribir el código para lo que SwiftData no puede deducir.
+
+##### 2. Definición formal y vocabulario
+Un **`VersionedSchema`** es un protocolo para un tipo, aquí un enum, que agrupa los modelos de una versión. Declara
+su número con `versionIdentifier` y sus clases con `models`. Cada versión tiene sus propias clases `@Model`
+anidadas, como `EsquemaV1.Entrega` y `EsquemaV2.Entrega`.
+
+Una **migración ligera** es la que SwiftData infiere comparando dos esquemas. Cubre agregar o quitar propiedades,
+agregar modelos y renombrar con **`@Attribute(originalName:)`**, que indica el nombre anterior de una propiedad.
+
+Un **`SchemaMigrationPlan`** lista las versiones en orden (`schemas`) y las etapas entre ellas (`stages`). Una
+**`MigrationStage`** puede ser `.lightweight(fromVersion:toVersion:)` o **`.custom`**. La segunda añade los
+closures `willMigrate` y `didMigrate`, que reciben un `ModelContext` para leer y cambiar datos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama sigue al contenedor desde que encuentra un archivo de la versión 1.
 
 ```mermaid
 flowchart TB
@@ -1871,6 +2155,72 @@ flowchart TB
     E --> F["almacén en versión 2.0.0"]
     C -->|"2.0.0"| F
 ```
+
+1. **Leer la versión del archivo.** El almacén guarda la descripción del esquema con que se creó. El contenedor la
+   compara con `EsquemaV2` y detecta que el archivo es 1.0.0.
+2. **Buscar el camino.** El plan lista `[EsquemaV1.self, EsquemaV2.self]`. El contenedor busca la etapa que va de la
+   versión del archivo a la siguiente: `v1aV2`.
+3. **`willMigrate`.** Si existe, se ejecuta con el esquema viejo, antes de cambiar nada. Aquí vale `nil`.
+4. **Parte ligera.** SwiftData compara los dos esquemas. Copia `pin` en `codigoEntrega` gracias a `originalName`,
+   crea `intentos` y `prioridad` con sus valores por defecto y agrega la tabla de `Conductor`.
+5. **`didMigrate`.** Se ejecuta con el esquema nuevo. Recorre las entregas y calcula la prioridad a partir de
+   `fragil`, un dato que ninguna regla ligera podía deducir.
+6. **Guardar.** El closure termina con `try contexto.save()`. El almacén queda en 2.0.0 y el contenedor se abre.
+
+El paso 4 depende de esta línea de `EsquemaV2.Entrega`:
+
+```swift
+@Attribute(originalName: "pin") var codigoEntrega: String
+var intentos: Int = 0
+var prioridad: Int = 0
+```
+
+Sin `originalName`, SwiftData vería una propiedad `pin` que desaparece y otra `codigoEntrega` que aparece. Borraría
+la columna vieja con sus datos y crearía una nueva vacía.
+
+El paso 5 usa la etapa personalizada que ya está en `Esquemas.swift`:
+
+```swift
+didMigrate: { contexto in
+    for entrega in try contexto.fetch(FetchDescriptor<EsquemaV2.Entrega>()) {
+        entrega.prioridad = entrega.fragil ? 2 : 1
+    }
+    try contexto.save()
+}
+```
+
+La salida real lo confirma: `EN-4471`, frágil, quedó con prioridad 2, y `EN-4472` con prioridad 1. Las dos
+conservaron su código y su ruta.
+
+##### 4. Reglas, variantes y casos límite
+- **Sin plan.** El experimento abrió el almacén v1 con `EsquemaV2` y sin plan. SwiftData hizo la parte ligera: los
+  códigos se conservaron, pero la prioridad quedó en 0 para las dos. Sin la etapa, nadie la calcula.
+- **Campo obligatorio sin valor.** Agregar `zona: String` sin valor por defecto impidió abrir el almacén. Core Data
+  respondió con el código 134110: «missing attribute values on mandatory destination attribute».
+- **Las versiones publicadas no se tocan.** Cambiar `EsquemaV1` después de publicarlo hace que ya no describa los
+  archivos reales. Cada cambio crea una versión nueva.
+- **Sin saltos.** Un teléfono con la versión 1 y una app en la 3 recorre las etapas 1→2 y 2→3, en orden.
+- **Clases de la versión.** Dentro de `didMigrate` se usan las clases de esa versión (`EsquemaV2.Entrega`), no los
+  `typealias` de la app, que mañana apuntarán a otra.
+- **Cambios de tipo.** `originalName` solo renombra. Pasar `pin` de `String` a `Int` exige una etapa personalizada.
+
+`VersionedSchema`, `SchemaMigrationPlan` y `MigrationStage` llegaron con SwiftData, en iOS 17.
+
+En JSON no hay plan: la «migración» es un decodificador que acepta las dos formas. `EntregaTolerante` usa
+`decodeIfPresent(Int.self, forKey: .intentos) ?? 0`, y por eso el archivo v1 se lee con `intentos = 0`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El error del tipo nuevo con el archivo viejo es el `keyNotFound` del Módulo 5, Tema 1. Allí faltaba una clave
+porque el servidor usaba otro nombre; aquí falta porque el archivo es de una versión anterior.
+
+Los `typealias Ruta = EsquemaV2.Ruta` del Tema 1 tienen aquí su razón. El resto de la app escribe `Entrega` sin
+saber qué versión es la actual. Al publicar la versión 3, cambias tres líneas.
+
+Compara una migración con el cambio de regla de borrado del Tema 3. La regla cambia el comportamiento futuro; la
+migración transforma datos que ya existen en millones de teléfonos, y solo tiene una oportunidad.
+
+En el Módulo 11, Tema 1, numeras versiones y compilaciones; anota en cada una qué versión del esquema trae. En el
+Módulo 13, Tema 4, una cola de salida guarda operaciones pendientes que también deben sobrevivir a una actualización.
 
 #### Problema resuelto 4.1
 En Linux: lee un archivo JSON de la versión 1 con el tipo de la versión 2, primero sin y después con un

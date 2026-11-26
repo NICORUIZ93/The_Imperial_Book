@@ -173,19 +173,109 @@ records en un `for`** (Módulo 0, Tema 6).
 - **Error típico:** guardar esos colores en constantes globales: no cambian con el modo oscuro.
 
 #### ► CÓMO FUNCIONA
-`temaApp` recibe un brillo y una semilla. `fromSeed` calcula la paleta, los temas de componente la usan y la
-extensión agrega los colores de estado. `MaterialApp` elige `theme` o `darkTheme` según el sistema, y cada widget lee
-lo que necesita con `Theme.of(context)`.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de envíos tiene un manual de marca. Los camiones, los uniformes y las facturas no deciden su color: lo
+consultan. Si la marca cambia, se edita el manual y todo lo demás lo sigue.
+
+El tema es ese manual dentro de la app. La pantalla de la ruta no debería decir «morado `0xFF...`», sino «el color
+principal» o «el texto sobre la superficie». El tema traduce esos nombres a colores concretos.
+
+Así se resuelven los tres síntomas del problema. El morado deja de estar en doce lugares. Todos los botones miden lo
+mismo porque una sola regla lo fija. Y el modo oscuro deja de mostrar texto negro sobre fondo casi negro, porque cada
+nombre tiene un valor distinto en cada modo.
+
+##### 2. Definición formal y vocabulario
+**`ThemeData`** es un objeto inmutable con la configuración visual de una app Material: colores, tipografía y estilos
+de componentes. `MaterialApp` lo recibe en `theme` y `darkTheme`. Los widgets lo leen con `Theme.of(context)`.
+
+Su parte más importante es `colorScheme`, un `ColorScheme`. **`ColorScheme.fromSeed`** lo genera desde un solo color
+semilla y un brillo. Según la documentación, construye un conjunto de paletas tonales a partir de la semilla y asigna
+desde ellas todos los colores del esquema.
+
+Cada color del esquema es un **rol de color**: un nombre por función, como `primary`, `surface` u
+`outlineVariant`. El prefijo `on` marca el color que va encima: `onSurface` es el texto sobre `surface`.
+
+Un **tema de componente**, como `cardTheme` o `filledButtonTheme`, fija el estilo por defecto de un tipo de widget. Una
+**`ThemeExtension`** añade al tema datos propios, como los colores de estado de una entrega.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el recorrido desde `main` hasta el color de un chip:
+
+1. `temaApp(Brightness.light)` llama a `ColorScheme.fromSeed` con la semilla índigo. El resultado no es la semilla:
+   `primary` sale `#515B92`, como muestra la salida real.
+2. Con `Brightness.dark`, la misma semilla produce otros tonos de las mismas paletas: `primary` pasa a `#BAC3FF` y
+   `surface` a `#121318`.
+3. `ThemeData` recibe el esquema, los temas de componente y la extensión correspondiente al brillo.
+4. `MaterialApp` decide qué tema usar. Con `themeMode` en su valor por defecto, `ThemeMode.system`, consulta el brillo
+   que pide el sistema operativo.
+5. `MaterialApp` publica el tema elegido en el árbol con un widget `Theme`, que es un widget heredado.
+6. Cuando un widget llama a `Theme.of(context)`, sube por el árbol hasta ese `Theme` y queda registrado como
+   dependiente. Si el tema cambia, Flutter lo reconstruye.
+7. Cada componente combina tres fuentes, de mayor a menor prioridad: el estilo que le pasas, su tema de componente y
+   los valores por defecto de Material 3, calculados desde `colorScheme`.
+
+```dart
+filledButtonTheme: FilledButtonThemeData(
+  style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+),
+```
+
+Este fragmento actúa en el paso 7. `FilledButton` no recibe `style`, así que toma el de su tema y mide 48 de alto. La
+salida lo confirma en las tres variantes: `botón 48 de alto`.
 
 ```mermaid
 flowchart LR
-    S["semilla + brillo"] --> F["ColorScheme.fromSeed"]
+    S["semilla y brillo"] --> F["ColorScheme.fromSeed: paletas tonales"]
     F --> T["ThemeData"]
     C["cardTheme, filledButtonTheme,<br/>inputDecorationTheme, chipTheme"] --> T
-    E["ColoresEstado.claro / .oscuro"] --> T
-    T --> M["MaterialApp: theme / darkTheme"]
-    M --> W["Theme.of(context)<br/>context.estados"]
+    E["ColoresEstado.claro u .oscuro"] --> T
+    T --> M["MaterialApp: theme o darkTheme según themeMode"]
+    M --> H["widget Theme heredado"]
+    H --> W["Theme.of(context)<br/>context.estados"]
 ```
+
+La extensión sigue el mismo camino. `ThemeData` guarda las extensiones por tipo.
+`Theme.of(context).extension<ColoresEstado>()` devuelve la instancia del tema activo: la clara o la oscura. El atajo
+`context.estados` solo acorta esa llamada.
+
+##### 4. Reglas, variantes y casos límite
+La semilla no reaparece intacta. La variante por defecto de `fromSeed` es `DynamicSchemeVariant.tonalSpot`, que da
+paletas suaves aunque la semilla sea muy saturada. Si necesitas colores más fieles a la marca, existe
+`DynamicSchemeVariant.fidelity`.
+
+`fromSeed` también acepta `contrastLevel`, entre -1,0 y 1,0, con 0,0 por defecto. Según la guía de Material, 0,5 y 1,0
+corresponden a contraste medio y alto.
+
+Puedes reemplazar un rol suelto pasándolo a `fromSeed`, por ejemplo `primary:`. Hazlo con cuidado: si cambias un rol
+sin su pareja `on`, rompes el contraste que el esquema había calculado.
+
+Los roles cambiaron entre versiones. Desde Flutter 3.22, `background`, `onBackground` y `surfaceVariant` están
+obsoletos. En su lugar se usan `surface`, `onSurface` y la familia `surfaceContainer`, como el
+`surfaceContainerHighest` del Módulo 8.
+
+`ThemeExtension` obliga a implementar `copyWith` y `lerp`, que son abstractos. Sin ellos, la clase no compila. `lerp`
+sirve para interpolar entre dos temas cuando `MaterialApp` anima un cambio de tema.
+
+Un widget dentro de otro `Theme` ve ese tema y no el de la app. Así puedes cambiar el aspecto de una sección con
+`Theme(data: ..., child: ...)`. Para variar poco, parte del tema actual con `Theme.of(context).copyWith(...)`.
+
+`MaterialApp` también acepta `highContrastTheme` y `highContrastDarkTheme`. Los usa cuando el sistema pide alto
+contraste. El Tema 3 vuelve sobre esas preferencias del usuario.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Ya leías `Theme.of(context).colorScheme` y `textTheme` desde el Módulo 1. Los roles de color del Módulo 2, Tema 6
+aparecen aquí generados desde una semilla. La extensión `context.estados` usa las extensiones de Dart del Módulo 0,
+Tema 7.
+
+No confundas `ThemeExtension` con una extensión de Dart. La primera es un dato guardado dentro del tema. La segunda
+añade un método a un tipo existente, como el atajo `estados` sobre `BuildContext`.
+
+Las pruebas golden del Módulo 9, Tema 4 son la red de este tema. El muestrario en claro y oscuro convierte cada cambio
+de semilla o de componente en una diferencia de píxeles visible.
+
+El Tema 2 mide con números si los pares que genera `fromSeed` y los de `ColoresEstado` se leen bien. El Tema 4 añade
+Cupertino, que tiene su propio sistema de tema.
 
 #### Problema resuelto 1.1
 Escribe el tema de la app y una pantalla de muestra que no tenga ni un color ni un tamaño a mano. Pruébala con tres
@@ -496,17 +586,106 @@ nombre** (Módulo 0, Tema 6).
 - **Error típico:** declarar «grande» un texto de 16 para usar el límite de 3:1.
 
 #### ► CÓMO FUNCIONA
-La prueba toma los pares del tema real, calcula el contraste de cada uno y lo compara con 4,5. Además dibuja cada par
-con su texto, para que la revisión sea también visual.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un letrero de calle. Letras blancas sobre fondo azul oscuro se leen desde lejos, incluso con sol. Letras
+grises sobre fondo blanco pueden verse elegantes en una oficina y desaparecer en la calle. Lo que decide no es el
+color en sí, sino la diferencia de luz entre las letras y su fondo.
+
+El repartidor mira el teléfono al sol, con prisa y a veces con la pantalla a medio brillo. El estado «Entregada» en
+gris claro sobre blanco no se lee en esas condiciones, aunque en el monitor del diseñador pareciera bien.
+
+El contraste convierte esa discusión en un número. El gris `#9E9E9E` sobre blanco da 2,68:1. La norma pide 4,5:1 para
+texto normal. Con ese número, la decisión deja de ser una opinión y pasa a ser una prueba que falla o pasa.
+
+##### 2. Definición formal y vocabulario
+La **luminancia relativa** de un color es su brillo percibido, normalizado entre 0 para el negro y 1 para el blanco.
+Las pautas WCAG 2 la definen sobre el espacio de color sRGB, el estándar de las pantallas.
+
+La **relación de contraste** compara dos luminancias: `(L1 + 0,05) / (L2 + 0,05)`, con `L1` la mayor. Va de 1:1 a
+21:1. El 0,05 representa el reflejo de luz ambiente sobre la pantalla y evita dividir por cero.
+
+**WCAG AA** es el nivel intermedio de las Pautas de Accesibilidad para el Contenido Web. Para texto pide 4,5:1. Para
+**texto grande** bastan 3:1. El nivel AAA sube a 7:1 y 4,5:1.
+
+Un **par texto/fondo** es la unidad que se mide. Un color no tiene contraste solo: lo tiene contra el fondo concreto
+sobre el que se dibuja. Por eso la prueba mide `onSurface` sobre `surface` y no `onSurface` a secas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el cálculo de un par, por ejemplo el gris a mano sobre blanco:
+
+1. Cada canal del color se expresa entre 0 y 1. En `material_ui`, los getters `r`, `g` y `b` de `Color` ya devuelven
+   ese rango.
+2. Cada canal se linealiza. Las pantallas guardan los colores con una corrección gamma: la mitad del número no es la
+   mitad de la luz. `_canal` deshace esa corrección.
+3. Los tres canales lineales se suman con pesos 0,2126, 0,7152 y 0,0722. El verde pesa más porque el ojo humano es más
+   sensible a él.
+4. Con las dos luminancias, la función elige la mayor como `L1` y aplica la fórmula.
+5. La prueba compara el resultado con 4,5 y lo imprime con dos decimales.
+
+```dart
+double _canal(double c) => c <= 0.04045 ? c / 12.92 : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
+```
+
+Esta línea es el paso 2. Los valores muy oscuros siguen una recta; el resto, una potencia de 2,4. Es la curva de
+transferencia de sRGB, la misma que usan los navegadores.
 
 ```mermaid
 flowchart LR
-    T["temaApp(brillo)"] --> P["pares: onSurface/surface,<br/>onPrimary/primary, enExito/exito…"]
-    P --> L["luminancia de cada color"]
-    L --> C["contraste = (L1+0,05)/(L2+0,05)"]
-    C -->|">= 4,5"| AA["AA"]
-    C -->|"< 4,5"| NO["no pasa"]
+    T["temaApp con su brillo"] --> P["pares: onSurface sobre surface,<br/>onPrimary sobre primary, enExito sobre exito"]
+    P --> R["canales r, g, b entre 0 y 1"]
+    R --> LN["linealizar: deshacer la gamma"]
+    LN --> L["luminancia: 0,2126 R + 0,7152 G + 0,0722 B"]
+    L --> C["contraste = L1 + 0,05 entre L2 + 0,05"]
+    C -->|"4,5 o más"| AA["AA"]
+    C -->|"menos de 4,5"| NO["no pasa"]
 ```
+
+Los pares salen de `temaApp`, no de una lista escrita a mano. Si cambias la semilla, la prueba mide los colores
+nuevos. Así se explica la salida: los roles del tema pasan en los dos modos y los dos grises a mano no.
+
+Observa el caso del modo oscuro. `#333333` sobre blanco tiene mucho contraste. Sobre `surface` oscuro, `#121318`, da
+1,47:1: dos colores casi igual de oscuros.
+
+##### 4. Reglas, variantes y casos límite
+El umbral es estricto. `#767676` sobre blanco da unos 4,54:1 y pasa; `#777777` da unos 4,48:1 y no pasa. No se
+redondea a favor: 4,48 no es 4,5.
+
+El **texto grande** tiene una definición exacta: 18 puntos normal o 14 puntos en negrita. En píxeles lógicos son unos
+24 y unos 18,7. Un `titleLarge` de 22 no llega.
+
+WCAG 2.1 añadió una regla para lo que no es texto. Los iconos que informan y los bordes de los controles necesitan al
+menos 3:1 contra lo que tienen al lado. Un campo de texto con borde casi invisible incumple esta regla aunque su
+texto pase.
+
+Hay excepciones previstas. El texto de logotipos, el decorativo y el de controles desactivados no tiene mínimo. Un
+botón desactivado puede verse tenue sin incumplir AA.
+
+Las versiones de WCAG anteriores a mayo de 2021 escribían el umbral de linealización como 0,03928, tomado de una
+versión antigua de sRGB. Hoy usan 0,04045, el mismo de este tema. Según la propia WCAG, el cambio no tiene efecto
+práctico en el cálculo.
+
+Flutter trae `Color.computeLuminance()`, que calcula la luminancia relativa. Este tema escribe la fórmula para que
+veas cada paso. En código de producción puedes usar la de Flutter.
+
+Desde Flutter 3.27, `Color` guarda sus canales como `double` y admite espacios de color amplios. Por eso `c.r` es un
+número entre 0 y 1, y no un entero entre 0 y 255 como el antiguo `red`.
+
+La fórmula no sirve para fondos que no son planos. Sobre una foto o un degradado, mide contra el punto más claro y el
+más oscuro detrás del texto. También puedes poner una capa de color detrás.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Los roles `on` del Tema 1 existen precisamente para formar pares con contraste. `fromSeed` los calcula con tonos
+separados. Esta prueba comprueba que lo consiguió, también con los colores propios de `ColoresEstado`.
+
+El código usa piezas del Módulo 0. `luminancia` y `contraste` son funciones de nivel superior (Tema 2). `Par` es un
+record con nombre (Tema 6), y `(claro, oscuro)` desestructura otro record para ordenar los colores.
+
+Compara con la golden del Módulo 9, Tema 4. La golden detecta que un color cambió, pero no si el resultado se lee.
+Esta prueba mide la legibilidad y la imagen ayuda a que una persona entienda el número.
+
+El Tema 3 lleva la idea a la pantalla completa. Flutter tiene una pauta automática, `textContrastGuideline`, que mide
+el contraste del texto ya dibujado, junto con el tamaño táctil y las etiquetas.
 
 #### Problema resuelto 2.1
 Implementa la fórmula de contraste, compruébala con valores conocidos y mide los pares del tema en claro y oscuro,
@@ -730,8 +909,7 @@ Al terminar este tema podrás:
 - ver el árbol de semántica con `SemanticsDebugger` y leer lo que anuncia el lector de pantalla;
 - usar `MergeSemantics` sin tragarse un botón.
 
-**Conceptos clave:** árbol de semántica, lector de pantalla, tamaño táctil mínimo, etiqueta semántica,
-`MergeSemantics`, pauta de accesibilidad
+**Conceptos clave:** árbol de semántica, lector de pantalla, tamaño táctil mínimo, etiqueta semántica, `MergeSemantics`, pauta de accesibilidad
 
 #### El problema
 Una repartidora con baja visión usa TalkBack. En la fila de la guía EN-4472, el lector anuncia «EN-4472», después
@@ -786,17 +964,110 @@ Este tema usa **el tema y los roles de color** (Temas 1 y 2), **las pruebas de w
 - **Error típico:** confiar solo en las pautas: una pantalla puede pasarlas todas y anunciar algo confuso (lo verás en la fila fusionada).
 
 #### ► CÓMO FUNCIONA
-La prueba activa el árbol de semántica (`tester.ensureSemantics()`), construye la fila y pasa las cuatro pautas.
-Después lee, con `getSemanticsData()`, lo que recibiría el lector al tocar el texto y al tocar el ícono. El
-pantallazo usa `SemanticsDebugger`, que dibuja un rectángulo por nodo con su etiqueta.
+
+##### 1. La idea en lenguaje sencillo
+Imagina que describes una oficina por teléfono a alguien que no puede verla. No le dices el color de las paredes: le
+dices «a tu derecha hay un mostrador; el botón del timbre está junto a la caja». Lo que importa es qué hay, qué es y
+qué se puede hacer con ello.
+
+El lector de pantalla hace esa descripción para la repartidora con baja visión. No mira los píxeles de la fila
+`EN-4472`: lee una descripción paralela que Flutter prepara para el sistema operativo. Si esa descripción dice solo
+«botón», ella no sabe que el botón llama al cliente.
+
+Hay además un problema físico. Un ícono de 24 × 24 es fácil de ver, pero difícil de acertar con guantes o en un
+vehículo en movimiento. El área que responde al toque debe tener el tamaño de un dedo, no el del dibujo.
+
+##### 2. Definición formal y vocabulario
+El **árbol de semántica** es una estructura paralela al árbol de render. Cada nodo tiene un rectángulo, una
+**etiqueta semántica**, acciones como `tap` y banderas como «es botón». Flutter lo entrega al sistema operativo.
+
+El **lector de pantalla** es el servicio del sistema que recorre ese árbol: TalkBack en Android y VoiceOver en iOS.
+Lee cada nodo en voz alta y ejecuta sus acciones con gestos propios, como el doble toque.
+
+El **tamaño táctil mínimo** es el área mínima de un elemento tocable: 48 × 48 en las guías de Android y 44 × 44 en las
+de Apple, en unidades lógicas. **`MergeSemantics`** junta en un solo nodo la semántica de todo su subárbol.
+
+Una **pauta de accesibilidad** de `flutter_test` comprueba una regla medible sobre la pantalla. Este tema usa cuatro:
+`androidTapTargetGuideline`, `iOSTapTargetGuideline`, `labeledTapTargetGuideline` y `textContrastGuideline`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El árbol de semántica no se construye siempre. Cuesta trabajo, así que Flutter lo activa solo cuando hace falta. Sigue
+el recorrido en la prueba:
+
+1. `tester.ensureSemantics()` pide activar la semántica y devuelve un manejador. En un teléfono, la activa el sistema
+   cuando enciendes TalkBack o VoiceOver.
+2. Tras construir y maquetar, cada objeto de render describe su parte. `Text` aporta su texto como etiqueta y
+   `IconButton` aporta su `tooltip`, la bandera de botón y la acción `tap`.
+3. Flutter agrupa esas descripciones en nodos. Muchos widgets no crean nodo propio y su información sube al nodo más
+   cercano.
+4. Donde hay un `MergeSemantics`, todo lo de abajo se funde en un nodo: etiquetas, banderas y acciones. Las etiquetas
+   se unen con saltos de línea.
+5. En la app, el árbol viaja al motor y de ahí a la API de accesibilidad del sistema. En la prueba, lo consultas tú.
+6. Al terminar, `semantica.dispose()` libera el manejador. Si nadie más lo necesita, el árbol se apaga.
+
+```dart
+title: MergeSemantics(                                          // solo se funde el texto
+  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    const Text('EN-4472'),
+    Text('Entregada', /* estilo del tema */),
+  ]),
+),
+```
+
+Este fragmento de `FilaAccesible` aplica el paso 4 solo al texto. El botón queda fuera, como nodo propio. Por eso la
+salida real anuncia «EN-4472 | Entregada» al tocar el texto y «Llamar a Luis Pardo» (botón) al tocar el ícono.
+
+En `FilaFusionada`, el `MergeSemantics` envuelve la fila entera. El paso 4 funde también el botón, con su acción y su
+bandera. Toda la fila se convierte en un botón que llama.
+
+Las pautas leen el resultado. Las de tamaño recorren los nodos con acción `tap` y miden su rectángulo. La de etiqueta
+exige texto en esos nodos. La de contraste toma una imagen de la pantalla y mide los píxeles reales bajo cada texto.
 
 ```mermaid
 flowchart LR
-    W["árbol de widgets"] --> S["árbol de semántica<br/>(ensureSemantics)"]
-    S --> P["pautas: 48, 44, etiqueta, contraste"]
-    S --> D["getSemanticsData():<br/>lo que anuncia el lector"]
-    S --> V["SemanticsDebugger:<br/>pantallazo de los nodos"]
+    W["árbol de widgets"] --> R["objetos de render describen su semántica"]
+    R --> S["árbol de semántica<br/>activado con ensureSemantics"]
+    S --> M["MergeSemantics funde un subárbol en un nodo"]
+    M --> P["pautas: 48, 44, etiqueta, contraste"]
+    M --> D["getSemanticsData:<br/>lo que anuncia el lector"]
+    M --> V["SemanticsDebugger:<br/>pantallazo de los nodos"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+Pasar las cuatro pautas no basta. `FilaFusionada` las cumple todas y aun así engaña: un doble toque sobre «Entregada»
+llama al cliente. Las pautas miden tamaños, etiquetas y contraste; no juzgan el sentido de lo anunciado.
+
+La pauta de contraste mide contra el fondo real. Por eso encuentra 2,55:1 sobre `surface` (`#FBF8FF`), mientras que el
+Tema 2 midió 2,68:1 contra blanco puro. Si el fondo cambia, el resultado cambia.
+
+`IconButton` dibuja un ícono de 24 y responde en 48 × 48. Ese relleno lo controla `ThemeData.materialTapTargetSize`.
+En móviles su valor por defecto es `padded`; en escritorio es `shrinkWrap`, y el área puede quedar más pequeña.
+
+Para dar semántica a un widget propio usa `Semantics(button: true, label: ..., onTap: ...)`. Para ocultar algo
+decorativo, `ExcludeSemantics`. Muchos widgets tienen su atajo, como `semanticLabel` en `Icon` e `Image`.
+
+Usa `MergeSemantics` solo donde todo lo que contiene forma una unidad de lectura. Si dentro hay una acción propia, deja
+esa acción fuera, como en `FilaAccesible`.
+
+El tamaño del texto también es accesibilidad. Desde Flutter 3.16, la preferencia del usuario llega como un
+`TextScaler`, que se lee con `MediaQuery.textScalerOf(context)` y reemplazó a `textScaleFactor`. Una fila que se
+desborda con texto grande tampoco es accesible.
+
+`MaterialApp(showSemanticsDebugger: true)` muestra los nodos en la app. En las pruebas, este tema usa
+`SemanticsDebugger` directamente para controlar la fuente de las etiquetas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 mide un par de colores; este tema mide el texto ya dibujado con `textContrastGuideline`. Los roles del Tema 1
+lo arreglan: `onSurfaceVariant` en lugar del gris a mano.
+
+Las pruebas de widgets del Módulo 9, Tema 2 son la base técnica. Aquí, además de buscar widgets, lees el árbol que
+recibe el lector. `ListTile` (Módulo 1) aporta una estructura con área táctil y orden de lectura razonables.
+
+Compara con los tres árboles del Módulo 1, Tema 6. El árbol de semántica es un cuarto árbol que se deriva del de
+render. Las capas del Módulo 8, Tema 5 se derivan de la pintura de la misma forma.
+
+El Tema 4 cambia los componentes según la plataforma. Los de Cupertino traen su propia semántica y la pauta de 44 de
+iOS cobra sentido ahí.
 
 #### Problema resuelto 3.1
 Escribe tres versiones de la fila de la guía EN-4472: una inaccesible (ícono de 24 sin etiqueta y estado en gris),
@@ -1142,15 +1413,106 @@ patrones en `switch`** (Módulo 0, Tema 6).
 - **Error típico:** usar `showDialog` con `CupertinoAlertDialog`: el diálogo es de iOS y la animación, de Android.
 
 #### ► CÓMO FUNCIONA
-Todos los componentes adaptativos leen `Theme.of(context).platform`. Con `android` construyen la versión Material;
-con `iOS`, la Cupertino. `accionAdaptativa` hace lo mismo para los botones del diálogo, que `material_ui` no adapta.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un conductor que maneja el mismo camión en dos países. El camión es igual, pero en cada país usa las
+señales y los gestos locales. Nadie le pide un camión distinto; le piden que respete las costumbres del lugar.
+
+La pantalla de ajustes de la ruta es una sola. Los repartidores con iPhone esperan ciertos gestos y formas: el
+interruptor verde, el diálogo centrado con botones a lo ancho, la rueda de puntos. Los de Android esperan los de
+Material. Si la app ignora esas costumbres, se siente ajena aunque funcione.
+
+La solución no es duplicar pantallas. Es usar componentes que se visten según la plataforma, y mantener igual todo lo
+demás: datos, lógica, tu marca y la mayoría de los widgets.
+
+##### 2. Definición formal y vocabulario
+**Material** es el sistema de diseño de Google. En Flutter 3.50 sus widgets viven en el paquete `material_ui`.
+**Cupertino** es el conjunto de widgets con el aspecto de iOS, en el paquete `cupertino_ui`. Los dos funcionan en
+todas las plataformas.
+
+Un **constructor `.adaptive`** es una variante de un widget de `material_ui` que construye la versión Cupertino si la
+plataforma es iOS o macOS. Ejemplos: `Switch.adaptive`, `Slider.adaptive`, `CircularProgressIndicator.adaptive` y
+`AlertDialog.adaptive`.
+
+**`TargetPlatform`** es la enumeración que nombra las plataformas: `android`, `iOS`, `macOS`, `linux`, `windows` y
+`fuchsia`. `ThemeData.platform` guarda una de ellas. En sencillo: es la plataforma para la que la app se viste, no
+necesariamente la máquina que la ejecuta.
+
+**`showAdaptiveDialog`** muestra un diálogo con la presentación de cada plataforma: la de `showCupertinoDialog` en iOS
+y macOS y la de `showDialog` en las demás.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la construcción de la pantalla con la plataforma iOS fijada en el tema:
+
+1. La prueba crea el tema con `copyWith(platform: TargetPlatform.iOS)`. Sin ese ajuste, `ThemeData.platform` toma
+   `defaultTargetPlatform`, que en una app es la plataforma real.
+2. `MaterialApp` publica el tema. También deriva de él un tema de Cupertino, para que los widgets Cupertino usen los
+   colores de tu esquema.
+3. `SwitchListTile.adaptive` lee `Theme.of(context).platform`. Ve `iOS` y dibuja el aspecto de iOS dentro del mismo
+   `Switch`: por eso el conteo no encuentra `CupertinoSwitch`.
+4. `Slider.adaptive` y `CircularProgressIndicator.adaptive` hacen la misma consulta y construyen `CupertinoSlider` y
+   `CupertinoActivityIndicator`. La salida real cuenta uno de cada uno.
+5. Al tocar «Cerrar turno», `showAdaptiveDialog` elige la ruta de diálogo de iOS, con su animación y su barrera.
+6. `AlertDialog.adaptive` construye un `CupertinoAlertDialog`. Sus `actions` son los widgets que tú pasas: no se
+   transforman.
+7. `accionAdaptativa` consulta la misma plataforma y devuelve `CupertinoDialogAction`. El resultado: dos acciones de
+   iOS, como cuenta la salida.
+
+```dart
+switch (Theme.of(context).platform) {
+  case TargetPlatform.iOS || TargetPlatform.macOS:
+    return CupertinoDialogAction(onPressed: alPulsar, isDestructiveAction: destructiva, child: Text(texto));
+  default:
+    return TextButton(onPressed: alPulsar, child: Text(texto));
+}
+```
+
+Este fragmento resume `accionAdaptativa`, sin el estilo rojo de Material. El patrón lógico `||` agrupa iOS y macOS en
+un caso, y `default` cubre el resto. Es la misma decisión que toman por dentro los constructores `.adaptive`.
 
 ```mermaid
 flowchart TB
-    T["Theme.of(context).platform"] -->|android, linux, windows…| M["Switch, Slider, CircularProgressIndicator,<br/>AlertDialog + TextButton"]
-    T -->|iOS, macOS| C["CupertinoSwitch (aspecto), CupertinoSlider,<br/>CupertinoActivityIndicator,<br/>CupertinoAlertDialog + CupertinoDialogAction"]
+    T["Theme.of(context).platform"] -->|"android, linux, windows, fuchsia"| M["Switch, Slider, CircularProgressIndicator,<br/>AlertDialog con TextButton"]
+    T -->|"iOS, macOS"| C["Switch con aspecto de iOS, CupertinoSlider,<br/>CupertinoActivityIndicator,<br/>CupertinoAlertDialog con CupertinoDialogAction"]
     A["accionAdaptativa(context)"] --> T
+    D["copyWith(platform:) en la prueba"] --> T
 ```
+
+##### 4. Reglas, variantes y casos límite
+Un constructor `.adaptive` solo adapta su propio widget. Los hijos que pasas, como las acciones de un diálogo, siguen
+siendo lo que son. La captura de la mezcla lo muestra: un diálogo de iOS con botones de Material y sin rojo.
+
+Decide con `Theme.of(context).platform`, no con `Platform.isIOS` de `dart:io`. `dart:io` responde por la máquina que
+ejecuta y no existe en la web. La salida real lo prueba: el tema dice `iOS` y `Platform.isIOS` dice `false` en Linux.
+
+En las pruebas, la plataforma por defecto es Android. Por eso basta `copyWith(platform:)` para capturar iOS desde
+Linux. `testWidgets` también acepta `variant: TargetPlatformVariant.only(TargetPlatform.iOS)`, que fija la plataforma
+para toda la prueba.
+
+La plataforma cambia más cosas que los `.adaptive`. `AppBar` centra el título en iOS, como se ve en la captura. Las
+listas rebotan al llegar al borde y las transiciones entre pantallas se deslizan desde la derecha.
+
+Las animaciones que nunca terminan cambian la forma de probar. Ni la rueda de Material ni la de iOS se detienen, así
+que la prueba avanza con `pump` y una duración fija.
+
+Si necesitas ajustar Cupertino por separado, `ThemeData` acepta `cupertinoOverrideTheme`. Sin él, los widgets
+Cupertino toman los colores del esquema de Material.
+
+La fuente es la excepción visible de estas capturas. San Francisco solo existe en los dispositivos de Apple; en Linux
+el texto se ve con Roboto. El aspecto de los componentes sí es el de iOS.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El tema del Tema 1 sigue siendo uno solo. `copyWith(platform:)` cambia un campo y conserva colores y componentes. Los
+interruptores de iOS siguen siendo verdes porque es su convención, pero los textos usan tus roles.
+
+`showDialog` y `Navigator.pop` con resultado (Módulo 3) siguen funcionando igual: `confirmarCierre` devuelve `true`,
+`false` o `null`. El `switch` con patrones del Módulo 0, Tema 6 decide la variante.
+
+Compara con el diseño adaptable del Módulo 2. Allí la pantalla cambiaba según el ancho disponible. Aquí cambia según
+la plataforma, aunque el ancho sea el mismo. Una app real combina las dos adaptaciones.
+
+La pauta de 44 × 44 del Tema 3 corresponde a iOS. Las goldens del Módulo 9 en las dos plataformas vigilan estas
+pantallas. El Proyecto 27 reúne tema, contraste, accesibilidad y adaptación en un mismo sistema de diseño.
 
 #### Problema resuelto 4.1
 Escribe la pantalla de ajustes de la ruta con interruptores, un deslizador, un indicador de carga y un botón que

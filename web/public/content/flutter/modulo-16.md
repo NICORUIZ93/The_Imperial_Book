@@ -117,8 +117,80 @@ Este tema usa **`MethodChannel`** (Módulo 7, Tema 1) como punto de comparación
 - **Error típico:** declarar `Int32` donde C usa `double`.
 
 #### ► CÓMO FUNCIONA
-Con FFI, la llamada no sale del proceso ni del hilo: Dart prepara los argumentos según la convención de C, salta a la
-función y recibe el resultado. Por eso es rápida y síncrona, y por eso un error de C es un error del proceso entero.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una oficina donde todos hablan español y un técnico experto solo habla otro idioma. Puedes mandarle notas
+por la recepción, que las traduce y las reenvía, o puedes aprender las pocas frases que él entiende y hablarle directo.
+La segunda opción es más rápida, pero si dices mal una frase, nadie te corrige.
+
+En la empresa de envíos, el técnico experto es la biblioteca de C de las básculas y las impresoras. Ya calcula el
+dígito de control de cada guía y la distancia entre paradas, y lo hace bien desde hace años. Reescribirla en Dart
+produjo dos versiones que no coinciden. Lo sensato es que la app llame a **la misma** biblioteca, sin intermediarios.
+
+Ese «hablarle directo» es **FFI**. La app de Dart y la biblioteca de C viven en el mismo proceso. Dart salta a la
+función de C como si fuera suya. No hay mensajes ni traductores en cada plataforma. A cambio, tú escribes las frases:
+las firmas de cada función, que deben coincidir exactamente con las de C.
+
+##### 2. Definición formal y vocabulario
+
+**FFI** (*foreign function interface*, interfaz de funciones foráneas) es el mecanismo de `dart:ffi` para
+llamar a funciones que siguen la **convención de llamada** de C. La convención de llamada es el acuerdo binario
+sobre dónde van los argumentos y el resultado: qué registros del procesador o qué posiciones de la pila. La llamada es
+síncrona y ocurre en el mismo hilo que la hace.
+
+El código de C llega compilado en una **biblioteca compartida**: un archivo que el sistema carga al ejecutar. En
+Linux y Android es un `.so`; en macOS e iOS, un `.dylib` o un *framework*; en Windows, un `.dll`. La biblioteca exporta
+**símbolos**, nombres públicos que apuntan a cada función. La orden `nm -D` los lista; aquí son 12.
+
+**`DynamicLibrary`** representa una biblioteca ya cargada. `DynamicLibrary.open(ruta)` pide al cargador del sistema
+que la abra; en Linux usa `dlopen`. Después, **`lookupFunction`** busca un símbolo por nombre y lo envuelve en una
+función de Dart que puedes llamar como cualquier otra.
+
+Para envolverlo, `lookupFunction` necesita dos firmas escritas con **tipos nativos**. La firma nativa describe la
+memoria de C (`Int32`, `Double`, `Pointer<Utf8>`). La firma de Dart describe lo que ve tu código (`int`, `double`,
+`Pointer<Utf8>`). Cada tipo nativo tiene un tipo de Dart correspondiente, y el compilador exige que las dos firmas
+encajen entre sí.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el viaje de una llamada a `guia_digito_control`, desde que abres la biblioteca hasta que recibes el `7`.
+
+1. **Carga.** `DynamicLibrary.open('build_nativo/libguias.so')` llama al cargador del sistema. Este lee el archivo,
+   lo mapea en la memoria del proceso y resuelve sus dependencias (`libm`, `libc`). Si no encuentra el archivo, lanza
+   `Invalid argument(s): Failed to load dynamic library`.
+2. **Búsqueda del símbolo.** `lookupFunction` pregunta por el nombre `guia_digito_control`. El cargador devuelve la
+   dirección de memoria donde empieza esa función. Si el nombre no existe, el error dice `undefined symbol`.
+3. **Creación del envoltorio.** Dart genera un trozo de código que traduce entre sus valores y la convención de C.
+   Lo guardas en una variable `final` y lo reutilizas: buscar en cada llamada repite los pasos 2 y 3 sin necesidad.
+4. **Preparación de los argumentos.** Un `int` de Dart se coloca en un registro de enteros; un `double`, en uno de
+   punto flotante. Un `String` no puede pasar tal cual: antes lo copias a memoria nativa.
+5. **Salto y regreso.** El hilo salta a la dirección de la función de C, que corre hasta terminar. El resultado vuelve
+   en un registro, y Dart lo convierte en un `int` o un `double`.
+
+```dart
+typedef _DigitoC = Int32 Function(Pointer<Utf8> guia);
+typedef _DigitoDart = int Function(Pointer<Utf8> guia);
+
+final lib = DynamicLibrary.open('build_nativo/libguias.so');
+final digito = lib.lookupFunction<_DigitoC, _DigitoDart>('guia_digito_control');
+```
+
+Observa la pareja de `typedef`. `_DigitoC` repite la firma de C: `int32_t` es `Int32` y `const char *` es un puntero.
+`_DigitoDart` dice cómo la llamas desde Dart. La búsqueda ocurre una sola vez, al principio.
+
+```dart
+final nativa = 'EN-4471'.toNativeUtf8(); // reserva 8 bytes: 7 letras y el cero final
+try {
+  print(digito(nativa)); // 7
+} finally {
+  malloc.free(nativa);
+}
+```
+
+El paso 4 aparece aquí. `toNativeUtf8` copia el texto como UTF-8 terminado en cero, el formato que C espera. Esa copia
+vive fuera del montón de Dart, así que la liberas tú, en un `finally`. El diagrama compara este salto directo con el
+camino de un `MethodChannel`.
 
 ```mermaid
 flowchart LR
@@ -133,11 +205,48 @@ flowchart LR
     D -. "MethodChannel: mensaje<br/>al código de la plataforma (Módulo 7)" .-> P["Kotlin / Swift / C++"]
 ```
 
+##### 4. Reglas, variantes y casos límite
+
+**Las firmas no se comprueban contra C.** Dart verifica que la firma nativa y la de Dart sean compatibles entre sí. No
+puede leer el `.h`, así que no sabe si coinciden con la función real. Declarar `distancia_m` con `Int32` devolvió
+`1072068704` en lugar de `111194.9`, sin ningún error.
+
+**Usa tipos de tamaño fijo.** `Int32`, `Int64` y `Double` tienen el mismo tamaño en todas las plataformas. `Int`, en
+cambio, es el `int` de C, cuyo tamaño depende de la plataforma. Si el `.h` dice `int32_t`, la firma dice `Int32`.
+
+**Las rutas siguen las reglas del cargador.** Un nombre sin directorio, como `libguias.so`, se busca en
+`LD_LIBRARY_PATH` y en las rutas del sistema, no en tu proyecto. Una ruta relativa con directorio se resuelve desde el
+directorio actual del proceso, no desde el archivo `.dart`. Por eso falla si ejecutas desde `bin/`.
+
+**Solo se ven los símbolos exportados.** Las funciones `static` de C, como `reservar` o `tramo`, no aparecen en
+`nm -D` y Dart no puede buscarlas. Si compilas sin `-fPIC -shared`, obtienes un ejecutable, no una biblioteca.
+
+**Cada lado libera lo suyo.** Lo que reservó `toNativeUtf8` se libera con `malloc.free`. Lo que devuelve C, como la
+etiqueta, se libera con la función que C ofrece (`guias_liberar`). El Tema 3 muestra qué pasa si los cruzas.
+
+**La variante hoja.** `lookupFunction` acepta `isLeaf: true` para funciones muy cortas que no vuelven a Dart. El
+binding de `distancia_m` la usa; el Tema 4 mide cuánto ahorra. `dart:ffi` es estable desde Dart 2.12; este módulo usa
+Dart 3.14.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 7, Tema 1, llamaste al código de la plataforma con un **`MethodChannel`**. Aquella llamada era asíncrona:
+Dart enviaba un mensaje, Kotlin o Swift lo atendía y la respuesta llegaba en un `Future`. Con FFI no hay mensaje ni
+`Future`: la llamada vuelve con el valor, como una función normal.
+
+Esa diferencia define cuándo usar cada uno. Usa Dart puro para lo que Dart hace bien: formatos, validaciones y la
+mayoría de cálculos. Usa un canal o un plugin para las API de la plataforma, como la cámara o los permisos. Reserva FFI
+para bibliotecas de C, C++, Rust o Go, o para cálculo pesado que ya existe en C.
+
 | Necesitas… | Usa |
 |---|---|
 | lógica que Dart hace bien (formatos, validaciones, la mayoría de cálculos) | Dart puro |
 | una API de la plataforma (cámara, permisos, notificaciones) | `MethodChannel` o un plugin (Módulo 7) |
 | una biblioteca de C, C++, Rust o Go, o cálculo pesado ya escrito en C | FFI |
+
+Los **records** del Módulo 0, Tema 6, aparecen en el ejemplo para agrupar latitud y longitud de la bodega y del
+cliente. El Tema 2 elimina el trabajo manual de este tema: `ffigen` escribe las firmas y un *build hook* compila la
+biblioteca. El Tema 3 se ocupa de la memoria que aquí liberas a mano, y el Tema 4, del tiempo que tarda cada llamada.
 
 #### Problema resuelto 1.1
 Escribe la biblioteca de guías en C, compílala como `libguias.so` y llámala desde Dart con un binding escrito a mano:
@@ -681,14 +790,14 @@ Este tema usa **el `.h` del Tema 1**, **las compilaciones de release** (Módulo 
 - **Ejemplo:** `@ffi.Native<ffi.Int32 Function(ffi.Pointer<ffi.Char>)>() external int guia_digito_control(...)`.
 - **Error típico:** mover el archivo generado a otra carpeta sin cambiar el `assetName` del *hook*.
 
-***build hook***
+**build hook**
 - **Definición técnica:** el script `hook/build.dart` de un paquete; Dart y Flutter lo ejecutan solos antes de `dart run`, `dart test`, `dart build` y `flutter build`, con la plataforma de destino como entrada, y él declara los archivos nativos que produjo.
 - **En palabras sencillas:** la receta que se cocina sola cada vez que alguien usa el paquete.
 - **Dónde se rompe la comparación:** se ejecuta en la máquina que compila, con sus herramientas: si falta el compilador de C (o el NDK para Android), falla ahí.
 - **Ejemplo:** `CBuilder.library(name: 'guias', ...)` produce `libguias.so`.
 - **Error típico:** descargar binarios desde el *hook*: la compilación deja de ser reproducible y falla sin red.
 
-***code asset***
+**code asset**
 - **Definición técnica:** archivo nativo (biblioteca dinámica) declarado por un *hook* con un identificador (`package:m16/nativo/guias.g.dart`); la herramienta lo copia al paquete final y el VM lo usa para resolver los `@Native` con ese identificador.
 - **En palabras sencillas:** la herramienta etiquetada con el nombre de quien la va a usar.
 - **Dónde se rompe la comparación:** el identificador es un texto: no tiene que coincidir con el nombre del archivo `.so`, sino con la biblioteca de Dart que lo usa.
@@ -703,9 +812,77 @@ Este tema usa **el `.h` del Tema 1**, **las compilaciones de release** (Módulo 
 - **Error típico:** olvidar una biblioteca del sistema y obtener `undefined symbol` al cargar.
 
 #### ► CÓMO FUNCIONA
-`ffigen` corre cuando cambias el `.h` y deja un archivo `.g.dart` en el repositorio. El *hook* corre en cada
-compilación, para el destino que toque, y entrega la `.so` con un identificador. En ejecución, la primera llamada a un
-`@Native` busca el *asset* con su identificador y resuelve el símbolo.
+
+##### 1. La idea en lenguaje sencillo
+
+Imagina que cada vez que el proveedor cambia un repuesto, alguien reescribe a mano el catálogo de la bodega. Tarde o
+temprano copia mal una referencia. La solución sensata es que el catálogo se genere solo, leyendo la ficha del
+proveedor. Y que cada camión reciba el repuesto correcto para su modelo, sin que nadie lo cargue a mano.
+
+El Tema 1 tenía los dos problemas. Las 8 firmas de Dart se copiaron a mano del `.h`, y una firma mal copiada no avisa.
+La `libguias.so` se compiló a mano en una carpeta, solo para Linux x86_64. Para el escritorio, Android y el CI habría
+que repetir esa compilación y copiar el archivo en cada caso.
+
+Este tema automatiza las dos partes. `ffigen` lee el `.h` y escribe las firmas por ti. Un *build hook* compila el C
+para el destino que toque y entrega la biblioteca al empaquetador. Tú solo ejecutas `dart run` o `flutter build`.
+
+##### 2. Definición formal y vocabulario
+
+**`ffigen`** es un paquete de desarrollo que analiza encabezados de C con **libclang**, la biblioteca del compilador
+clang que entiende C. Con lo que lee genera código de Dart: funciones, clases `Struct` y `Opaque`, `typedef` de
+*callbacks* y constantes. Se ejecuta cuando cambia el `.h`, no en cada compilación.
+
+Las funciones que genera llevan la anotación **`@Native`**. Es una función `external` de Dart con su firma nativa
+escrita en la anotación. No hay `DynamicLibrary.open` ni `lookupFunction`: el símbolo se resuelve en el primer uso,
+dentro de un *asset* con un identificador. Por defecto, ese identificador es la URI de la propia biblioteca de Dart.
+
+Un **_build hook_** es el script `hook/build.dart` de un paquete. Dart y Flutter lo ejecutan solos antes de
+`dart run`, `dart test`, `dart build` y `flutter build`. Recibe la plataforma de destino y declara los archivos nativos
+que produjo. En lenguaje sencillo: es la receta que se cocina sola cada vez que alguien usa el paquete.
+
+Cada archivo nativo declarado es un **_code asset_**. Lleva un identificador con la forma
+`package:<paquete>/<nombre>`. La herramienta lo copia al paquete final y el VM lo usa para resolver los `@Native` con
+ese identificador.
+
+**`CBuilder`**, de `native_toolchain_c`, es quien compila. Busca el compilador de C adecuado para el destino: gcc o
+clang en Linux, el del NDK en Android, el de Xcode en Apple y MSVC en Windows. Después declara el resultado como
+*code asset*.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Hay dos momentos distintos: la generación, que ocurre cuando cambias el `.h`, y la compilación, que ocurre siempre.
+
+1. **Generación.** Ejecutas `dart run tool/ffigen.dart`. `ffigen` carga libclang, analiza `src/guias.h` y todo lo que
+   este incluye, como `stdint.h`. Un `Visitor` decide qué declaraciones entran.
+2. **Escritura.** `ffigen` escribe `lib/nativo/guias.g.dart`: 85 líneas, 12 funciones `@Native`, `Punto` como
+   `Struct` y `Ruta` como `Opaque`. Ese archivo se versiona.
+3. **Ejecución del hook.** Al hacer `dart run bin/tema2.dart`, la herramienta ejecuta antes `hook/build.dart` con la
+   configuración del destino. `CBuilder` compila `src/guias.c` y deja la `.so` en `.dart_tool/hooks_runner/`.
+4. **Declaración.** El hook declara la `.so` con el identificador `package:m16/nativo/guias.g.dart`. Ese texto sale de
+   `assetName: 'nativo/guias.g.dart'` dentro del paquete `m16`.
+5. **Resolución.** La primera vez que llamas a `guia_digito_control`, el VM busca el *asset* con la URI de la biblioteca
+   que declara la función. Lo encuentra, carga la `.so` y resuelve el símbolo.
+6. **Caché.** Si nada cambió, el hook no recompila. La segunda ejecución del tema tardó 1,3 s en total.
+
+```dart
+@ffi.Native<ffi.Int32 Function(ffi.Pointer<ffi.Char>)>()
+external int guia_digito_control(ffi.Pointer<ffi.Char> guia);
+```
+
+Este es un fragmento generado. La firma nativa va en la anotación; la de Dart, en la declaración `external`. No hay
+nombre de archivo `.so` en ninguna parte: la unión la hace el identificador del *asset*.
+
+```dart
+final constructor = CBuilder.library(
+  name: 'guias', // libguias.so
+  assetName: 'nativo/guias.g.dart', // = package:m16/nativo/guias.g.dart
+  sources: ['src/guias.c'],
+  libraries: ['m'], // -lm (sin, cos, asin)
+);
+```
+
+Aquí está el otro extremo de la unión. `name` decide el nombre del archivo; `assetName` decide el identificador.
+`libraries: ['m']` enlaza la biblioteca matemática que usan `sin`, `cos` y `asin`.
 
 ```mermaid
 flowchart LR
@@ -715,6 +892,48 @@ flowchart LR
     G -->|"primer uso: busca el asset"| SO
     SO --> B["bundle/lib/libguias.so<br/>(Linux) · lib/arm64-v8a/ (APK)"]
 ```
+
+Al empaquetar, el mismo hook corre una vez por destino. `flutter build linux` dejó la `.so` en `bundle/lib/`. `flutter
+build apk` la compiló con el NDK para `arm64-v8a` y `x86_64`, y Gradle la puso en `lib/<abi>/`.
+
+##### 4. Reglas, variantes y casos límite
+
+**El identificador manda.** Si el `assetName` no coincide con la biblioteca que tiene los `@Native`, todo compila. El
+fallo llega en la primera llamada: `No asset with id 'package:m16/nativo/guias.g.dart' found`. Si mueves el archivo
+generado, cambia también el `assetName`.
+
+**Puedes fijar el identificador.** `@Native` acepta `assetId` y `symbol` explícitos. El Tema 4 los usa para declarar
+`distancia_m` otra vez, con otro nombre de Dart y `isLeaf: true`.
+
+**En la API de Dart de `ffigen`, lo no incluido queda fuera.** El YAML sin filtros traía 555 líneas, con 114 constantes
+de glibc. Con un `Visitor`, solo entra lo que nombras. Además, `ffigen` 23 marca el YAML como obsoleto.
+
+**`ffigen` traduce literalmente.** `const char *` se vuelve `Pointer<Char>`, no `Pointer<Utf8>`. Conviertes con
+`cast()` en un solo lugar, el envoltorio `guias.dart`. La advertencia «no definition found» sobre `Ruta` es esperada:
+el `struct` es opaco a propósito.
+
+**El hook corre en la máquina que compila.** Usa sus herramientas: sin compilador de C, o sin NDK para Android, falla
+ahí. El entorno es casi hermético: solo pasan unas pocas variables, como `PATH`. No debe descargar binarios: la
+compilación dejaría de ser reproducible.
+
+**Versiones.** Los *build hooks* llegaron en Dart 3.10, con Flutter 3.38. Los *link hooks*, que eliminan símbolos no
+usados, llegaron en Dart 3.13. Este módulo usa Dart 3.14, `hooks` 2.2.0 y `native_toolchain_c` 0.19.6.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema reemplaza las dos partes manuales del Tema 1, pero el mecanismo de la llamada es el mismo. Un `@Native` sigue
+siendo una llamada síncrona, en el mismo hilo, con tipos nativos que deben coincidir con C. Lo que cambia es quién
+escribe la firma y quién encuentra la biblioteca.
+
+`ffigen` se agregó como **dependencia de desarrollo**, como viste en el Módulo 9: se usa al escribir el código y no
+viaja en la app. Las compilaciones de release del Módulo 11 ya conocías; ahora el hook se integra en ellas sin tocar
+`CMakeLists.txt` ni Gradle.
+
+Compara con un plugin de Flutter que trae código nativo propio. El plugin necesita un proyecto de Android, otro de iOS
+y uno por escritorio. El hook es un solo archivo de Dart que compila el mismo C para todos.
+
+El Tema 3 usa estos bindings para estudiar la memoria: `Struct`, `Opaque` y la `Arena` de `guias.dart`. El Tema 4
+vuelve a declarar un `@Native` con `isLeaf` y usa los `typedef` de *callback* que generó `ffigen`.
 
 #### Problema resuelto 2.1
 Genera los bindings de `guias.h` con `ffigen`, compila la biblioteca con un *build hook* y úsala desde un script de
@@ -1132,8 +1351,7 @@ Al terminar este tema podrás:
 - pasar *structs* por valor y por puntero, y arreglos de *structs*, entre Dart y C;
 - atar memoria nativa a un objeto de Dart con `NativeFinalizer`, y medir fugas y accesos inválidos de verdad.
 
-**Conceptos clave:** propiedad de la memoria, `Allocator` (`malloc`, `calloc`), `Arena`, `Struct` y `Opaque`,
-`NativeFinalizer`
+**Conceptos clave:** propiedad de la memoria, `Allocator` (`malloc`, `calloc`), `Arena`, `Struct` y `Opaque`, `NativeFinalizer`
 
 #### El problema
 La app de la ruta lleva una semana en pruebas y el equipo de soporte reporta dos cosas: en jornadas largas la app
@@ -1183,9 +1401,78 @@ Este tema usa **los bindings y el *hook* del Tema 2**, **`try`/`finally`** (Mód
 - **Error típico:** liberar a mano y no llamar a `detach`: el finalizador libera otra vez el mismo puntero.
 
 #### ► CÓMO FUNCIONA
-La memoria de Dart la gestiona el GC; la nativa, quien la reservó. Hay tres patrones: memoria temporal en una `Arena`
-(se libera al salir del bloque), memoria que entrega C y devuelve con su función de liberar, y memoria que vive tanto
-como un objeto de Dart, atada con un `NativeFinalizer`.
+
+##### 1. La idea en lenguaje sencillo
+
+En una bodega con herramientas compartidas, la regla es simple: quien saca una herramienta la devuelve. Si nadie la
+devuelve, el armario se vacía poco a poco. Si alguien devuelve una herramienta ajena al armario equivocado, el
+inventario queda corrupto. Y si alguien sigue usando una herramienta ya devuelta, puede tomar la de otro sin saberlo.
+
+En Dart casi nunca piensas en esto. El **recolector de basura** (GC, *garbage collector*) es el encargado de la bodega:
+detecta los objetos que nadie usa y recupera su memoria. Pero el GC solo ve el **montón de Dart**, la memoria donde
+viven tus objetos. La memoria que reserva C, o la que reservas con `package:ffi`, queda fuera de su vista.
+
+La app de la ruta mostró los dos síntomas. En jornadas largas ocupaba cada vez más memoria: una **fuga**. A veces se
+cerraba sola al terminar una ruta: un acceso a memoria ya liberada. Ninguno de los dos lanzó una excepción de Dart.
+Este tema te da reglas para no provocarlos y herramientas para encontrarlos.
+
+##### 2. Definición formal y vocabulario
+
+La **propiedad de la memoria** es la regla que dice qué parte del programa libera cada bloque nativo. En la frontera
+entre Dart y C, libera quien reservó, y con su propio liberador. Una función puede **transferir** la propiedad, como
+`etiqueta_crear`, que entrega un bloque que tú devuelves con `guias_liberar`. Esa transferencia se escribe en el `.h`.
+
+Un **`Allocator`** es la interfaz de `dart:ffi` con dos operaciones: `allocate` y `free`. `package:ffi` trae dos:
+**`malloc`**, que entrega memoria sin inicializar, y **`calloc`**, que la entrega en ceros. Los dos usan el `malloc` del
+sistema, así que el GC no sabe nada de ellos.
+
+La **`Arena`** es un `Allocator` que anota todo lo que reserva y lo libera junto con `releaseAll`. La función `using`
+crea una arena, ejecuta tu bloque y la libera al salir, aunque haya excepción. Es la bandeja de lo temporal.
+
+**`Struct`** describe en Dart un `struct` de C, campo por campo, con su tipo nativo. **`Opaque`** representa un tipo
+cuyos campos Dart no conoce: solo lo maneja por puntero. `Punto` es un `Struct` de 16 bytes; `Ruta` es `Opaque`.
+
+Por último, **`NativeFinalizer`** llama a una función nativa cuando el GC recoge un objeto de Dart. El objeto debe
+implementar **`Finalizable`**. Esa interfaz además mantiene vivo el objeto mientras dura una llamada nativa que use
+sus campos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Hay tres patrones de vida para la memoria nativa. Cada uno responde a la pregunta «¿cuándo se libera?».
+
+1. **Temporal, en una `Arena`.** Reservas dentro de `using`, llamas a C y sales. Al salir, `using` llama a
+   `releaseAll` y todo lo reservado vuelve al sistema.
+2. **Entregada por C.** C reserva y te entrega el puntero. Lo usas y lo devuelves con la función de C (`guias_liberar`
+   o `ruta_destruir`), nunca con `malloc.free`.
+3. **Atada a un objeto de Dart.** Un objeto `Finalizable` guarda el puntero. Lo liberas tú con `liberar()`; si se te
+   olvida, el `NativeFinalizer` lo libera cuando el GC recoja el objeto.
+
+```dart
+int digitoControl(String guia) => using((arena) {
+  final nativa = guia.toNativeUtf8(allocator: arena); // se libera al salir de using
+  return c.guia_digito_control(nativa.cast<Char>());
+});
+```
+
+Este es el primer patrón. La copia de la guía se reserva en la arena y desaparece al salir. El `int` que devuelve C
+es un valor de Dart: no depende de esa memoria y sobrevive sin problema.
+
+El tercer patrón tiene más piezas. Observa cómo `RutaNativa` conecta el objeto con el finalizador:
+
+```dart
+_finalizador.attach(this, _ruta.cast(), detach: this, externalSize: bytesReservados);
+
+void liberar() {
+  if (_ruta == nullptr) return;
+  _finalizador.detach(this);
+  c.ruta_destruir(_ruta);
+  _ruta = nullptr;
+}
+```
+
+`attach` registra tres datos: el objeto vigilado, el puntero que se pasará a `ruta_destruir` y una llave para
+desconectar. `externalSize` le dice al GC cuánta memoria nativa cuelga del objeto: así recoge antes. `liberar()` llama
+a `detach` antes de destruir, para que el finalizador no libere el mismo puntero otra vez.
 
 ```mermaid
 flowchart TB
@@ -1200,6 +1487,50 @@ flowchart TB
     O -->|"puntero"| R
     O -. "NativeFinalizer: el GC llama a<br/>ruta_destruir si nadie llamó a liberar()" .-> R
 ```
+
+Los *structs* cruzan de dos formas. **Por puntero**, `arena<Punto>(n)` reserva n structs contiguos en memoria nativa
+y C recibe la dirección del primero. **Por valor**, `Struct.create<Punto>()` crea el struct en memoria de Dart y la
+llamada lo copia entero a C, como hace `ruta_agregar`.
+
+##### 4. Reglas, variantes y casos límite
+
+**Nunca cruces liberadores.** La biblioteca de C guarda una cabecera de 8 bytes delante de cada bloque. Pasar su
+puntero a `malloc.free` hizo que glibc imprimiera `free(): invalid pointer` y abortara con código 134. Ningún `try`
+lo captura.
+
+**Un puntero de una `Arena` no sobrevive al bloque.** Si lo guardas en un campo, queda apuntando a memoria liberada.
+Para memoria que debe durar, reserva con `calloc` y átala a un objeto `Finalizable`.
+
+**El uso después de liberar no es determinista.** El mismo programa, con los mismos datos, dio `0.0 m` dos veces y
+se cayó cuatro con `SEGV`. Bajo valgrind imprimió `33.4 m`. Por eso estos errores se buscan con herramientas, no
+a ojo.
+
+**El finalizador es una red, no un horario.** El GC decide cuándo actuar, y puede no hacerlo antes de que el proceso
+termine. En la prueba, el contador llegó a 48 129 120 bytes antes de bajar. Para recursos grandes o escasos, libera
+explícitamente y deja el finalizador como respaldo.
+
+**El orden de los campos importa.** Un `Struct` debe tener los mismos campos, en el mismo orden y con los mismos
+tipos que en C. Si no, lees bytes de otro campo. `ffigen` los copia del `.h` para evitarlo.
+
+**valgrind necesita un ejecutable compilado.** `dart build cli` compila el script de forma AOT y copia `libguias.so`
+con el mismo *build hook* del Tema 2. Otra opción es compilar la `.so` con `-fsanitize=address`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El patrón de `using` es el mismo `try`/`finally` del Módulo 0, empaquetado: la liberación ocurre en cualquier camino
+de salida. En el Tema 1 escribiste ese `finally` a mano; la `Arena` de `guias.dart`, en el Tema 2, lo hizo por ti.
+
+La captura de errores del Módulo 13, Tema 1, tiene un límite que este tema hace visible. `PlatformDispatcher.onError`
+recibe excepciones de Dart. Un `SIGABRT` o un `SEGV` en C no son excepciones: el sistema operativo termina el proceso
+antes de que Dart pueda reaccionar.
+
+Compara `NativeFinalizer` con `Finalizer`, el de `dart:core`. `Finalizer` ejecuta código de Dart después de que el GC
+recoge el objeto, sin garantía de momento. `NativeFinalizer` llama directamente a una función de C, sin
+pasar por Dart. Por eso la documentación lo recomienda para liberar recursos nativos.
+
+El Tema 4 aplica estas reglas entre hilos. `optimizarEnHiloDeC` libera su arreglo de puntos al volver de C, y eso
+solo es correcto porque C copia los puntos antes. Si C guardara el puntero, sería el mismo uso después de liberar de
+este tema, ahora en otro hilo.
 
 #### Problema resuelto 3.1
 Provoca y mide los errores de memoria más comunes con la biblioteca de guías: fugas en C y en Dart, una ruta nativa
@@ -1624,8 +1955,7 @@ Al terminar este tema podrás:
 - mover el trabajo nativo a otro isolate con `Isolate.run`, o a un hilo de C con `NativeCallable.listener`;
 - demostrar con la app real que la interfaz sigue dibujando mientras C trabaja.
 
-**Conceptos clave:** llamada hoja (`isLeaf`), llamada bloqueante, `Isolate.run`, `NativeCallable.listener`,
-`NativeCallable.isolateLocal`
+**Conceptos clave:** llamada hoja (`isLeaf`), llamada bloqueante, `Isolate.run`, `NativeCallable.listener`, `NativeCallable.isolateLocal`
 
 #### El problema
 El optimizador de rutas en C reordena 600 paradas en un par de segundos. La primera versión de la pantalla lo llama
@@ -1673,9 +2003,70 @@ Este tema usa **medir los cuadros** (Módulo 8, Tema 3), **isolates** (Módulo 8
 - **Error típico:** usarlo para avisos de progreso desde un hilo de trabajo.
 
 #### ► CÓMO FUNCIONA
-El isolate de la UI dibuja un cuadro cada 16 ms (a 60 Hz) si tiene el hilo libre. Hay tres lugares donde puede correr
-el trabajo de C: en ese mismo hilo (lo congela), en el hilo de otro isolate (`Isolate.run`) o en un hilo creado por C,
-que avisa con `NativeCallable.listener`.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una ventanilla de atención con una sola persona. Si esa persona sale a hacer un trámite de dos horas, la
+ventanilla queda cerrada, aunque escriba «vuelvo pronto». Hay dos arreglos: mandar el trámite con un compañero, o
+dejar que la oficina de destino lo haga y avise por teléfono cuando termine.
+
+En la app, la ventanilla es el **isolate de la UI**: el que construye los widgets, atiende los toques y dibuja los
+cuadros. A 60 Hz, tiene unos 16 ms por cuadro. El optimizador de C reordena 600 paradas en segundos. Si lo llamas
+desde ese isolate, la pantalla no se dibuja hasta que C termina: el camión no gira y el botón no responde.
+
+Escribir `async` no lo arregla. Una función de C no se vuelve asíncrona por estar dentro de un `Future`. Este tema
+mide cuánto cuesta cada llamada y te muestra dos formas reales de sacar el trabajo largo del isolate de la UI.
+
+##### 2. Definición formal y vocabulario
+
+Toda llamada FFI es una **llamada bloqueante**: el hilo que la hace espera a que C devuelva. Si ese hilo es el del
+isolate de la UI, no hay `build`, animaciones ni gestos durante la llamada. Envolverla en `async` solo la retrasa;
+sigue corriendo en el mismo hilo.
+
+Una **llamada hoja** se declara con `isLeaf: true` en `@Native` o en `lookupFunction`. El VM omite la **transición**
+completa a código nativo: el cambio de estado que deja el isolate listo para el GC y para recibir llamadas de vuelta.
+Es más barata, pero solo sirve para funciones cortas que no llaman a Dart ni se bloquean.
+
+**`Isolate.run`** crea un isolate nuevo, ejecuta una función en él, devuelve el resultado y lo cierra. Los argumentos
+y el resultado se copian entre isolates, porque cada isolate tiene su propia memoria.
+
+**`NativeCallable.listener`** crea un puntero a función de C que se puede llamar desde cualquier hilo. Cada llamada
+se convierte en un mensaje que el isolate creador ejecuta después. No devuelve valor: su tipo de retorno es `Void`.
+
+**`NativeCallable.isolateLocal`** también crea un puntero a función, pero ejecuta el código de Dart en el momento y
+puede devolver un valor. Solo se puede llamar desde el hilo del isolate que lo creó.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El trabajo de C puede correr en tres lugares. Sigue cada uno en orden.
+
+1. **En el isolate de la UI.** La UI llama a `ruta_optimizar`. El hilo entra en C y no sale hasta terminar. El
+   motor no puede pedir cuadros a ese isolate: en la consola, 1 latido en 1 843 ms.
+2. **En otro isolate.** `Isolate.run` copia la lista de paradas al isolate nuevo. Ese isolate reserva los punteros,
+   llama a C y libera. La UI siguió libre: 101 latidos.
+3. **En un hilo de C.** La UI llama a `ruta_optimizar_en_hilo`, que copia los puntos, crea un hilo y vuelve enseguida.
+   El hilo de C trabaja y llama a `progreso` después de cada pasada. Cada llamada llega como mensaje: 83 latidos y 30
+   avisos.
+4. **El cierre.** Al final, C llama a `terminado`. Ese mensaje cierra los dos `NativeCallable` y completa el `Future`.
+
+```dart
+Future<Resultado> optimizarEnIsolate(List<(double, double)> puntos, int pasadas) =>
+    Isolate.run(() => optimizar(puntos, pasadas)); // la lista se copia; los punteros, no
+```
+
+`Isolate.run` recibe un cierre. Lo que el cierre captura, aquí `puntos` y `pasadas`, se copia al isolate nuevo. Los
+punteros se crean allá, dentro de `optimizar`, y se liberan allá.
+
+```dart
+terminado = NativeCallable<Void Function(Double)>.listener((double metros) {
+  progreso.close();
+  terminado.close();
+  listo.complete((metros: metros, milisegundos: reloj.elapsedMilliseconds));
+});
+```
+
+`terminado.nativeFunction` es la dirección que recibe C. Cuando el hilo de C la llama, el VM encola un mensaje para
+este isolate. El cierre corre después, en el isolate de la UI, y por eso puede completar el `Completer` sin riesgo.
 
 ```mermaid
 sequenceDiagram
@@ -1693,6 +2084,47 @@ sequenceDiagram
     HC-->>UI: progreso(10), progreso(20)… (mensajes)
     HC-->>UI: terminado(metros) · close()
 ```
+
+Los tres caminos dieron la misma ruta, de 413,1 km. Solo cambió quién esperaba.
+
+##### 4. Reglas, variantes y casos límite
+
+**`isLeaf` tiene condiciones.** La función no debe llamar de vuelta a Dart, ni bloquearse, ni esperar nada. Mientras
+dura, ese hilo no coopera con el VM. En la medición, la hoja costó 42,0 ns por llamada contra 54,8 de la normal.
+
+**Cruzar a C no acelera por sí solo.** La misma fórmula de distancia en Dart costó entre 38,5 y 40,7 ns. FFI gana
+cuando el trabajo dentro de C es grande o la biblioteca ya existe, no por el cruce.
+
+**Un `listener` mantiene vivo su isolate.** Sin `close()`, el programa terminó su trabajo pero no salió: `timeout` lo
+mató a los 10 s. La propiedad `keepIsolateAlive` cambia ese comportamiento. Cierra el `listener` cuando C ya no vaya
+a llamarlo, nunca antes.
+
+**`isolateLocal` no sirve desde un hilo de C.** El VM abortó con `Cannot invoke native callback outside an isolate.`
+Ningún `try` lo captura. Úsalo solo para *callbacks* que C llama durante una llamada síncrona hecha desde Dart.
+
+**Lo que cruza de isolate se copia.** La lista de paradas viaja por valor. Un `Pointer` es una dirección del mismo
+proceso, pero la `Arena` que lo poseía no viaja. Reserva y libera en el isolate que usa la memoria.
+
+**Versiones.** `NativeCallable` existe desde Dart 3.1; antes, los *callbacks* desde otros hilos exigían puertos
+nativos y código de C adicional. Este módulo usa Dart 3.14.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 8, Tema 4, usaste isolates y `compute` para cálculos de Dart. Aquí la idea es la misma, pero el trabajo
+está en C. `Isolate.run` funciona igual: el isolate nuevo llama a C con sus propios punteros.
+
+En el Módulo 8, Tema 3, mediste los cuadros. Este tema usa la misma vara: un `Ticker` que cuenta cuadros y la mayor
+pausa entre dos. En la app, el modo «mismo isolate» no dibujó en 6 108 ms; los otros dos siguieron avanzando.
+
+El `Completer` del Módulo 0, Tema 3, convierte los avisos sueltos de C en un `Future` que la pantalla puede esperar.
+Es el puente entre un mundo de *callbacks* y un mundo de `await`.
+
+Compara los dos caminos que no bloquean. `Isolate.run` sirve con cualquier función síncrona de C, sin cambiarla.
+El hilo de C con `listener` exige que la biblioteca ofrezca esa variante, pero no copia datos entre isolates y
+permite mostrar el avance real.
+
+Este tema cierra el módulo. El Proyecto 33 reúne lo visto: bindings generados, memoria bien liberada y trabajo
+pesado fuera del isolate de la UI.
 
 #### Problema resuelto 4.1
 Mide el costo de las llamadas cortas (normales y hoja) y el efecto de una llamada larga en tres lugares, primero con

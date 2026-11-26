@@ -172,15 +172,64 @@ existan correos válidos?
 - **Error típico:** escribir `this.tags = tags;`: en `EmailAntes.java` la etiqueta `intruso` aparece en un correo ya creado.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Un `Builder` acumula valores en su propio estado mutable, expone una API fluida (`return this`) y concentra la validación y la copia defensiva en `build()`. El producto final `Email` es inmutable: constructor privado, campos `final` y `List.copyOf`.
 
-**Por qué existe.** Un constructor telescópico con seis parámetros opcionales es ilegible y permite combos inválidos. Los setters permiten estados intermedios inválidos. Builder separa *acumular datos* de *construir un objeto válido*.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** Añade una clase por producto y una capa de llamadas. A cambio, los invariantes viven en un solo punto (`build()`) y el objeto construido no puede mutarse. `tag()` rechaza etiquetas vacías y `build()` valida formato de correo, subject obligatorio y longitud máxima.
+Piensa en el trámite de un pasaporte. Llenas el formulario por partes, en el orden que quieras. Nadie te entrega el
+documento mientras escribes. Solo al final un funcionario revisa todo junto y, si algo falta, te lo devuelve sin
+emitir nada.
 
-El flujo tiene dos fases. En la primera, el cliente llama métodos del Builder en cualquier orden y el Builder solo
-guarda. En la segunda, `build()` revisa todas las reglas juntas. Si alguna falla, lanza una excepción y el `Email`
-nunca existe.
+Tienda Aurora tiene el mismo problema con sus correos. Un `Email` necesita destinatario y asunto, puede llevar cuerpo
+y admite varias etiquetas. Con constructores de dos, tres y cuatro `String`, el compilador acepta cualquier orden. En
+`EmailAntes.java` viste el resultado: un correo con `to=Bienvenida`, otro con `intruso` y otro con `subject=null`.
+
+El patrón Builder separa dos momentos que el constructor telescópico mezcla. Primero acumulas datos sin
+compromiso. Después pides el objeto, y solo lo recibes si cumple todas las reglas a la vez.
+
+##### 2. Definición formal y vocabulario
+
+Un **Builder** es un patrón creacional en el que un objeto auxiliar recibe los datos de construcción uno a uno y
+entrega el producto al llamar a `build()`. El libro de la «banda de los cuatro» (Gamma y otros, 1994) lo describe
+como separar la construcción de un objeto complejo de su representación. La variante de este tema es la que Joshua
+Bloch popularizó para Java: una clase anidada que sustituye a los constructores con muchos parámetros.
+
+El problema que resuelve se llama **constructor telescópico**: una cadena de sobrecargas donde cada una agrega un
+parámetro y delega en la siguiente con `this(...)`. En lenguaje sencillo, un catalejo que se alarga dato por dato.
+Su defecto es que los parámetros se identifican por posición, no por nombre.
+
+La **interfaz fluida** es el estilo que permite escribir `.to(...).subject(...).tag(...)` en una sola expresión.
+Técnicamente, cada método devuelve el mismo objeto con `return this`. En palabras sencillas, cada paso te devuelve
+el formulario para que sigas llenándolo.
+
+Un **invariante** es una condición que todo objeto de un tipo cumple desde que termina su constructor hasta que
+desaparece. Para `Email`, el invariante dice: destinatario con formato de correo y asunto no vacío de hasta 120
+caracteres. La **copia defensiva** protege ese invariante: el objeto guarda su propia copia de los datos mutables
+que recibe, en vez de la referencia original.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la ejecución de `Email.builder().to("ana@aurora.test").subject("Bienvenida").tag("onboarding").build()`:
+
+1. `Email.builder()` es un método `static` que llama al constructor privado de `Email.Builder`. Nace un objeto
+   Builder con `to` y `subject` en `null`, `body` en `""` y una `ArrayList` vacía.
+2. Cada método del Builder normaliza su argumento y lo guarda en un campo. `Objects.requireNonNull` corta con
+   `NullPointerException` si recibe `null`. Luego `return this` entrega el mismo Builder a la llamada siguiente.
+3. `tag(" ")` valida en el acto, porque su regla depende solo de su argumento. Lanza `IllegalArgumentException`
+   antes de llegar a `build()`.
+4. `build()` revisa las reglas que miran el estado completo. Si alguna falla, lanza `IllegalStateException` y no se
+   ejecuta ningún `new Email`.
+5. Si todo pasa, `build()` llama a `new Email(this)`. El constructor privado copia los campos a variables `final` y
+   convierte la lista con `List.copyOf`.
+
+```java
+public Builder to(String to) {
+    this.to = Objects.requireNonNull(to, "to").trim();
+    return this;              // la cadena sigue con el mismo Builder
+}
+```
+
+Este fragmento resume el paso 2. Observa que el método no valida el formato del correo. Esa regla se aplica en
+`build()`, cuando ya sabes que no habrá más cambios.
 
 ```mermaid
 sequenceDiagram
@@ -200,11 +249,47 @@ sequenceDiagram
     end
 ```
 
-**Confusión común.** Confundirlo con “una clase con muchos setters”. La diferencia es que el builder no expone el producto hasta que `build()` valida. Para `Point(x, y)` o un DTO de dos campos, un constructor directo basta.
+¿Por qué el Builder puede leer los campos privados de `Email`, y `Email` los del Builder? La especificación del
+lenguaje (JLS §6.6.1) permite el acceso a un miembro `private` desde cualquier punto de la clase de nivel superior
+que lo contiene. Las dos clases viven dentro de `Email`, así que comparten ese permiso.
 
-**Lo que cambia en Java.** El constructor del producto es `private` y el Builder es una clase anidada `static`. Así
-el compilador impide crear un `Email` sin pasar por `build()`. Si el objeto tiene dos o tres campos obligatorios,
-un `record` con constructor compacto (Java, Módulo 1, Tema 5) valida igual y no necesita Builder.
+##### 4. Reglas, variantes y casos límite
+
+El Builder es una clase anidada `static`. Una clase anidada no estática guardaría una referencia oculta a una
+instancia de `Email`, y no la hay todavía. Con `static`, el Builder existe por su cuenta.
+
+Desde Java 11 (JEP 181, *nest-based access control*), la JVM reconoce a la clase externa y sus anidadas como un
+**nido**. Antes, `javac` generaba métodos puente sintéticos para que una clase anidada tocara miembros privados de
+otra. Hoy la JVM autoriza ese acceso directamente.
+
+`List.copyOf` existe desde Java 10. Devuelve una lista no modificable y lanza `NullPointerException` si algún
+elemento es `null`. Si recibe una lista que ya es no modificable, puede devolverla sin copiarla. Cualquier `add` sobre
+el resultado lanza `UnsupportedOperationException`, como muestra la salida 4 de `EmailBuilder.java`.
+
+Los campos `final` del producto tienen una garantía extra en el modelo de memoria (JLS §17.5). Si el constructor no
+deja escapar `this`, otro hilo ve los valores finales correctos sin sincronización. Por eso un objeto inmutable se
+comparte con seguridad.
+
+Recuerda tres casos límite. Llamar dos veces a `subject(...)` no es error: gana la última asignación. Reutilizar el
+mismo Builder para dos `build()` crea dos `Email` distintos, porque cada uno copia la lista. Un `subject` de espacios
+queda vacío tras `trim()` y `build()` lo rechaza.
+
+Desde Java 16 (JEP 395) existe `record`. Un `record` con constructor compacto valida y es inmutable en una sola
+declaración. Si el objeto tiene dos o tres campos obligatorios y ninguno opcional, el `record` basta y el Builder
+sobra.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema se apoya en constructores y encapsulación (Java, Módulo 1, Tema 1) y en el constructor compacto de
+`record` (Java, Módulo 1, Tema 5). La distinción entre `IllegalArgumentException` e `IllegalStateException` viene de
+Módulo 3, Tema 1: la primera señala un argumento malo y la segunda un estado acumulado incompleto.
+
+No confundas Builder con una clase llena de setters. Con setters el objeto existe desde el principio y pasa por
+estados inválidos. Con Builder el producto no existe hasta que `build()` aprueba todo.
+
+En el Tema 2 verás factories, que también crean objetos, pero deciden **qué tipo** concreto instanciar. Builder
+decide **cómo** se arma un solo tipo. En el Tema 5, Prototype retoma la copia defensiva: copiar un objeto exige el
+mismo cuidado con las listas mutables que aprendiste aquí.
 
 #### Problema resuelto 1.1
 Antes del patrón. Crea correos con constructores telescópicos y setters, y comprueba qué errores deja pasar Java.
@@ -653,20 +738,72 @@ precio. ¿Cómo dejas una sola decisión de creación y cambias reglas de precio
 - **Error típico:** `assertEquals(new BigDecimal("90.00"), total)` falla aunque el monto sea correcto; usa `compareTo(...) == 0`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo (Factory Method).** Un método de creación centraliza qué tipo concreto se instancia a partir de un parámetro (`"EMAIL"`, `"SMS"`). El cliente recibe la interfaz `Notificacion`.
 
-**Por qué existe (Factory Method).** Sin él, el `switch` de creación se repite por el sistema. Aquí `NotificacionFactory.crear()` es el único lugar que decide.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones (Factory Method).** Agregar un canal exige tocar la factory. Si la creación necesita credenciales, pools o configuración, esta factory simple se queda corta: conviene un módulo de composición o DI.
+En una cafetería, el cliente pide «un capuchino» en la caja. No entra a la cocina ni elige la máquina. La caja es
+el único lugar que traduce el pedido en un producto concreto. Si mañana llega una bebida nueva, se cambia la caja, no
+a cada cliente.
 
-**Mecanismo (Strategy).** Una interfaz funcional `PricingStrategy` encapsula el algoritmo; `Checkout` recibe una implementación por constructor y llama a `total(subtotal)`. El lambda se pasa directamente: `new Checkout(sub -> sub.multiply(new BigDecimal("0.90")))`.
+Tienda Aurora tenía esa decisión repetida. En `CanalesAntes.java`, un `switch` sabía enviar por WhatsApp y otro no
+sabía cobrarlo, y el programa terminó con `Canal no soportado: WHATSAPP`. Una factory deja esa decisión en un solo
+punto.
 
-**Por qué existe (Strategy).** Las campañas de precio cambian. Sin Strategy, `Checkout` crece con un `if` por campaña y cada regla nueva obliga a modificar esa clase.
+El segundo problema es distinto. La cafetería cobra con la tarifa del día: normal, socio o promoción. La caja no
+cambia cuando cambia la tarifa; solo recibe otra regla. Eso es Strategy: `Checkout` recibe la regla de precio ya
+hecha y la aplica sin saber cuál es.
 
-**Implicaciones (Strategy).** El contexto depende solo del contrato (DIP) y puede cambiar de algoritmo sin recompilar la clase. En este proyecto no hay `cambiarEstrategia`: se crea un `Checkout` distinto por campaña, que es suficiente para el caso.
+##### 2. Definición formal y vocabulario
 
-Las dos ideas trabajan juntas pero responden preguntas distintas. La factory contesta «¿qué objeto creo?» en un solo
-lugar. Strategy contesta «¿cómo calculo?» con un objeto que el contexto recibe ya creado.
+Una **factory simple** es un método, casi siempre `static`, que recibe un parámetro y decide qué implementación de
+una interfaz instanciar. No es un patrón del catálogo clásico, sino una práctica: concentrar la creación. El cliente
+solo ve el tipo `Notificacion`, nunca `SmsNotificacion`.
+
+**Factory Method** sí es un patrón del catálogo de Gamma y otros. Su definición dice: define una interfaz para crear
+un objeto, pero deja que las subclases decidan qué clase instanciar. Requiere dos piezas: un flujo fijo en la clase
+base y un método de creación que cada subclase redefine. En `Remitente`, el flujo es `notificar()` y el método
+fábrica es `crearNotificacion()`.
+
+**Strategy** encapsula una familia de algoritmos intercambiables detrás de una interfaz. El objeto que la usa se
+llama **contexto**; aquí el contexto es `Checkout`. En palabras sencillas, el contexto sabe *cuándo* calcular y la
+estrategia sabe *cómo*.
+
+En Java, la forma natural de una estrategia es una **interfaz funcional**: una interfaz con exactamente un método
+abstracto. Esa forma permite escribir la estrategia como una lambda. La **escala de `BigDecimal`** aparece porque el
+cálculo de precios usa dinero exacto, y la escala decide cómo se compara el resultado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Empieza por la factory. Cuando llamas `NotificacionFactory.crear(" sms ")`, ocurre esto:
+
+1. La expresión `canal.trim().toUpperCase()` convierte `" sms "` en `"SMS"`. Un `null` se reemplaza por `""` antes.
+2. El `switch` sobre `String` calcula el `hashCode` del texto, salta al caso candidato y confirma con `equals`.
+3. La rama elegida ejecuta `new SmsNotificacion()` y el resultado sale con el tipo estático `Notificacion`.
+4. Un texto desconocido cae en `default` y lanza `IllegalArgumentException` con el valor original.
+
+En Factory Method, la llamada `r.notificar(...)` usa **despacho dinámico**: la JVM busca `crearNotificacion()` en la
+clase real del objeto, no en la variable. Con un `RemitenteWhatsApp`, se ejecuta su versión y nace un
+`WhatsAppNotificacion`.
+
+```java
+abstract class Remitente {
+    protected abstract Notificacion crearNotificacion();   // punto de variación
+    final String notificar(String destino, String mensaje) {
+        Notificacion n = crearNotificacion();               // despacho dinámico
+        return n.enviar(destino, mensaje) + " costo=" + n.costoEnCentavos();
+    }
+}
+```
+
+El modificador `final` en `notificar` impide que una subclase cambie el flujo. Solo puede cambiar el producto.
+
+Ahora Strategy. Cuando escribes `new Checkout(sub -> sub.subtract(new BigDecimal("15.00")).max(BigDecimal.ZERO))`:
+
+1. El compilador ve que el constructor espera `PricingStrategy`, cuyo único método recibe y devuelve `BigDecimal`.
+   Comprueba que la lambda encaje en esa forma.
+2. `javac` traduce la lambda a un método privado de la clase y a una instrucción `invokedynamic`.
+3. En la primera ejecución, la JVM usa `LambdaMetafactory` para fabricar un objeto que implementa `PricingStrategy`.
+4. `cobrar` valida el subtotal y llama a `pricing.total(subtotal)`. No sabe si recibió un `enum` o una lambda.
 
 ```mermaid
 classDiagram
@@ -685,6 +822,11 @@ classDiagram
       <<interface>>
       +total(subtotal) BigDecimal
     }
+    class Campana {
+      <<enumeration>>
+      NORMAL
+      VIP
+    }
     class Checkout {
       -pricing PricingStrategy
       +cobrar(subtotal) BigDecimal
@@ -692,16 +834,44 @@ classDiagram
     Remitente <|-- RemitenteWhatsApp
     Remitente ..> Notificacion : crea
     Checkout o-- PricingStrategy : usa
-    PricingStrategy <|.. Campana : enum
+    PricingStrategy <|.. Campana : implementa
 ```
 
-**Confusión común (Factory Method).** Creer que toda factory es un “Factory Method” del GoF clásico con herencia. Aquí es una factory estática simple; el criterio útil es el mismo: concentrar la decisión de creación.
+El último paso explica la salida `VIP -> 90.0000`. Según la documentación de `BigDecimal`, `multiply` devuelve un
+resultado con escala igual a la suma de las escalas. `100.00` tiene escala 2 y `0.90` también, así que el total tiene
+escala 4.
 
-**Confusión común (Strategy).** Confundirlo con Factory. Factory decide **qué objeto crear**; Strategy decide **cómo calcular**. Tampoco hace falta una clase concreta por estrategia: un lambda es una estrategia válida si la regla es estable.
+##### 4. Reglas, variantes y casos límite
 
-**Lo que cambia en Java.** Una estrategia de una línea es una lambda; un conjunto fijo y conocido de reglas cabe en
-un `enum` que implementa la interfaz. Los productos sin estado, como cada `Notificacion`, pueden ser `record` vacíos.
-Un método `default` en la interfaz evita repetir el formato de envío en cada canal.
+La especificación (JLS §9.8) define interfaz funcional como la que tiene un solo método abstracto. Los métodos
+`default` y `static` no cuentan. Tampoco cuentan los que repiten un método público de `Object`, como `equals`.
+`@FunctionalInterface` es opcional: solo pide al compilador que falle si alguien agrega un segundo método abstracto.
+
+Lambdas, métodos `default` e interfaces funcionales llegaron en Java 8. El `switch` con flechas usado como expresión
+es estándar desde Java 14 (JEP 361). El `switch` sobre `String` existe desde Java 7.
+
+Cada constante de `Campana` que tiene cuerpo propio es, según JLS §8.9.1, una clase anónima que extiende al `enum`.
+Por eso `NORMAL` y `VIP` pueden implementar `total` de forma distinta. Un `enum` sirve para reglas fijas y conocidas;
+una lambda, para reglas que llegan de fuera o duran una temporada.
+
+`BigDecimal.equals` compara valor y escala; `compareTo` compara solo el valor. La salida
+`equals=false compareTo=0 escalas=2/4` lo demuestra. `subtract`, en cambio, usa la mayor de las dos escalas: por eso
+`CYBER_MONDAY` imprime `85.00`.
+
+Un caso límite de la factory: `toUpperCase()` sin argumento usa el idioma del sistema. En configuración turca, la
+`i` minúscula no se convierte en `I`. Para claves técnicas conviene `toUpperCase(Locale.ROOT)`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Factory Method es la versión creacional de Template Method (Fundamentos, Módulo 9, Tema 3): un flujo fijo con un
+paso variable. Strategy aplica la inversión de dependencias (Arquitectura, Módulo 0, Tema 3): `Checkout` depende del
+contrato, no de las campañas. Las lambdas vienen de Java, Módulo 4, Tema 1.
+
+Compara con el Tema 1. Builder arma un solo tipo paso a paso; la factory elige entre varios tipos. Y no confundas
+factory con Strategy: la primera decide **qué objeto crear**; la segunda, **cómo calcular**.
+
+En el Tema 3, Abstract Factory amplía la idea de este tema: ya no crea un producto, sino una familia completa que
+debe ser coherente. En el Tema 4 verás por qué Strategy cumple el principio abierto/cerrado de SOLID.
 
 #### Problema resuelto 2.1
 Antes de la factory. Envía avisos y calcula su costo con dos `switch` separados, y agrega WhatsApp solo en uno.
@@ -1249,14 +1419,60 @@ oscuro, y nada avisó. ¿Cómo haces que una pantalla solo pueda recibir piezas 
 - **Error típico:** usarla para un único producto: ahí basta una factory simple (Tema 2 de este módulo).
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Una interfaz `TemaUiFactory` crea varios productos relacionados (`Boton`, `Input`). Cada fábrica concreta produce una familia completa. `PantallaCheckout` recibe una fábrica y crea todos sus componentes desde ella.
 
-**Por qué existe.** El problema no es crear un botón, sino evitar mezclar claro y oscuro en la misma pantalla. La fábrica convierte la coherencia en una consecuencia del diseño.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** Agregar un producto a la familia obliga a modificar la interfaz y todas las fábricas. El costo se paga solo cuando los productos cambian juntos; con un único producto, una factory simple basta.
+Cuando amueblas un comedor, eliges una colección del catálogo. La mesa y las sillas salen de la misma línea y
+combinan por diseño. Si compraras cada pieza en una tienda distinta, nadie te impediría llevar una silla rústica a una
+mesa de vidrio.
 
-La pantalla ya no elige piezas: recibe una fábrica y le pide cada componente. La decisión de familia ocurre una sola
-vez, al crear la fábrica.
+La pantalla de checkout de Tienda Aurora vivía esa situación. En `PantallaAntes.java`, `crearInput` y `crearBoton`
+recibían el tema por separado. Una línea copiada pasó `"claro"` a una sola función y la salida mezcló `[OSCURO]` con
+`[CLARO]`. El compilador no protestó, porque para él solo eran dos textos.
+
+Abstract Factory cambia la pregunta. La pantalla ya no pide «un botón claro» y «un input oscuro». Pide «la colección
+oscura» una vez, y de ella saca todas sus piezas.
+
+##### 2. Definición formal y vocabulario
+
+Una **familia de productos** es un conjunto de tipos distintos diseñados para usarse juntos. En este tema, `Boton` e
+`Input` forman la familia; cada tema visual es una variante de esa familia. Lo que importa es que las piezas de una
+misma pantalla vengan de la misma variante.
+
+**Abstract Factory** es un patrón creacional del catálogo de Gamma y otros. Su intención oficial es ofrecer una
+interfaz para crear familias de objetos relacionados sin especificar sus clases concretas. Tiene cuatro piezas:
+
+- la **fábrica abstracta**, aquí `TemaUiFactory`, con un método de creación por producto;
+- las **fábricas concretas**, `ClaroUiFactory` y `OscuroUiFactory`, una por variante;
+- los **productos abstractos**, `Boton` e `Input`, que el cliente conoce;
+- el **cliente**, `PantallaCheckout`, que solo habla con interfaces.
+
+En palabras sencillas: el cliente conoce el catálogo, no las fábricas que lo fabrican. Recuerda la factory simple
+del Tema 2. Allí un método decidía qué tipo de un solo producto crear. Aquí una fábrica decide toda una familia.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la ejecución de `new PantallaCheckout(fabricaPara("oscuro"))`:
+
+1. `fabricaPara` evalúa su `switch` y crea un `OscuroUiFactory`. Es el único punto del programa donde un texto decide
+   la familia.
+2. El constructor de `PantallaCheckout` recibe ese objeto con el tipo `TemaUiFactory`. Comprueba que no sea `null`.
+3. `f.crearBoton()` se compila como una llamada a método de interfaz (`invokeinterface` en el bytecode). En tiempo
+   de ejecución, la JVM busca la implementación en la clase real de `f`: `OscuroUiFactory`.
+4. Esa implementación devuelve una lambda. La JVM la convierte en un objeto que implementa `Boton`.
+5. `f.crearInput()` usa la misma referencia `f`. Por construcción, el input sale de la misma familia.
+6. `render()` llama a `render()` de cada producto y une los textos. Las dos piezas dicen `[OSCURO]`.
+
+```java
+PantallaCheckout(TemaUiFactory factory) {
+    TemaUiFactory f = Objects.requireNonNull(factory, "factory");
+    this.boton = f.crearBoton();   // misma f
+    this.input = f.crearInput();   // misma f: misma familia
+}
+```
+
+La coherencia no la garantiza una comprobación en tiempo de ejecución. La garantiza la forma del constructor: recibe
+una sola fábrica. Para mezclar familias habría que cambiar la firma de la clase.
 
 ```mermaid
 classDiagram
@@ -1264,6 +1480,14 @@ classDiagram
       <<interface>>
       +crearBoton() Boton
       +crearInput() Input
+    }
+    class Boton {
+      <<interface>>
+      +render() String
+    }
+    class Input {
+      <<interface>>
+      +render() String
     }
     class ClaroUiFactory
     class OscuroUiFactory
@@ -1281,11 +1505,43 @@ classDiagram
     OscuroUiFactory ..> Input : crea
 ```
 
-**Confusión común.** Confundirlo con la factory de canales del tema 2. Factory simple crea *un* producto variable; Abstract Factory crea *una familia* que debe permanecer compatible.
+El diagrama muestra el aislamiento. `PantallaCheckout` solo tiene flechas hacia interfaces. Las fábricas concretas
+son las únicas que conocen el estilo real de cada pieza.
 
-**Lo que cambia en Java.** Cuando cada producto tiene un solo método (`render()`), es una interfaz funcional y la
-fábrica devuelve lambdas en lugar de clases con nombre. El compilador garantiza que cada fábrica implemente todos
-los métodos de creación: olvidar uno es un error de compilación, no un fallo en producción.
+##### 4. Reglas, variantes y casos límite
+
+La especificación del lenguaje (JLS §8.1.1.1) exige que una clase no abstracta implemente todos los métodos
+abstractos que hereda. Por eso, al agregar `crearCheckbox()` a la interfaz, `ClaroUiFactory` deja de compilar con
+`is not abstract and does not override abstract method`. El error es el costo del patrón, pero también su protección.
+
+Desde Java 8 existe una variante: declarar el producto nuevo como método `default` en la interfaz. Así las fábricas
+viejas compilan sin cambios. El precio es que heredan un producto genérico que quizá no combina con su familia.
+Úsalo solo si existe un valor por defecto razonable.
+
+Desde Java 17 (JEP 409) puedes declarar `sealed interface TemaUiFactory permits ClaroUiFactory, OscuroUiFactory`.
+Con eso nadie fuera de la lista puede crear una tercera familia. Es útil cuando el conjunto de variantes es cerrado.
+
+Cuando cada producto tiene un solo método abstracto, como `render()`, es una interfaz funcional. Por eso las fábricas
+devuelven lambdas. Un caso límite: la especificación (JLS §15.27.4) no garantiza si cada evaluación de una lambda crea
+un objeto nuevo. No compares productos con `==`.
+
+Abstract Factory no sirve si solo varía un producto. Con un solo producto, la interfaz de la fábrica tiene un
+método y equivale a una factory simple o a un `Supplier`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema extiende directamente el Tema 2. La factory simple concentraba la creación de un producto; Factory Method
+dejaba a una subclase elegir ese producto. Abstract Factory agrupa varios métodos fábrica en una interfaz, y cada
+implementación los coordina.
+
+También usa las interfaces de Java, Módulo 1, Tema 3 y las lambdas de Módulo 4, Tema 1. La elección de familia en
+`fabricaPara` repite la técnica de un único `switch` de creación.
+
+Compara con Strategy. Una Strategy cambia *cómo* se calcula algo; una fábrica abstracta cambia *qué piezas* existen.
+Si mañana solo cambia el botón, Strategy o una factory simple son más baratas.
+
+En el Tema 4 verás Bridge, que también separa dos ejes de variación, y el principio de inversión de dependencias
+que explica por qué la pantalla depende de `TemaUiFactory` y no de una fábrica concreta.
 
 #### Problema resuelto 3.1
 Antes del patrón. Crea el input y el botón con dos funciones que reciben el tema por separado.
@@ -1649,89 +1905,88 @@ cada uno, y cómo sabes cuándo no poner ninguna?
 - **Error típico:** guardar `null`: `put("C-1", null)` termina con `java.lang.NullPointerException`, a diferencia de `HashMap`.
 
 #### ► CÓMO FUNCIONA
-SOLID aparece aquí de forma comprobable: **S**RP se demuestra con `CobroAcoplado` frente a la composición `PagoFacade` + `ProcesadorPagoDecorado` + `PagoExternoAdapter`; **O**pen/Closed se ve en `Checkout` (nueva campaña = nuevo lambda, no nuevo `if`); **L**iskov se cumple porque cualquier `Notificacion` o `ProcesadorPago` sustituye al contrato; **I**nterface Segregation se refleja en contratos pequeños (`Boton`, `Input`, `CanalEntrega`); **D**IP se cumple porque `Checkout` depende de `PricingStrategy` y `PagoFacade` depende de `ProcesadorPago`, nunca de implementaciones concretas.
 
-La pregunta de diagnóstico es siempre la misma: *¿qué cambio espero y cuánto cuesta el diseño actual?* Si no hay cambio probable, la solución simple gana. Al final de este tema hay una comparación ejecutable entre una solución directa y una factory innecesaria.
+##### 1. La idea en lenguaje sencillo
 
-**Adapter — traducir un contrato incompatible.** La ficha de Adapter está en Arquitectura, Módulo 0, Tema 3. En Java:
+Un edificio de oficinas tiene recepción, adaptadores de enchufe para visitantes extranjeros y un portero que decide
+quién sube. Ninguna de esas piezas hace el trabajo de las oficinas. Todas cambian *cómo se llega* al trabajo: lo
+traducen, lo simplifican, lo envuelven o lo filtran.
 
-**Mecanismo.** `PagoExternoAdapter` implementa `ProcesadorPago` y delega en `PagoExterno.ejecutarPago(clienteId, centavos)`, convirtiendo `BigDecimal` a centavos con `RoundingMode.HALF_UP`.
+Los patrones estructurales hacen lo mismo con objetos. No inventan comportamiento nuevo del dominio. Organizan cómo
+se conectan los objetos que ya tienes. En Tienda Aurora aparecen seis situaciones distintas: un proveedor que habla en
+centavos, un cobro que necesita registro, un pedido con paquetes dentro de paquetes, un reporte caro, alertas por
+varios canales y millones de etiquetas iguales.
 
-**Por qué existe.** El proveedor externo no habla el lenguaje del dominio. No conviene importar su API en las reglas de negocio.
+SOLID es el criterio para decidir dónde cortar. Y la última pregunta del tema es la más importante: ¿hay un cambio
+real que justifique la estructura? Si no lo hay, la solución directa gana.
 
-**Implicaciones.** La conversión monetaria y el redondeo viven en la frontera. Si el proveedor cambia, se cambia el adapter. `intValueExact()` falla si el monto no cabe en `int`.
+##### 2. Definición formal y vocabulario
 
-**Confusión común.** Confundirlo con Facade. Adapter *traduce* una interfaz incompatible; Facade *simplifica* un subsistema compatible.
+Los cinco principios SOLID se formulan así: responsabilidad única (**SRP**), abierto/cerrado (**OCP**), sustitución de
+Liskov (**LSP**), segregación de interfaces (**ISP**) e inversión de dependencias (**DIP**). `CobroAcoplado` viola SRP:
+valida, registra, convierte y llama al proveedor, así que tiene cuatro razones para cambiar.
 
-**Decorator — agregar comportamiento sin subclases.** La ficha de Decorator está en Fundamentos, Módulo 9, Tema 1.
-En Java:
+Cada patrón estructural resuelve una tensión precisa:
 
-**Mecanismo.** `ProcesadorPagoDecorado` implementa la misma interfaz que su delegado, registra antes y después de la llamada y devuelve el resultado del delegado.
+- **Adapter** convierte la interfaz de una clase en otra que el cliente espera. `PagoExternoAdapter` traduce
+  `BigDecimal` a centavos `int`.
+- **Decorator** agrega responsabilidades a un objeto sin cambiar su contrato. `Registro.envolver` escribe antes y
+  después de cobrar.
+- **Facade** ofrece una interfaz simple a un subsistema. `PagoFacade` expone una sola operación.
+- **Composite** compone objetos en árbol para que hojas y grupos se traten igual.
+- **Proxy** controla el acceso a otro objeto con su misma interfaz: decide si lo llama.
+- **Bridge** separa una abstracción de su implementación para que ambas varíen por separado.
+- **Flyweight** comparte el **estado intrínseco** inmutable y recibe el **estado extrínseco** como parámetro.
 
-**Por qué existe.** Logging, métricas o retry son cortes transversales. Crear una subclase por combinación produce una explosión de clases.
+La **sobre-ingeniería** es lo contrario de todo lo anterior: estructura sin presión de cambio que la justifique. El
+`Logger` de `java.util.logging` y `ConcurrentHashMap` son las dos piezas del JDK que el tema usa para registrar y
+compartir.
 
-**Implicaciones.** Se compone en runtime: `new ProcesadorPagoDecorado(new PagoExternoAdapter(new PagoExterno()))`. Cada capa añade indirección y debe ser observable; los logs JUL aparecen en la salida real de `run`.
+##### 3. Cómo funciona por dentro, paso a paso
 
-**Confusión común.** Confundirlo con Proxy. Decorator *añade responsabilidades* manteniendo el contrato; Proxy *controla el acceso* al objeto real, normalmente sin que el cliente sepa que existe.
+Empieza por la cadena de cobro. Cuando el cliente llama a `cobrarCliente("C-1", monto)`, ocurre esto:
 
-**Facade — simplificar un subsistema.**
-
-**Mecanismo.** `PagoFacade.cobrarCliente()` valida `clienteId` y delega en el `ProcesadorPago` inyectado.
-
-**Por qué existe.** El caso común no necesita exponer conversión, logging ni composición del procesador. La fachada reduce la superficie que el cliente debe conocer.
-
-**Implicaciones.** No prohíbe el acceso avanzado: el cliente puede seguir usando `ProcesadorPago` directamente. Si la fachada acumula reglas de negocio, dejó de ser fachada.
-
-**Confusión común.** Confundirla con un “objeto Dios” o con Adapter. Facade simplifica; Adapter traduce; un objeto Dios concentra responsabilidades que deberían estar separadas.
+1. `PagoFacade` valida `clienteId`. Un texto vacío termina con `IllegalArgumentException("clienteId inválido")`.
+2. La fachada llama a `procesador.cobrar(...)`. No sabe que ese procesador es una lambda decoradora.
+3. El decorador imprime `log: iniciando cobro`, delega en su `delegado` e imprime el resultado.
+4. El adapter multiplica por 100, redondea con `RoundingMode.HALF_UP` y convierte con `intValueExact()`.
+5. `PagoExterno.ejecutarPago` responde `OK:C-1:1990`, y el texto sube por la cadena sin cambios.
 
 ```mermaid
 flowchart LR
     C["cliente"] --> F["PagoFacade<br/>valida clienteId"]
-    F --> D["ProcesadorPagoDecorado<br/>registra antes y después"]
+    F --> D["Decorator<br/>registra antes y después"]
     D --> A["PagoExternoAdapter<br/>BigDecimal → centavos"]
     A --> P["PagoExterno<br/>ejecutarPago(id, int)"]
     P -. "OK:C-1:1990" .-> C
 ```
 
-**Composite — hojas y grupos bajo un mismo contrato.**
+La composición se arma de adentro hacia afuera, y cada capa solo conoce el contrato `ProcesadorPago`. Como ese
+contrato tiene un único método, el Decorator puede ser una lambda:
 
-**Mecanismo.** `ComponentePedido` define `total()` y `descripcion()`. `Articulo` es hoja; `Paquete` contiene `List<ComponentePedido>` y delega el cálculo a sus hijos, de modo que un paquete puede contener otros paquetes.
+```java
+static ProcesadorPago envolver(ProcesadorPago delegado) {
+    return (clienteId, monto) -> {
+        System.out.println("log: iniciando cobro cliente=" + clienteId);
+        String resultado = delegado.cobrar(clienteId, monto);
+        System.out.println("log: resultado=" + resultado);
+        return resultado;
+    };
+}
+```
 
-**Por qué existe.** El cliente no debería preguntar “¿es artículo o paquete?” para sumar. La estructura en árbol se manipula de forma uniforme.
+La lambda **captura** `delegado`: guarda la referencia y la usa cada vez que se invoca. Quitar el decorador es pasar
+el adapter directamente; la salida `sin registro: OK:C-1:1990` lo demuestra.
 
-**Implicaciones.** `total()` usa `reduce(BigDecimal.ZERO, BigDecimal::add)` en el orden de inserción; la descripción es recursiva. Añadir un nuevo tipo de componente exige implementar dos métodos del contrato.
+Las otras estructuras siguen la misma lógica de delegación:
 
-**Confusión común.** Pensar que Composite es “una lista”. La lista es el detalle de almacenamiento; el patrón es la interfaz común que elimina el `if` por tipo.
-
-**Proxy — controlar el acceso al objeto real.**
-
-**Mecanismo.** `ServicioReportesProxy` implementa `ServicioReportes`, comprueba la lista de clientes permitidos y memoriza resultados con `computeIfAbsent` sobre un `HashMap` sincronizado. El objeto real `ServicioReportesReal` cuenta sus llamadas con un `AtomicInteger`.
-
-**Por qué existe.** Generar un informe es costoso y no todos los clientes deben poder pedirlo. El control de acceso y el cacheo son responsabilidades de frontera, no del cálculo del informe.
-
-**Implicaciones.** `real.llamadas()` sigue en 1 aunque se pidan dos veces el mismo reporte; un cliente no autorizado recibe `SecurityException`. El `synchronized` protege el caché si varios hilos comparten el proxy.
-
-**Confusión común.** Confundirlo con Decorator. Proxy decide *si* se llama al real y puede devolver un valor cacheado; Decorator siempre delega y añade comportamiento.
-
-**Bridge — separar abstracción e implementación.**
-
-**Mecanismo.** `Alerta` es la abstracción (`emitir`) y `CanalEntrega` es el implementor (`enviar`). `AlertaUrgente` y `AlertaInformativa` refinan la abstracción; `CanalConsola` y `CanalMemoria` implementan el canal. Las dos jerarquías evolucionan por separado.
-
-**Por qué existe.** Sin Bridge harían falta cuatro clases para dos tipos de alerta por dos canales (`UrgenteConsola`, `UrgenteMemoria`, `InformativaConsola` e `InformativaMemoria`). Con Bridge bastan dos abstracciones y dos canales, y cualquier combinación es posible en runtime.
-
-**Implicaciones.** `AlertaInformativa(new CanalMemoria())` deja rastro en `memoria.enviados()`; `AlertaUrgente(new CanalConsola())` convierte el texto a mayúsculas antes de entregarlo. El cliente elige ambos ejes al construir.
-
-**Confusión común.** Confundirlo con Strategy o Adapter. Strategy cambia un algoritmo detrás de una interfaz; Bridge separa dos jerarquías que varían por razones distintas. Adapter se usa cuando la interfaz ya existente es incompatible.
-
-**Flyweight — compartir estado inmutable.** La ficha de Flyweight está en Fundamentos, Módulo 9, Tema 8. En Java:
-
-**Mecanismo.** `EtiquetaFactory` mantiene un `ConcurrentHashMap<Clave, EtiquetaFlyweight>`. La clave (canal, estilo) es el estado intrínseco compartido; el producto se pasa como estado extrínseco a `renderizar(producto)`.
-
-**Por qué existe.** Crear millones de etiquetas con el mismo canal y estilo malgasta memoria. Compartir la instancia reduce el número de objetos.
-
-**Implicaciones.** `assertSame(primera, segunda)` y `tamanio() == 1` comprueban el compartimiento. El flyweight debe ser inmutable: si guardara el producto, todas las llamadas compartirían el mismo estado mutable.
-
-**Confusión común.** Pensar que es un Singleton. Flyweight crea *una instancia por valor de estado intrínseco*; Singleton crea una instancia global para todo el proceso.
+1. En Composite, `Paquete.total()` recorre sus hijos y suma con `reduce(BigDecimal.ZERO, BigDecimal::add)`. Un hijo
+   que es otro `Paquete` repite la suma en su nivel. La recursión termina en las hojas `Articulo`.
+2. En Proxy, `generar(id)` revisa primero la lista de permitidos. Luego entra en `synchronized (cache)` y llama a
+   `computeIfAbsent`, que solo invoca a `real::generar` si la clave falta.
+3. En Bridge, `AlertaUrgente.emitir` transforma el texto y lo pasa al `CanalEntrega` guardado en un campo.
+4. En Flyweight, `EtiquetaFactory.obtener` crea una clave y `computeIfAbsent(clave, k -> k)` devuelve la instancia
+   guardada. De 10 000 pedidos salen solo 2 objetos.
 
 ```mermaid
 classDiagram
@@ -1740,26 +1995,74 @@ classDiagram
       +total() BigDecimal
       +descripcion() String
     }
-    <<record>> Articulo
-    <<record>> Paquete
+    class Articulo {
+      <<record>>
+    }
+    class Paquete {
+      <<record>>
+    }
+    class ServicioReportes {
+      <<interface>>
+    }
+    class Alerta {
+      <<abstract>>
+    }
+    class CanalEntrega {
+      <<interface>>
+    }
     ComponentePedido <|.. Articulo
     ComponentePedido <|.. Paquete
     Paquete o-- ComponentePedido : hijos
-    <<interface>> ServicioReportes
     ServicioReportes <|.. ServicioReportesReal
     ServicioReportes <|.. ServicioReportesProxy
     ServicioReportesProxy --> ServicioReportesReal : decide si llama
-    <<abstract>> Alerta
-    <<interface>> CanalEntrega
     Alerta o-- CanalEntrega : puente
     Alerta <|-- AlertaUrgente
     CanalEntrega <|.. CanalMemoria
 ```
 
-**Lo que cambia en Java.** Si el contrato tiene un solo método, el Decorator puede ser una función. Recibe un
-`ProcesadorPago` y devuelve una lambda que lo envuelve. Composite gana con `sealed`: la jerarquía queda cerrada y un
-`switch` sobre ella es exhaustivo sin `default`. Un `record` es la clave ideal de un Flyweight porque trae `equals` y
-`hashCode` por valor. Y el JDK ya aplica Flyweight: `Integer.valueOf` reutiliza los valores de −128 a 127.
+##### 4. Reglas, variantes y casos límite
+
+Decorator y Proxy tienen la misma forma: implementan la interfaz y guardan otro objeto. La diferencia es la
+intención. Decorator siempre delega y agrega algo. Proxy puede no delegar: rechaza con `SecurityException` o devuelve
+lo que ya tiene en caché.
+
+`intValueExact()` lanza `ArithmeticException` si el valor no cabe en `int`, en vez de truncarlo en silencio. En una
+frontera de dinero, fallar es mejor que cobrar otra cifra.
+
+`HashMap` no es seguro para varios hilos; por eso el proxy envuelve `computeIfAbsent` en `synchronized`. En
+`ConcurrentHashMap`, la documentación garantiza que `computeIfAbsent` es atómico y que la función se invoca a lo sumo
+una vez por clave ausente. `ConcurrentHashMap` rechaza claves y valores `null` con `NullPointerException`.
+
+Un `record` sirve como clave de Flyweight porque genera `equals` y `hashCode` por valor. Records son estándar desde
+Java 16 (JEP 395). El JDK aplica la misma idea: la especificación (JLS §5.1.7) obliga a reutilizar las cajas de
+`Integer` entre −128 y 127. Por eso `127 == 127` da `true` y `128 == 128` da `false` en la salida real.
+
+`sealed` es estándar desde Java 17 (JEP 409). Con una jerarquía sellada, un tipo no listado en `permits` no compila,
+y el `switch` con patrones (estándar en Java 21, JEP 441) puede ser exhaustivo sin `default`.
+
+Para Proxy existe una variante dinámica en el JDK: `java.lang.reflect.Proxy` crea en tiempo de ejecución una clase que
+implementa interfaces y desvía cada llamada a un manejador. Frameworks como Spring la usan para transacciones.
+
+`Logger.info(Supplier<String>)` existe desde Java 8. La lambda solo se evalúa si el nivel `INFO` está activo, así que no
+pagas por armar el texto si nadie lo va a leer.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las fichas de SOLID y Adapter están en Arquitectura, Módulo 0, Tema 3; Decorator, en Fundamentos, Módulo 9, Tema 1;
+Flyweight, en Fundamentos, Módulo 9, Tema 8. Aquí viste su forma idiomática en Java. `AtomicInteger` y
+`synchronized` vienen de Java, Módulo 5, Tema 4, y `sealed`, de Módulo 7, Tema 1.
+
+Los temas anteriores de este módulo cumplen SOLID sin nombrarlo. `Checkout` del Tema 2 es OCP: una campaña nueva es
+una lambda nueva. `PantallaCheckout` del Tema 3 es DIP: depende de `TemaUiFactory`. Los contratos pequeños como `Boton`
+e `Input` son ISP.
+
+No confundas Bridge con Strategy. Strategy cambia un algoritmo; Bridge separa dos jerarquías completas que crecen por
+razones distintas. Tampoco confundas Flyweight con Singleton: Flyweight tiene una instancia por valor intrínseco, no
+una para todo el proceso.
+
+En el Tema 5, Prototype vuelve al problema de la copia: compartir objetos inmutables es seguro, como en Flyweight,
+pero compartir listas mutables no lo es.
 
 #### Problema resuelto 4.1
 Antes de SRP. Escribe el cobro en una sola clase y ejecútala con un cliente válido y uno en blanco.
@@ -3031,14 +3334,65 @@ heredan etiquetas que nadie pidió. ¿Cómo copias un objeto sin que la copia y 
 - **Error típico:** olvidar `implements Cloneable`: `java.lang.CloneNotSupportedException: PlantillaCampana`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `PlantillaCampana.copiar()` llama a un constructor con `new ArrayList<>(etiquetas)`. Es un constructor de copia explícito en lugar de `Cloneable`/`clone()`.
 
-**Por qué existe.** Partir de una plantilla es más barato que reconstruirla. Pero una copia superficial compartiría la lista mutable y mutar la copia alteraría la plantilla.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** `etiquetas()` devuelve `List.copyOf(etiquetas)`, así que el estado interno no se filtra. `agregarEtiqueta()` muta la copia; la prueba comprueba que la base sigue siendo `["base"]`.
+En una oficina, nadie redacta cada contrato desde cero. Se toma una plantilla, se duplica y se cambian dos datos. El
+truco funciona porque el archivo duplicado es independiente: escribir en él no altera la plantilla.
 
-Una copia superficial crea un objeto nuevo, pero sus campos apuntan a los mismos objetos que el original. Si un
-campo es mutable, ese objeto queda compartido. La copia profunda corta esa unión en cada campo mutable.
+Marketing de Tienda Aurora hace lo mismo con sus campañas, pero su «duplicado» no era independiente. En
+`PrototypeAntes.java`, agregar `vip` a la copia cambió la base a `[base, vip]`. La salida `¿misma lista? true` explica
+por qué: original y copia guardaban la misma lista.
+
+Prototype es el patrón de crear objetos copiando uno existente. Este tema trata sobre todo de *cómo* copiar, porque
+en Java una copia mal hecha parece correcta y no lo es.
+
+##### 2. Definición formal y vocabulario
+
+**Prototype** es un patrón creacional del catálogo de Gamma y otros. Su intención es especificar qué objetos crear
+mediante una instancia prototípica, y crear objetos nuevos copiándola. En lenguaje sencillo: partes de un ejemplar ya
+configurado en vez de llamar al constructor con todos los datos.
+
+El riesgo de copiar se llama **aliasing**: dos referencias apuntan al mismo objeto mutable. Un cambio hecho a través
+de una es visible por la otra. Recuerda que en Java una variable de tipo objeto guarda una referencia, no el objeto
+(Java, Módulo 0, Tema 4).
+
+Una **copia superficial** duplica el objeto exterior, pero sus campos siguen apuntando a los mismos objetos internos.
+Una **copia profunda** duplica también cada objeto mutable que contiene, hasta que nada mutable quede compartido. Los
+objetos inmutables, como `String`, pueden compartirse sin riesgo.
+
+Java ofrece dos caminos. El heredado es **`Cloneable` y `clone()`**: un método de `Object` que hace copia superficial.
+El recomendado es el **constructor de copia**: código tuyo que decide, campo por campo, qué duplicar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Observa primero qué hace `super.clone()` en `PrototypeAntes.java`:
+
+1. `Object.clone()` comprueba si la clase real implementa la interfaz `Cloneable`. Si no, lanza
+   `CloneNotSupportedException`.
+2. Reserva un objeto nuevo de la misma clase **sin llamar a ningún constructor**.
+3. Copia cada campo como si fuera una asignación. El campo `etiquetas` recibe la misma referencia.
+4. Devuelve el objeto como `Object`; tu método lo convierte con `(PlantillaCampana)`.
+
+El resultado es la columna izquierda del diagrama: dos objetos, una sola lista. Ahora sigue el constructor de copia de
+`PrototypeDespues.java`:
+
+```java
+PlantillaCampana(String canal, String asunto, List<String> etiquetas) {
+    this.canal = Objects.requireNonNull(canal, "canal");
+    this.asunto = Objects.requireNonNull(asunto, "asunto");
+    this.etiquetas = new ArrayList<>(Objects.requireNonNull(etiquetas, "etiquetas"));
+}
+PlantillaCampana copiar() {
+    return new PlantillaCampana(canal, asunto, etiquetas);
+}
+```
+
+1. `copiar()` llama al constructor normal, así que pasa por todas sus validaciones.
+2. El constructor crea una `ArrayList` nueva con los mismos elementos. Las cadenas internas se comparten, pero son
+   inmutables.
+3. La copia y la base terminan con listas distintas. `agregarEtiqueta("vip")` solo toca la de la copia.
+4. `etiquetas()` devuelve `List.copyOf(...)`, así que tampoco un llamador externo puede tocar la lista interna.
 
 ```mermaid
 flowchart LR
@@ -3052,11 +3406,48 @@ flowchart LR
     end
 ```
 
-**Confusión común.** Usar `Object.clone()` por costumbre. `clone()` hace copia superficial por defecto y obliga a tratar `CloneNotSupportedException`; un constructor de copia es más explícito y no necesita `Cloneable`.
+El `record Plantilla` va un paso más allá. Su constructor compacto reemplaza el parámetro por `List.copyOf(etiquetas)`
+antes de asignarlo al campo. Como el contenido ya es inmutable, «copiar» deja de tener sentido. `conEtiqueta` crea
+una lista nueva y un `record` nuevo, y la base queda intacta.
 
-**Lo que cambia en Java.** Si un `record` guarda sus listas con `List.copyOf` en el constructor compacto, todo su
-contenido es inmutable. No hay nada que copiar en profundidad: la «copia con un cambio» es un método que crea otro `record`. Así el
-prototipo deja de ser un objeto mutable que se clona y pasa a ser un valor del que se derivan otros.
+##### 4. Reglas, variantes y casos límite
+
+`Cloneable` es una **interfaz marcadora**: no declara ningún método. Solo cambia el comportamiento de
+`Object.clone()`, que es `protected`. Para que otros lo llamen, debes sobrescribirlo como `public`. Desde Java 5 puedes
+declarar el tipo de retorno como `PlantillaCampana`, gracias a los tipos de retorno covariantes.
+
+`clone()` choca con los campos `final`. Para hacer una copia profunda, tendrías que reasignar `etiquetas` en el clon,
+y un campo `final` no lo permite fuera del constructor. Joshua Bloch, en *Effective Java*, señala esta incompatibilidad
+y recomienda constructores o fábricas de copia.
+
+La palabra `clone()` también existe en los arreglos. `int[].clone()` es público, no lanza excepción y devuelve el tipo
+correcto. Pero también es superficial: un arreglo de listas clonado comparte las listas.
+
+Un constructor de copia tiene un riesgo de mantenimiento. Si agregas un campo mutable a la clase y olvidas copiarlo,
+el aliasing vuelve solo para ese campo. Una prueba que compare identidades con `==` lo detecta.
+
+Ten cuidado con `Map.copyOf` y `List.copyOf` (Java 10). Son copias de un nivel. Un mapa de listas copiado así es un
+mapa nuevo con las mismas listas adentro.
+
+En un `record`, el constructor compacto asigna los campos al final, con los valores que tengan los parámetros. Por eso
+`etiquetas = List.copyOf(etiquetas)` funciona: cambias el parámetro y Java asigna ese valor al campo. `equals` de un
+`record` compara por valor, como confirma `base.equals(copia exacta)=true`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La copia superficial ya apareció en Fundamentos, Módulo 9, Tema 6. Aquí viste su versión en Java y el detalle de
+`Cloneable`. La copia defensiva y el invariante vienen del Tema 1 de este módulo: `List.copyOf` en el Builder es la
+misma herramienta que protege la plantilla.
+
+Compara Prototype con Builder. Builder arma un objeto desde cero, paso a paso. Prototype parte de un objeto ya armado
+y cambia lo mínimo. Con un `record` inmutable, las dos ideas convergen en métodos de «copia con un cambio».
+
+También se relaciona con Flyweight del Tema 4. Flyweight comparte objetos a propósito, y es seguro porque son
+inmutables. Prototype evita compartir por accidente, porque la plantilla es mutable.
+
+En el Módulo 14, Tema 1 verás la publicación segura entre hilos, donde un campo `final` asignado en el constructor
+es una de las formas válidas de publicar. La sección siguiente de este módulo, «Punto de entrada y verificación ejecutable», prueba la copia
+con `PatronesTest`.
 
 #### Problema resuelto 5.1
 Antes. Copia una plantilla de dos formas comunes, un constructor que reutiliza la lista y `clone()`, y modifica cada copia.

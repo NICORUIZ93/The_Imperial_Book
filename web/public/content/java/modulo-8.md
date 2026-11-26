@@ -128,23 +128,95 @@ Jackson, cuántos archivos necesitas y cómo te aseguras de que tu compañero us
 - **Error típico:** ejecutar `gradle` (el instalado en tu máquina) en vez de `./gradlew`: cada persona construye con otra versión.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `pom.xml` es un modelo declarativo: coordenadas (`groupId`, `artifactId`, `version`), `<modules>`, `<dependencies>`, `<properties>` y plugins ligados a fases. `build.gradle.kts` es un script Kotlin que configura un grafo de tareas: cada tarea declara entradas, salidas y dependencias con otras tareas. Los plugins aportan tareas y convenciones en ambos casos.
 
-**Por qué existe.** Necesitamos una descripción del build que una persona y una máquina puedan ejecutar sin depender del IDE. Maven eligió la convención y un vocabulario fijo; Gradle eligió la programabilidad y el cálculo incremental.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** En Maven, la estructura estándar (`src/main/java`, `src/test/java`) hace que gran parte del build sea implícito. En Gradle, `subprojects { ... }` centraliza la configuración, pero esa misma flexibilidad permite builds difíciles de leer. Un script de build merece revisión de código; un POM merece revisión de versiones y scopes.
+Piensa en una empresa de envíos que arma paquetes. Cada paquete lleva piezas propias y piezas compradas a proveedores. Si cada operario consigue las piezas a su manera, dos paquetes «iguales» salen distintos. La empresa escribe entonces una orden de armado: qué piezas, de qué proveedor, en qué edición y en qué orden.
 
-El recorrido de una dependencia es siempre el mismo, con cualquiera de las dos herramientas:
+Un programa Java vive el mismo problema. Tu código usa clases que no escribiste, como `ObjectMapper` de Jackson o `Iva` de la librería `precios`. Alguien tiene que conseguir esos archivos, ponerlos donde `javac` y `java` los busquen y repetirlo igual en cada máquina. El Problema resuelto 1.1 lo hace a mano y necesita tres intentos.
+
+Un **build tool** convierte ese trabajo en un archivo de texto versionado junto al código. Tú escribes **qué** necesitas y la herramienta decide **cómo** conseguirlo. Además, lo repite idéntico en tu portátil, en la de tu compañero y en el servidor de integración continua.
+
+##### 2. Definición formal y vocabulario
+
+Formalmente, un **build tool** es un programa que transforma fuentes, **dependencias** y reglas en **artefactos** reproducibles, a partir de una descripción declarada. Esa descripción vive en un **`pom.xml`** (Maven) o en un **`build.gradle.kts`** (Gradle con **Kotlin DSL**).
+
+Cada dependencia se nombra por sus **coordenadas**: `groupId`, `artifactId` y `version`. La documentación de Maven las llama la «dirección» única de un artefacto. Gradle las escribe juntas, separadas por dos puntos: `com.aurora:precios:1.0.0`.
+
+Las coordenadas apuntan a un **repositorio Maven**: un árbol de carpetas `grupo/nombre/versión/` con el `.jar` y su descriptor `.pom`. El descriptor lista las dependencias de esa librería; esas son tus **dependencias transitivas**, que llegan sin que las declares.
+
+Con todo eso, la herramienta arma el **classpath**: la lista ordenada de carpetas y jars donde la JVM busca clases. Las tareas concretas (compilar, empaquetar, publicar) las aporta cada **plugin**. Por último, el **Gradle wrapper** fija qué versión de Gradle ejecuta todo lo anterior.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando pides `gradle run` en `m8-tienda`, ocurre esto, en orden:
+
+1. Gradle lee `settings.gradle.kts` y obtiene el nombre del proyecto raíz, `tienda`.
+2. Compila y ejecuta `build.gradle.kts`. Como es Kotlin, primero se compila el script; por eso la primera corrida tardó minutos.
+3. Los plugins se aplican. `application` registra la tarea `run` y conoce la clase principal.
+4. Para la configuración `runtimeClasspath`, Gradle toma cada coordenada declarada y la convierte en una ruta del repositorio.
+5. Descarga o localiza el `.pom` (y el `.module`, si existe) y lee de ahí las dependencias transitivas. Repite el paso con cada una.
+6. Si dos caminos piden versiones distintas de la misma librería, elige una. Gradle toma por defecto la más alta; Maven, la más cercana a tu proyecto.
+7. Con la lista final de jars, llama al compilador y luego a la JVM con el classpath ya armado.
 
 ```mermaid
 flowchart LR
   D["build.gradle.kts o pom.xml<br/>com.aurora:precios:1.0.0"] --> R["repositorio Maven<br/>com/aurora/precios/1.0.0/"]
-  R --> P["precios-1.0.0.pom<br/>¿trae transitivas?"]
+  R --> P["precios-1.0.0.pom<br/>dependencias transitivas"]
   R --> J["precios-1.0.0.jar"]
+  P -->|"repite por cada transitiva"| R
   P --> CP["classpath de compilación<br/>y de ejecución"]
   J --> CP
   CP --> C["javac y java"]
 ```
+
+El classpath que recibe la JVM es solo una cadena de texto. Este programa la imprime, entrada por entrada:
+
+```java
+import java.io.File;
+public class VerClasspath {
+    public static void main(String[] args) {
+        String cp = System.getProperty("java.class.path");
+        for (String estante : cp.split(File.pathSeparator)) {
+            System.out.println("estante: " + estante);
+        }
+    }
+}
+```
+
+La propiedad `java.class.path` guarda lo que recibió `-cp`. `File.pathSeparator` es `:` en Linux y macOS, y `;` en Windows. Ejecutado con `java -cp "out:libs/*" VerClasspath`, con dos jars en `libs`:
+
+```text
+estante: out
+estante: libs/auditoria-1.0.0.jar
+estante: libs/precios-1.0.0.jar
+```
+
+Observa que `libs/*` ya no aparece: el lanzador `java` expandió el comodín a cada jar antes de arrancar. Un build tool produce exactamente esta lista, pero calculada desde las coordenadas y no escrita por ti.
+
+##### 4. Reglas, variantes y casos límite
+
+La dependencia transitiva solo llega si el descriptor la declara. Por eso, en el Problema resuelto 1.1, compilar con `jackson-databind` solo falló: tú armabas el classpath y nadie leía su POM.
+
+Compilar y ejecutar usan classpaths distintos. `javac` carga solo las clases que tu código nombra; la JVM carga las que la ejecución toca. Así se explica que `JsonView` faltara solo en tiempo de ejecución.
+
+El comodín `libs/*` incluye solo archivos `.jar` de esa carpeta, sin subcarpetas. La documentación del comando `java` advierte que el orden de los jars expandidos no está garantizado.
+
+Una versión publicada no se modifica. Si cambias el código, publicas otra versión, como la `1.1.0` del Ejercicio verificable 3. Las versiones que terminan en `-SNAPSHOT` son la excepción: Maven las trata como «en desarrollo» y puede volver a descargarlas.
+
+Gradle publica, además del `.pom`, un archivo `.module` con la **Gradle Module Metadata**, activo por defecto desde Gradle 6.0. Por eso el POM de `precios` trae el comentario `published-with-gradle-metadata`: Gradle prefiere ese archivo más rico, y Maven sigue leyendo el POM.
+
+Sobre la sintaxis, Kotlin DSL es un script compilado. Una llamada sin paréntesis es un error de Kotlin, no de dependencias. Desde Gradle 8.2, `gradle init` genera Kotlin DSL por defecto; los archivos `build.gradle` sin `.kts` usan Groovy, con otra gramática.
+
+El wrapper fija Gradle, no Java. Y fija la versión que lo generó, salvo que pases `--gradle-version`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Ya compilaste con `javac` y ejecutaste con `java` desde el Módulo 0, usando paquetes y `main`. Este tema añade lo que faltaba: clases que no son tuyas. En el Módulo 6, Tema 2, Jackson funcionó porque Gradle armó el classpath sin que lo vieras.
+
+No confundas classpath con import. El `import` es un atajo de nombres dentro del archivo fuente; no busca nada. Quien encuentra la clase es el classpath. Un `import` correcto con el jar ausente produce `package … does not exist`.
+
+El Tema 2 explica cuándo entra cada dependencia en cada classpath. El Tema 3 divide el proyecto en módulos con dependencias de proyecto. El Tema 4 compara las dos herramientas y presenta el toolchain. El Módulo 10 reemplaza el classpath por el module path.
 
 Sin build tool, cada flecha la haces tú a mano. El Problema resuelto 1.1 lo hace así para que veas cuánto trabajo es.
 
@@ -666,11 +738,58 @@ Este tema usa **dependencia**, **classpath**, **plugin** y **repositorio Maven**
 - **Error típico:** fijar a mano versiones distintas de piezas de JUnit (`jupiter` 5.13 con `platform-launcher` de otra línea): fallan en runtime al descubrir pruebas.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** El ciclo default de Maven encadena fases: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. `mvn package` ejecuta las fases previas. Gradle no tiene fases: tiene tareas (`compileJava`, `test`, `jar`, `build`, `run`) con relaciones definidas por plugins. Los scopes son conjuntos de classpath: Maven usa `<scope>test</scope>`, `<scope>runtime</scope>`, etc.; Gradle usa configuraciones como `implementation`, `runtimeOnly`, `testImplementation` y `testRuntimeOnly`.
 
-**Por qué existe.** Separar clasificaciones evita que una dependencia necesaria solo para probar o solo en ejecución contamine la compilación o el artefacto. Afecta al tamaño del paquete, a la superficie de seguridad y a la claridad de los contratos.
+##### 1. La idea en lenguaje sencillo
 
-Cada configuración alimenta classpaths distintos. Esta es la tabla que comprobarás con reportes reales:
+Una bodega de envíos trabaja por estaciones: recibir, revisar, empacar, etiquetar, despachar. Nadie despacha un paquete que no pasó por empaque. Además, cada herramienta tiene su lugar: la báscula se queda en la bodega y el paquete viaja solo con lo que el cliente pagó.
+
+Construir un programa tiene la misma forma. Hay un orden obligatorio (compilar antes de probar, probar antes de empaquetar) y hay piezas que solo sirven en una estación. JUnit sirve para probar, pero no debe viajar dentro de la aplicación que corre en producción.
+
+En `caja`, la librería `precios` se usa en todas partes. `auditoria` solo hace falta cuando el programa corre. `datos-prueba` solo hace falta en las pruebas. Este tema te enseña a decirle eso al build y a comprobar que obedeció.
+
+##### 2. Definición formal y vocabulario
+
+Maven organiza el trabajo en un **ciclo de vida**: una secuencia fija de **fases** con nombre. Trae tres ciclos integrados: `clean`, `default` y `site`. El ciclo `default` empieza en `validate` y termina en `deploy`, con más de veinte fases intermedias.
+
+Una fase no hace nada por sí misma. El trabajo lo hacen los **goals** de los plugins enganchados a ella. Un goal se escribe `plugin:goal`, como `compiler:compile` o `dependency:tree`. Puedes invocar un goal suelto, sin recorrer el ciclo.
+
+Gradle no tiene fases. Trabaja con **tareas**, cada una con entradas, salidas y dependencias hacia otras tareas. Antes de ejecutar, calcula un **grafo de tareas**: un grafo dirigido sin ciclos con todo lo que lo pedido necesita. Lo más parecido a una fase son las tareas de ciclo de vida, como `assemble`, `check` y `build`. No hacen trabajo propio: solo agrupan otras.
+
+Para las dependencias, Maven usa el **scope** (`compile`, `provided`, `runtime`, `test`, `system`, `import`). Gradle usa **configuraciones de dependencias**. Un **BOM** es un POM que solo fija versiones de una familia de librerías.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando escribes `mvn package` en un proyecto con empaquetado `jar`, Maven hace esto:
+
+1. Lee el POM y calcula el modelo efectivo, con lo heredado del padre y los valores por defecto.
+2. Ubica `package` dentro del ciclo `default` y arma la lista de fases desde `validate` hasta `package`.
+3. Para cada fase busca los goals enganchados. En un `jar`, por defecto: `resources:resources` en `process-resources`, `compiler:compile` en `compile`, `surefire:test` en `test` y `jar:jar` en `package`.
+4. Descarga cada plugin que falte en `~/.m2`. Por eso `mvn -o compile` falló en `maven-resources-plugin`: era el primer goal que necesitaba.
+5. Ejecuta los goals en orden. Si uno falla, el build se detiene ahí.
+
+Gradle recorre tres etapas que su documentación llama **inicialización**, **configuración** y **ejecución**:
+
+1. En la inicialización evalúa `settings.gradle.kts` y decide qué proyectos participan.
+2. En la configuración ejecuta los scripts de build. Los plugins registran tareas y las conectan entre sí.
+3. Con las tareas pedidas, calcula el grafo. `--dry-run` se detiene aquí y lista todo como `SKIPPED`.
+4. En la ejecución corre cada tarea en orden. Si sus entradas y salidas no cambiaron, la marca `UP-TO-DATE` y no la repite.
+
+Las configuraciones forman una jerarquía. Unas son **declarables** (donde escribes la dependencia, como `implementation`). Otras son **resolubles** (las que Gradle convierte en una lista de jars, como `compileClasspath`). Cada configuración resoluble hereda de varias declarables:
+
+```mermaid
+flowchart LR
+  I["implementation"] --> CC["compileClasspath"]
+  I --> RC["runtimeClasspath"]
+  R["runtimeOnly"] --> RC
+  I -. "testImplementation hereda" .-> T["testImplementation"]
+  R -. "testRuntimeOnly hereda" .-> TRO["testRuntimeOnly"]
+  T --> TC["testCompileClasspath"]
+  T --> TR["testRuntimeClasspath"]
+  TRO --> TR
+  RC --> JAR["lib/ de installDist"]
+```
+
+Lee el diagrama así: `testImplementation` contiene todo lo de `implementation`, y `testRuntimeOnly` todo lo de `runtimeOnly`. Por eso `precios` aparece en los cuatro reportes del Problema resuelto 2.2. El resultado práctico es esta tabla, que comprobarás con reportes reales:
 
 | Configuración Gradle | Scope Maven parecido | Compilar `main` | Ejecutar `main` | Compilar pruebas | Ejecutar pruebas |
 |---|---|---|---|---|---|
@@ -679,18 +798,41 @@ Cada configuración alimenta classpaths distintos. Esta es la tabla que comproba
 | `testImplementation` | `test` | no | no | sí | sí |
 | `testRuntimeOnly` | `test` (sin equivalente exacto) | no | no | no | sí |
 
-```mermaid
-flowchart LR
-  I["implementation"] --> CC["compileClasspath"]
-  I --> RC["runtimeClasspath"]
-  R["runtimeOnly"] --> RC
-  I --> TC["testCompileClasspath"]
-  T["testImplementation"] --> TC
-  RC --> TR["testRuntimeClasspath"]
-  T --> TR
-  TRO["testRuntimeOnly"] --> TR
-  RC --> JAR["distribución de la app"]
+¿Cómo puede una clase existir al ejecutar sin estar al compilar? Mira el fragmento de `Caja.java`:
+
+```java
+Class<?> clase = Class.forName("com.aurora.auditoria.RegistroConsola");
+Runnable auditor = (Runnable) clase.getDeclaredConstructor().newInstance();
+auditor.run();
 ```
+
+Para `javac`, el nombre de la clase es solo un `String`. El compilador revisa `Runnable`, que está en el JDK, y nada más. La JVM busca `RegistroConsola` en el classpath recién cuando ejecuta `Class.forName`. Así funcionan los drivers JDBC y por eso encajan en `runtimeOnly`.
+
+##### 4. Reglas, variantes y casos límite
+
+Invocar una fase ejecuta todas las anteriores de su ciclo. `mvn test package` recorre el ciclo dos veces en el mismo comando, aunque la segunda vez el compilador no recompile lo que no cambió.
+
+Saltar trabajo no es saltar fases. `-DskipTests` hace que Surefire no ejecute pruebas, pero sí las compila. `-Dmaven.test.skip=true` tampoco las compila.
+
+Los scopes también filtran lo transitivo. Las dependencias `test` y `provided` de una librería nunca llegan a quien la consume. Una dependencia `runtime` de tu dependencia `compile` llega como `runtime`.
+
+`provided` significa «la pone el entorno de ejecución», como un servidor de aplicaciones. Su pariente en Gradle es `compileOnly`. El scope `system` está desaconsejado en la documentación de Maven.
+
+El scope `import` solo vale dentro de `<dependencyManagement>` y con `<type>pom</type>`: así se importa un BOM. En Gradle, `platform(...)` cumple ese papel desde Gradle 5.0.
+
+Las configuraciones `compile` y `runtime` de Gradle se reemplazaron por `implementation` y `runtimeOnly` en Gradle 3.4. Gradle 7.0 eliminó las viejas. Si un tutorial antiguo escribe `compile "…"`, no sirve hoy.
+
+`--rerun-tasks` desactiva el cálculo incremental. Úsalo para medir o diagnosticar, no como costumbre.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Tema 1 viste que compilar y ejecutar usan classpaths distintos. Aquí aprendes a controlar qué entra en cada uno, dependencia por dependencia.
+
+De Fundamentos (Módulo 4, Temas 2 y 4) traes la idea de prueba unitaria y de integración continua. CI suele ejecutar `mvn verify` o `./gradlew build`: el ciclo de vida es lo que garantiza que no se empaquete nada sin probar.
+
+No confundas scope con visibilidad de código. `private` o `public` controlan qué ve otra clase dentro del mismo classpath. El scope decide si el jar está en el classpath. Son dos barreras distintas.
+
+El Tema 3 suma una configuración nueva, `api`, para módulos que son librerías. El Tema 4 usa `dependency:copy-dependencies -DincludeScope=runtime`. El Módulo 9 configura JUnit Platform con el BOM y `testRuntimeOnly` que viste aquí.
 
 #### Problema resuelto 2.1
 Muestra qué trabajo hace cada herramienta cuando le pides construir: el grafo de tareas de Gradle y las fases de Maven.
@@ -1195,20 +1337,92 @@ Este tema usa **coordenadas**, **repositorio Maven** y **classpath** (Tema 1) y 
 - **Error típico:** ejecutar `mvn -pl api package` sin `-am`: Maven no construye `core` y busca su jar en el repositorio.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Gradle declara la pertenencia al build en `settings.gradle.kts` con `include("core", "api")`; Maven la declara en el POM padre con `<modules>`. La dirección de la dependencia se escribe después: `implementation(project(":core"))` o `com.aurora:core:${project.version}`.
 
-**Por qué existe.** Un multi-módulo convierte una regla arquitectónica en una restricción del build: `core` no puede importar `api` porque no declara esa dependencia. Un classpath plano no ofrecería esa barrera.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** Se puede compilar y testear `core` sin levantar la aplicación. Los contratos entre módulos se vuelven visibles: si `Catalogo.comoJson()` expusiera `JsonProcessingException`, `api` tendría que declarar Jackson para compilar. Traducirla a `IllegalStateException` mantiene el límite limpio. Un ciclo `core → api → core` deja de ser una mala costumbre y pasa a ser un error de resolución.
+En una empresa de envíos, el área de tarifas calcula precios y el mostrador atiende clientes. El mostrador consulta a tarifas; tarifas nunca necesita saber cómo es el mostrador. Si un día tarifas empieza a depender del mostrador, cualquier cambio en la atención rompe el cálculo de precios.
+
+En un proyecto de una sola carpeta, esa regla vive solo en la cabeza del equipo. Cualquier clase puede importar cualquier otra, porque todas comparten el mismo classpath. Con el tiempo, la regla se olvida y todo depende de todo.
+
+Un proyecto multi-módulo convierte la regla en una barrera física. `core` guarda las reglas del catálogo y `api` guarda el programa que las usa. Si `core` intenta importar algo de `api`, el compilador lo rechaza, porque `api` no está en el classpath de `core`.
+
+##### 2. Definición formal y vocabulario
+
+Un **proyecto multi-módulo** es un build formado por varios subproyectos. Cada uno tiene sus fuentes, sus dependencias y su propio artefacto, y un proyecto raíz los coordina.
+
+En Gradle, **`settings.gradle.kts`** declara qué subproyectos existen con `include(...)`. Cada subproyecto se nombra con una ruta que empieza en dos puntos, como `:core`. Una **dependencia de proyecto**, `project(":core")`, apunta a otro subproyecto del mismo build en lugar de a un repositorio.
+
+El plugin `java-library` añade la **configuración `api`**. Lo declarado con `api` forma parte del contrato público del módulo y llega al classpath de compilación de quien lo consume. Lo declarado con `implementation` queda como detalle interno.
+
+En Maven, el POM padre agrupa los módulos con `<modules>` y lleva `<packaging>pom</packaging>`. El **reactor** es el componente que lee esos módulos y los ordena. Una **dependencia circular** es un ciclo en ese grafo y ninguna de las dos herramientas la acepta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando pides `gradle :api:run` en `m8-multi`, Gradle hace esto:
+
+1. En la inicialización lee `settings.gradle.kts` y crea los proyectos `:core` y `:api`.
+2. En la configuración ejecuta el script raíz. `subprojects { … }` aplica `java-library`, el repositorio y el toolchain a los dos.
+3. Ejecuta `api/build.gradle.kts`. La línea `implementation(project(":core"))` conecta las tareas de `:api` con las salidas de `:core`.
+4. Calcula el grafo. `:api:compileJava` necesita las clases de `:core`, así que `:core:compileJava` va primero.
+5. Para `:api:run` necesita el classpath de ejecución completo: el jar de `core` y, debajo, `precios`.
+
+La salida real del Problema resuelto 3.1 confirma ese orden. `:core:jar` aparece después de `:api:compileJava`: para compilar bastaron las clases de `core`, y el jar solo hizo falta para ejecutar.
 
 ```mermaid
 flowchart LR
-  S["settings.gradle.kts<br/>include(core, api)"] --> C[":core"]
+  S["settings.gradle.kts<br/>include core y api"] --> C[":core"]
   S --> A[":api"]
-  A -- "implementation(project(:core))" --> C
-  C -- "implementation(precios)" --> P["com.aurora:precios:1.0.0"]
+  A -- "implementation project core" --> C
+  C -- "implementation precios" --> P["com.aurora:precios:1.0.0"]
   C -. "prohibido: crearía un ciclo" .-> A
+  P -. "solo en runtimeClasspath de api" .-> A
 ```
+
+Maven sigue un camino parecido. El reactor lee `<modules>`, carga cada POM y arma un grafo con las dependencias entre módulos hermanos. Después lo ordena de modo que cada proveedor se construya antes que sus consumidores. Por eso `core` salió antes que `api`, aunque el POM padre los listaba al revés.
+
+Si el grafo tiene un ciclo, no existe orden posible. Gradle lo detecta al calcular el grafo de tareas; Maven, al ordenar el reactor. Ambos fallan antes de compilar una sola línea.
+
+Un ciclo se rompe con diseño, no con configuración. Si `core` necesita avisar algo, define una interfaz propia y deja que `api` la implemente:
+
+```java
+package com.aurora.multi.core;
+public interface Notificador {
+    void avisar(String mensaje);
+}
+```
+
+`Catalogo` recibe un `Notificador` por su constructor y llama a `avisar`. `api` lo crea con una lambda: `new Catalogo(mensaje -> System.out.println("[api] " + mensaje))`. Compilado y ejecutado así, el programa imprime:
+
+```text
+[api] catalogo: 2 skus
+skus=[CAF-100, MOL-200]
+```
+
+La flecha sigue yendo de `api` a `core`. `core` conoce solo su interfaz; quién la implementa se decide desde afuera.
+
+##### 4. Reglas, variantes y casos límite
+
+`include` solo registra un módulo. No crea ninguna dependencia: la dirección la escribes tú en cada `build.gradle.kts` o POM.
+
+La configuración `api` existe solo con el plugin `java-library`. Con el plugin `java` a secas, Gradle no la reconoce. Úsala únicamente cuando un tipo de la dependencia aparece en tu contrato público, por ejemplo como tipo de retorno de un método `public`.
+
+Con `implementation`, la dependencia queda oculta al compilar, pero viaja al ejecutar. El Checkpoint 3.1 se apoya en esa diferencia.
+
+En Maven, **herencia** y **agregación** son dos ideas distintas. `<parent>` hereda configuración del POM padre. `<modules>` agrega módulos al reactor. Un mismo POM suele hacer las dos cosas, pero no es obligatorio.
+
+Las opciones del reactor más usadas son tres. `-pl` elige módulos; `-am` construye también lo que esos módulos necesitan; `-amd` construye también quienes dependen de ellos. Sin `-am`, Maven busca a los hermanos en el repositorio.
+
+La documentación de Gradle desaconseja hoy centralizar la configuración con `allprojects` y `subprojects`. Recomienda **plugins de convención**: un plugin propio con lo común, que cada módulo aplica de forma explícita. Para dos módulos, `subprojects` sigue siendo legible.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema usa las coordenadas del Tema 1 y las configuraciones del Tema 2. `project(":core")` es una dependencia más, pero resuelta dentro del build y no en un repositorio.
+
+En el Módulo 3, Tema 1, viste excepciones checked. `Catalogo.comoJson()` traduce `JsonProcessingException` a `IllegalStateException`. Gracias a eso, `api` no necesita Jackson para compilar: el límite entre módulos queda limpio.
+
+No confundas un módulo de build con un módulo de JPMS. El del build separa classpaths; el de JPMS, que verás en el Módulo 10, Tema 1, controla qué paquetes exporta un jar. Se pueden usar juntos.
+
+El Tema 4 construye un multi-módulo completo con Gradle y Maven a la vez. En el Módulo 9 cada módulo tendrá sus propias pruebas, que se ejecutan sin levantar la aplicación.
 
 #### Problema resuelto 3.1
 Divide la tienda en `core` (reglas) y `api` (programa) con Gradle, y ejecuta `api` sin publicar `core`.
@@ -1691,9 +1905,65 @@ Este tema usa todo lo anterior del módulo: **coordenadas** y **wrapper** (Tema 
 - **Error típico:** ejecutarlo como `mvn -pl api -am dependency:copy-dependencies`: falla con `Path com/aurora/core/1.0.0/core-1.0.0.jar NOT allowed from central`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Las fuentes Java son idénticas; cambia la descripción del build y el comando que lo ejecuta. Gradle ejecuta tareas (`test`, `:api:run`); Maven ejecuta fases (`test`, `package`) y necesita un classpath explícito para ejecutar `main` cuando no se configura `exec:java`.
 
-**Por qué existe.** Comparar los dos modelos con el mismo código separa lo que es del dominio de lo que es del entorno. Si la salida cambia al cambiar de herramienta, hay una dependencia accidental del build.
+##### 1. La idea en lenguaje sencillo
+
+Dos transportadoras pueden llevar el mismo paquete de Bogotá a Medellín. Cambian los formularios, los nombres de los trámites y el camión. El paquete que llega debe ser idéntico. Si llega distinto, el problema está en el transporte, no en lo que enviaste.
+
+Gradle y Maven son esas dos transportadoras. Este tema toma las mismas fuentes Java de Tienda Aurora y las construye con las dos. Si la salida del programa coincide línea por línea, sabes que el comportamiento depende del código y no de la herramienta.
+
+Esa prueba sirve para decidir con datos. Antes de «migrar todo», compruebas que ambas producen lo mismo y eliges según lo que tu equipo sabe mantener.
+
+##### 2. Definición formal y vocabulario
+
+Un **artefacto** es un archivo que produce el build y que se identifica por coordenadas: un `.jar` de clases, un `.pom` o una distribución `.zip`. Un jar normal contiene solo las clases de su módulo, nunca las de sus dependencias.
+
+Un **toolchain** de Gradle declara qué JDK compila, prueba y ejecuta tu código. Es independiente del JDK que ejecuta a Gradle. Maven fija la versión de destino con la propiedad `maven.compiler.release`, que se traduce en la opción `--release` de `javac`.
+
+**`installDist`** es la tarea del plugin `application` que arma una carpeta lista para ejecutar: `bin/` con scripts y `lib/` con el `runtimeClasspath`. En Maven, el goal **`dependency:copy-dependencies`** cumple una parte de ese papel: copia los jars de un scope a una carpeta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La comparación del Problema resuelto 4.1 sigue estos pasos:
+
+1. Las dos herramientas leen el mismo árbol de fuentes: `src/main/java` y `src/test/java` son la convención de ambas.
+2. Gradle resuelve el toolchain 25 y compila `core` y luego `api`. Maven compila con el JDK de `JAVA_HOME`, usando `--release 25`.
+3. Las dos ejecutan `CatalogoTest`. Gradle lo hace en la tarea `:core:test`; Maven, en el goal de Surefire enganchado a la fase `test`.
+4. Gradle ejecuta el `main` con `:api:run`, que ya conoce el classpath. Maven no trae una fase para ejecutar: copias las dependencias de runtime y armas tú el `java -cp`.
+5. Comparas las dos salidas con `diff`. Si no imprime nada, el comportamiento es idéntico.
+
+```mermaid
+flowchart LR
+  F["Mismas fuentes Java<br/>core y api"] --> G["Gradle<br/>tareas y toolchain 25"]
+  F --> M["Maven<br/>fases y release 25"]
+  G --> GR[":api:run"]
+  M --> MR["package + copy-dependencies<br/>+ java -cp"]
+  GR --> S["productos=2 + JSON"]
+  MR --> S
+  S --> D["diff vacío"]
+```
+
+Hay un detalle que el `diff` no ve: el número de versión dentro de cada `.class`. `javac` escribe ahí para qué Java compiló. La JVM, al cargar la clase, compara ese número con el máximo que entiende. Este programa muestra ambos datos de la JVM que lo ejecuta:
+
+```java
+public class VersionClase {
+    public static void main(String[] args) {
+        System.out.println("JVM: " + Runtime.version().feature());
+        System.out.println("class file máx.: " + System.getProperty("java.class.version"));
+    }
+}
+```
+
+`Runtime.version().feature()` devuelve el número principal de Java. La propiedad `java.class.version` es la versión de class file más alta que acepta esa JVM. Con OpenJDK 25.0.5 imprime:
+
+```text
+JVM: 25
+class file máx.: 69.0
+```
+
+Con Java 21, el máximo es `65.0`. Ese es exactamente el `up to 65.0` del `UnsupportedClassVersionError` del Problema resuelto 4.2.
+
+Esta tabla traduce las órdenes de una herramienta a la otra:
 
 | Quieres… | Gradle (Kotlin DSL) | Maven |
 |---|---|---|
@@ -1706,15 +1976,31 @@ Este tema usa todo lo anterior del módulo: **coordenadas** y **wrapper** (Tema 
 | Ejecutar el `main` | `./gradlew :api:run` | classpath con `dependency:copy-dependencies` y `java -cp` |
 | Ver dependencias | `./gradlew :core:dependencies` | `mvn -pl core dependency:tree` |
 
-```mermaid
-flowchart LR
-  F["Mismas fuentes Java<br/>core y api"] --> G["Gradle<br/>tareas"]
-  F --> M["Maven<br/>fases"]
-  G --> GR[":api:run"]
-  M --> MR["package + copy-dependencies<br/>+ java -cp"]
-  GR --> S["productos=2 + JSON"]
-  MR --> S
-```
+##### 4. Reglas, variantes y casos límite
+
+Una JVM ejecuta clases compiladas para su versión o para versiones anteriores. Nunca acepta una versión posterior. El número de class file es la versión de Java más 44: Java 17 escribe 61, Java 21 escribe 65 y Java 25 escribe 69.
+
+La opción `--release N` de `javac` existe desde JDK 9. Fija la versión del class file y, además, compila contra la API pública de Java N. Un `javac` solo puede generar versiones iguales o anteriores a la suya: por eso un JDK 21 rechaza `--release 25`.
+
+El toolchain de Gradle está disponible desde Gradle 6.7. Si el JDK pedido no está instalado, Gradle 8 y posteriores solo lo descargan cuando hay un resolvedor de toolchains configurado. Sin él, fallan con `Toolchain auto-provisioning is not enabled`.
+
+Maven también admite toolchains, con el `maven-toolchains-plugin` y un archivo `~/.m2/toolchains.xml`. Este proyecto no los usa: compila con el JDK que ejecuta Maven.
+
+El toolchain no viaja con el artefacto. El script de `installDist` usa `JAVA_HOME` o el `java` del `PATH`. Quien ejecuta decide la JVM, y debe ser igual o más nueva que la del toolchain.
+
+Para ejecutar un `main` desde Maven existe el goal `exec:java` del `exec-maven-plugin`, de MojoHaus. Este tema arma el classpath a mano para que veas qué hace ese plugin.
+
+El wrapper de Maven, `mvnw`, cumple el mismo papel que `gradlew`: fija la versión de Maven en un archivo del proyecto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema reúne todo el módulo. Usa las coordenadas y el wrapper del Tema 1, y las fases, tareas, scopes y BOM del Tema 2. Del Tema 3 toma el reactor y las dependencias de proyecto.
+
+`dependency:copy-dependencies -DincludeScope=runtime` hace en Maven lo que `runtimeClasspath` hace en Gradle. Compara la carpeta `core/target/deps/` con la carpeta `lib/` de `installDist`: las dos excluyen JUnit por la misma razón de scope.
+
+No confundas versión de Java del toolchain con versión del lenguaje que usas. Puedes compilar con un JDK 27 y `--release 25`, como hizo el entorno original con Maven. El resultado corre en Java 25.
+
+El Módulo 9 ejecuta pruebas con `./gradlew test` sobre este mismo modelo. El Módulo 10 usa `jlink` para crear un runtime propio, que resuelve de raíz el problema de qué Java tiene el usuario. El Módulo 11 mira qué hace la JVM con estas clases una vez cargadas.
 
 #### Problema resuelto 4.1
 Construye `tienda-aurora-build-tools` con las dos herramientas desde el mismo árbol y compara la salida del programa.

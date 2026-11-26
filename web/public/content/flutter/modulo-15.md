@@ -106,6 +106,13 @@ records y patrones** (Módulo 0, Tema 6).
 - **Ejemplo:** `NumberFormat.simpleCurrency(locale: 'es_CO')` da «18.500,00 €».
 - **Error típico:** dejar que el idioma elija la moneda; la moneda la decide el negocio (aquí, COP), el idioma solo el formato.
 
+**`LocalizationsDelegate`**
+- **Definición técnica:** objeto que sabe cargar los recursos de un tipo para un locale: `isSupported` dice qué idiomas atiende, `load` devuelve un `Future` con los recursos y `shouldReload` decide si recargar; `MaterialApp` los recibe en `localizationsDelegates` y el widget `Localizations` los ejecuta.
+- **En palabras sencillas:** el bibliotecario que trae el diccionario del idioma que pides.
+- **Dónde se rompe la comparación:** cada *delegate* trae un solo tipo de recurso; la app necesita varios a la vez (los textos propios y los de Material, Cupertino y Widgets) y todos deben atender el mismo locale.
+- **Ejemplo:** `await Textos.delegate.load(Locale('ar'))` devuelve los textos árabes en la prueba de plurales, sin construir widgets.
+- **Error típico:** usar la lista `Textos.localizationsDelegates` con widgets de `material_ui`: en español la app falla con `No MaterialLocalizations found.`
+
 **RTL**
 - **Definición técnica:** dirección de texto de derecha a izquierda (`TextDirection.rtl`), la del árabe y el hebreo; `GlobalWidgetsLocalizations` la activa según el locale, y `Row`, `EdgeInsetsDirectional`, `AlignmentDirectional` y los iconos con `matchTextDirection` se reflejan solos.
 - **En palabras sencillas:** la pantalla en el espejo.
@@ -114,10 +121,67 @@ records y patrones** (Módulo 0, Tema 6).
 - **Error típico:** probar solo en inglés y español, que van en la misma dirección.
 
 #### ► CÓMO FUNCIONA
-Los ARB son la fuente. `flutter gen-l10n` (o cualquier `flutter run`/`build`/`test`) genera `Textos`. En
-`MaterialApp` declaras los idiomas y los *delegates*: el tuyo, que carga los textos de la app, y los de
-`material_ui`, que traducen lo que trae Material (el *tooltip* de «atrás», los selectores de fecha) y fijan la
-dirección. Cada widget lee `Textos.of(context)`.
+
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de envíos que opera en varios países no reescribe su guía de despacho en cada idioma a mano y sin orden.
+Tiene un diccionario de frases aprobadas, una página por idioma, y un traductor que respeta las costumbres locales:
+cómo se escriben las fechas, dónde va el símbolo del dinero, si el texto se lee de izquierda a derecha.
+
+Traducir una app no es cambiar palabras. «Quedan 1 entregas» es un error de plural; «el repartidor» para una
+repartidora es un error de género. Un precio en euros para un cliente colombiano es un error de moneda. En árabe,
+además, la pantalla entera se lee al revés.
+
+Este tema separa los textos del código y deja que cada idioma decida sus reglas. La app pide «el mensaje de entregas
+pendientes con 3». Recibe la frase correcta en español, inglés o árabe, con su plural, su fecha y su dirección.
+
+##### 2. Definición formal y vocabulario
+
+Un **ARB** (*Application Resource Bundle*) es un archivo JSON con un mensaje por clave, uno por idioma. La plantilla,
+aquí `app_es.arb`, agrega metadatos con `@clave`: descripción y tipo de cada marcador. Los demás idiomas solo traen
+los textos.
+
+**`gen-l10n`** es la herramienta de Flutter que lee los ARB según `l10n.yaml` y genera código Dart con tipos. Produce
+una clase abstracta, `Textos`, una subclase por idioma, el `delegate` y la lista `supportedLocales`.
+`t.entregasPendientes(3)` es un método con un parámetro `int`, no una búsqueda por texto.
+
+Los mensajes usan la sintaxis **ICU** de Unicode. `{n, plural, …}` elige una variante por número según las reglas de
+cada idioma. Esas reglas vienen de CLDR, la base de datos de costumbres locales de Unicode. `{g, select, …}` elige por
+un valor de texto, como el género.
+
+Un **locale** es un idioma y, opcionalmente, una región: `es`, `es_CO`, `ar_EG`. Decide los textos y las reglas de
+formato. Un `LocalizationsDelegate` es el objeto que carga los recursos de un locale. **RTL** (*right to left*) es la
+dirección de derecha a izquierda del árabe y el hebreo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El trabajo empieza antes de ejecutar la app, en la generación de código:
+
+1. `flutter gen-l10n`, o cualquier `flutter run`, `build` o `test`, lee `l10n.yaml`. Si falta `generate: true` en
+   `pubspec.yaml`, se niega a generar, como muestra la primera salida del tema.
+2. Lee la plantilla y toma de ahí los tipos de los marcadores. `cantidad` es `int`; `valor` es `double` con formato
+   `currency` y moneda `COP`.
+3. Por cada idioma genera una subclase. Para el árabe, el plural se convierte en una llamada a `Intl.pluralLogic` con
+   seis ramas.
+4. Las claves que faltan en un idioma usan el texto de la plantilla y quedan anotadas en `sin_traducir.json`.
+
+Después, en tiempo de ejecución, `MaterialApp` crea un widget `Localizations`:
+
+5. Resuelve el locale. Si el teléfono dice `es_CO` y la lista trae `es`, `en` y `ar`, busca primero una coincidencia
+   exacta y después solo por idioma: elige `es`.
+6. Pide a cada *delegate* que cargue sus recursos para `es`. `Textos.delegate` carga los textos de la app; los de
+   `material_ui` cargan los de Material y Cupertino.
+7. El *delegate* de widgets fija la dirección del texto. Para `ar` es `TextDirection.rtl`, y `Localizations` pone un
+   `Directionality` con ese valor sobre toda la app.
+8. Cada widget lee sus textos con `Textos.of(context)`. Al cambiar el locale, `Localizations` recarga y todo lo que
+   depende de él se reconstruye.
+
+```text
+"entregasPendientes": "{cantidad, plural, =0{No quedan entregas} =1{Queda 1 entrega} other{Quedan {cantidad} entregas}}",
+```
+
+Lee esa línea de afuera hacia adentro. `cantidad` es el marcador; `plural` indica que se elige por número; cada rama
+tiene un selector y un texto. `=0` y `=1` son números exactos; `other` es la categoría obligatoria que cubre el resto.
 
 ```mermaid
 flowchart LR
@@ -128,8 +192,51 @@ flowchart LR
     G --> S["sin_traducir.json"]
     T --> M["MaterialApp: locale,<br/>localizationsDelegates"]
     MU["GlobalMaterialLocalizations.delegates<br/>(de material_ui)"] --> M
-    M --> W["Textos.of(context)<br/>Directionality: ltr / rtl"]
+    M --> L["Localizations: resuelve el locale<br/>y carga cada delegate"]
+    L --> W["Textos.of(context)<br/>Directionality: ltr / rtl"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+Las categorías de plural no son números. `zero`, `one`, `two`, `few`, `many` y `other` son categorías de CLDR, y cada
+idioma usa las suyas. La tabla del tema lo muestra: en árabe 3 es `few` y 11 es `many`; en español, 1 000 000 es
+`many`. Los selectores `=0`, `=1` y `=2` sí son números exactos.
+
+`other` es obligatoria en `plural` y en `select`. No todos los idiomas necesitan todas las ramas: en inglés, el
+`select` de género solo usa `other`, porque «Assigned to» no cambia con el género.
+
+La moneda la decide el negocio, no el idioma. `NumberFormat.simpleCurrency` elige la moneda por el locale, y `intl`
+0.20.3 no trae datos de `es_CO`: usa los de `es`, con euros. Por eso el mensaje fija `name: COP` y el locale solo
+decide separadores y posición del símbolo.
+
+En la salida árabe del dinero hay un carácter invisible antes de la cifra: «‏18,500 $». Es la marca de derecha a
+izquierda de Unicode (U+200F). `intl` la agrega para que la cifra y el símbolo se ordenen bien dentro de un texto
+árabe.
+
+La dirección RTL se aplica sola a lo que está escrito en términos de inicio y fin. `Row`, `EdgeInsetsDirectional`,
+`AlignmentDirectional` y `CrossAxisAlignment.start` se reflejan. Lo escrito con `left` o `right` fijos, como
+`EdgeInsets.only(left: 16)`, no se refleja.
+
+En Flutter 3.50, la lista `Textos.localizationsDelegates` que genera `gen-l10n` trae las clases antiguas de
+`flutter_localizations`. Con widgets de `material_ui`, la app falla en español con `No MaterialLocalizations found`.
+Por eso el tema usa `GlobalMaterialLocalizations.delegates` de `material_ui`.
+
+Las pruebas no ven las fuentes del sistema. Sin una fuente con glifos árabes cargada en `flutter test`, las capturas
+muestran rectángulos aunque el teléfono sí tenga esas letras.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El tema de la app y su `ThemeData` vienen del Módulo 10, Tema 1; aquí se agrega `fontFamilyFallback` para el árabe.
+Las capturas por idioma son pruebas golden como las del Módulo 9, Tema 4. Los textos que antes estaban escritos en el
+código, como en el Módulo 12, Tema 4, pasan a los ARB.
+
+Compara `gen-l10n` con escribir un mapa de textos a mano. Un mapa da un `String` por clave y no sabe de plurales,
+tipos ni formatos. `gen-l10n` produce métodos con parámetros tipados: si cambias `cantidad` de `int` a `String`, el
+compilador marca cada uso.
+
+El Tema 2 escribe una regla del analizador que detecta textos fijos en `Text('…')` y formatos de fecha sin locale. El
+Tema 3 explica por qué existen dos juegos de clases de localización: la migración a `material_ui`. El Tema 4 usa estos
+mismos ARB para los textos del asistente.
 
 #### Problema resuelto 1.1
 Traduce la pantalla de la ruta al español, inglés y árabe, con un selector de idioma, plurales, género, la fecha y el
@@ -761,8 +868,7 @@ Al terminar este tema podrás:
 - convertir una métrica (líneas de un `build`) en una regla;
 - activar, silenciar y medir el costo de las reglas en `flutter analyze`.
 
-**Conceptos clave:** plugin del analizador, `AnalysisRule`, visitante del árbol de sintaxis, regla *lint* frente a
-*warning*, métrica
+**Conceptos clave:** plugin del analizador, `AnalysisRule`, visitante del árbol de sintaxis, regla *lint* frente a *warning*, métrica
 
 #### El problema
 Después del Tema 1 alguien agrega una tarjeta de resumen con `Text('Resumen del día')` y
@@ -796,7 +902,7 @@ comprobada con una prueba** (Módulo 12, Tema 1), que era otra forma de vigilar 
 - **Ejemplo:** comprobar que `Text` viene de `package:flutter/`, no de otra clase con el mismo nombre.
 - **Error típico:** comparar solo el nombre en el texto del código, sin mirar el tipo.
 
-**regla *lint* frente a *warning***
+**regla lint frente a warning**
 - **Definición técnica:** un plugin registra sus reglas como *warning* (activas por defecto) o como *lint* (apagadas hasta que se activan en `plugins: <nombre>: diagnostics:`); se silencian con `// ignore: <plugin>/<regla>`.
 - **En palabras sencillas:** avisos que vienen encendidos o que cada proyecto decide encender.
 - **Dónde se rompe la comparación:** la severidad que muestra `flutter analyze` (aquí `info`) la fija el `LintCode`; `flutter analyze` termina con código 1 igual.
@@ -811,16 +917,80 @@ comprobada con una prueba** (Módulo 12, Tema 1), que era otra forma de vigilar 
 - **Error típico:** subir el umbral cada vez que alguien lo supera.
 
 #### ► CÓMO FUNCIONA
-`flutter analyze` arranca el servidor de análisis. Al leer `plugins:`, este crea un paquete auxiliar en
-`~/.dartServer/.plugin_manager/`, resuelve las dependencias, compila el plugin (`plugin.aot`) y lo carga. Por cada
-archivo, el plugin recibe el árbol resuelto, sus visitantes reportan y los diagnósticos salen en la misma lista que
-los del analizador.
+
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de envíos tiene normas generales, como el código de tránsito, y normas propias: «toda guía lleva el
+teléfono del destinatario», «nada frágil sin firma». Los inspectores de tránsito revisan las generales. Para las
+propias, la empresa entrena a su propio inspector.
+
+El analizador de Dart es el inspector general. Conoce el lenguaje y los lints de la comunidad, y marca lo que está mal
+en cualquier proyecto. No sabe que tu equipo decidió que todo texto visible sale de los ARB, ni que un `build` de 60
+líneas se divide.
+
+Este tema entrena a un inspector propio: un plugin que se sienta junto al analizador y escribe sus comentarios en la
+misma lista. Lo ves en el editor mientras escribes y en `flutter analyze` en el CI, con mensajes en español que dicen
+qué hacer.
+
+##### 2. Definición formal y vocabulario
+
+Un **plugin del analizador** es un paquete Dart con un archivo `lib/main.dart` que expone una variable de nivel
+superior, `plugin`, con una subclase de `Plugin`. El sistema de plugins de `analysis_server_plugin` existe desde Dart
+3.10. Se declara en la sección `plugins:` de primer nivel de `analysis_options.yaml`.
+
+Una **`AnalysisRule`** es la ficha de una regla: nombre, descripción, un `LintCode` con el mensaje y la corrección, y
+el método `registerNodeProcessors`. En ese método la regla pide qué tipos de nodo quiere visitar, por ejemplo las
+expresiones que crean objetos.
+
+El **visitante del árbol de sintaxis** es una subclase de `SimpleAstVisitor` con métodos `visitX`. Recibe cada nodo
+registrado ya **resuelto**: con su tipo estático y el elemento que indica de qué biblioteca viene cada clase. En
+sencillo: entiende qué es cada palabra, no solo cómo se escribe.
+
+Las reglas se registran como **lint** o como **warning**. Las *warning* vienen encendidas; las *lint* vienen apagadas
+hasta que las activas en `diagnostics:`. Una **métrica** es un número calculado del código, como las líneas de un
+método, que se compara con un umbral.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa entre `flutter analyze` y la lista de nueve hallazgos del tema.
+
+1. `flutter analyze` arranca el servidor de análisis de Dart, el mismo que usa tu editor.
+2. El servidor lee la sección `plugins:`. Crea un paquete auxiliar que depende de todos los plugins activos y resuelve
+   sus dependencias con `dart pub upgrade`.
+3. Compila ese paquete y lo carga en un *isolate* aparte dentro del proceso del servidor. Ese *isolate* trae su propia
+   copia del analizador, y por eso la memoria del tema pasó de 327 MB a más de 1,5 GB.
+4. El servidor llama a `register` del plugin, que registra las tres reglas con `registerLintRule`. Como son *lint*,
+   solo se ejecutan las que `diagnostics:` activa.
+5. Por cada archivo, el analizador construye el árbol de sintaxis y lo resuelve. Cada regla recibe su `RuleContext` y
+   decide si participa: `texto_sin_traducir` no registra nada si el archivo no está en `lib/`.
+6. El recorrido visita los nodos y llama a los visitantes registrados. Este es el corazón de `texto_sin_traducir`:
+
+```dart
+final tipo = node.staticType?.element;
+if (tipo?.name != 'Text' || !'${tipo?.library?.uri}'.startsWith('package:flutter/')) return;
+final argumentos = node.argumentList.arguments;
+if (argumentos.isEmpty) return;
+final primero = argumentos.first;
+final texto = switch (primero) {
+  SimpleStringLiteral() || StringInterpolation() => primero.toSource(),
+  _ => null, // una variable o una llamada: no se puede saber, no se reporta
+};
+if (texto != null && _letra.hasMatch(texto)) regla.reportAtNode(primero, arguments: [texto]);
+```
+
+Mira el tipo, no el nombre escrito: una clase propia llamada `Text` no se reporta. Después mira la forma del primer
+argumento. Solo un literal con letras es, con seguridad, un texto escrito en el código.
+
+7. `reportAtNode` crea un diagnóstico en la posición del nodo. El `{0}` del mensaje se reemplaza por el literal, y así
+   aparece `El texto 'Ver detalle' está escrito en el código…`.
+8. Los diagnósticos del plugin vuelven al servidor y salen mezclados con los del analizador, con el formato `mensaje •
+   archivo:línea:columna • código`.
 
 ```mermaid
 flowchart LR
     AO["analysis_options.yaml<br/>plugins: reglas_ruta"] --> AS["servidor de análisis"]
-    AS -->|"pub upgrade + compilar"| P["plugin.aot<br/>(isolate propio)"]
-    AS -->|"árbol resuelto"| P
+    AS -->|"pub upgrade + compilar"| P["plugin<br/>(isolate aparte)"]
+    AS -->|"árbol resuelto de cada archivo"| P
     P --> R1["texto_sin_traducir"]
     P --> R2["formato_sin_locale"]
     P --> R3["build_muy_largo"]
@@ -828,6 +998,49 @@ flowchart LR
     R2 --> D
     R3 --> D
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+La sección `plugins:` va en el primer nivel del archivo. Dentro de `analyzer:` era la sintaxis del sistema antiguo de
+plugins, que no activa un plugin de `analysis_server_plugin`. Tampoco se puede configurar en un
+`analysis_options.yaml` anidado: solo en la raíz del paquete. Después de cambiar esa sección, el servidor de análisis
+debe reiniciarse.
+
+El silencio también tiene reglas. `// ignore: reglas_ruta/texto_sin_traducir` silencia una línea; `//
+ignore_for_file:` con el mismo código silencia el archivo. Para que funcione, el `LintCode` debe ser `static const`.
+Escribe siempre por qué silencias, como en los nombres de idioma «ES», «EN» y «ع».
+
+La severidad que muestra `flutter analyze`, aquí `info`, la fija el `LintCode`. Aun con `info`, `flutter analyze`
+termina con código 1 si hay hallazgos. Eso basta para que un CI falle.
+
+La API del analizador cambia entre versiones. Con `analyzer` 14, un argumento con nombre es `NamedArgument` y su
+nombre se lee con `a.name.lexeme`; antes era `NamedExpression`. Un ejemplo copiado de otra versión no compila. Por eso
+el plugin fija versiones en su `pubspec.yaml` y se analiza solo con `dart analyze` antes de activarlo.
+
+Una regla sintáctica tiene límites. `texto_sin_traducir` no ve `final s = 'Hola'; Text(s)`, porque seguir el valor de
+una variable exige análisis de flujo de datos. Es mejor dejar pasar un caso que llenar la lista de falsos positivos,
+que enseñan a ignorar la regla.
+
+`formato_sin_locale` existe por un detalle de Flutter: cambiar el idioma no cambia `Intl.defaultLocale`. Un
+`DateFormat` sin locale sigue formateando con el valor por defecto de `intl`, y la fecha sale en inglés en la pantalla
+árabe.
+
+El costo es real y se mide. En el equipo del tema, el análisis pasó de 7 s a más de 60 s. Además, el sistema detuvo el
+servidor por falta de memoria varias veces. Un CI con 2 o 4 GB necesita un trabajo aparte para el análisis con plugin.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El analizador, los lints y `analysis_options.yaml` son del Módulo 0, Tema 4; aquí se agrega una sección nueva. La
+prueba de arquitectura del Módulo 12, Tema 1 también vigilaba el código, pero leía texto con expresiones regulares y
+corría en `flutter test`. El plugin trabaja sobre el árbol resuelto y avisa en el editor mientras escribes.
+
+Diferencia un lint de comunidad de una regla propia. `prefer_single_quotes` vale para cualquier proyecto Dart y viene
+en el SDK. `texto_sin_traducir` solo tiene sentido en una app que traduce con ARB, como la del Tema 1. Las reglas
+propias codifican decisiones del equipo.
+
+El Tema 3 usa otra pieza del mismo servidor de análisis: los arreglos automáticos que aplica `dart fix`. Allí,
+`deprecated_member_use` sube a `error` en `analysis_options.yaml`, como ya hace la app de este tema. El Tema 4 escribe
+sus textos en los ARB desde el principio, y el plugin lo comprueba.
 
 #### Problema resuelto 2.1
 Escribe un plugin con tres reglas: textos visibles escritos en el código, `DateFormat`/`NumberFormat` sin locale y
@@ -1263,8 +1476,7 @@ Al terminar este tema podrás:
 - migrar a mano `WillPopScope` y `textScaleFactor` sin cambiar el comportamiento, con pruebas que lo demuestran;
 - convivir con paquetes que todavía usan `package:flutter/material.dart`.
 
-**Conceptos clave:** API obsoleta (`@Deprecated`), arreglo basado en datos, `dart fix`, `material_ui`, puente de
-compatibilidad
+**Conceptos clave:** API obsoleta (`@Deprecated`), arreglo basado en datos, `dart fix`, `material_ui`, puente de compatibilidad
 
 #### El problema
 La app de la ruta de 2024 sigue en producción. Al pasar a Flutter 3.50 compila, pero el analizador muestra 10
@@ -1276,7 +1488,7 @@ Este tema usa **el analizador y `dart fix`** (Módulo 0, Tema 4), **las pruebas 
 
 #### Glosario del tema
 
-**API obsoleta**
+**API obsoleta (`@Deprecated`)**
 - **Definición técnica:** una clase, miembro o librería marcada con `@Deprecated('mensaje')`; el analizador la reporta como `deprecated_member_use` con el mensaje, que suele decir el reemplazo y desde qué versión.
 - **En palabras sencillas:** el letrero de «esta puerta se cierra pronto, use la de al lado».
 - **Dónde se rompe la comparación:** todavía funciona; un día se borra y entonces no compila. Por defecto es solo `info`.
@@ -1312,20 +1524,121 @@ Este tema usa **el analizador y `dart fix`** (Módulo 0, Tema 4), **las pruebas 
 - **Error típico:** dejarlo para siempre en lugar de presionar al paquete para que migre.
 
 #### ► CÓMO FUNCIONA
-El analizador marca cada uso obsoleto. `dart fix` aplica las recetas que existen, en dos fuentes: las de Flutter
-(cambiar el `import`, `withOpacity`) y, después de cambiar el `import`, las de `material_ui` (`ButtonBar`,
-`background`). Lo que queda se migra a mano y se comprueba con pruebas.
+
+##### 1. La idea en lenguaje sencillo
+
+Cuando una ciudad cambia la numeración de sus calles, no derriba las casas. Pone letreros: «esta dirección ahora es
+Calle 93 # 15-20». Durante un tiempo valen las dos. Después, la vieja desaparece y los paquetes con esa dirección se
+devuelven. Una empresa de envíos ordenada actualiza su base de datos mientras conviven las dos.
+
+Flutter hace lo mismo con su código. Cuando una clase o un método se reemplaza, lo marca como obsoleto con un letrero
+que dice qué usar. El código viejo sigue compilando por un tiempo. En Flutter 3.50, el letrero más grande está en el
+propio `import`: los widgets Material se mudaron al paquete `material_ui`.
+
+Muchos cambios son mecánicos: cambiar un nombre por otro. Otros cambian el comportamiento, y ahí nadie puede migrar
+por ti. Este tema separa los dos tipos, deja lo mecánico a `dart fix` y fija con pruebas que lo migrado a mano se
+comporta igual.
+
+##### 2. Definición formal y vocabulario
+
+Una **API obsoleta** es una clase, miembro o biblioteca marcada con la anotación `@Deprecated('mensaje')` de
+`dart:core`. El analizador reporta cada uso con el código `deprecated_member_use`, con severidad `info` por defecto.
+El mensaje suele decir el reemplazo y desde qué versión.
+
+Un **arreglo basado en datos** (*data-driven fix*) es una receta en YAML. El autor de un paquete la publica en
+`lib/fix_data.yaml` o en la carpeta `lib/fix_data/`. Describe cambios mecánicos: renombrar una clase, reemplazar una
+biblioteca, cambiar un parámetro. Flutter tiene, por ejemplo, la regla «Migrate from flutter/material.dart to
+material_ui/material_ui.dart».
+
+**`dart fix`** aplica los arreglos automáticos del analizador: los de los lints y los de esas recetas. `--dry-run`
+lista lo que haría; `--apply` lo escribe; `--code=` filtra por código de diagnóstico.
+
+**`material_ui`** es el paquete de pub con los widgets Material que antes vivían dentro de Flutter. Trae sus propias
+clases `ThemeData`, `Theme` y `MaterialLocalizations`, distintas de las antiguas aunque se llamen igual. Para convivir
+con paquetes que no migraron existe el **puente de compatibilidad**, `MaterialUiCompatibilityBridge`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la migración de la app de 2024 tal como ocurrió en las salidas del tema.
+
+1. `dart analyze` resuelve cada uso y consulta si el elemento lleva `@Deprecated`. Reporta 10 avisos. El más antiguo,
+   `WillPopScope`, está obsoleto desde la 3.12.
+2. `dart fix --dry-run` busca, para cada diagnóstico, una corrección. Las encuentra en las recetas de Flutter y en una
+   corrección del propio analizador para la dependencia que falta. Propone 7 cambios en 2 archivos.
+3. `dart fix --apply` escribe esos cambios. `withOpacity(0.08)` pasa a `withValues(alpha: 0.08)`, `ButtonBar` a
+   `OverflowBar` y `background` a `surface`. En `pubspec.yaml` agrega `material_ui: any`.
+4. `dart fix` no ejecuta `pub get`. El `import` ya apunta a un paquete que no está descargado, así que el análisis se
+   llena de errores: 30 problemas, y ni `runApp` existe.
+5. `flutter pub add material_ui` descarga el paquete y cambia `any` por `^1.11.1`. Quedan 3 avisos sin receta.
+6. Esos tres se migran a mano, porque el reemplazo funciona distinto:
+
+```dart
+final escala = MediaQuery.textScalerOf(context); // TextScaler: admite escalado no lineal (Android 14+)
+final tamano = escala.scale(14); // 14 px con la escala del sistema aplicada
+return PopScope(
+  canPop: false, // se declara antes, no se pregunta después
+  child: Scaffold(body: Text('Texto de 14 px → ${tamano.toStringAsFixed(1)} px')),
+);
+```
+
+`WillPopScope` preguntaba en el momento: `onWillPop` devolvía un `Future<bool>`. `PopScope` declara antes, con
+`canPop`, si se puede salir. El «atrás predictivo» de Android necesita esa respuesta por adelantado para animar el
+gesto antes de que termine.
+
+`textScaleFactor` era un solo número que multiplicaba todos los tamaños. `TextScaler` es un objeto con un método
+`scale`, y permite que el sistema agrande menos los textos que ya son grandes.
+
+7. Dos pruebas fijan el comportamiento: «atrás» no saca de la pantalla, y 14 px con escala 1,3 dan 18,2 px. Con eso,
+   `dart analyze` dice `No issues found!`.
 
 ```mermaid
 flowchart TD
-    A["dart analyze<br/>10 avisos"] --> D["dart fix --dry-run<br/>7 arreglos"]
+    A["dart analyze<br/>10 avisos"] --> D["dart fix --dry-run<br/>7 arreglos con receta"]
     D --> F["dart fix --apply"]
-    F --> P["pubspec: material_ui: any<br/>(sin pub get)"]
+    F --> P["pubspec: material_ui: any<br/>(sin pub get → 30 problemas)"]
     P --> G["flutter pub add material_ui"]
     G --> M["3 avisos sin receta:<br/>WillPopScope, textScaleFactor"]
     M --> H["a mano + pruebas"]
     H --> OK["No issues found!"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+Un aviso de obsolescencia es `info`, no error: el código compila y la app funciona. Esa comodidad es el riesgo. Los
+avisos se acumulan hasta la versión que borra la API, y entonces todo falla a la vez. Subir `deprecated_member_use` a
+`error` en `analysis_options.yaml` impide que entren usos nuevos.
+
+«Sin avisos» no significa «migrado». Lo que no tiene aviso ni receta no aparece en ninguna lista. Por eso la migración
+termina con pruebas que comprueban el comportamiento, no con un análisis limpio.
+
+`dart fix` puede tocar `pubspec.yaml` y deja `any` como restricción, que acepta cualquier versión, también una futura
+incompatible. Después de aplicar, ejecuta `flutter pub get` o `flutter pub add`, después `dart analyze` y después las
+pruebas. Y aplica siempre con control de versiones, para revisar el `diff`.
+
+Al migrar `PopScope`, no copies la lógica de `onWillPop` a `onPopInvokedWithResult` esperando que decida. Ese
+*callback* solo avisa que hubo un intento de salir, y su primer parámetro dice si la salida ocurrió. La decisión ya la
+tomó `canPop`.
+
+Las clases de `material_ui` y las antiguas no son intercambiables. Un `Theme.of` antiguo no ve el `ThemeData` nuevo y
+devuelve el morado por defecto, `0xff6750a4`. El puente pone un `Theme` y unas `Localizations` antiguas traducidas del
+tema nuevo. No crea un `Material` antiguo: un `Chip` viejo necesita uno alrededor.
+
+El puente nace obsoleto a propósito: es temporal. Úsalo mientras el paquete de terceros migra, con una prueba que lo
+cubra, y quítalo cuando ya no haga falta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`dart fix` por regla y las bases del analizador son del Módulo 0, Tema 4. Las pruebas de widgets que fijan el
+comportamiento son del Módulo 9, Tema 2. Material y Cupertino como sistemas de diseño son del Módulo 10, Tema 4; aquí
+cambian de paquete.
+
+Compara `dart fix` con el plugin del Tema 2. Las dos cosas corren en el mismo servidor de análisis. El plugin
+encuentra problemas que tú defines; `dart fix` corrige problemas que otros ya describieron con una receta. Ninguno de
+los dos sabe si el comportamiento cambió: eso lo dicen las pruebas.
+
+Este tema explica el error común del Tema 1: la lista que genera `gen-l10n` trae las localizaciones antiguas. El Tema
+4 escribe código nuevo directamente con `material_ui`. Y la regla de subir `deprecated_member_use` a `error` es la que
+ya usa la app del Tema 2.
 
 #### Problema resuelto 3.1
 Migra la app de 2024 a Flutter 3.50 y `material_ui`, sin cambiar lo que hace: el repartidor no sale con «atrás» y el
@@ -1816,7 +2129,7 @@ errores de red** (Módulo 5, Tema 4) y **los secretos fuera del binario** (Módu
 
 #### Glosario del tema
 
-***streaming***
+**streaming**
 - **Definición técnica:** respuesta HTTP que se envía en partes mientras se genera; el cliente la lee como un `Stream<List<int>>` (`StreamedResponse.stream`).
 - **En palabras sencillas:** recibir la carta línea por línea, mientras se escribe.
 - **Dónde se rompe la comparación:** los trozos de bytes no coinciden con las palabras ni con las letras: una «á» (2 bytes en UTF-8) puede llegar partida.
@@ -1852,10 +2165,71 @@ errores de red** (Módulo 5, Tema 4) y **los secretos fuera del binario** (Módu
 - **Error típico:** la clave en el binario o en `--dart-define`: se extrae del APK en minutos (Módulo 11).
 
 #### ► CÓMO FUNCIONA
-La app envía la pregunta a tu servidor. El servidor responde con cabeceras `text/event-stream` y después un evento
-por palabra. El cliente decodifica los bytes **como flujo** (`utf8.decoder`), los parte en líneas (`LineSplitter`) y
-emite cada `delta`; la pantalla hace un `setState` por fragmento. «Detener» completa el `abortTrigger`: el cliente
-cierra la conexión y el servidor, que escucha su socket, deja de generar.
+
+##### 1. La idea en lenguaje sencillo
+
+Llamas a una central de envíos para preguntar por tu ruta. Una operadora te deja en silencio veinte segundos y luego
+lee todo de corrido. Otra empieza a responder de inmediato, frase por frase, y si ya oíste lo que necesitabas,
+cuelgas. La segunda se siente rápida aunque tarde lo mismo.
+
+Un modelo de lenguaje genera su respuesta palabra por palabra y puede tardar varios segundos. Si la app espera el
+texto completo, el repartidor ve un círculo girando. Con *streaming*, la app muestra cada palabra al llegar y ofrece
+un botón «Detener».
+
+Ese flujo trae preguntas que una petición normal no tiene. ¿Qué pasa si el servidor se queda callado a la mitad? ¿Si
+la conexión se corta sin aviso? ¿Si la persona detiene la respuesta y el servidor sigue generando, y cobrando? Y una
+regla de seguridad: la clave del proveedor nunca viaja en la app.
+
+##### 2. Definición formal y vocabulario
+
+Una respuesta en ***streaming*** es una respuesta HTTP que el servidor envía en partes mientras la genera. En
+`package:http`, el cliente la lee como un `Stream<List<int>>`: el `stream` de un `StreamedResponse`. Cada trozo es un
+puñado de bytes, sin relación con palabras ni letras.
+
+**SSE** (*Server-Sent Events*) es un formato de texto con tipo `text/event-stream`, definido en el estándar HTML. Cada
+evento es una o más líneas `data: …` y termina con una línea vacía. Las APIs de chat envían un JSON por evento y un
+evento final; aquí, `data: [DONE]`.
+
+**`AbortableRequest`** es una petición de `package:http`, disponible desde la versión 1.5, que acepta un
+`abortTrigger`. Cuando ese `Future` se completa, el cliente corta la petición. Si ya estaba leyendo, el flujo recibe
+una `RequestAbortedException`.
+
+El **tiempo de espera por fragmento** son dos límites: uno para la primera parte, mientras el modelo «piensa», y otro
+más corto entre partes. El **servidor intermedio** es tu backend: recibe la pregunta autenticada, llama al proveedor
+con su clave y reenvía el flujo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue una pregunta desde que la pantalla la envía hasta que el texto termina de pintarse.
+
+1. `preguntar` es una función `async*`: devuelve un `Stream<String>` y emite valores con `yield`. Nada se ejecuta
+   hasta que alguien escucha el flujo.
+2. Arma un `AbortableRequest` y lo envía con `send`, limitado por `esperaPrimerFragmento`. `send` termina cuando
+   llegan la línea de estado y las cabeceras, no el cuerpo.
+3. Si el estado no es 200, lee el cuerpo completo y lanza `ErrorChat` con él. Así llega el 503 del caso «saturado».
+4. Convierte los bytes en líneas con dos transformadores encadenados:
+
+```dart
+final lineas = respuesta.stream
+    .transform(utf8.decoder) // decodifica por flujo: une los bytes de una letra partida entre dos trozos
+    .transform(const LineSplitter());
+final iterador = StreamIterator(lineas);
+```
+
+En UTF-8, la «á» ocupa dos bytes y puede llegar partida entre dos trozos. `utf8.decoder` es un decodificador por
+flujo: guarda la mitad y la completa con el trozo siguiente. `LineSplitter` hace lo mismo con los saltos de línea.
+
+5. Un `StreamIterator` permite pedir líneas una por una con `moveNext()`. Cada pedido lleva su propio límite: el de la
+   primera parte o el de entre partes.
+6. Las líneas que no empiezan por `data: ` se ignoran: son las líneas vacías que separan eventos. Con `[DONE]`, marca
+   `terminado` y sale del ciclo. Con un JSON, emite su `delta` con `yield`.
+7. Al salir del ciclo por cualquier motivo, el bloque `finally` cancela el iterador. Eso cancela la suscripción al
+   cuerpo y cierra la conexión.
+8. Si el ciclo terminó sin `[DONE]`, lanza `respuesta incompleta`. El fin de la conexión no es el fin de la respuesta.
+
+La cancelación recorre el camino inverso. «Detener» completa el `Completer` que la pantalla pasó como `abortTrigger`.
+El cliente corta la conexión, `moveNext` falla con `RequestAbortedException` y el generador termina sin error. Del
+otro lado, el servidor escucha el cierre del socket y deja de generar.
 
 ```mermaid
 sequenceDiagram
@@ -1871,11 +2245,54 @@ sequenceDiagram
         S-->>C: data: {"delta": "..."}
         C-->>P: fragmento → setState
     end
-    S-->>C: data: [DONE]
-    P->>C: Detener (abortTrigger)
-    C--xS: cierra la conexión
-    Note over S: socket cerrado → deja de generar
+    alt respuesta completa
+        S-->>C: data: [DONE]
+    else la persona toca Detener
+        P->>C: completa abortTrigger
+        C--xS: cierra la conexión
+        Note over S: socket cerrado → deja de generar
+    end
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+Decodificar cada trozo por separado, con `stream.map(utf8.decode)`, funciona mientras el texto no tenga tildes. Con la
+primera letra partida, falla con `Unfinished UTF-8 octet sequence`. La salida del tema lo muestra en el byte 22, la
+primera mitad de la «á» de «Bogotá».
+
+Un límite de tiempo para toda la respuesta corta respuestas largas y sanas. Por eso hay dos límites por fragmento.
+Fíjate además en que `Future.timeout` no cancela el `moveNext` pendiente: solo deja de esperarlo. La conexión se
+cierra porque el error sale del ciclo y el `finally` cancela el iterador.
+
+Cancelar en la app no garantiza que el servidor se detenga. La primera versión del servidor escribía con
+`HttpResponse`, que descarta en silencio lo escrito a un cliente ausente. Siguió hasta las 33 palabras. La versión
+final toma el socket con `detachSocket` y escucha su cierre. Con un proveedor real, el servidor debe cancelar a su vez
+su petición.
+
+El cliente asume un `data:` por evento. El formato SSE permite varias líneas `data:` en un mismo evento, que se unen
+con saltos de línea, y campos como `event:` o `id:`. Si tu proveedor usa esas variantes, el cliente debe juntar las
+líneas hasta la línea vacía antes de decodificar el JSON.
+
+El objeto `EventSource` de los navegadores solo hace peticiones `GET`. Las APIs de chat usan `POST` con cuerpo JSON,
+así que se leen como aquí: una petición normal con el cuerpo como flujo.
+
+La clave del proveedor no va en la app, ni en el código ni con `--dart-define`: cualquier cadena del binario se puede
+extraer. Va en el servidor intermedio, que además comprueba la sesión, limita el uso por persona y puede cambiar de
+proveedor sin publicar una versión nueva.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los streams y los generadores `async*` vienen del Módulo 0, Tema 5. El límite de tiempo de una petición con `http` es
+del Módulo 5, Tema 1. El diseño de errores de red es del Módulo 5, Tema 4. La regla de no guardar secretos en el
+binario es del Módulo 11, Tema 2.
+
+Compara este flujo con el WebSocket del Módulo 14, Tema 3. Los dos reciben datos que el servidor empuja. El WebSocket
+es bidireccional y vive mucho tiempo, así que necesita reconexión y reanudación. SSE va en una sola dirección y dura
+una respuesta, así que basta con detectar el silencio y el final incompleto.
+
+Los textos de la pantalla del asistente salen de los ARB del Tema 1, y el plugin del Tema 2 lo comprueba. El Proyecto
+32 une los cuatro temas: la app de la ruta en tres idiomas, vigilada por reglas propias, migrada a `material_ui` y con
+este asistente.
 
 #### Problema resuelto 4.1
 Escribe el servidor simulado y un cliente de chat en *streaming*, pruébalo contra el servidor real en todos los

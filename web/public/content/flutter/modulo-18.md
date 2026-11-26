@@ -65,8 +65,7 @@ Al terminar este tema podrás:
 - envolver el plugin en una interfaz propia y probar el flujo con una tienda falsa;
 - explicar qué pasa cuando una compra no se completa y por qué `autoConsume` puede perder dinero.
 
-**Conceptos clave:** producto consumible, no consumible y suscripción, `purchaseStream`, `PurchaseStatus`,
-`completePurchase`, tienda falsa
+**Conceptos clave:** consumible, no consumible, suscripción, `purchaseStream`, `PurchaseStatus`, `completePurchase`, tienda falsa
 
 #### El problema
 La app de reparto quiere vender tres cosas: paquetes de 10 envíos exprés, etiquetas con la marca del negocio y el
@@ -115,10 +114,80 @@ Este tema usa **los `Stream`** (Módulo 0, Tema 8), **las interfaces y los doble
 - **Error típico:** una tienda falsa que siempre aprueba: las pruebas pasan y los casos difíciles quedan sin probar.
 
 #### ► CÓMO FUNCIONA
-`main` crea el controlador, que se suscribe al *stream* de inmediato. Comprar solo abre la hoja de pago; el resultado
-llega por el *stream*. Con `purchased` o `restored`, el controlador pregunta al servidor (Tema 3) y, **solo si el
-servidor guardó el derecho**, completa la compra. Si el servidor no responde, no completa: la tienda la volverá a
-entregar.
+
+##### 1. La idea en lenguaje sencillo
+
+Cuando pagas en un almacén con datáfono, el cajero no te entrega la compra al pasar la tarjeta. Espera el comprobante
+del banco, que a veces tarda. Si el comprobante dice «aprobado», entrega y firma. Si se cae la conexión, no entrega,
+pero tampoco cobra dos veces: el banco reenvía la respuesta cuando vuelve la señal.
+
+En la app de reparto, el banco es la tienda (Google Play o App Store). La app vende paquetes de 10 envíos exprés,
+etiquetas con la marca y el Plan Pro. La primera versión sumaba los créditos en el teléfono apenas veía «comprado» y
+nunca firmaba el recibido. Hubo créditos de más y reembolsos que nadie entendía.
+
+Este tema arma el flujo correcto. La app pide el pago, espera el resultado por un canal aparte, pregunta al servidor y
+solo entonces firma. Todo se prueba con una tienda falsa, porque el equipo de pruebas no tiene cuentas de tienda.
+
+##### 2. Definición formal y vocabulario
+
+Hay tres tipos de producto. Un **consumible** se gasta y se vuelve a comprar, como los créditos exprés; hay que
+**consumirlo** para poder comprarlo de nuevo. Un **no consumible** se compra una vez y es para siempre, como las
+etiquetas. Una **suscripción** da acceso por periodos que se renuevan solos, como el Plan Pro.
+
+El plugin `in_app_purchase` es una **fachada**: una API común sobre dos implementaciones, la de Android y la de iOS.
+Todas las novedades de compra llegan por **`purchaseStream`**, un `Stream<List<PurchaseDetails>>`. Ahí llegan las que
+inicia la app, las restauradas, las aprobadas después y las que quedaron sin completar en una sesión anterior.
+
+Cada `PurchaseDetails` trae un **`PurchaseStatus`**: `pending`, `purchased`, `error`, `restored` o `canceled`.
+
+**`completePurchase`** cierra la transacción después de entregar el producto. En Android **confirma** la compra, lo
+que Google llama *acknowledge*. En iOS la saca de la cola de transacciones sin terminar. Para un consumible en Android,
+consumir también confirma.
+
+Una **tienda falsa** implementa la misma interfaz propia, `TiendaDeCompras`, sin hablar con ninguna tienda. Reproduce
+con un guion lo que haría la real: aprobar, cancelar, rechazar, dejar pendiente, reentregar y reembolsar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue una compra de `creditos_expres_10` desde que la app arranca.
+
+1. **Suscripción temprana.** `main` crea el `ControladorCompras` antes de `runApp`. Su constructor se suscribe a
+   `tienda.compras` de inmediato, para no perder lo que llegue al arrancar.
+2. **Catálogo.** `iniciar()` comprueba que la tienda esté disponible y consulta los productos. Los precios vienen de
+   la tienda, nunca de tu código.
+3. **Pedido.** `comprar()` abre la hoja de pago. El `await` solo dice si la hoja se pudo abrir, no si el cliente pagó.
+4. **Resultado por el *stream*.** La tienda publica `pending` si el pago tarda, y luego `purchased` con un *token*:
+   el identificador de esa compra en la tienda.
+5. **Validación.** El controlador manda el *token* al servidor de recibos. El servidor pregunta a la tienda y guarda
+   el derecho.
+6. **Cierre.** Solo con la respuesta válida del servidor, el controlador llama a `completar`, que termina en
+   `completePurchase`. Si el servidor falla, no completa: la tienda volverá a entregar la compra.
+
+```dart
+ControladorCompras({required this.tienda, required this.validador, required this.usuario}) {
+  _suscripcion = tienda.compras.listen(_alLlegar);
+}
+
+Future<void> comprar(Producto p) async {
+  estado = _estado.copia(Fase.comprando, enCurso: p);
+  await tienda.comprar(p, cuenta: usuario); // el resultado NO llega aquí: llega por el stream
+}
+```
+
+Observa la separación. `comprar` cambia el estado a «comprando» y termina. El resultado llega a `_alLlegar`, que
+puede ejecutarse segundos o días después. `enCurso` guarda qué se estaba comprando, porque una cancelación en Android
+llega sin identificador de producto.
+
+```dart
+case Valida(:final derechos):
+  await tienda.completar(c); // solo después de que el servidor guardó el derecho
+  estado = _estado.copia(Fase.comprado, derechos: derechos);
+case FalloTemporal():
+  // NO se completa: la tienda la volverá a entregar y se validará entonces.
+```
+
+Este es el corazón del flujo. La firma va después de la entrega. Con un fallo temporal no se firma, y la compra queda
+viva en la tienda hasta el siguiente intento.
 
 ```mermaid
 sequenceDiagram
@@ -136,6 +205,44 @@ sequenceDiagram
     C->>T: completar(compra)
     C-->>UI: comprado
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**El tipo lo decides tú.** La tienda no impone el método en tiempo de ejecución. Si compras un consumible con
+`buyNonConsumable`, nunca se consume, y la segunda compra falla con `BillingResponse.itemAlreadyOwned`.
+
+**Sin completar, la compra vuelve.** En cada arranque, la tienda reentrega las compras sin cerrar. En Google Play, una
+compra sin confirmar se reembolsa a los 3 días. El código ingenuo sumó 20 créditos por un solo pago y además perdió el
+dinero.
+
+**`autoConsume` es peligroso.** Es `true` por defecto en `buyConsumable`. En `in_app_purchase_android` 0.5.5 consume
+la compra antes de entregarla al *stream*. Si tu servidor falla en ese momento, Google ya no la reentrega. Usa
+`autoConsume: false`.
+
+**Una suscripción, varios productos.** Android entrega un `ProductDetails` por cada **plan base** (`mensual`,
+`anual`). Si guardas el catálogo en un `Map` por `id`, pierdes un plan sin error. Por eso la clave es
+`plan_pro:mensual`.
+
+**`canceled` no es un error.** Quien cierra la hoja de pago no merece un mensaje rojo. Vuelve al catálogo sin más.
+
+**No se completa una compra `pending`.** El plugin lanza si lo intentas: todavía no hay pago.
+
+**Sin implementación, no hay plugin.** En Linux, `InAppPurchase.instance` falla con un `LateInitializationError` que
+no menciona compras. Decide la tienda en `main` según la plataforma.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 0, Tema 8, sabes que un `Stream` entrega eventos cuando ocurren, no cuando los pides. `purchaseStream` es
+un caso extremo: un evento puede llegar en otra sesión. Por eso la suscripción vive toda la sesión, no en una pantalla.
+
+Del Módulo 12, Tema 2, viene la interfaz con dobles de prueba. `TiendaDeCompras` separa la lógica del plugin, y
+`TiendaFalsa` permite probar cada estado sin teléfono. El controlador es un `ChangeNotifier`, como en el Módulo 4.
+
+Compara este flujo con una llamada HTTP del Módulo 5. Allí pedías y esperabas la respuesta en el mismo `await`. Aquí
+el pedido y la respuesta van por caminos distintos, y la respuesta puede repetirse.
+
+El Tema 2 dibuja la pantalla para cada estado del controlador. El Tema 3 construye el servidor que valida los recibos.
+El Tema 4 trata las suscripciones a lo largo del tiempo, la restauración y la compilación real para Android.
 
 #### Problema resuelto 1.1
 Define el catálogo, una interfaz propia sobre el plugin, una tienda falsa y el controlador. Prueba el catálogo, una
@@ -1013,7 +1120,7 @@ por estados** (Módulo 12, Tema 4).
 
 #### Glosario del tema
 
-***paywall* (pantalla de planes)**
+**paywall (pantalla de planes)**
 - **Definición técnica:** la pantalla que presenta lo que se vende, sus precios y periodos, y lanza la compra; es una función pura del estado del controlador.
 - **En palabras sencillas:** la vitrina con los precios.
 - **Dónde se rompe la comparación:** la vitrina no cobra: el cobro y su resultado ocurren en la tienda y llegan después.
@@ -1049,8 +1156,71 @@ por estados** (Módulo 12, Tema 4).
 - **Error típico:** fotografiar solo el estado bonito (el catálogo).
 
 #### ► CÓMO FUNCIONA
-El controlador produce un `EstadoPlanes`; la pantalla elige qué dibujar con un `switch` sobre la fase. Todos los
-precios salen de `Producto.precio`; el ahorro del plan anual se calcula con `rawPrice`, también de la tienda.
+
+##### 1. La idea en lenguaje sencillo
+
+En una vitrina honesta, el precio está pegado al producto, en la moneda del país y con letra legible. Si es un plan
+mensual, dice que se cobra cada mes. Nadie esconde la puerta de salida ni deja marcada de antemano la opción más cara.
+La vitrina tampoco cobra: el cobro ocurre en la caja.
+
+La pantalla de planes de la app de reparto es esa vitrina. El diseño inicial tenía el precio escrito en el código,
+«$89.900». En México, la tienda cobraba en pesos mexicanos otra cifra, pero el texto se veía igual de creíble. Además
+marcaba el plan anual, gritaba «¡PRUEBA GRATIS!» y escondía la renovación en letra gris diminuta.
+
+Este tema dibuja la pantalla correcta para cada momento de la compra. Comprueba con pruebas que cada precio visible
+viene de la tienda y compara el resultado con una versión engañosa.
+
+##### 2. Definición formal y vocabulario
+
+Un **_paywall_**, o pantalla de planes, presenta lo que se vende, sus precios y periodos, y lanza la compra. Aquí es
+una **función pura del estado**: dado el mismo `EstadoPlanes`, siempre dibuja lo mismo. No decide si la persona pagó;
+eso lo dice el servidor.
+
+El **precio localizado** es el texto `ProductDetails.price` que entrega la tienda. Ya viene formateado en la moneda y
+el formato de la cuenta. Los campos `rawPrice` y `currencyCode` sirven para calcular, no para mostrar.
+
+Los **términos de renovación** dicen cuánto se cobra, cada cuánto, que se renueva solo y cómo cancelar. Las dos tiendas
+piden que estén claros antes de comprar.
+
+Un **patrón engañoso** es un diseño que empuja a comprar algo que la persona no elegiría informada. Ejemplos: la
+opción cara preseleccionada, el precio expresado por día, el cierre escondido o la renovación oculta.
+
+Una **prueba golden por estado** dibuja la pantalla con un estado fijo y compara la imagen con una guardada. Hay una
+foto por cada fase: cargando, catálogo, comprando, error y comprado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que ocurre entre el controlador del Tema 1 y los píxeles.
+
+1. **El estado cambia.** El controlador asigna un nuevo `EstadoPlanes` y llama a `notifyListeners`.
+2. **La pantalla se reconstruye.** Quien escucha al controlador vuelve a crear `PantallaPlanes` con el estado
+   nuevo. La pantalla solo recibe `estado` y tres funciones: comprar, restaurar y cerrar.
+3. **Se elige la vista.** Un `switch` sobre `e.fase` decide qué dibujar. Cargando, sin tienda y comprado tienen su
+   propia vista; el resto muestra el catálogo.
+4. **Se arman los precios.** Cada tarjeta muestra `producto.detalles.price`. El ahorro del plan anual se calcula con
+   `rawPrice`, también de la tienda.
+5. **Se bloquean los botones.** En `comprando` y `pendiente`, todos los botones se desactivan para no lanzar dos
+   compras a la vez.
+
+```dart
+body: switch (e.fase) {
+  Fase.cargando => const CentroPlanes(icono: null, texto: 'Consultando precios en la tienda…'),
+  Fase.sinTienda => CentroPlanes(icono: Icons.storefront_outlined, texto: e.mensaje!),
+  Fase.comprado => CompradoPlanes(estado: e),
+  _ => _catalogo(context, e),
+},
+```
+
+Observa la primera rama. En `cargando` no hay ningún precio, ni siquiera uno de respaldo. Si la consulta a la tienda
+falla, la persona no habrá visto un precio que no se cobrará.
+
+```dart
+final ahorro = (100 - anual.detalles.rawPrice * 100 / (mensual.detalles.rawPrice * 12)).round();
+final ocupado = e.fase == Fase.comprando || e.fase == Fase.pendiente;
+```
+
+`ahorro` sale de dos números de la tienda: 12 × 9 900 = 118 800 contra 89 900, un 24 %. Si mañana cambias el precio
+en la consola, la etiqueta cambia sola. `ocupado` alimenta el `onPressed: null` que desactiva los botones.
 
 ```mermaid
 stateDiagram-v2
@@ -1065,6 +1235,48 @@ stateDiagram-v2
     comprando --> comprado: purchased + servidor
     error --> comprando: reintenta
 ```
+
+Cada flecha del diagrama es un evento del Tema 1. Cada caja es una foto golden.
+
+##### 4. Reglas, variantes y casos límite
+
+**El símbolo `$` no dice la moneda.** Con `intl`, el peso colombiano (`es_CO`) se escribe `9.900 $` y el mexicano
+(`es_MX`), `$49.00`. Los dos usan `$`. Un precio escrito a mano parece correcto en cualquier país y es falso en todos
+menos uno.
+
+**Nada caro preseleccionado.** El plan mensual va primero y marcado. La persona elige el anual si quiere, informada
+del ahorro calculado.
+
+**Los términos, junto al botón.** El botón dice precio y periodo, «Suscribirme por 9.900 $ al mes». Debajo, los
+términos repiten el mismo precio y dicen cómo cancelar. Un enlace gris de 9 puntos no cumple.
+
+**Lo que piden las tiendas.** La política de suscripciones de Google Play pide mostrar costo y frecuencia sin pasos
+extra, y cómo cancelar. En una prueba gratis, pide su duración y el precio posterior. Las pautas de Apple, en 3.1.2(c),
+piden describir con claridad qué se obtiene.
+
+**La accesibilidad también se prueba.** La pantalla correcta pasa las guías de contraste y de tamaño táctil. La
+engañosa falla las dos: la «X» de 14 puntos y los términos en gris claro.
+
+**La prueba de precios.** La prueba recorre todos los `Text` y exige que cada texto con precio contenga un `price` de
+la tienda. Detectó `$89.900` y `Solo $246 al día` en la versión engañosa. Ejecútala con al menos dos países.
+
+**Las fotos no prueban el flujo.** Una golden muestra un instante. Las transiciones se prueban con la tienda falsa del
+Tema 1.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 12, Tema 4, viene la vista por estados: un `switch` exhaustivo sobre una fase, sin banderas sueltas. Aquí
+la fase la produce el controlador del Tema 1, y la pantalla solo la traduce a widgets.
+
+Del Módulo 9 vienen las pruebas golden. La diferencia es que aquí fotografías todos los estados, no solo el bonito.
+Del Módulo 10, Temas 2 y 3, vienen el contraste y el tamaño táctil, que aquí separan la versión honesta de la
+engañosa.
+
+Compara un patrón engañoso con una buena pantalla en el tiempo. El engaño puede subir las compras del primer día.
+Después llegan reembolsos, cancelaciones, malas reseñas y rechazos de la tienda.
+
+El Tema 3 explica de dónde sale la fase `comprado`: el servidor valida el recibo y guarda el derecho. El Tema 4 agrega
+el botón «Restaurar compras» y los cambios de plan entre mensual y anual.
 
 #### Problema resuelto 2.1
 Construye la pantalla de planes, fotografíala en sus cinco estados con productos de una cuenta colombiana, comprueba
@@ -1454,7 +1666,7 @@ y **los `switch` con patrones** (Módulo 0).
 - **Ejemplo:** `GET /androidpublisher/v3/applications/com.academia.m18/purchases/products/creditos_expres_10/tokens/tok-A1`.
 - **Error típico:** poner las credenciales de la API dentro de la app.
 
-**derecho (*entitlement*)**
+**derecho (entitlement)**
 - **Definición técnica:** lo que un usuario de **tu** sistema puede usar, calculado por el servidor a partir de las compras válidas: funciones activas, créditos, fecha de fin de la suscripción.
 - **En palabras sencillas:** la lista de lo que te toca, guardada en la oficina, no en tu bolsillo.
 - **Dónde se rompe la comparación:** una compra no es un derecho: una compra reembolsada sigue existiendo, pero ya no da derecho.
@@ -1476,9 +1688,69 @@ y **los `switch` con patrones** (Módulo 0).
 - **Error típico:** confiar en el `productoId` que manda la app.
 
 #### ► CÓMO FUNCIONA
-La app manda usuario, paquete, producto y token. El servidor primero mira si ya conoce el token (idempotencia y
-cuenta); si no, pregunta a la tienda, revisa la respuesta, guarda el registro y devuelve los derechos completos. La
-app solo los muestra.
+
+##### 1. La idea en lenguaje sencillo
+
+Cuando alguien paga con un cheque, la tienda no entrega la mercancía por ver el papel. Llama al banco y pregunta si el
+cheque existe, si tiene fondos y si es de quien lo presenta. Además anota el número del cheque, para que nadie cobre
+dos veces con el mismo. El cliente puede traer cualquier papel; el banco es quien confirma.
+
+En la app de reparto, el papel es el **token de compra** y el banco es Google Play. Si la app decide sola, el Plan Pro
+queda gratis con un cliente modificado que emita un `purchased` falso. También con un token copiado de otra cuenta.
+Además, si el repartidor cambia de teléfono, el nuevo no sabe nada de lo que pagó.
+
+La regla central del módulo resuelve los dos problemas: la app nunca se da un derecho a sí misma. Lo da el servidor,
+después de preguntarle a la tienda, y lo guarda en tu sistema, no en el teléfono.
+
+##### 2. Definición formal y vocabulario
+
+En Android, el **token de compra** es el `purchaseToken` que Google entrega al dispositivo. En el plugin llega como
+`verificationData.serverVerificationData`. Solo prueba algo cuando la tienda confirma que existe y de qué es.
+
+La **validación en servidor** ocurre así: tu servidor recibe el token y consulta la **Google Play Developer API** con
+credenciales propias. En producción son las de una **cuenta de servicio** con el alcance `androidpublisher`. Después
+revisa estado, producto, paquete y cuenta. En este tema, la API es un simulador local con las rutas y campos
+documentados.
+
+Un **derecho** (*entitlement*) es lo que un usuario de tu sistema puede usar: funciones activas, créditos, fecha de fin
+de la suscripción. El servidor lo calcula a partir de las compras válidas. Una compra no es un derecho: una compra
+reembolsada sigue existiendo, pero ya no da nada.
+
+La **idempotencia** garantiza que repetir la misma operación con los mismos datos deja el mismo resultado. Validar dos
+veces el mismo token no suma dos veces, porque el token es la llave del registro.
+
+El **fraude de recibos** agrupa los intentos de obtener derechos sin pagar: tokens inventados, tokens de otra cuenta,
+tokens de un producto barato presentados como de otro y compras reembolsadas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue una petición a `POST /v1/compras/validar` con usuario, paquete, producto y token.
+
+1. **Forma.** El servidor comprueba que el paquete sea el suyo y que la plataforma sea conocida. Si no, responde 400.
+2. **¿Ya conozco el token?** Busca el token en sus registros. Si existe, compara usuario y producto antes de responder.
+3. **Pregunta a la tienda.** Si el token es nuevo, el servidor llama a la API de Google. Para productos usa
+   `purchases.products.get`; para suscripciones, `purchases.subscriptionsv2.get`.
+4. **Interpretación.** Lee la respuesta. En `ProductPurchase`, `purchaseState: 0` es comprado; `purchaseType: 0`
+   marca una compra de prueba. Compara `obfuscatedExternalAccountId` con el usuario que pide validar.
+5. **Registro.** Si todo coincide, guarda el token como llave, con usuario y producto, y suma el derecho.
+6. **Respuesta.** Devuelve los derechos completos, no «lo que se sumó». La app solo los muestra.
+
+```dart
+final previo = tokens[token];
+if (previo != null) {
+  // Idempotencia: el mismo recibo otra vez (reintento, reinicio, restaurar) no suma nada.
+  if (previo.usuario != usuario) return responder(409, 'recibo_de_otra_cuenta');
+  if (previo.productoId != productoId) return responder(400, 'producto_no_coincide');
+  return responder(200, 'repetida', repetida: true);
+}
+```
+
+Observa el orden de las tres comprobaciones. Un token conocido solo da 200 si viene del mismo usuario y para el mismo
+producto. La segunda validación de `tok-A1` ni siquiera consultó a Google y devolvió los mismos 10 créditos.
+
+¿De dónde sale el usuario que Google devuelve? Al comprar, la app manda `applicationUserName`. El plugin lo pasa a
+Google como identificador de cuenta, y Google lo devuelve en `obfuscatedExternalAccountId`. Así el servidor sabe a
+quién pertenece cada compra.
 
 ```mermaid
 flowchart TD
@@ -1496,6 +1768,46 @@ flowchart TD
     V -->|"cancelada"| E410["410"]
     V -->|"comprada"| OK["registrar token → 200 derechos"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**El producto se compara siempre.** La primera versión revisaba el token antes que el producto. El caso 5 respondió
+200 a un token real presentado como `etiquetas_marca`. No sumó nada, pero un cliente que solo mira el código de estado
+habría desbloqueado las etiquetas.
+
+**Los fallos de la tienda no se registran.** Si Google responde 5xx, el servidor devuelve 503 sin guardar nada. La app
+reintenta con espera, y como la validación es idempotente, el reintento no duplica. En la prueba, el segundo intento
+entró.
+
+**Un token desconocido no es un error de red.** Google responde 404 y el servidor, 400 `recibo_desconocido`. Así
+terminó la compra fabricada: sin derechos y con un mensaje claro.
+
+**Las credenciales nunca van en la app.** Quien tenga la cuenta de servicio puede consultar y modificar compras.
+Viven solo en el servidor.
+
+**El usuario sale de la sesión.** En producción, la ruta de validación toma el usuario del token de sesión, no del
+cuerpo de la petición. Si no, cualquiera puede validar a nombre de otro.
+
+**No todo rechazo es fraude.** Una familia que comparte una cuenta de Google también produce «tokens de otra cuenta».
+El 409 protege tu sistema; el mensaje al usuario no debe acusar.
+
+**iOS es distinto.** Con StoreKit 2, en `in_app_purchase_storekit` 0.4.17, el campo trae una transacción firmada
+en formato JWS, no un token de Google. El principio es el mismo: el servidor la verifica antes de dar el derecho.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 5, Temas 1 y 4, vienen `http` y los reintentos con espera. `ValidadorHttp` los usa contra tu servidor. La
+idempotencia del servidor es lo que hace seguros esos reintentos.
+
+Del Módulo 12, Tema 4, viene el servidor local en Dart, que aquí crece con dos piezas: el servidor de recibos y el
+Google Play simulado. Los `switch` con patrones del Módulo 0 traducen cada respuesta en `Valida`, `Pendiente`,
+`Rechazada` o `FalloTemporal`.
+
+Compara esto con el Tema 1. Allí el validador era de prueba, en memoria; el flujo ya esperaba su respuesta antes de
+completar. Ahora la respuesta viene de un servidor real por HTTP, y el controlador no cambió.
+
+El Tema 4 agrega la dimensión del tiempo. Una suscripción se renueva, se cancela o se reembolsa días después, y Google
+avisa al servidor con notificaciones. Los registros que guardas aquí, por token, son los que ese aviso actualiza.
 
 #### Problema resuelto 3.1
 Escribe el servidor de recibos y un Google Play simulado, y prueba con `curl` una compra válida, el mismo recibo
@@ -2172,8 +2484,7 @@ Al terminar este tema podrás:
 - preparar las cuentas de prueba de Play Console y App Store Connect;
 - compilar la app con el plugin para Android y comprobar el permiso de facturación en el APK.
 
-**Conceptos clave:** notificaciones en tiempo real (RTDN), periodo de gracia y suspensión, cambio de plan
-(`linkedPurchaseToken`), restaurar compras, cuentas de prueba
+**Conceptos clave:** notificaciones en tiempo real (RTDN), periodo de gracia y suspensión, cambio de plan (`linkedPurchaseToken`), restaurar compras, cuentas de prueba
 
 #### El problema
 El Plan Pro se renueva cada mes, pero la app solo se entera de una compra cuando la persona compra. Si la tarjeta
@@ -2222,8 +2533,69 @@ pruebas con reloj fijo** (Módulo 12, Tema 2).
 - **Error típico:** probar con una cuenta normal en una pista de prueba: según la documentación de Google, se cobra de verdad.
 
 #### ► CÓMO FUNCIONA
-Cada cambio de una suscripción sale de Google como un aviso; el servidor lo deduplica, vuelve a consultar la
-suscripción y recalcula los derechos. El acceso se decide por estado **y** fecha.
+
+##### 1. La idea en lenguaje sencillo
+
+Un parqueadero mensual no te cobra una sola vez. Cada mes intenta el débito. Si la tarjeta falla, te da unos días para
+ponerte al día antes de cerrarte la talanquera. Si cancelas, puedes seguir entrando hasta el fin del mes pagado. Y si
+cambias a plan anual, el recibo viejo deja de valer, aunque todavía tenga fecha vigente.
+
+El Plan Pro funciona igual, pero la app solo se entera de una compra cuando la persona compra. Los cobros fallidos,
+las cancelaciones desde Google Play, los cambios de plan y los reembolsos ocurren fuera de la app. Nada de eso pasa
+por el `purchaseStream`. Un repartidor que canceló seguía con el plan; otro perdía las rutas por un día de tarjeta
+vencida.
+
+Este tema le enseña al servidor a escuchar a la tienda a lo largo del tiempo. También resuelve el teléfono nuevo, el
+usuario que intenta usar una compra ajena y la compilación real para Android.
+
+##### 2. Definición formal y vocabulario
+
+Las **notificaciones en tiempo real para desarrolladores** (RTDN, *Real-time developer notifications*) son avisos de
+Google Play. Llegan a tu servidor por **Cloud Pub/Sub**, un servicio de mensajería de Google, cuando cambia una
+compra. El sobre trae `message.data` en base64 con un `DeveloperNotification` que incluye el tipo y el token.
+
+Cuando falla el cobro de una renovación, empieza el **periodo de gracia**: estado `SUBSCRIPTION_STATE_IN_GRACE_PERIOD`.
+Google reintenta y la persona conserva el acceso. Si sigue fallando, llega la **suspensión**,
+`SUBSCRIPTION_STATE_ON_HOLD`, sin acceso. Si paga, vuelve con el aviso `SUBSCRIPTION_RECOVERED`.
+
+Un **cambio de plan**, por ejemplo de mensual a anual, crea en Google una compra con un token **nuevo**. Su campo
+`linkedPurchaseToken` apunta al token viejo.
+
+**Restaurar compras** con `restorePurchases` pide a la tienda las compras vigentes de su cuenta. Las entrega al
+*stream* como `restored`; los consumibles ya consumidos no vuelven.
+
+Las **cuentas de prueba** son, en Google Play, los *license testers*, que compran con instrumentos de prueba. En Apple
+son las cuentas de **Sandbox** de App Store Connect.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando Google renueva, suspende o cancela el Plan Pro.
+
+1. **Aviso.** Google publica un mensaje en el tema de Pub/Sub. La suscripción *push* lo envía por HTTP a
+   `/v1/notificaciones/google`.
+2. **Deduplicación.** El servidor mira el `messageId`. Si ya lo procesó, responde 200 sin hacer nada; si respondiera
+   otro código, Pub/Sub lo reenviaría.
+3. **Decodificación.** Decodifica `data` desde base64 y lee el JSON. Distingue avisos de suscripción de avisos de
+   reembolso (`voidedPurchaseNotification`).
+4. **Consulta.** El aviso no trae el estado completo. El servidor vuelve a consultar `subscriptionsv2.get` con el token.
+5. **Asignación.** Si el token es nuevo, como en un cambio de plan, el servidor lo asigna al usuario que indica
+   `obfuscatedExternalAccountId`.
+6. **Actualización.** Guarda `subscriptionState`, `expiryTime` y el plan base. Si hay `linkedPurchaseToken`, marca el
+   token viejo como reemplazado.
+7. **Cálculo.** Cuando la app pide los derechos, el servidor decide el acceso por estado y fecha a la vez.
+
+```dart
+final pro = propios.where(
+  (r) =>
+      r.productoId == 'plan_pro' &&
+      r.reemplazadoPor == null &&
+      (r.estado == 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD' ||
+          (_conAcceso.contains(r.estado) && r.hasta!.isAfter(ahora))),
+);
+```
+
+Lee la condición en orden. Un token reemplazado nunca cuenta. En gracia, el acceso se conserva aunque `expiryTime` ya
+pasó. En los demás estados con acceso, como `ACTIVE` y `CANCELED`, la fecha también debe estar en el futuro.
 
 ```mermaid
 stateDiagram-v2
@@ -2238,6 +2610,50 @@ stateDiagram-v2
     note right of ON_HOLD: sin acceso
     note right of CANCELED: con acceso hasta expiryTime
 ```
+
+Los números de las flechas son los tipos de aviso de Google. `ahora` sale de un reloj inyectado, así que la prueba
+recorre meses de suscripción en segundos.
+
+##### 4. Reglas, variantes y casos límite
+
+**El tipo del aviso no basta.** Google pide consultar la API después de cada aviso. El mismo mensaje puede llegar dos
+veces, y el orden no está garantizado.
+
+**La fecha sola tampoco.** La primera versión exigía `expiryTime` futuro en todos los estados. El repartidor perdió el
+plan justo al entrar en gracia, cuando Google empezaba a reintentar el cobro.
+
+**`CANCELED` todavía da acceso.** Cancelar detiene la renovación, no el periodo pagado. En la prueba, a los 31 días el
+acceso desapareció sin ningún aviso: la fecha decidió. Después llegó `EXPIRED`.
+
+**El token viejo no cuenta doble.** Tras el cambio a anual, el token mensual seguía `ACTIVE` en el registro. Sin la
+marca de reemplazo, el usuario habría tenido dos suscripciones.
+
+**Restaurar no presta compras.** La cuenta de Google no es la cuenta de tu app. Cuando `rep-0777` restauró con la misma
+cuenta de Google, recibió `recibo_de_otra_cuenta`. Con servidor, el teléfono nuevo ya conoce sus derechos al iniciar
+sesión.
+
+**Las pruebas aceleran el tiempo.** Una suscripción mensual de prueba se renueva cada 5 minutos, hasta 6 veces. Una
+cuenta normal en una pista de prueba paga de verdad, según la documentación de Google.
+
+**El permiso llega solo.** `com.android.vending.BILLING` aparece en el APK sin declararlo: lo agrega
+`com.android.billingclient:billing:9.1.0` al unir manifiestos. También llegaron `INTERNET` y `ACCESS_NETWORK_STATE`.
+`in_app_purchase_android` 0.5.5 exige `minSdk` 23.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema extiende el servidor del Tema 3. Allí cada token se validaba una vez, cuando la app lo enviaba. Aquí el mismo
+registro cambia con el tiempo, empujado por la tienda, sin que la app participe.
+
+Del Módulo 12, Tema 2, viene el reloj inyectado: una función que devuelve la hora, reemplazable en las pruebas. Del
+Módulo 11, Tema 4, viene la compilación de release. Aquí la usas para comprobar con `aapt2` qué permisos tiene el APK
+final.
+
+Compara la restauración con los avisos. Restaurar es la app preguntando «¿qué tengo?» cuando el usuario toca un botón.
+Los avisos son la tienda diciendo «esto cambió» en cualquier momento. Con un servidor, los avisos mantienen los
+derechos al día y restaurar casi nunca hace falta.
+
+El Proyecto 35 reúne el módulo: catálogo, pantalla de planes, validación en servidor y suscripciones que se mantienen
+solas al día.
 
 #### Problema resuelto 4.1
 Con el servidor y el simulador del Tema 3 y un reloj que avanza, recorre la vida del Plan Pro mensual con avisos de

@@ -23,8 +23,8 @@ que se corta. Este módulo los resuelve por separado y después los une en una p
 real con WebSocket) → Tema 4 (la pantalla de seguimiento) → Proyecto 31.
 
 **Qué necesitas saber antes:** el Módulo 12 (capas y pruebas por capa); del Módulo 5, **errores de red y
-reintentos** (Tema 3); del Módulo 0, **`Stream`, `Timer` y `StreamController`** (Tema 8); del Módulo 11, **la app de
-escritorio en pantalla virtual**.
+reintentos** (Tema 3); del Módulo 0, **`Stream` y `StreamController`** (Tema 5); del Módulo 1, **`Timer`** (Tema 4);
+del Módulo 11, **la app de escritorio en pantalla virtual**.
 
 **Qué no se repite:** las peticiones HTTP y la copia local (Módulos 5 y 12). Aquí la información llega empujada por
 el servidor, segundo a segundo.
@@ -119,18 +119,129 @@ escritorio** (Módulo 11).
 - **Error típico:** taparla con un panel inferior.
 
 #### ► CÓMO FUNCIONA
-`FlutterMap` convierte cada coordenada a píxeles según la cámara. `TileLayer` pide las teselas visibles; las demás
-capas dibujan sobre ellas. `initialCameraFit` decide la cámara inicial a partir de la ruta.
+
+##### 1. La idea en lenguaje sencillo
+
+Imagina un piso hecho de baldosas cuadradas, todas del mismo tamaño. Si quieres ver una habitación, solo levantas las
+baldosas de esa habitación. Si quieres más detalle, cambias a baldosas más pequeñas, cada una con un pedazo más chico
+del piso.
+
+Un mapa de app funciona así. El mundo se corta en imágenes cuadradas, y la app descarga solo las que caben en la
+pantalla al nivel de detalle actual. Encima de ese piso se ponen hojas transparentes: la línea de la ruta, la zona de
+llegada, el camión y el pin del destino.
+
+Para el seguimiento de un envío hay dos exigencias más. El mapa debe encuadrar la ruta completa, sea de 500 m o de 20
+km, sin cortar el pin del destino. Y debe dar crédito a quienes hicieron el mapa, porque la licencia de los datos lo
+exige.
+
+##### 2. Definición formal y vocabulario
+
+Una **tesela** (*tile*) es una imagen cuadrada de 256 × 256 píxeles que cubre una parte del mundo en un nivel de zoom
+`z`. Se identifica con tres números, `z`, `x` e `y`, que el mapa pone en una plantilla de URL como
+`https://tile.openstreetmap.org/{z}/{x}/{y}.png`.
+
+En `flutter_map`, cada hijo de `FlutterMap` es una **capa**. `TileLayer` dibuja las teselas; `PolylineLayer`,
+`CircleLayer` y `MarkerLayer` dibujan encima, con las mismas coordenadas geográficas. Lo último de la lista queda
+arriba y recibe los toques primero.
+
+**`CameraFit`** calcula el centro y el zoom para que un conjunto de coordenadas quepa en el mapa, con un margen en
+píxeles. Un **marcador** es un widget de Flutter puesto en una coordenada, con un tamaño y una alineación respecto a
+ese punto.
+
+La **atribución** es el crédito obligatorio a los autores de los datos. Los datos de OpenStreetMap usan la licencia
+ODbL, que exige el texto «© OpenStreetMap contributors» visible sobre el mapa. En sencillo: la firma de quienes
+dibujaron el plano.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Casi todos los mapas web usan la proyección **Web Mercator**: aplanan la esfera en un cuadrado. En el zoom 0 el mundo
+entero es una tesela. Cada nivel parte cada tesela en cuatro, así que el zoom `z` tiene `4^z` teselas. Este programa
+calcula en qué tesela cae el destino:
+
+```dart
+import 'dart:math' as math;
+
+(int, int) tesela(double lat, double lon, int z) {
+  final n = math.pow(2, z);
+  final phi = lat * math.pi / 180;
+  final x = ((lon + 180) / 360 * n).floor();
+  final y = ((1 - math.log(math.tan(phi) + 1 / math.cos(phi)) / math.pi) / 2 * n).floor();
+  return (x, y);
+}
+
+void main() {
+  for (final z in [12, 15]) print('zoom $z: ${math.pow(4, z)} teselas; destino en ${tesela(4.6770, -74.0510, z)}');
+}
+```
+
+```text
+$ dart run tesela.dart
+zoom 12: 16777216 teselas; destino en (1205, 1994)
+zoom 15: 1073741824 teselas; destino en (9643, 15957)
+```
+
+La `x` crece de forma lineal con la longitud. La `y` usa un logaritmo: así se estira la latitud cerca de los polos.
+Con más de mil millones de teselas en el zoom 15, descargar solo las visibles no es una optimización: es la única
+opción.
+
+Con eso, sigue lo que hace `FlutterMap` al construirse:
+
+1. Lee `MapOptions.initialCameraFit`. `CameraFit.coordinates` busca el rectángulo que contiene todos los puntos de la
+   ruta y resta el margen al tamaño del widget.
+2. Elige el mayor zoom en el que ese rectángulo cabe en el espacio que queda, y centra la cámara en él.
+3. Con la cámara fijada, cada capa convierte coordenadas geográficas a píxeles de pantalla usando la misma proyección.
+4. `TileLayer` calcula qué teselas cubren la pantalla, arma sus URL con la plantilla y las descarga. Cada petición
+   lleva una cabecera *User-Agent* con `userAgentPackageName`.
+5. Las demás capas se pintan en orden sobre las teselas: el plan, lo recorrido, la geocerca y los marcadores.
+6. Al arrastrar o hacer zoom, la cámara cambia y el mapa repite los pasos 3 a 5. Las teselas ya descargadas se
+   reutilizan.
 
 ```mermaid
 flowchart TB
-    C["MapOptions.initialCameraFit<br/>(ruta + margen)"] --> M["FlutterMap"]
+    C["MapOptions.initialCameraFit<br/>(ruta + margen)"] --> M["FlutterMap: cámara = centro + zoom"]
     M --> T["TileLayer: pide {z}/{x}/{y}.png"]
     M --> P["PolylineLayer: plan y recorrido"]
     M --> Z["CircleLayer: geocerca de 50 m"]
     M --> K["MarkerLayer: origen, destino, repartidor"]
     M --> A["SimpleAttributionWidget"]
+    T -.->|"capa de abajo"| P -.-> Z -.-> K -.->|"capa de arriba"| A
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+`CameraFit` encuadra puntos, no dibujos. El pin del destino mide 36 px y, con `alignment: Alignment.topCenter`, se
+dibuja hacia arriba desde su punto. Con un margen superior pequeño, el punto cabe pero el pin se corta. Por eso el
+margen de arriba es 70 y los demás, 40.
+
+Un marcador se centra en su punto por defecto. En `flutter_map` 6 se reemplazó `builder` por `child`, y el ancla
+`AnchorPos` dejó su lugar a `alignment`; si copias un ejemplo anterior, no compila. Este curso usa la versión 8.3.2.
+
+`CircleMarker` mide su radio en píxeles salvo que pongas `useRadiusInMeter: true`. En píxeles, la zona cubre
+kilómetros al alejar y un poste al acercar. En metros, la zona de 50 m mide unos pocos píxeles a zoom de ciudad, como
+se ve en la captura.
+
+El servidor público de OpenStreetMap tiene una política de uso. Exige una cabecera que identifique la app, la
+atribución visible y un uso moderado. Prohíbe el uso intensivo y la descarga masiva. Una app con muchas personas
+usuarias necesita un proveedor comercial o teselas propias.
+
+Cambiar de proveedor toca dos cosas: la `urlTemplate` y el texto de la atribución que ese proveedor exija. Si el
+proveedor pide una clave, esa clave viaja en cada petición y debe restringirse a tu app. Las demás capas no cambian.
+
+La proyección Web Mercator no llega a los polos: se corta cerca de los 85° de latitud. No afecta a una ruta urbana,
+pero explica por qué Groenlandia se ve enorme en un mapa web.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las capas del mapa siguen la misma idea que `Stack` en el Módulo 1: lo último de la lista se pinta encima. Los colores
+de las líneas y el pin salen del `ColorScheme` del Módulo 10, Tema 1. La captura de la app real usa la pantalla
+virtual del Módulo 11.
+
+Compara `flutter_map` con `google_maps_flutter`. El segundo dibuja con el SDK nativo de Google y solo funciona en
+Android, iOS y web, con claves restringidas. `flutter_map` dibuja con widgets de Flutter, así que corre también en
+escritorio y acepta cualquier proveedor de teselas.
+
+El Tema 2 calcula las distancias y la geocerca que este mapa dibuja. El Tema 3 trae las posiciones del camión en
+tiempo real. El Tema 4 une las tres cosas en `SeguimientoVista`, que reconstruye `MapaRuta` con cada lectura buena.
 
 #### Problema resuelto 1.1
 Dibuja el mapa de la ruta: el plan en color tenue, lo recorrido en color fuerte, una zona de 50 m alrededor del
@@ -316,8 +427,7 @@ Al terminar este tema podrás:
 - detectar la llegada a un destino con una geocerca con histéresis;
 - estimar el tiempo de llegada con la velocidad reciente.
 
-**Conceptos clave:** haversine, precisión de la lectura, filtro de saltos, geocerca con histéresis, tiempo estimado
-de llegada
+**Conceptos clave:** haversine, precisión de la lectura, filtro de saltos, geocerca con histéresis, tiempo estimado de llegada
 
 #### El problema
 El repartidor reporta posiciones cada 5 segundos. Algunas vienen con un radio de error de 120 m (debajo de un puente),
@@ -365,18 +475,133 @@ y **las pruebas unitarias** (Módulo 9, Tema 1).
 - **Error típico:** dividir por la velocidad instantánea: con un semáforo, la estimación salta a infinito.
 
 #### ► CÓMO FUNCIONA
-Las lecturas pasan por el filtro; las buenas alimentan la geocerca, el tiempo estimado y la línea del mapa. Todo es
-Dart puro: corre en pruebas, en el servidor y en la app.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un despachador que recibe por radio la posición de un repartidor cada cinco segundos. Casi siempre los
+reportes son razonables. A veces uno dice que la moto saltó dos kilómetros en un instante; otro llega con «más o
+menos, por aquí». Un buen despachador no mueve el alfiler del tablero con cada reporte: primero se pregunta si es
+posible.
+
+Las lecturas de GPS son esos reportes. Traen una posición, una hora y una precisión, y a veces mienten: debajo de un
+puente, entre edificios o al arrancar el teléfono. Si la app las dibuja todas, el mapa traza rayos y la llegada
+parpadea.
+
+Este tema le da a la app el criterio del despachador. Mide distancias sobre la Tierra, descarta lo imposible, decide
+cuándo el repartidor llegó sin cambiar de idea con cada temblor y estima cuánto falta.
+
+##### 2. Definición formal y vocabulario
+
+La fórmula de **haversine** calcula la distancia sobre una esfera a partir de dos pares de latitud y longitud. Usa el
+radio medio de la Tierra, `R` = 6 371 km. Es la distancia en línea recta siguiendo la curva, no por calles.
+
+La **precisión de la lectura** es el radio, en metros, dentro del cual el sistema estima que está la posición real.
+Android la define como el radio con un 68 % de confianza. Es una estimación del propio receptor, así que una lectura
+con buena precisión también puede estar mal.
+
+El **filtro de saltos** descarta una lectura imposible. Lo es si, para llegar a ella desde la última buena, habría que
+superar 40 m/s, unos 144 km/h. En sencillo: una moto no se teletransporta.
+
+Una **geocerca con histéresis** es una zona circular con dos umbrales. Se entra al bajar de 50 m y se sale solo al
+superar 75 m. El **tiempo estimado de llegada** divide la distancia restante entre la velocidad media de las últimas
+lecturas buenas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Empieza por la distancia. Un grado de latitud mide siempre lo mismo, unos 111,2 km sobre la esfera del cálculo. Un
+grado de longitud se encoge al alejarse del ecuador, multiplicado por el coseno de la latitud. Por eso la salida da
+111,2 m y 110,8 m para 0,001° en Bogotá, que está cerca del ecuador.
+
+1. `distanciaMetros` pasa las diferencias de latitud y longitud a radianes.
+2. Calcula `h`, el cuadrado del seno de media distancia angular. La forma con senos de ángulos pequeños es estable
+   para distancias cortas, a diferencia de la ley esférica de los cosenos.
+3. Devuelve `2R·asin(√h)`: el arco por el radio.
+
+Ahora el filtro. Recorre las lecturas en orden con `indexed`, un record `(índice, valor)` por elemento:
+
+4. Si la precisión supera 50 m, la descarta y anota el motivo.
+5. Si ya hay una lectura buena, calcula la velocidad necesaria para ir de esa a la actual. La lectura 30 exigía 1 441
+   km/h, así que se descarta.
+6. Si pasa las dos pruebas, la agrega a las buenas. Las siguientes se comparan con ella.
+
+La geocerca guarda un solo dato, `_dentro`, y aplica dos umbrales:
+
+```dart
+if (!_dentro && d < radio) { _dentro = true; return CambioGeocerca.entro; }
+if (_dentro && d > radio * factorSalida) { _dentro = false; return CambioGeocerca.salio; }
+return null;
+```
+
+7. Fuera de la zona, solo importa el umbral de entrada. Dentro, solo el de salida. Entre 50 y 75 m nada cambia, y ahí
+   caen las oscilaciones de 45 a 58 m de la llegada.
+8. Con factor 1,0 los dos umbrales coinciden y la salida muestra cinco cambios. Con factor 1,5, uno solo.
+
+El tiempo estimado toma las últimas seis lecturas buenas, suma los cinco tramos entre ellas y divide por los segundos
+transcurridos. Esa velocidad media divide la distancia restante.
 
 ```mermaid
 flowchart LR
-    L["lecturas crudas<br/>(posición, hora, precisión)"] --> F{"precisión ≤ 50 m<br/>y velocidad ≤ 144 km/h?"}
-    F -->|no| D["descartadas (con motivo)"]
-    F -->|sí| B["lecturas buenas"]
+    L["lecturas crudas<br/>(posición, hora, precisión)"] --> P{"precisión ≤ 50 m?"}
+    P -->|no| D["descartadas (con motivo)"]
+    P -->|sí| V{"velocidad desde la última<br/>buena ≤ 144 km/h?"}
+    V -->|no| D
+    V -->|sí| B["lecturas buenas"]
     B --> G["geocerca 50 m / 75 m"]
-    B --> E["tiempo estimado"]
+    B --> E["tiempo estimado (últimas 6)"]
     B --> M["línea del recorrido"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+La Tierra no es una esfera: es un elipsoide achatado en los polos. La fórmula de Vincenty trabaja sobre ese elipsoide
+y por eso `latlong2` da 5 231 m donde haversine da 5 256 m. La diferencia, 0,5 %, sobra para entregas y no para
+topografía. Vincenty es iterativa y puede no converger con puntos casi opuestos del globo.
+
+El filtro tiene un punto débil al arrancar: compara con la última **buena**, y la primera lectura siempre se acepta.
+Si esa primera es mala, las lecturas correctas parecen saltos y se descartan en cadena. El Checkpoint y el Paso 2
+muestran el efecto.
+
+Dos lecturas con la misma hora dividen entre cero. En Dart, con números `double`, eso no lanza error:
+
+```dart
+void main() {
+  final saltoSinTiempo = 120 / 0; // otra posición, misma hora: Infinity
+  final quietoSinTiempo = 0 / 0; // misma posición, misma hora: NaN
+  print('$saltoSinTiempo > 40: ${saltoSinTiempo > 40}');
+  print('$quietoSinTiempo > 40: ${quietoSinTiempo > 40}');
+}
+```
+
+```text
+$ dart run nan.dart
+Infinity > 40: true
+NaN > 40: false
+```
+
+Una posición distinta con la misma hora da infinito y se descarta, como corresponde. Una lectura repetida da `NaN`, y
+toda comparación con `NaN` es falsa: el filtro la acepta. No hace daño aquí, pero conviene saber que `NaN` pasa por
+los `if` sin avisar.
+
+El factor de histéresis es un compromiso. Uno pequeño deja pasar el ruido; uno grande tarda en detectar una salida
+real. Ajústalo con recorridos grabados de los lugares difíciles, no con uno perfecto.
+
+El tiempo estimado usa línea recta y velocidad reciente. Con calles, semáforos y tráfico, el error crece. Si el
+repartidor está detenido, la función devuelve `null` en lugar de inventar un número. La interfaz redondea a minutos
+para no prometer una precisión que no existe.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los records como `(buenas: ..., descartadas: ...)` y el `indexed` de las listas son del Módulo 0. El reloj y los datos
+de prueba fijos siguen la idea del Módulo 12: el recorrido de prueba empieza siempre a las 9:00 y trae los errores en
+posiciones conocidas. Las pruebas son unitarias, como en el Módulo 9, Tema 1.
+
+Si has estudiado electrónica, la geocerca con histéresis es un disparador Schmitt: un comparador con dos umbrales que
+ignora el ruido alrededor del punto de cambio. La diferencia es que aquí la señal es una distancia y el umbral se mide
+en metros.
+
+La capa `geo` no importa Flutter, sino `package:meta` para `@immutable`. Por eso la usan las pruebas, la app y el
+servidor de posiciones del Tema 3, que corre con `dart run`. El Tema 4 aplica el filtro y la geocerca a cada posición
+que llega y muestra «Llegó al destino» una sola vez.
 
 #### Problema resuelto 2.1
 Implementa la distancia, el filtro, la geocerca y el tiempo estimado, y pruébalos con el recorrido de prueba: 138
@@ -705,8 +930,7 @@ Al terminar este tema podrás:
 - reconectar con espera creciente sin saturar al servidor;
 - reanudar desde el último mensaje recibido, sin huecos ni repetidos.
 
-**Conceptos clave:** WebSocket, latido o vigilante de silencio, espera creciente (*backoff*), reanudación, mensaje
-idempotente
+**Conceptos clave:** WebSocket, latido o vigilante de silencio, espera creciente (*backoff*), reanudación, mensaje idempotente
 
 #### El problema
 Preguntar al servidor cada 5 segundos «¿dónde está?» gasta batería y datos y llega tarde. Con WebSocket, el servidor
@@ -714,8 +938,8 @@ empuja cada posición. Pero la red del repartidor se corta en túneles, y la con
 llegue nada. La primera versión no se daba cuenta, y cuando reconectaba, pedía todo desde el principio y repetía
 posiciones.
 
-Este tema usa **`Stream`, `StreamController` y `Timer`** (Módulo 0, Tema 8), **los reintentos** (Módulo 5, Tema 3)
-y **el servidor de prueba local** (Módulo 12).
+Este tema usa **`Stream` y `StreamController`** (Módulo 0, Tema 5), **`Timer`** (Módulo 1, Tema 4), **los reintentos**
+(Módulo 5, Tema 3) y **el servidor de prueba local** (Módulo 12).
 
 #### Glosario del tema
 
@@ -726,14 +950,14 @@ y **el servidor de prueba local** (Módulo 12).
 - **Ejemplo:** `ws://127.0.0.1:8097` en la app real.
 - **Error típico:** asumir que `onDone` llega siempre que se pierde la conexión.
 
-**vigilante de silencio**
+**latido o vigilante de silencio**
 - **Definición técnica:** un `Timer` que se reinicia con cada mensaje; si vence (aquí, 3 s sin nada), el cliente da la conexión por muerta y la cierra.
 - **En palabras sencillas:** «si no oigo nada en un rato, cuelgo y vuelvo a llamar».
 - **Dónde se rompe la comparación:** si el servidor no tiene nada que enviar, debe mandar un latido (*ping*) para que el silencio signifique algo.
 - **Ejemplo:** `silencioMaximo: Duration(seconds: 3)`.
 - **Error típico:** quedarse esperando para siempre en una conexión zombi.
 
-**espera creciente**
+**espera creciente (backoff)**
 - **Definición técnica:** entre intentos de reconexión, una espera que se duplica (250, 500, 1 000 ms…) hasta un máximo (8 s), y vuelve al mínimo al conectar.
 - **En palabras sencillas:** insistir, pero cada vez con más paciencia.
 - **Dónde se rompe la comparación:** si miles de teléfonos reconectan con la misma espera, llegan todos juntos; en producción se le suma un poco de azar (*jitter*).
@@ -755,19 +979,119 @@ y **el servidor de prueba local** (Módulo 12).
 - **Error típico:** sumar distancias o contar entregas con mensajes repetidos.
 
 #### ► CÓMO FUNCIONA
-El cliente se conecta, pide desde el siguiente número y vigila el silencio. Si la conexión se cierra o se calla, espera
-y reconecta, con esperas que crecen. Al volver, pide desde donde iba.
+
+##### 1. La idea en lenguaje sencillo
+
+Hay dos formas de saber dónde va un repartidor. Puedes llamarlo cada cinco segundos y preguntar, o dejar una llamada
+abierta para que él hable cuando avance. La primera gasta saldo y siempre llega un poco tarde. La segunda es
+inmediata, pero tiene un riesgo: la llamada puede quedar muda sin colgarse, y tú no te enteras.
+
+El seguimiento en vivo usa la llamada abierta. El servidor empuja cada posición en cuanto la tiene. El cliente debe
+darse cuenta cuando la línea muere y volver a llamar sin saturar a nadie. Al reconectar, dice «íbamos en la posición
+6».
+
+Este tema construye ese cliente y lo prueba con una caída real: el servidor desaparece a los 0,7 s y vuelve 1,6 s
+después en el mismo puerto. La prueba cuenta si se perdió o se repitió alguna posición.
+
+##### 2. Definición formal y vocabulario
+
+**WebSocket** es un protocolo, definido en el RFC 6455, que mantiene abierta una conexión TCP por la que ambos lados
+envían mensajes cuando quieren. Empieza como una petición HTTP con `Upgrade: websocket`. Si el servidor acepta,
+responde `101 Switching Protocols` y desde ahí ya no se habla HTTP.
+
+El **vigilante de silencio** es un `Timer` que se reinicia con cada mensaje. Si vence, aquí a los 3 s sin nada, el
+cliente da la conexión por muerta y la cierra. Para que el silencio signifique algo, el servidor debe enviar un
+**latido** cuando no tenga datos.
+
+La **espera creciente** (*backoff* exponencial) duplica la pausa entre intentos de reconexión: 250, 500, 1 000 ms,
+hasta un máximo de 8 s. Al conectar, vuelve al mínimo. En producción se le suma un poco de azar, llamado *jitter*.
+
+La **reanudación** consiste en que el cliente, al reconectar, dice desde qué número de mensaje quiere seguir:
+`{"desde": n}`. Un **mensaje idempotente** es uno que, si llega dos veces, produce el mismo efecto que una. Aquí se
+logra ignorando todo `n` menor o igual al último recibido.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la vida de una conexión en la prueba, con las horas de la salida real.
+
+1. `WebSocketChannel.connect(url)` abre el TCP y envía el saludo HTTP. `await canal.ready` espera a que el servidor
+   responda con 101. A los 33 ms el estado pasa a `conectado`.
+2. El cliente envía `{"desde": 0}`, porque `ultimaRecibida` empieza en -1. El servidor arranca un `Timer.periodic` que
+   envía una lectura cada 100 ms desde ese número.
+3. Cada mensaje entra por `_recibir`, que primero reinicia el vigilante y después descarta repetidos:
+
+```dart
+void _recibir(dynamic mensaje) {
+  _vigilar();
+  final m = jsonDecode(mensaje as String) as Map<String, Object?>;
+  final n = m['n']! as int;
+  if (n <= ultimaRecibida) return; // repetida: se ignora
+  ultimaRecibida = n;
+  // ... arma la Lectura y la publica en _posiciones
+}
+```
+
+4. A los 687 ms el servidor cae: envía un cierre con código 1001 (`goingAway`) y deja de escuchar. El *stream* del
+   canal termina y `onDone` llama a `_perdida`.
+5. `_perdida` cancela el vigilante y la suscripción, cuenta el intento y calcula la espera: `250 ms ×
+   min(2^(intentos−1), 32)`. Programa un `Timer` que llamará a `conectar`.
+6. Los tres intentos siguientes fallan: no hay servidor y la conexión se rechaza. `ready` lanza, el `catch` llama otra
+   vez a `_perdida` y la espera se duplica.
+7. El servidor vuelve a los 2,3 s. El cuarto intento conecta, `_intentos` vuelve a 0 y el cliente envía `{"desde":
+   6}`. La secuencia sigue en 6, 7, 8, 9.
 
 ```mermaid
 stateDiagram-v2
     [*] --> conectando
-    conectando --> conectado: listo → envía {"desde": n}
+    conectando --> conectado: ready → envía {"desde": n}
+    conectando --> reconectando: falla el saludo
     conectado --> conectado: mensaje (reinicia el vigilante)
-    conectado --> reconectando: cierre o 3 s de silencio
+    conectado --> reconectando: cierre, error o 3 s de silencio
     reconectando --> conectado: intento con éxito (espera vuelve a 250 ms)
     reconectando --> reconectando: falla (espera ×2, máx. 8 s)
     conectado --> cerrado: cerrar()
 ```
+
+Observa que todas las pérdidas pasan por el mismo método: cierre, error, fallo al conectar y silencio. Un solo camino
+de recuperación es más fácil de probar que cuatro.
+
+##### 4. Reglas, variantes y casos límite
+
+Una conexión TCP no siempre avisa cuando muere. Si la red del repartidor cae en un túnel, puede que ningún paquete de
+cierre llegue nunca. Sin vigilante, el cliente sigue «conectado» y la pantalla dice «En vivo» con datos viejos.
+
+El vigilante cierra el *sink* y espera que el *stream* termine. En una red muerta de verdad, ese saludo de cierre
+puede no completarse. Una variante más robusta llama a `_perdida` directamente desde el vigilante. Otra, solo en
+plataformas con `dart:io`, usa `pingInterval`: el cliente envía *pings* del protocolo y cierra si no llega respuesta.
+
+La espera creciente protege al servidor. Imagina miles de teléfonos que pierden la conexión a la vez y reintentan sin
+pausa. El servidor que vuelve recibe miles de conexiones por segundo y cae otra vez. El azar del Paso 4 reparte esos
+intentos en el tiempo para que no lleguen todos juntos.
+
+La reanudación exige dos cosas del servidor: numerar los mensajes y guardar los recientes. Si el cliente pide un
+número que el servidor ya olvidó, hay que decidir qué hacer, por ejemplo enviar el estado actual completo. La
+idempotencia del cliente cubre el caso contrario: mensajes que llegan dos veces.
+
+Los `StreamController` del canal son *broadcast*: varios oyentes pueden suscribirse. Pero un evento que se emite sin
+oyentes se pierde. Por eso la prueba se suscribe a `estados` y `posiciones` antes de llamar a `conectar`.
+
+`cerrar` marca `_cerrado`, cancela el vigilante y también el `Timer` de una reconexión ya programada,
+guardado en `_reconexion`. Sin esa cancelación, un intento pendiente conectaba después de cerrar: la prueba
+`cerrar_test.dart` lo demuestra. Además, `conectar` no hace nada si el canal ya está cerrado.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`Stream` y `StreamController` son del Módulo 0, Tema 5, y `Timer`, del Módulo 1, Tema 4; aquí se combinan en un objeto
+con estado. Los reintentos del Módulo 5, Tema 3 eran para peticiones sueltas; aquí se aplican a una conexión que debe
+vivir mucho tiempo. El servidor real en `127.0.0.1` con puerto libre es la técnica del Módulo 12, Tema 2.
+
+Compara WebSocket con consultar al servidor cada pocos segundos con HTTP. La consulta periódica es más simple y
+funciona detrás de cualquier red, pero gasta batería y llega tarde. WebSocket llega al instante y exige vigilancia,
+reconexión y reanudación, que es justo lo que este tema construye.
+
+En producción, la conexión va cifrada con `wss://`, sobre el mismo TLS del Módulo 13, Tema 4. El Tema 4 de este módulo
+conecta `CanalPosiciones` con la vista: el chip muestra el estado del canal y cada posición nueva pasa por el filtro
+del Tema 2.
 
 #### Problema resuelto 3.1
 Escribe el cliente con reconexión y el servidor que envía el recorrido. En una prueba con sockets reales, el servidor
@@ -809,6 +1133,7 @@ class CanalPosiciones {
   WebSocketChannel? _canal;
   StreamSubscription<dynamic>? _sub;
   Timer? _vigilante;
+  Timer? _reconexion; // el intento programado; cerrar() lo cancela
   int _intentos = 0;
   Duration ultimaEspera = Duration.zero; // la espera antes del próximo intento
   int ultimaRecibida = -1; // para pedir desde ahí al reconectar
@@ -818,6 +1143,7 @@ class CanalPosiciones {
   Stream<EstadoCanal> get estados => _estados.stream;
 
   Future<void> conectar() async {
+    if (_cerrado) return;
     if (_intentos == 0) _estados.add(EstadoCanal.conectando);
     try {
       final canal = WebSocketChannel.connect(url);
@@ -863,12 +1189,13 @@ class CanalPosiciones {
     final espera = esperaBase * math.min(math.pow(2, _intentos - 1), 32).toInt(); // 250, 500, 1000… hasta 8 s
     ultimaEspera = espera;
     _estados.add(EstadoCanal.reconectando);
-    Timer(espera, conectar);
+    _reconexion = Timer(espera, conectar);
   }
 
   Future<void> cerrar() async {
     _cerrado = true;
     _vigilante?.cancel();
+    _reconexion?.cancel(); // sin esto, un intento ya programado conecta después de cerrar
     await _sub?.cancel();
     await _canal?.sink.close();
     _estados.add(EstadoCanal.cerrado);
@@ -1020,6 +1347,76 @@ $ flutter test test/tiempo_real_test.dart
 - En total llegaron 29 posiciones, sin repetidas ni huecos: después de la caída, la secuencia siguió en 6, 7, 8, 9.
 - La espera vuelve a 250 ms al conectar (`_intentos = 0`): la próxima caída empieza de nuevo con esperas cortas.
 
+Un caso que la prueba anterior no cubre: cerrar el canal mientras espera para reconectar. La primera versión de
+`cerrar()` no cancelaba el `Timer` de la reconexión ya programada; si el servidor volvía durante esa espera, el canal
+cerrado se conectaba igual y dejaba una conexión abierta. Esta prueba lo demuestra contando las conexiones que recibe
+un servidor que vuelve justo después de `cerrar()`:
+
+```dart
+// test/cerrar_test.dart — cerrar() durante la espera de reconexión: el servidor vuelve, y el canal no debe conectarse
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:m14/tiempo_real/canal_posiciones.dart';
+
+void main() {
+  test('cerrar mientras espera reconectar: ninguna conexión nueva', () async {
+    final libre = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0); // un puerto libre, todavía sin servidor
+    final puerto = libre.port;
+    await libre.close();
+
+    final canal = CanalPosiciones(Uri.parse('ws://127.0.0.1:$puerto'));
+    await canal.conectar(); // falla: queda programado un intento en 250 ms
+    await canal.cerrar(); // la persona sale de la pantalla durante la espera
+
+    var conexiones = 0; // el servidor vuelve antes del intento pendiente y cuenta quién se conecta
+    final servidor = await HttpServer.bind(InternetAddress.loopbackIPv4, puerto);
+    servidor.listen((p) async {
+      conexiones++;
+      await WebSocketTransformer.upgrade(p);
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 600)); // más que la espera pendiente
+    debugPrint('conexiones recibidas después de cerrar(): $conexiones');
+    await servidor.close(force: true);
+    expect(conexiones, 0);
+  });
+}
+```
+
+Con la versión sin `_reconexion` (el `Timer(espera, conectar)` sin guardar):
+
+```text
+$ flutter test test/cerrar_test.dart
+00:00 +0: loading /home/estudiante/labs/flutter/m14/test/cerrar_test.dart
+00:00 +0: cerrar mientras espera reconectar: ninguna conexión nueva
+conexiones recibidas después de cerrar(): 1
+00:00 +0 -1: cerrar mientras espera reconectar: ninguna conexión nueva [E]
+  Expected: <0>
+    Actual: <1>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/cerrar_test.dart 27:5                          main.<fn>
+  
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  /home/estudiante/labs/flutter/m14/test/cerrar_test.dart: cerrar mientras espera reconectar: ninguna conexión nueva
+[código de salida: 1]
+```
+
+Con la versión de arriba, que guarda el `Timer` en `_reconexion`, lo cancela en `cerrar()` y además hace que
+`conectar()` no haga nada si el canal ya está cerrado:
+
+```text
+$ flutter test test/cerrar_test.dart
+00:00 +0: loading /home/estudiante/labs/flutter/m14/test/cerrar_test.dart
+00:00 +0: cerrar mientras espera reconectar: ninguna conexión nueva
+conexiones recibidas después de cerrar(): 0
+00:00 +1: All tests passed!
+```
+
 > **Error común.** Confiar en que la conexión avisa cuando se pierde. En redes móviles, muchas veces no llega ningún
 > cierre: sin vigilante de silencio, la app muestra «En vivo» con datos de hace diez minutos.
 
@@ -1035,8 +1432,10 @@ $ flutter test test/tiempo_real_test.dart
 #### Checkpoint 3.1
 Si el servidor tarda 20 segundos en volver, ¿cuántos intentos hace el cliente y cuánto espera entre los últimos?
 
-Respuesta: esperas de 250, 500, 1 000, 2 000, 4 000 y 8 000 ms (ya en el máximo), y después 8 000 ms entre intentos:
-unos 8 intentos en 20 s, el último a lo sumo 8 s después de que el servidor vuelve.
+Respuesta: las esperas son 250, 500, 1 000, 2 000, 4 000 y 8 000 ms (ya en el máximo), así que los intentos caen,
+contando desde la caída, a los 0,25, 0,75, 1,75, 3,75, 7,75 y 15,75 s: **6 intentos fallidos en 20 s**. El séptimo
+llega tras otra espera de 8 000 ms, a los 23,75 s, y conecta unos 3,75 s después de que el servidor vuelve. Desde ahí
+la espera entre intentos se queda en 8 s (a esos tiempos se suman los pocos milisegundos que tarda cada rechazo).
 
 </details>
 
@@ -1044,7 +1443,7 @@ unos 8 intentos en 20 s, el último a lo sumo 8 s después de que el servidor vu
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Paso 1 · Crea los archivos
-Crea `canal_posiciones.dart`, `servidor_posiciones.dart` y `tiempo_real_test.dart`, y ejecuta.
+Crea `canal_posiciones.dart`, `servidor_posiciones.dart`, `tiempo_real_test.dart` y `cerrar_test.dart`, y ejecuta.
 
 #### Paso 2 · Sin reanudación
 Cambia el cliente para que envíe siempre `{"desde": 0}` y quita la línea que ignora repetidas. ¿Cuántas repetidas
@@ -1140,8 +1539,62 @@ pantalla virtual** (Módulo 11).
 - **Error típico:** revisar solo el estado inicial.
 
 #### ► CÓMO FUNCIONA
-Cada posición recibida se agrega a las crudas, se filtra, actualiza la geocerca y redibuja. El panel calcula la
-distancia y el tiempo estimado de las lecturas buenas.
+
+##### 1. La idea en lenguaje sencillo
+
+En una central de despachos, la pantalla grande no inventa nada: muestra lo que llega por radio, filtrado por el
+despachador, sobre un plano de la ciudad. Al lado hay un letrero que dice si la radio funciona. Si el letrero dice «en
+línea» cuando no lo está, toda la pantalla miente.
+
+La pantalla de seguimiento es esa central en pequeño. Recibe posiciones del canal del Tema 3, las filtra con la
+geometría del Tema 2 y las dibuja en el mapa del Tema 1. Debajo, un panel dice cuánto falta, cuándo llega y si la
+información es de ahora.
+
+Las piezas ya están probadas. Lo nuevo es el pegamento: quién se suscribe a qué, cuándo se redibuja y qué texto lee la
+persona que espera el envío. Ahí aparecen errores que ninguna prueba de lógica encuentra, como «0.0 km» al llegar.
+
+##### 2. Definición formal y vocabulario
+
+La **vista de seguimiento** es un `StatefulWidget` que se suscribe a los `Stream` del canal en `initState`. Con cada
+posición aplica el filtro y la geocerca, y dibuja el mapa y un panel. En `dispose` cancela las suscripciones.
+
+El **estado de conexión visible** es el `Chip` que muestra «En vivo» o «Reconectando…». Solo dice la verdad porque el
+canal tiene vigilante de silencio: sin él, una conexión muerta seguiría marcada como viva.
+
+El **texto de distancia** es la distancia formateada para leer: kilómetros con un decimal desde 1 km y metros
+redondeados a 10 por debajo. Su precisión no debe superar la del GPS. Por último, la **captura por momentos** toma
+pantallazos de la app real a tiempos fijos mientras el servidor envía un recorrido conocido.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la vida de la pantalla desde que Flutter la monta.
+
+1. Flutter crea el `State` y llama a `initState` una sola vez. Allí la vista se suscribe a `estados` y a `posiciones`,
+   y solo después llama a `conectar`. Como los controladores son *broadcast*, suscribirse antes evita perder los
+   primeros eventos.
+2. La geocerca se declara como `late final _geocerca = Geocerca(widget.destino, 50)`. Un inicializador de campo normal
+   no puede leer `widget`; con `late`, se evalúa la primera vez que se usa, cuando `widget` ya existe.
+3. Cada posición llega al oyente, que la agrega a las crudas y vuelve a filtrar la lista completa:
+
+```dart
+widget.canal.posiciones.listen((p) {
+  _crudas.add(p.$2);
+  final buenas = filtrarRuido(_crudas).buenas;
+  if (buenas.length != _buenas.length && _geocerca.actualizar(buenas.last.posicion) == CambioGeocerca.entro) {
+    _llego = true;
+  }
+  setState(() => _buenas = buenas);
+}),
+```
+
+4. La geocerca solo se actualiza si hubo una lectura buena nueva. Una lectura descartada no cuenta como movimiento.
+   Cuando la geocerca devuelve `entro`, `_llego` queda en `true` para siempre.
+5. `setState` marca el widget para reconstruir en el siguiente frame. `build` calcula la última posición, el tiempo
+   estimado y los textos.
+6. `MapaRuta` recibe el recorrido nuevo y la posición del camión. Sus capas se repintan; la cámara no se mueve, porque
+   `initialCameraFit` solo se aplica al crear el mapa.
+7. El panel escribe la distancia con `distanciaLegible` y el tiempo con `(eta.inSeconds / 60).ceil()`: redondear hacia
+   arriba evita prometer menos de lo que falta.
 
 ```mermaid
 sequenceDiagram
@@ -1150,13 +1603,54 @@ sequenceDiagram
     participant V as SeguimientoVista
     participant G as filtro + geocerca
     participant M as MapaRuta
+    C->>V: estados: conectado → chip «En vivo»
     S->>C: {"n": 42, lat, lon, t, precision}
     C->>V: posiciones (42, Lectura)
     V->>G: filtrarRuido(crudas) → buenas
     G-->>V: ¿entró? → «Llegó al destino»
+    V->>V: setState
     V->>M: recorrido = buenas, repartidor = última
     V->>V: panel: distancia y «llega en ~N min»
 ```
+
+La demostración real compila la app en release y la ejecuta contra `bin/servidor_posiciones.dart`, que envía una
+lectura cada 100 ms. Así, el recorrido de 11 minutos pasa en unos 14 s. El script captura la ventana a los 3, 9 y 17
+segundos.
+
+##### 4. Reglas, variantes y casos límite
+
+Cancelar las suscripciones en `dispose` es obligatorio. Sin eso, la pantalla cerrada seguiría recibiendo posiciones y
+llamando a `setState`. Flutter lo reporta como error porque ese `State` ya no está en el árbol.
+
+La vista cancela sus suscripciones, pero no cierra el canal: el canal se creó en `main` y la vista no es su dueña. Si
+la pantalla se cierra, el canal sigue conectado o reconectando. Quien crea el canal debe cerrarlo; con más pantallas,
+ese trabajo pasa a un *view model*.
+
+Filtrar la lista completa en cada mensaje es simple y correcto, pero su costo crece con el recorrido. Con 138 lecturas
+no se nota. Con horas de lecturas, conviene un filtro incremental que solo compare la nueva con la última buena.
+
+El texto de distancia tiene sus propios bordes. `distanciaLegible(8)` da «a 10 m», como en la captura de llegada. Pero
+`distanciaLegible(4)` da «a 0 m», porque `(0.4).round()` es 0. Si el repartidor puede quedar a menos de 5 m, ese caso
+necesita su propio texto.
+
+El chip solo distingue `conectado` del resto. Mientras el canal está en `conectando`, al abrir la pantalla, ya dice
+«Reconectando…». Es un detalle menor, pero es un texto que la persona lee.
+
+Las capturas por momentos sirven para revisar, no como prueba golden. Los tiempos dependen de la máquina, de la red y
+de las teselas descargadas. Lo que se compara es lo que dicen los textos y lo que se ve en el mapa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`StatefulWidget`, `initState`, `dispose` y las suscripciones son del Módulo 4. La app de escritorio en pantalla
+virtual, con `xvfb-run` y capturas, es del Módulo 11. El mapa, la geometría y el canal son los Temas 1, 2 y 3 de este
+módulo, sin cambios.
+
+Compara esta vista con la vista por estados del Módulo 12, Tema 4. Allí la vista solo dibujaba lo que el *view model*
+le daba. Aquí la vista hace ese trabajo ella misma: filtra, actualiza la geocerca y arma los textos. Con una sola
+pantalla es aceptable; el Paso 5 la separa como en el Módulo 12.
+
+El Proyecto 31 pide agregar azar a la espera, un latido y una captura durante la reconexión. En el Módulo 15, los
+textos de este panel, como «llega en ~9 min» y las distancias, pasan a formatos por idioma.
 
 #### Problema resuelto 4.1
 Escribe la vista y `main`, compila la app en release y ejecútala contra el servidor de posiciones, con capturas a la
@@ -1350,33 +1844,36 @@ Toda la suite:
 $ flutter test
 00:00 +0: loading /home/estudiante/labs/flutter/m14/test/tiempo_real_test.dart
 00:00 +0: /home/estudiante/labs/flutter/m14/test/tiempo_real_test.dart: caída del servidor, reconexión con espera creciente y reanudación
-   20 ms  estado: conectando
-   40 ms  estado: conectado
-  690 ms  recibidas hasta ahora: [0, 1, 2, 3, 4, 5]
-  692 ms  ── el servidor se cae ──
-  707 ms  estado: reconectando (próximo intento en 250 ms)
-  963 ms  estado: reconectando (próximo intento en 500 ms)
- 1466 ms  estado: reconectando (próximo intento en 1000 ms)
- 2309 ms  ── el servidor vuelve en el mismo puerto ──
- 2474 ms  estado: conectado
- 4813 ms  recibidas: 29, primeras después de la caída: [6, 7, 8, 9]
- 4817 ms  repetidas: 0, huecos en la secuencia: []
- 4821 ms  estado: cerrado
-00:04 +1: loading /home/estudiante/labs/flutter/m14/test/geo_test.dart
-00:05 +1: /home/estudiante/labs/flutter/m14/test/geo_test.dart: distancias
+   12 ms  estado: conectando
+   30 ms  estado: conectado
+  682 ms  recibidas hasta ahora: [0, 1, 2, 3, 4, 5]
+  683 ms  ── el servidor se cae ──
+  693 ms  estado: reconectando (próximo intento en 250 ms)
+  949 ms  estado: reconectando (próximo intento en 500 ms)
+ 1451 ms  estado: reconectando (próximo intento en 1000 ms)
+ 2294 ms  ── el servidor vuelve en el mismo puerto ──
+ 2460 ms  estado: conectado
+ 4797 ms  recibidas: 29, primeras después de la caída: [6, 7, 8, 9]
+ 4801 ms  repetidas: 0, huecos en la secuencia: []
+ 4803 ms  estado: cerrado
+00:04 +1: loading /home/estudiante/labs/flutter/m14/test/cerrar_test.dart
+00:05 +1: /home/estudiante/labs/flutter/m14/test/cerrar_test.dart: cerrar mientras espera reconectar: ninguna conexión nueva
+conexiones recibidas después de cerrar(): 0
+00:05 +2: loading /home/estudiante/labs/flutter/m14/test/geo_test.dart
+00:06 +2: /home/estudiante/labs/flutter/m14/test/geo_test.dart: distancias
 origen → destino: haversine propio 5256 m, latlong2 5231 m
 0,001° de latitud: 111.2 m
 0,001° de longitud en Bogotá: 110.8 m
-00:05 +2: /home/estudiante/labs/flutter/m14/test/geo_test.dart: filtro de lecturas
+00:06 +3: /home/estudiante/labs/flutter/m14/test/geo_test.dart: filtro de lecturas
 138 lecturas → 135 buenas; descartadas: [#30: salto a 1441 km/h, #45: precisión 120 m, #135: precisión 80 m]
-00:05 +3: /home/estudiante/labs/flutter/m14/test/geo_test.dart: geocerca de 50 m en el destino, sin y con histéresis
+00:06 +4: /home/estudiante/labs/flutter/m14/test/geo_test.dart: geocerca de 50 m en el destino, sin y con histéresis
 factor de salida 1.0: [entro@40m, salio@60m, entro@45m, salio@58m, entro@20m]
 factor de salida 1.5: [entro@40m]
-00:05 +4: /home/estudiante/labs/flutter/m14/test/geo_test.dart: tiempo estimado de llegada
+00:06 +5: /home/estudiante/labs/flutter/m14/test/geo_test.dart: tiempo estimado de llegada
 lectura 10: faltan 4856 m, estimado 607 s, real hasta la geocerca 605 s
 lectura 60: faltan 2778 m, estimado 347 s, real hasta la geocerca 345 s
 lectura 100: faltan 1189 m, estimado 150 s, real hasta la geocerca 145 s
-00:05 +5: All tests passed!
+00:06 +6: All tests passed!
 ```
 
 **Explicación por partes.**

@@ -130,15 +130,37 @@ Este tema usa **prueba unitaria**, **caso límite** y **fixture** (Fundamentos, 
 - **Error típico:** guardar estado en un campo `static` «para no repetir»: las pruebas pasan o fallan según el orden.
 
 #### ► CÓMO FUNCIONA
-El build usa JUnit Jupiter **5.13.4** mediante `org.junit:junit-bom`. Jupiter es el modelo de programación: `@Test` marca un método ejecutable, `@BeforeEach` y `@AfterEach` envuelven cada test, `@BeforeAll` y `@AfterAll` el conjunto, y `@DisplayName`, `@Disabled` y `@Nested` organizan la suite. Las aserciones (`assertEquals`, `assertThrows`, `assertTrue`, `assertAll`) convierten la expectativa en una condición verificable.
 
-**Mecanismo.** El motor de JUnit descubre tests anotados, crea una instancia nueva de la clase por método (ciclo de vida por defecto) y ejecuta los callbacks de ciclo de vida antes y después de cada uno. JUnit Platform es la capa que permite que motores distintos —Jupiter, jqwik— convivan en la misma ejecución; por eso `testRuntimeOnly("org.junit.platform:junit-platform-launcher")` pertenece al classpath de ejecución.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** El aislamiento entre instancias evita que un test modifique el estado que recibe el siguiente. Los callbacks centralizan preparación y limpieza sin repetir código en cada método.
+Antes de despachar, una bodega revisa cada paquete con una lista: peso correcto, dirección completa, guía impresa. La revisión es rápida, siempre igual y la hace alguien que no armó el paquete. Si algo falla, el paquete no sale y el reporte dice qué punto de la lista no se cumplió.
+
+Una prueba automática es esa lista para tu código. Llamas a `DescuentoService` con datos conocidos y comparas lo que devuelve con lo que debería devolver. Si 5 unidades de `100.00` no dan `90.00`, la regla se rompió y lo sabes antes de que llegue a producción.
+
+JUnit es quien encuentra esas pruebas, las ejecuta una por una y te entrega el reporte. Además, garantiza que cada prueba empiece desde cero: lo que hizo una no contamina a la siguiente.
+
+##### 2. Definición formal y vocabulario
+
+**JUnit 5** no es una sola librería, sino tres piezas. **JUnit Platform** define cómo se descubren y ejecutan pruebas en la JVM y cómo se reportan a Gradle, Maven o el IDE. **JUnit Jupiter** es el modelo de programación: las anotaciones y aserciones que escribes. JUnit Vintage ejecuta pruebas antiguas de JUnit 4.
+
+En Jupiter, **`@Test`** marca un método como prueba. Una **aserción** compara un valor obtenido con uno esperado y, si no coinciden, lanza `org.opentest4j.AssertionFailedError`. **`assertThrows`** es la aserción que exige una excepción.
+
+**`@BeforeEach`** marca el método que prepara cada prueba: la fixture que conociste en Fundamentos. El **ciclo de vida de la prueba** es el orden exacto en que JUnit crea la instancia, llama a esos métodos y registra el resultado.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando ejecutas `./gradlew test`, ocurre esto:
+
+1. Gradle compila `src/test/java` con el `testCompileClasspath` y arranca una JVM aparte para las pruebas.
+2. `useJUnitPlatform()` le indica que use el **launcher** de JUnit Platform, que llegó por `testRuntimeOnly`.
+3. El launcher busca **motores de prueba** en el classpath. Cada motor se registra con el mecanismo `ServiceLoader` de Java. En `aurora-m9` encuentra Jupiter y jqwik.
+4. En la fase de **descubrimiento**, cada motor recorre las clases y, por reflexión, se queda con los métodos que lleva su anotación.
+5. En la fase de **ejecución**, Jupiter aplica el ciclo de vida a cada método, como muestra el diagrama.
+6. Cada resultado vuelve al launcher, y Gradle lo escribe en los XML de `build/test-results/test/`.
 
 ```mermaid
 sequenceDiagram
-  participant G as Gradle (tarea test)
+  participant G as Gradle tarea test
   participant P as JUnit Platform
   participant J as Motor Jupiter
   participant T as DescuentoServiceTest
@@ -146,13 +168,58 @@ sequenceDiagram
   P->>J: descubre clases y métodos @Test
   loop por cada método @Test
     J->>T: new DescuentoServiceTest()
-    J->>T: setUp() (@BeforeEach)
+    J->>T: setUp() con @BeforeEach
     J->>T: método @Test
     T-->>J: pasa o lanza AssertionFailedError
   end
   J-->>P: resultados
   P-->>G: XML en build/test-results/test
 ```
+
+Observa el bucle: la instancia se crea **dentro** de él. Por eso el campo `service` de la prueba siempre empieza recién asignado:
+
+```java
+private DescuentoService service;
+
+@BeforeEach
+void setUp() {
+    service = new DescuentoService();
+}
+```
+
+Si una prueba cambiara `service`, ese cambio moriría con su instancia. El modelo `MiniRunner` del Problema resuelto 1.2 lo hace visible: imprime `instancia #1`, `#2` y `#3`, una por prueba.
+
+Dentro de la prueba, la aserción es una llamada normal que puede lanzar una excepción:
+
+```java
+assertEquals(new BigDecimal("90.00"), total);
+```
+
+Si `total` vale otra cosa, `assertEquals` lanza `AssertionFailedError` con el esperado y el obtenido. Jupiter la atrapa, marca la prueba como fallida y sigue con la siguiente. Cualquier otra excepción inesperada también hace fallar la prueba, con su propio mensaje y su traza.
+
+##### 4. Reglas, variantes y casos límite
+
+Un método `@Test` no puede ser `private` ni `static` y debe devolver `void`. La clase de prueba no necesita ser `public`: Jupiter acepta clases y métodos con visibilidad de paquete.
+
+`@BeforeAll` y `@AfterAll` corren una vez por clase. Por defecto deben ser `static`, porque todavía no existe ninguna instancia. Con `@TestInstance(Lifecycle.PER_CLASS)` cambias el ciclo a una sola instancia por clase y pueden dejar de ser `static`.
+
+El orden entre métodos es determinista, pero la documentación de JUnit lo describe como «intencionalmente no obvio». Si una prueba necesita que otra corra antes, tienes un defecto de diseño. `@TestMethodOrder` existe para casos especiales, no para tapar dependencias.
+
+En `assertEquals(esperado, obtenido)` el orden importa: el primer argumento es el esperado. Con `BigDecimal`, la comparación usa `equals`, que también compara la escala; lo muestra el modelo `Escala.java`.
+
+`assertThrows` pasa también con subclases del tipo pedido. Si necesitas el tipo exacto, Jupiter ofrece `assertThrowsExactly` desde la versión 5.8.
+
+Este módulo usa la línea 5.13 de Jupiter, que funciona desde Java 8; en ella Platform se numera aparte, por eso el launcher resolvió `1.13.4`. JUnit 6.0.0, publicado en septiembre de 2025, exige Java 17 y unifica el número de versión de todas sus piezas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Fundamentos, Módulo 4, Tema 2, escribiste pruebas unitarias y conociste la fixture. Aquí ves cómo las organiza el ecosistema Java. La configuración `testImplementation`, `testRuntimeOnly` y el BOM vienen del Módulo 8, Tema 2.
+
+Las anotaciones funcionan gracias a la reflexión: Java puede leer en tiempo de ejecución qué anotaciones tiene un método si se declararon con retención `RUNTIME`. `MiniRunner` usa exactamente esa técnica con sus propias anotaciones `@Prueba` y `@Antes`.
+
+No confundas la aserción de JUnit con la instrucción `assert` de Java. `assert` solo se evalúa si la JVM arranca con `-ea`; las aserciones de JUnit se evalúan siempre.
+
+El Tema 2 añade una extensión, `MockitoExtension`, que se engancha a este mismo ciclo de vida. El Tema 3 reemplaza varias pruebas iguales por una tabla con `@ParameterizedTest`. El Tema 4 suma un segundo motor, jqwik, sobre la misma plataforma.
 
 #### Problema resuelto 1.1
 Prueba la regla de descuento con JUnit Jupiter: un caso sin descuento, uno con descuento y una entrada inválida.
@@ -592,24 +659,85 @@ Este tema usa **doble de prueba**, **prueba unitaria** y **prueba de integració
 - **Error típico:** declararla en una clase y copiar los `@Mock` a otra que no la tiene: allí todos los campos quedan en `null`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Un doble de prueba sustituye una dependencia. `@Mock` crea el objeto, `@ExtendWith(MockitoExtension.class)` integra su ciclo de vida con JUnit, `when(...).thenReturn(...)` define el comportamiento del doble y `verify(...)` comprueba las interacciones. `never()` y `verifyNoMoreInteractions(...)` restringen qué llamadas se permiten.
 
-**Por qué existe.** Probar `PedidoService` no debería exigir una base de datos ni un inventario remoto. El mock representa el contrato del puerto: devuelve `true` o `false` para `hayStock` y deja que la regla de descuento real se ejecute.
+##### 1. La idea en lenguaje sencillo
 
-Una prueba con dobles tiene tres tiempos: preparar (crear dobles y programar respuestas), actuar (llamar al servicio) y
-comprobar (aserciones sobre el resultado y `verify` sobre las interacciones).
+Para ensayar el despacho de una bodega no hace falta un camión real ni un cliente real. Basta con alguien que haga de transportadora y responda «recibido», y con un cuaderno donde se anote qué se le entregó. Al final revisas el cuaderno: ¿se entregó el paquete correcto, una sola vez?
+
+`PedidoService` depende de tres cosas externas: un inventario remoto, una base de datos y un servicio de auditoría. Una prueba unitaria no puede esperar a que la red y la base estén arriba. Necesitas sustitutos que respondan lo que tú decidas y que anoten lo que el servicio les pidió.
+
+Mockito fabrica esos sustitutos. Le dices de qué interfaz, qué debe responder y, al terminar, le preguntas qué llamadas recibió. La regla de negocio que estás probando, en cambio, se ejecuta de verdad.
+
+##### 2. Definición formal y vocabulario
+
+Un **puerto** es una interfaz que describe lo que el servicio necesita del exterior, sin decir cómo se implementa. `InventarioClient`, `PedidoRepository` y `AuditoriaService` son puertos. En producción los implementa un adaptador real; en una prueba, un doble.
+
+Un **stub** es un doble que devuelve respuestas preparadas. Un **mock** es un doble que registra las llamadas para que la prueba las verifique después. Son roles, no tipos de objeto: en Mockito el mismo doble puede cumplir los dos.
+
+**Mockito** es la librería que crea esos dobles en tiempo de ejecución. **`@Mock`** marca un campo que debe recibir un doble nuevo. **`@ExtendWith`** registra en JUnit la extensión `MockitoExtension`, que procesa esas anotaciones. **`verify`** comprueba que una llamada ocurrió, con qué argumentos y cuántas veces.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Un doble es un objeto que implementa la interfaz, pero cuyos métodos no tienen lógica de negocio. Cada llamada pasa por un manejador central que decide qué responder y la anota. Java trae un mecanismo propio para construir objetos así, `java.lang.reflect.Proxy`:
+
+```java
+List<String> llamadas = new ArrayList<>();
+InventarioClient doble = (InventarioClient) Proxy.newProxyInstance(
+    InventarioClient.class.getClassLoader(), new Class<?>[] {InventarioClient.class},
+    (proxy, metodo, argumentos) -> { llamadas.add(metodo.getName() + List.of(argumentos)); return false; });
+System.out.println("respuesta=" + doble.hayStock("CLI-9", 3) + " llamadas=" + llamadas);
+```
+
+`newProxyInstance` crea en tiempo de ejecución una clase que implementa `InventarioClient`. Cada llamada llega a la lambda, que la anota y responde `false`. Ejecutado dentro de un `main`, imprime:
+
+```text
+respuesta=false llamadas=[hayStock[CLI-9, 3]]
+```
+
+Mockito no usa `Proxy`: genera las clases con la librería **Byte Buddy**. La idea, sin embargo, es la misma. En `PedidoServiceTest` sucede esto:
+
+1. Antes de cada prueba, `MockitoExtension` busca los campos con `@Mock` y asigna a cada uno un doble nuevo de su tipo.
+2. `when(inventario.hayStock("CLI-1", 5))` llama al doble. La llamada devuelve el valor por defecto, pero Mockito la guarda como «la última invocación».
+3. `.thenReturn(true)` toma esa última invocación y le asocia una respuesta. Desde ahí, esa llamada con esos argumentos devuelve `true`.
+4. `service.procesar(pedido)` ejecuta el código real. Cada llamada a un doble busca una respuesta programada y queda registrada.
+5. `verify(repository).guardar(resultado)` busca en el registro una llamada con argumentos iguales según `equals`. Si no la encuentra, falla.
+6. Al terminar, la extensión revisa si quedaron stubs sin usar y descarta los dobles. La siguiente prueba recibe otros.
 
 ```mermaid
 flowchart LR
-  T["PedidoServiceTest"] -- "when(hayStock).thenReturn(true)" --> I["InventarioClient<br/>stub"]
-  T -- "procesar(pedido)" --> S["PedidoService"]
+  T["PedidoServiceTest"] -- "when hayStock thenReturn true" --> I["InventarioClient<br/>stub"]
+  T -- "procesar pedido" --> S["PedidoService"]
   S --> I
   S --> D["DescuentoService<br/>real"]
   S --> R["PedidoRepository<br/>mock"]
   S --> A["AuditoriaService<br/>mock"]
-  T -. "verify(guardar), verify(registrarAprobado)" .-> R
-  T -. "verify" .-> A
+  T -. "verify guardar" .-> R
+  T -. "verify registrarAprobado o never" .-> A
 ```
+
+El diagrama resume los tres tiempos de una prueba con dobles: preparar (crear dobles y programar respuestas), actuar (llamar al servicio) y comprobar (aserciones sobre el resultado y `verify` sobre las interacciones).
+
+##### 4. Reglas, variantes y casos límite
+
+Una llamada sin respuesta programada devuelve un valor vacío: `false`, `0`, `null`, una colección vacía o `Optional.empty()`. Por eso un stub con argumentos equivocados no lanza error: devuelve `false` y la prueba falla por otro lado.
+
+`MockitoExtension` trabaja por defecto con **stubs estrictos**. Si programas un `when` que ninguna llamada usa, la prueba falla con `UnnecessaryStubbingException`. Así detecta pruebas que ya no prueban lo que dicen.
+
+Los comparadores de argumentos, como `any()` o `eq(...)`, tienen una regla: si usas uno en una llamada, todos los argumentos de esa llamada deben ser comparadores. Mezclar valores sueltos y comparadores lanza `InvalidUseOfMatchersException`.
+
+`verify` acepta un modo: `times(n)`, `never()`, `atLeastOnce()`. Sin modo, exige exactamente una llamada. `verifyNoMoreInteractions` falla si el doble recibió alguna llamada que no verificaste.
+
+Desde Mockito 5, el fabricante de dobles por defecto es el **inline mock maker**. Redefine clases existentes mediante un agente de instrumentación, y así puede imitar clases `final`. La alternativa `mock-maker-subclass`, que usa este proyecto, crea subclases: no puede imitar clases `final` ni métodos `static`. Mockito 5 exige Java 11 o posterior.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 1, Tema 3, viste interfaces. Aquí son la pieza clave: si `PedidoService` recibiera clases concretas creadas con `new`, ninguna prueba podría reemplazarlas. Recibirlas por el constructor es lo que hace posible el doble.
+
+La extensión de Mockito se engancha al ciclo de vida del Tema 1: crea dobles nuevos por cada instancia de prueba, igual que `@BeforeEach` crea un servicio nuevo.
+
+No confundas mock con prueba de integración. Un mock confirma que el servicio llamó al puerto como esperabas; no confirma que el inventario real responda así. Por eso Fundamentos, Módulo 4, Tema 2, separa los dos tipos de prueba.
+
+El Tema 3 mide qué partes del código ejecutaron estas pruebas. En el Módulo 10, Tema 3, verás que los frameworks que usan reflexión, como Mockito, necesitan permisos explícitos cuando el código vive en módulos.
 
 #### Problema resuelto 2.1
 Antes de usar Mockito, escribe a mano un stub del inventario y un mock del repositorio, y úsalos para probar las dos
@@ -1024,22 +1152,91 @@ y `@Test`, aserción y `assertThrows` (Tema 1 de este módulo).
 - **Error típico:** celebrar el 100 % de líneas: la línea `if (unidades <= 0)` se ejecuta siempre, pero su rama `throw` nunca.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `@ParameterizedTest` ejecuta un mismo cuerpo con datos de una fuente. `@CsvSource` convierte cada fila en argumentos; el resultado son 8 ejecuciones dentro de `DescuentoServiceTest` sin duplicar código. JaCoCo, por su parte, instrumenta bytecode y cuenta instrucciones, ramas, líneas, métodos y clases ejecutadas.
 
-**Por qué existe.** Las tablas de casos hacen explícitos los bordes (1, 4, 5 y 6 unidades; `19.99`). La cobertura señala zonas que ningún test visita; es una señal de dónde mirar, no una medida de calidad de las aserciones.
+##### 1. La idea en lenguaje sencillo
 
-En Gradle, el plugin `jacoco` agrega un agente a la JVM de la tarea `test`. El agente escribe un archivo binario, y la tarea
-`jacocoTestReport` lo convierte en XML y HTML.
+Una transportadora cobra distinto según el peso: hasta 4 kg una tarifa, desde 5 kg otra. Para revisar la tabla de tarifas no escribes cinco procedimientos distintos. Escribes uno solo, «pesa, consulta, compara», y lo aplicas a cada fila de una tabla de casos.
+
+Después de revisar, queda otra pregunta: ¿qué partes del proceso nunca se usaron? Si ninguna prueba pesó un paquete vacío, nadie sabe qué pasa con él. Un contador en cada puerta del proceso te diría por cuáles pasó alguien y por cuáles no.
+
+Este tema trae las dos herramientas. `@ParameterizedTest` convierte la tabla de casos de `DescuentoService` en una sola prueba que se repite por fila. JaCoCo es el contador: dice qué instrucciones y qué ramas de tu código ejecutaron las pruebas.
+
+##### 2. Definición formal y vocabulario
+
+**`@ParameterizedTest`** marca un método con parámetros que JUnit ejecuta una vez por cada conjunto de argumentos. Los argumentos los entrega una **fuente**. **`@CsvSource`** es una fuente que lee filas de texto con columnas separadas por comas. Vive en el artefacto `junit-jupiter-params`, que llega dentro de `junit-jupiter`.
+
+**JaCoCo** (Java Code Coverage) es una herramienta que mide qué partes del bytecode se ejecutaron mientras corrían las pruebas. Gradle la integra con el plugin `jacoco`.
+
+JaCoCo reporta varios contadores. La **cobertura de instrucciones** cuenta instrucciones de bytecode ejecutadas. La **cobertura de ramas** cuenta las salidas de cada decisión (`if`, `switch`, `? :`, `&&`, `||`) que se recorrieron. Además informa líneas, métodos, clases y complejidad ciclomática.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Para `@ParameterizedTest`, el motor Jupiter hace esto:
+
+1. Descubre el método por su anotación, como hace con `@Test`.
+2. Lee la fuente. `@CsvSource` entrega cinco cadenas; cada una es una **invocación**.
+3. Parte cada fila por la coma y convierte cada columna al tipo del parámetro. `"5"` se convierte en el `int 5`.
+4. Por cada fila aplica el ciclo de vida completo del Tema 1: instancia nueva, `@BeforeEach`, el método con sus argumentos.
+5. Registra cada invocación como una prueba separada. Por eso `DescuentoServiceTest` reporta `tests="8"`: tres `@Test` más cinco filas.
+
+```java
+@CsvSource({ "100.00,4,100.00", "100.00,5,90.00" })
+void calculaTotalesEsperados(String subtotal, int unidades, String esperado) {
+    assertEquals(new BigDecimal(esperado), service.aplicar(new BigDecimal(subtotal), unidades));
+}
+```
+
+Este fragmento recorta la tabla a dos filas: justo el borde entre 4 y 5 unidades. El cuerpo no cambia; solo cambian los datos.
+
+Para la cobertura, Gradle y JaCoCo hacen esto:
+
+1. El plugin `jacoco` añade un **agente Java** (`-javaagent`) a la JVM que ejecuta la tarea `test`.
+2. Cuando la JVM carga cada clase, el agente la modifica en memoria. Inserta **sondas**: marcas booleanas que se activan al pasar por un punto del código.
+3. Las pruebas corren normalmente. Cada sonda activada registra que ese tramo se ejecutó.
+4. Al terminar la JVM, el agente escribe las sondas en un archivo binario, por defecto `build/jacoco/test.exec`.
+5. `jacocoTestReport` cruza ese archivo con las clases compiladas y las fuentes, y produce el XML y el HTML.
 
 ```mermaid
 flowchart LR
-  CSV["@CsvSource<br/>5 filas"] --> PT["@ParameterizedTest<br/>5 ejecuciones"]
-  PT --> TEST["tarea test<br/>con agente JaCoCo"]
-  TEST --> EXEC["datos binarios<br/>de ejecución"]
+  CSV["@CsvSource<br/>5 filas"] --> PT["@ParameterizedTest<br/>5 invocaciones"]
+  PT --> TEST["tarea test<br/>JVM con agente JaCoCo"]
+  TEST --> EXEC["build/jacoco/test.exec<br/>sondas activadas"]
   EXEC --> REP["jacocoTestReport<br/>XML y HTML"]
-  REP --> L["líneas 26/26"]
-  REP --> B["ramas 10/14"]
+  REP --> L["líneas 26 de 26"]
+  REP --> B["ramas 10 de 14"]
 ```
+
+¿Por qué una línea cubierta puede esconder ramas sin cubrir? Mira la línea 6 de `DescuentoService`:
+
+```java
+if (subtotal == null || subtotal.signum() < 0) throw new IllegalArgumentException("subtotal inválido");
+```
+
+Hay dos condiciones, y cada una tiene salida verdadera y falsa: cuatro ramas. Las pruebas recorrieron tres. Ninguna pasó `null`. La línea figura como ejecutada, pero el reporte dice `branch missed/covered 1 3`.
+
+##### 4. Reglas, variantes y casos límite
+
+`@CsvSource` tiene reglas de texto precisas. La comilla simple delimita valores que contienen comas. Un valor vacío entre comillas, `''`, llega como cadena vacía; un valor vacío sin comillas llega como `null`. Desde Jupiter 5.8.1 admite `textBlock` para escribir la tabla como bloque de texto.
+
+La conversión implícita cubre los tipos primitivos, `String`, enumeraciones, fechas de `java.time` y también `BigDecimal`. Este curso recibe los precios como `String` para que veas la conversión explícita; un parámetro `BigDecimal` también conservaría la escala del texto.
+
+Hay otras fuentes: `@ValueSource` para un solo parámetro, `@MethodSource` para argumentos calculados por un método y `@EnumSource` para recorrer una enumeración. No combines `@ParameterizedTest` con `@Test` en el mismo método.
+
+JaCoCo considera una línea «parcialmente cubierta» si se ejecutó alguna de sus instrucciones, pero no todas. El HTML la pinta amarilla. La cobertura de líneas depende del formato del código; la de instrucciones, no.
+
+Cobertura no es verificación. Una prueba sin aserciones activa las mismas sondas que una buena. Por eso el número sirve para encontrar código que nadie ejecuta, no para certificar que el código funciona.
+
+Gradle ofrece la tarea `jacocoTestCoverageVerification` para hacer fallar el build bajo un mínimo. Úsala con ramas de reglas de negocio, no con un 100 % de líneas global.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Fundamentos, Módulo 4, Tema 2, conociste la cobertura como idea. Aquí la mides sobre bytecode real. Los casos límite que elegiste allí (justo antes y justo después del borde) son las filas de esta tabla.
+
+La tarea `jacocoTestReport` y el enlace `finalizedBy` son tareas del Módulo 8, Tema 2. El agente que instrumenta clases es la misma técnica que usa el inline mock maker de Mockito, visto en el Tema 2.
+
+No confundas una prueba parametrizada con una prueba basada en propiedades. Aquí tú escribes cada fila y su resultado esperado. En el Tema 4, jqwik genera cientos de entradas y tú escribes una regla que todas deben cumplir.
+
+El Módulo 11, Tema 2, mide otra cosa con otra herramienta: no qué código se ejecutó, sino cuánto tiempo y memoria gastó, con Java Flight Recorder.
 
 #### Problema resuelto 3.1
 Escribe la tabla de casos de `DescuentoService` una sola vez y ejecútala fila por fila. Agrega la fila que falta: unidades en 0.
@@ -1323,20 +1520,102 @@ Este tema usa **caso límite** (Fundamentos, Módulo 1, Tema 1), **JUnit Platfor
 - **Error típico:** depurar con el contraejemplo original en vez del reducido: tiene ruido que no explica la falla.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Una propiedad describe un invariante y un generador produce entradas. jqwik ejecutó 1000 intentos sobre `@Positive double subtotalRaw` y `@IntRange(min = 1, max = 100) int unidades`, verificando que el total no es negativo ni supera el subtotal. Si aparece un contraejemplo, el shrinking reduce el caso mínimo que falla.
 
-**Por qué existe.** Los tests de ejemplo documentan casos concretos; las propiedades exploran el espacio de entradas que una persona no escribiría a mano. Encuentran casos límite inesperados sin multiplicar líneas de test.
+##### 1. La idea en lenguaje sencillo
+
+Una empresa de envíos puede revisar seis paquetes elegidos a mano y concluir que la báscula funciona. Pero hay reglas que deben cumplirse con **cualquier** paquete: el peso nunca es negativo y la tarifa con descuento nunca supera la tarifa sin descuento. Para confiar en eso, conviene pesar cientos de paquetes al azar, no seis.
+
+Las pruebas de los Temas 1 y 3 son ejemplos: tú eliges la entrada y escribes el resultado esperado. Una prueba basada en propiedades invierte el trabajo. Tú escribes la regla general y una máquina inventa las entradas.
+
+Si la máquina encuentra una entrada que rompe la regla, no te entrega el caso enorme y confuso que encontró primero. Lo simplifica hasta el caso más pequeño que todavía falla, para que entiendas la causa.
+
+##### 2. Definición formal y vocabulario
+
+Una **prueba basada en propiedades** afirma una **invariante** y la comprueba contra muchas entradas generadas. La invariante de este tema es: para todo subtotal positivo y toda cantidad de 1 a 100, el total no es negativo y no supera el subtotal redondeado.
+
+Un **generador** produce valores de un tipo dentro de un dominio. **jqwik** es un motor de pruebas por propiedades que corre sobre JUnit Platform. Su anotación **`@Property`** marca el método; **`@ForAll`** pide un valor generado para cada parámetro.
+
+El **shrinking** es la reducción del contraejemplo: tras encontrar una entrada que falla, jqwik busca entradas más simples que sigan fallando y reporta la menor que encontró.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando la tarea `test` llega a `DescuentoPropertyTest`, ocurre esto:
+
+1. JUnit Platform encuentra dos motores en el classpath: Jupiter y jqwik. jqwik reclama los métodos con `@Property`.
+2. jqwik crea una instancia de la clase para la propiedad. Todos los intentos de esa propiedad comparten esa instancia.
+3. Para cada parámetro elige un generador según su tipo y sus restricciones. `@ForAll @IntRange(min = 1, max = 100) int` produce enteros entre 1 y 100.
+4. Inicia un generador pseudoaleatorio con una **semilla**: un número que determina toda la secuencia de valores.
+5. Repite hasta 1000 veces: genera los argumentos, llama al método y observa si lanzó una excepción. Una aserción fallida es una excepción.
+6. Si un intento falla, detiene la generación y empieza el shrinking. Prueba variantes más simples del caso y se queda con las que siguen fallando.
+7. Reporta el contraejemplo original, el reducido y la semilla. Si nada falla, reporta `tries` y `checks`.
 
 ```mermaid
 flowchart LR
-  G["generadores<br/>subtotal > 0, unidades 1..100"] --> E["entrada"]
-  E --> R["aplicar(subtotal, unidades)"]
-  R --> P{"¿se cumple<br/>el invariante?"}
+  G["generadores<br/>subtotal mayor que 0, unidades 1 a 100"] --> E["entrada"]
+  E --> R["aplicar subtotal y unidades"]
+  R --> P{"¿se cumple<br/>la invariante?"}
   P -- "sí" --> N["siguiente intento<br/>hasta 1000"]
   N --> G
   P -- "no" --> S["shrinking<br/>entrada más simple que falla"]
-  S --> C["contraejemplo reportado"]
+  S --> C["contraejemplo y semilla reportados"]
 ```
+
+La semilla es lo que vuelve reproducible una prueba aleatoria. Dos generadores con la misma semilla producen la misma secuencia:
+
+```java
+Random primera = new Random(42);
+Random repeticion = new Random(42);
+for (int i = 0; i < 3; i++) {
+    System.out.println(primera.nextInt(1, 101) + " = " + repeticion.nextInt(1, 101));
+}
+```
+
+Dentro de un `main`, este fragmento imprime:
+
+```text
+31 = 31
+64 = 64
+49 = 49
+```
+
+Por eso el modelo `PropiedadAMano` usa `new Random(42)`: cada corrida falla en el mismo intento 6, con el mismo `subtotal=979.122`.
+
+La propiedad de jqwik dice lo mismo que ese modelo, en menos líneas:
+
+```java
+@Property
+void totalNuncaEsNegativoNiMayorQueSubtotal(
+        @ForAll @Positive double subtotalRaw,
+        @ForAll @IntRange(min = 1, max = 100) int unidades) {
+```
+
+Las anotaciones de los parámetros son el generador. El cuerpo es la invariante, escrita con aserciones de Jupiter.
+
+##### 4. Reglas, variantes y casos límite
+
+Por defecto, `@Property` ejecuta 1000 intentos. Puedes cambiarlo con `@Property(tries = …)` o en `junit-platform.properties`.
+
+El generador no es un sorteo uniforme. jqwik mezcla **casos borde** en la corrida: valores como 0, 1, los mínimos y los máximos del dominio. Su documentación llama a ese modo `EdgeCasesMode.MIXIN` y es el predeterminado.
+
+Si el dominio tiene menos valores distintos que los intentos pedidos, el modo de generación predeterminado, `AUTO`, cambia a generación exhaustiva: prueba todos los valores una vez.
+
+Una **suposición** descarta un intento sin fallar la prueba. Por eso existen dos contadores: `tries` (llamadas) y `checks` (llamadas no descartadas). Si se descartan demasiadas, jqwik reporta la propiedad como fallida.
+
+El shrinking tiene un límite. En el modo predeterminado, `ShrinkingMode.BOUNDED`, se detiene a los 10 segundos. El caso reducido es el más simple que encontró, no necesariamente el mínimo absoluto.
+
+Tras una falla, la siguiente corrida prueba primero el último caso reducido: el modo `AfterFailureMode.SAMPLE_FIRST`. Así confirmas rápido si tu corrección funcionó.
+
+Una propiedad no debe repetir la implementación. Si escribes `total == subtotal × 0.9`, copias la fórmula y sus errores. Afirma relaciones que deben cumplirse sin importar la fórmula: límites, orden, ida y vuelta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los casos límite de Fundamentos siguen siendo necesarios. jqwik los mezcla en la generación, pero las filas de borde que elegiste en el Tema 3 documentan reglas exactas, como «5 unidades sí descuentan».
+
+jqwik es el segundo motor sobre la JUnit Platform del Tema 1. Comparte la tarea `test` y el reporte XML, pero no usa `@Test` ni `@BeforeEach`: tiene su propio ciclo de vida.
+
+No confundas una propiedad con una prueba parametrizada. En `@ParameterizedTest` tú escribes cada entrada y su resultado. En `@Property` escribes una regla y la máquina elige las entradas.
+
+Tampoco confundas cantidad de intentos con cobertura. Como muestra la Buena práctica de este tema, 1000 intentos válidos nunca tocan las ramas de validación. Para esas ramas sigues necesitando las pruebas con `assertThrows` del Tema 1.
 
 #### Problema resuelto 4.1
 Antes de usar jqwik, escribe a mano una prueba por propiedades: genera 1000 entradas con semilla fija, comprueba el

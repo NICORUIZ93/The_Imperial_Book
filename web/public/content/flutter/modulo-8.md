@@ -119,20 +119,119 @@ color** (Módulo 2, Tema 6).
 - **Error típico:** usar `UniqueKey()`: anima en cada reconstrucción, aunque nada haya cambiado.
 
 #### ► CÓMO FUNCIONA
-Cuando el padre reconstruye la tarjeta con `entregada: true`, cada widget animado compara su valor nuevo con el
-anterior y arranca su propia animación interna. En cada cuadro, Flutter pide los valores intermedios y redibuja; al
-terminar, solo queda el estado final.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un regulador de luz de una sala. No describes cada nivel intermedio: giras la perilla hasta «más
+claro» y la lámpara recorre sola el camino. Tú pones el destino; el regulador pone el recorrido.
+
+Una animación implícita funciona así. En la tarjeta de la entrega EN-4472 no programas «a los 100 ms el radio vale
+tanto». Solo dices: si `entregada` es verdadero, el radio es 28; si no, 12. Cuando el valor cambia, el widget nota la
+diferencia y dibuja el paso de uno a otro durante 400 ms.
+
+Eso resuelve el problema del conductor. Su toque produce un cambio visible y gradual: el color se aclara, la tarjeta
+se redondea y el camión se convierte en un visto. No necesita leer para saber que la acción quedó registrada.
+
+El precio de esa comodidad es el control. No decides cuándo empieza la animación ni puedes pausarla o repetirla.
+Empieza sola cada vez que cambia un valor, y eso basta para la mayoría de los cambios de estado de una interfaz.
+
+##### 2. Definición formal y vocabulario
+La documentación de Flutter llama **animación implícita** a un widget derivado de `ImplicitlyAnimatedWidget`. Cuando
+se reconstruye con un valor distinto en una de sus propiedades, interpola desde el valor actual hasta el nuevo. No
+necesitas crear ni liberar ningún controlador: el widget lo gestiona por dentro.
+
+Cada animación implícita recibe una **duración** obligatoria (`duration`, de tipo `Duration`) y una **curva**
+opcional (`curve`). La curva es una función que recibe el tiempo normalizado, entre 0 y 1, y devuelve el avance.
+Dicho en sencillo: la duración dice cuánto tarda el cambio y la curva dice a qué ritmo ocurre.
+
+Entre el valor inicial y el final trabaja un **`Tween`** («entre», en inglés). Es un objeto con un valor `begin` y
+otro `end` que calcula cualquier punto intermedio. Hay uno por tipo: `ColorTween` mezcla colores y `DecorationTween`
+mezcla decoraciones, radio incluido.
+
+**`AnimatedSwitcher`** no es un `ImplicitlyAnimatedWidget`, aunque se use igual. No anima un valor: anima el
+reemplazo de un hijo por otro. Para saber si el hijo es otro, compara el tipo del widget y su **key del hijo**. Es
+la misma regla de identidad que viste con las keys en el Módulo 1, Tema 5.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el recorrido desde el toque hasta el último cuadro:
+
+1. El padre llama a `setState` y vuelve a construir `TarjetaEstado(entregada: true)`. Los widgets son los mismos, con
+   valores nuevos.
+2. Flutter actualiza el `State` interno de `AnimatedContainer` y llama a su `didUpdateWidget`. Ahí el estado recorre
+   sus propiedades animables y compara cada destino nuevo con el que tenía.
+3. Por cada propiedad que cambió, crea un `Tween` cuyo `begin` es el valor que se ve en ese instante y cuyo `end` es
+   el nuevo. Después reinicia su controlador interno desde 0 y lo pone en marcha.
+4. En cada cuadro, el controlador avanza, la curva transforma ese avance y cada `Tween` calcula su valor intermedio.
+5. El estado se reconstruye y devuelve un `Container` normal con esos valores. Por eso la prueba lee el radio en el
+   `Container` que vive dentro del `AnimatedContainer`.
+6. Al llegar a 1, el controlador se detiene y solo queda el estado final.
+
+```dart
+AnimatedContainer(
+  duration: const Duration(milliseconds: 400),
+  curve: Curves.easeInOutCubic,
+  decoration: BoxDecoration(borderRadius: BorderRadius.circular(entregada ? 28 : 12)),
+)
+```
+
+En este fragmento no hay ningún número intermedio. Escribes los dos extremos con un operador ternario; el estado
+interno del widget calcula el resto. Si `entregada` no cambia entre dos construcciones, no se crea ninguna animación.
+
+`AnimatedSwitcher` sigue otro camino. Guarda una lista de hijos, cada uno con su propio controlador. Cuando el hijo
+nuevo tiene otra key, el viejo empieza su animación de salida y el nuevo su entrada, los dos a la vez. Por eso la
+salida real muestra `iconos en pantalla 2` a los 100, 200 y 400 ms.
 
 ```mermaid
 flowchart LR
     A["setState: entregada = true"] --> B["build: los mismos widgets con valores nuevos"]
-    B --> C["AnimatedContainer: radio 12 → 28, color, relleno"]
-    B --> D["AnimatedSwitcher: camión → visto (key distinta)"]
-    B --> E["AnimatedOpacity: 0,6 → 1"]
-    C --> F["cada cuadro: valor intermedio con la curva"]
+    B --> U["didUpdateWidget: compara destinos"]
+    U --> C["AnimatedContainer: Tween de radio 12 a 28, color, relleno"]
+    U --> E["AnimatedOpacity: Tween de 0,6 a 1"]
+    B --> D["AnimatedSwitcher: key distinta, sale el camión y entra el visto"]
+    C --> F["cada cuadro: avance, curva y valor intermedio"]
     D --> F
     E --> F
+    F --> G["al llegar a 1: solo el estado final"]
 ```
+
+El hijo saliente no desaparece cuando su animación llega a 0. `AnimatedSwitcher` lo quita con un `setState` que se
+aplica en el cuadro siguiente. Esa es la razón por la que la prueba necesita `pumpAndSettle` para ver `iconos en
+pantalla 1`.
+
+##### 4. Reglas, variantes y casos límite
+Si el valor cambia en mitad de una animación, no hay salto. El nuevo `Tween` arranca desde el valor visible en ese
+momento y va hacia el destino nuevo. Puedes tocar la tarjeta dos veces seguidas y el movimiento se invierte con
+suavidad.
+
+La curva por defecto de `AnimatedContainer` es `Curves.linear`. Por eso la tarjeta declara `Curves.easeInOutCubic`:
+arranca despacio, acelera y frena. Con la misma duración, la curva cambia cuánto se ha recorrido a los 100 ms, como
+comprobarás en el Ejercicio verificable 2.
+
+Algunas propiedades no se interpolan. El texto de un `Text` cambia de golpe, porque no existe un punto medio entre
+dos frases. Por eso la tarjeta anima la opacidad del texto y no su contenido.
+
+`AnimatedOpacity` exige una opacidad entre 0 y 1. Las curvas que se pasan del destino, como `Curves.easeOutBack`,
+sirven para escalas y posiciones, no para opacidades.
+
+En `AnimatedSwitcher`, la transición por defecto es un fundido (`FadeTransition`). Con `transitionBuilder` la cambias,
+como hace la tarjeta con `ScaleTransition`. También puedes fijar `switchInCurve`, `switchOutCurve` y
+`reverseDuration` para que la salida dure distinto que la entrada.
+
+Si ningún widget implícito anima la propiedad que necesitas, usa `TweenAnimationBuilder`. Recibe un `Tween` con el
+destino y te entrega el valor intermedio en un `builder`. Sigue siendo implícito: cambias `end` y anima.
+
+Desde Flutter 3.50 estos widgets llegan con el import de `material_ui`, como el resto de widgets del curso. Su forma
+de funcionar no cambió con esa separación.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema se apoya en tres ideas anteriores. `Container` y `BoxDecoration` (Módulo 1, Temas 2 y 3) son lo que
+`AnimatedContainer` construye en cada cuadro. Las keys (Módulo 1, Tema 5) deciden si `AnimatedSwitcher` ve un hijo
+nuevo. Los roles de color (Módulo 2, Tema 6) dan los dos extremos del color.
+
+Las transiciones entre pantallas y `Hero` (Módulo 3, Tema 5) también animan, pero lo hace el `Navigator` al cambiar de
+ruta. Aquí la animación nace dentro de una sola pantalla, en cuanto cambia un dato.
+
+El Tema 2 abre la caja. Vas a crear tú el `AnimationController` que aquí permanece oculto, para coreografías que un
+cambio de valor no puede expresar. El Tema 3 medirá si esos cuadros llegan a tiempo.
 
 #### Problema resuelto 1.1
 Anima el cambio de la tarjeta de «En camino» a «Entregada» y comprueba en una prueba los valores y los pantallazos a
@@ -331,8 +430,7 @@ Al terminar este tema podrás:
 - reconstruir solo la parte que se mueve con `AnimatedBuilder` y su `child`;
 - reconocer el error de no liberar un controlador.
 
-**Conceptos clave:** `AnimationController`, `vsync` y `Ticker`, `CurvedAnimation`, `Interval`, `AnimatedBuilder`,
-fuga de `Ticker`
+**Conceptos clave:** `AnimationController`, `vsync` y `Ticker`, `CurvedAnimation`, `Interval`, `AnimatedBuilder`, fuga de `Ticker`
 
 #### El problema
 La pantalla de inicio del turno quiere mostrar el camión avanzando por la ruta mientras aparecen las paradas, una
@@ -387,15 +485,68 @@ Este tema usa **`StatefulWidget` y `dispose`** (Módulo 1, Tema 4), **`LayoutBui
 - **Error típico:** liberar el controlador después de `super.dispose()`.
 
 #### ► CÓMO FUNCIONA
-El controlador avanza de 0 a 1 en 1,2 segundos, un valor por cuadro. Del mismo controlador salen varias animaciones:
-la del camión con su curva y una por parada, cada una en su intervalo. Los widgets que las escuchan se reconstruyen
-en cada cuadro; el resto de la pantalla no.
+
+##### 1. La idea en lenguaje sencillo
+Imagina el director de una orquesta. No toca ningún instrumento: marca el compás, y cada músico entra cuando le
+toca según la partitura. Si el director se detiene, todos se detienen; si repite, todos repiten.
+
+Una animación explícita reparte los papeles de la misma forma. Un único objeto lleva el tiempo, de 0 a 1 en 1,2
+segundos. El camión lo usa entero para recorrer la ruta; cada parada usa solo un tramo para aparecer. Todo queda
+sincronizado porque todos miran el mismo reloj.
+
+En el Tema 1, el reloj estaba escondido dentro de cada widget y arrancaba solo al cambiar un valor. Aquí lo creas tú.
+Decides cuándo arranca, si va hacia atrás, si se repite y cuándo se libera. Esa responsabilidad es el precio del
+control.
+
+##### 2. Definición formal y vocabulario
+Un **`AnimationController`** es una `Animation<double>` que genera valores entre un límite inferior y uno superior,
+por defecto 0 y 1, durante una `duration`. Ofrece `forward`, `reverse`, `repeat`, `stop`, `reset` y `animateTo`. Su
+estado se consulta con `status`: `dismissed`, `forward`, `reverse` o `completed`.
+
+El controlador no mide el tiempo por sí mismo. Se lo da un **`Ticker`**, un objeto que llama a una función una vez por
+cuadro con el tiempo transcurrido. El parámetro **`vsync`** recibe un `TickerProvider`, que fabrica ese `Ticker`. En
+sencillo: `vsync` es quien conecta el metrónomo con la pantalla.
+
+Una **`CurvedAnimation`** es una animación derivada: escucha a su padre y aplica una curva a su valor. Un
+**`Interval`** es una curva especial que solo avanza entre un `begin` y un `end`, ambos entre 0 y 1. Antes del tramo
+vale 0 y después vale 1.
+
+**`AnimatedBuilder`** escucha una animación y vuelve a ejecutar su `builder` en cada cambio. El `child` que recibe se
+construye una sola vez. Si olvidas liberar el controlador, ocurre una **fuga de `Ticker`**: el metrónomo sigue
+activo aunque su pantalla ya no exista.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Este es el recorrido completo, desde que el `State` nace hasta que se destruye:
+
+1. Al crearse `control`, el controlador pide a `vsync: this` un `Ticker`. El `State` puede fabricarlo porque mezcla
+   `SingleTickerProviderStateMixin`.
+2. `initState` llama a `forward()`. El controlador arranca su `Ticker`, que se registra en el planificador de cuadros
+   de Flutter.
+3. Al comenzar cada cuadro, el planificador llama a los `Ticker` activos. Cada uno pasa el tiempo transcurrido a su
+   controlador.
+4. El controlador calcula su valor, entre 0 y 1, y avisa a sus oyentes. Las `CurvedAnimation` derivadas recalculan el
+   suyo a partir de ese número.
+5. `AnimatedBuilder` y `ScaleTransition`, que escuchan esas animaciones, marcan su parte del árbol para el próximo
+   `build`, la maquetación y la pintura.
+6. Al llegar a 1,2 s, el valor queda en 1, el estado pasa a `completed` y el `Ticker` se detiene.
+7. Cuando la pantalla se cierra, `dispose` libera el controlador y su `Ticker`. Después, `super.dispose()` comprueba
+   que no quede ninguno activo.
+
+```dart
+Animation<double> _parada(int i) => CurvedAnimation(
+      parent: control,
+      curve: Interval(i * 0.2, i * 0.2 + 0.4, curve: Curves.easeOutBack),
+    );
+```
+
+Este fragmento deriva cuatro animaciones del mismo controlador. La parada `i` empieza en `i × 0,2` y dura 0,4 del
+total. La cuarta (`i = 3`) va de 0,6 a 1,0: termina justo en el límite que `Interval` permite.
 
 ```mermaid
 gantt
-    title Tiempo del controlador (0 a 1200 ms)
-    dateFormat X
-    axisFormat %L
+    title Tiempo del controlador, 0 a 1200 ms
+    dateFormat x
+    axisFormat %S.%L s
     section Camión
     avance easeInOut      :0, 1200
     section Paradas
@@ -404,6 +555,58 @@ gantt
     Parada 3 (0,4–0,8)    :480, 960
     Parada 4 (0,6–1,0)    :720, 1200
 ```
+
+El diagrama muestra la partitura. El camión ocupa los 1200 ms; cada parada, 480 ms, con 240 ms de desfase. A los
+600 ms, la cuarta parada todavía no empezó: por eso la salida real marca `0.00` en ese momento.
+
+```dart
+AnimatedBuilder(
+  animation: _avance,
+  builder: (context, hijo) => Positioned(left: _avance.value * (c.maxWidth - 40), top: 4, child: hijo!),
+  child: Icon(Icons.local_shipping, size: 40, color: colores.primary),
+)
+```
+
+Aquí está la otra mitad del truco. En cada cuadro solo se ejecuta el `builder`, que crea un `Positioned` nuevo. El
+`Icon` llega como `hijo` ya construido, así que no se vuelve a crear 60 veces por segundo.
+
+##### 4. Reglas, variantes y casos límite
+`Interval` comprueba con aserciones que `begin` y `end` estén entre 0 y 1 y que `end` no sea menor que `begin`. La
+primera versión de este tema terminaba la cuarta parada en 1,05 y la prueba falló con `'end <= 1.0'`. Las aserciones
+solo se evalúan en modo debug, que es el modo de las pruebas.
+
+Las curvas pueden salirse del rango 0–1 aunque el tiempo no lo haga. `Curves.easeOutBack` sube por encima de 1 y
+vuelve, y por eso la Parada 1 mide 1,09 a los 300 ms. En una escala eso se ve como un rebote; en una opacidad sería
+un valor inválido.
+
+Con un solo controlador usas `SingleTickerProviderStateMixin`. Si el mismo `State` necesita dos o más, cambia a
+`TickerProviderStateMixin`. El primero lanza un error si le pides un segundo `Ticker`.
+
+El orden de `dispose` es estricto: primero `control.dispose()` y después `super.dispose()`. Al revés, el mixin
+encuentra el `Ticker` activo. La prueba falla entonces con `was disposed with an active Ticker`, como en el ejemplo
+de `ejemplos_que_fallan/`.
+
+El `vsync` también ahorra trabajo. Cuando la pantalla deja de verse, por ejemplo tapada por otra ruta, Flutter
+silencia sus `Ticker` con `TickerMode`. El controlador deja de recibir cuadros hasta que la pantalla vuelve.
+
+Hay variantes para casos frecuentes. `repeat(reverse: true)` va y vuelve sin fin. `Tween<double>(begin: 0, end: 300)`
+transforma el rango 0–1 en otro. `TweenSequence` encadena tramos sin calcular intervalos a mano. Las clases
+`...Transition` (`FadeTransition`, `SlideTransition`, `RotationTransition`) son atajos para propiedades comunes.
+
+Prefiere esas transiciones a un oyente con `setState`. Un `setState` reconstruye todo el `State`, mientras que una
+transición solo actualiza su propio widget. `AnimatedBuilder` es hoy una subclase de `ListenableBuilder`, así que
+escucha cualquier `Listenable`, no solo animaciones.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El ciclo de vida de `StatefulWidget` y `dispose` (Módulo 1, Tema 4) es la base: el controlador nace en el `State` y
+muere con él. `Stack` y `Positioned` (Módulo 1, Tema 3) colocan el camión, y `LayoutBuilder` (Módulo 2, Tema 1) da el
+ancho disponible.
+
+Compara con el Tema 1. Allí el controlador existía igual, dentro de `AnimatedContainer`, pero era privado y arrancaba
+al cambiar un valor. Elige la implícita para estados y la explícita para coreografías, repeticiones o control manual.
+
+Lo que viene usa estas piezas. El Tema 3 mide si cada cuadro de una animación llega en sus 16,7 ms. El Tema 5 vuelve
+a un controlador con `repeat()` y muestra que un ícono que gira puede obligar a repintar un dibujo grande.
 
 #### Problema resuelto 2.1
 Anima el recorrido del camión con las paradas escalonadas. Mide la posición del camión y la escala de cada parada en
@@ -669,8 +872,7 @@ Al terminar este tema podrás:
 - leer un resumen de línea de tiempo: promedio, percentil 90, peor cuadro y cuadros fuera de presupuesto;
 - comparar dos versiones de la misma pantalla con números.
 
-**Conceptos clave:** cuadro, presupuesto de cuadro, construcción y rasterizado, modo profile, línea de tiempo,
-*jank*
+**Conceptos clave:** cuadro, presupuesto de cuadro, construcción y rasterizado, modo profile, línea de tiempo, *jank*
 
 #### El problema
 El conductor dice que la lista de la ruta «se traba» al desplazarla rápido. En el escritorio del desarrollador, en
@@ -716,7 +918,7 @@ Este tema usa **`ListView.builder`** (Módulo 1, Tema 5) y **las pruebas de inte
 - **Ejemplo:** `build/calculo_en_build.timeline_summary.json`.
 - **Error típico:** grabar toda la sesión en lugar de solo la acción que se quiere medir.
 
-***jank***
+**jank**
 - **Definición técnica:** cuadros que no llegan a tiempo y hacen que la pantalla repita la imagen anterior, lo que se percibe como un tirón.
 - **En palabras sencillas:** la traba.
 - **Dónde se rompe la comparación:** un solo cuadro de 33 ms en un desplazamiento ya se nota.
@@ -724,18 +926,104 @@ Este tema usa **`ListView.builder`** (Módulo 1, Tema 5) y **las pruebas de inte
 - **Error típico:** buscarlo a ojo, en el emulador y en modo debug.
 
 #### ► CÓMO FUNCIONA
-La prueba de integración abre la lista, y `traceAction` graba la línea de tiempo mientras se desplaza tres veces. El
-*driver* (un programa aparte que controla la prueba) recibe la línea de tiempo y escribe un resumen por medición. La
-comparación de los dos resúmenes dice cuánto cuesta el trabajo dentro de `build`.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un folioscopio, esa libreta que parece animarse cuando pasas sus páginas rápido. Si una página se pega y
+tarda en pasar, el movimiento da un tirón, aunque todas las demás pasen bien. El ojo nota la página atrasada, no el
+promedio.
+
+Una pantalla funciona igual. A 60 Hz muestra una imagen nueva cada 16,7 ms. Si Flutter no tiene lista la siguiente a
+tiempo, la pantalla repite la anterior. El conductor que desplaza la lista de la ruta siente ese tirón como «se traba».
+
+Para arreglarlo no basta con mirar. Necesitas una cifra por cuadro, tomada en condiciones parecidas a las del teléfono,
+que puedas comparar antes y después de un cambio. Este tema convierte «se siente lento» en «7 cuadros fuera de
+presupuesto».
+
+##### 2. Definición formal y vocabulario
+Un **cuadro** es una imagen completa de la interfaz entregada a la pantalla. El **presupuesto de cuadro** es el tiempo
+disponible para prepararlo antes del siguiente refresco: 1000 ms divididos entre la frecuencia, 16,7 ms a 60 Hz y
+8,3 ms a 120 Hz.
+
+Flutter reparte cada cuadro en dos etapas que corren en hilos distintos. La **construcción y rasterizado** se miden por
+separado. La construcción, en el hilo de la interfaz, ejecuta tu código Dart. El rasterizado, en otro hilo, convierte
+el resultado en píxeles.
+
+El **modo profile** es una compilación anticipada (AOT, código máquina generado antes de ejecutar) como la de
+producción. Conserva lo justo para medir: la **línea de tiempo**, un registro de eventos con su inicio y su duración.
+El ***jank*** es el síntoma visible: cuadros que no llegan a tiempo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Observa qué ocurre en cada cuadro mientras el dedo desplaza la lista:
+
+1. La pantalla emite la señal de sincronía vertical (*vsync*) y el motor de Flutter la pasa al planificador de Dart.
+2. El planificador ejecuta los `Ticker` activos, como los de las animaciones del Tema 2 y la inercia del desplazamiento.
+3. Después reconstruye los widgets marcados. Aquí `ListView.builder` llama a `itemBuilder` para cada fila que entra en
+   pantalla.
+4. Siguen la maquetación, que calcula tamaños y posiciones, y la pintura, que registra las instrucciones de dibujo en
+   capas.
+5. El árbol de capas pasa al hilo de rasterizado. Hasta aquí llega la construcción del cuadro.
+6. El hilo de rasterizado convierte las capas en píxeles con el motor gráfico y entrega la imagen a la pantalla.
+
+Los dos hilos trabajan en cadena. Mientras se rasteriza un cuadro, el hilo de la interfaz ya construye el siguiente.
+Por eso cada etapa tiene su propio presupuesto, y por eso el resumen las separa.
+
+```dart
+final codigo = calcularEnBuild ? codigoVerificacion(guia) : _codigos[guia]!;
+```
+
+Esta línea decide en qué etapa cae el costo. Con `calcularEnBuild`, cada fila nueva ejecuta 1.200.000 vueltas dentro
+del paso 3. Si en un cuadro entran varias filas, ese cuadro se pasa del presupuesto.
+
+Para medirlo, la prueba envuelve los tres `fling` en `binding.traceAction`. Mientras dura la acción, Flutter graba la
+línea de tiempo del proceso y la guarda bajo una clave (`reportKey`). Al terminar, el *driver* recibe esos datos.
 
 ```mermaid
 flowchart LR
     D["flutter drive --profile"] --> A["App de Linux en modo profile"]
     A --> T["traceAction: 3 desplazamientos"]
-    T --> L["línea de tiempo de cada cuadro"]
+    T --> L["línea de tiempo: construcción y rasterizado de cada cuadro"]
     L --> DR["rendimiento_driver.dart"]
-    DR --> S["build/*.timeline_summary.json"]
+    DR --> R["TimelineSummary.summarize"]
+    R --> S["build/*.timeline_summary.json"]
 ```
+
+El *driver* es un programa aparte, que corre en tu equipo y controla la app. Con `TimelineSummary.summarize` calcula
+los campos del resumen y `writeTimelineToFile` los guarda en `build/`. Así obtienes `frame_count: 56` y
+`missed_frame_build_budget_count: 7`.
+
+##### 4. Reglas, variantes y casos límite
+Mide siempre en modo profile. El modo debug compila al vuelo (JIT), evalúa aserciones y activa comprobaciones extra:
+es mucho más lento y deforma las proporciones. El modo release es el más rápido, pero no expone la línea de tiempo.
+
+En móviles, el modo profile solo funciona en dispositivos físicos, no en emuladores ni simuladores. Por eso este
+módulo mide en la app de escritorio Linux, como declara la cabecera.
+
+Lee los campos en este orden: cuadros fuera de presupuesto, peor cuadro y percentil 90. El **percentil 90** es el valor
+que no supera el 90 % de los cuadros. Un promedio de 7,36 ms puede esconder un peor cuadro de 31,74 ms.
+
+Separa siempre las dos etapas. Si sube la construcción, busca trabajo en `build`, maquetación o pintura. Si sube el
+rasterizado, busca efectos caros: sombras, recortes, opacidades sobre grupos o capas grandes.
+
+El rasterizado de esta medición ronda los 19 ms porque la pantalla virtual dibuja sin GPU. Ese valor no se compara con
+un teléfono; sí se compara entre las dos versiones, donde casi no cambia.
+
+Hay variantes según la pregunta. DevTools, en su pestaña Performance, muestra lo mismo en vivo y marca los cuadros
+lentos. En producción, `SchedulerBinding.instance.addTimingsCallback` entrega objetos `FrameTiming` con la duración
+de cada etapa, útiles para enviar métricas.
+
+La línea de tiempo también se guarda completa en `build/<clave>.timeline.json`. Ese archivo se abre en Perfetto o en
+`chrome://tracing` para ver qué función ocupó cada cuadro largo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema reutiliza `ListView.builder` (Módulo 1, Tema 5), que construye filas solo cuando entran en pantalla. Esa
+construcción perezosa explica por qué el costo aparece al desplazar y no al abrir. También usa las pruebas de
+integración en Linux (Módulo 7, Tema 1).
+
+Las pruebas de widgets del Tema 1 avanzaban un reloj falso con `pump`. Aquí el reloj es real: la app compilada corre
+de verdad y cada milisegundo cuenta. Por eso las pruebas de widgets no sirven para medir rendimiento.
+
+Lo que viene parte de esta medición. Calcular antes elimina el *jank*, pero congela la app casi un segundo al abrir la
+lista; el Tema 4 lo resuelve con un isolate. El Tema 5 ataca el otro frente: pintar menos.
 
 #### Problema resuelto 3.1
 Mide el desplazamiento de una lista de 300 entregas en dos versiones: con un cálculo caro dentro de `build` de cada
@@ -979,10 +1267,10 @@ Este tema usa **`Future` y la cola de eventos** (Módulo 0, Tema 3) y **el cálc
 - **Error típico:** usar `compute` de Flutter en código nuevo: hace lo mismo, y `Isolate.run` es la API de Dart.
 
 **copia de mensajes**
-- **Definición técnica:** los argumentos y el resultado viajan copiados entre isolates (o transferidos, en algunos tipos).
-- **En palabras sencillas:** se envía una fotocopia, no el original.
-- **Dónde se rompe la comparación:** copiar estructuras enormes también cuesta.
-- **Ejemplo:** el mapa de 300 códigos vuelve copiado al principal.
+- **Definición técnica:** lo que se envía a otro isolate (la función y lo que captura) viaja copiado; el resultado de `Isolate.run` vuelve por `Isolate.exit`, que lo transfiere al isolate que llamó sin copiarlo.
+- **En palabras sencillas:** a la otra mesa se envía una fotocopia; el resultado vuelve en mano, sin fotocopiar.
+- **Dónde se rompe la comparación:** copiar estructuras enormes al enviarlas también cuesta.
+- **Ejemplo:** el mapa de 300 códigos se transfiere al principal sin copiarse.
 - **Error típico:** enviar al isolate un objeto enorme para hacer un cálculo pequeño.
 
 **trabajo de CPU frente a espera**
@@ -993,23 +1281,109 @@ Este tema usa **`Future` y la cola de eventos** (Módulo 0, Tema 3) y **el cálc
 - **Error típico:** mover peticiones HTTP a un isolate «para que no se trabe»: no se trababan.
 
 #### ► CÓMO FUNCIONA
-Con el cálculo en el hilo principal, la cola de eventos se detiene: ningún temporizador, toque ni cuadro se atiende
-hasta que termina. Con `Isolate.run`, el cálculo corre en otro isolate; el principal sigue atendiendo su cola y recibe
-el resultado como un evento más.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una ventanilla de envíos con un solo empleado. Si se pone a cuadrar la caja del mes, la fila deja de
+avanzar, aunque nadie se queje en voz alta. Decirle «hazlo después» no ayuda: cuando empiece, la fila se detendrá
+igual. La solución es que otra persona, en otra mesa, haga las cuentas.
+
+Tu app tiene ese único empleado: el **hilo principal**. Atiende los toques, ejecuta `build`, avanza las animaciones y
+pide cada cuadro. Mientras calcula los 300 códigos de verificación, no atiende nada más. La salida real lo muestra:
+`mayor espera entre cuadros: 943 ms`.
+
+Un isolate es la segunda mesa. El cálculo dura lo mismo, pero el hilo principal sigue libre. Con `Isolate.run`, la
+espera máxima entre cuadros baja a 16 ms, el valor normal de un temporizador de 16 ms.
+
+##### 2. Definición formal y vocabulario
+Un **isolate** es la unidad de ejecución de Dart. Tiene su propia memoria y su propio ciclo de eventos, con una cola de
+eventos y otra de microtareas. Dos isolates no comparten variables: se comunican enviándose mensajes.
+
+El **hilo principal** de una app de Flutter es su isolate principal. En él viven los widgets, el estado y el
+planificador de cuadros. Un `Future` o una función `async` no crean otro hilo. Solo ordenan el trabajo dentro de la
+misma cola.
+
+**`Isolate.run`** crea un isolate, ejecuta en él una función y devuelve su resultado en un `Future`. Al terminar, el
+isolate se cierra solo. Existe desde Dart 2.19 y forma parte de `dart:isolate`.
+
+La **copia de mensajes** es la regla de comunicación. Lo que envías al isolate se copia en su memoria. La
+documentación de `Isolate.run` precisa un detalle: el resultado vuelve por `Isolate.exit`, que lo transfiere al
+isolate que llamó sin copiarlo.
+
+Por último, distingue el **trabajo de CPU frente a espera**. Calcular ocupa el procesador. Esperar una respuesta de red
+no lo ocupa: el sistema operativo avisa cuando llega, y el isolate atiende otras cosas mientras tanto.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero mira por qué `async` no basta. Un isolate ejecuta un evento de su cola de principio a fin, sin
+interrupciones. Si un evento tarda 939 ms, los eventos siguientes esperan, incluido el cuadro que pide la pantalla.
+
+```dart
+Future<Map<String, int>> calcularEnOtroIsolate() => Isolate.run(() => calcularTodos(guias));
+```
+
+Esta línea desencadena la siguiente secuencia:
+
+1. `Isolate.run` crea un isolate nuevo. Comparte el código ya cargado del programa, pero no su memoria.
+2. Envía la función, junto con lo que captura, al isolate nuevo. Antes del envío, Dart comprueba que todo se pueda
+   enviar.
+3. La clausura no captura `guias`, porque es una variable de nivel superior. Cada isolate tiene su propia copia de
+   esas variables: el isolate nuevo crea su lista `guias` la primera vez que la lee.
+4. El isolate nuevo ejecuta `calcularTodos` en otro hilo del sistema operativo. Con dos procesadores, corre en
+   paralelo con el principal.
+5. Mientras tanto, el principal sigue atendiendo su cola: temporizadores, toques y cuadros. La salida cuenta 62 cuadros
+   en ese tiempo.
+6. Al terminar, el isolate nuevo sale con `Isolate.exit` y transfiere el mapa de 300 códigos al principal.
+7. En el principal, el resultado llega como un evento más y completa el `Future`. El `await` continúa con el mapa.
 
 ```mermaid
 sequenceDiagram
     participant P as Hilo principal
     participant I as Isolate nuevo
     Note over P: con el cálculo en el principal
-    P->>P: 939 ms calculando; ningún cuadro
-    Note over P: con Isolate.run
-    P->>I: Isolate.run(calcularTodos)
-    loop cada 16 ms
+    P->>P: 939 ms calculando, sin cuadros
+    Note over P,I: con Isolate.run
+    P->>I: envía la clausura que llama a calcularTodos
+    loop cada 16 ms mientras I calcula
         P->>P: cuadro atendido
     end
-    I-->>P: resultado copiado (300 códigos)
+    I-->>P: Isolate.exit transfiere el mapa de 300 códigos
 ```
+
+El diagrama compara las dos versiones. Arriba, una sola franja ocupa el hilo principal. Abajo, el cálculo pasa a la
+otra columna y el principal sigue atendiendo cuadros.
+
+##### 4. Reglas, variantes y casos límite
+No todo se puede enviar. La documentación de `SendPort.send` excluye los objetos con recursos nativos, `ReceivePort`,
+`DynamicLibrary`, los `Finalizable` y las clases marcadas como no enviables. Un archivo abierto o una conexión de red
+tampoco viajan.
+
+Cuidado con las clausuras. Una función anónima puede capturar más estado del que usa. Si captura algo no enviable, el
+envío falla en ejecución. La documentación recomienda llamar a una función de nivel superior y pasarle solo los datos
+necesarios.
+
+Un isolate secundario no puede tocar widgets ni el estado del principal. Además, `dart:ui` no existe en un programa de
+consola: por eso `dart run` falló cuando el cálculo importaba Flutter. Mantén la función en un archivo de Dart puro.
+
+Si la función lanza una excepción, el isolate termina y `Isolate.run` lanza el mismo error en el principal. Lo atrapas
+con `try` y `catch` alrededor del `await`, como cualquier otro error asíncrono.
+
+Crear un isolate tiene un costo fijo de unos milisegundos. Para tareas cortas no compensa. Para tareas repetidas sin
+pausa existe `Isolate.spawn` con un `ReceivePort`, que mantiene un isolate vivo y le envía mensajes.
+
+En la web, Flutter no ejecuta varios isolates. El `compute` de Flutter, que cumple el mismo papel que `Isolate.run`,
+ejecuta allí el trabajo en el hilo principal. El curso usa `Isolate.run`, la API de Dart.
+
+Desde Flutter 3.7, un isolate secundario puede llamar a canales de plataforma si registra
+`BackgroundIsolateBinaryMessenger`. Este tema no lo necesita, porque el cálculo es Dart puro.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Módulo 0, Tema 3 presentó `Future` y la cola de eventos. Este tema muestra su límite: la cola ordena el trabajo,
+pero no lo reparte entre procesadores. Esa diferencia explica el Ejercicio verificable 2.
+
+Conecta también con las peticiones del Módulo 5. Esperar la red es espera, no CPU; por eso esas pantallas no se
+trababan. Convertir una respuesta JSON de varios megabytes sí es CPU, y ahí un isolate tiene sentido.
+
+El Tema 3 midió el costo dentro de `build`; este tema lo saca del hilo principal. El Tema 5 cierra el módulo con el
+último frente: evitar que un dibujo grande se pinte cuando no cambió.
 
 #### Problema resuelto 4.1
 Calcula los 300 códigos en el hilo principal y en otro isolate. Mide con un temporizador de 16 ms (un «cuadro») la
@@ -1213,23 +1587,116 @@ Este tema usa **`CustomPaint`** (Módulo 7, Tema 2), **`AnimationController`** (
 - **Error típico:** dejarlo en el código de producción.
 
 #### ► CÓMO FUNCIONA
-Cuando el ícono gira, su objeto de render pide repintarse; Flutter sube hasta la capa más cercana y la repinta
-entera, con todo lo que contenga. Con `RepaintBoundary`, el mapa tiene su capa: el giro repinta la otra. Cuando la
-pantalla se reconstruye, llega un `PintorRuta` nuevo y Flutter pregunta a `shouldRepaint`; si dice que no, la capa
-del mapa se reutiliza.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en los dibujos animados clásicos, hechos con hojas de acetato superpuestas. El fondo del paisaje se pinta una
+vez en su propia hoja. El personaje que se mueve va en otra. Si el personaje estuviera pintado sobre el fondo, habría
+que repintar el paisaje entero en cada movimiento.
+
+La pantalla del mapa tiene ese problema. El ícono de sincronización gira sin parar y comparte hoja con el mapa de la
+ruta. Cada giro obliga a repintar cientos de manzanas que no cambiaron. La salida real lo cuenta: 60 pintadas en 60
+cuadros.
+
+Hay un segundo problema, distinto. Cada vez que llega una nueva hora estimada, la pantalla se reconstruye y crea un
+pintor nuevo para el mapa. Si nadie pregunta «¿cambió algo?», el mapa se vuelve a pintar con datos idénticos.
+
+##### 2. Definición formal y vocabulario
+La **pintura** es la fase del cuadro en la que cada objeto de render registra sus instrucciones de dibujo. Ocurre
+después de la maquetación y antes del rasterizado del Tema 3. Pintar no produce píxeles: produce una lista de
+órdenes que después se convierten en píxeles.
+
+Esas órdenes se guardan en una **capa**, un grupo de instrucciones que Flutter puede reutilizar entre cuadros. En
+sencillo, la capa es la hoja de acetato. Todo lo que comparte capa se repinta junto.
+
+**`RepaintBoundary`** es el widget que crea un límite de repintado: su hijo se pinta en una capa propia. Por dentro,
+su objeto de render responde `true` a `isRepaintBoundary`. Ese límite funciona en las dos direcciones.
+
+**`shouldRepaint`** es el método de `CustomPainter` que responde si el pintor nuevo dibujaría algo distinto del
+anterior. El **contador de pintadas** de este tema es una variable global que `paint` incrementa. Solo existe para
+medir en el laboratorio.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue primero un giro del ícono, sin límite:
+
+1. El `AnimationController` del giro avanza y `RotationTransition` cambia la transformación del ícono.
+2. El objeto de render del ícono llama a `markNeedsPaint`, que significa «mi dibujo ya no vale».
+3. Como no es un límite de repintado, la marca sube por sus ancestros hasta encontrar el primer límite.
+4. Sin `RepaintBoundary` propio, ese límite envuelve la pantalla entera, mapa incluido.
+5. En la fase de pintura, Flutter vuelve a pintar todo lo que cuelga de ese límite. `PintorRuta.paint` se ejecuta y
+   el contador sube.
+
+Con el límite, el paso 3 se detiene antes. La marca del ícono llega a un límite que no contiene el mapa. En la fase de
+pintura, la capa del mapa sigue limpia: Flutter la reutiliza tal cual y `paint` no se llama.
+
+```dart
+widget.conLimite ? RepaintBoundary(child: mapa) : mapa,
+```
+
+Esta línea es toda la diferencia entre 60 pintadas y 0. No cambia lo que se dibuja: cambia en qué capa queda.
+
+Ahora sigue una reconstrucción, cuando `actualizarEta` llama a `setState`:
+
+1. `build` crea un `PintorRuta` nuevo con las mismas paradas y el mismo color.
+2. El objeto de render de `CustomPaint` recibe el pintor nuevo y lo compara con el anterior.
+3. Si son el mismo objeto, no hace nada. Si son de tipos distintos, repinta.
+4. Si son del mismo tipo, llama a `nuevo.shouldRepaint(anterior)`. Solo si devuelve `true`, marca la pintura.
+
+```dart
+@override
+bool shouldRepaint(PintorRuta anterior) =>
+    !compararDatos || anterior.color != color || !_iguales(anterior.paradas, paradas);
+```
+
+El fragmento compara contenidos, no identidad. Cada `build` crea un pintor distinto, así que `identical` siempre
+daría falso. Con `compararDatos: false`, la expresión vale siempre `true` y vuelven las 5 pintadas.
 
 ```mermaid
 flowchart TB
     subgraph S["Sin RepaintBoundary: una capa"]
-        A1["Ícono gira"] --> C1["repintar capa"] --> M1["mapa: paint() ×60/s"]
+        A1["Ícono gira"] --> MP1["markNeedsPaint sube hasta el límite de la pantalla"]
+        MP1 --> M1["mapa: paint() en cada cuadro"]
     end
     subgraph C["Con RepaintBoundary: dos capas"]
-        A2["Ícono gira"] --> C2["repintar su capa"]
+        A2["Ícono gira"] --> C2["repintar solo su capa"]
         M2["mapa: capa propia, reutilizada"]
         R["Reconstrucción: pintor nuevo"] --> Q{"shouldRepaint?"}
         Q -->|"datos iguales: false"| M2
+        Q -->|"datos distintos: true"| P2["mapa: paint() una vez"]
     end
 ```
+
+##### 4. Reglas, variantes y casos límite
+Las dos herramientas no se sustituyen. `RepaintBoundary` protege de los vecinos que se repintan. `shouldRepaint`
+protege de las reconstrucciones con datos iguales. La tercera medición lo demuestra: con límite y sin comparar, quedan
+0 pintadas por la animación y 5 por las reconstrucciones.
+
+`shouldRepaint` solo se consulta cuando llega un pintor nuevo. Si el `CustomPaint` cambia de tamaño, se repinta igual,
+porque la maquetación cambió. Y si el pintor es de otro tipo, Flutter repinta sin preguntar.
+
+Un límite no es gratis. Cada capa propia guarda su contenido y suma trabajo al componer el cuadro. Ponlo donde un área
+grande y estable convive con algo pequeño que cambia, no alrededor de cada widget.
+
+Flutter ya pone límites en algunos sitios. `ListView` envuelve cada fila en un `RepaintBoundary` por defecto, con
+`addRepaintBoundaries: true`. Cada ruta del `Navigator` también tiene el suyo.
+
+Hay una variante para dibujos que cambian solos. El constructor de `CustomPainter` acepta un `Listenable` en
+`repaint`. Cuando ese objeto avisa, el pintor se repinta sin reconstruir widgets. Así se anima un dibujo sin `setState`.
+
+`CustomPaint` también acepta las pistas `isComplex` y `willChange`. Le indican al motor si conviene guardar en caché
+el resultado rasterizado. Son pistas: el motor decide.
+
+Para ver las capas en vivo, DevTools ofrece «Highlight repaints». En código existe `debugRepaintRainbowEnabled`, que
+cambia el color del borde de cada capa al repintarse.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema completa los tres árboles del Módulo 1, Tema 6. Los widgets describen, los elementos conservan y los objetos
+de render maquetan y pintan. Las capas son un cuarto nivel que solo ve la pintura.
+
+`CustomPaint` (Módulo 7, Tema 2) ya dibujaba; aquí aprendes cuándo vuelve a dibujar. El `AnimationController` con
+`repeat()` es el del Tema 2, y el Tema 3 explica la diferencia entre pintar y rasterizar.
+
+Compara con el Tema 4. Allí sacaste trabajo de CPU del hilo principal. Aquí evitas trabajo de pintura que no hacía
+falta. El Proyecto 25 combina las dos técnicas, y el Módulo 9 te enseña a fijar estos comportamientos con pruebas.
 
 #### Problema resuelto 5.1
 Dibuja el mapa de la ruta con un ícono girando debajo. Cuenta las pintadas del mapa durante 60 cuadros de animación y

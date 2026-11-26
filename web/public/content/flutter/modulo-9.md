@@ -255,7 +255,7 @@ Este tema usa **funciones con parámetros con nombre** (Módulo 0, Tema 2), **ex
 - **Ejemplo:** `tarifaEnvio(pesoGramos: 350, distanciaKm: 8)` debe dar 5000.
 - **Error típico:** probar la regla de la tarifa a través de la pantalla: lento y frágil.
 
-**`expect` y *matcher***
+**`expect` y matcher**
 - **Definición técnica:** `expect(valor, matcher)` comprueba un valor contra un *matcher* (`equals`, `isTrue`, `contains`, `throwsArgumentError`, `isA<T>().having(...)`); un valor simple equivale a `equals`.
 - **En palabras sencillas:** «espero que esto sea así».
 - **Dónde se rompe la comparación:** los *matchers* compuestos describen qué esperaban; por eso los fallos se entienden.
@@ -284,18 +284,104 @@ Este tema usa **funciones con parámetros con nombre** (Módulo 0, Tema 2), **ex
 - **Error típico:** nombres de prueba como «test 1».
 
 #### ► CÓMO FUNCIONA
-`flutter test` busca los archivos `*_test.dart` en `test/`, ejecuta cada `test` y muestra un contador (`+8`) de
-pruebas que pasaron y uno (`-1`) de las que fallaron. Cada `expect` que falla detiene su prueba y muestra el valor
-esperado, el obtenido y la línea.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en la báscula de una oficina de envíos. Cada mañana alguien pone encima una pesa de 1 kg conocida y mira si
+marca 1000 g. No pesa paquetes de clientes para comprobarlo: usa un valor cuyo resultado sabe de antemano.
+
+Una prueba unitaria hace lo mismo con una función. Llamas a `tarifaEnvio` con un peso y una distancia cuyo precio
+calculaste a mano desde la regla. Si el resultado coincide, la prueba pasa; si no, te dice cuánto esperabas, cuánto
+salió y en qué línea.
+
+La tarifa tiene cuatro reglas que se combinan. Un cambio en una puede romper otra sin que la pantalla lo muestre.
+Con pruebas que corren en milisegundos, ese error aparece al guardar el archivo, no cuando un cliente reclama.
+
+##### 2. Definición formal y vocabulario
+Una **prueba unitaria** ejecuta una función o una clase aislada, sin interfaz, sin red y sin disco. En Dart se
+declara con `test(descripción, cuerpo)`. Las pruebas relacionadas se agrupan con `group`, que antepone su nombre al
+de cada prueba.
+
+La comprobación se escribe con **`expect` y *matcher***. `expect(valor, matcher)` compara un valor real con una
+descripción de lo esperado. Un *matcher* es un objeto que sabe si un valor cumple una condición y cómo describirla en
+palabras.
+
+Un **caso límite** es una entrada en el borde de una regla. Una **prueba parametrizada** genera varias pruebas desde
+una lista de casos. El **mensaje de fallo** es el texto que la prueba imprime al fallar: `Expected`, `Actual`, tu
+`reason` y la pila de llamadas.
+
+Estas funciones vienen del paquete `test` de Dart. `flutter_test` las reexporta, por eso basta un import en
+`tarifas_test.dart`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Al ejecutar `flutter test test/tarifas_test.dart` ocurre esto:
+
+1. La herramienta compila el archivo de prueba con tu código y lo arranca en un proceso de prueba sin ventana.
+2. Se ejecuta `main()`. Las llamadas a `group` y `test` no prueban nada todavía: solo registran las pruebas en una
+   lista, con su nombre completo.
+3. El corredor de pruebas recorre esa lista en orden y ejecuta el cuerpo de cada `test`. Si el cuerpo devuelve un
+   `Future`, espera a que termine.
+4. Cada `expect` evalúa su *matcher*. Si se cumple, no hace nada y la prueba sigue.
+5. Si no se cumple, `expect` lanza una excepción `TestFailure`. La prueba se detiene en esa línea.
+6. El corredor atrapa la excepción, marca la prueba como fallida e imprime la descripción del *matcher*.
+7. Al final, imprime el total. Si alguna falló, la orden termina con código de salida 1, el dato que mira un CI.
+
+```dart
+for (final (valor, esperado) in [(500, r'$ 500'), (6500, r'$ 6.500'), (1234567, r'$ 1.234.567')]) {
+  test('$valor → $esperado', () => expect(pesos(valor), esperado));
+}
+```
+
+Este bucle corre en el paso 2. Desestructura cada record en `valor` y `esperado` y registra tres pruebas con nombres
+distintos. Por eso la salida lista `pesos 500 → $ 500` y llega a `+8`.
 
 ```mermaid
 flowchart LR
-    T["flutter test test/tarifas_test.dart"] --> G1["group tarifaEnvio: 5 tests"]
-    T --> G2["group pesos: 3 tests generados"]
-    G1 --> E["expect(valor, matcher)"]
-    E -->|cumple| OK["+1"]
-    E -->|no cumple| F["-1: Expected / Actual / reason / línea"]
+    T["flutter test test/tarifas_test.dart"] --> M["main registra las pruebas"]
+    M --> G1["group tarifaEnvio: 5 tests"]
+    M --> G2["group pesos: 3 tests generados"]
+    G1 --> E["expect con su matcher"]
+    G2 --> E
+    E -->|cumple| OK["la prueba sigue y suma +1"]
+    E -->|no cumple| F["TestFailure: Expected, Actual, reason, línea"]
+    F --> X["suma -1 y código de salida 1"]
 ```
+
+El contador de la salida resume el recorrido. `+5` significa cinco pruebas que pasaron hasta ese momento y `-1`, una
+que falló. Una prueba omitida con `skip` aparecería como `~1`.
+
+##### 4. Reglas, variantes y casos límite
+Si pasas un valor simple en lugar de un *matcher*, `expect` lo envuelve en `equals`. Así, `expect(x, 5000)` compara
+con `==`. Para decimales usa `closeTo(valor, margen)`, porque la igualdad exacta entre `double` falla por redondeo.
+
+Un `expect` fallido detiene su prueba. En el ejemplo que falla, los tres primeros pasan y el cuarto corta. Por eso
+conviene una prueba por regla: un fallo no oculta los siguientes.
+
+Las excepciones se prueban pasando una función, no un resultado. `expect(() => tarifaEnvio(...), throwsArgumentError)`
+deja que `expect` llame a la función y atrape el error. Sin el `() =>`, la excepción saltaría antes de llegar a
+`expect` y la prueba fallaría por error, no por expectativa.
+
+`isA<T>().having(...)` comprueba el tipo y además una propiedad. En el ejemplo verifica que el `ArgumentError` nombra
+`distanciaKm`. Si falla, el mensaje incluye la etiqueta `'name'` que le diste.
+
+Elige los casos límite a ambos lados de cada comparación: 1000 y 1001 g, 20 y 21 km. Un `>` cambiado por `>=` solo se
+nota en la raya, como comprobarás en el Paso 4.
+
+Para código asíncrono, el cuerpo de `test` puede ser `async` y usar `await`. Con *matchers* de futuros, como
+`completion` o `throwsA` sobre un `Future`, usa `expectLater` y espéralo con `await`.
+
+Hay más controles útiles. `setUp` y `tearDown` corren antes y después de cada prueba de su grupo. `flutter test
+--plain-name 'pesos'` ejecuta solo las pruebas cuyo nombre contiene ese texto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema aplica el Módulo 0. Los parámetros con nombre (Tema 2) hacen legibles las llamadas de prueba. Las
+excepciones (Tema 3) son lo que `throwsArgumentError` atrapa, y los records (Tema 6) dan forma a cada caso
+parametrizado.
+
+En el Módulo 8 usaste `testWidgets` para medir y tomar pantallazos. Una prueba unitaria es más simple: no construye
+widgets ni avanza relojes. Por eso es la más rápida y la que más escribirás.
+
+El Tema 2 sube un nivel y prueba la pantalla que muestra esta tarifa. El Tema 3 resuelve cómo probar el controlador,
+que depende de un repositorio. El Tema 5 medirá qué líneas de `tarifas.dart` quedaron cubiertas.
 
 #### Problema resuelto 1.1
 Escribe las pruebas de la tarifa y del formato de pesos, con casos límite y datos imposibles. Después, lee el fallo
@@ -509,7 +595,7 @@ Este tema usa **pruebas de widgets** (Módulo 1), **keys** (Módulo 1, Tema 5) y
 - **Ejemplo:** `tester.pumpWidget(...)`, `tester.tap(...)`.
 - **Error típico:** usar `Future.delayed` real dentro de `testWidgets`: el reloj es simulado.
 
-***finder***
+**finder**
 - **Definición técnica:** descripción de qué widgets buscar (`find.text`, `find.byKey`, `find.byType`, `find.byIcon`, `find.descendant`), que se evalúa contra el árbol actual.
 - **En palabras sencillas:** la forma de señalar algo en la pantalla.
 - **Dónde se rompe la comparación:** un *finder* no busca hasta que se usa; si el árbol cambia, el resultado cambia.
@@ -538,9 +624,61 @@ Este tema usa **pruebas de widgets** (Módulo 1), **keys** (Módulo 1, Tema 5) y
 - **Error típico:** falsos tan complejos que necesitan sus propias pruebas.
 
 #### ► CÓMO FUNCIONA
-La prueba construye la pantalla con un repositorio falso, avanza un cuadro para que termine la carga, busca y toca, y
-avanza otra vez para ver el efecto. Cada paso es sincrónico desde el punto de vista de la prueba: nada ocurre si no
-se llama a `pump`.
+
+##### 1. La idea en lenguaje sencillo
+Imagina un ensayo de teatro con el tiempo en tus manos. Puedes detener la obra, mirar el escenario, mover a un actor
+y avanzar exactamente dos segundos. Nada pasa por su cuenta: todo espera tu orden.
+
+Una prueba de widgets te da ese control sobre una pantalla. Construyes `PantallaRuta` sin abrir ninguna ventana,
+señalas la fila `EN-4471`, la tocas y avanzas el reloj 100 ms. Después compruebas lo que vería el conductor: el visto,
+la tarifa o el aviso de error.
+
+El Tema 1 probó la regla de la tarifa. Pero la regla puede estar bien y la pantalla mostrar otro número, o no
+reaccionar al toque. Este tipo de prueba responde preguntas sobre lo que se ve y lo que se hace.
+
+##### 2. Definición formal y vocabulario
+Una prueba de widgets se declara con `testWidgets`. Su cuerpo recibe un **`WidgetTester`**, el objeto que construye
+widgets, simula gestos, avanza el reloj e inspecciona el árbol. Todo ocurre en un entorno de prueba sin dispositivo
+ni código nativo.
+
+Un ***finder*** describe qué widgets buscar: `find.text`, `find.byKey`, `find.byIcon`, `find.byType` o
+`find.descendant`. Es perezoso. En sencillo: es una instrucción para señalar, que solo se cumple cuando la usas.
+
+**`pump`** avanza el reloj simulado y produce un cuadro. `pumpAndSettle` repite `pump` hasta que no quedan cuadros
+pendientes.
+
+**`findsOneWidget`** es un *matcher* que se aplica a un *finder*: exige exactamente un resultado. Sus parientes son
+`findsNothing`, `findsWidgets` y `findsNWidgets(n)`. El **falso hecho a mano** es la clase `RepositorioFalso`: una
+implementación de prueba con datos fijos y un fallo que se activa a pedido.
+
+##### 3. Cómo funciona por dentro, paso a paso
+`testWidgets` prepara un entorno especial antes de ejecutar tu cuerpo. Usa un *binding* de prueba, la pieza que une el
+framework con la plataforma, y un reloj falso. Los `Timer` y los `Future.delayed` solo avanzan cuando la prueba lo
+pide.
+
+Sigue la tercera prueba, la del error:
+
+1. `pumpWidget` monta el `MaterialApp` en una vista de prueba y produce el primer cuadro. `initState` llama a
+   `cargar()`, que pide `pendientes()` al falso.
+2. El primer `pump` ejecuta las microtareas pendientes. El `Future` de `pendientes()` ya estaba resuelto, el
+   controlador notifica y el cuadro muestra la lista.
+3. `tester.tap` evalúa el *finder*, calcula el centro de la fila y envía un evento de puntero que baja y sube en ese
+   punto. El `ListTile` recibe el toque y llama a `marcar`.
+4. `marcar` cambia la lista de inmediato y notifica. Pero `tap` no produce cuadros: la pantalla aún muestra el estado
+   anterior.
+5. El segundo `pump` construye un cuadro con la marca optimista. El falso sigue esperando su `Future.delayed` de
+   100 ms, que en el reloj falso no ha vencido.
+6. `pump(100 ms)` adelanta el reloj, vence ese `Timer` y el falso lanza `Exception('sin red')`. El controlador
+   restaura la lista y publica el aviso, y el cuadro muestra el `SnackBar`.
+
+```dart
+await tester.tap(find.byKey(const Key('fila-EN-4471')));
+await tester.pump();                                            // marca optimista: ya se ve el visto
+expect(find.byIcon(Icons.check_circle), findsOneWidget);
+```
+
+Estas tres líneas corresponden a los pasos 3 a 5. El `expect` evalúa el *finder* contra el árbol de ese momento. Si
+movieras el `expect` antes del `pump`, encontraría cero vistos.
 
 ```mermaid
 sequenceDiagram
@@ -549,12 +687,51 @@ sequenceDiagram
     participant F as RepositorioFalso
     T->>P: pumpWidget
     P->>F: pendientes()
-    T->>P: pump → lista visible
-    T->>P: tap(fila-EN-4471)
-    P->>F: marcar (falla)
-    T->>P: pump → marca optimista (visto)
-    T->>P: pump(100 ms) → deshace + SnackBar
+    T->>P: pump, la lista se ve
+    T->>P: tap en fila-EN-4471
+    P->>F: marcar, espera 100 ms simulados
+    T->>P: pump, marca optimista con visto
+    T->>P: pump de 100 ms
+    F-->>P: Exception sin red
+    P-->>T: deshace la marca y muestra el SnackBar
 ```
+
+##### 4. Reglas, variantes y casos límite
+Los *finders* son perezosos y se reevalúan en cada uso. Puedes guardar uno en una variable y usarlo antes y después de
+un `pump`: cada vez mira el árbol actual.
+
+Por defecto, los *finders* ignoran los widgets fuera de escena (*offstage*). Si una fila no entra en pantalla y un
+`ListView.builder` no la construyó, ningún *finder* la encuentra. Usa `tester.scrollUntilVisible` o
+`tester.dragUntilVisible` para llevarla a la vista.
+
+`tap` comprueba que el punto calculado realmente toque ese widget. Si otro widget lo tapa, imprime una advertencia en
+la salida de la prueba. Lee esas advertencias: suelen explicar un toque que «no hizo nada».
+
+`pumpAndSettle` falla si las animaciones nunca terminan. Con un `CircularProgressIndicator` girando, por ejemplo,
+agota su tiempo límite y lanza un error. Por eso este tema usa `pump` con duraciones exactas.
+
+Al terminar, el entorno comprueba que no queden `Timer` pendientes. Si no avanzas el reloj lo suficiente para que
+venzan, la prueba falla aunque todos los `expect` hayan pasado.
+
+Una excepción lanzada durante `build` no detiene tu código de prueba al instante. El *binding* la captura y la prueba
+falla al final. Si quieres comprobar esa excepción, la recuperas con `tester.takeException()`.
+
+La vista de prueba mide 800 × 600 píxeles lógicos por defecto. Si la pantalla depende del tamaño, fíjalo antes de
+construir, como hace la herramienta de pantallazos del Módulo 1.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Ya usaste `testWidgets` en el Módulo 1 para los pantallazos y en el Módulo 8 para ver animaciones cuadro a cuadro. Las
+keys del Módulo 1, Tema 5 vuelven aquí como asas para buscar filas sin depender del texto.
+
+El controlador con `ChangeNotifier` (Módulo 4, Tema 2) es lo que la prueba recorre. La marca optimista y su reversión
+son su lógica, vista desde la pantalla.
+
+Compara con el Tema 1. Allí llamabas a la función y mirabas el número. Aquí llegas al mismo número a través de lo que
+se ve, `$ 6.000` en una fila. Prueba cada regla en el nivel más bajo posible y usa este nivel para comprobar que las
+piezas se conectan.
+
+El falso hecho a mano tiene un límite: no dice cuántas veces lo llamaron ni con qué argumentos. El Tema 3 resuelve eso
+con `mocktail`, y el Tema 4 compara la pantalla píxel a píxel.
 
 #### Problema resuelto 2.1
 Prueba la pantalla de la ruta: que muestre las tarifas, que tocar una fila la marque y que un fallo del servidor
@@ -754,7 +931,7 @@ anónimas** (Módulo 0, Tema 2).
 - **Ejemplo:** `class RepositorioMock extends Mock implements RepositorioEntregas {}`.
 - **Error típico:** verificar cada llamada interna: la prueba se rompe con cualquier refactorización.
 
-***stub***
+**stub**
 - **Definición técnica:** respuesta programada para una llamada: `when(() => repo.pendientes()).thenAnswer(...)`.
 - **En palabras sencillas:** el guion del doble.
 - **Dónde se rompe la comparación:** para `Future` se usa `thenAnswer((_) async => ...)`, no `thenReturn`.
@@ -783,18 +960,107 @@ anónimas** (Módulo 0, Tema 2).
 - **Error típico:** crear el mock una vez para todo el archivo: `verify(...).called(1)` cuenta las llamadas de todas las pruebas.
 
 #### ► CÓMO FUNCIONA
-En `setUp` se crea un mock nuevo con su guion por defecto. Cada prueba puede cambiar el guion, ejecuta el
-controlador y después verifica el estado y las llamadas. `mocktail` intercepta cada llamada al mock: si hay un guion
-que coincide, responde con él; además, la anota.
+
+##### 1. La idea en lenguaje sencillo
+En el rodaje de una película, la escena peligrosa no la hace el actor: la hace un doble. El doble sigue un guion
+exacto y, además, el director revisa la grabación para comprobar qué hizo y en qué orden.
+
+Un mock es ese doble con cámara. Reemplaza al repositorio real del controlador de la ruta. Le das un guion («si te
+piden las pendientes, devuelve `EN-4471`») y, al final, le preguntas qué le pidieron, cuántas veces y con qué
+argumento.
+
+El falso del Tema 2 ya reemplazaba al repositorio, pero solo respondía. Para saber si `cargar` nunca intentó marcar,
+tendrías que añadirle contadores y listas a mano. Con un mock, esas preguntas vienen incluidas.
+
+##### 2. Definición formal y vocabulario
+Un **doble de prueba** es cualquier objeto que reemplaza una dependencia real durante una prueba. La terminología
+clásica distingue varios. El falso tiene una implementación simple que funciona. El ***stub*** devuelve respuestas
+programadas. El **mock** además registra las llamadas para comprobarlas.
+
+En `mocktail`, un mock es una clase que extiende `Mock` e implementa la interfaz. El guion se escribe con
+`when(...).thenAnswer`, `thenReturn` o `thenThrow`. Cada uno de esos guiones es un *stub*.
+
+**`verify`** comprueba que una llamada ocurrió; `.called(n)` exige un número exacto. `verifyNever` exige que no
+ocurriera y `verifyInOrder`, un orden. La **captura de argumentos** con `captureAny()` guarda los valores recibidos en
+la lista `captured`.
+
+**`setUp`** es una función del paquete `test` que se ejecuta antes de cada prueba de su grupo. Aquí crea un mock y un
+controlador nuevos, para que ninguna prueba herede llamadas de otra.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, ¿cómo compila una clase que no implementa ningún método?
+
+```dart
+class RepositorioMock extends Mock implements RepositorioEntregas {}
+```
+
+Dart permite que una clase concreta deje miembros de su interfaz sin implementar si hereda un `noSuchMethod` propio.
+`Mock` lo tiene. El compilador genera entonces métodos que reenvían cada llamada a `noSuchMethod`, con un objeto
+`Invocation` que describe el nombre y los argumentos.
+
+Con esa pieza, sigue la cuarta prueba:
+
+1. `setUp` crea el mock y programa `pendientes()`. `when` activa un modo de grabación y ejecuta la función anónima.
+2. En ese modo, la llamada `repo.pendientes()` no responde nada real. `noSuchMethod` la guarda como la llamada que se
+   va a programar.
+3. `thenAnswer` asocia a esa llamada una función que crea la respuesta. El mock guarda el par llamada y respuesta.
+4. La prueba añade su propio `when(() => repo.marcar(any())).thenThrow(...)`. `any()` es un comparador de argumentos:
+   coincide con cualquier guía.
+5. El controlador llama a `pendientes()` y luego a `marcar('EN-4471')`. En cada una, `noSuchMethod` anota la llamada y
+   busca un guion que coincida.
+6. Para `marcar` encuentra `thenThrow` y lanza `Exception('sin red')`. El controlador la atrapa y deshace la marca.
+7. `verifyInOrder` vuelve a usar el modo de grabación. Compara las llamadas descritas con las anotadas y exige ese
+   orden.
 
 ```mermaid
 flowchart LR
-    S["setUp: mock + when(pendientes) → [EN-4471]"] --> T["prueba: when(marcar) → thenThrow"]
-    T --> C["controlador.cargar() y marcar()"]
-    C --> M["RepositorioMock: responde según el guion y anota"]
-    M --> V["verify / verifyInOrder / captured"]
+    S["setUp: mock nuevo y when de pendientes"] --> T["prueba: when de marcar con thenThrow"]
+    T --> C["controlador: cargar y marcar"]
+    C --> M["RepositorioMock: noSuchMethod busca el guion y anota la llamada"]
+    M --> V["verify, verifyInOrder y captured"]
     C --> E["expect sobre el estado"]
 ```
+
+El diagrama separa las dos comprobaciones. `expect` mira el estado del controlador; `verify` mira la conversación con
+el repositorio. La cuarta prueba usa las dos.
+
+##### 4. Reglas, variantes y casos límite
+Si dos guiones coinciden con la misma llamada, gana el último que registraste. Por eso el `thenThrow` de la segunda
+prueba reemplaza el guion de `setUp` sin borrarlo.
+
+Si una llamada no tiene guion, el mock devuelve `null`. Cuando el tipo de retorno no admite `null`, como
+`Future<void>`, Dart lanza un `TypeError`. Eso explica el Checkpoint 3.1.
+
+Para un `Future` usa `thenAnswer((_) async => ...)`. `thenReturn(Future.value(...))` está prohibido: entregaría el
+mismo `Future` en cada llamada, y `mocktail` lo rechaza con el mensaje del Ejercicio verificable 3.
+
+`any()` y `captureAny()` necesitan un valor del tipo del parámetro mientras graban. `mocktail` trae valores de
+respaldo para tipos básicos, como `String`. Para tus propias clases debes llamar antes a `registerFallbackValue`.
+
+Para parámetros con nombre, el comparador lleva ese nombre: `any(named: 'urgente')`. Si lo olvidas, la llamada grabada
+no coincide con la real.
+
+`called(1)` cuenta todas las llamadas anotadas desde que el mock existe. Un mock compartido entre pruebas suma las
+llamadas de todas. Por eso el `setUp` crea uno nuevo cada vez.
+
+Hay utilidades para casos menos comunes. `verifyNoMoreInteractions` falla si quedó alguna llamada sin verificar.
+`reset` borra guiones y anotaciones de un mock.
+
+`mocktail` no genera código. Su alternativa más conocida, `mockito`, crea las clases de mock con `build_runner` desde
+que Dart incorporó la seguridad frente a nulos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La pieza que lo hace posible es la interfaz `RepositorioEntregas` (Módulo 4, Tema 4). Como el controlador depende de
+una interfaz y no de una clase concreta, aceptas cualquier implementación: la real, el falso o el mock.
+
+Las funciones anónimas del Módulo 0, Tema 2 aparecen en cada `when` y cada `verify`. Esa función no se ejecuta para
+obtener un resultado: `mocktail` la ejecuta para grabar qué llamada describes.
+
+Compara con el Tema 2. Allí el falso hecho a mano era más legible para probar la pantalla. Aquí el mock responde mejor
+a preguntas sobre la interacción. Usa el mock cuando el cómo importa; si solo importa el resultado, basta un falso.
+
+El Tema 5 cierra el círculo. Medirá qué líneas del controlador recorrieron estas pruebas y probará el flujo con la app
+real, sin dobles.
 
 #### Problema resuelto 3.1
 Prueba el controlador de la ruta con un mock: la secuencia de estados al cargar, el error al cargar, el argumento con
@@ -893,8 +1159,8 @@ $ flutter test test/controlador_test.dart
 #### Checkpoint 3.1
 ¿Qué pasa si quitas el `when(() => repo.marcar(any())).thenAnswer((_) async {})` de la tercera prueba?
 
-Respuesta: el mock devuelve `null` para `marcar`, que debía devolver un `Future<void>`, y `mocktail` lanza un error de
-tipo; el controlador lo atrapa como un fallo, deshace la marca, y la prueba falla en `isTrue`.
+Respuesta: el mock devuelve `null` para `marcar`, que debía devolver un `Future<void>`, y Dart lanza un `TypeError`
+porque `null` no es de ese tipo; el controlador lo atrapa como un fallo, deshace la marca, y la prueba falla en `isTrue`.
 
 </details>
 
@@ -963,8 +1229,7 @@ Al terminar este tema podrás:
 - leer el fallo de una prueba golden y las imágenes de diferencia que genera Flutter;
 - evitar las causas comunes de goldens inestables (fuentes, tamaño, sombras, animaciones).
 
-**Conceptos clave:** prueba golden, imagen de referencia, `--update-goldens`, imágenes de diferencia, golden
-inestable
+**Conceptos clave:** prueba golden, imagen de referencia, `--update-goldens`, imágenes de diferencia, golden inestable
 
 #### El problema
 Alguien cambia el estilo de la tarifa de `titleMedium` a `titleSmall` «porque se veía grande». Todas las pruebas de
@@ -1012,14 +1277,67 @@ Este tema usa **la herramienta de pantallazos** (Módulo 1), que ya era una prue
 - **Error típico:** goldens con la fuente de prueba de Flutter (cuadros grises), que no muestran el texto real.
 
 #### ► CÓMO FUNCIONA
-La prueba fija el entorno (fuentes, tamaño, densidad), construye el widget y compara. La primera vez, o cuando el
-cambio es intencional, `--update-goldens` escribe la referencia. Después, cada ejecución compara: si un píxel cambia,
-la prueba falla, dice qué porcentaje cambió y deja las imágenes para revisar.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en la prueba de color de una imprenta. Antes de imprimir mil folletos, el cliente aprueba una hoja. Desde
+entonces, cada tirada se compara con esa hoja. Si un tono cambia, alguien lo nota antes de repartir.
+
+Una prueba golden hace esa comparación con la interfaz. Construye la tarjeta de entrega, toma una imagen y la compara
+con una imagen aprobada que vive en el repositorio. Si un solo píxel cambia, la prueba falla y te deja las imágenes
+para que decidas.
+
+El problema del tema lo explica bien. Cambiar `titleMedium` por `titleSmall` no altera ningún dato: la tarifa sigue
+correcta y visible. Las pruebas de los Temas 1 a 3 pasan. Solo una comparación de imágenes detecta que el diseño
+cambió.
+
+##### 2. Definición formal y vocabulario
+Una **prueba golden** es una prueba de widgets que compara una imagen renderizada con un archivo aprobado. En Flutter
+se escribe con el *matcher* asíncrono `matchesGoldenFile`, que se usa con `expectLater`. La función `pantallazo` del
+curso es solo un envoltorio de esa llamada.
+
+La **imagen de referencia** (*golden file*) es ese PNG aprobado, aquí `test/pantallazos/m9-tarjeta.png`. La ruta es
+relativa al archivo de prueba y se guarda en el control de versiones junto al código.
+
+**`--update-goldens`** es la opción de `flutter test` que cambia el comportamiento del *matcher*: en lugar de comparar,
+escribe la imagen actual como nueva referencia.
+
+Las **imágenes de diferencia** son los cuatro PNG que Flutter escribe en `test/failures/` cuando la comparación falla.
+Una **golden inestable** es la que falla sin cambio de diseño, por algo del entorno que no fijaste.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue una ejecución normal, sin `--update-goldens`:
+
+1. `setUpAll(cargarFuentes)` carga Roboto y la fuente de íconos de Material desde la caché de Flutter. Sin ese paso,
+   el texto se dibujaría con la fuente de prueba.
+2. `tamanoPantalla` fija la vista en 360 × 200 puntos lógicos con densidad 2. También enciende las sombras, que en las
+   pruebas vienen apagadas.
+3. `pumpWidget` construye el `MaterialApp` con las dos tarjetas y produce un cuadro completo: construcción,
+   maquetación y pintura.
+4. `matchesGoldenFile` busca el objeto de render que corresponde al *finder* y sube hasta el primer límite de
+   repintado. Es la misma idea de capa del Módulo 8, Tema 5.
+5. Pide a esa capa una imagen en píxeles físicos: 720 × 400, es decir, 288.000 píxeles.
+6. Entrega la imagen al comparador global, `goldenFileComparator`. El de serie lee el PNG de referencia y compara los
+   píxeles uno a uno.
+7. Si todos coinciden, el *matcher* se cumple. Si no, falla con el porcentaje y escribe las imágenes de diferencia.
+
+```dart
+await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('pantallazos/$nombre.png'));
+```
+
+Esta línea es el corazón de `pantallazo`. Usa `expectLater` porque capturar la imagen es asíncrono: hay que esperar a
+que termine antes de seguir.
+
+Con `--update-goldens`, los pasos 1 a 5 son iguales. En el paso 6, el comparador escribe la imagen como referencia y
+la prueba pasa sin comparar.
+
+La cifra del fallo se comprueba a mano. 3315 píxeles distintos sobre 288.000 dan el 1,15 % que muestra la salida
+real. Solo cambiaron los dos importes.
 
 ```mermaid
 flowchart TD
-    A["flutter test --update-goldens"] --> R["test/pantallazos/m9-tarjeta.png (referencia)"]
-    B["flutter test"] --> C{"¿la imagen actual es igual?"}
+    A["flutter test --update-goldens"] --> R["test/pantallazos/m9-tarjeta.png, la referencia"]
+    B["flutter test"] --> P["captura de la capa: 720 x 400 px"]
+    P --> C{"¿la imagen actual es igual?"}
     R --> C
     C -->|sí| OK["la prueba pasa"]
     C -->|no| F["falla: % y px distintos"]
@@ -1028,6 +1346,47 @@ flowchart TD
     H -->|sí| A
     H -->|no| X["corregir el código"]
 ```
+
+El diagrama muestra el ciclo de revisión. La herramienta detecta; una persona decide si el cambio era intencional.
+
+##### 4. Reglas, variantes y casos límite
+El comparador de serie no tiene tolerancia: un píxel distinto basta para fallar. Si necesitas margen, puedes escribir
+tu propio comparador y asignarlo a `goldenFileComparator`. Hazlo solo después de fijar el entorno, no para esconder
+diferencias.
+
+Las referencias dependen del sistema. El suavizado de bordes y el dibujo de las letras cambian entre Linux, macOS y
+Windows. Genera y compara siempre en el mismo entorno, como el contenedor de Linux del CI.
+
+Sin fuentes cargadas, Flutter usa su fuente de prueba, que dibuja cada letra como un rectángulo. La golden seguiría
+detectando cambios de tamaño, pero no serviría para revisar la tipografía, como verás en el Paso 5.
+
+Las sombras vienen apagadas en las pruebas mediante `debugDisableShadows`. Por eso `tamanoPantalla` las enciende y
+las vuelve a apagar al terminar con `addTearDown`.
+
+Captura siempre un estado quieto. Si una animación está a medias, la imagen depende del instante. Avanza con `pump` o
+`pumpAndSettle` hasta el estado final antes de comparar.
+
+Evita datos que cambian solos, como fechas, horas o números aleatorios. Esa es la causa más común de una golden
+inestable. Fija los datos de entrada, como hace la prueba con `EN-4471` y `EN-4472`.
+
+Si el widget no cabe en la vista, Flutter avisa del desbordamiento y la prueba falla antes de comparar. Le pasó a la
+primera versión de este tema: con 170 de alto, `A RenderFlex overflowed by 6.0 pixels on the bottom`.
+
+Para configurar todo un directorio, Flutter lee `flutter_test_config.dart` si existe en `test/`. Ahí puedes cargar
+fuentes o instalar un comparador una sola vez.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Desde el Módulo 1 usas `pantallazo` para obtener las figuras del curso. Sin saberlo, escribías pruebas golden: este
+tema explica qué hacía esa herramienta por dentro.
+
+El sistema de diseño del Módulo 2, Tema 6 define los estilos de texto y los roles de color. Una golden por componente
+lo protege: cualquier cambio en un token aparece como diferencia de píxeles.
+
+Compara con el Tema 2. Allí `find.text(r'$ 6.000')` confirmaba que la tarifa estaba. Aquí confirmas cómo se ve. Las
+dos pruebas se complementan: una vigila el contenido y la otra la forma.
+
+El Módulo 10 cambia temas, modo oscuro y contraste; las goldens en ambos modos te avisarán de cada efecto visual. El
+Tema 5 de este módulo deja los píxeles y prueba el flujo en la app compilada.
 
 #### Problema resuelto 4.1
 Protege con una golden el diseño de la tarjeta de entrega en sus dos estados. Después, cambia el estilo de la tarifa y
@@ -1236,19 +1595,112 @@ Este tema usa **las pruebas de integración en Linux** (Módulo 7, Tema 1) y **t
 - **Error típico:** ignorar las líneas sin cubrir de los caminos de error.
 
 #### ► CÓMO FUNCIONA
-La prueba de integración compila la app para Linux y la ejecuta en una pantalla virtual: el mismo `main` que vería el
-usuario. Aparte, `flutter test --coverage` ejecuta todas las pruebas de `test/` y anota qué líneas recorrieron. Un
-pequeño programa resume el informe por archivo.
+
+##### 1. La idea en lenguaje sencillo
+Un fabricante de bicicletas revisa cada pieza en el banco: frenos, cadena, ruedas. Aun así, antes de vender, alguien
+monta la bicicleta armada y da una vuelta. Las piezas pueden estar bien y fallar juntas: un cable corto, un tornillo
+mal apretado.
+
+La prueba de integración es esa vuelta. Abre la app con su `main` real, con su repositorio y en la plataforma de
+verdad, y recorre un flujo: ver la ruta y marcar `EN-4471`. Comprueba que las piezas de los Temas 1 a 4 funcionan
+montadas.
+
+La cobertura responde otra pregunta: ¿qué partes del código no pisó ninguna prueba? Es como marcar en un plano las
+calles que recorrió el repartidor. Las que quedan sin marcar te dicen dónde mirar.
+
+##### 2. Definición formal y vocabulario
+Una **prueba de integración de flujo** se escribe con `testWidgets`, como una prueba de widgets, pero vive en
+`integration_test/` y usa `IntegrationTestWidgetsFlutterBinding`. Corre dentro de la app compilada, en un dispositivo
+o en el escritorio.
+
+La **pirámide de pruebas** es un modelo de proporciones. La base son muchas pruebas unitarias, rápidas y baratas. En
+medio van las de widgets. En la punta, pocas de integración, lentas y más frágiles.
+
+La **cobertura** es la proporción de líneas ejecutables que alguna prueba ejecutó. `flutter test --coverage` la
+registra en **`lcov.info`**, un archivo de texto en formato LCOV, un estándar que leen muchas herramientas.
+
+Una **línea sin cubrir** es una línea con contador 0. En el informe de este tema hay una sola: la 66 de
+`pantalla_ruta.dart`, el botón «Reintentar».
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, la prueba de integración. Al ejecutar `flutter test integration_test/flujo_test.dart -d linux` ocurre esto:
+
+1. La herramienta compila la app para Linux, con la prueba como punto de entrada en lugar de `lib/main.dart`.
+2. Arranca el ejecutable, aquí dentro de la pantalla virtual de `xvfb-run`.
+3. `IntegrationTestWidgetsFlutterBinding.ensureInitialized()` instala un *binding* que deja correr la app de verdad y
+   devuelve los resultados a la herramienta.
+4. `app.main()` llama a `runApp` con el `RepositorioDemo`, exactamente como al abrir la app.
+5. `pumpAndSettle` espera cuadros reales hasta que no queda nada pendiente. Aquí el reloj no es falso.
+6. `tap` y `expect` funcionan igual que en el Tema 2. Al terminar, la herramienta recibe el resultado y cierra la app.
+
+Ahora la cobertura. Al ejecutar `flutter test --coverage`:
+
+1. Cada archivo de `test/` corre como siempre, pero con la recolección de cobertura activada en la máquina virtual de
+   Dart.
+2. La máquina virtual cuenta cuántas veces se ejecuta cada línea de las bibliotecas cargadas.
+3. Al terminar cada archivo, la herramienta pide esos contadores y los acumula.
+4. Finalmente escribe `coverage/lcov.info`, con un bloque por archivo de tu paquete.
+
+```text
+$ tail -8 coverage/lcov.info
+DA:66,0
+DA:68,2
+DA:70,1
+DA:71,3
+DA:72,6
+LF:40
+LH:39
+end_of_record
+```
+
+Este es el final del bloque de `lib/pantalla_ruta.dart`, que empieza con una línea `SF:` con el nombre del archivo.
+Cada `DA` da un número de línea y su contador. `LF` cuenta las líneas ejecutables y `LH`, las ejecutadas. `DA:66,0` es
+la línea sin cubrir.
 
 ```mermaid
 flowchart LR
     subgraph P["Pirámide de este módulo"]
-        U["8 unitarias"] --- W["3 de widgets + 4 de controlador + 1 golden"] --- I["1 de integración"]
+        U["8 unitarias"] --- W["3 de widgets, 4 de controlador y 1 golden"] --- I["1 de integración"]
     end
     T["flutter test --coverage"] --> L["coverage/lcov.info"]
-    L --> R["bin/cobertura.py: % por archivo"]
-    R --> X["línea 66 sin cubrir → falta una prueba"]
+    L --> R["resumen: líneas cubiertas por archivo"]
+    R --> X["línea 66 sin cubrir: falta una prueba"]
 ```
+
+El diagrama junta las dos ideas. La pirámide dice cuántas pruebas de cada tipo tienes; la cobertura dice qué dejaron
+sin tocar entre todas.
+
+##### 4. Reglas, variantes y casos límite
+El informe solo incluye archivos que alguna prueba cargó. `main.dart` no aparece porque nada en `test/` lo importa. Un
+archivo ausente no figura como 0 %: no figura. Revisa la lista de archivos antes de leer el total.
+
+Una línea cubierta no es una línea comprobada. Una prueba sin `expect` puede recorrer todo `ruta.dart` y dar 100 %. La
+cobertura señala lo que falta; no certifica lo que hay.
+
+La cobertura de este informe es de líneas. Una línea con un `if` cuenta como cubierta aunque solo se haya probado una
+de sus ramas. Por eso los casos límite del Tema 1 importan más que el porcentaje.
+
+Las pruebas de integración usan reloj real. `pumpAndSettle` espera cuadros de verdad y un indicador que gira sin fin
+lo bloquea hasta su tiempo límite. También son más lentas: compilar y arrancar la app cuesta segundos.
+
+En Android e iOS, la misma prueba corre en un dispositivo o en un emulador con `-d <dispositivo>`. En la nube,
+servicios como Firebase Test Lab ejecutan el mismo código en muchos modelos de teléfono.
+
+El archivo LCOV se convierte en un informe HTML con `genhtml`, de la herramienta `lcov`. Los servicios de cobertura de
+un CI leen el mismo archivo para comentar cada pull request.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las pruebas de integración en Linux del Módulo 7, Tema 1 son la base técnica. En el Módulo 8, Tema 3 usaste el mismo
+*binding* con `traceAction` para medir cuadros. Aquí lo usas para comprobar un flujo.
+
+Este tema reúne todo el módulo. Las 16 pruebas de `test/` son las de los Temas 1 a 4: 8 unitarias, 3 de pantalla, 4
+de controlador y 1 golden. La línea 66 sin cubrir corresponde al Paso 4 del Tema 2, que nadie había escrito.
+
+Compara con el Tema 2. Allí un falso controlaba los datos y el reloj; aquí no controlas nada, y eso es lo que pruebas.
+Usa la integración para pocos flujos críticos y deja el detalle a los niveles inferiores.
+
+El Módulo 11 automatiza esta secuencia. El CI ejecuta análisis, pruebas con cobertura, goldens e integración en cada
+cambio antes de firmar y publicar la app.
 
 #### Problema resuelto 5.1
 Prueba el flujo «abrir la ruta y marcar una entrega» en la app compilada. Mide la cobertura de todas las pruebas y
@@ -1258,7 +1710,8 @@ encuentra qué línea no recorre ninguna.
 1. La prueba de integración importa `main.dart` y llama a `app.main()`.
 2. Se ejecuta con `xvfb-run` en la app de Linux, como en el Módulo 7.
 3. `flutter test --coverage` corre las 16 pruebas de `test/` (sin la de integración).
-4. El resumen se hace con un programa de Python de 15 líneas, para no depender de herramientas extra.
+4. El resumen se hace con un programa de consola en Dart, `bin/cobertura.dart`, para no depender de herramientas
+   extra.
 
 ```dart
 // integration_test/flujo_test.dart — la app completa, compilada para Linux, con su main y su repositorio
@@ -1293,29 +1746,37 @@ flujo completo: 2 tarjetas, 1 marcada
 00:02 +1: All tests passed!
 ```
 
-```text
-# bin/cobertura.py — resume coverage/lcov.info: líneas cubiertas por archivo (sin herramientas extra)
-import sys
-archivo, total, cubiertas, resumen = None, 0, 0, []
-for linea in open(sys.argv[1] if len(sys.argv) > 1 else 'coverage/lcov.info'):
-    if linea.startswith('SF:'):
-        archivo, lf, lh = linea[3:].strip(), 0, 0
-    elif linea.startswith('LF:'):
-        lf = int(linea[3:])
-    elif linea.startswith('LH:'):
-        lh = int(linea[3:])
-    elif linea.startswith('end_of_record'):
-        resumen.append((archivo, lh, lf)); total += lf; cubiertas += lh
-for a, h, f in sorted(resumen):
-    print(f'{a:28} {h:3}/{f:<3} {100 * h / f:5.1f} %')
-print(f'{"total":28} {cubiertas:3}/{total:<3} {100 * cubiertas / total:5.1f} %')
+```dart
+// bin/cobertura.dart — resume coverage/lcov.info: líneas cubiertas por archivo (sin herramientas extra)
+// ignore_for_file: avoid_print — es un programa de consola: imprimir es su salida
+import 'dart:io';
+
+void main(List<String> args) {
+  final resumen = <(String, int, int)>[];
+  var (archivo, lf, lh) = ('', 0, 0);
+  for (final linea in File(args.isEmpty ? 'coverage/lcov.info' : args.first).readAsLinesSync()) {
+    if (linea.startsWith('SF:')) archivo = linea.substring(3);
+    if (linea.startsWith('LF:')) lf = int.parse(linea.substring(3));
+    if (linea.startsWith('LH:')) lh = int.parse(linea.substring(3));
+    if (linea == 'end_of_record') resumen.add((archivo, lh, lf));
+  }
+  String fila(String nombre, int h, int f) =>
+      '${nombre.padRight(28)} ${'$h'.padLeft(3)}/${'$f'.padRight(3)} ${(100 * h / f).toStringAsFixed(1).padLeft(5)} %';
+  resumen.sort((a, b) => a.$1.compareTo(b.$1));
+  for (final (a, h, f) in resumen) {
+    print(fila(a, h, f));
+  }
+  final cubiertas = resumen.fold(0, (s, r) => s + r.$2);
+  final total = resumen.fold(0, (s, r) => s + r.$3);
+  print(fila('total', cubiertas, total));
+}
 ```
 
 ```text
 $ flutter test --coverage
 ...
 00:07 +16: All tests passed!
-$ python3 bin/cobertura.py
+$ dart run bin/cobertura.dart
 lib/pantalla_ruta.dart        39/40   97.5 %
 lib/ruta.dart                 19/19  100.0 %
 lib/tarifas.dart              13/13  100.0 %
@@ -1329,6 +1790,9 @@ total                         71/72   98.6 %
 - `main.dart` no aparece en el informe: ninguna prueba de `test/` lo importa. La prueba de integración lo recorre,
   pero no se incluye en este informe.
 - 16 pruebas en 7 segundos: la base de la pirámide es rápida.
+- `bin/cobertura.dart` lee `lcov.info` línea a línea. `SF:` abre un archivo, `LF:` y `LH:` dan sus líneas
+  ejecutables y ejecutadas, y `end_of_record` cierra el bloque y lo guarda como record `(archivo, cubiertas, total)`.
+  Después ordena por nombre, imprime cada fila con `fila` y suma los totales con `fold`.
 
 > **Error común.** Celebrar el porcentaje. Un 98,6 % con el camino de error sin probar es peor que un 90 % con todos los
 > errores cubiertos.
@@ -1356,7 +1820,7 @@ Respuesta: 40/40, 100 %: la línea 66 era la única sin cubrir.
 Crea `integration_test/flujo_test.dart` y ejecútala con `xvfb-run -a flutter test ... -d linux`.
 
 #### Paso 2 · Mide la cobertura
-Ejecuta `flutter test --coverage` y `python3 bin/cobertura.py`.
+Ejecuta `flutter test --coverage` y `dart run bin/cobertura.dart`.
 
 #### Paso 3 · Cubre la línea 66
 Agrega la prueba del Paso 4 del Tema 2 y vuelve a medir.

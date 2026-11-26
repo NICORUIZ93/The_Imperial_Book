@@ -105,8 +105,7 @@ Al terminar este tema podrás:
   caso;
 - leer el choque que produce `!` sobre un `nil` y saber por qué no debe estar en el código de una app.
 
-**Conceptos clave:** opcional, `if let` y `guard let`, encadenamiento opcional, operador `??`, desenvolvimiento
-forzado, `throws` tipado
+**Conceptos clave:** opcional, `if let` y `guard let`, encadenamiento opcional, operador `??`, desenvolvimiento forzado, `throws` tipado
 
 #### El problema
 La bodega envía la ruta del día como líneas de texto: `EN-4472;Luis Pardo;;800;`. Ese envío no tiene teléfono ni
@@ -153,10 +152,61 @@ Este tema no usa temas anteriores: es el punto de partida.
 - **Ejemplo:** `numeroDeGuia("EN-44X1")!` detiene el programa con el código 132 en Linux.
 - **Error típico:** usar `!` porque «aquí nunca es nil», con datos que vienen de afuera (texto, red, escáner).
 
+**`throws` tipado**
+- **Definición técnica:** `throws(Tipo)` declara que la función solo puede lanzar errores de ese tipo concreto (Swift 6.0, SE-0413); en el `catch`, `error` ya tiene ese tipo, sin conversión.
+- **En palabras sencillas:** la función avisa por adelantado exactamente qué problemas puede reportar.
+- **Dónde se rompe la comparación:** no obliga a tratar cada caso: un `catch` general sigue siendo válido, y `throws` sin tipo equivale a `throws(any Error)`.
+- **Ejemplo:** `func leerPeso(_ texto: String) throws(ErrorDeLectura) -> Int`; con `try leerPeso("cero")` el `catch` imprime `pesoInvalido("cero")`.
+- **Error típico:** lanzar otro tipo de error dentro de la función: `throw SinConexion()` no compila (`thrown expression type 'SinConexion' cannot be converted to error type 'ErrorDeLectura'`).
+
 #### ► CÓMO FUNCIONA
-Un opcional es un `enum` de la biblioteca estándar. El compilador lleva la cuenta: mientras un valor sea `T?`, solo se
-puede usar a través de una de las formas de abrirlo. Cada forma responde a una pregunta distinta sobre qué hacer si
-falta.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en el formulario de un envío. Algunas casillas son obligatorias, como la guía o el peso. Otras pueden quedar
+en blanco sin que nada esté mal, como el teléfono del destinatario o el barrio. Una persona entiende esa diferencia
+sin pensarlo; un programa necesita que alguien se la diga.
+
+En muchos lenguajes cualquier referencia puede estar vacía, y nadie te avisa hasta que el programa falla. Swift toma
+otro camino: la posibilidad de que algo falte se escribe en el tipo. Si el teléfono es `String?`, el compilador sabe
+que puede no estar y te obliga a decidir qué hacer en ese caso.
+
+En la ruta del día eso separa tres situaciones. Un teléfono vacío es normal y se muestra «sin teléfono». Un peso que
+dice `cero` es un error de la línea y se informa con su motivo. Una guía mal escaneada no es un número de guía, y la
+función lo dice devolviendo `nil` en lugar de inventar uno.
+
+##### 2. Definición formal y vocabulario
+Un **opcional** es un valor del tipo genérico `Optional<Wrapped>` de la biblioteca estándar. Es un `enum` con dos
+casos: `.some(Wrapped)`, que lleva el valor, y `.none`, que representa la ausencia. `T?` es la forma corta de
+escribir `Optional<T>`, y `nil` es la forma corta de `.none`.
+
+`String` y `String?` son tipos distintos. Por eso el compilador rechaza `telefono.count` cuando `telefono` es
+`String?`: el miembro `count` pertenece al tipo envuelto, no a la caja. Para llegar al valor tienes que
+**desenvolver** el opcional, es decir, sacarlo de la caja después de comprobar que existe.
+
+El glosario nombra las formas de hacerlo. El enlace opcional (**`if let` y `guard let`**) comprueba y, si hay valor,
+lo asigna a una constante no opcional. El **encadenamiento opcional** (`?.`) accede a un miembro solo si hay valor y
+devuelve otro opcional. El **operador `??`** da un valor de reemplazo. El **desenvolvimiento forzado** (`!`) afirma
+que hay valor y detiene el programa si no lo hay.
+
+El tema añade una idea más: **`throws` tipado**. Una función marcada `throws(ErrorDeLectura)` solo puede lanzar
+errores de ese tipo, y quien la llama lo sabe sin leer su cuerpo. Cubre el caso que un opcional no cubre bien: falta
+un dato obligatorio y hay que decir por qué.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa con la línea `EN-4472;Luis Pardo;;800;` dentro de `leerEnvio`:
+
+1. `split` con `omittingEmptySubsequences: false` produce cinco campos, aunque dos estén vacíos. Sin ese argumento,
+   los campos vacíos desaparecerían y la cuenta daría tres.
+2. `guard campos.count == 5` comprueba la forma de la línea. Si no se cumple, el `else` lanza `.camposIncompletos`
+   y la función termina ahí.
+3. `numeroDeGuia(campos[0])` devuelve `Int?`. El `guard` solo pregunta si es distinto de `nil`; el número en sí no
+   se usa.
+4. `guard let peso = Int(campos[3]), peso > 0` hace dos cosas. Primero desenvuelve el `Int?` que devuelve
+   `Int(_:)`; después exige que sea positivo. Desde ahí hasta el final, `peso` es `Int`, no `Int?`.
+5. El teléfono y el barrio vacíos se convierten en `nil` con una expresión condicional. Son opcionales por diseño,
+   no por error.
+
+El diagrama resume qué forma elegir según lo que quieras hacer cuando el valor falta:
 
 ```mermaid
 flowchart TB
@@ -167,6 +217,66 @@ flowchart TB
     P -->|"solo me interesa una propiedad"| E["valor?.count → Int?"]
     P -->|"nunca falta (seguro)"| F["valor! → si es nil, el programa se cae"]
 ```
+
+Cada forma de abrir la caja equivale a un `switch` sobre los dos casos del `enum`. Este fragmento hace lo mismo que
+un `if let … else`, escrito a mano:
+
+```swift
+let telefono: String? = "3105550101"
+switch telefono {
+case .some(let numero): print("tel. \(numero)")
+case .none: print("sin teléfono")
+}
+```
+
+`if let` es la forma corta de ese `switch`. Lo importante ocurre en la verificación de tipos: dentro del bloque, el
+nombre se refiere a un `String`; fuera, sigue siendo `String?`. El compilador lleva esa cuenta por ti.
+
+El operador `??` tiene un detalle interno que importa. Su lado derecho se declara `@autoclosure`: Swift lo envuelve
+en una función y solo la ejecuta si hace falta. Si el lado izquierdo tiene valor, el derecho nunca se evalúa.
+
+El `!` también es un `switch`, pero su caso `.none` llama a una rutina que detiene el proceso. En Linux esa parada
+aparece como `Illegal instruction` con código 132. En la Mac con Apple Silicon aparece como `Trace/BPT trap: 5` con
+código 133. Son las salidas reales del problema resuelto.
+
+##### 4. Reglas, variantes y casos límite
+El `else` de un `guard` debe salir del ámbito actual. Valen `return`, `throw`, `break`, `continue` o una llamada a
+una función que nunca vuelve, como `fatalError`. Si el `else` puede seguir de largo, el código no compila.
+
+Desde Swift 5.7 (propuesta SE-0345) puedes escribir `if let telefono { … }` en lugar de
+`if let telefono = telefono { … }`. La constante nueva toma el mismo nombre y oculta al opcional dentro del bloque.
+Funciona igual con `guard let` y con `if var`.
+
+Varias condiciones se separan con comas, como en `guard let peso = Int(texto), peso > 0`. Se evalúan de izquierda a
+derecha y la primera que falla corta el resto. Las constantes de las primeras ya se pueden usar en las siguientes.
+
+El encadenamiento opcional no suma capas. Si `envio` es `Envio?` y `telefono` es `String?`, la expresión
+`envio?.destinatario.telefono?.count` es `Int?`, no `Int??`. Desde Swift 5 (SE-0230), `try?` tampoco suma capas
+cuando la función ya devuelve un opcional.
+
+Existe una variante que conviene reconocer: el **opcional desenvuelto implícitamente**, `T!` en una declaración. Se
+comporta como `T?`, pero el compilador lo fuerza solo donde se necesita un `T`. Aparece en código antiguo de UIKit,
+como los `@IBOutlet`, y tiene el mismo riesgo que `!`.
+
+Los errores tipados llegaron en Swift 6.0 con la propuesta SE-0413. `throws` sin tipo equivale a
+`throws(any Error)`, y `throws(Never)` equivale a no lanzar nada. En el `catch` de una llamada a una función
+tipada, la constante `error` ya tiene el tipo concreto, como comenta la demostración.
+
+Queda un caso límite de impresión. Interpolar un opcional en un texto produce `Optional(4471)`, y el compilador lo
+avisa con una advertencia. La demostración usa `String(describing:)` para mostrarlo a propósito. En una app,
+desenvuelve antes de mostrar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Si vienes de Java o Kotlin, el opcional se parece a una referencia que puede ser `null`. La diferencia es que en Swift
+la ausencia forma parte del tipo y se comprueba al compilar, no al ejecutar. Un `Int` de Swift nunca puede ser `nil`.
+
+Este es el primer tema del curso, así que no depende de otros. Los siguientes sí lo usan. En el Tema 2 verás que un
+opcional es un tipo valor más y se copia como cualquier `struct`. En el Tema 3 descubrirás que `Optional` es un
+`enum` con valor asociado, el mismo patrón que usarás para los estados de un envío.
+
+En el Tema 4, toda variable `weak` es opcional, porque el objeto al que apunta puede desaparecer. En los módulos de
+SwiftUI y de red, cada dato de afuera pasa por una frontera como `leerEnvio`. Ahí se valida una vez y, de ahí hacia
+adentro, deja de ser opcional.
 
 #### Problema resuelto 1.1
 Lee las líneas de la ruta del día: los campos vacíos de teléfono y barrio son `nil`; una guía, un peso o una
@@ -562,9 +672,50 @@ Este tema usa **los opcionales** (Tema 1).
 - **Error típico:** evitar `struct` «porque copiar arreglos es caro».
 
 #### ► CÓMO FUNCIONA
-Con un tipo valor, cada variable tiene su propio valor. Con un tipo referencia, cada variable tiene una flecha al mismo
-objeto. La elección no es de rendimiento: es de significado. Un paquete es un dato (su contenido lo define); una moto
-es una cosa con identidad (hay una sola con esa placa).
+
+##### 1. La idea en lenguaje sencillo
+Imagina dos formas de pasar información en una oficina. Puedes entregar una fotocopia del formulario: quien la recibe
+escribe lo que quiera y tu original no cambia. O puedes entregar la llave de la moto: quien la recibe usa la misma moto
+que tú, y si la carga, tú la ves cargada.
+
+Swift tiene las dos formas, y la diferencia se decide al declarar el tipo, no al usarlo. Un `struct` se comporta como
+la fotocopia. Una `class` se comporta como la llave. Cuando asignas o pasas un valor a una función, Swift hace lo que
+dice el tipo, sin preguntarte.
+
+En la app de envíos, un paquete es un dato: lo definen su guía, su peso y sus notas. Si la pantalla del detalle
+agrega «frágil» a su copia, la lista no debería enterarse sin que nadie lo decida. Una moto, en cambio, es una cosa
+única con placa: todas las pantallas que la miran deben ver la misma carga.
+
+##### 2. Definición formal y vocabulario
+La documentación oficial de Swift lo dice así: un **tipo valor** es un tipo cuyo valor se copia al asignarse.
+También se copia cuando se pasa a una función. Son tipos valor los `struct`, los `enum` y las tuplas. Casi toda
+la biblioteca estándar también lo es: `Int`, `String`, `Array`, `Dictionary`.
+
+Un **tipo referencia** no se copia al asignarse: se copia una referencia a la misma instancia. En Swift son tipos
+referencia las clases, los actores y los closures. Una referencia es, en términos sencillos, la dirección donde vive
+el objeto.
+
+De esa diferencia salen las otras fichas del glosario. **`mutating`** marca los métodos de un tipo valor que
+modifican `self`. La **identidad** solo existe en los tipos referencia, y el operador **`===`** la compara. La
+**copia al escribir** es la técnica que hace barato copiar colecciones grandes.
+
+La palabra `let` cambia de significado según el tipo. Sobre un `struct`, `let` congela el valor entero, con todas sus
+propiedades. Sobre una `class`, `let` solo congela la referencia: no puedes apuntar a otra moto, pero sí cambiar la
+carga de la que tienes.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la demostración del problema resuelto línea por línea:
+
+1. `var copia = original` copia las tres propiedades de `Paquete`. Desde ese momento hay dos valores. Lo que escribas
+   en uno no aparece en el otro.
+2. `let mismaMoto = moto` no crea otro `Vehiculo`. Copia la referencia y aumenta en uno su **conteo de referencias**,
+   el número de variables que apuntan al objeto. Ese conteo lo administra ARC, que verás en el Tema 4.
+3. `mismaMoto.cargar(original)` guarda en el arreglo de la moto una copia del paquete. Por eso la nota que agregas
+   después a `original` no llega a la carga: `lo cargado no cambia: []`.
+4. `var otraLista = lista` copia el arreglo, pero el arreglo por dentro es una referencia a un almacenamiento
+   compartido. Las dos variables apuntan al mismo bloque de memoria.
+5. `otraLista[0].pesoGramos = 1` es una escritura. Antes de escribir, el arreglo pregunta si es el único dueño de su
+   almacenamiento. Como no lo es, lo duplica y escribe en la copia nueva.
 
 ```mermaid
 flowchart LR
@@ -577,6 +728,72 @@ flowchart LR
         MM["mismaMoto"] --> OBJ
     end
 ```
+
+El paso 5 explica la salida `true` y luego `false` al comparar direcciones. La pregunta «¿soy el único dueño?» se
+hace con la función `isKnownUniquelyReferenced`. `Array`, `Dictionary`, `Set` y `String` la usan por dentro; tus
+propios `struct` no lo hacen solos.
+
+¿Qué pasa si un `struct` guarda una clase dentro? La copia del `struct` copia la referencia, no el objeto. Observa
+este fragmento:
+
+```swift
+final class Bitacora { var eventos: [String] = [] }
+
+struct Ruta {
+    var paradas: [String]
+    let bitacora: Bitacora
+}
+
+let manana = Ruta(paradas: ["Chapinero"], bitacora: Bitacora())
+var tarde = manana
+tarde.paradas.append("Suba")
+tarde.bitacora.eventos.append("salida 14:00")
+print(manana.paradas, manana.bitacora.eventos)
+```
+
+```text
+["Chapinero"] ["salida 14:00"]
+```
+
+Las paradas se copiaron: `manana` sigue con una. La bitácora se compartió: el evento escrito desde `tarde` aparece en
+`manana`. Un `struct` solo es una fotocopia completa si todo lo que contiene también es tipo valor.
+
+##### 4. Reglas, variantes y casos límite
+Un método de un `struct` o un `enum` que cambia `self` debe llevar `mutating`. Solo se puede llamar sobre una
+variable `var`. Con `let`, el compilador responde `cannot use mutating member on immutable value`, como muestra la
+salida real del tema.
+
+Las clases no usan `mutating`: sus métodos pueden cambiar cualquier propiedad `var`. A cambio, una clase puede tener
+herencia, `deinit` (código que corre cuando el objeto se libera) e identidad. Un `struct` no tiene herencia ni
+identidad.
+
+`===` exige operandos de clase (formalmente, `AnyObject?`). Con dos `struct` no compila. `==` compara contenido y
+requiere que el tipo cumpla `Equatable`. Para un `struct` cuyas propiedades son todas `Equatable`, el compilador
+escribe `==` por ti si declaras la conformidad.
+
+Los `struct` reciben gratis un **inicializador por miembros**, un `init` con un parámetro por propiedad. Es interno
+al módulo; si el tipo es `public`, tienes que escribir el `init` público, como hace `Paquete`. Las clases no lo
+reciben: siempre necesitan su propio `init` si alguna propiedad no tiene valor inicial.
+
+`final` impide que alguien herede de la clase. Además permite al compilador llamar a sus métodos directamente, sin
+buscar en una tabla de sobrescrituras. `private(set)` deja leer una propiedad desde fuera pero solo escribirla desde
+dentro del tipo.
+
+Un caso límite: los tipos valor también pueden tener una vida única. Desde Swift 5.9, un `struct` marcado
+`~Copyable` no se copia y puede tener `deinit`. Es el tema del Tema 5.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Del Tema 1 ya conoces un tipo valor sin saberlo: `Optional` es un `enum`, y un `String?` se copia como cualquier
+`struct`. En Java todo objeto es tipo referencia; en Swift lo normal es lo contrario, y la clase es la excepción que
+eliges con motivo.
+
+El Tema 3 sigue con tipos valor: los `enum` con datos asociados para los estados de un envío. El Tema 4 vuelve a las
+referencias desde otro ángulo, porque los closures son tipo referencia y pueden formar ciclos de retención con una
+clase.
+
+Esta elección pesa mucho más adelante. En SwiftUI, las vistas son `struct` y se recrean todo el tiempo, mientras que
+el modelo compartido es una clase `@Observable` (Módulo 2). En concurrencia (Módulo 4), los tipos valor son seguros de
+enviar entre tareas, y las clases necesitan protección.
 
 #### Problema resuelto 2.1
 Modela el paquete como `struct` y la moto como `class`. Comprueba con una ejecución que la copia del paquete es
@@ -840,8 +1057,7 @@ Al terminar este tema podrás:
 - escribir un protocolo con una implementación por defecto en una extensión;
 - distinguir `some` de `any` y reconocer cuándo una extensión no se comporta como un método del tipo.
 
-**Conceptos clave:** `enum` con valores asociados, `switch` exhaustivo, protocolo, extensión de protocolo, `some` y
-`any`
+**Conceptos clave:** `enum` con valores asociados, `switch` exhaustivo, protocolo, extensión de protocolo, `some` y `any`
 
 #### El problema
 El estado de un envío se guardó como texto (`"entregado"`), con campos sueltos: `repartidor`, `recibio`, `motivo`,
@@ -889,9 +1105,52 @@ Este tema usa **los opcionales** (Tema 1) y **los `struct`** (Tema 2).
 - **Error típico:** escribir `[Tarifable]` sin `any`: en Swift 6 todavía compila, pero con la función futura `ExistentialAny` es una advertencia que anuncia un error.
 
 #### ► CÓMO FUNCIONA
-El `enum` hace imposibles los estados que no existen: no hay forma de construir un `pendiente` con firma. El
-`switch` obliga a decidir qué hacer en cada caso, y el compilador recuerda los casos nuevos. El protocolo separa «qué
-se puede hacer» (tarifa, recibo) de «cómo lo hace cada tipo».
+
+##### 1. La idea en lenguaje sencillo
+Piensa en los formularios de una empresa de envíos. El de entrega pide quién recibió y a qué hora. El de intento
+fallido pide el motivo y el número de intento. Nadie llena un solo formulario gigante con todas las casillas y deja
+en blanco las que no aplican: cada situación tiene el suyo.
+
+Un `enum` con valores asociados es eso en código. El estado de un envío es uno de cuatro casos, y cada caso trae solo
+sus datos. No puedes construir un envío pendiente con firma de recibido, porque el caso `pendiente` no tiene dónde
+guardarla.
+
+La segunda mitad del tema resuelve otro problema: cobrar envíos que se calculan distinto. Un envío urbano cobra por
+peso y uno nacional por ciudad. Un protocolo dice «todo lo que esté en esta lista sabe calcular su tarifa», sin
+importar cómo lo haga cada uno.
+
+##### 2. Definición formal y vocabulario
+Una enumeración define un tipo con un conjunto cerrado de casos. Un **`enum` con valores asociados** permite que cada
+caso guarde datos propios, con tipos y etiquetas distintos. Un valor del `enum` está en un solo caso a la vez, y sus
+datos solo se leen después de comprobar en cuál.
+
+Para comprobarlo existe la **coincidencia de patrones** (pattern matching), la operación de comparar un valor con una
+forma y extraer sus partes. El **`switch` exhaustivo** la aplica caso por caso y exige cubrirlos todos. `if case` la
+aplica a un solo caso. `where` agrega una condición a un patrón.
+
+Un **protocolo** es un plano de requisitos: propiedades y métodos que un tipo promete tener. Un tipo **cumple** el
+protocolo (conformance) cuando implementa todos los requisitos. Una **extensión de protocolo** agrega código ya
+escrito que reciben todos los tipos que lo cumplen.
+
+Por último, **`some` y `any`** son dos formas de usar un protocolo como tipo. `some Tarifable` es un **tipo opaco**:
+uno concreto que el compilador conoce y quien llama no ve. `any Tarifable` es un **existencial**: una caja que puede
+guardar cualquier tipo que cumpla el protocolo, distinto en cada elemento.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que ocurre con `describir(.fallido(.direccionErrada, intentos: 3))`:
+
+1. El valor guarda una etiqueta interna que dice en qué caso está, más el espacio para los datos de ese caso. Ese
+   espacio es tan grande como los datos del caso más grande.
+2. El `switch` prueba los patrones en orden, de arriba abajo. `.pendiente`, `.enRuta` y `.entregado` no coinciden
+   con la etiqueta.
+3. `.fallido(let motivo, let intentos) where intentos >= 3` coincide en el caso. Swift enlaza `motivo` e `intentos`
+   y luego evalúa el `where`. Como 3 es mayor o igual que 3, ese patrón gana.
+4. El último patrón, `.fallido` sin `where`, ya no se prueba. Por eso el caso con `where` va antes: si fuera
+   después, nunca se alcanzaría.
+5. Al compilar, Swift comprobó que los patrones cubren todos los casos posibles. Si agregas `devuelto`, falla con
+   `switch must be exhaustive` y sugiere el caso que falta.
+
+Este es el ciclo de vida que modela el `enum`, con los datos de cada transición:
 
 ```mermaid
 stateDiagram-v2
@@ -903,6 +1162,63 @@ stateDiagram-v2
     fallido --> [*]: intentos ≥ 3 (devuelto a bodega)
     entregado --> [*]
 ```
+
+Con los protocolos, la pregunta interna es otra: ¿qué implementación se ejecuta? Cada tipo que cumple `Tarifable`
+tiene una **tabla de testigos** (protocol witness table). Es una lista que asocia cada requisito con la función del
+tipo que lo implementa.
+
+Cuando llamas `envios[1].tarifa()` sobre un `any Tarifable`, Swift abre la caja, busca `tarifa` en la tabla y llama a
+la de `EnvioNacional`. Eso es **despacho dinámico**: la decisión se toma al ejecutar.
+
+`recibo()` no es requisito, así que no está en la tabla. Para `envios[1].recibo()`, el compilador solo ve
+`any Tarifable` y elige la versión de la extensión. Eso es **despacho estático**: la decisión se tomó al compilar.
+Explica las dos líneas de `recibo` en la salida real.
+
+La solución es declarar el método como requisito. Observa el cambio:
+
+```swift
+public protocol Tarifable {
+    var guia: String { get }
+    func tarifa() -> Int
+    func recibo() -> String  // ahora es requisito: entra en la tabla
+}
+```
+
+Con esa línea, la extensión pasa a ser solo el valor por defecto, y `EnvioNacional` lo reemplaza también dentro de la
+lista.
+
+##### 4. Reglas, variantes y casos límite
+Un `enum` puede tener **valores crudos** (raw values) en lugar de asociados, como `MotivoFallo: String`. Cada caso
+tiene un valor fijo del mismo tipo, y `init?(rawValue:)` devuelve un opcional. Un mismo `enum` no puede tener valores
+crudos y asociados a la vez.
+
+`CaseIterable` genera `allCases`, la lista de todos los casos. El compilador solo la genera si ningún caso tiene
+valores asociados. `Equatable` se genera si todos los datos asociados son `Equatable`, como en `EstadoEnvio`.
+
+Un `enum` que se contiene a sí mismo necesita `indirect`, porque su tamaño sería infinito. Desde Swift 5.9
+(SE-0380), `switch` e `if` pueden usarse como expresiones que devuelven un valor, como en el ejemplo del `icono`.
+
+`default` cubre todo lo no listado y apaga el aviso de casos nuevos. Para un `enum` de otra biblioteca que puede
+crecer, Swift ofrece `@unknown default`. Cubre los casos futuros, pero el compilador sigue avisando si falta uno
+conocido.
+
+Las palabras `some` y `any` llegaron por partes. Los tipos opacos en el resultado llegaron con Swift 5.1 (SE-0244).
+La palabra `any` para marcar un existencial llegó en Swift 5.6 (SE-0335). `some` en
+parámetros llegó en Swift 5.7 (SE-0341).
+
+Un `some` debe ser siempre el mismo tipo concreto. Si `envioDePrueba()` devolviera un urbano en un camino y un
+nacional en otro, no compilaría. Un `any` sí puede variar, a cambio de la caja y del despacho dinámico.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 ya te presentó un `enum` con valor asociado: `Optional`, con `.some(valor)` y `.none`. Un `if let` es un
+`if case .some(let x)` abreviado. Los errores tipados `ErrorDeLectura` también eran un `enum` con datos.
+
+Del Tema 2 viene que un `enum` es tipo valor: se copia al asignarse. Si vienes de Java, un `enum` de Java tiene una
+instancia por caso; en Swift cada valor lleva sus propios datos.
+
+El Tema 4 usa protocolos con restricciones en los genéricos, como `Comparable`. En SwiftUI (Módulo 1), `View` es un
+protocolo y `some View` es el tipo opaco que verás en cada pantalla. La navegación del Módulo 3 vuelve a modelar
+destinos como un `enum` con valores asociados.
 
 #### Problema resuelto 3.1
 Modela los estados de un envío con valores asociados y descríbelos para la pantalla; un envío con 3 intentos fallidos
@@ -1238,9 +1554,74 @@ Este tema usa **los opcionales** (Tema 1), **las clases y su identidad** (Tema 2
 - **Error típico:** `[weak self]` en todos los closures «por si acaso», incluso en los que no escapan.
 
 #### ► CÓMO FUNCIONA
-Las funciones de orden superior reciben un closure que dice qué hacer con cada elemento. Los genéricos permiten
-escribir esa lógica una vez para cualquier tipo. Cuando un closure se guarda (`@escaping`), lo que captura vive tanto
-como él; si captura a quien lo guardó, se forma un ciclo.
+
+##### 1. La idea en lenguaje sencillo
+Cuando le pides a un compañero «ordena estos paquetes del más pesado al más liviano», no le explicas cómo comparar
+uno por uno. Le dices qué criterio usar y él recorre la pila. Si mañana le pides ordenarlos por nombre, el trabajo es
+el mismo con otro criterio.
+
+Esa es la idea de este tema. Un **closure** es el criterio escrito como código que se puede entregar. Las funciones
+de orden superior, como `sorted` o `map`, hacen el recorrido. Los genéricos permiten escribir el recorrido una sola
+vez para cualquier tipo de dato.
+
+Hay un costo escondido. Un closure que se guarda para usarlo después se lleva consigo lo que menciona. Si la pantalla
+de seguimiento le entrega al notificador un closure que la menciona, el notificador la mantiene viva. Así aparecen
+las pantallas que nunca se liberan del problema del tema.
+
+##### 2. Definición formal y vocabulario
+La documentación de Swift define un **closure** como un bloque de funcionalidad autocontenido que se puede pasar y
+usar en tu código. Las funciones con nombre son un caso particular de closure. Un closure **captura** las constantes
+y variables del contexto donde se define, y puede usarlas aunque ese contexto ya no exista.
+
+Una **función de orden superior** recibe o devuelve funciones. En la biblioteca estándar, `map`, `filter`,
+`compactMap`, `reduce` y `sorted(by:)` son métodos de colecciones que reciben un closure. `Dictionary(grouping:by:)`
+es un inicializador que también lo recibe.
+
+Un parámetro de tipo función es **no escapante** por defecto: el closure solo puede usarse mientras la función se
+ejecuta. **`@escaping`** declara que el closure puede sobrevivir a la llamada, porque se guarda o se ejecuta después.
+
+Un **genérico con restricción** declara parámetros de tipo, como `<Elemento, Clave: Comparable>`. La restricción dice
+qué protocolos debe cumplir el tipo. Dentro de la función solo puedes usar las operaciones que esas restricciones
+garantizan.
+
+Un **ciclo de retención** aparece cuando dos o más objetos se retienen con referencias fuertes entre sí. Swift
+administra la memoria de las clases con **ARC** (Automatic Reference Counting, conteo automático de referencias). Cada
+referencia fuerte suma uno, y el objeto se libera cuando la cuenta llega a cero.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Empieza por la captura, que es la base del resto. Un closure no copia las variables que menciona: guarda acceso a
+ellas. Una **lista de captura** entre corchetes sí copia el valor en el momento de crear el closure:
+
+```swift
+var entregados = 0
+let contar = { entregados += 1 }
+let foto = { [entregados] in print("al crear: \(entregados)") }
+contar()
+contar()
+print("variable: \(entregados)")
+foto()
+```
+
+```text
+variable: 2
+al crear: 0
+```
+
+`contar` modificó la variable original dos veces. `foto` guardó el valor `0` al crearse y no ve los cambios. Con
+`[weak self]` pasa algo parecido: la lista de captura decide cómo se guarda `self`, en este caso como referencia
+débil.
+
+Ahora sigue el ciclo de la demostración, paso a paso:
+
+1. `PantallaSeguimiento(notificador:fuerte: true)` crea la pantalla. ARC pone su cuenta en 1 mientras dura la
+   expresión.
+2. La pantalla guarda el notificador en `let notificador`: una referencia fuerte de la pantalla al notificador.
+3. `alEntregar` recibe un closure `@escaping` que menciona `self` y lo agrega a `oyentes`. El closure retiene a la
+   pantalla con fuerza.
+4. Al terminar el bloque `do`, desaparece la referencia temporal. La cuenta de la pantalla no llega a cero: el
+   closure, guardado en el notificador, todavía la retiene.
+5. Con `[weak self]`, el closure no suma a la cuenta. La segunda pantalla llega a cero, corre su `deinit` y el
+   contador baja. Por eso la salida real dice `pantallas vivas después de cerrar las dos: 1`.
 
 ```mermaid
 flowchart LR
@@ -1249,6 +1630,49 @@ flowchart LR
     C -- "captura self (fuerte)" --> P
     C2["closure { [weak self] … }"] -. "captura débil" .-> P2["otra PantallaSeguimiento"]
 ```
+
+Con los genéricos, el compilador trabaja de otra forma. Al verificar `losMayores`, solo sabe que `Clave` cumple
+`Comparable`, y por eso acepta `>`. Al llamarla con `\.pesoGramos`, deduce que `Elemento` es `Envio` y `Clave` es
+`Int`.
+
+Después, el optimizador puede generar una copia especializada de la función para `Envio` e `Int`. Eso se llama
+**especialización**. Si no la genera, la función recibe por dentro la información del tipo y la usa al ejecutar. Para
+ti siempre es una sola función.
+
+##### 4. Reglas, variantes y casos límite
+Los closures no escapan por defecto desde Swift 3 (SE-0103). Un closure no escapante no puede guardarse en una
+propiedad ni en un arreglo. El error real del tema lo dice: `converting non-escaping parameter 'oyente' … may allow it
+to escape`.
+
+Dentro de un closure `@escaping` que vive en una clase, Swift exige escribir `self.` de forma explícita. Es un
+recordatorio de que estás capturando. Desde Swift 5.3 (SE-0269) puedes omitirlo si pones `[self]` en la lista de
+captura. Desde Swift 5.8 (SE-0365) también tras un `guard let self` en un closure `[weak self]`.
+
+Una referencia `weak` siempre es una variable opcional. Cuando el objeto se libera, ARC la pone en `nil`. Por eso el
+closure usa `self?.ultimaEntrega`. La alternativa `unowned` no es opcional ni se anula: si el objeto ya no existe, el
+programa se detiene.
+
+Hay varias formas cortas de escribir un closure. `$0` y `$1` nombran los argumentos sin declararlos. Un closure al
+final de la llamada puede ir fuera de los paréntesis. Desde Swift 5.2 (SE-0249), una ruta de clave como `\.guia`
+sirve donde se espera una función, como en `map(\.guia)`.
+
+Una conformidad puede ser condicional: `extension Pagina: Equatable where Elemento: Equatable` solo vale cuando los
+elementos se pueden comparar. Las conformidades condicionales existen desde Swift 4.2 (SE-0143).
+
+Por último, el error de `elMayor` muestra que en Swift 6.4 `Comparable` se declara con `~Copyable, ~Escapable`. Eso
+significa que el protocolo ya no exige que el tipo se pueda copiar. Lo entenderás en el Tema 5.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema reúne los tres anteriores. `compactMap(numeroDeGuia)` usa la función del Tema 1 y descarta sus `nil`. El
+ciclo de retención solo existe porque `PantallaSeguimiento` y `Notificador` son clases del Tema 2, con identidad. Las
+restricciones genéricas usan protocolos del Tema 3.
+
+Si vienes de Java, un closure se parece a una lambda. La diferencia es la memoria: Java tiene un recolector de basura
+que encuentra ciclos, y ARC no. En Swift, el ciclo lo rompes tú con `weak` o `unowned`.
+
+El Tema 5 retoma la memoria desde los tipos valor, con `borrowing` y `consuming`. En SwiftUI (Módulo 1), cada
+`ForEach` y cada botón reciben closures. En el Módulo 4, una `Task` es un closure que escapa, y la pregunta de qué
+captura vuelve con más fuerza.
 
 #### Problema resuelto 4.1
 Con la lista de envíos del día: agrúpalos por barrio, suma los kilos, saca las guías válidas de una lista escrita a
@@ -1614,9 +2038,47 @@ Este tema usa **`struct` y tipos valor** (Tema 2) y **los genéricos** (Tema 4).
 - **Error típico:** creer que el código está bien porque `-typecheck` no dio errores.
 
 #### ► CÓMO FUNCIONA
-Un valor copiable se duplica cada vez que se asigna. Uno `~Copyable` se mueve: la asignación y el paso como
-`consuming` lo entregan, y el nombre anterior queda vacío. `borrowing` lo presta sin moverlo. El compilador sigue cada
-valor por todos los caminos del código y rechaza los usos imposibles.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un boleto de bus de un solo viaje. Puedes mostrárselo al conductor para que lo revise, y lo sigues teniendo.
+Cuando lo metes en la máquina, la máquina se lo queda y lo anula. Nadie puede fotocopiarlo, porque entonces el mismo
+viaje se pagaría una vez y se usaría dos.
+
+Casi todos los valores de Swift son lo contrario: se copian sin costo y sin pedir permiso. Para un número o un texto
+eso es lo correcto. Para un código de entrega de un solo uso, una copia es un error del dominio: el mismo código
+podría confirmar dos entregas.
+
+Swift 6 te deja escribir esa regla en el tipo. Declaras el código como no copiable, y el compilador se convierte en el
+conductor del bus. Revisa en cada línea quién tiene el código, quién solo lo está mirando y quién ya lo gastó.
+
+##### 2. Definición formal y vocabulario
+En Swift, todo tipo cumple de forma implícita el protocolo **`Copyable`**: sus valores se pueden duplicar. La marca
+**`~Copyable`** quita ese requisito implícito. Se lee «sin la suposición de Copyable», no «lo contrario de
+copiable».
+
+Un valor no copiable tiene un único **dueño** a la vez. Pasarlo de un dueño a otro se llama **mover**. El dueño
+anterior queda sin valor, y el compilador no le deja volver a usarlo.
+
+Los modificadores de propiedad dicen qué hace una función con el valor que recibe. **`borrowing`** lo recibe
+prestado: puede leerlo, pero no consumirlo ni guardarlo. **`consuming`** se queda con él. Un tercer modificador,
+`inout`, lo presta con permiso de modificarlo y lo devuelve al terminar.
+
+Un **`deinit` en un `struct`** solo es posible en tipos no copiables. Se ejecuta cuando el valor deja de tener dueño.
+El **verificador de propiedad** es la fase del compilador que sigue cada valor no copiable y rechaza los usos
+imposibles.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el código `EN-4471` en la demostración:
+
+1. `let codigo = CodigoEntrega(…)` crea el valor. La función `demoFirma` es su dueña.
+2. `mostrarEnPantalla(codigo)` lo presta dos veces. Cada préstamo termina al volver la función, y `demoFirma` sigue
+   siendo la dueña. Nada se copia y nada se destruye.
+3. `describirPrestado(codigo) { $0.pista() }` también presta. Es genérica, pero su `T: ~Copyable` permite recibir
+   un tipo no copiable.
+4. `confirmarEntrega(codigo, dictado:)` recibe el parámetro como `consuming`. El valor se mueve a la función, y desde
+   esa línea `codigo` ya no existe para `demoFirma`.
+5. Dentro, `canjear` también es `consuming`. Al terminar sin devolver el código, nadie lo tiene: se ejecuta el
+   `deinit` y el registro anota `código de EN-4471 destruido`.
 
 ```mermaid
 stateDiagram-v2
@@ -1626,6 +2088,73 @@ stateDiagram-v2
     consumido --> [*]: deinit («código destruido»)
     consumido --> error: usar otra vez → «used after consume»
 ```
+
+¿Cuándo comprueba todo esto el compilador? No durante el análisis de tipos. Swift traduce primero el programa a
+**SIL** (Swift Intermediate Language), una representación intermedia donde cada copia y cada destrucción es una
+instrucción visible.
+
+Sobre SIL corre el verificador de propiedad. Recorre todos los caminos posibles del código y marca dónde se consume
+cada valor. Si encuentra un uso después de un consumo, informa las dos líneas: `consumed here` y `used here`. Por eso
+`-typecheck` no ve estos errores y `-emit-sil` sí.
+
+Con un tipo no copiable, Swift no deja que el modificador quede implícito. Observa qué pasa si lo olvidas:
+
+```swift
+struct CodigoEntrega: ~Copyable {
+    let digitos: String
+}
+
+func registrar(_ codigo: CodigoEntrega) {
+    print(codigo.digitos)
+}
+```
+
+```text
+error: parameter of noncopyable type 'CodigoEntrega' must specify ownership
+note: add 'borrowing' for an immutable reference
+note: add 'inout' for a mutable reference
+note: add 'consuming' to take the value from the caller
+```
+
+El compilador te obliga a decidir. Para una función que solo imprime, la respuesta correcta es `borrowing`.
+
+##### 4. Reglas, variantes y casos límite
+Las piezas llegaron en dos etapas. Swift 5.9 introdujo los `struct` y `enum` no copiables (SE-0390) y los
+modificadores `borrowing` y `consuming` (SE-0377). Swift 6.0 permitió usarlos en genéricos y protocolos con
+`T: ~Copyable` (SE-0427).
+
+En un genérico, `<T>` sin más significa `<T: Copyable>`. La salida real del tema lo muestra:
+`'where T: Copyable' is implicit here`. Solo escribiendo `~Copyable` el genérico acepta los dos tipos de valores.
+Dentro de él, no puedes copiar `T`.
+
+Para los tipos copiables, `borrowing` y `consuming` casi no cambian el resultado. Sirven como indicación para el
+optimizador sobre quién debe liberar el valor. Por defecto, los parámetros de funciones se prestan y los de un `init`
+se consumen.
+
+El operador `consume` (SE-0366, Swift 5.9) termina de forma explícita la vida de una variable local o un parámetro.
+Después de `let b = consume a`, usar `a` es un error. No se aplica a variables globales ni a propiedades.
+
+`discard self` dentro de un método `consuming` termina el valor sin ejecutar su `deinit`. Hoy tiene un límite: solo
+funciona si las propiedades guardadas se destruyen trivialmente, sin limpieza propia. `String` no cumple esa
+condición, como muestra el error de `t5_discard.swift`.
+
+Una clase nunca puede ser `~Copyable`: copiar una referencia no copia el objeto, así que la marca no tendría sentido.
+Tampoco un tipo copiable puede guardar dentro una propiedad no copiable.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te enseñó que un `struct` se copia al asignarse. Este tema es la excepción controlada: un `struct`
+`~Copyable` se mueve. También te explicó que solo las clases tenían `deinit`; ahora sabes que los `struct` no
+copiables también pueden tenerlo.
+
+Del Tema 4 viene la nota de `Comparable` con `~Copyable, ~Escapable`. Ahora puedes leerla: la biblioteca estándar
+quitó la suposición de copia para que sus protocolos sirvan también a tipos como `CodigoEntrega`.
+
+Si conoces Rust, la idea es la misma que su propiedad y sus préstamos, pero opcional. En Swift solo la pagas en los
+tipos que la necesitan.
+
+En el Módulo 4 aparece una idea cercana con `sending`. El compilador comprueba que un valor pasado a otra tarea no se
+vuelva a usar desde el lado que lo envió. El Proyecto 37 del módulo usa el código de entrega tal como lo escribiste
+aquí.
 
 #### Problema resuelto 5.1
 Escribe el código de entrega como tipo no copiable: se puede mostrar (prestado) muchas veces y canjear (consumido) una

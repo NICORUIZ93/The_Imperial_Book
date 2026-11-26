@@ -107,7 +107,7 @@ Al terminar este tema podrás:
 - medir cuántos widgets reconstruye un `setState`;
 - reconocer las señales de que el estado debe salir del árbol de widgets.
 
-**Conceptos clave:** estado local, subir el estado, ancestro común, *prop drilling*, estado inmutable
+**Conceptos clave:** estado local, subir el estado, ancestro común, prop drilling, estado inmutable
 
 #### El problema
 La lista de la ruta tiene una casilla por entrega, y la barra superior muestra cuántas quedan pendientes. Las dos
@@ -139,7 +139,7 @@ Este tema usa **`StatefulWidget`** y **`setState`** (Módulo 1, Tema 4) y **`Bad
 - **Ejemplo:** `RutaConSetState`, que contiene al `AppBar` y a la lista.
 - **Error típico:** subir el estado a `main.dart` «por si acaso»: toda la app se reconstruye por un cambio pequeño.
 
-***prop drilling***
+**prop drilling**
 - **Definición técnica:** pasar un dato o una función por constructores a través de widgets intermedios que no lo usan, solo para que llegue a un descendiente.
 - **En palabras sencillas:** pasar un recado de mano en mano.
 - **Dónde se rompe la comparación:** con dos niveles está bien; con cinco, cada cambio de firma toca muchos archivos.
@@ -154,9 +154,63 @@ Este tema usa **`StatefulWidget`** y **`setState`** (Módulo 1, Tema 4) y **`Bad
 - **Error típico:** modificar la lista en el lugar (`_ruta[1] = ...`) sin `setState`: el dato cambia y la pantalla no.
 
 #### ► CÓMO FUNCIONA
-El estado vive en el ancestro común. Baja por constructores hasta el contador y las filas; las acciones suben por
-funciones (`alTocar`). Cada `setState` vuelve a ejecutar `build` del ancestro, que crea de nuevo el contador y todas
-las filas.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una bodega donde cada conductor anota en su libreta qué entregó. El supervisor quiere saber cuántas faltan,
+pero no puede leer veinte libretas. La solución es un tablero único en la pared: todos escriben ahí y todos leen de ahí.
+
+En la ruta pasa lo mismo. La casilla de cada fila y el número del camión en la barra superior hablan del mismo dato:
+qué entregas siguen pendientes. Si cada fila guarda su casilla, el número no tiene de dónde leer. El tablero de la
+pared es el widget que contiene a ambos, y ahí debe vivir la lista.
+
+Este tema trata de esa decisión: dónde guardar un dato que varias partes de la pantalla necesitan. También trata de su
+costo, porque cada vez que el tablero cambia, Flutter vuelve a dibujar todo lo que cuelga de él.
+
+##### 2. Definición formal y vocabulario
+Un `StatefulWidget` crea un objeto `State` que persiste entre reconstrucciones. Los campos de ese objeto son su
+**estado local**: datos que solo ese widget y sus descendientes conocen. La documentación de Flutter lo llama estado
+efímero (*ephemeral state*) y lo distingue del estado de la app, que comparten muchas pantallas.
+
+`setState(fn)` es el método de `State` que avisa al framework que el estado interno cambió. Ejecuta la función que le
+pasas y marca el widget para reconstruirse. No guarda nada por sí mismo: el dato ya cambió dentro de la función.
+
+**Subir el estado** (en inglés, *lifting state up*) es mover el dato hasta el **ancestro común** de los widgets que lo
+usan. El ancestro común es el widget más bajo que los contiene a todos. Desde ahí, el dato baja por constructores y
+las acciones suben como funciones (`VoidCallback`). Cuando ese paso de mano en mano atraviesa widgets que no usan el
+dato, se llama ***prop drilling***.
+
+El **estado inmutable** completa la idea: en lugar de modificar la lista, creas otra con el cambio. Así el valor viejo
+y el nuevo son objetos distintos, y comparar los dos dice si algo cambió.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue un toque sobre `EN-4472` desde el dedo hasta la pantalla:
+
+1. `CheckboxListTile` recibe el toque y llama a `onChanged`, que ejecuta `alTocar()`. Esa función la creó el ancestro.
+2. `alTocar` llama a `_alternar('EN-4472')` en `_RutaConSetStateState`. La acción subió sin que la fila sepa nada de la
+   lista.
+3. `setState` ejecuta la función de forma sincrónica. Al volver, `_ruta` ya apunta a una lista nueva.
+4. `setState` marca el elemento de la pantalla como «sucio» y pide un cuadro nuevo. Todavía no se construye nada.
+5. En el cuadro siguiente, el `BuildOwner` recorre los elementos sucios y ejecuta `build` del ancestro.
+6. `build` crea objetos nuevos: un `ContadorPendientes` y cinco `FilaEntrega`. Son widgets, descripciones baratas.
+7. Cada elemento compara su widget viejo con el nuevo. Si el tipo y la *key* coinciden, el elemento se reutiliza y
+   ejecuta el `build` del widget nuevo.
+8. Los objetos de render solo cambian donde cambió una propiedad: la casilla de `EN-4472` y el texto tachado.
+
+```dart
+void _alternar(String guia) => setState(() {
+      _ruta = [
+        for (final e in _ruta)
+          e.guia == guia ? e.con(e.estado == Estado.entregada ? Estado.pendiente : Estado.entregada) : e,
+      ];
+    });
+```
+
+En este esquema, la lista nueva reutiliza las cuatro entregas que no cambiaron: son los mismos objetos. Solo la
+entrega tocada es un objeto nuevo, creado con `con(...)`.
+
+El paso 7 explica la medición del problema resuelto. Las cinco `FilaEntrega` son instancias nuevas, así que Flutter
+ejecuta los cinco `build`, aunque cuatro filas dibujen lo mismo. El paso 8 explica por qué no es grave con cinco filas:
+el trabajo caro, pintar, solo ocurre donde algo cambió.
 
 ```mermaid
 flowchart TD
@@ -166,6 +220,42 @@ flowchart TD
     S -->|"..."| F5["FilaEntrega EN-4480"]
     F2 -.->|"alTocar() → setState"| S
 ```
+
+##### 4. Reglas, variantes y casos límite
+`setState` tiene reglas que el framework comprueba en modo de depuración. Conócelas antes de que aparezcan en la consola:
+
+- La función que recibe debe ser sincrónica. Si devuelve un `Future` (por ejemplo, `setState(() async {...})`), Flutter
+  lanza un error que dice que el callback devolvió un `Future`. Haz el `await` antes y llama a `setState` después.
+- Solo se llama con el widget montado. Tras `dispose`, el error empieza con `setState() called after dispose()`. Por
+  eso, después de un `await`, compruebas `mounted` primero (Módulo 3, Tema 1).
+- No se llama durante un `build`. El mensaje es `setState() or markNeedsBuild() called during build.`
+- Llamar varias veces a `setState` antes del siguiente cuadro no produce varias reconstrucciones. El elemento ya está
+  marcado y se construye una sola vez.
+
+Un caso límite importante es el widget `const`. Si el ancestro crea `const Icon(...)`, en cada `build` recibe el mismo
+objeto. Flutter detecta que el widget es idéntico y no lo reconstruye. `FilaEntrega` no puede ser `const` porque recibe
+datos que cambian.
+
+Otro caso límite es la lista. En Dart, `==` entre listas compara identidad, no contenido. Si modificas `_ruta` en el
+lugar, el objeto sigue siendo el mismo y nada externo puede notar el cambio. Dentro de `setState` funcionaría hoy, pero
+los Temas 3 y 6 dependen de comparar valores y fallarían.
+
+La documentación de Flutter admite que no hay una regla universal entre estado efímero y estado de la app. Una regla
+práctica sirve de punto de partida. Si un dato lo usa un solo widget, déjalo local. Si lo usan varios widgets cercanos,
+súbelo al ancestro común. Si cruza pantallas o necesita pruebas sin interfaz, sácalo del árbol.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema usa tres piezas del Módulo 1. `StatefulWidget` y el ciclo de vida de `State` vienen del Tema 4. Las *keys*
+del Tema 5 deciden si un elemento se reutiliza en el paso 7. Los tres árboles del Tema 6 explican por qué reconstruir
+widgets es barato y repintar no lo es.
+
+Del Módulo 3, Tema 1, viene `mounted`: la misma regla que protege a `Navigator` después de un `await` protege a
+`setState`. Del Módulo 0, Tema 2, viene la clase inmutable con campos `final` y constructor `const`, que es la forma
+de `Entrega`.
+
+Fíjate en la diferencia con lo que viene. Aquí el estado vive dentro del árbol, y solo lo ven los descendientes del
+ancestro. El Tema 2 lo saca a un `ChangeNotifier`, que cualquier pantalla puede escuchar. El Tema 3 usa Riverpod para
+que cada fila escuche solo su entrega y la medición baje de 5 filas a 1.
 
 #### Problema resuelto 1.1
 Construye la ruta con contador y casillas usando solo `setState`. Mide cuántas filas se reconstruyen al marcar una
@@ -479,9 +569,60 @@ Este tema usa **subir el estado** y **estado inmutable** (Tema 1) y **`ChangeNot
 - **Error típico:** calcular reglas en el `build` y no poder probarlas sin pantalla.
 
 #### ► CÓMO FUNCIONA
-`Ruta` vive fuera del árbol y se pasa a la pantalla. Dos `ListenableBuilder` la escuchan. Al tocar una fila,
-`alternar` crea la lista nueva y llama a `notifyListeners`: los dos `builder` se ejecutan de nuevo y el resto de la
-pantalla (el `Scaffold`, el título) no se reconstruye.
+
+##### 1. La idea en lenguaje sencillo
+Imagina la oficina de despacho con un tablero de anuncios y una campana. Quien cambia algo en el tablero toca la
+campana. Los interesados se acercan a leer. El tablero no sabe quién lee ni para qué: solo guarda los datos y avisa.
+
+En el Tema 1, el tablero era la propia pantalla: la lista vivía en un `State`. Para leerla había que estar dentro de
+ese widget. Ahora la lista pasa a un objeto propio, `Ruta`, que no es un widget. La pantalla, una prueba o una segunda
+pantalla pueden tenerlo y escuchar su campana.
+
+Ese cambio separa dos trabajos. `Ruta` decide qué significa alternar una entrega y cuántas quedan. Los widgets solo
+muestran lo que `Ruta` dice y le reenvían los toques.
+
+##### 2. Definición formal y vocabulario
+**`ChangeNotifier`** es una clase de la biblioteca `foundation` de Flutter que puedes extender o mezclar. Implementa
+`Listenable`: mantiene una lista de oyentes, funciones `VoidCallback` sin parámetros, que registras con
+`addListener` y quitas con `removeListener`.
+
+**`notifyListeners`** recorre esa lista y llama a cada oyente, de forma sincrónica, antes de devolver el control. No
+dice qué cambió ni compara valores: solo anuncia que algo cambió. Por eso el oyente vuelve a leer lo que le interesa.
+
+**`ListenableBuilder`** es el widget que conecta un `Listenable` con la pantalla. Recibe `listenable` y `builder`, y
+ejecuta el `builder` cada vez que llega un aviso. Tiene un parámetro opcional, `child`, para un subárbol que no depende
+del dato y se construye una sola vez.
+
+La **separación de lógica y presentación** es el principio que justifica todo esto. Las reglas viven en una clase sin
+widgets; los widgets solo dibujan. La prueba es inmediata: si puedes ejercer la regla sin construir una pantalla,
+está bien separada.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el mismo toque sobre `EN-4472` del Tema 1, ahora con `Ruta`:
+
+1. Al construirse, cada `ListenableBuilder` llama a `ruta.addListener` con una función propia. `Ruta` tiene dos oyentes.
+2. El toque llega a `FilaEntrega` y ejecuta `ruta.alternar('EN-4472')`. La fila no sabe nada de widgets externos.
+3. `alternar` reemplaza `_entregas` por una lista nueva. En este instante nadie lo sabe todavía.
+4. `notifyListeners()` llama a los dos oyentes, uno detrás de otro.
+5. Cada oyente hace lo mismo que `setState` en el Tema 1: marca su elemento como sucio.
+6. En el cuadro siguiente, Flutter ejecuta los dos `builder`. Uno crea el contador, el otro el `ListView` con cinco filas.
+7. `Scaffold`, `AppBar` y el título no se reconstruyen: no escuchan a `Ruta`.
+
+```dart
+void alternar(String guia) {
+  _entregas = [
+    for (final e in _entregas)
+      e.guia == guia ? e.con(e.estado == Estado.entregada ? Estado.pendiente : Estado.entregada) : e,
+  ];
+  notifyListeners();                                              // avisa a quien escuche
+}
+```
+
+Este método resume el contrato: primero cambias el dato, después avisas. Si inviertes el orden, los oyentes leen el
+valor viejo. Si olvidas el aviso, el dato cambia y la pantalla no.
+
+El paso 6 explica por qué la medición sigue en **5 filas**. El `ListenableBuilder` de la lista sabe que hubo un cambio,
+no cuál. Su `builder` vuelve a crear las cinco `FilaEntrega`, y cada una ejecuta su `build`.
 
 ```mermaid
 flowchart LR
@@ -490,6 +631,40 @@ flowchart LR
     F["FilaEntrega"] -->|"ruta.alternar(guía)"| R
     T["Prueba unitaria"] -->|"alternar, pendientes"| R
 ```
+
+##### 4. Reglas, variantes y casos límite
+La documentación de `ChangeNotifier` fija su costo: agregar un oyente es O(1); quitarlo y notificar son O(N), con N
+oyentes. Está pensado para pocos oyentes por objeto, no para miles.
+
+Después de `dispose()`, el objeto queda inservible. La documentación indica que `addListener` lanza un error si se
+llama sobre un objeto liberado. Quien crea el `ChangeNotifier` es quien lo libera; en la prueba del tema lo hace
+`addTearDown(ruta.dispose)`.
+
+`notifyListeners` avisa siempre, aunque el valor sea idéntico. Eso es lo que mide el Paso 4 del laboratorio: alternar
+una guía inexistente produce un aviso inútil. La comprobación de «¿cambió algo?» es tu responsabilidad.
+
+Existe una variante que sí compara: `ValueNotifier<T>`, un `ChangeNotifier` que envuelve un solo valor. Al asignar
+`value`, solo avisa si el valor nuevo es distinto del anterior según `==`. Sirve para un dato simple, no para una clase
+con varias reglas.
+
+`ListenableBuilder` tiene la misma implementación que `AnimatedBuilder`. La documentación recomienda `AnimatedBuilder`
+cuando escuchas una animación, solo por legibilidad. Su parámetro `child` evita reconstruir lo que no depende del dato.
+
+Tres reglas de uso salen de aquí. Crea el notificador fuera de `build`, o perderás el estado en cada reconstrucción.
+Expón métodos, no listas modificables. Y pon el `ListenableBuilder` lo más abajo posible, alrededor de lo que cambia.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Ya usaste `ChangeNotifier` en el Módulo 3, Tema 4: `refreshListenable` de go_router escuchaba la sesión para decidir
+redirecciones. Aquí el mismo mecanismo alimenta la pantalla. `dispose` y su obligación de liberar recursos vienen del
+Módulo 1, Tema 4.
+
+Compáralo con el Tema 1. `setState` vive dentro de un `State` y solo sirve a sus descendientes. `ChangeNotifier` vive
+fuera del árbol y sirve a cualquiera que tenga la referencia. Ganas lógica comprobable y compartible. No ganas
+precisión: un aviso sigue rehaciendo todo lo que escucha.
+
+El Tema 3 resuelve esa precisión. Riverpod cambia la campana por un valor: cada widget elige qué parte observar, y solo
+se reconstruye si esa parte cambió según `==`. El paquete `provider`, antecesor de Riverpod, se construyó sobre
+`ChangeNotifier`; Riverpod 3 conserva `ChangeNotifierProvider` solo como API heredada.
 
 #### Problema resuelto 2.1
 Pasa la lógica de la ruta a un `ChangeNotifier`, escúchala desde la pantalla y prueba la lógica sin pantalla.
@@ -692,10 +867,60 @@ Este tema usa **`ChangeNotifier`** y **separación de lógica y presentación** 
 - **Error típico:** un provider derivado que devuelve una lista nueva en cada cálculo: todos sus oyentes se reconstruyen siempre.
 
 #### ► CÓMO FUNCIONA
-`RutaNotifier` y `FiltroNotifier` guardan el estado; `guiasVisiblesProvider` y `pendientesProvider` se derivan de
-ellos. La pantalla observa la lista de guías visibles, el contador observa los pendientes y cada fila observa solo su
-entrega con `select`. Al tocar `EN-4472`, cambia la ruta: las guías visibles siguen siendo las mismas (no avisa), los
-pendientes cambian (se redibuja el contador) y solo la fila `EN-4472` ve un valor distinto.
+
+##### 1. La idea en lenguaje sencillo
+Vuelve a la oficina de despacho. Con la campana del Tema 2, cada aviso hacía levantar a todos. Ahora piensa en un
+sistema de suscripciones: cada conductor pide «avísame solo si cambia mi entrega». El supervisor pide «avísame si
+cambia el número de pendientes». Nadie se levanta por un cambio que no le toca.
+
+Riverpod funciona así. Declaras una vez cómo obtener cada dato: la ruta, el filtro elegido, las guías visibles, el
+número de pendientes. Cada widget dice qué dato observa, y a veces qué parte de él. Riverpod lleva la cuenta de quién
+depende de qué y solo reconstruye a quien vio un valor distinto.
+
+El resultado se mide en la salida del tema: el mismo toque sobre `EN-4472` pasa de reconstruir 5 filas a 1.
+
+##### 2. Definición formal y vocabulario
+Un **provider** es un objeto inmutable, normalmente una variable global `final`, que describe cómo crear un valor. El
+valor no vive en el provider: vive en un contenedor. En la app, el contenedor lo crea `ProviderScope`; en una prueba,
+lo creas tú con `ProviderContainer`. Cada contenedor tiene sus propios valores, aunque la variable sea global.
+
+Un **`Notifier`** es la clase que guarda un estado que cambia. Su método `build` devuelve el estado inicial, y sus
+métodos asignan un estado nuevo a `state`. Se expone con `NotifierProvider`. Al asignar `state`, Riverpod avisa a los
+oyentes si el valor nuevo es distinto del anterior según `==`.
+
+Desde un widget lees providers con un `WidgetRef`. **`ref.watch`** lee y suscribe: el widget se reconstruirá si el
+valor cambia. **`ref.read`** lee una sola vez, sin suscribir; es para callbacks como `onChanged`.
+
+El **estado derivado** es un `Provider((ref) => ...)` que calcula su valor observando otros providers. **`select`**
+observa solo una parte del valor de un provider. Los dos deciden si avisar comparando con `==`, así que dependen de la
+**igualdad por valor**: que dos objetos con el mismo contenido sean iguales.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue otra vez el toque sobre `EN-4472`, ahora con el filtro en «Todas»:
+
+1. `ProviderScope` creó el contenedor al arrancar. `rutaProvider` no existía hasta que la pantalla lo leyó por primera
+   vez: los providers se crean de forma perezosa.
+2. El toque ejecuta `ref.read(rutaProvider.notifier).alternar('EN-4472')`. `read` obtiene el `RutaNotifier` sin
+   suscribir la fila.
+3. `alternar` asigna una lista nueva a `state`. Riverpod la compara con la anterior: son objetos distintos, así que hay
+   cambio.
+4. Riverpod marca como desactualizados a quienes dependen de `rutaProvider`: los dos derivados y los `select` de las
+   cinco filas.
+5. Cada fila evalúa su función de `select`. Cuatro filas obtienen el mismo objeto `Entrega` de antes: `==` es verdadero
+   y no se reconstruyen. La fila `EN-4472` obtiene una `Entrega` nueva y se marca para reconstruirse.
+6. `pendientesProvider` se recalcula: pasa de 5 a 4. El `Consumer` del contador se reconstruye.
+7. `guiasVisiblesProvider` se recalcula y devuelve un `GuiasVisibles` con las mismas cinco guías. Gracias a su `==`, es
+   igual al anterior: la lista no se entera.
+
+```dart
+final entrega = ref.watch(rutaProvider.select((ruta) => ruta.firstWhere((e) => e.guia == guia)));
+```
+
+Esta línea de `FilaConsumidora` es el paso 5. La función se ejecuta en cada cambio de la ruta; lo que se ahorra es el
+`build`, no el cálculo del `select`.
+
+El paso 7 explica el hallazgo del problema resuelto. Con `List<String>`, cada cálculo creaba una lista nueva. Como en
+Dart `[1] == [1]` es `false`, Riverpod veía un cambio en cada toque y la lista reconstruía todas las filas.
 
 ```mermaid
 flowchart TD
@@ -707,6 +932,42 @@ flowchart TD
     R -->|"select: solo EN-4472"| F2["FilaConsumidora EN-4472"]
     R -->|"select: solo EN-4471"| F1["FilaConsumidora EN-4471 (no cambia)"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+Este curso usa `flutter_riverpod` 3.5.0. Riverpod 3.0 cambió varias reglas respecto a 2.x, y verás código viejo en
+internet:
+
+- Desde 3.0, todos los providers filtran los avisos con `==`. Antes, algunos usaban otras comparaciones. Puedes
+  personalizarlo sobrescribiendo `updateShouldNotify`.
+- `StateProvider`, `StateNotifierProvider` y `ChangeNotifierProvider` siguen existiendo, pero se movieron a
+  `package:riverpod/legacy.dart` para indicar que ya no se recomiendan. Usa `Notifier`.
+- `Ref` es un solo tipo, sin parámetro genérico. Tipos como `FutureProviderRef` desaparecieron.
+- Cuando un widget deja de estar visible, sus suscripciones se pausan, y se reanudan al volver.
+- `ProviderContainer.test()` crea un contenedor que se libera solo al terminar la prueba. Lo usa la prueba del tema.
+
+Hay reglas de uso que el analizador no detecta. En `build` siempre `watch` o `select`; en callbacks, `read`. Nunca
+modifiques `state` en el lugar (`state.add(...)`): el objeto es el mismo, `==` es verdadero y nadie se entera.
+
+Un provider declarado sin `autoDispose` conserva su valor mientras viva el contenedor. Con
+`NotifierProvider.autoDispose`, el valor se destruye cuando nadie lo escucha. La ruta del día puede vivir siempre; una
+búsqueda temporal, no.
+
+`select` tiene un límite que muestra el Checkpoint 3.1. Evita las reconstrucciones que vienen del provider, no las que
+vienen del padre. Si la lista crea un widget `FilaConsumidora` nuevo, ese widget se construye aunque su entrega no haya
+cambiado.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La igualdad por valor viene del Módulo 0, Tema 2, donde implementaste `operator ==` y `hashCode`. Las `ValueKey` de
+cada fila vienen del Módulo 1, Tema 5: permiten que Flutter reutilice el elemento correcto cuando el filtro cambia el
+orden.
+
+Compáralo con el Tema 2. `ChangeNotifier` avisa «cambié» y el oyente relee todo. `Notifier` publica un valor nuevo, y
+Riverpod compara antes de avisar. `ref.watch` cumple el papel de `ListenableBuilder`, pero lo usas dentro de cualquier
+`ConsumerWidget`.
+
+Lo que viene se apoya en este tema. El Tema 4 usa `AsyncNotifier`, el mismo `Notifier` para datos que tardan. El Tema
+5 agrega `ref.listen` para efectos de una sola vez. El Tema 6 explica cuándo se recalculan los derivados y compara este
+modelo con Cubit.
 
 #### Problema resuelto 3.1
 Haz la ruta con Riverpod y un filtro por estado. Consigue que un toque reconstruya una sola fila y prueba los
@@ -938,8 +1199,7 @@ Al terminar este tema podrás:
 - reintentar una carga fallida con `AsyncValue.guard`;
 - reemplazar el origen de los datos en una prueba y controlar los reintentos automáticos de Riverpod 3.
 
-**Conceptos clave:** `AsyncValue`, `AsyncNotifier`, esqueleto de carga, estado vacío, `AsyncValue.guard`,
-reintento automático
+**Conceptos clave:** `AsyncValue`, `AsyncNotifier`, esqueleto de carga, estado vacío, `AsyncValue.guard`, reintento automático
 
 #### El problema
 La ruta del día viene del servidor. Durante un segundo no hay datos; a veces la red falla; algunos días no hay
@@ -994,9 +1254,60 @@ las **pantallas de mensaje** del sistema de diseño (Módulo 2, Tema 6).
 - **Error típico:** probar el estado de error sin desactivarlos: la pantalla sigue cargando y la prueba no encuentra «Reintentar».
 
 #### ► CÓMO FUNCIONA
-La pantalla observa `entregasProvider`. Al abrirla, `build` del `AsyncNotifier` llama al repositorio y el estado es
-`AsyncLoading`: se muestra el esqueleto. Cuando el `Future` termina, el estado pasa a `AsyncData` (lista o vacío) o a
-`AsyncError` (error con reintento). «Reintentar» vuelve a poner `AsyncLoading` y repite la carga con `guard`.
+
+##### 1. La idea en lenguaje sencillo
+Cuando pides un domicilio, la aplicación no te muestra una pantalla en blanco mientras el restaurante confirma. Te dice
+«preparando», luego «en camino» o «no pudimos procesar tu pedido». Cada momento tiene su mensaje, y tú sabes qué hacer
+en cada uno.
+
+La ruta del día también llega con demora. Durante un rato no hay datos; luego hay entregas, o no hay ninguna, o la red
+falló. Son cuatro situaciones distintas, y el conductor debe distinguirlas de un vistazo, en la calle y con prisa.
+
+Este tema convierte esas situaciones en un solo valor que la pantalla puede revisar con un `switch`. Así ningún caso
+queda sin diseño, porque el compilador te obliga a cubrirlos.
+
+##### 2. Definición formal y vocabulario
+**`AsyncValue<T>`** es un tipo `sealed` de Riverpod con tres subtipos: `AsyncLoading`, `AsyncData` (con `value`) y
+`AsyncError` (con `error` y `stackTrace`). Al ser sellado, un `switch` sobre él puede ser exhaustivo: el analizador
+sabe que no hay un cuarto caso.
+
+**`AsyncNotifier<T>`** es un `Notifier` cuyo `build` devuelve un `Future<T>`. Riverpod envuelve ese `Future`: el estado
+empieza en `AsyncLoading` y pasa solo a `AsyncData` o `AsyncError` cuando termina. Se expone con
+`AsyncNotifierProvider`.
+
+**`AsyncValue.guard`** ejecuta una función asíncrona y devuelve `AsyncData` con el resultado o `AsyncError` con la
+excepción. Nunca deja escapar el error: lo convierte en estado.
+
+El **reintento automático** es una política de Riverpod 3: si un provider falla al construirse, Riverpod vuelve a
+ejecutar su `build` después de una espera. El **esqueleto de carga** y el **estado vacío** no son APIs: son decisiones
+de diseño que dan una pantalla propia a «cargando» y a «no hay datos».
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la prueba «error y reintento» del problema resuelto, con el repositorio falso que falla la primera vez:
+
+1. `PantallaCarga` ejecuta `ref.watch(entregasProvider)`. Es la primera lectura, así que Riverpod crea `EntregasDelDia`
+   y llama a su `build`.
+2. `build` llama a `cargar()` y devuelve el `Future` sin esperarlo. El estado queda en `AsyncLoading` y el `switch` cae
+   en `_`: se ve el esqueleto.
+3. A los 500 ms, `cargar()` lanza `Exception('sin conexión')`. Riverpod atrapa el error y pasa el estado a
+   `AsyncError`.
+4. La prueba desactivó el reintento con `retry: (intento, error) => null`. El estado se queda en error y la pantalla
+   muestra `EstadoError`.
+5. El toque en «Reintentar» llama a `recargar()`. Este asigna `AsyncLoading` y la pantalla vuelve al esqueleto.
+6. `AsyncValue.guard` espera la segunda llamada, que devuelve la ruta. El estado pasa a `AsyncData` con cinco entregas.
+
+```dart
+Future<void> recargar() async {
+  state = const AsyncLoading();
+  state = await AsyncValue.guard(() => ref.read(repositorioProvider).cargar());   // atrapa el error en el estado
+}
+```
+
+Las dos asignaciones son dos avisos distintos. La primera hace visible que el toque funcionó; la segunda entrega el
+resultado. Por eso la salida dice `al tocar Reintentar: esqueleto` y luego `segundo intento: 5 entregas`.
+
+En el `switch` de la pantalla, el orden de los casos es la regla que decide entre vacío y datos. El patrón con `when
+lista.isEmpty` va primero porque un patrón general `AsyncData(value: final lista)` también acepta la lista vacía.
 
 ```mermaid
 stateDiagram-v2
@@ -1007,6 +1318,43 @@ stateDiagram-v2
     Error --> Cargando: Reintentar (guard)
     Datos --> Cargando: recargar()
 ```
+
+##### 4. Reglas, variantes y casos límite
+El reintento automático llegó con Riverpod 3.0. Por defecto reintenta cualquier error salvo los de tipo `Error` y
+`ProviderException`. La primera espera es de 200 ms y se duplica en cada intento, hasta 6,4 segundos, con un máximo de
+diez reintentos. Lo configuras con `retry` en `ProviderScope`, en `ProviderContainer` o en cada provider.
+
+Esa política explica el fallo descrito en el problema resuelto. `Exception('sin conexión')` no es un `Error`, así que
+Riverpod lo reintentaba. Mientras tanto, el estado seguía en «cargando» y el botón «Reintentar» no existía.
+
+El reintento solo actúa cuando falla `build`. Si tú asignas `state` con `guard`, como en `recargar`, el error queda en
+el estado y Riverpod no lo repite.
+
+Riverpod 3 también cambió los nombres de lectura. `valueOrNull` pasó a llamarse `value`, que devuelve `null` si todavía
+no hay datos. `requireValue` lanza un error si no los hay. En la pantalla prefiere el `switch`: no deja casos sin
+mirar.
+
+Un `AsyncLoading` puede llevar el valor anterior. Ocurre cuando `build` se repite porque cambió un provider observado,
+o cuando usas `copyWithPrevious`, como en el Paso 5 del laboratorio. Ese estado sigue siendo `AsyncLoading`, no
+`AsyncData`, así que el patrón `AsyncData(...)` no lo acepta.
+
+Un último caso límite: el usuario puede salir de la pantalla mientras esperas. En Riverpod 3, usar un `Notifier` ya
+destruido lanza un error. Después de un `await` largo, comprueba `ref.mounted` antes de asignar `state`.
+
+En diseño, el esqueleto tiene su propio límite. Si la carga suele tardar menos de unos 300 ms, el esqueleto aparece y
+desaparece de golpe. En ese caso es mejor no mostrar nada durante ese tiempo breve.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `switch` con patrones y las clases selladas vienen del Módulo 0, Tema 6: `AsyncValue` es exactamente ese modelo
+aplicado a una carga. `Future`, `async` y `await` vienen del Módulo 0, Tema 3.
+
+Compáralo con el `Notifier` del Tema 3. Allí el estado existía desde el primer instante. Aquí el estado inicial no es
+un valor tuyo: es `AsyncLoading`, y Riverpod lo cambia cuando el `Future` termina. Por eso no guardas banderas
+`cargando` y `error` aparte: no se pueden contradecir.
+
+Las pantallas de mensaje siguen el sistema de diseño del Módulo 2, Tema 6. El Tema 5 reutiliza `AsyncValue` para el
+estado de un envío. El Tema 6 reemplaza el repositorio en una prueba con `overrides`. En el Módulo 5, ese repositorio
+llamará a un servidor real.
 
 #### Problema resuelto 4.1
 Carga la ruta con un `AsyncNotifier`, diseña los cuatro estados y prueba cada uno con un repositorio falso que
@@ -1351,8 +1699,7 @@ Al terminar este tema podrás:
 - representar el envío (inactivo, enviando, enviado, error) en un provider y bloquear el formulario mientras envía;
 - separar el estado que se dibuja (`watch`) de los efectos que se disparan una vez (`listen`).
 
-**Conceptos clave:** `Form` y `TextFormField`, validador, modo de validación automática, `TextEditingController`,
-efecto con `ref.listen`
+**Conceptos clave:** `Form` y `TextFormField`, validador, modo de validación automática, `TextEditingController`, efecto con `ref.listen`
 
 #### El problema
 El conductor reporta una novedad desde la calle: escribe la guía, un teléfono opcional y qué pasó. Si se equivoca en
@@ -1400,9 +1747,62 @@ Este tema usa **`Notifier`**, **`ref.watch` y `ref.read`** (Tema 3), **`AsyncVal
 - **Error típico:** mostrar el `SnackBar` dentro de `build`: aparece cada vez que la pantalla se reconstruye.
 
 #### ► CÓMO FUNCIONA
-Al tocar «Enviar», `validate()` ejecuta los validadores y muestra los errores. Si todo es válido, el botón llama al
-`Notifier` del envío, que pasa a `AsyncLoading`: la pantalla lo observa con `watch` y deshabilita campos y botón. Al
-terminar, el estado pasa a `AsyncData` y `ref.listen` muestra la confirmación una sola vez.
+
+##### 1. La idea en lenguaje sencillo
+En una oficina de correos, el funcionario revisa la planilla antes de recibirla. Si el código postal está mal, te
+señala esa casilla, no te devuelve la hoja con un «inválido». Mientras sella el paquete, no te deja entregar otro
+igual. Al final te da un comprobante, una sola vez.
+
+El formulario de novedad sigue ese mismo orden. Primero, cada campo revisa su formato y muestra el problema debajo de
+sí. Después, si todo está bien, empieza el envío, y durante el envío nada se puede tocar. Al terminar, aparece un aviso
+de confirmación que no se repite.
+
+Hay dos clases de estado en juego. El estado de los campos (qué escribió, qué error tiene) vive en el `State` del
+formulario. El estado del envío (enviando, enviado, falló) vive en un provider, porque es lógica de la app.
+
+##### 2. Definición formal y vocabulario
+**`Form`** es un widget contenedor que agrupa campos de tipo `FormField`. Su estado, `FormState`, se obtiene con una
+`GlobalKey<FormState>` y ofrece `validate()`, `save()` y `reset()`. **`TextFormField`** es un `FormField<String>` que
+envuelve un `TextField` y se registra solo en el `Form` más cercano.
+
+Un **validador** es una función con la firma `String? Function(String?)`. Recibe el valor del campo y devuelve el texto
+del error, o `null` si es válido. Flutter muestra ese texto debajo del campo, con el color de error del tema.
+
+El **modo de validación automática** (`autovalidateMode`) decide cuándo se validan los campos sin llamar a `validate()`.
+Con `onUserInteraction`, un campo se valida cada vez que el usuario cambia su valor.
+
+Un **`TextEditingController`** guarda el texto y la selección de un campo. Es un `ValueNotifier<TextEditingValue>`, es
+decir, un `ChangeNotifier`. Por eso lo creas en el `State` y lo liberas en `dispose`.
+
+Un **efecto con `ref.listen`** ejecuta una función cuando un provider cambia, sin reconstruir el widget. Recibe el
+valor anterior y el nuevo, y es el lugar para acciones únicas, como un `SnackBar`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la prueba del tema, que primero envía con errores y después corrige:
+
+1. El usuario toca «Enviar novedad». `_enviar` llama a `_clave.currentState!.validate()`.
+2. `validate()` recorre los tres campos y ejecuta cada validador con su texto actual. Cada campo guarda su mensaje y se
+   reconstruye.
+3. Hay errores, así que `validate()` devuelve `false` y `_enviar` termina. La salida lo confirma: `errores visibles: 3 de 3`.
+4. El usuario corrige. Como el `Form` usa `onUserInteraction`, cada cambio vuelve a validar ese campo y el error se
+   desvanece con una animación.
+5. El segundo toque pasa la validación. `_enviar` llama a `enviar` del `Notifier`, que asigna `AsyncLoading`.
+6. `ref.watch(envioProvider)` reconstruye el formulario: `enviando` es verdadero, los campos se deshabilitan y
+   `onPressed` queda en `null`.
+7. Un segundo después, `guard` asigna `AsyncData`. El formulario se reconstruye otra vez, habilitado.
+8. En la misma transición, el oyente de `ref.listen` recibe `antes` en `AsyncLoading` y `ahora` en `AsyncData`, y
+   muestra «Novedad enviada».
+
+```dart
+ref.listen(envioProvider, (antes, ahora) {                      // efectos: avisar, no dibujar
+  if (ahora is AsyncData && antes is AsyncLoading) {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Novedad enviada')));
+  }
+});
+```
+
+Observa la condición. No pregunta «¿hay datos?», sino «¿pasó de enviando a enviado?». Así una reconstrucción posterior,
+con el estado todavía en `AsyncData`, no repite el aviso.
 
 ```mermaid
 stateDiagram-v2
@@ -1413,6 +1813,42 @@ stateDiagram-v2
     Enviando --> Error: AsyncError
     Error --> Enviando: Enviar otra vez
 ```
+
+##### 4. Reglas, variantes y casos límite
+`AutovalidateMode` tiene cinco valores en la documentación de Flutter. `disabled` no valida solo. `always` valida
+incluso sin interacción, y llena de errores un formulario recién abierto. `onUserInteraction` valida después de cada
+cambio del usuario. `onUnfocus` valida cuando el campo pierde el foco. `onUserInteractionIfError` revalida solo los
+campos que ya tienen error.
+
+El modo del `Form` aplica a todos sus campos, y cada `TextFormField` puede tener el suyo. Un campo que el usuario nunca
+tocó no muestra error con `onUserInteraction`, hasta que llamas a `validate()`.
+
+`FormState` tiene una variante útil: `validateGranularly()`. Valida igual que `validate()`, pero devuelve el conjunto de
+campos inválidos. Sirve, por ejemplo, para llevar el foco al primero que falla.
+
+La `GlobalKey<FormState>` se crea una vez, como campo del `State`. Si la creas en `build`, cada reconstrucción crea un
+formulario nuevo y pierde los errores. Lo mismo pasa con los controladores, que además deben liberarse en `dispose`.
+
+Un validador valida forma, no verdad. Que `EN-4472` cumpla `^EN-\d{4,6}$` no significa que la guía exista. Esa regla
+solo la conoce el servidor, y su respuesta llega como `AsyncError` del envío.
+
+Sobre `ref.listen`, una regla: llámalo en `build` de un `ConsumerWidget` o `ConsumerState`, nunca dentro de un
+callback. Riverpod gestiona la suscripción con el ciclo de vida del widget.
+
+Riverpod 3.0 trajo una variante experimental para envíos: `Mutation`, con estados `MutationIdle`, `MutationPending`,
+`MutationError` y `MutationSuccess`. Este curso usa `Notifier` con `AsyncValue`, que es estable.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `dispose` de los controladores es la regla del Módulo 1, Tema 4. El `SnackBar` y el `ScaffoldMessenger` vienen del
+Módulo 3, Tema 6. La `GlobalKey` es una de las *keys* del Módulo 1, Tema 5, con un uso nuevo: dar acceso al `State`.
+
+Compáralo con el Tema 4. Allí `AsyncValue` describía una carga que empieza sola. Aquí describe una acción que el
+usuario dispara, y por eso hace falta `null` para «todavía no se envió». La diferencia entre `watch` y `listen` es
+la misma que en el Tema 3 entre `watch` y `read`: dibujar o actuar.
+
+El Módulo 2, Tema 5, explicó cómo el teclado reduce el espacio; este formulario usa `ListView` para que los campos
+sigan alcanzables. En el Módulo 5, el envío simulado se convierte en una petición real, y sus errores tendrán mensajes
+propios.
 
 #### Problema resuelto 5.1
 Construye el formulario de novedad con tres reglas de validación, un envío simulado de un segundo y su confirmación.
@@ -1767,9 +2203,64 @@ Este tema usa **providers** y **`ProviderContainer`** (Tema 3), **`RepositorioEn
 - **Error típico:** probar un derivado justo después de cambiar el estado, sin `await`: el oyente todavía no recibió nada.
 
 #### ► CÓMO FUNCIONA
-La misma lógica cambia de forma, no de fondo. En Riverpod, el `Notifier` asigna `state` y los derivados se recalculan
-al final del turno; en las pruebas, el contenedor acepta reemplazos. En Bloc, el Cubit emite cada estado al momento y
-los widgets lo escuchan a través de `BlocProvider`; en las pruebas, se crea el Cubit directamente.
+
+##### 1. La idea en lenguaje sencillo
+Un simulador de vuelo usa la cabina real, con los mismos mandos y las mismas reglas. Lo que cambia es lo que está
+enchufado detrás: en lugar de motores y cielo, hay un computador que produce la tormenta que el instructor quiere. Así
+se practica una emergencia sin arriesgar un avión.
+
+Probar la ruta funciona igual. La lógica de `EntregasDelDia` es la real. Detrás de ella enchufas un repositorio de
+prueba que devuelve una bodega ficticia o falla cuando lo pides. Eso es la inyección de dependencias: quien usa una
+pieza no la fabrica, la recibe.
+
+La segunda parte del tema cambia de cabina. Escribes la misma ruta con Cubit, de la familia Bloc, y comparas. La lógica
+es idéntica; cambia cuándo y cómo llegan los avisos.
+
+##### 2. Definición formal y vocabulario
+La **inyección de dependencias** consiste en entregar a un componente, desde fuera, los objetos que necesita. En
+Riverpod no se hace por constructor: la dependencia es un provider (`repositorioProvider`) y quien la usa la lee con
+`ref`.
+
+Los **`overrides`** son la lista de reemplazos que recibe un `ProviderScope` o un `ProviderContainer`.
+`repositorioProvider.overrideWithValue(RepositorioFijo())` dice: en este contenedor, ese provider vale esto. Todo
+provider que dependa de él usa el reemplazo sin cambiar su código.
+
+**Cubit** es una clase del paquete `bloc` que guarda un estado y expone métodos. Cada método publica el estado nuevo
+con **`emit`**. Los widgets lo reciben a través de un `Stream`, por medio de `flutter_bloc`. **`BlocSelector`** observa
+una parte del estado y reconstruye su `builder` solo si esa parte cambia.
+
+Las **notificaciones agrupadas** describen una diferencia de tiempo. Riverpod no avisa a los oyentes de un derivado en
+cada cambio: lo hace en el siguiente turno de la cola de eventos, con el valor final. Cubit, en cambio, produce un
+evento por cada `emit`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, la prueba de Riverpod con el repositorio reemplazado:
+
+1. `ProviderContainer.test(overrides: [...])` crea un contenedor. Para él, `repositorioProvider` devuelve
+   `RepositorioFijo`.
+2. `contenedor.read(entregasProvider.future)` crea `EntregasDelDia` y espera su `build`. Ese `build` lee el
+   repositorio reemplazado y carga `[EN-9001]`.
+3. Los tres `alternar` cambian `state` de `RutaNotifier` en el momento, uno tras otro.
+4. `pendientesProvider` queda marcado como desactualizado, pero su oyente todavía no recibe nada: `avisos antes de
+   ceder el turno = []`.
+5. Al ceder el turno, Riverpod recalcula el derivado una vez y avisa con el valor final: `[4]`.
+
+Ahora el mismo trabajo con Cubit:
+
+1. `RutaCubit()` arranca con `rutaInicial` como estado.
+2. Cada `alternar` llama a `emit`. `emit` compara con `==`; la lista es nueva, así que reemplaza el estado y lo agrega
+   al `stream`.
+3. Tres `emit` producen tres eventos. La prueba cede el turno para que lleguen y obtiene `[4, 3, 4]`.
+
+```dart
+void alternar(String guia) => emit([                              // emit publica el estado nuevo
+      for (final e in state)
+        e.guia == guia ? e.con(e.estado == Estado.entregada ? Estado.pendiente : Estado.entregada) : e,
+    ]);
+```
+
+Compara este método con el `alternar` del Tema 3. Solo cambia `state = [...]` por `emit([...])`. El fondo es el mismo:
+estado inmutable, una lista nueva por cambio, igualdad para decidir si avisar.
 
 ```mermaid
 flowchart LR
@@ -1782,6 +2273,42 @@ flowchart LR
         BP["BlocProvider: crea y cierra"] --> C
     end
 ```
+
+##### 4. Reglas, variantes y casos límite
+La documentación de `bloc` fija las reglas de `emit`. No hace nada si el estado nuevo es igual al actual, salvo que
+sea el primer `emit` de esa instancia. Después de `close()`, lanza `StateError('Cannot emit new states after calling
+close')`.
+
+`BlocProvider` crea el Cubit con `create` y lo cierra solo cuando su widget sale del árbol. Su variante
+`BlocProvider.value` recibe un Cubit que ya existe y no lo cierra: quien lo creó debe cerrarlo. La prueba sin pantalla
+crea el Cubit a mano, y por eso llama a `close()` al final.
+
+Bloc tiene dos formas. Cubit expone métodos, como `alternar`. Bloc completo recibe objetos evento (`EntregaAlternada`,
+por ejemplo) y los transforma en estados. Los eventos dejan un registro de cada acción, útil cuando el equipo necesita
+trazarlas.
+
+En Riverpod, el tiempo de los avisos tiene un caso límite que explica el Checkpoint 6.1. `contenedor.read` de un
+derivado lo recalcula al momento; lo que espera al siguiente turno es el aviso a los oyentes. Si la prueba comprueba
+un oyente, cede el turno antes.
+
+`overrideWithValue` reemplaza un provider por un valor fijo. Para reemplazarlo por una función que también recibe
+`ref`, existe `overrideWith`. Reemplaza las dependencias, no el `AsyncNotifier` que quieres probar: si lo reemplazas,
+ya no pruebas su lógica.
+
+Tanto `select` como `BlocSelector` comparan con `==`. Si el selector crea un objeto nuevo en cada llamada sin igualdad
+por valor, siempre verá un cambio. Es el mismo error del Tema 3, con otra sintaxis.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `Stream` de Cubit es el del Módulo 0, Tema 5: suscribirse, recibir eventos y cancelar. La prueba usa
+`cubit.stream.listen` y `suscripcion.cancel()` igual que allí.
+
+Este tema cierra el recorrido del módulo. El Tema 1 guardaba el estado en un `State`; el Tema 2 lo sacó a un
+`ChangeNotifier`; el Tema 3 lo hizo observable por partes. Cubit se parece más a Riverpod que a `ChangeNotifier`:
+publica valores nuevos y los compara, en lugar de avisar «cambié».
+
+El `RepositorioEntregas` del Tema 4 es la costura que permite enchufar otra pieza. En el Módulo 5, esa costura recibe
+un cliente HTTP real, y las pruebas siguen usando un repositorio falso. El Módulo 9 profundiza en los dobles de
+prueba con mocktail.
 
 #### Problema resuelto 6.1
 Escribe la ruta con Cubit y mide las reconstrucciones. Prueba el Cubit y los providers sin pantalla, reemplazando el

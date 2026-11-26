@@ -93,28 +93,138 @@ mañana el pago con criptomonedas, cada parte del código que decide «qué hace
 - **Error típico:** agregar una variante y no actualizar el `switch`: `the switch expression does not cover all possible input values`.
 
 #### ► CÓMO FUNCIONA
-Una clase o interfaz `sealed` restringe qué tipos pueden extenderla o implementarla. Se declara con `sealed` y
-`permits`, y los subtipos permitidos deben ser `final`, `sealed` o `non-sealed`. Esto crea una jerarquía
-cerrada: el compilador conoce todas las variantes posibles.
 
-La ventaja principal es la exhaustividad. En un `switch` sobre un sealed, el compilador puede verificar que
-cubriste todos los casos. Si mañana agregas `PagoCripto` a `permits`, todos los switches exhaustivos sobre
-`Pago` fallarán al compilar hasta que los actualices. Ese fallo es bueno: te obliga a decidir.
+##### 1. La idea en lenguaje sencillo
 
-Usa `sealed` cuando el dominio tiene un conjunto cerrado de variantes conocidas. No lo uses cuando la extensión
-abierta es parte del diseño, como un plugin de terceros. `non-sealed` existe para abrir un punto específico de
-la jerarquía, pero debe ser una decisión consciente.
+Piensa en el formulario de pago de una caja registradora con tres botones: tarjeta, transferencia y efectivo. El
+cajero sabe que no hay un cuarto botón. Si mañana se añade uno, alguien debe reimprimir el manual de cada cajero
+para explicar qué hacer.
+
+En Java, una interfaz normal es un formulario con botones ilimitados. Cualquier clase de cualquier parte del código
+puede implementar `Pago`. Por eso un `switch` sobre `Pago` necesita un `default`: el compilador no puede saber
+cuántas variantes existen.
+
+Una interfaz `sealed` fija los botones. Declaras la lista completa de variantes y nadie más puede añadirse. Ahora
+el compilador conoce todos los casos y puede revisar cada `switch`: si falta uno, no compila.
+
+En Tienda Aurora esto convierte un olvido en un error visible. Si mañana aparece el pago con criptomonedas, cada
+lugar que decide qué hacer con un pago deja de compilar. El error te da la lista exacta de sitios que debes
+actualizar.
+
+##### 2. Definición formal y vocabulario
+
+La Especificación del Lenguaje Java (JLS, sección 8.1.1.2) define una clase **sealed** como aquella que restringe
+qué clases pueden ser sus subclases directas. Para interfaces, la sección 9.1.1.4 aplica la misma regla a sus
+implementaciones y extensiones directas.
+
+La cláusula **permits** enumera esos subtipos directos. Si la omites, el compilador toma como permitidos los
+subtipos declarados en el mismo archivo fuente. Todos los permitidos deben estar en el mismo módulo, o en el mismo
+paquete si el código no usa módulos.
+
+Cada subtipo permitido debe declarar uno de tres **modificadores de subtipo**. `final` cierra la rama. `sealed` la
+cierra con su propia lista. `non-sealed` la vuelve a abrir a cualquier subclase. Los records y los enums ya son
+implícitamente `final`.
+
+El resultado es una **jerarquía cerrada**: el conjunto de subtipos se conoce completo al compilar. Sobre ella, el
+compilador comprueba la **exhaustividad** de un `switch`, es decir, que sus casos cubran todos los valores
+posibles.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la jerarquía del Problema resuelto 1.1:
+
+```java
+sealed interface Pago permits PagoTarjeta, PagoTransferencia, PagoEfectivo {
+    String pedidoId();
+    BigDecimal monto();
+}
+```
+
+1. Al compilar `Pago`, `javac` comprueba que cada tipo de `permits` exista, esté en el mismo paquete y la
+   implemente directamente.
+2. Comprueba que cada permitido declare `final`, `sealed` o `non-sealed`. Los tres records cumplen por ser `final`.
+3. Escribe en `Pago.class` un atributo llamado `PermittedSubclasses` con los tres nombres. Así la lista viaja
+   dentro del bytecode.
+4. Al compilar cualquier otra clase que diga `implements Pago`, `javac` lee esa lista. Si la clase no está, emite
+   `class is not allowed to extend sealed class`.
+5. La JVM repite la comprobación al cargar las clases. Una clase compilada aparte que intente colarse falla con
+   `IncompatibleClassChangeError`.
+6. `Class.isSealed()` y `getPermittedSubclasses()` leen ese atributo en tiempo de ejecución. Por eso la salida
+   muestra `permitidos=[PagoTarjeta, PagoTransferencia, PagoEfectivo]`.
 
 ```mermaid
 flowchart TB
-  P["sealed interface Pago"] -->|permits| T["record PagoTarjeta (final)"]
-  P -->|permits| R["record PagoTransferencia (final)"]
-  P -->|permits| E["record PagoEfectivo (final)"]
-  X["record PagoCripto"] -. "no listado: no compila" .-> P
-  S["switch (pago) sin default"] --> C{"¿cubre los 3?"}
-  C -->|sí| OK["compila"]
+  P["sealed interface Pago"] -->|"permits"| T["record PagoTarjeta, final"]
+  P -->|"permits"| R["record PagoTransferencia, final"]
+  P -->|"permits"| E["record PagoEfectivo, final"]
+  X["record PagoCripto"] -.->|"no listado: no compila"| P
+  S["switch sobre pago sin default"] --> C{"¿cubre los 3?"}
+  C -->|"sí"| OK["compila"]
   C -->|"falta uno"| ERR["error: does not cover all possible input values"]
 ```
+
+La exhaustividad usa la misma lista. Ante este `switch`, el compilador razona así:
+
+```java
+return switch (pago) {
+    case PagoTarjeta t -> "tarjeta";
+    case PagoTransferencia t -> "transferencia";
+    case PagoEfectivo e -> "efectivo";
+};
+```
+
+`Pago` es sellada y sus permitidos son exactamente esos tres. Cada uno tiene un caso. Por lo tanto, cualquier
+`Pago` no nulo cae en algún caso y no hace falta `default`.
+
+El compilador añade además un caso oculto. Si en ejecución llega un tipo que no existía al compilar, porque alguien
+recompiló `Pago` por separado, el `switch` lanza `MatchException`. Así un cambio de versión no pasa en silencio.
+
+##### 4. Reglas, variantes y casos límite
+
+`sealed` y `non-sealed` fueron vista previa en Java 15 y 16. Son estándar desde Java 17 (JEP 409). El `switch` con
+patrones de tipo, que hace útil la exhaustividad sobre jerarquías selladas, es estándar desde Java 21 (JEP 441).
+
+`sealed`, `non-sealed` y `permits` son **palabras clave contextuales**. Solo tienen significado especial en esa
+posición de una declaración. Puedes seguir usando `permits` como nombre de variable en otra parte, aunque no es
+buena idea.
+
+Las reglas del compilador son estrictas:
+
+- Una clase `sealed` debe tener al menos un subtipo permitido.
+- Cada permitido debe extender o implementar directamente al tipo sellado. Un nieto no puede aparecer en `permits`.
+- Un permitido sin modificador produce `sealed, non-sealed or final modifiers expected`.
+- Una clase anónima o local no puede ser subtipo de un tipo sellado.
+
+`non-sealed` reabre solo su rama. En el Problema resuelto 1.3, `Franquicia` extiende `Tienda` sin aparecer en
+ningún `permits`. El `switch` sobre `Canal` sigue siendo exhaustivo, porque toda franquicia es una `Tienda`.
+
+Un `switch` exhaustivo sin `default` tiene un caso límite: `null`. Si `pago` es `null`, el `switch` lanza
+`NullPointerException`. Desde Java 21 puedes escribir `case null ->` si quieres tratarlo.
+
+La exhaustividad aplica a expresiones `switch` y también a sentencias `switch` que usan patrones. Una sentencia
+`switch` clásica sobre constantes, sin patrones, no tiene que ser exhaustiva.
+
+Desde Java 21, un `switch` exhaustivo sobre un enum también lanza `MatchException` si en ejecución aparece una
+constante nueva. Antes lanzaba `IncompatibleClassChangeError`.
+
+`sealed` no limita cuántos objetos creas ni sus valores. Limita quién puede ser subtipo. Un `PagoTarjeta` con monto
+negativo sigue siendo posible; eso se valida en el constructor compacto del record.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema combina dos piezas del Java, Módulo 1: las interfaces del Tema 3 y los records del Tema 5. Un record ya
+es `final`, por eso encaja como variante sin escribir ningún modificador, como explica el Checkpoint 1.1.
+
+Los `switch` con flechas del Java, Módulo 0, Tema 6 trabajaban con constantes: números, textos o enums. Aquí cada
+caso es un tipo. Un enum también es un conjunto cerrado, pero sus variantes no pueden tener componentes distintos;
+un record sellado sí.
+
+Compara `sealed` con una clase `final`. `final` cierra todo: no admite ningún subtipo. `sealed` cierra con lista:
+admite exactamente los subtipos que nombras.
+
+El Tema 2 aprovecha esta jerarquía con record patterns y guardas `when`, que extraen componentes dentro del caso.
+El Tema 3 usa `_` para ignorar componentes que no importan. El laboratorio integrador modela todo el procesador de
+pagos con estas jerarquías.
 
 #### Problema resuelto 1.1
 Modela los tres medios de pago como una jerarquía sellada y decide el medio de cada pago sin `default`.
@@ -457,25 +567,137 @@ repite el tipo dos veces y un casteo equivocado explota en ejecución. ¿Cómo p
 - **Error típico:** ordenar de lo general a lo específico: `this case label is dominated by a preceding case label`.
 
 #### ► CÓMO FUNCIONA
-Pattern matching permite probar una forma y extraer datos en el mismo paso. `instanceof` con patrón
-(`if (valor instanceof PagoTarjeta tarjeta)`) evita el casteo manual. El record pattern desestructura
-componentes por posición.
 
-En `switch`, el pattern matching se vuelve aún más potente: cada `case` puede ser un tipo, un record pattern, o
-incluir un `when` guard. El guard `case PagoEfectivo efectivo when efectivo.vuelto().signum() > 0` agrega una
-condición; debes asegurar que los casos sigan siendo exhaustivos y que el orden no oculte casos más específicos.
+##### 1. La idea en lenguaje sencillo
+
+Imagina a un empleado que recibe sobres en la oficina de correo. Con el método antiguo, primero mira el sobre y
+dice «es una factura». Luego lo abre, saca la hoja y la vuelve a revisar como factura. Si se equivocó en el primer
+paso, el error aparece al abrirlo.
+
+Con `instanceof` y un casteo, Java trabajaba así. Preguntas si el valor es un `PagoTarjeta`, luego lo conviertes
+con `(PagoTarjeta) valor` y recién después lees sus datos. El tipo se escribe dos veces, y un casteo equivocado
+explota en ejecución con `ClassCastException`.
+
+El **pattern matching** hace las dos cosas en un paso. Preguntas «¿eres una tarjeta?» y, si la respuesta es sí, ya
+tienes la variable lista. Con un record pattern vas más lejos: sacas cada componente del record a su propia
+variable.
+
+En el procesador de pagos de Tienda Aurora esto se vuelve un único `switch`. Cada caso describe una forma de pago y
+extrae los datos que necesita. El compilador revisa que no falte ninguna forma y que ningún caso quede oculto por
+otro.
+
+##### 2. Definición formal y vocabulario
+
+La JLS (sección 14.30) define un **patrón** como una descripción de la forma que puede tener un valor. El **pattern
+matching** es el proceso de comprobar un valor contra un patrón y, si coincide, enlazar variables con partes de ese
+valor.
+
+Un **patrón de tipo** tiene la forma `Tipo variable`. Coincide si el valor no es nulo y es instancia de `Tipo`. Un
+**record pattern** tiene la forma `Record(p1, p2, ...)`. Coincide con instancias de ese record y aplica cada
+subpatrón al componente correspondiente, por posición.
+
+Un **switch con patrones** usa patrones en sus etiquetas `case` y los evalúa de arriba abajo. Una **guarda when**
+añade una condición booleana a un caso. La **dominancia de casos** es la regla que rechaza un caso que nunca podría
+ejecutarse porque otro anterior ya atrapa todo lo suyo.
+
+Las variables que crea un patrón se llaman **variables de patrón**. Solo existen donde el compilador puede
+demostrar que el patrón coincidió.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el `switch` del Problema resuelto 2.2 con el pago `PED-103`, un efectivo exacto:
+
+```java
+return switch (pago) {
+    case PagoTarjeta(String pedidoId, BigDecimal monto, String titular, String ultimos4) -> ...;
+    case PagoTransferencia(String pedidoId, BigDecimal monto, String banco, String referencia) -> ...;
+    case PagoEfectivo efectivo when efectivo.vuelto().signum() > 0 -> ...;
+    case PagoEfectivo efectivo -> "OK " + efectivo.pedidoId() + " - Efectivo exacto";
+};
+```
+
+1. Si `pago` fuera `null`, el `switch` lanzaría `NullPointerException` antes de mirar los casos.
+2. El compilador traduce este `switch` a una llamada `invokedynamic` que, en ejecución, recibe el valor y devuelve
+   el número del primer caso cuyo tipo coincide.
+3. El tipo es `PagoEfectivo`, así que salta al tercer caso. Enlaza la variable `efectivo` con el valor ya
+   convertido.
+4. Evalúa la guarda: `vuelto()` da `0.00` y `signum()` da `0`. La guarda es falsa.
+5. Vuelve a buscar desde el caso siguiente. El cuarto caso es `PagoEfectivo` sin guarda, coincide y devuelve `OK
+   PED-103 - Efectivo exacto`.
 
 ```mermaid
 flowchart TB
-  V["pago"] --> C1{"PagoTarjeta(pedidoId, monto, titular, ultimos4)?"}
-  C1 -->|sí| A1["OK tarjeta"]
-  C1 -->|no| C2{"PagoTransferencia(...)?"}
-  C2 -->|sí| A2["PENDIENTE"]
-  C2 -->|no| C3{"PagoEfectivo y vuelto > 0?"}
-  C3 -->|sí| A3["OK con vuelto"]
-  C3 -->|no| C4{"PagoEfectivo?"}
-  C4 -->|sí| A4["OK exacto"]
+  V["pago"] --> C1{"¿PagoTarjeta con sus 4 componentes?"}
+  C1 -->|"sí"| A1["OK tarjeta"]
+  C1 -->|"no"| C2{"¿PagoTransferencia con sus 4 componentes?"}
+  C2 -->|"sí"| A2["PENDIENTE"]
+  C2 -->|"no"| C3{"¿PagoEfectivo y vuelto mayor que 0?"}
+  C3 -->|"sí"| A3["OK con vuelto"]
+  C3 -->|"no"| C4{"¿PagoEfectivo?"}
+  C4 -->|"sí"| A4["OK exacto"]
 ```
+
+Un record pattern trabaja en dos fases. Primero comprueba el tipo, como un patrón de tipo. Después llama al método
+de acceso de cada componente y aplica el subpatrón a su resultado. Para `PagoTarjeta(String pedidoId, ...)`, llama
+a `pedidoId()` y enlaza el valor a la variable `pedidoId`.
+
+El alcance de una variable de patrón sigue el flujo del programa. En `valor instanceof PagoTarjeta tarjeta &&
+tarjeta.monto()...`, la variable existe a la derecha del `&&` porque allí el patrón ya coincidió. También funciona
+al revés, verificado con OpenJDK 25.0.5.1:
+
+```java
+if (!(o instanceof Caja caja)) return;
+System.out.println("alcance por flujo: " + caja.cantidad());
+```
+
+Después del `return`, el compilador sabe que el patrón coincidió, y `caja` está disponible.
+
+##### 4. Reglas, variantes y casos límite
+
+Cada pieza llegó en una versión distinta. `instanceof` con patrón de tipo es estándar desde Java 16 (JEP 394). Los
+record patterns y el `switch` con patrones son estándar desde Java 21 (JEP 440 y JEP 441). Los patrones de tipos
+primitivos siguen en vista previa en Java 25.
+
+La exhaustividad tiene reglas precisas:
+
+- Un caso con `when` no cuenta como cobertura. Hace falta otro caso del mismo tipo sin guarda (Checkpoint 2.1).
+- Sobre `Object` o una interfaz no sellada, el `switch` necesita `default` o un caso `Object o`.
+- Un record pattern cubre su tipo solo si todos sus subpatrones cubren los tipos de los componentes.
+
+La dominancia también tiene reglas:
+
+- Un caso sin guarda domina a uno posterior del mismo tipo con guarda. Por eso el orden se invierte y aparece `this
+  case label is dominated by a preceding case label`.
+- Un patrón de tipo domina a un record pattern posterior del mismo tipo.
+- El compilador no analiza la lógica de las guardas. Dos guardas que se solapan no producen error.
+
+`null` tiene un tratamiento especial. `instanceof` siempre da `false` con `null`. Un `switch` lanza
+`NullPointerException`, salvo que tenga `case null`. Dentro de un record pattern, un subpatrón que cubre todo el
+tipo del componente sí acepta `null`. `Caja(String sku, Integer c)` coincide con `new Caja(null, 3)` y `sku` vale
+`null`.
+
+En los subpatrones puedes escribir `var` en lugar del tipo: `Caja(var sku, var c)`. El compilador infiere el tipo
+del componente. Un patrón de tipo no puede combinarse con `||` en un mismo `if`, porque la variable no estaría
+definida en todos los caminos.
+
+Los nombres de las variables en un record pattern son libres. La correspondencia es por posición. Si cambias el
+orden de los componentes del record, los patrones existentes enlazan los valores en otras variables sin avisar si
+los tipos coinciden.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 creó la jerarquía sellada `Pago`. Este tema la recorre con patrones. La exhaustividad del Tema 1 sigue
+funcionando aquí, pero ahora también debe tener en cuenta las guardas.
+
+Los records del Java, Módulo 1, Tema 5 tienen métodos de acceso automáticos para cada componente. Un record pattern
+usa esos métodos. Por eso solo puedes desestructurar records, no clases normales.
+
+El `switch` con flechas del Java, Módulo 0, Tema 6 comparaba constantes. Aquí compara formas y se evalúa en orden.
+Sigue sin haber «caída» de un caso a otro con `->`.
+
+Los record patterns obligan a nombrar todos los componentes, incluso los que no usas, como `titular` en la
+transferencia. El Tema 3 resuelve eso con `_`. El laboratorio integrador usa este `switch` en
+`ProcesadorPagos.procesar`.
 
 #### Problema resuelto 2.1
 Etiqueta valores de auditoría de tipo `Object` primero con el casteo clásico y luego con patrones.
@@ -711,8 +933,8 @@ Al terminar este tema podrás:
 **Conceptos clave:** variable sin nombre, patrón sin nombre, text block
 
 #### El problema
-En el Problema resuelto 2.2, la rama de transferencia declara `monto` y `referencia` aunque solo usa algunos
-datos. Quien lee no sabe si esas variables se olvidaron o se ignoran a propósito. Además, el comprobante de pago
+En el Problema resuelto 2.2, la rama de transferencia declara `referencia` aunque nunca la usa. Quien lee no sabe
+si esa variable se olvidó o se ignora a propósito. Además, el comprobante de pago
 de Tienda Aurora es un texto de varias líneas que hoy se arma con `+` y `\n`. ¿Cómo expresar ambas cosas con claridad?
 
 #### Glosario del tema
@@ -739,26 +961,130 @@ de Tienda Aurora es un texto de varias líneas que hoy se arma con `+` y `\n`. �
 - **Error típico:** escribir texto en la misma línea que las `"""` de apertura: no compila.
 
 #### ► CÓMO FUNCIONA
-`_` se usa como variable o patrón sin nombre cuando el valor es deliberadamente ignorado. En un record pattern,
-`PagoTransferencia(var pedidoId, var monto, var banco, _)` comunica que la referencia no importa en esa rama.
-Es mejor que llamar la variable `ignored` o `ref` y no usarla, porque el compilador y el lector entienden la
-intención.
 
-También sirve en lambdas, catch y asignaciones en contextos soportados. No lo uses para ocultar datos que sí
-deberían validarse. Ignorar es una decisión de diseño; si el componente es relevante para la regla, debe
-nombrarse y usarse.
+##### 1. La idea en lenguaje sencillo
 
-El text block resuelve el otro lado del problema: el comprobante se escribe como se verá. Java quita la
-indentación común a todas las líneas, medida respecto de la línea menos indentada (incluida la de las comillas
-de cierre).
+Piensa en un formulario de envío con diez casillas. Solo necesitas tres, pero el sistema te obliga a escribir algo
+en todas. Si pones «xxx» en las demás, quien revise el formulario tendrá una duda. No sabrá si las ignoraste a
+propósito o si olvidaste un dato.
+
+Los record patterns del Tema 2 tienen ese problema. Para desestructurar una transferencia debes nombrar sus cuatro
+componentes, aunque la regla solo use dos. Una variable con nombre que nadie lee parece un descuido.
+
+Java 22 añadió una marca para decir «esto lo ignoro a propósito»: el guion bajo `_`. Lo escribes donde la sintaxis
+exige una variable que no vas a usar. El lector entiende la intención y el compilador impide que alguien lea esa
+variable por error.
+
+El tema resuelve un segundo detalle de legibilidad: el texto de varias líneas. El comprobante de pago de Tienda
+Aurora tiene tres líneas. Con un **text block** lo escribes tal como se verá, sin `+` ni `\n` en cada línea.
+
+##### 2. Definición formal y vocabulario
+
+El JEP 456 define una **variable sin nombre** como una variable que se declara con `_` en lugar de un
+identificador. Se puede inicializar, pero no se puede leer ni escribir después. Su objetivo declarado es expresar
+que una declaración o un valor no se usará.
+
+Un **patrón sin nombre** es el patrón `_`, que coincide con cualquier valor sin enlazarlo. Solo puede aparecer como
+subpatrón dentro de un record pattern. También existe el patrón de tipo sin nombre, `Tipo _`, que comprueba el tipo
+pero no crea variable.
+
+Un **text block** es un literal de texto que empieza con tres comillas `"""` y un salto de línea. Termina con otras
+tres comillas. La JLS (sección 3.10.6) define cómo el compilador lo convierte en un `String` normal.
+
+`String.formatted(...)` aplica un formato con `%s` y otros marcadores, igual que `String.format`. Combinado con un
+text block, sirve de plantilla simple.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el patrón de la transferencia del Problema resuelto 3.1:
+
+```java
+case PagoTransferencia(var pedidoId, _, var banco, _) ->
+        "transferencia pedido=" + pedidoId + " banco=" + banco;
+```
+
+1. El compilador comprueba que `PagoTransferencia` tenga cuatro componentes. El patrón también tiene cuatro
+   posiciones.
+2. Para `var pedidoId` y `var banco`, infiere el tipo del componente y crea una variable de patrón.
+3. Para cada `_`, no crea variable. Esas posiciones coinciden con cualquier valor, incluido `null`.
+4. Al generar el bytecode, solo llama a los métodos de acceso necesarios para las variables con nombre.
+5. Si algún código intenta leer `_`, el compilador responde `underscore not allowed here`.
 
 ```mermaid
 flowchart LR
-  R["PagoTransferencia(pedidoId, monto, banco, referencia)"] --> P["patrón (var pedidoId, _, var banco, _)"]
-  P --> U["usa: pedidoId, banco"]
-  P --> I["ignora a propósito: monto, referencia"]
-  T["text block con %s"] -->|"formatted(pedidoId, mensaje)"| S["comprobante de 3 líneas"]
+  R["PagoTransferencia: pedidoId, monto, banco, referencia"] --> P["patrón: var pedidoId, _, var banco, _"]
+  P --> U["usa: pedidoId y banco"]
+  P --> I["ignora a propósito: monto y referencia"]
+  T["text block con %s"] -->|"formatted pedidoId y mensaje"| S["comprobante de 3 líneas"]
 ```
+
+Los patrones sin nombre permiten algo que antes era imposible: varios patrones en un mismo caso. En `esDigital`,
+`case PagoTarjeta _, PagoTransferencia _ -> true` agrupa dos tipos. Funciona porque ninguno enlaza variables. Con
+nombres, Java no sabría de qué tipo es la variable, como explica el Checkpoint 3.1.
+
+Un text block se procesa al compilar, en este orden:
+
+1. Separa el contenido en líneas a partir del salto que sigue a las `"""` de apertura.
+2. Calcula la **indentación incidental**: el menor número de espacios iniciales entre las líneas no vacías y la
+   línea de las comillas de cierre.
+3. Quita esa indentación de cada línea. La sangría extra, como la de `JOIN` en la consulta SQL, se conserva.
+4. Quita los espacios al final de cada línea y normaliza todos los saltos de línea a `\n`.
+5. Interpreta las secuencias de escape, como `\t` o `\"`.
+
+En `ReciboAurora`, las comillas de cierre están en su propia línea. Por eso el texto termina en `\n` y la salida
+muestra `terminaEnSalto=true`. En la consulta, las comillas van pegadas a la última línea y no hay salto final.
+
+El resultado es un `String` constante idéntico al que escribirías con `+` y `\n`. En ejecución no existe
+diferencia: todo el trabajo ocurre en `javac`.
+
+##### 4. Reglas, variantes y casos límite
+
+`_` tiene historia. Java 8 avisaba si lo usabas como identificador. Java 9 lo convirtió en error (JEP 213) para
+reservarlo. Java 21 lo presentó como vista previa (JEP 443) y Java 22 lo hizo estándar (JEP 456). Compilar con
+`--release 21` da `unnamed variables are not supported in -source 21`.
+
+Las variables sin nombre se permiten en estos lugares:
+
+- variables locales con inicializador, incluido `var _ = ...`;
+- la variable de un `for` mejorado y las de un `for` clásico;
+- recursos de try-with-resources;
+- parámetros de una lambda, como `(sku, _) -> ...`;
+- parámetros de un `catch`, como `catch (NumberFormatException _)`.
+
+No se permiten en campos ni en parámetros de métodos. Un método conserva sus nombres de parámetro porque forman
+parte de su documentación.
+
+Puedes declarar varias variables `_` en el mismo alcance, porque ninguna tiene nombre que choque. Una lambda `(_,
+_) -> 0` es válida.
+
+El patrón `_` solo va dentro de un record pattern. No puedes escribir `case _ ->` como caso de nivel superior; para
+eso existe `default`. Varios patrones en un caso son válidos solo si ninguno declara variables.
+
+Los text blocks fueron vista previa en Java 13 y 14, y son estándar desde Java 15 (JEP 378). Sus reglas de forma
+son estrictas:
+
+- Las `"""` de apertura deben ir seguidas de un salto de línea. Texto en esa misma línea no compila.
+- `\` al final de una línea une esa línea con la siguiente, sin salto.
+- `\s` produce un espacio que no se elimina al quitar los espacios finales.
+
+`formatted` existe desde Java 15. Si faltan argumentos para los marcadores, lanza `MissingFormatArgumentException`
+en ejecución, no al compilar. Por eso el laboratorio prueba el comprobante completo con un test.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema cierra el recorrido del módulo. El Tema 1 fijó las variantes con `sealed`. El Tema 2 las desestructuró
+con record patterns. Aquí afinas esos patrones para que digan solo lo que la regla usa.
+
+`_` en lambdas conecta con el Java, Módulo 4. En `stock.forEach((sku, _) -> ...)`, la `BiConsumer` exige dos
+parámetros, pero solo usas la clave. Antes escribías un nombre como `ignorado`; ahora la intención queda en el
+lenguaje.
+
+`_` en un `catch` conecta con las excepciones del Java, Módulo 3. Sirve cuando el tipo de la excepción ya dice todo
+lo necesario. Si vas a registrar el mensaje, dale un nombre.
+
+Los text blocks producen un `String` normal, así que todo lo que sabes de `String` se aplica. `lines()` los parte y
+`formatted()` rellena los marcadores. El laboratorio integrador los usa en `ReciboTexto.recibo` y aplica `_` en
+`etiquetaAuditoria`.
 
 #### Problema resuelto 3.1
 Reescribe la auditoría de pagos ignorando de forma explícita lo que cada rama no necesita, y usa `_` en un

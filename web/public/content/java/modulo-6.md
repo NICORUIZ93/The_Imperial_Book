@@ -102,29 +102,126 @@ cuando un archivo no existe, el error debe decir cuál faltó. ¿Con qué herram
 - **Error típico:** capturar `Exception` y mostrar «error de archivo», perdiendo la ruta que lo explica.
 
 #### ► CÓMO FUNCIONA
-`Path` representa una ruta de sistema de archivos. A diferencia de `File`, es más composable (`resolve`,
-`relativize`, `normalize`, `toAbsolutePath`) y funciona bien con la API `Files`. `Files` ofrece operaciones
-estáticas: `exists`, `createDirectories`, `readString`, `writeString`, `lines`, `list`, `walk`, `copy`, `move`,
-`deleteIfExists`.
 
-La ruta correcta depende del contexto. Un path relativo se resuelve contra el directorio de trabajo actual, que
-puede cambiar según cómo se ejecute la app. Para archivos de usuario o reportes, pasa la base explícitamente o
-resuélvela desde una configuración conocida. Para recursos empaquetados, usa classpath, no rutas del filesystem
-(lo verás en el Tema 3).
+##### 1. La idea en lenguaje sencillo
 
-`Files.move` con `ATOMIC_MOVE` es útil para escritura segura: escribes a un temporal y luego reemplazas el
-archivo final. Si el proceso muere antes del move, el archivo final anterior sigue intacto. No todos los
-filesystems soportan move atómico entre directorios distintos, por eso el temporal se crea junto al destino.
+Piensa en un mensajero que lleva un sobre. Necesita tres cosas: la dirección exacta, saber en qué idioma está
+escrita la carta y no entregar un sobre a medio llenar. Si falla la dirección, vuelve con el sobre. Si falla el
+idioma, el destinatario no entiende nada.
+
+Los archivos de Tienda Aurora tienen las mismas tres necesidades. El programa debe saber **dónde** está el catálogo
+y en qué **charset** se escribió el texto. También debe reemplazar la lista de precios sin que nadie lea una
+versión a medias.
+
+Java separa esas tareas en dos piezas. Un `Path` es la dirección: sabe unir tramos, simplificar `..` y decir si es
+completa o relativa. `Files` es el mensajero: lee, escribe, crea carpetas y mueve archivos usando esa dirección.
+
+Esta separación es útil. Puedes construir y comparar rutas sin tocar el disco. El disco solo entra en juego cuando
+llamas a un método de `Files`, y es ahí donde pueden aparecer errores.
+
+##### 2. Definición formal y vocabulario
+
+La documentación de `java.nio.file` define **Path** como un objeto que puede usarse para ubicar un archivo en un
+sistema de archivos. Representa una ruta jerárquica: una secuencia de nombres de directorio y archivo separados por
+un delimitador propio del sistema.
+
+Una **ruta absoluta** empieza en la raíz y contiene toda la información para ubicar el archivo. Una **ruta
+relativa** necesita combinarse con otra. Por defecto, Java la combina con el **directorio de trabajo**: la carpeta
+desde la que se lanzó el proceso `java`.
+
+**Files** es una clase con métodos estáticos que operan sobre archivos y directorios. Casi todos delegan en el
+proveedor del sistema de archivos al que pertenece el `Path`. Casi todos pueden lanzar `IOException`, que es
+comprobada.
+
+Un **charset** traduce caracteres a bytes y bytes a caracteres. Una **escritura atómica** reemplaza un archivo en
+un solo paso visible. **NoSuchFileException** es la `IOException` que informa que una ruta o su carpeta padre no
+existe.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la escritura atómica del Problema resuelto 1.3:
+
+```java
+Path temporal = destino.resolveSibling(destino.getFileName() + ".tmp");
+Files.writeString(temporal, "sku,precio\nCAF-100,15.50\nMOL-200,79.90\n", StandardCharsets.UTF_8);
+Files.move(temporal, destino, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+```
+
+1. `resolveSibling` es una operación de texto. Toma la carpeta padre de `destino` y le añade el nombre
+   `precios.csv.tmp`. No toca el disco.
+2. `writeString` pide al codificador UTF-8 que convierta el texto en bytes. Cada carácter de este texto ocupa un
+   byte; la `é` ocuparía dos.
+3. `writeString` abre el temporal con tres opciones por defecto: crearlo si no existe, truncarlo si existe y
+   abrirlo para escritura. Escribe los bytes y lo cierra.
+4. `Files.move` con `ATOMIC_MOVE` pide al sistema operativo un renombrado atómico. En Linux es la llamada `rename`,
+   que reemplaza el destino en un solo paso.
+5. Un lector que abre `precios.csv` durante el proceso ve el archivo viejo completo o el nuevo completo. Nunca ve
+   una mezcla.
+6. `Files.size` devuelve el tamaño en bytes que informa el sistema de archivos: 39 en la salida del tema.
 
 ```mermaid
 flowchart LR
-  P["Path.of(base)"] --> R["resolve('data/precios.csv')"]
-  R --> D["Files.createDirectories(padre)"]
-  D --> T["Files.writeString(temporal, UTF-8)"]
-  T --> M["Files.move(temporal, destino, ATOMIC_MOVE)"]
-  M --> L["Files.readString(destino, UTF-8)"]
-  R -. "relativa: se resuelve contra el directorio de trabajo" .-> W["toAbsolutePath()"]
+  P["Path.of base"] --> R["resolve data/precios.csv"]
+  R --> D["Files.createDirectories del padre"]
+  D --> T["Files.writeString temporal en UTF-8"]
+  T --> M["Files.move temporal a destino con ATOMIC_MOVE"]
+  M --> L["Files.readString destino en UTF-8"]
+  R -.->|"relativa: se resuelve contra el directorio de trabajo"| W["toAbsolutePath"]
 ```
+
+La lectura hace el camino inverso. `Files.readString` lee los bytes y los pasa por un decodificador. Ese
+decodificador está configurado para **informar** errores, no para reemplazarlos. Si encuentra bytes que no forman
+una secuencia válida del charset, lanza `MalformedInputException`, como en `CharsetAurora.java`.
+
+Las rutas relativas se resuelven tarde. `Path.of("aurora-io/data")` guarda solo el texto. Al llamar a
+`toAbsolutePath()` o al abrir el archivo, Java le antepone el directorio de trabajo. Por eso la salida de
+`absoluta=` cambia según la carpeta desde la que ejecutes.
+
+##### 4. Reglas, variantes y casos límite
+
+NIO.2 llegó en Java 7 con `Path`, `Paths.get` y `Files`. Java 11 añadió `Path.of`, que hace lo mismo que
+`Paths.get`, y los métodos `Files.readString` y `Files.writeString`. Java 18 (JEP 400) hizo de UTF-8 el charset por
+defecto de casi toda la plataforma.
+
+Los métodos de `Files` que reciben texto sin charset ya usaban UTF-8 antes de Java 18. Otros métodos antiguos, como
+`new FileReader(...)`, usaban el charset del sistema operativo hasta esa versión. Indicar `StandardCharsets.UTF_8`
+siempre elimina esa diferencia.
+
+Las operaciones de `Path` son léxicas, es decir, trabajan sobre el texto:
+
+- `normalize()` quita `.` y `nombre/..` sin comprobar si existen.
+- `equals` compara texto. Dos rutas distintas al mismo archivo no son iguales; para eso existe `Files.isSameFile`.
+- `toRealPath()` sí consulta el disco: resuelve enlaces simbólicos y falla si el archivo no existe.
+
+`ATOMIC_MOVE` tiene reglas propias. Si el sistema de archivos no puede mover de forma atómica, lanza
+`AtomicMoveNotSupportedException`. Mover entre dos sistemas de archivos distintos nunca es atómico. Por eso el
+temporal se crea con `resolveSibling`, en la misma carpeta.
+
+La documentación de `Files.move` añade un detalle: con `ATOMIC_MOVE`, las demás opciones se ignoran. Si el destino
+existe, depende de la implementación si se reemplaza. En Linux se reemplaza, como confirma la salida.
+
+`NoSuchFileException` aparece también al escribir, si falta la carpeta padre. `Files.createDirectories` crea todas
+las carpetas que falten y no falla si ya existen. `Files.createDirectory`, en singular, falla si la carpeta ya
+existe.
+
+`Files.readString` y `Files.readAllBytes` cargan el archivo completo en memoria. Sirven para archivos pequeños,
+como una nota o una configuración. El Tema 3 muestra cómo procesar archivos grandes.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las excepciones comprobadas del Java, Módulo 3 aparecen en cada método de este tema. `IOException` es la clase
+madre y `NoSuchFileException` es una subclase concreta. Capturar la concreta permite informar la ruta con
+`getFile()`.
+
+`Path` se parece a `File`, la clase clásica de `java.io`. Ambas representan rutas, pero `File` mezcla la ruta con
+operaciones que devuelven `false` en lugar de lanzar excepciones. Con `Path` y `Files`, cada fallo trae su causa.
+Si una librería exige `File`, conviertes con `path.toFile()`.
+
+El método `lines()` de `String`, usado para imprimir el contenido, devuelve un stream del Java, Módulo 4, Tema 1.
+`Files.lines` hace lo mismo sobre un archivo.
+
+El Tema 2 usa `Path` y `Files` para guardar JSON con Jackson. El Tema 3 lee archivos grandes por partes con
+`BufferedReader` y `Files.lines`. También explica cuándo una ruta del disco no sirve y hace falta el classpath.
 
 #### Problema resuelto 1.1
 Arma las rutas de Tienda Aurora a partir de una base y comprueba qué hace cada operación de `Path`.
@@ -243,9 +340,42 @@ noExiste=NoSuchFileException:build/aurora-io/data/inexistente.txt
 Comprobación concreta: el test `textoSeEscribeYSeLeeConUtf8` comprueba que el archivo contiene exactamente
 `Tienda Aurora\nI/O con UTF-8\n`, y `archivoInexistenteLanzaNoSuchFileException` confirma el tipo y la ruta.
 
-> **Error común.** Escribir en una carpeta que no existe. `Files.writeString(Path.of("salidas/nota.txt"), …)` sin
-> crear `salidas` termina con `Exception in thread "main" java.nio.file.NoSuchFileException: salidas/nota.txt`.
-> El nombre de la excepción engaña: lo que falta es la **carpeta**. Llama antes a `Files.createDirectories(nota.getParent())`.
+> **Error común.** Escribir en una carpeta que no existe. `SinCarpeta.java` escribe una nota en `salidas/` sin crear
+> antes esa carpeta:
+>
+> ```java
+> import java.io.IOException;
+> import java.nio.charset.StandardCharsets;
+> import java.nio.file.Files;
+> import java.nio.file.Path;
+>
+> public class SinCarpeta {
+>     public static void main(String[] args) throws IOException {
+>         Path nota = Path.of("salidas/nota.txt");
+>         Files.writeString(nota, "Tienda Aurora\n", StandardCharsets.UTF_8);
+>         System.out.println("bytes=" + Files.size(nota));
+>     }
+> }
+> ```
+>
+> ```text
+> $ java SinCarpeta.java
+> Exception in thread "main" java.nio.file.NoSuchFileException: salidas/nota.txt
+> 	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+> 	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+> 	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+> 	at java.base/sun.nio.fs.UnixFileSystemProvider.newFileChannel(UnixFileSystemProvider.java:213)
+> 	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:244)
+> 	at java.base/java.nio.file.spi.FileSystemProvider.newOutputStream(FileSystemProvider.java:426)
+> 	at java.base/java.nio.file.Files.newOutputStream(Files.java:215)
+> 	at java.base/java.nio.file.Files.write(Files.java:3174)
+> 	at java.base/java.nio.file.Files.writeString(Files.java:3368)
+> 	at SinCarpeta.main(SinCarpeta.java:9)
+> ```
+>
+> La última línea del rastro apunta a la línea 9 de tu archivo, la de `writeString`. El nombre de la excepción
+> engaña: lo que falta es la **carpeta**. Llama antes a `Files.createDirectories(nota.getParent())`; con ese
+> cambio el programa imprime `bytes=14` (Ejercicio verificable 2).
 
 #### Problema resuelto 1.3
 Actualiza la lista de precios sin que nadie pueda leer un archivo a medio escribir, y comprueba qué pasa con los
@@ -349,8 +479,9 @@ leidoComoUtf8=java.nio.charset.MalformedInputException: Input length = 3
 > **Prevenir errores.** Escribe siempre `StandardCharsets.UTF_8` al leer y escribir, aunque sea el valor por
 > defecto desde Java 18. El código queda explícito y no cambia de comportamiento en otro entorno.
 
-> **Ingeniería de software.** `File` está obsoleto: no, sigue funcionando. Pero para código nuevo, `Path/Files`
-> suele ser más claro y completo; si una librería te exige `File`, convierte en el borde con `path.toFile()`.
+> **Ingeniería de software.** `java.io.File` no está obsoleto: sigue en el JDK y funciona. Para código nuevo, sin
+> embargo, `Path` y `Files` son más claros y completos, y sus errores traen la causa. Si una librería te exige un
+> `File`, convierte solo en ese borde con `path.toFile()`.
 
 #### Checkpoint 1.1
 Ejecutas `RutasAurora` desde `/srv/aurora`. ¿Qué imprime la línea `absoluta=`?
@@ -483,26 +614,129 @@ texto. Las fechas de los pedidos también deben viajar sin perder su significado
 - **Error típico:** serializar objetos de dominio con campos internos que nunca debieron salir del programa.
 
 #### ► CÓMO FUNCIONA
-Jackson es una librería para JSON en Java. `ObjectMapper` convierte objetos Java a JSON (`writeValueAsString`,
-`writeValue`) y JSON a objetos (`readValue`). Para records y POJOs simples funciona bien por defecto; para tipos
-como `LocalDate`, necesitas módulos como `jackson-datatype-jsr310`.
 
-Dos decisiones importan: formato de fechas y manejo de tipos. `WRITE_DATES_AS_TIMESTAMPS` desactivado produce
-ISO-8601 legible (`2026-11-20`) en vez de números. Para leer una lista genérica, usa
-`TypeReference<List<Producto>>() {}` porque Java borra genéricos en runtime.
+##### 1. La idea en lenguaje sencillo
 
-La serialización es un contrato. Si cambias nombres de campos, tipos o estructura, puedes romper lectores
-existentes. Para APIs públicas, versiona o diseña compatibilidad. No serialices objetos de dominio con detalles
-internos accidentales sin revisarlo.
+Piensa en una mudanza. Los muebles armados no caben en el camión, así que los desarmas, etiquetas cada pieza y los
+cargas en cajas. En la casa nueva, alguien lee las etiquetas y vuelve a armar cada mueble igual que estaba.
+
+Un objeto Java vive en la memoria de un programa. No puede viajar así a un archivo ni a otro sistema. La
+**serialización** lo desarma en texto con etiquetas; la **deserialización** lee ese texto y vuelve a armar el
+objeto.
+
+En Tienda Aurora, el catálogo es una lista de records `Producto`. Para guardarlo esta noche y recuperarlo mañana,
+lo conviertes en **JSON**, un formato de texto que entienden todos los lenguajes. Al leerlo, debes obtener los
+mismos productos: `igualAlOriginal=true`.
+
+Jackson es la librería que hace esa conversión. No es parte del JDK, pero es la más usada en Java para JSON. Spring
+Boot la usa por debajo en cada API REST.
+
+##### 2. Definición formal y vocabulario
+
+La **serialización** convierte el estado de un objeto en una secuencia de bytes o texto. La **deserialización**
+reconstruye objetos desde esa secuencia. Solo viajan los datos: los métodos quedan en el código de cada lado.
+
+**JSON** es un formato de texto definido en el RFC 8259. Tiene objetos, arreglos, textos, números, `true`, `false`
+y `null`. No tiene tipo fecha ni tipo decimal exacto: las fechas viajan como texto o como números.
+
+En Jackson, la clase central es **ObjectMapper**. `writeValueAsString` y `writeValue` serializan; `readValue`
+deserializa. El mapper guarda configuración: módulos registrados y opciones llamadas *features*.
+
+**TypeReference** conserva un tipo genérico completo, como `List<Producto>`, que el compilador borra.
+**JavaTimeModule** enseña a Jackson los tipos de `java.time`. Todo junto forma un **contrato de serialización**:
+los nombres, tipos y estructura que escritor y lector prometen respetar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Jackson se divide en tres librerías. `jackson-core` lee y escribe JSON token a token. `jackson-annotations` define
+anotaciones como `@JsonProperty`. `jackson-databind` contiene `ObjectMapper` y une objetos con tokens. Sigue esta
+llamada del Problema resuelto 2.1:
+
+```java
+String json = mapper.writeValueAsString(cafe);
+```
+
+1. El mapper mira la clase de `cafe` y pregunta si ya tiene un serializador para `Producto`. La primera vez no lo
+   tiene.
+2. Inspecciona la clase por **reflexión**, es decir, lee su estructura en tiempo de ejecución. Como es un record,
+   toma sus componentes: `sku`, `nombre`, `precio` y `stock`.
+3. Construye un serializador con una propiedad por componente, en el orden del record, y lo guarda en una caché.
+4. Crea un generador de `jackson-core` que escribe en un búfer de texto.
+5. El serializador emite `{`, y para cada propiedad llama al método de acceso, escribe el nombre y el valor con el
+   serializador de su tipo.
+6. `BigDecimal` se escribe como número sin redondear, por eso sale `14.90` con sus dos decimales.
+7. Emite `}` y devuelve el texto.
+
+La lectura hace el recorrido inverso. `readValue` lee tokens, busca cada nombre en las propiedades conocidas y
+guarda los valores. Para un record, al final llama al **constructor canónico** con todos los valores. Si aparece un
+nombre desconocido, como `"color"`, lanza `UnrecognizedPropertyException`.
 
 ```mermaid
 flowchart LR
   O["record Producto"] -->|"writeValueAsString"| J["texto JSON"]
-  J -->|"Files / red"| X["catalogo.json"]
-  X -->|"readValue + TypeReference"| L["lista de Producto"]
-  L --> C{"equals(original)?"}
-  M["JavaTimeModule + ISO-8601"] -.-> J
+  J -->|"Files o red"| X["catalogo.json"]
+  X -->|"readValue con TypeReference"| L["lista de Producto"]
+  L --> C{"¿igual al original?"}
+  M["JavaTimeModule e ISO-8601"] -.-> J
 ```
+
+Las listas necesitan ayuda. Por el **borrado de tipos**, en tiempo de ejecución `List<Producto>` es solo `List`. Si
+pasas `List.class`, Jackson no sabe qué hay dentro y crea un `LinkedHashMap` por cada objeto. La subclase anónima
+resuelve eso:
+
+```java
+List<Producto> leidos = mapper.readValue(archivo.toFile(), new TypeReference<List<Producto>>() {});
+```
+
+Una subclase sí conserva en su archivo `.class` el tipo genérico de su superclase. Jackson lo lee por reflexión y
+sabe que cada elemento es un `Producto`.
+
+##### 4. Reglas, variantes y casos límite
+
+Las salidas del tema se obtuvieron con Jackson 2.16.1. Jackson soporta records desde la versión 2.12. En la línea
+2.x, dos opciones vienen activadas por defecto y explican los errores del tema:
+
+- `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES`: un campo desconocido lanza `UnrecognizedPropertyException`.
+- `SerializationFeature.WRITE_DATES_AS_TIMESTAMPS`: las fechas se escriben como números o arreglos, como
+  `[2026,11,20]`.
+
+Los tipos de `java.time` no están en `jackson-databind` 2.x. Sin `JavaTimeModule`, serializar un `LocalDate` lanza
+`InvalidDefinitionException`, y el mensaje nombra la dependencia que falta.
+
+Jackson 3.0, publicada en 2025, cambió varias de estas reglas. Usa el paquete `tools.jackson` y exige Java 17.
+Incluye el soporte de `java.time` dentro de databind. Además, desactiva por defecto `FAIL_ON_UNKNOWN_PROPERTIES` y
+la escritura de fechas como números. El código de este tema usa la línea 2.x, la del laboratorio.
+
+`ObjectMapper` es seguro entre hilos una vez configurado. Cambiar su configuración mientras otros hilos lo usan no
+lo es. Si necesitas variantes, `mapper.writer(...)` y `mapper.reader(...)` crean objetos inmutables con la
+configuración ajustada.
+
+Crear un mapper es costoso: pierde la caché de serializadores del paso 3. Por eso se crea uno, se configura al
+arrancar y se comparte.
+
+`TypeReference` exige las llaves finales `{}`. Sin ellas no hay subclase y el código no compila, porque
+`TypeReference` es abstracta.
+
+El contrato tiene casos frágiles. Renombrar un componente del record cambia el nombre en el JSON. Cambiar un `int`
+por `String` rompe a los lectores existentes. Con `@JsonProperty("precio")` puedes renombrar el componente en Java
+sin cambiar el JSON.
+
+No confundas esta serialización con `java.io.Serializable`. Esa es la serialización binaria nativa de Java, que
+reconstruye clases arbitrarias y tiene riesgos de seguridad conocidos. Para intercambiar datos se usa JSON.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los records del Java, Módulo 1, Tema 5 son el modelo ideal para JSON. Sus componentes definen los campos y su
+`equals` compara componente a componente. Por eso `igualAlOriginal=true` prueba la ida y vuelta sin código extra.
+
+`TypeReference` existe por el *type erasure* del Java, Módulo 2, Tema 4. Allí viste que los genéricos se borran al
+compilar. Aquí ves la consecuencia práctica y el truco de la subclase anónima para recuperarlos.
+
+El Tema 1 aportó `Path`, `Files.createDirectories` y la escritura en UTF-8. Jackson escribe JSON en UTF-8 por
+defecto, así que la `é` de `Café Aurora` se conserva.
+
+El Tema 3 lee archivos grandes línea por línea. Esa técnica, combinada con `readValue` por línea, es la base del
+formato NDJSON del Ejercicio verificable 3. El laboratorio exporta pedidos con ella.
 
 #### Problema resuelto 2.1
 Guarda el catálogo como JSON legible, léelo de vuelta y comprueba que los objetos son iguales a los originales.
@@ -694,7 +928,7 @@ Respuesta esperada: `{"sku":"FIL-300","nombre":"Filtros V60","precio":9.50,"stoc
 Intermedio. Haz que el lector tolere el campo `color` sin fallar. ¿Qué imprime el producto leído?
 
 Respuesta esperada: con `mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)` el campo se
-ignora y se imprime `Producto[sku=CAF-100, nombre=Cafe, precio=14.90, stock=8]`.
+ignora y se imprime `Producto[sku=CAF-100, nombre=Café Aurora, precio=14.90, stock=8]`.
 
 #### Ejercicio verificable 3
 Reto. Escribe el catálogo como NDJSON (un producto por línea) y reconstrúyelo con `Files.lines` y `readValue`.
@@ -780,26 +1014,131 @@ de la aplicación, donde no hay una carpeta `src/main/resources`. ¿Cómo se lee
 - **Error típico:** con `ClassLoader`, empezar el nombre con `/`: devuelve `null`. La barra inicial solo vale con `Clase.class.getResourceAsStream`.
 
 #### ► CÓMO FUNCIONA
-Para archivos grandes, evita cargar todo en memoria si no hace falta. `Files.readAllBytes` o `readString` son
-cómodos para archivos pequeños; para millones de líneas, usa `BufferedReader`, `Files.lines()` o streaming.
-`Files.lines()` devuelve un `Stream<String>` que debe cerrarse; por eso se usa en try-with-resources.
 
-NDJSON es útil para streams: un JSON por línea. Permite escribir y leer registro por registro. CSV es compacto,
-pero necesita cuidado con escapes si los campos pueden contener comas, comillas o saltos de línea.
+##### 1. La idea en lenguaje sencillo
 
-Los recursos del classpath son archivos empaquetados dentro del JAR o en `src/main/resources`. Se leen con
-`getResourceAsStream`, no con `Path.of("src/main/resources/...")`, porque esa ruta no existe dentro de un JAR. El
-stream debe cerrarse. Si el recurso no existe, retorna `null`; hay que manejarlo explícitamente.
+Imagina que debes contar las cajas de café en un camión con quinientas mil cajas. No las bajas todas al andén para
+contarlas: no caben. Bajas una, la anotas, la vuelves a subir y pasas a la siguiente. El andén solo necesita
+espacio para una caja.
+
+El reporte de pedidos de Tienda Aurora es ese camión: 24 MB y medio millón de líneas. `Files.readAllLines` intenta
+bajar todo al andén, y con 16 MB de memoria el programa muere. `BufferedReader` baja una línea, la procesa y la
+descarta.
+
+Hay un segundo problema en el tema. La plantilla de la nota de despacho no está suelta en el disco: viaja
+**dentro** del archivo JAR de la aplicación. Para leerla no sirve una ruta; hay que pedírsela al mismo mecanismo
+que carga las clases.
+
+Las dos soluciones comparten una idea. En lugar de pedir «el archivo entero», abres un **flujo**: un canal por el
+que los datos llegan de a poco. Tú decides cuánto lees y cuándo cierras.
+
+##### 2. Definición formal y vocabulario
+
+Java tiene dos familias de flujos en `java.io`. Un **flujo de bytes** se lee con `InputStream` y entrega bytes
+crudos; `read()` devuelve un valor entre 0 y 255, o `-1` al final. Un **flujo de caracteres** se lee con `Reader` y
+aplica un charset para convertir esos bytes en caracteres.
+
+Un **buffer** es una zona de memoria intermedia. `BufferedReader` pide al disco bloques grandes, los guarda y te
+entrega caracteres o líneas desde ahí. Su tamaño por defecto es de 8192 caracteres.
+
+Todos los flujos implementan `Closeable`. Por eso se abren con **try-with-resources en I/O**, que llama a `close()`
+al salir del bloque aunque haya excepción. **Files.lines** devuelve un `Stream<String>` perezoso que mantiene el
+archivo abierto hasta que lo cierras.
+
+**NDJSON** guarda un documento JSON completo en cada línea, así cada línea se procesa por separado. Un **recurso
+del classpath** es un archivo empaquetado junto a las clases, que se lee con `getResourceAsStream`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la lectura del Problema resuelto 3.2:
+
+```java
+try (BufferedReader lector = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+    String linea;
+    while ((linea = lector.readLine()) != null) {
+        // procesar la línea y olvidarla
+    }
+}
+```
+
+1. `Files.newBufferedReader` abre un canal de bytes hacia el archivo. Lo envuelve en un decodificador UTF-8 y este
+   en un `BufferedReader`.
+2. La primera llamada a `readLine()` encuentra el buffer vacío. Pide al decodificador hasta 8192 caracteres, y el
+   decodificador pide bytes al disco.
+3. `readLine()` busca un salto de línea dentro del buffer y devuelve el texto anterior como un `String` nuevo.
+4. Las llamadas siguientes toman caracteres del buffer sin tocar el disco. Solo cuando el buffer se vacía vuelve al
+   paso 2.
+5. El `String` de cada línea queda sin referencias al pasar a la siguiente vuelta. El recolector de basura puede
+   liberarlo.
+6. Al final del archivo, `readLine()` devuelve `null` y el bucle termina.
+7. Al salir del `try`, `close()` cierra el `BufferedReader`, que a su vez cierra el decodificador y el canal.
 
 ```mermaid
 flowchart LR
   D[("disco: pedidos.ndjson 24 MB")] -->|"bytes"| IS["InputStream"]
   IS -->|"charset UTF-8"| R["Reader"]
-  R --> B["BufferedReader: balde de 8192"]
-  B -->|"readLine(): una línea"| P["procesar y olvidar"]
+  R --> B["BufferedReader: buffer de 8192"]
+  B -->|"readLine: una línea"| P["procesar y olvidar"]
   P --> B
   J[("JAR: data/plantilla-nota.txt")] -->|"getResourceAsStream"| IS2["InputStream o null"]
 ```
+
+La memoria usada depende del tamaño de una línea y del buffer, no del archivo. Por eso `ArchivoGrande` funciona con
+`-Xmx16m`. `readAllLines`, en cambio, guarda las 500 000 líneas en una lista y agota el heap.
+
+La escritura usa el mismo buffer al revés. `BufferedWriter.write` copia el texto al buffer. Solo cuando se llena, o
+cuando llamas a `flush()` o `close()`, lo envía al disco. Si el programa termina sin cerrar el escritor, lo que
+quedaba en el buffer se pierde.
+
+Los recursos del classpath siguen otro camino. `getResourceAsStream("data/plantilla-nota.txt")` recorre cada
+entrada del classpath en orden. Si es una carpeta, busca el archivo en ella. Si es un JAR, que es un archivo ZIP,
+busca una entrada con ese nombre y devuelve un flujo que la descomprime.
+
+##### 4. Reglas, variantes y casos límite
+
+Las clases de flujos existen desde los inicios de Java. NIO.2, en Java 7, añadió `Files.newBufferedReader`,
+`Files.newInputStream` y try-with-resources. `Files.lines` llegó en Java 8. `InputStream.readAllBytes()` y
+`transferTo()` llegaron en Java 9.
+
+Hay diferencias entre las formas de abrir un lector:
+
+- `Files.newBufferedReader` lanza `MalformedInputException` si encuentra bytes que no son válidos en el charset.
+- `new InputStreamReader(entrada, charset)` reemplaza esos bytes por el carácter `�` sin avisar.
+- `Files.lines` envuelve los errores de lectura en `UncheckedIOException`, porque un stream no puede lanzar
+  excepciones comprobadas.
+
+`Files.lines` exige cierre. La documentación indica usar try-with-resources si necesitas liberar el archivo a
+tiempo. Un `Files.lines(archivo).count()` sin `try` deja el archivo abierto hasta que el recolector actúe, si
+actúa.
+
+try-with-resources cierra en orden inverso al de apertura. Si el bloque lanza una excepción y `close()` lanza otra,
+la segunda no reemplaza a la primera. Queda adjunta como excepción **suprimida**, visible con `getSuppressed()`.
+
+`ClassLoader.getResourceAsStream` y `Class.getResourceAsStream` interpretan el nombre distinto:
+
+- En `ClassLoader`, el nombre siempre es relativo a la raíz del classpath. Una barra inicial hace que no encuentre
+  nada.
+- En `Class`, un nombre sin barra es relativo al paquete de esa clase. Con barra inicial, es relativo a la raíz.
+
+Ambos devuelven `null` si el recurso no existe. No lanzan excepción. Por eso `LeerPlantilla` convierte ese `null`
+en una `IOException` con el nombre.
+
+NDJSON tiene una regla simple que se rompe con facilidad. Cada línea debe ser un JSON completo y sin saltos
+internos. Un mapper con *pretty printer* escribe saltos de línea y rompe el formato.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 usó `Files.readString` y `Files.writeString`, que cargan o escriben todo de una vez. Este tema muestra su
+límite y la alternativa por partes. El charset explícito del Tema 1 sigue siendo obligatorio aquí.
+
+`Files.lines` es un stream del Java, Módulo 4, Tema 1. Es perezoso como cualquier pipeline: solo lee líneas cuando
+una operación terminal las pide. `filter` y `count` funcionan igual que sobre una lista.
+
+try-with-resources viene del Java, Módulo 3, Tema 2. Aquí ves por qué importa en I/O: cerrar un escritor vacía su
+buffer, y no cerrarlo produce un archivo cortado, como dice el Checkpoint 3.1.
+
+El Tema 2 convierte cada línea NDJSON en un objeto con `readValue`. El laboratorio integrador combina las tres
+piezas: exporta pedidos como NDJSON, lee la plantilla desde el classpath y cuenta líneas con streaming.
 
 #### Problema resuelto 3.1
 Comprueba en un archivo pequeño la diferencia entre leer bytes y leer caracteres.

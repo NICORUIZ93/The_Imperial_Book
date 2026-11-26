@@ -801,16 +801,56 @@ sabe cuál manda. En otro, el build pasa en un portátil y falla en CI porque us
 - **Error típico:** usar una versión vieja sin proveedor de JUnit Platform: Maven imprime `Tests run: 0` y el build pasa.
 
 #### ► CÓMO FUNCIONA
-Maven organiza el build alrededor del POM (`pom.xml`), un ciclo de vida estándar y plugins. El POM declara coordenadas (`groupId`, `artifactId`, `version`), dependencias, plugins y propiedades. El ciclo de vida da fases predecibles: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Surefire ejecuta tests en `test`.
 
-**Por qué existe:** en equipos, el problema no es compilar un archivo, sino compilar el mismo proyecto de la misma forma en CI, en laptops y en releases. Maven estandariza esa convención.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** el `pom.xml` de `maven-demo` usa `dependencyManagement` con BOM para no repetir versiones de JUnit, `pluginManagement` para fijar compilador/Surefire, Enforcer para exigir JDK 25 y un perfil `ci`. `mvn -B verify` ejecuta `validate → compile → test → package` con la salida mostrada más abajo.
+Una cadena de restaurantes no deja que cada cocina compre ingredientes de cualquier marca ni use hornos de cualquier
+modelo. Tiene una lista central de proveedores y equipos aprobados. Cada local cocina sus platos, pero los insumos y
+las herramientas salen de esa lista.
 
-**Confusión común:** “Maven es solo XML”. El XML es el formato; el valor real está en el modelo de ciclo de vida, la resolución de dependencias y la reproducibilidad.
+En Tienda Aurora pasaba lo contrario. Un servicio repetía la versión de JUnit en cinco lugares. Otro pasaba en un
+portátil y fallaba en CI porque el plugin de pruebas no era el mismo. Nadie había decidido esas versiones: cada máquina
+elegía la suya.
 
-El POM tiene dos tipos de bloques: los que **gestionan** (fijan versiones, no ejecutan) y los que **usan**. Enforcer
-y Surefire se ejecutan dentro de fases concretas del ciclo de vida:
+Maven ofrece las piezas para centralizar esas decisiones dentro del `pom.xml`. Una sección fija versiones de
+bibliotecas, otra fija versiones de plugins y un plugin vigila que el entorno cumpla las reglas antes de compilar.
+
+##### 2. Definición formal y vocabulario
+
+Maven construye un proyecto a partir de un modelo. El POM (`pom.xml`) declara coordenadas, dependencias, plugins y
+propiedades. Maven lo combina con el POM de sus padres y con un **super POM** interno, y obtiene el **POM efectivo**: el
+modelo completo con todos los valores resueltos.
+
+**`dependencyManagement`** fija versión y scope de dependencias sin agregarlas al proyecto. Cuando una dependencia se
+declara sin `<version>`, Maven toma la de esta sección. En lenguaje sencillo, es la lista de precios: leerla no compra
+nada. Con `<scope>import</scope>` y tipo `pom`, la sección importa un BOM completo.
+
+**`pluginManagement`** hace lo mismo con plugins: fija versión y configuración sin ejecutarlos.
+
+**Maven Enforcer** es el plugin `maven-enforcer-plugin`. Comprueba reglas del entorno o del proyecto y detiene el build
+si alguna falla. Un **perfil de Maven** es un bloque `<profile>` que cambia el modelo cuando se activa con `-P` o por
+una condición. **Surefire** es el plugin que ejecuta las pruebas unitarias en la fase `test`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que hace `mvn -B verify` con el POM de `maven-demo`:
+
+1. **Lectura del modelo.** Maven lee el POM, aplica los padres y el super POM, activa los perfiles cuya condición se
+   cumple y valida el resultado. Una dependencia sin versión y sin gestión detiene todo aquí, con
+   `'dependencies.dependency.version' ... is missing`.
+2. **Resolución de versiones.** Cada dependencia sin versión recibe la de `dependencyManagement`. Cada plugin recibe la
+   de `pluginManagement` o, si no hay, la que su instalación de Maven trae por defecto.
+3. **Plan de ejecución.** `verify` es una fase del ciclo de vida por defecto. Pedir una fase ejecuta también todas las
+   anteriores: `validate`, `compile`, `test`, `package` y las intermedias.
+4. **validate.** Corre la ejecución `exige-jdk-25` de Enforcer. La regla `RequireJavaVersion` con rango `[25,)`
+   compara la versión del JDK que ejecuta Maven.
+5. **compile.** `compiler:3.14.1` compila el código principal.
+6. **test.** `surefire:3.5.4` lanza una JVM aparte, descubre las clases de prueba y las ejecuta con JUnit Platform.
+   Imprime `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`.
+7. **package.** `jar:3.5.1` empaqueta. Esa versión no está en el POM: la eligió la instalación de Maven.
+
+La salida de `mvn -B verify` es la traza de estos pasos. Cada cabecera `--- plugin:versión:goal (ejecución) @
+proyecto ---` corresponde a una línea del plan.
 
 ```mermaid
 flowchart LR
@@ -819,6 +859,47 @@ flowchart LR
   V["validate<br/>Enforcer: Java ≥ 25"] --> C["compile"] --> T["test<br/>Surefire + JUnit"] --> P["package<br/>jar"] --> VE["verify"]
   PR["perfil ci (-Dci)"] -. "propiedades extra" .-> C
 ```
+
+Las flechas punteadas son decisiones de modelo, tomadas en los pasos 1 y 2. Las continuas son ejecución, pasos 4 a 7.
+
+##### 4. Reglas, variantes y casos límite
+
+`dependencyManagement` también gobierna dependencias **transitivas**, las que llegan a través de otras bibliotecas.
+Si una biblioteca trae otra versión de un artefacto gestionado, gana la versión gestionada. Sin gestión, Maven aplica
+la mediación por cercanía: gana la versión más cercana en el árbol y, a igual distancia, la declarada primero.
+
+Un plugin sin versión no es un error para Maven. Usa la versión por defecto de su instalación. Por eso Maven 3.9.11 pidió
+`maven-resources-plugin:3.3.1` y falló sin red. Otra versión de Maven puede elegir otra, y el build deja de ser
+reproducible sin que cambie una línea.
+
+Enforcer se liga por defecto a la fase `validate`, pero solo corre si declaras una `<execution>` con el goal `enforce`.
+Si solo pones el plugin en `pluginManagement`, existe en el modelo y nunca se ejecuta. El rango `[25,)` usa la sintaxis
+de rangos de Maven: el corchete incluye el extremo y el paréntesis abierto significa «sin límite superior».
+
+Un perfil se activa por `id` con `-Pci` o por condición. La condición `<property><name>ci</name></property>` se cumple
+cuando defines la propiedad con `-Dci`. Si pides un `id` inexistente, Maven solo imprime un `[WARNING]` y sigue sin él.
+
+Surefire reconoce por defecto las clases `Test*`, `*Test`, `*Tests` y `*TestCase`. Una prueba llamada
+`VerificaImporte` no se ejecuta. Surefire soporta JUnit Platform de forma nativa desde la versión 2.22.0; con versiones
+más viejas puedes ver `Tests run: 0` y un build verde.
+
+`-B` activa el modo batch, sin colores ni preguntas. `-o` trabaja sin red, útil para comprobar que el modelo es válido
+antes de descargar nada.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema profundiza Java, Módulo 8. Las coordenadas, el POM y los plugins vienen del Tema 1; el ciclo de vida, las
+fases, los scopes y el BOM, del Tema 2; el reactor, del Tema 3; el toolchain, del Tema 4. JUnit Platform viene de Java,
+Módulo 9, Tema 1.
+
+Es la versión Maven de lo que hiciste en Módulo 13, Tema 2 con Gradle: un build reproducible. Allí el wrapper fijaba la
+herramienta y el toolchain fijaba Java. Aquí `pluginManagement` fija los plugins y Enforcer comprueba Java.
+
+No confundas gestionar con usar. `dependencyManagement` y `pluginManagement` no agregan nada al build; solo deciden
+versiones para cuando algo se declara.
+
+En el Tema 2 verás cómo Gradle resuelve el mismo problema con otro modelo: tareas con entradas y salidas, y caché. En el
+Tema 4, Surefire ejecutará pruebas de JUnit 6 y Mockito.
 
 #### Problema resuelto 1.1
 Declara una dependencia de prueba sin repetir su versión y comprueba qué hace Maven sin la sección que la gestiona.
@@ -1073,15 +1154,52 @@ trabajo puede saltarse sin arriesgar un resultado viejo, y cómo conviertes los 
 - **Error típico:** apagar el aviso con `@SuppressWarnings("all")` en vez de corregir el código.
 
 #### ► CÓMO FUNCIONA
-Gradle modela el build como un grafo de tareas. Cada tarea declara inputs, outputs y dependencias; Gradle puede ejecutar en orden correcto, evitar trabajo innecesario y cachear resultados. El script Kotlin DSL (`build.gradle.kts`) es código tipado que configura plugins, toolchains y dependencias.
 
-**Por qué existe:** los proyectos reales necesitan más que compilar: múltiples módulos, generación de código, tests, empaquetado, quality gates, publicación. Gradle da flexibilidad sin perder estructura.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** reproducibilidad significa fijar Gradle con wrapper (`./gradlew`), fijar Java con toolchain, declarar repositorios y versiones, y evitar depender de estado local oculto. `-Werror` y `-Xlint:all` convierten warnings en deuda visible.
+En una cocina profesional, nadie vuelve a picar cebolla si la que picó en la mañana sigue en la nevera y la receta no
+cambió. Pero solo puede saltarse el paso si sabe exactamente qué receta se usó y si el recipiente sigue intacto. Si
+alguien cambió el corte pedido, hay que picar de nuevo.
 
-**Confusión común:** “Gradle siempre es no determinista porque es flexible”. La flexibilidad es un riesgo si se abusa, pero con wrapper, toolchain, inputs declarados y dependencias fijas el build puede ser muy estable. Otro error es commitear salidas `build/` en vez del wrapper.
+El equipo de Tienda Aurora hacía lo contrario: `clean build` «por si acaso», en cada máquina y en cada rama de CI. Todo
+se recompilaba desde cero porque nadie confiaba en lo que ya estaba hecho.
 
-Antes de ejecutar cada tarea, Gradle calcula una huella de sus entradas y decide entre cuatro caminos:
+Gradle puede saltarse trabajo de forma segura si cada tarea declara qué consume y qué produce. Con esa información
+decide si una tarea está al día, si su resultado ya existe en una caché o si debe ejecutarse. Y con `-Werror`, los
+avisos del compilador dejan de acumularse en silencio.
+
+##### 2. Definición formal y vocabulario
+
+Gradle modela el build como un grafo de tareas. Cada tarea puede declarar sus **entradas** (`inputs`): propiedades y
+archivos de los que depende su resultado. También declara sus **salidas** (`outputs`): archivos o directorios que
+produce. En lenguaje sencillo, la receta con sus ingredientes y el plato terminado.
+
+**`UP-TO-DATE`** es el estado de una tarea cuyas entradas y salidas coinciden con las de su última ejecución en ese
+directorio. Gradle no la ejecuta.
+
+La **caché de build** es un almacén de salidas indexado por la huella de las entradas. Con `--build-cache` o
+`org.gradle.caching=true`, Gradle reutiliza salidas producidas en otro momento, otro directorio u otra máquina. La
+salida marca esas tareas como `FROM-CACHE`.
+
+**`-Werror`** es una opción de `javac` que convierte cualquier aviso en error. Combinada con `-Xlint:all`, que activa
+todas las categorías de aviso, hace que un cast redundante detenga el build con `warnings found and -Werror specified`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Gradle ejecuta un build en tres fases. En la **inicialización** lee `settings.gradle.kts` y decide qué proyectos
+participan. En la **configuración** ejecuta los scripts y arma el grafo de tareas. En la **ejecución** recorre el grafo
+en orden de dependencias.
+
+Antes de ejecutar cada tarea, Gradle hace esta comprobación:
+
+1. Calcula una **huella** (*fingerprint*) de cada entrada. Para archivos usa el contenido, no la fecha de modificación.
+   Para propiedades usa su valor.
+2. Agrega la implementación de la tarea a la huella. Si cambia el código de la tarea o su classpath, la huella cambia.
+3. Compara con el historial guardado en el directorio `.gradle` del proyecto. Si la huella coincide y las salidas
+   siguen intactas, marca la tarea `UP-TO-DATE`.
+4. Si no coincide y la caché está activa, busca la huella como clave en la caché. Si la encuentra, copia las salidas
+   guardadas y marca `FROM-CACHE`.
+5. Si tampoco está en caché, ejecuta la tarea. Si la tarea es cacheable, guarda sus salidas con esa clave.
 
 ```mermaid
 flowchart LR
@@ -1093,6 +1211,55 @@ flowchart LR
   Q2 -->|no| E["se ejecuta<br/>y guarda en caché"]
   S["tarea sin salidas"] --> E
 ```
+
+Aplica el diagrama al Problema resuelto 2.2. Tras agregar un comentario a `App.java`, la huella de `:app:compileJava`
+cambia, porque cambió el contenido del fuente. La tarea se ejecuta. Pero el `.class` resultante es idéntico, así que
+la huella de `:app:jar` no cambia y queda `UP-TO-DATE`.
+
+Con `--build-cache` después de `clean`, el historial local desaparece, pero la caché no. Las compilaciones salen
+`FROM-CACHE`. `jar` se vuelve a ejecutar porque Gradle no la trata como cacheable: reempaquetar es más barato que
+descargar el archivo.
+
+En `generarInfo`, la propiedad `etiqueta` es la entrada. Con `v1` repetido, la tarea queda al día; con `v2`, se ejecuta
+y el archivo pasa a decir `etiqueta=v2`.
+
+##### 4. Reglas, variantes y casos límite
+
+La documentación de Gradle es explícita: una tarea sin salidas declaradas nunca se considera al día. Por eso
+`sinSalidas` se ejecuta en cada corrida.
+
+Gradle solo conoce lo que declaraste. Si una tarea lee un archivo o una variable de entorno sin registrarlos como
+entrada, puede quedar `UP-TO-DATE` aunque ese dato haya cambiado. Con una caché compartida, el error se propaga a
+otras máquinas.
+
+Las propiedades del ejemplo usan la API de **proveedores**: `providers.gradleProperty("etiqueta")` y
+`layout.buildDirectory`. Son valores perezosos, que se calculan cuando hacen falta. Así la configuración no lee nada
+antes de tiempo.
+
+La caché local vive en el directorio de usuario de Gradle, no en el proyecto. Por eso `clean` no la borra. Una caché
+remota permite compartir salidas entre CI y desarrolladores, y exige entradas bien declaradas.
+
+`-Werror` tiene un costo al migrar. Algunos avisos dependen del JDK, así que subir de versión puede romper un build
+que antes pasaba. Es el comportamiento deseado: el aviso nuevo aparece antes de llegar a producción.
+
+En versiones: el proyecto usa el wrapper con Gradle 9.9.1; las salidas locales de este tema vienen de Gradle 8.14.3.
+Gradle 9 necesita Java 17 o posterior para ejecutarse, independiente del toolchain que compila tu código. Kotlin DSL es
+el lenguaje por defecto para builds nuevos desde Gradle 8.2.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las tareas, el grafo de tareas y Kotlin DSL vienen de Java, Módulo 8, Temas 1 y 2; el toolchain, del Tema 4. El build
+reproducible de Java, Módulo 13, Tema 2 fijaba versiones. Este tema agrega la otra mitad: no repetir trabajo sin perder
+la garantía de resultado correcto.
+
+Compara con Maven del Tema 1. Maven ejecuta las fases que pides de forma lineal. Gradle decide tarea por tarea si hace
+falta trabajar. Las dos herramientas son reproducibles si fijas versiones; Gradle además es incremental por diseño.
+
+No confundas `UP-TO-DATE` con `FROM-CACHE`. El primero compara con la última ejecución en ese directorio. El segundo
+recupera salidas de cualquier ejecución previa con la misma huella.
+
+En el Tema 3 el grafo crece a varios proyectos, `domain` y `app`. Ahí la incrementalidad importa más: un cambio
+interno en `app` no debe recompilar `domain`.
 
 #### Problema resuelto 2.1
 Escribe una tarea que genere un archivo con una etiqueta de versión y comprueba cuándo Gradle la salta.
@@ -1381,25 +1548,115 @@ método». Nadie lo notó en la revisión. Meses después, probar el dominio exi
 - **Error típico:** «arreglar» ese error agregando `domain -> app`: el resultado es un ciclo que Gradle rechaza.
 
 #### ► CÓMO FUNCIONA
-Un multi-módulo divide el sistema en unidades con dependencias explícitas. En este proyecto, `domain` define reglas y puertos (`CatalogoProductos`, `ServicioReservas`, `Dinero`); `app` implementa adaptadores (`CatalogoEnMemoria`, `CatalogoJdbc`), configuración de logging y el `main`.
 
-**Por qué existe:** cuando todo vive en un solo módulo, los límites se vuelven sociales (“no importes esto”). El build no puede defenderlos. Los módulos hacen que la frontera sea compilable.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** la dirección de dependencia importa. `app` depende de `domain`; `domain` no conoce `app`. Si el dominio necesita algo externo, se expresa como puerto/interfaz en `domain` y se implementa en `app`. Esto permite probar dominio sin infraestructura.
+En un edificio, un letrero que dice «solo personal autorizado» depende de la buena voluntad. Una puerta con cerradura
+no. Si alguien quiere pasar, necesita la llave, y conseguirla deja rastro.
 
-**Confusión común:** crear muchos módulos sin criterio. Un módulo debe representar una frontera con razón clara. Otro error es “romper” ciclos con utilidades compartidas que terminan siendo un basurero; el ciclo suele indicar un contrato mal ubicado.
+En Tienda Aurora, la regla «el dominio no importa la aplicación» era un letrero. Alguien importó una clase de `app`
+desde el dominio para reutilizar un método, y la revisión no lo vio. Meses después, probar el dominio exigía Logback y
+una base de datos.
 
-La dirección permitida es una sola. Si alguien intenta la inversa, falla el compilador; si además la declara en el
-build, falla el grafo de tareas:
+Un proyecto multi-módulo convierte el letrero en cerradura. Cada módulo compila con un classpath propio, y ese
+classpath solo contiene lo que el módulo declara. Si `domain` no declara `app`, el compilador no encuentra sus clases.
+Y si alguien declara la dependencia para forzar la entrada, Gradle detecta el ciclo.
+
+##### 2. Definición formal y vocabulario
+
+Un **proyecto multi-módulo** de Gradle tiene una raíz y varios subproyectos, listados en `settings.gradle.kts` con
+`include("domain", "app")`. Cada subproyecto tiene su propio `build.gradle.kts`, sus fuentes y su salida.
+
+**`allprojects` y `subprojects`** son bloques del build raíz que aplican configuración a todos los proyectos o solo a
+los subproyectos. Gradle lo llama configuración entre proyectos. En `tienda-aurora-build`, `subprojects` aplica
+`java-library`, el toolchain 25 y `-Xlint:all -Werror -parameters` a `domain` y `app`.
+
+El **plugin `java-library`** extiende el plugin `java` para módulos que otros consumen. Agrega la configuración `api`,
+que separa lo que el módulo expone de lo que usa internamente con `implementation`.
+
+Una **frontera compilable** es un límite entre módulos que el compilador hace cumplir. En lenguaje sencillo, es la
+cerradura: `domain` no ve `app` porque `app` no está en su classpath de compilación.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que hace Gradle con `gradle :app:compileJava` en este proyecto:
+
+1. **Inicialización.** Lee `settings.gradle.kts` y registra los proyectos `:domain` y `:app`. `gradle projects` muestra
+   ese resultado.
+2. **Configuración.** Ejecuta el build raíz. `subprojects { ... }` corre una vez por subproyecto y aplica el plugin y
+   las opciones de compilación.
+3. Ejecuta `app/build.gradle.kts`. La línea `implementation(project(":domain"))` crea una dependencia de proyecto.
+4. **Grafo de tareas.** Para compilar `app` necesita las clases de `domain`. Gradle agrega `:domain:compileJava` antes
+   de `:app:compileJava`.
+5. **Classpath.** Al ejecutar `:app:compileJava`, Gradle pasa a `javac` un classpath con las salidas de `domain`. Al
+   ejecutar `:domain:compileJava`, el classpath no contiene nada de `app`.
+6. **Compilación.** `javac` resuelve cada `import` contra ese classpath. Desde `domain`,
+   `import com.aurora.build.app.App` falla con `package com.aurora.build.app does not exist`.
+
+El error del paso 6 no lo emite Gradle, sino `javac`. Gradle solo decidió qué le daba a cada compilación.
+
+```java
+package com.aurora.build.app;
+import com.aurora.build.domain.Dinero;      // app -> domain: permitido
+public final class App {
+    private App() {}
+    public static void main(String[] args) {
+        System.out.println("total=" + Dinero.de("12.50").multiplicar(2).monto());
+    }
+}
+```
+
+Esta es la dirección correcta, y la salida real fue `total=25.00`. `runtimeClasspath` de `app` muestra una sola línea:
+`\--- project :domain`.
 
 ```mermaid
 flowchart LR
   ROOT["raíz: subprojects<br/>java-library · toolchain 25 · -Werror"] -. "configura" .-> DOM
   ROOT -. "configura" .-> APP
-  APP["app<br/>adaptadores · logback · main"] -->|implementation project(':domain')| DOM["domain<br/>reglas · puertos"]
+  APP["app<br/>adaptadores · logback · main"] -->|"implementation project(':domain')"| DOM["domain<br/>reglas · puertos"]
   DOM -. "import app → no compila" .-> X["frontera compilable"]
   DOM -. "implementation project(':app')" .-> C["Circular dependency<br/>between the following tasks"]
 ```
+
+La rama inferior del diagrama es el segundo intento. Si declaras `domain -> app`, el paso 4 necesita compilar `app`
+antes de `domain` y `domain` antes de `app`. Gradle no puede ordenar ese grafo y aborta con
+`Circular dependency between the following tasks`, antes de compilar nada.
+
+##### 4. Reglas, variantes y casos límite
+
+`api` e `implementation` deciden qué ven los consumidores. Una dependencia `implementation` de `domain` no aparece en el
+classpath de compilación de `app`, aunque sí viaja al de ejecución. Una dependencia `api` aparece en los dos. Declarar
+como `api` algo interno filtra detalles a todos los consumidores.
+
+Esa separación tiene un efecto en el rendimiento. Gradle compara la **ABI** de un módulo, es decir, su superficie
+pública: clases, firmas y constantes visibles. Si un cambio en `domain` no altera esa superficie, los consumidores no
+necesitan recompilar.
+
+`allprojects` y `subprojects` son cómodos, pero la documentación de Gradle recomienda hoy los **plugins de
+convención**. Son plugins propios, en `buildSrc` o en un build incluido, que cada subproyecto aplica de forma explícita.
+La razón es el acoplamiento: con `subprojects`, cada módulo depende de un script que no ve.
+
+No pongas plugins de Java en `allprojects`. La raíz de este proyecto no tiene código; por eso solo aplica `base`.
+
+La frontera compilable tiene límites. Protege el código que pasa por `javac`. La reflexión o un nombre de clase en un
+archivo de configuración pueden saltarla. Para una frontera también en tiempo de ejecución existen los módulos JPMS.
+
+Un ciclo no se rompe con una utilidad compartida que reciba «todo lo común». Normalmente indica un contrato mal
+ubicado. La corrección es un puerto en `domain` implementado en `app`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El proyecto multi-módulo, la dependencia de proyecto, la configuración `api` y la dependencia circular vienen de Java,
+Módulo 8, Tema 3. El grafo de tareas viene del Tema 2 de ese módulo.
+
+El puerto y la regla de dependencia vienen de Java, Módulo 13, Tema 1. Allí la regla se comprobaba con `grep` sobre los
+`import`, una revisión manual. Aquí la hace cumplir el build: `domain` ni siquiera puede ver `app`.
+
+Compara con JPMS de Java, Módulo 10. Un módulo Gradle controla qué hay en el classpath al compilar. Un módulo JPMS
+controla, además, qué paquetes exporta y qué se puede leer en ejecución. Puedes usar ambos a la vez.
+
+En el Tema 4 probarás el dominio de este proyecto sin infraestructura, con fakes y Mockito. Eso solo es posible porque
+la frontera de este tema mantiene a Logback y JDBC fuera de `domain`.
 
 #### Problema resuelto 3.1
 Comprueba con Gradle la forma real del proyecto: qué subproyectos existen y de qué depende `app` al ejecutarse.
@@ -1682,16 +1939,63 @@ se rompió?
 - **Error típico:** verificar `never()` con un argumento exacto (`"TET-002"`): pasaría aunque el código consultara otro SKU; usa `anyString()`.
 
 #### ► CÓMO FUNCIONA
-JUnit 6.1.3 (Jupiter) ejecuta tests con un modelo extensible. `@Test` define casos; `assertAll` agrupa assertions relacionadas; `MockitoExtension`, `@Mock`, `ArgumentCaptor`, `when(...)` y `verify(...)` permiten aislar colaboradores y verificar interacciones.
 
-**Por qué existe:** las reglas de dominio deben validarse rápido. Un test unitario rápido da feedback en segundos y localiza fallos. Los dobles aíslan dependencias lentas o externas sin levantar infraestructura.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** `ServicioReservasTest` usa un lambda porque el puerto es simple; `ServicioReservasMockitoTest` usa Mockito cuando interesa verificar que se consultó el SKU esperado y que una validación temprana impidió la llamada. Las assertions son expresivas: mensaje descriptivo por condición y separación entre valor esperado y comportamiento observable.
+Para probar un horno nuevo no necesitas un restaurante funcionando. Te basta una bandeja con masa de prueba y un
+termómetro. Si además quieres saber si el cocinero abrió la puerta del horno antes de tiempo, necesitas otra cosa: una
+cámara que registre lo que hizo.
 
-**Confusión común:** confundir cobertura con calidad. Otro error clásico es mockear todo, incluso value objects o lógica pura, produciendo tests frágiles que replican implementación. Si un refactor interno rompe tests pero el comportamiento sigue bien, los tests estaban mal acoplados.
+`ServicioReservas` de Tienda Aurora plantea las dos preguntas. La primera es si el total es correcto: basta un catálogo
+de mentira que responda precios fijos. La segunda es si, con una cantidad inválida, el servicio evita consultar el
+catálogo. Esa respuesta no está en el resultado, sino en lo que el servicio hizo o dejó de hacer.
 
-El tipo de doble depende de la pregunta. Si preguntas «¿qué devuelve?», basta un fake. Si preguntas «¿cómo lo
-usó?», necesitas registrar las llamadas:
+Este tema distingue los dobles que **responden** de los que **registran**. También muestra cómo escribir aserciones
+que, al fallar, digan exactamente qué se rompió.
+
+##### 2. Definición formal y vocabulario
+
+**JUnit 6** es la versión mayor de JUnit publicada en 2025. Unifica bajo un mismo número de versión sus tres partes:
+Platform, Jupiter y Vintage. Exige Java 17 o posterior y conserva la API de Jupiter que ya conoces: `@Test`,
+`Assertions` y extensiones.
+
+Un **fake** es un doble de prueba con una implementación real pero simplificada. Responde con datos fijos y no registra
+nada. En `DobleManual.java`, una lambda hace de fake y el total sale `135.00`.
+
+Un **mock** de Mockito es un objeto generado que implementa el puerto, responde lo que le programes con `when` y
+registra cada llamada. Un **espía** escrito a mano hace lo mismo con una lista.
+
+**`assertAll`** ejecuta un grupo de comprobaciones y reporta juntas todas las que fallen. **`ArgumentCaptor`** guarda el
+argumento con el que se llamó a un mock para compararlo después. **`never()`** es un modo de verificación que exige cero
+llamadas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la prueba `verificaInteraccionConElPuerto`:
+
+1. `MockitoExtension` se ejecuta antes de la prueba. Encuentra el campo `@Mock CatalogoProductos catalogo` y crea un mock.
+   También crea el captor anotado con `@Captor`.
+2. `when(catalogo.buscarPorSku("TET-002"))` llama al mock. El mock registra esa invocación y devuelve un valor por
+   defecto. `when` toma la última invocación registrada y `thenReturn` le asocia la respuesta.
+3. La prueba ejecuta el servicio real. El servicio llama a `buscarPorSku("TET-002")` y el mock responde con el producto.
+   Además, anota la llamada.
+4. `verify(catalogo)` pasa el mock a modo verificación. La llamada siguiente no se ejecuta: se compara con el registro.
+5. `skuCaptor.capture()` actúa como comodín que acepta cualquier argumento y lo guarda.
+6. `assertAll` ejecuta las tres comprobaciones, aunque alguna falle, y luego informa.
+
+```java
+verify(catalogo).buscarPorSku(skuCaptor.capture());
+assertAll("reserva con doble Mockito",
+        () -> assertEquals("TET-002", skuCaptor.getValue(), "sku consultado en el catálogo"),
+        () -> assertEquals("PED-200", resultado.pedidoId(), "id de pedido devuelto"),
+        () -> assertEquals(Dinero.de("135.00"), resultado.total(), "total calculado"));
+```
+
+Cada comprobación lleva un mensaje en palabras del negocio. Si fallan dos, el reporte muestra el encabezado
+`reserva con doble Mockito` y los dos mensajes.
+
+En `noConsultaCatalogoConCantidadInvalida`, el paso clave es `verify(catalogo, never()).buscarPorSku(anyString())`.
+`anyString()` acepta cualquier texto. Si el registro contiene alguna llamada a `buscarPorSku`, la verificación falla.
 
 ```mermaid
 flowchart LR
@@ -1702,6 +2006,51 @@ flowchart LR
   C --> A
   N --> A
 ```
+
+El diagrama resume la decisión. `DobleManual.java` recorre las tres ramas sin Mockito: la lambda es el fake y la lista
+`consultas` es el registro. La salida `consultas al catálogo=[TET-002]` equivale a una llamada verificada y a `never()`
+en el caso inválido.
+
+##### 4. Reglas, variantes y casos límite
+
+`verify(mock).metodo(...)` sin modo equivale a `times(1)`: exactamente una llamada. `never()` equivale a `times(0)`.
+Verificar `never()` con un argumento exacto, como `"TET-002"`, pasaría aunque el código consultara otro SKU. Por eso la
+prueba usa `anyString()`.
+
+`ArgumentCaptor.getValue()` devuelve el último valor capturado. Si hubo varias llamadas, `getAllValues()` devuelve la
+lista. Si comparar el argumento directamente es suficiente, `verify(catalogo).buscarPorSku("TET-002")` es más claro
+que un captor.
+
+Con `MockitoExtension`, Mockito trabaja por defecto en modo estricto. Un stub que la prueba nunca usa produce
+`UnnecessaryStubbingException`. Así detectas preparaciones que sobran.
+
+`assertAll` agrupa, pero no aísla dependencias. Si una comprobación obtiene un valor nulo, las que dependen de él
+también fallan.
+
+Una lambda solo puede ser fake de una interfaz funcional. Con dos métodos abstractos, el compilador responde
+`CatalogoProductos is not a functional interface`. Entonces escribes una clase, usas un mock o divides el puerto.
+
+En versiones: Mockito 5 usa por defecto el generador de mocks *inline*, que se instala como agente de la JVM. Ese
+agente explica el aviso `Sharing is only supported for boot loader classes` del Mac. Desde JDK 21 (JEP 451), cargar un
+agente dinámicamente produce además un aviso, y Mockito documenta cómo declararlo con `-javaagent`.
+
+JUnit 6 retiró APIs que JUnit 5 ya marcaba como obsoletas. Algunas extensiones de terceros pueden necesitar una
+versión nueva.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+JUnit Platform, `@Test` y `assertThrows` vienen de Java, Módulo 9, Tema 1. Mockito, `verify`, `@Mock` y `@ExtendWith`,
+del Tema 2 de ese módulo. El doble de prueba como idea general viene de Fundamentos, Módulo 4, Tema 2. La lambda como
+implementación de una interfaz funcional, de Java, Módulo 4, Tema 1.
+
+En Java, Módulo 13, Tema 2 mockeaste el puerto `PedidoRepositorio` y construiste `Pedido` reales. La regla se mantiene:
+`Dinero`, `Producto` y `ResultadoReserva` son valores y no se mockean.
+
+No confundas fake con mock. El fake contesta. El mock contesta y además recuerda, y por eso permite verificar
+interacciones.
+
+En el Tema 5 cambiarás de nivel. En vez de reemplazar el catálogo por un doble, usarás `CatalogoJdbc` con una base H2
+real en memoria. Esa prueba de integración responde lo que un mock no puede: si el SQL funciona.
 
 #### Problema resuelto 4.1
 Escribe a mano lo que Mockito automatiza: un fake que responde y un espía que además anota las llamadas.
@@ -1953,15 +2302,71 @@ depender de un servidor compartido que otras pruebas ensucian?
 - **Error típico:** dar por estable una suite que pasa en un orden; JUnit no garantiza el orden de los métodos.
 
 #### ► CÓMO FUNCIONA
-Una prueba de integración verifica colaboración real entre componentes: persistencia, serialización, configuración, HTTP, colas o arranque de contexto. No reemplaza unit tests; cubre riesgos que los dobles no ven.
 
-**Por qué existe:** dos piezas pueden pasar sus unit tests y fallar juntas por configuración, mapeo, transacciones, SQL real o formato de mensajes.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** `ReservaIntegracionTest` crea una H2 con nombre UUID, crea el esquema (tabla y semilla) en código, usa `CatalogoJdbc` real, ejecuta el caso de uso y captura el JSON de Logback. No depende de servicios compartidos ni de orden entre tests. Para integraciones de BD/cola externas, el mismo principio aplica: declarar dependencias, aislar datos, limpiar estado y evitar servicios externos compartidos; el módulo siguiente muestra ese patrón con PostgreSQL efímero.
+Un piloto practica en un simulador, pero antes de volar con pasajeros alguien prueba el avión real en pista. El
+simulador detecta errores del piloto; la pista detecta errores de la máquina. Ninguna de las dos pruebas reemplaza a
+la otra.
 
-**Confusión común:** llamar “integración” a un test que levanta todo el sistema innecesariamente, o al revés, mockear la frontera que justamente querías validar. H2 es útil, pero no sustituye PostgreSQL cuando importan dialecto o comportamiento del motor.
+En el Tema 4, `ServicioReservas` pasó sus pruebas con un catálogo de mentira. Pero en producción el catálogo es una
+tabla con una columna `precio` de tipo `DECIMAL(10,2)`. Un fake no puede decirte si el SQL está bien escrito, si el
+nombre de la columna coincide o si el precio llega con la escala correcta.
 
-La prueba de integración monta la pieza real de infraestructura y deja dobles solo donde no hay riesgo que probar:
+Una prueba de integración monta la pieza real de infraestructura. Aquí es una base H2 en memoria, propia de cada
+prueba, para que el resultado no dependa de lo que otra prueba dejó.
+
+##### 2. Definición formal y vocabulario
+
+**JDBC** (*Java Database Connectivity*) es la API estándar del módulo `java.sql` para trabajar con bases relacionales.
+Define interfaces como `Connection`, `PreparedStatement` y `ResultSet`. Cada motor aporta un **driver** que las
+implementa. En lenguaje sencillo: el enchufe universal, con un adaptador por marca.
+
+**`DataSource`** es la interfaz de `javax.sql` que entrega conexiones con `getConnection()`. Oculta la URL, las
+credenciales y el pool. El adaptador `CatalogoJdbc` recibe un `DataSource` y no sabe si detrás hay H2 o un pool de
+producción.
+
+Una **base de datos embebida** corre dentro del mismo proceso que la prueba. H2 con la URL `jdbc:h2:mem:<nombre>` vive
+en memoria y desaparece con la JVM.
+
+El **aislamiento de datos de prueba** es la propiedad por la que cada prueba crea y usa sus propios datos. Su resultado
+no depende del orden ni de pruebas anteriores. `EstadoCompartido.java` muestra la falta de aislamiento: con base
+compartida, el orden B dio `catalogoVacio=FAILED`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `ReservaIntegracionTest` desde que crea la base hasta que lee el precio:
+
+1. La prueba arma una URL con un nombre único: `jdbc:h2:mem:aurora-int-<UUID>;DB_CLOSE_DELAY=-1`. El UUID garantiza que
+   ninguna otra prueba abra la misma base.
+2. Crea un `JdbcDataSource` de H2 con esa URL. Crear el objeto no abre ninguna conexión todavía.
+3. Abre una conexión, crea la tabla `productos` e inserta su propia semilla. H2 crea la base en memoria al recibir la
+   primera conexión con ese nombre.
+4. Crea `CatalogoJdbc` con el `DataSource` y `ServicioReservas` con el catálogo. Las dos clases son reales.
+5. El servicio llama a `buscarPorSku`, que ejecuta el SQL:
+
+```java
+String sql = "SELECT sku, nombre, precio FROM productos WHERE sku = ?";
+try (Connection c = dataSource.getConnection();
+     PreparedStatement ps = c.prepareStatement(sql)) {
+    ps.setString(1, sku);
+    try (ResultSet rs = ps.executeQuery()) {
+        if (!rs.next()) return Optional.empty();
+        return Optional.of(new Producto(rs.getString("sku"), rs.getString("nombre"),
+                Dinero.de(rs.getBigDecimal("precio").toPlainString())));
+    }
+}
+```
+
+6. `prepareStatement` envía el SQL con un marcador `?`. `setString` asigna el valor como dato, no como texto de SQL.
+7. `executeQuery` devuelve un `ResultSet`, un cursor sobre las filas. `rs.next()` avanza a la primera fila o devuelve
+   `false`.
+8. `getBigDecimal("precio")` convierte `DECIMAL(10,2)` en un `BigDecimal` con escala 2. `toPlainString()` lo lleva a
+   `Dinero` sin notación científica.
+9. Al salir de cada `try`, los recursos se cierran en orden inverso: primero el `ResultSet`, luego la sentencia y al
+   final la conexión.
+
+El servicio multiplica y devuelve `25.00`. Un appender en memoria captura el JSON de Logback para la parte de logs.
 
 ```mermaid
 flowchart LR
@@ -1972,6 +2377,42 @@ flowchart LR
   SR --> R["total 25.00"]
   AP --> L["pedidoId · sku · operacion · service"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+Desde JDBC 4.0 (Java 6), los drivers se registran solos mediante `ServiceLoader`, si su JAR está en el classpath. Ya
+no hace falta `Class.forName`. Al pedir una conexión, `DriverManager` pregunta a cada driver registrado si acepta la
+URL. Si ninguno la acepta, lanza `SQLException: No suitable driver found`. Ese mensaje casi siempre significa que el
+driver no está en el classpath de esa ejecución.
+
+La configuración de dependencias decide ese classpath. H2 está en `testImplementation`, así que existe en las pruebas
+y no viaja en el artefacto de producción. Si la aplicación lo usara al ejecutarse, iría en `runtimeOnly`.
+
+Una base H2 en memoria con nombre se comparte entre conexiones de la misma JVM. Por defecto, se destruye al cerrarse la
+última conexión. `DB_CLOSE_DELAY=-1` la mantiene viva mientras dure la JVM. Sin esa opción, la tabla creada en el paso
+3 podría desaparecer antes del paso 5.
+
+JUnit no promete un orden de ejecución de métodos que puedas dar por sentado. Puedes fijarlo con `@TestMethodOrder`,
+pero eso esconde el problema. El aislamiento lo elimina.
+
+Una consulta parametrizada protege contra inyección SQL. El valor de `sku` nunca se mezcla con el texto de la consulta.
+
+H2 no es el motor de producción. Tipos, funciones, índices y bloqueos pueden comportarse distinto que en PostgreSQL.
+H2 sirve para el contrato del adaptador; el dialecto real se prueba contra el motor real.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Prueba unitaria, prueba de integración y pirámide de pruebas vienen de Fundamentos, Módulo 4, Tema 2. Conexión, tabla
+y consulta parametrizada vienen de SQL, Módulo 0, Temas 1 y 2. Try-with-resources, de Java, Módulo 3, Tema 2.
+
+`CatalogoJdbc` es un adaptador del puerto `CatalogoProductos`, igual que los repositorios de Java, Módulo 13, Tema 1. La
+regla de dependencia permite que el mismo servicio funcione con `CatalogoEnMemoria`, con un mock o con JDBC.
+
+Compara con el Tema 4. Allí el doble respondía y registraba llamadas. Aquí no hay doble en el catálogo: la prueba
+responde si el SQL, el mapeo de columnas y la escala del precio funcionan juntos.
+
+En el Tema 6 verás la otra mitad de `ReservaIntegracionTest`: el JSON de Logback con `pedidoId` y `sku`. En el Módulo 16,
+Testcontainers reemplazará a H2 por un PostgreSQL efímero cuando importe el dialecto.
 
 #### Problema resuelto 5.1
 Demuestra por qué una base compartida hace que el resultado dependa del orden de las pruebas.
@@ -2216,15 +2657,70 @@ sin pasarlos como parámetro por todos los métodos, y sin acoplar el dominio a 
 - **Error típico:** escribir JSON a mano en el mensaje: el resultado es un texto con comillas escapadas, no campos consultables.
 
 #### ► CÓMO FUNCIONA
-SLF4J es la fachada; Logback es la implementación; el dominio no importa ninguna de las dos. MDC asocia contexto a un hilo (`pedidoId`, `sku`, `operacion`) para que cada línea de log pueda correlacionarse con una operación.
 
-**Por qué existe:** en producción, un log plano sin identificador de correlación obliga a reconstruir la secuencia a mano. JSON con campos estables permite filtrar y correlacionar en un colector de logs.
+##### 1. La idea en lenguaje sencillo
 
-**Implicación práctica:** `TiendaAuroraBuildApp.reservar` hace `MDC.put` antes de loguear y `MDC.remove` en `finally`. `logback.xml` usa `LogstashEncoder` con `customFields` para `service`. La salida observada incluye `"pedidoId":"PED-100"`, `"sku":"CAF-001"`, `"operacion":"reservar"` y `"service":"tienda-aurora-build"` en cada evento.
+En un hospital, cada muestra de laboratorio lleva una etiqueta con el número del paciente. Sin esa etiqueta, mil
+tubos en una gradilla no sirven para nada: nadie sabe de quién es cada resultado. Y si un técnico reutiliza un tubo
+sin quitar la etiqueta vieja, el error es peor que no tener etiqueta.
 
-**Confusión común:** usar Logback directamente en reglas de negocio (acopla el dominio a infraestructura), olvidar limpiar MDC en un pool de hilos (filtra contexto de la petición anterior) o loguear datos sensibles. Los placeholders `{}` evitan concatenar strings costosos y preservan parámetros tipados.
+Los logs de Tienda Aurora estaban en la primera situación. Miles de líneas de texto plano, de varios hilos, sin decir a
+qué pedido pertenecían. Para investigar el reclamo de `PED-100`, alguien tenía que adivinar.
 
-El dominio no ve nada de esto. La aplicación pone el contexto, llama al dominio, registra eventos y limpia:
+Este tema resuelve tres cosas a la vez. El código escribe logs sin depender de una biblioteca concreta. Cada línea
+lleva el pedido y la operación sin pasarlos por todos los métodos. Y el formato es JSON, con campos que un colector
+puede filtrar.
+
+##### 2. Definición formal y vocabulario
+
+**SLF4J** (*Simple Logging Facade for Java*) es una **fachada**: una API de logging que el código usa sin elegir
+implementación. Tu clase importa `org.slf4j.Logger` y `LoggerFactory`. En lenguaje sencillo, es el enchufe estándar.
+
+**Logback** es una implementación de SLF4J. Recibe cada evento, lo filtra por nivel y lo entrega a **appenders**,
+que deciden el destino: consola, archivo o red. Cada appender usa un **encoder**, que decide el formato.
+
+El **encoder JSON** de este proyecto es `LogstashEncoder`. Convierte cada evento en un objeto JSON con campos fijos, como
+`@timestamp`, `level` y `message`. Agrega también el contexto del hilo y los campos de `customFields`.
+
+**MDC** (*Mapped Diagnostic Context*) es un mapa clave-valor asociado al hilo actual. Todo evento emitido desde ese hilo
+lleva una copia del mapa. Internamente usa un `ThreadLocal`.
+
+El **marcador de posición `{}`** es un hueco en el mensaje que se rellena con un argumento solo si el evento se va a
+escribir.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `TiendaAuroraBuildApp.reservar("PED-100", "CAF-001", 2)`:
+
+1. Al cargar la clase, `LoggerFactory.getLogger(...)` busca una implementación. SLF4J 2 la encuentra con
+   `ServiceLoader`, que lee los proveedores declarados en los JAR del classpath. Encuentra Logback.
+2. Logback se configura al iniciarse: busca `logback-test.xml` y luego `logback.xml` en el classpath. Lee el appender de
+   consola, el `LogstashEncoder` y el nivel raíz `INFO`.
+3. `reservar` pone tres claves en el MDC: `pedidoId`, `sku` y `operacion`. Quedan en el mapa del hilo `main`.
+4. `log.info("Reserva confirmada total={} cantidad={}", ...)` comprueba primero si `INFO` está activo para ese logger.
+   Si no lo estuviera, el método volvería sin formatear nada.
+5. Como está activo, Logback crea un evento. Rellena los `{}` con los argumentos y copia el MDC del hilo.
+6. El appender pasa el evento al encoder. El encoder escribe una línea JSON con los campos fijos, el MDC y
+   `"service":"tienda-aurora-build"`.
+7. El bloque `finally` quita las tres claves. El hilo queda limpio para su siguiente trabajo.
+
+```java
+MDC.put("pedidoId", pedidoId);
+MDC.put("sku", sku);
+MDC.put("operacion", "reservar");
+try {
+    ResultadoReserva resultado = servicio.reservar(pedidoId, sku, cantidad);
+    log.info("Reserva confirmada total={} cantidad={}", resultado.total().monto(), resultado.cantidad());
+    return resultado;
+} finally {
+    MDC.remove("pedidoId");
+    MDC.remove("sku");
+    MDC.remove("operacion");
+}
+```
+
+Este fragmento resume el método real, que además registra el inicio y el rechazo. La salida del Mac muestra el efecto:
+`"pedidoId":"PED-100","sku":"CAF-001","operacion":"reservar","service":"tienda-aurora-build"`.
 
 ```mermaid
 flowchart LR
@@ -2235,6 +2731,50 @@ flowchart LR
   E --> O["una línea JSON por evento"]
   A --> F["finally: MDC.remove"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+La separación se refleja en el build. SLF4J va en `implementation`, porque el código lo compila. Logback va en
+`runtimeOnly`, porque solo hace falta al ejecutar. Si no hay ninguna implementación, SLF4J 2 avisa que no encontró
+proveedores y descarta los mensajes. Si hay dos, avisa y elige una.
+
+SLF4J 2 cambió el mecanismo de enlace. Las versiones 1.7 buscaban una clase concreta en el classpath. Desde 2.0 se usa
+`ServiceLoader`. Por eso una implementación pensada para 1.7 no se enlaza con una API 2.x.
+
+El MDC es por hilo, y eso tiene dos consecuencias. En un pool, el hilo se reutiliza: sin limpieza, la tarea siguiente
+hereda el contexto. `ContextoFiltrado.java` lo muestra con `{pedidoId=PED-100}` en una tarea de mantenimiento. Además,
+una tarea enviada a otro hilo no lleva el contexto. Para pasarlo, copias el mapa con `MDC.getCopyOfContextMap()` y lo
+instalas en el otro hilo con `MDC.setContextMap(...)`.
+
+`MDC.remove` de las claves propias es más seguro que `MDC.clear()`. `clear()` borraría también las claves que puso otra
+capa, como un filtro HTTP con el ID de correlación.
+
+`{}` evita convertir el argumento a texto cuando el nivel está apagado. No evita calcular el argumento: si llamas a un
+método caro dentro de la llamada, se ejecuta igual. `PlaceholderCosto.java` midió la diferencia con `java.util.logging`:
+1000 conversiones al concatenar y 0 con parámetro.
+
+SLF4J 2 agrega una API fluida: `log.atInfo().addKeyValue("total", total).log("Reserva confirmada")`. Los pares
+clave-valor llegan al encoder como campos, sin pasar por el MDC.
+
+Con virtual threads, millones de hilos con `ThreadLocal` consumen memoria. Java 25 finalizó los **scoped values** (JEP
+506), una alternativa de contexto con alcance limitado. Las bibliotecas de logging aún usan MDC sobre `ThreadLocal`.
+
+No registres datos sensibles en el mensaje ni en el MDC. Una línea JSON llega a varios sistemas y se conserva meses.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El registro estructurado y el ID de correlación vienen de Arquitectura, Módulo 1, Tema 4. `ThreadLocal` viene de Java,
+Módulo 5, Tema 6, y el pool de hilos, del Tema 1 de ese módulo. El `Logger` de `java.util.logging` apareció en Java,
+Módulo 12, Tema 4, con la misma idea de diferir el texto mediante un `Supplier`.
+
+La fachada aplica la regla de dependencia de Java, Módulo 13, Tema 1: el código depende de una abstracción y la
+implementación se elige en el borde. Por la frontera del Tema 3, el dominio ni siquiera importa SLF4J.
+
+No confundas MDC con parámetros del mensaje. El mensaje describe el evento. El MDC describe el contexto en que ocurrió,
+y se repite en todas las líneas de esa operación.
+
+La prueba de integración del Tema 5 ya captura este JSON con un appender en memoria y comprueba `pedidoId` y `sku`. En
+el laboratorio integrador, el pipeline local de calidad reúne build, pruebas y logs en un solo comando.
 
 #### Problema resuelto 6.1
 Demuestra cómo se filtra el contexto de una tarea a la siguiente en un pool, usando el mismo mecanismo que MDC.

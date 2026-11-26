@@ -80,8 +80,7 @@ Al terminar este tema podrás:
 - comprobar esas reglas con una prueba que lee los `import` del proyecto;
 - dibujar el grafo real de dependencias.
 
-**Conceptos clave:** capa, regla de dependencia, inversión de dependencias, raíz de composición, prueba de
-arquitectura
+**Conceptos clave:** capa, regla de dependencia, inversión de dependencias, raíz de composición, prueba de arquitectura
 
 #### El problema
 En la app de la ruta, la pantalla hace la petición HTTP, decodifica el JSON, decide si una entrega frágil puede
@@ -89,7 +88,7 @@ marcarse y guarda la copia en un archivo. Para probar la regla de la firma hay q
 de `http` a `dio` hay que tocar la pantalla. Y aunque el equipo acuerde «la interfaz no habla con la red», tres
 semanas después alguien agrega el `import` porque era más rápido.
 
-Este tema usa **las clases abstractas e `interface`** (Módulo 0, Tema 5), **Riverpod** (Módulo 4) y **las pruebas
+Este tema usa **las clases abstractas e `interface`** (Módulo 0, Tema 2), **Riverpod** (Módulo 4) y **las pruebas
 unitarias** (Módulo 9, Tema 1).
 
 #### Glosario del tema
@@ -130,9 +129,83 @@ unitarias** (Módulo 9, Tema 1).
 - **Error típico:** escribir las reglas una vez y no ejecutarlas en el CI.
 
 #### ► CÓMO FUNCIONA
-Cada archivo pertenece a una capa por su carpeta. La prueba recorre `lib/`, resuelve cada `import` relativo a su
-archivo y compara las dos capas con la tabla de permitidas. Además escribe el grafo en formato DOT, que Graphviz
-convierte en imagen.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una empresa de envíos con tres áreas: el mostrador que atiende clientes, la oficina que fija las tarifas y
+la bodega que guarda los paquetes. El mostrador pide a la oficina una tarifa; no entra a la bodega a revisar estantes.
+Si la bodega se muda, el mostrador ni se entera.
+
+Una app crece igual. Al principio todo cabe en la pantalla: la petición HTTP, el JSON, la regla de la firma y el
+archivo de copia. Cada línea nueva amarra la pantalla a más detalles. Cambiar `http` por `dio` obliga a tocar widgets,
+y probar una regla exige levantar un servidor.
+
+La solución tiene dos partes. Primero, repartes el código en **capas**: grupos de archivos con una sola
+responsabilidad. Segundo, escribes quién puede depender de quién y lo compruebas con una prueba. Sin esa prueba, el
+acuerdo del equipo dura hasta el primer viernes con prisa.
+
+##### 2. Definición formal y vocabulario
+
+La guía oficial de arquitectura de Flutter separa la app en dos capas: la de interfaz (vistas y *view models*) y la de
+datos (repositorios y servicios). Entre ambas admite una capa opcional de dominio con la lógica del negocio. Este
+módulo usa las tres, con el dominio en el centro.
+
+Una **capa** es un grupo de archivos con una responsabilidad y un conjunto de dependencias permitidas. En el proyecto,
+cada capa es una carpeta: `lib/ui/`, `lib/dominio/` y `lib/datos/`. Lo que queda fuera de esas carpetas, `main.dart` y
+`dependencias.dart`, forma la zona de composición.
+
+Una **regla de dependencia** dice qué capa puede importar a cuál. Aquí el dominio no importa a nadie, los datos
+importan al dominio y la interfaz importa al dominio y a la composición. La interfaz nunca importa a los datos. En
+sencillo: quién puede llamar a quién.
+
+La **inversión de dependencias** es la pieza que hace posible esa regla. Sin ella, el dominio tendría que importar la
+clase HTTP para usarla. Con ella, el dominio declara un contrato, `RepositorioEntregas`, y la capa de datos lo
+implementa. El enchufe lo define la casa, no el electrodoméstico.
+
+Alguien tiene que conectar el electrodoméstico: esa es la **raíz de composición**, el único lugar que conoce las
+clases concretas. Con Riverpod son los *providers* de `dependencias.dart`. Por último, la **prueba de arquitectura**
+lee los `import` de `lib/` y falla si una capa importa algo prohibido.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Una dependencia en Dart es, literalmente, una directiva `import`. El compilador no conoce las capas; solo conoce
+archivos que importan archivos. Por eso la prueba trabaja sobre el texto de esas directivas, sin compilar nada. Sigue
+este orden:
+
+1. `flutter test` ejecuta la prueba con la raíz del paquete como carpeta de trabajo. Por eso `Directory('lib')`
+   encuentra el código y las rutas salen como `lib/ui/...`.
+2. `listSync(recursive: true)` recorre `lib/` y el filtro conserva solo los archivos `.dart`.
+3. La función `capaDe` decide la capa de cada archivo con un `switch` sobre patrones de lista:
+
+```dart
+String capaDe(String ruta) => switch (ruta.split('/')) {
+  ['lib', 'ui', ...] => 'ui',
+  ['lib', 'dominio', ...] => 'dominio',
+  ['lib', 'datos', ...] => 'datos',
+  _ => 'composición', // main.dart y dependencias.dart
+};
+```
+
+El `...` es un elemento de resto: acepta cualquier cantidad de segmentos después de los dos primeros. El caso `_`
+atrapa todo lo demás, así que el `switch` es exhaustivo y siempre devuelve una capa.
+
+4. Una expresión regular con `multiLine: true` encuentra cada línea que empieza por `import '`. El grupo captura la
+   URI entre comillas.
+5. Las URI `dart:` se aceptan siempre: son la biblioteca estándar. Las `package:` se comparan con la tabla
+   `paquetesPermitidos`, que hoy limita al dominio y a los datos.
+6. Las URI relativas se resuelven contra la carpeta del archivo que importa:
+
+```dart
+final resuelto = File(archivo.parent.uri.resolve(destino).toFilePath()).path;
+```
+
+`Uri.resolve` aplica las reglas estándar de las URI: `../../dominio/resultado.dart` desde `lib/datos/repositorios/`
+termina en `lib/dominio/resultado.dart`. Con la ruta resuelta, `capaDe` da la capa de destino.
+
+7. Si la capa de destino no está en `permitidas[capa]`, la prueba anota una violación con origen, capa e importado. Al
+   final, `expect(violaciones, isEmpty)` falla y muestra la lista completa.
+8. La segunda prueba escribe cada pareja (archivo, importado) en formato **DOT**, el lenguaje de texto de Graphviz. La
+   orden `dot -Tpng` lo convierte en la imagen del grafo.
 
 ```mermaid
 flowchart TB
@@ -143,7 +216,50 @@ flowchart TB
     UI --> DO
     DA --> DO
     UI -. "prohibido" .-> DA
+    DO -. "prohibido" .-> UI
+    DO -. "prohibido" .-> DA
 ```
+
+Observa la forma del diagrama: el dominio solo recibe flechas. La composición es el único nodo que apunta a datos y a
+dominio a la vez. La interfaz y la composición se importan mutuamente, y Dart lo permite: los ciclos entre bibliotecas
+no son un error de compilación.
+
+##### 4. Reglas, variantes y casos límite
+
+En Dart hay tres formas de URI en un `import`: `dart:` para la plataforma, `package:` para paquetes y rutas relativas.
+La guía *Effective Dart* recomienda rutas relativas dentro de `lib/` y prohíbe que una ruta entre o salga de `lib/`.
+La prueba se apoya en esa convención.
+
+Ese apoyo tiene un hueco real. Si la vista escribe `import 'package:m12/datos/servicios/api_entregas.dart';`, la
+prueba lo trata como paquete. La interfaz no tiene entrada en `paquetesPermitidos`, así que la violación pasa sin
+aviso. Para cerrarlo, activa la regla del analizador `prefer_relative_imports` o resuelve también las URI
+`package:m12/`.
+
+Hay otros límites que conviene conocer. La expresión regular solo lee comillas simples, así que un `import "..."` con
+comillas dobles escapa. Tampoco revisa `export` ni `part`, ni la segunda URI de una importación condicional. Y revisa
+dependencias directas: lo que la composición importa no cuenta como importado por la vista.
+
+El contrato del dominio usa `abstract interface class`, un modificador de clase que llegó con Dart 3.0. `abstract`
+impide crear objetos de la clase. `interface` impide extenderla fuera de su biblioteca: los demás solo pueden
+implementarla con `implements`. Es la forma más clara de decir «esto es un contrato».
+
+No todo merece una interfaz. Si una clase tiene una sola implementación y nadie la reemplaza en pruebas, la interfaz
+solo agrega un archivo. Aquí `RepositorioEntregas` se justifica porque tiene dos implementaciones: la HTTP del Tema 2
+y la de memoria del Tema 3.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las clases abstractas vienen del Módulo 0, Tema 2; el modificador `interface` se explica en la sección 4 de este tema.
+Los *providers* que hacen de raíz de composición son los del Módulo 4. La estructura de una prueba unitaria es la del
+Módulo 9, Tema 1. Aquí esas piezas dejan de ser ejercicios y sostienen una decisión de diseño.
+
+Distingue esta prueba del analizador estático. `flutter analyze` revisa reglas del lenguaje y del estilo, iguales para
+cualquier proyecto. La prueba de arquitectura revisa reglas que solo tu equipo conoce. Por eso vive en `test/` y corre
+con `flutter test`, también en el CI del Módulo 11.
+
+Los Temas 2 y 3 llenan las capas que este tema solo nombra: datos y dominio. El Tema 4 usa la raíz de composición para
+reemplazar el repositorio en las pruebas de la vista. Más adelante, el Módulo 15, Tema 2 vuelve a vigilar el código,
+esta vez con reglas propias dentro del analizador.
 
 #### Problema resuelto 1.1
 Escribe la prueba de arquitectura del proyecto, ejecútala, provoca dos violaciones (la vista importando un servicio
@@ -425,20 +541,132 @@ Este tema usa **`http` y los códigos de estado** (Módulo 5, Tema 1), **guardar
 - **Error típico:** guardar en la copia lo que llegó antes de validarlo.
 
 #### ► CÓMO FUNCIONA
-El repositorio pide a `ApiEntregas`. Si responde, traduce el JSON (y con eso lo valida), lo guarda y devuelve la ruta.
-Si no hay conexión, lee `AlmacenLocal`. Cada otro problema se convierte en un `Fallo` con su tipo.
+
+##### 1. La idea en lenguaje sencillo
+
+En una oficina de envíos, el mensajero va al centro de distribución y trae la planilla del día. No la interpreta: solo
+la trae. El encargado de bodega la lee, la pasa al formato de la oficina y guarda una fotocopia. Si el mensajero
+vuelve sin nada porque no hubo transporte, el encargado entrega la fotocopia y dice de qué hora es.
+
+La capa de datos de la app hace ese mismo reparto. Un objeto habla con el servidor, otro con el archivo, y un tercero
+decide qué responder. Así, cuando no hay señal en la calle, el repartidor ve la ruta descargada hace media hora en
+lugar de una pantalla de error.
+
+La otra mitad del problema son los errores. Hoy cada pantalla captura excepciones distintas y escribe su propio
+mensaje. La capa de datos los convierte en un conjunto pequeño y cerrado de casos con nombre. La interfaz ya no
+adivina qué pasó: lee el caso y muestra su texto.
+
+##### 2. Definición formal y vocabulario
+
+La guía de arquitectura de Flutter divide la capa de datos en dos tipos de objetos. Un **servicio** envuelve una
+fuente externa, como un *endpoint* HTTP o un archivo, y no guarda estado. En el proyecto son `ApiEntregas` y
+`AlmacenLocal`: devuelven mapas crudos y lanzan excepciones propias.
+
+Un **repositorio** es, según esa guía, la fuente de verdad de los datos del modelo. Combina servicios, maneja errores
+y entrega modelos del dominio. `RepositorioEntregasHttp` implementa el contrato `RepositorioEntregas` del Tema 1. La
+interfaz nunca ve un mapa de JSON: ve una `Ruta` o un error con nombre.
+
+La **traducción JSON → modelo** es la función `entregaDesdeJson`. Vive en un solo lugar, en la frontera entre el
+servidor y tu código. Al traducir también valida: un campo que falta o un estado desconocido lanza un error en ese
+punto, no tres pantallas después.
+
+**`Resultado`** es una clase `sealed` con dos casos, `Exito` y `Fallo`. El `Fallo` lleva un `ErrorRuta`, otra clase
+`sealed` con los errores esperables: `SinConexion`, `ServidorCaido`, `DatosInvalidos` y `ReglaIncumplida`. La
+documentación de Flutter recomienda este patrón para errores que forman parte del flujo normal.
+
+Por último, **red primero con copia local** es la estrategia de lectura. Pide a la red, guarda lo recibido y, si no
+hay conexión, devuelve la última copia con su fecha. En sencillo: pregunta al servidor y, si no contesta, mira la
+libreta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue una llamada a `rutaDelDia()` desde que sale hasta que vuelve. Cada paso corresponde a una línea concreta del
+código del problema resuelto.
+
+1. `ApiEntregas.pendientes()` hace el `GET /entregas` con un límite de 5 segundos. `Future.timeout` envuelve la
+   petición:
+
+```dart
+final r = await peticion().timeout(const Duration(seconds: 5));
+if (r.statusCode != 200) throw RespuestaHttpException(r.statusCode);
+```
+
+Si la conexión se rechaza, el fallo llega como `SocketException` o como `http.ClientException`, según la plataforma.
+El servicio captura las dos y lanza una sola, `SinConexionException`. Cualquier código distinto de 200 se convierte en
+`RespuestaHttpException`.
+
+2. `jsonDecode` devuelve un valor sin tipo estático. La llamada `cast<Map<String, Object?>>()` no copia la lista: crea
+   una vista que comprueba el tipo de cada elemento al leerlo.
+3. El repositorio traduce cada mapa con `entregaDesdeJson`. Un cambio de tipo (`as String` sobre `null`) lanza
+   `TypeError`; un estado nuevo como `perdida` hace que `byName` lance `ArgumentError`.
+4. Solo si la traducción terminó, el repositorio guarda la copia con la hora del reloj inyectado:
+
+```dart
+final ruta = Ruta(json.map(entregaDesdeJson).toList()); // valida antes de guardar
+await _almacen.guardar(json, _reloj());
+return Exito(ruta);
+```
+
+El orden es la regla más importante del tema. Si guardaras antes de traducir, una respuesta mala reemplazaría la única
+copia buena. El ejemplo que falla del problema resuelto muestra el efecto: sin red, la traducción revienta dentro del
+`catch`.
+
+5. Cada `on` del `try` convierte una excepción en un `Fallo` con su tipo. Ninguna excepción de la capa de datos
+   debería cruzar hacia la interfaz.
 
 ```mermaid
 flowchart TB
     R["rutaDelDia()"] --> A["ApiEntregas.pendientes()"]
     A -->|200| T["traducir JSON → Ruta"]
     T -->|bien| G["AlmacenLocal.guardar"] --> E1["Exito(ruta)"]
-    T -->|estado desconocido| F3["Fallo(DatosInvalidos)"]
+    T -->|"TypeError o ArgumentError"| F3["Fallo(DatosInvalidos)"]
     A -->|SinConexionException| L["AlmacenLocal.leer()"]
     L -->|hay copia| E2["Exito(ruta, guardadaEn)"]
     L -->|no hay| F1["Fallo(SinConexion)"]
     A -->|código ≠ 200| F2["Fallo(ServidorCaido)"]
 ```
+
+Del otro lado, quien recibe el `Resultado` usa un `switch`. Como `Resultado` es `sealed`, el compilador conoce todos
+sus subtipos. Si falta un caso, el `switch` no compila: el analizador avisa que no es exhaustivo.
+
+##### 4. Reglas, variantes y casos límite
+
+Las clases `sealed` llegaron con Dart 3.0, junto con los patrones. Una clase `sealed` es abstracta de forma implícita
+y solo puede tener subtipos directos en su misma biblioteca. Esa restricción es la que permite al compilador comprobar
+la exhaustividad. Los casos se declaran `final class` para que nadie los extienda fuera.
+
+No todo error es un `Resultado`. Los errores esperables, como la falta de red o un 500, son valores. Un `null`
+inesperado por un descuido tuyo sigue siendo una excepción y debe verse. Si conviertes todo en `Fallo`, escondes los
+errores de programación.
+
+Aquí hay una tensión honesta. En Dart, las clases `Error`, como `TypeError` y `ArgumentError`, señalan fallos de
+programación, y la regla del analizador `avoid_catching_errors` desaconseja capturarlas. El repositorio las captura a
+propósito, solo en la frontera con datos ajenos. Una variante más estricta valida a mano y lanza `FormatException`.
+
+El límite de tiempo deja un hueco. `Future.timeout` lanza `TimeoutException`, de la biblioteca `dart:async`, y ningún
+`on` del repositorio la captura. Con un servidor lento, la excepción escapa hasta la interfaz. El Ejercicio
+verificable 3 lo pide corregir en el servicio.
+
+La copia tampoco es perfecta. `writeAsString` escribe sobre el archivo existente; si la app muere a mitad de
+escritura, la copia queda incompleta. Una variante común escribe en un archivo temporal y después lo renombra, porque
+el renombrado dentro del mismo sistema de archivos es atómico en Linux.
+
+Fíjate en la decisión de qué errores usan la copia. Sin conexión, sí: el servidor no pudo responder. Con un 500 o un
+401, no: el servidor respondió, y mostrar datos viejos ocultaría una falla real.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La petición con `http` y la lectura de códigos de estado vienen del Módulo 5, Tema 1. Guardar JSON en un archivo es
+del Módulo 6, Tema 2. Las clases `sealed` y el `switch` con patrones son del Módulo 0, Tema 6. Aquí se ordenan detrás
+de un contrato que la interfaz no puede saltarse.
+
+Compara el repositorio con un servicio. El servicio sabe cómo hablar con una fuente; el repositorio sabe qué fuente
+usar y qué responder. Por eso el servicio lanza excepciones y el repositorio devuelve valores. Cambiar `http` por
+`dio` toca el servicio; cambiar la estrategia de copia toca el repositorio.
+
+El Tema 3 consume estos `Resultado` desde el caso de uso y el *view model*. Además usa la función `describir` para el
+texto que ve la persona usuaria. El Tema 4 ejecuta este mismo repositorio contra el servidor de desarrollo. En el
+Módulo 13, Tema 4, el cliente HTTP de `ApiEntregas` se reemplaza por uno que fija el certificado del servidor.
 
 #### Problema resuelto 2.1
 Escribe los dos servicios, la traducción y el repositorio, y pruébalos contra un servidor HTTP real en `127.0.0.1`
@@ -983,8 +1211,7 @@ Al terminar este tema podrás:
 - probar las reglas con un repositorio en memoria y el *view model* con `ProviderContainer`;
 - decidir qué texto ve la persona usuaria para cada error, en un solo lugar.
 
-**Conceptos clave:** modelo del dominio, caso de uso, *view model*, repositorio en memoria, mensaje para la persona
-usuaria
+**Conceptos clave:** modelo del dominio, caso de uso, *view model*, repositorio en memoria, mensaje para la persona usuaria
 
 #### El problema
 La regla «las entregas frágiles se entregan solo con firma» está en el `onTap` de la fila. La pantalla de detalle,
@@ -1010,7 +1237,7 @@ Este tema usa **`AsyncNotifier` y `AsyncValue`** (Módulo 4, Tema 4), **`Provide
 - **Ejemplo:** `MarcarEntrega` rechaza las frágiles sin firma y las que no están pendientes.
 - **Error típico:** casos de uso vacíos que solo llaman a un método del repositorio, «por si acaso».
 
-***view model***
+**view model**
 - **Definición técnica:** objeto de la capa de interfaz que expone el estado de una pantalla y sus acciones, usando casos de uso y repositorios; con Riverpod, un `AsyncNotifier` con un *provider*.
 - **En palabras sencillas:** el que prepara lo que la pantalla muestra y atiende lo que la pantalla pide.
 - **Dónde se rompe la comparación:** no conoce widgets ni `BuildContext`: devuelve el mensaje y la vista decide mostrarlo en un `SnackBar`.
@@ -1032,9 +1259,66 @@ Este tema usa **`AsyncNotifier` y `AsyncValue`** (Módulo 4, Tema 4), **`Provide
 - **Error típico:** escribir el mensaje pensando en una sola acción (lo verás en la prueba del *view model*).
 
 #### ► CÓMO FUNCIONA
-La vista llama a una acción del *view model*. El *view model* usa el caso de uso, que aplica la regla y, si se
-cumple, llama al repositorio. El `Resultado` vuelve hasta el *view model*, que actualiza el estado o devuelve el
-mensaje.
+
+##### 1. La idea en lenguaje sencillo
+
+En una empresa de envíos, la norma «lo frágil se entrega con firma» está en el manual, no en la libreta de cada
+repartidor. Si cada uno la anotara a su manera, el día que entra uno nuevo la norma desaparece. Y el que atiende el
+mostrador no la aplica: solo informa lo que el manual decidió.
+
+En la app pasa lo mismo. Hoy la regla vive en el `onTap` de la fila de la lista. La pantalla de detalle, escrita
+después, no la tiene. Para probarla, además, hay que construir widgets, tocar una fila y leer un `SnackBar`.
+
+Este tema separa dos cosas que suelen mezclarse. Las reglas del negocio van al dominio, en casos de uso que no saben
+de pantallas. El estado de cada pantalla va a un *view model*, que usa esas reglas y entrega a la vista algo listo
+para dibujar.
+
+##### 2. Definición formal y vocabulario
+
+Un **modelo del dominio** es una clase inmutable que representa un concepto del negocio con sus valores válidos.
+`Entrega`, `EstadoEntrega` y `Ruta` no conocen el JSON ni los widgets. Pueden tener cálculos propios, como
+`Ruta.pendientes`, mientras no dependan de nada externo.
+
+Un **caso de uso** es una clase con un método que aplica una regla y coordina repositorios. La guía de Flutter los
+llama también *interactors* y los ubica en la capa de dominio, que considera opcional. `MarcarEntrega` recibe el
+repositorio por el constructor y expone el método `call`.
+
+Un ***view model*** expone el estado de una pantalla y sus acciones. En la guía oficial, cada vista tiene un *view
+model* y este puede usar varios casos de uso y repositorios. Con Riverpod, el *view model* es un `AsyncNotifier`
+publicado por un *provider*.
+
+Para probar sin red usas un **repositorio en memoria**: otra implementación del mismo contrato, con datos fijos y una
+lista de llamadas recibidas. Y el **mensaje para la persona usuaria** de cada `ErrorRuta` se define una sola vez, en
+la función `describir`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Empieza por la carga de la pantalla. Riverpod crea el `RutaViewModel` la primera vez que alguien observa
+`rutaViewModelProvider` y ejecuta su `build`:
+
+```dart
+Future<Ruta> build() async => switch (await ref.watch(repositorioProvider).rutaDelDia()) {
+  Exito(:final valor) => valor,
+  Fallo(:final error) => throw error,
+};
+```
+
+1. `ref.watch` obtiene el repositorio de la raíz de composición y crea una dependencia. Si el *provider* del
+   repositorio cambia, Riverpod reconstruye el *view model*.
+2. Mientras el `Future` de `build` no termina, el estado es `AsyncLoading`.
+3. Si `build` devuelve un valor, el estado pasa a `AsyncData`. Si lanza, Riverpod captura el objeto lanzado y el
+   estado pasa a `AsyncError`. Por eso `throw error` conserva el `ErrorRuta` con su tipo.
+
+Ahora sigue una acción. La vista llama a `marcar`, y el *view model* usa el caso de uso con `ref.read`, no con
+`ref.watch`. La regla de Riverpod es observar en `build` y leer una sola vez dentro de las acciones.
+
+4. El caso de uso comprueba primero el estado de la entrega y después la firma. Si una condición falla, devuelve un
+   `Fallo(ReglaIncumplida(...))` sin llamar al repositorio.
+5. Si las dos se cumplen, devuelve lo que responda `cambiarEstado`. El caso de uso no captura nada: el repositorio ya
+   convirtió los errores en valores.
+6. El *view model* recibe el `Resultado`. Con `Fallo`, devuelve el texto de `describir`. Con `Exito`, reemplaza solo
+   la entrega que cambió, conserva `guardadaEn` y asigna un `AsyncData` nuevo a `state`.
+7. Asignar `state` notifica a quien lo observa. La vista se reconstruye con la ruta actualizada.
 
 ```mermaid
 sequenceDiagram
@@ -1042,9 +1326,11 @@ sequenceDiagram
     participant VM as RutaViewModel
     participant CU as MarcarEntrega
     participant R as RepositorioEntregas
+    VM->>R: build: rutaDelDia()
+    R-->>VM: Exito(ruta) y state = AsyncData
     V->>VM: marcar(EN-4472, conFirma: false)
     VM->>CU: call(entrega, conFirma: false)
-    CU-->>VM: Fallo(ReglaIncumplida) — sin tocar el repositorio
+    CU-->>VM: Fallo(ReglaIncumplida) sin tocar el repositorio
     VM-->>V: «…es frágil: se entrega solo con firma.»
     V->>VM: marcar(EN-4471)
     VM->>CU: call
@@ -1053,6 +1339,51 @@ sequenceDiagram
     CU-->>VM: Exito
     VM->>VM: state = AsyncData(ruta actualizada)
 ```
+
+El caso de uso se invoca como si fuera una función: `MarcarEntrega(repo)(entrega, conFirma: false)`. En Dart, una
+clase que define un método llamado `call` produce objetos invocables. Es azúcar sintáctico: `x(...)` equivale a
+`x.call(...)`.
+
+##### 4. Reglas, variantes y casos límite
+
+Riverpod 3 reintenta por defecto un *provider* que falla, con esperas crecientes. En una prueba eso retrasa el error o
+lo esconde. El *provider* desactiva los reintentos con una función que devuelve `null`:
+
+```dart
+final rutaViewModelProvider = AsyncNotifierProvider<RutaViewModel, Ruta>(RutaViewModel.new, retry: (_, _) => null);
+```
+
+Los dos `_` seguidos solo compilan desde Dart 3.7, que convirtió `_` en un comodín que no declara nombre. Antes, dos
+parámetros llamados `_` eran un nombre duplicado y había que escribir `(_, __)`.
+
+`state.requireValue` lanza si el estado no tiene valor, por ejemplo mientras carga. `marcar` puede usarlo porque la
+vista solo permite tocar filas cuando ya hay datos. Si llamas a `marcar` antes de la carga, el error sale de ahí.
+
+`@immutable` viene del paquete `meta` y Flutter lo reexporta en `foundation.dart`. No impide nada en tiempo de
+ejecución: pide al analizador que avise si un campo no es `final`. Y si sobrescribes `==`, debes sobrescribir
+`hashCode` con los mismos campos, como hace `Entrega`.
+
+No todo merece un caso de uso. Si una acción solo pasa datos del repositorio a la pantalla, el *view model* puede
+llamar al repositorio directamente. La guía oficial reserva los casos de uso para lógica que se repite o que combina
+varios repositorios. Un caso de uso vacío es una capa sin trabajo.
+
+El *view model* tampoco toca widgets. No recibe `BuildContext`, no muestra un `SnackBar` y no navega. Devuelve un
+valor, aquí un `String?`, y la vista decide cómo presentarlo. Gracias a eso se prueba con `ProviderContainer`, sin
+bombear frames.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`AsyncNotifier`, `AsyncValue` y la diferencia entre `watch` y `read` vienen del Módulo 4, Tema 4. Reemplazar un
+*provider* con `overrideWithValue` dentro de un `ProviderContainer` es del Módulo 4, Tema 6. El repositorio en memoria
+es un doble de prueba como los del Módulo 9, Tema 3.
+
+Diferencia el caso de uso del repositorio del Tema 2. El repositorio sabe de dónde vienen los datos y qué hacer si
+fallan. El caso de uso sabe qué está permitido hacer con ellos. Una entrega frágil sin firma nunca llega al
+repositorio, como muestra la lista de llamadas vacía.
+
+El Tema 4 dibuja el estado de este *view model* en una vista por estados y la captura en cada uno. El Módulo 14, Tema
+4 propone mover a un *view model* el filtro y los textos de la pantalla de seguimiento. Allí aplicarás lo mismo:
+estado probado sin mapa ni widgets.
 
 #### Problema resuelto 3.1
 Escribe el modelo, el caso de uso `MarcarEntrega` y el `RutaViewModel`. Prueba el caso de uso en sus cuatro casos y
@@ -1381,6 +1712,9 @@ llamadas al repositorio: [rutaDelDia, cambiarEstado(EN-4471, entregada), cambiar
 **Explicación por partes.**
 - **Dominio:** las dos reglas se cumplen sin red ni widgets. Cuando la regla rechaza, la lista de llamadas al
   repositorio está vacía: el caso de uso no hizo trabajo inútil.
+- **Igualdad:** `Entrega.==` compara solo `guia`, `estado` y `destinatario` a propósito: la guía identifica la
+  entrega, y el estado es lo único que cambia durante la ruta. `direccion` y `fragil` vienen fijos del servidor, así
+  que no se comparan; si algún día pudieran cambiar, habría que agregarlos a `==` y a `hashCode`.
 - **Carga:** 3 entregas, 2 pendientes. Con el repositorio devolviendo `Fallo(ServidorCaido(503))`, el estado es
   `AsyncError<Ruta>` y su error es el `ServidorCaido`, con su texto.
 - **Marcar:** la frágil sin firma devuelve el mensaje de la regla; la común devuelve `null` y baja las pendientes a
@@ -1488,7 +1822,7 @@ Este tema usa **`ConsumerWidget` y `switch` sobre `AsyncValue`** (Módulo 4), **
 - **Ejemplo:** `MaterialBanner` solo si `ruta.desdeCopiaLocal`.
 - **Error típico:** olvidar el estado de error y dejar la rueda girando para siempre.
 
-***override* del repositorio**
+**override del repositorio**
 - **Definición técnica:** `ProviderScope(overrides: [repositorioProvider.overrideWithValue(falso)])` reemplaza la implementación para todo lo que hay debajo, incluida la vista.
 - **En palabras sencillas:** cambiar la bodega real por la de utilería sin tocar la tienda.
 - **Dónde se rompe la comparación:** solo funciona porque la vista y el *view model* piden el repositorio al *provider*; si lo crearan ellos, no habría nada que reemplazar.
@@ -1510,20 +1844,123 @@ Este tema usa **`ConsumerWidget` y `switch` sobre `AsyncValue`** (Módulo 4), **
 - **Error típico:** querer probarlo todo de punta a punta.
 
 #### ► CÓMO FUNCIONA
-En las pruebas de la vista, el repositorio se reemplaza para producir cada estado. En la demostración, la app real
-usa el repositorio HTTP contra el servidor de desarrollo; al apagarlo, el mismo repositorio lee la copia que guardó.
+
+##### 1. La idea en lenguaje sencillo
+
+Antes de abrir una sucursal nueva, una empresa de envíos ensaya. Revisa cada área por separado y después hace un día
+de prueba completo, con paquetes de verdad. Ese día aparecen cosas que ninguna revisión vio: un letrero mal escrito,
+una ventanilla que tapa otra.
+
+Las capas de la app ya pasaron su revisión por separado en los Temas 1 a 3. Falta lo que ve el repartidor en la calle:
+la pantalla mientras carga, sin señal, con el servidor caído. También falta la app compilada hablando con un servidor
+de verdad.
+
+Este tema hace las dos cosas. Primero escribe una vista que solo dibuja lo que el *view model* le da, y la fotografía
+en cada situación. Después compila la app de escritorio y la ejecuta dos veces: con servidor y sin él.
+
+##### 2. Definición formal y vocabulario
+
+Una **vista por estados** es un widget que hace `switch` sobre el `AsyncValue` del *view model*, con una rama por
+estado. No tiene lógica de negocio ni llama a servicios. La guía de Flutter admite en las vistas solo lógica sencilla:
+condiciones sobre el estado, animación, diseño y navegación.
+
+Un ***override* del repositorio** reemplaza la implementación para todo lo que está debajo de un `ProviderScope`.
+Funciona porque la vista y el *view model* nunca crean el repositorio: lo piden al *provider*. Si lo crearan ellos, no
+habría nada que reemplazar.
+
+Un **servidor de desarrollo** es un programa local que imita la API con datos fijos. Aquí es `bin/servidor.dart`, que
+responde `GET /entregas` y `PATCH /entregas/<guía>`. Una **prueba de punta a punta** ejecuta la app compilada contra
+servicios reales o de desarrollo y recorre un flujo completo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Empieza por la vista. Cada vez que el estado del *view model* cambia, Riverpod marca la `RutaVista` para reconstruir,
+y su `build` elige una rama:
+
+```dart
+body: switch (estado) {
+  AsyncData(:final value) => _Lista(ruta: value, ahora: ahora ?? DateTime.now()),
+  AsyncError(:final error) => _Error(
+    mensaje: error is ErrorRuta ? describir(error) : '$error',
+    reintentar: () => ref.invalidate(rutaViewModelProvider),
+  ),
+  _ => const Center(child: CircularProgressIndicator()),
+},
+```
+
+Los casos se evalúan en orden y gana el primero que coincide. El comodín `_` cubre la carga. Dentro de `AsyncData` hay
+un subestado que decide el dominio: si `ruta.desdeCopiaLocal` es `true`, aparece el `MaterialBanner` con la hora de la
+copia.
+
+El botón «Reintentar» llama a `ref.invalidate(rutaViewModelProvider)`. Eso descarta el estado actual y hace que
+Riverpod ejecute `build` otra vez, que vuelve a pedir la ruta.
+
+Ahora las pruebas. Cada una produce un estado distinto cambiando solo el repositorio:
+
+1. `ProviderScope(overrides: [repositorioProvider.overrideWithValue(repo)])` pone el repositorio de prueba en la raíz
+   del árbol.
+2. `pumpWidget` construye el primer frame. El *view model* arranca `build` y el estado es de carga.
+3. Un `pump()` más deja terminar el `Future` del repositorio falso y dibuja el estado final: datos, copia o error.
+4. Para la captura de carga, `RepositorioLento` devuelve el `future` de un `Completer` que nadie completa. El estado
+   se queda en carga para siempre.
+5. `pantallazo` guarda la imagen; con `--update-goldens`, esa imagen pasa a ser la referencia.
+
+La demostración real recorre el camino completo sin dobles. `flutter build linux --release --dart-define=API_URL=...`
+fija la dirección del servidor dentro del binario. La app pide la ruta, el repositorio guarda la copia y el script
+apaga el servidor. En la segunda ejecución, el repositorio cae en `SinConexionException` y lee esa copia.
 
 ```mermaid
 flowchart LR
-    subgraph Pruebas de la vista
+    subgraph P["Pruebas de la vista"]
       F["RepositorioFalso / Lento"] --> VM1["RutaViewModel"] --> V1["RutaVista: 5 capturas"]
     end
-    subgraph App real
+    subgraph A["App real, compilada en release"]
       S["bin/servidor.dart :8090"] <-->|HTTP| R["RepositorioEntregasHttp"]
-      R <--> A["/tmp/ruta_del_dia.json"]
+      R <--> C["ruta_del_dia.json<br/>carpeta temporal"]
       R --> VM2["RutaViewModel"] --> V2["ventana de escritorio"]
     end
 ```
+
+Observa que `RutaViewModel` y `RutaVista` son las mismas clases en los dos lados del diagrama. Solo cambia lo que
+entrega la raíz de composición.
+
+##### 4. Reglas, variantes y casos límite
+
+`String.fromEnvironment` solo funciona como constante: el valor se fija al compilar, no al ejecutar. Si cambias
+`--dart-define`, tienes que volver a compilar. Sin la opción, la app usa el valor por defecto,
+`http://localhost:8080`.
+
+No uses `pumpAndSettle` mientras gira la rueda de carga. `CircularProgressIndicator` sin valor anima sin fin, así que
+siempre hay otro frame pendiente. `pumpAndSettle` espera hasta su límite, que por defecto es de 10 minutos de tiempo
+simulado, y falla con `pumpAndSettle timed out`.
+
+Después de un `await`, el widget puede haber salido del árbol. Por eso `_marcar` comprueba `context.mounted` antes de
+usar el `context`. La regla del analizador `use_build_context_synchronously` avisa cuando falta esa comprobación.
+
+`MaterialBanner` exige al menos una acción: con la lista vacía falla una aserción del propio widget. La vista pasa
+`const [SizedBox.shrink()]`, un widget que no ocupa espacio, para cumplir la regla sin mostrar botones.
+
+La hora de referencia es una dependencia más. La vista recibe `ahora` para que las capturas no cambien con el reloj
+real. La app real no lo pasa y usa `DateTime.now()`; por eso dice «hace un momento» y la captura de prueba dice «hace
+35 min».
+
+Las pruebas de punta a punta son lentas y frágiles, así que se escriben pocas, para los flujos principales. Flutter
+ofrece además el paquete `integration_test`, que conduce la app en un dispositivo o simulador con la API de
+`flutter_test`. Aquí basta un script que compila, ejecuta y captura.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`ConsumerWidget` y el `switch` sobre `AsyncValue` vienen del Módulo 4. Las pruebas golden y el archivo
+`pantallazo.dart` son del Módulo 9, Tema 4 y del Módulo 10. Ejecutar la app de escritorio en una pantalla virtual y
+fijar el tamaño de la ventana es del Módulo 11.
+
+Distingue esta prueba de las del Tema 3. Allí el *view model* se probaba sin widgets, con `ProviderContainer`. Aquí la
+vista se prueba con el *view model* real y el repositorio falso. La prueba de punta a punta no reemplaza ninguna:
+confirma que las piezas encajan juntas.
+
+El Módulo 13 prepara esta misma app para producción: captura sus errores, los envía con contexto y fija el certificado
+del servidor. El Módulo 14 agrega un mapa y datos en tiempo real sobre la misma arquitectura. El Módulo 15 traduce
+estos textos a otros idiomas.
 
 #### Problema resuelto 4.1
 Escribe la vista y su `main`, pruébala en sus cuatro estados más la interacción, con capturas. Después ejecuta la app

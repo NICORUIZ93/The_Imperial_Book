@@ -179,7 +179,7 @@ dependencies {
 tasks.test { useJUnitPlatform() }
 ```
 
-El bloque `toolchain` fija Java 25 aunque tu `java` del sistema sea más nuevo. Gradle busca un JDK 25 instalado y, si no lo encuentra, lo descarga. Eso elimina la diferencia entre la máquina del estudiante y el CI. Los argumentos `-Xlint:all -Werror` convierten cualquier advertencia del compilador en un fallo del build: es incómodo al principio y evita clases de bugs enteras después. El plugin `application` genera el script de arranque y permite `gradle run`; el manifiesto del JAR permite ejecutar el artefacto con `java -jar`.
+El bloque `toolchain` fija Java 25 aunque tu `java` del sistema sea más nuevo. Gradle busca un JDK 25 instalado; si no lo encuentra, el build falla con `Cannot find a Java installation on your machine … Toolchain download repositories have not been configured.` Para que lo descargue solo, hay que declarar un repositorio de toolchains en `settings.gradle.kts` (por ejemplo, el plugin `org.gradle.toolchains.foojay-resolver-convention`); este proyecto no lo declara, así que necesitas un JDK 25 instalado. Eso elimina la diferencia entre la máquina del estudiante y el CI. Los argumentos `-Xlint:all -Werror` convierten cualquier advertencia del compilador en un fallo del build: es incómodo al principio y evita clases de bugs enteras después. El plugin `application` genera el script de arranque y permite `gradle run`; el manifiesto del JAR permite ejecutar el artefacto con `java -jar`.
 
 ## settings.gradle.kts
 
@@ -1389,21 +1389,117 @@ sin dejar archivos. Un proyecto real no funciona así. Antes de ejecutar Tienda 
 - **Error típico:** «arreglar» `UnsupportedClassVersionError` recompilando al azar, en lugar de fijar `--release` o el toolchain.
 
 #### ► CÓMO FUNCIONA
-El ciclo real tiene tres pasos. `javac` lee los archivos `.java` y produce bytecode en archivos `.class`. Cada
-clase genera un `.class` con su nombre. La JVM (`java`) carga ese bytecode, lo verifica y lo ejecuta. El IDE no
-elimina ninguno de los pasos: los automatiza y los esconde.
 
-El bytecode no es código máquina ni texto: es un lenguaje intermedio con instrucciones como `aload_0`, `getfield` o
-`lreturn`. Por eso el mismo `.class` corre en macOS, Linux o Windows: lo que cambia es la JVM instalada en cada uno.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un manual de instrucciones que se escribe una vez en un idioma neutro. Luego cada país tiene un intérprete
+que lo lee en voz alta para su público. Nadie reescribe el manual por país: basta con tener el intérprete adecuado.
+
+Java funciona igual. Escribes Tienda Aurora una sola vez, en archivos `.java`. Un compilador lo traduce a ese idioma
+neutro, el bytecode. Después, en tu portátil, en el servidor de integración o en producción, una JVM lo ejecuta.
+Lo que cambia entre máquinas es la JVM instalada, no tu programa.
+
+El IDE esconde esta cadena tras el botón «Run». Por eso, cuando algo falla fuera del IDE, parece magia. En este tema
+separas los pasos. Así podrás señalar dónde está el problema: el fuente, el compilador, el archivo generado o la
+máquina que lo ejecuta.
+
+##### 2. Definición formal y vocabulario
+
+El **código fuente** es el texto de tus archivos `.java`. El **compilador `javac`** lo analiza según la
+especificación del lenguaje (la *Java Language Specification*, JLS). Si el texto cumple la sintaxis y los tipos,
+genera **bytecode**: instrucciones de una máquina abstracta definida por la *Java Virtual Machine Specification*
+(JVMS). En palabras sencillas: la JLS dice qué puedes escribir y la JVMS dice qué entiende la máquina.
+
+El bytecode se guarda en un **archivo `.class`**, uno por cada clase o interfaz, incluidas las anidadas. El formato
+de ese archivo es fijo. Empieza por el número mágico `0xCAFEBABE`, sigue con la **versión de class file** y luego
+guarda la tabla de constantes, los campos y los métodos.
+
+La **JVM** es el programa que carga esos archivos y ejecuta sus métodos. La lanzas con el comando `java`, que recibe
+el nombre de una clase, no el nombre de un archivo. Para mirar un `.class` por dentro usas **`javap`**, el
+desensamblador del JDK.
+
+Dos términos organizan dónde vive cada clase. Un **paquete** es un espacio de nombres: `com.aurora.inicio.Saludo`
+es el nombre completo de la clase `Saludo`. El **classpath** es la lista de carpetas y archivos JAR donde la JVM
+busca esos nombres completos. Si una clase no está en ningún elemento del classpath, para Java no existe.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el recorrido completo de `Hola.java`, el programa del Problema resuelto 1.1:
 
 ```mermaid
 flowchart LR
   SRC["Hola.java<br/>código fuente"] -->|javac| CLS["Hola.class<br/>bytecode, major 69"]
-  CLS -->|java Hola| LOAD["JVM: carga y verifica"]
-  LOAD --> RUN["ejecuta main"]
+  CLS -->|java Hola| LOAD["JVM: carga, verifica<br/>e inicializa"]
+  LOAD --> RUN["ejecuta main<br/>intérprete y JIT"]
   RUN --> OUT["salida en la terminal"]
   CLS -.->|javap -c| VIEW["instrucciones legibles"]
 ```
+
+1. **Análisis.** `javac` lee el archivo, comprueba la sintaxis y resuelve cada nombre. Si encuentra un solo error,
+   no genera ningún `.class` y te muestra el número de línea.
+2. **Generación.** Para cada clase escribe un `.class`. Con `-d out` lo coloca en una carpeta que replica el
+   paquete: `out/com/aurora/inicio/Saludo.class`. Una clase anidada produce un archivo con `$`, como
+   `Carrito$Tramo.class`.
+3. **Arranque.** El comando `java Hola` inicia la JVM. Esta toma el nombre de clase y lo busca en el classpath.
+   Si no indicas `-cp` ni la variable `CLASSPATH`, el classpath es la carpeta actual.
+4. **Carga.** Un **cargador de clases** (*class loader*, el componente que lee los bytes y crea la clase en memoria)
+   abre `Hola.class`. Las clases del propio Java, como `String`, las carga otro cargador desde la imagen del JDK.
+5. **Enlace y verificación.** La JVM comprueba que el archivo sea válido. Revisa el número mágico, la versión y que
+   ninguna instrucción use un tipo incorrecto. Un `.class` dañado o manipulado se rechaza aquí.
+6. **Inicialización y ejecución.** La JVM ejecuta los inicializadores estáticos y llama a `main`. Al principio
+   interpreta el bytecode instrucción por instrucción. Los métodos que se repiten mucho los compila a código máquina
+   el **compilador JIT** (*just-in-time*: traduce mientras el programa corre).
+
+Ahora conecta el paso 2 con lo que viste en `javap -c`. Esta línea de `Hola.java`:
+
+```java
+int productos = 4;
+```
+
+se convirtió en dos instrucciones: `iconst_4`, que apila la constante 4, e `istore_2`, que la guarda en la variable
+local número 2. La JVM es una **máquina de pila**: casi todas sus instrucciones toman datos de una pila de operandos
+y dejan ahí el resultado. Observa también que la concatenación de `"Hola desde " + tienda` aparece como
+`invokedynamic` con `makeConcatWithConstants`. Así compila `javac` las uniones de texto desde JDK 9.
+
+La versión de formato queda grabada en los bytes 7 y 8 del archivo. En tu salida de `od` el octavo byte es `45`
+hexadecimal, es decir 69. La JVM lee ese número antes que cualquier otra cosa del contenido.
+
+##### 4. Reglas, variantes y casos límite
+
+La primera regla la impone `javac`: una clase `public` de nivel superior debe estar en un archivo con su mismo
+nombre. `public class Hola` va en `Hola.java`; si no coinciden, la compilación falla.
+
+La declaración `package` debe ser la primera instrucción del archivo, antes de cualquier `import`. Solo los
+comentarios pueden ir antes. El nombre completo de la clase incluye el paquete. Por eso `java -cp out Saludo`
+falla con `ClassNotFoundException`, y entrar a la carpeta del paquete produce `NoClassDefFoundError (wrong name: …)`.
+
+Cada versión de Java tiene su número de class file: 17 es 61, 21 es 65 y 25 es 69. Una JVM carga archivos de su
+versión o anteriores, nunca posteriores. Si ejecutas un `.class` de versión 69 en la JVM 21, obtienes
+`UnsupportedClassVersionError` y el mensaje cita ambos números.
+
+Para controlar ese número tienes `--release N`, disponible desde JDK 9. Compila contra la API pública de Java N y
+marca el archivo con su versión. Es más seguro que la pareja antigua `-source`/`-target`: esta no impedía usar
+métodos que en Java N todavía no existían.
+
+Hay dos variantes de ejecución sin `.class` en disco. Desde JDK 11, `java Hola.java` compila en memoria y ejecuta un
+archivo único. Desde JDK 22, ese modo admite programas de varios archivos fuente en la misma carpeta. Ambos sirven
+para scripts y pruebas; un proyecto con dependencias se compila con Gradle o Maven.
+
+Un caso límite que confunde: `javac` sin errores no imprime nada. El silencio significa éxito. Otro: editar el
+`.java` y ejecutar `java Hola` sin recompilar ejecuta el `.class` viejo, porque la JVM nunca mira el fuente.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Fundamentos usabas `java Archivo.java`. Ese comando hacía los pasos 1 a 6 de golpe y descartaba el bytecode.
+Ahora ves cada paso por separado, que es lo que hacen las herramientas de build en un proyecto real.
+
+Java no es un lenguaje interpretado puro ni compilado a código máquina como C. Compila a bytecode por adelantado y
+la JVM decide en ejecución qué interpretar y qué compilar con el JIT. Esa mezcla explica por qué un programa Java
+arranca algo lento y luego acelera.
+
+El Tema 2 de este módulo separa las piezas que instalas: JDK, runtime y JVM, y cómo elige Gradle cuál usar. El
+Tema 3 explica por qué la JVM busca exactamente `public static void main(String[] args)` en el paso 6. Y el
+classpath reaparece cuando Gradle compila el proyecto completo con sus dependencias.
 
 #### Problema resuelto 1.1
 Escribe el primer programa de Tienda Aurora, compílalo a mano, ejecútalo y mira qué contiene el `.class`.
@@ -1769,7 +1865,7 @@ terminal ejecuta con otra. Antes de culpar al código necesitas saber qué Java 
 
 **toolchain**
 - **Definición técnica:** declaración en el build (Gradle) de la versión de Java con que se compila, prueba y ejecuta, independiente del `java` del `PATH`.
-- **En palabras sencillas:** el proyecto dice «necesito Java 25» y Gradle busca o descarga ese JDK.
+- **En palabras sencillas:** el proyecto dice «necesito Java 25» y Gradle busca ese JDK entre los instalados (solo lo descarga si el build declara un repositorio de toolchains).
 - **Dónde se rompe la comparación:** el toolchain solo afecta lo que corre Gradle; tu terminal sigue usando su propio `java`.
 - **Ejemplo:** `JavaLanguageVersion.of(25)` en `build.gradle.kts` hace que Gradle use el JDK 25 aunque el sistema tenga el 27.
 - **Error típico:** fijar el toolchain y ejecutar después el JAR con un `java` 21 de la terminal.
@@ -1782,19 +1878,52 @@ terminal ejecuta con otra. Antes de culpar al código necesitas saber qué Java 
 - **Error típico:** olvidar un módulo que la aplicación usa; el programa falla al arrancar en producción.
 
 #### ► CÓMO FUNCIONA
-Un JDK contiene el compilador, las herramientas y el runtime. Un JRE contiene solo lo necesario para ejecutar. La JVM
-es el motor dentro de ambos. Si tienes un runtime sin compilador y ejecutas `javac`, el sistema responde
-`command not found`. Si tienes dos JDK instalados, `java` y `javac` pueden apuntar a versiones distintas.
 
-Hay tres caminos para elegir un Java, y cada herramienta usa uno distinto:
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un taller de carpintería y en una sala de exposición. En el taller hay sierras, lijas y el mueble
+terminado. En la sala solo está el mueble: puedes usarlo, pero no fabricar otro. Ambos lugares comparten la pieza
+central, el mueble.
+
+Con Java pasa lo mismo. El JDK es el taller: compila, inspecciona, empaqueta y también ejecuta. El runtime es la
+sala: solo ejecuta programas ya compilados. La JVM es la pieza que ambos comparten, el motor que corre el bytecode.
+
+En Tienda Aurora conviven las dos situaciones. Tu portátil necesita el taller completo para compilar el proyecto.
+El servidor que atiende pedidos solo necesita ejecutarlo. Saber qué hay en cada máquina, y cuál de varias
+instalaciones usa cada herramienta, evita horas de diagnóstico.
+
+##### 2. Definición formal y vocabulario
+
+El **JDK** (*Java Development Kit*) es una distribución que reúne tres cosas. Trae la JVM, la biblioteca estándar
+organizada en módulos y las herramientas de desarrollo: `javac`, `javap`, `jar`, `jlink` y `jshell`. Hay varios
+proveedores, como Temurin, Oracle o el paquete de Ubuntu. Todos implementan la misma especificación.
+
+El **JRE** (*Java Runtime Environment*) era la distribución de solo ejecución: JVM más biblioteca, sin compilador.
+Desde Java 11 los proveedores principales dejaron de publicarlo aparte. Hoy lo equivalente es una **imagen de
+runtime**: una carpeta con un Java recortado que generas con **`jlink`**.
+
+La JVM ya la conoces del Tema 1: carga, verifica y ejecuta bytecode. Ahora importa cómo se elige cuál de varias
+JVM se ejecuta. Aquí entran tres mecanismos.
+
+La variable de entorno **`PATH`** es la lista ordenada de carpetas donde la terminal busca comandos. La variable
+**`JAVA_HOME`** es una convención: señala la raíz de un JDK para las herramientas que la leen, como Gradle y Maven.
+Un **toolchain** de Gradle es una declaración en el build que pide una versión de Java concreta.
+
+Por último, la JVM expone datos sobre sí misma mediante **propiedades del sistema**. Son pares clave-valor, como
+`java.version` o `java.home`, que tu programa lee con `System.getProperty`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cada herramienta llega a un Java por un camino distinto. El diagrama muestra los tres caminos y lo que produce
+`jlink`:
 
 ```mermaid
 flowchart TB
   subgraph JDK["JDK 25"]
     TOOLS["javac · javap · jar · jlink"]
-    subgraph RT["runtime (JRE)"]
+    subgraph RT["runtime"]
       JVM["JVM"]
-      LIB["biblioteca estándar"]
+      LIB["biblioteca estándar en módulos"]
     end
   end
   TERM["terminal: java / javac"] -->|PATH| JDK
@@ -1803,31 +1932,67 @@ flowchart TB
   JLINK["jlink"] -->|genera| IMG["imagen de runtime: java sin javac"]
 ```
 
-Gradle añade una capa útil: los toolchains. En lugar de depender del `java` del `PATH`, el build declara qué
-versión de lenguaje necesita y Gradle busca un JDK que la cumpla. En el Mac de referencia (JDK 27 en el `PATH`):
+Cuando escribes `javac -version` en la terminal, ocurre esto:
 
-```bash
-gradle -q javaToolchains
+1. La terminal recorre las carpetas de `PATH` en orden y se queda con el primer archivo llamado `javac`.
+2. Ese archivo suele ser un enlace. En Ubuntu, `/usr/bin/javac` apunta, a través de enlaces, al `javac` real del
+   JDK 25. `readlink -f` sigue esa cadena hasta el final, como viste en el Problema resuelto 2.1.
+3. El programa `java` o `javac` arranca la JVM de la instalación donde vive. Esa carpeta raíz es la que la JVM
+   reporta en la propiedad `java.home`.
+4. Si ninguna carpeta del `PATH` contiene el comando, la terminal responde `command not found`. Java ni siquiera
+   llega a ejecutarse.
+
+Observa que `JAVA_HOME` no aparece en esos pasos. El lanzador `java` no la consulta. Por eso puedes tener
+`JAVA_HOME` en el JDK 21 y ejecutar el 25 desde la terminal, como en el recuadro de error de este tema.
+
+Gradle sigue otro camino. Lee el bloque `toolchain` de `build.gradle.kts`, que en Tienda Aurora contiene
+`languageVersion = JavaLanguageVersion.of(25)`. Con esa declaración, Gradle detecta los JDK instalados: rutas habituales del sistema, `JAVA_HOME`, SDKMAN! y otras
+fuentes. Elige uno que cumpla la versión 25 y lo usa para compilar, probar y ejecutar. Solo lo descarga si el build
+configura un repositorio de toolchains en `settings.gradle.kts`. En el Mac de referencia, `gradle -q javaToolchains`
+listaba los JDK 25, 26 y 27. El build eligió el Temurin 25.0.5.1, aunque el `java` del `PATH` era el 27.
+
+Por último, la JVM que corre tu programa puede describirse a sí misma. Este fragmento pertenece a `VersionJava`:
+
+```java
+System.out.println("java.home    = " + System.getProperty("java.home"));
+System.out.println("feature      = " + Runtime.version().feature());
 ```
 
-```text
- + Options
-     | Auto-detection:     Enabled
-     | Auto-download:      Enabled
+`java.home` devuelve la raíz de la instalación activa. `Runtime.version().feature()` devuelve solo el número
+principal, 25, útil para comparar versiones en código sin analizar texto.
 
- + Eclipse Temurin JDK 25 (25.0.5.1+2-LTS)
-     | Location:           /Users/nicolasruiz/.gradle/jdks/eclipse_adoptium-25-aarch64-os_x.2/jdk-25.0.5.1+2/Contents/Home
-     | Language Version:   25
-     | Vendor:             Eclipse Temurin
-     | Architecture:       aarch64
-     | Is JDK:             true
-     | Detected by:        Auto-provisioned by Gradle
-```
+##### 4. Reglas, variantes y casos límite
 
-En esa máquina hay JDK 25, 26 y 27 instalados. El build usa el 25 porque el toolchain lo pide, aunque el `java` del
-`PATH` sea el 27. Esa separación entre «lo que ejecuta mi terminal» y «lo que usa el build» hace reproducibles los
-pipelines. (La salida completa de `javaToolchains` lista también los JDK 26 y 27; aquí se reproduce el bloque del
-JDK que el build selecciona.)
+Desde Java 9 la biblioteca estándar está dividida en **módulos**, unidades con nombre que declaran qué paquetes
+exportan. `java.base` es el obligatorio: contiene `String`, `System` y las colecciones. El JDK 25 de este módulo
+trae 69 módulos, según `java --list-modules | wc -l`.
+
+`jlink` aprovecha esa división. Recibe con `--add-modules` la lista de módulos y copia solo esos, más una JVM. La
+imagen resultante no incluye herramientas de desarrollo como `javac` o `javap`. Si olvidas un módulo que la
+aplicación usa, el error aparece al ejecutar, no al construir la imagen.
+
+Las propiedades del sistema tienen sus reglas. Una clave inexistente devuelve `null`, no lanza error. Por eso
+`System.getProperty("java.versión")` con tilde falla en silencio. Además, `java.home` describe la JVM actual y
+puede diferir de la variable `JAVA_HOME`.
+
+Con dos instalaciones, el `PATH` decide por orden, no por versión. Si `/usr/local/bin` tiene un `java` 21 antes que
+`/usr/bin`, ganará el 21 aunque exista el 25. La regla práctica es comprobar siempre tres cosas: `java -version`,
+`javac -version` y `echo $JAVA_HOME`.
+
+Un caso límite habitual: `java` responde y `javac` no. Significa que solo tienes un runtime, o que el `PATH` incluye
+la carpeta de un runtime y no la del JDK. Reinstalar no ayuda si el orden del `PATH` sigue igual.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Tema 1 viste que un `.class` de versión 69 no corre en la JVM 21. Este tema explica cómo terminas con una
+JVM 21 sin darte cuenta: un `PATH` desordenado o un `JAVA_HOME` viejo. Juntos forman el diagnóstico completo de
+«compila en mi máquina y falla en el servidor».
+
+No confundas toolchain con `--release`. `--release 25` controla qué bytecode genera `javac`. El toolchain controla
+qué JDK usa Gradle para ejecutar esa compilación. Tienda Aurora usa ambos para que local y CI coincidan.
+
+Las propiedades del sistema reaparecen cuando el proyecto lea configuración al arrancar. `jlink` y las imágenes de
+solo runtime vuelven a aparecer al empaquetar la aplicación para producción, junto con los contenedores.
 
 #### Problema resuelto 2.1
 Averigua qué Java usa la terminal, dónde está instalado y qué herramientas trae. Confírmalo desde un programa.
@@ -1901,7 +2066,7 @@ java -XshowSettings:properties -version 2>&1 | grep -E 'java.home|java.version|j
 ```
 
 ```text
-    java.home = /Users/nicolasruiz/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home
+    java.home = ~/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home
     java.vendor.version = Temurin-27.0.1.0.2+1
     java.version = 27.0.1.0.2
 ```
@@ -2138,28 +2303,122 @@ salió mal. Para eso tienes que saber qué hace cada palabra de esa línea y qu�
 - **Error típico:** escribir los errores en `System.out`; quien redirige la salida a un archivo los mezcla con los datos.
 
 #### ► CÓMO FUNCIONA
-Cuando escribes `java Argumentos cotizar --sku CAF-0001`, el lanzador sigue siempre el mismo camino. Carga la
-clase, busca un método llamado `main`, arma el arreglo `args` con las palabras restantes y lo invoca. Cada palabra
-de la firma resuelve una parte de ese camino.
 
-`public` significa que la JVM puede invocarlo desde fuera de la clase. `static` significa que no necesita una
-instancia: la JVM llama al método antes de que exista ningún objeto. `void` significa que no devuelve un valor;
-para comunicar éxito o fallo se usa el código de salida (`System.exit`). `main` es el nombre que el lanzador busca.
-`String[] args` es un arreglo con las palabras que escribiste después del nombre de la clase.
+##### 1. La idea en lenguaje sencillo
+
+Cuando entras a un edificio grande, la recepción te pregunta a qué vienes y te envía al piso correcto. No recorres
+todas las oficinas: hay una sola puerta de entrada y un procedimiento fijo.
+
+Un programa Java también tiene una puerta de entrada fija: el método `main`. La JVM no ejecuta el archivo de arriba
+abajo. Busca esa puerta, le entrega lo que escribiste en la terminal y deja que `main` decida qué hacer.
+
+En Tienda Aurora, esa recepción es `TiendaAuroraApp.main`. Lee la primera palabra, como `catalogo` o `cotizar`, y
+envía el trabajo al método adecuado. Si la palabra no existe, avisa por el canal de errores y termina con un código
+que un script puede comprobar.
+
+##### 2. Definición formal y vocabulario
+
+Una **clase** es una plantilla que declara campos (datos) y **métodos** (comportamiento con nombre, parámetros y tipo
+de retorno). Un **objeto** es una instancia concreta de esa clase, creada con `new`. Al crearla se ejecuta un
+**constructor**: un bloque con el nombre de la clase y sin tipo de retorno.
+
+El **`main`** clásico tiene la firma `public static void main(String[] args)`. Cada palabra cumple una función:
+
+- **`public`** es un modificador de acceso: permite invocar el método desde fuera de la clase. El lanzador está fuera.
+- **`static`** hace que el método pertenezca a la clase, no a un objeto. La JVM puede llamarlo sin crear nada antes.
+- **`void`** indica que el método no devuelve ningún valor al que lo llamó.
+- **`String[] args`** declara un parámetro: un arreglo de textos con las palabras escritas tras el nombre de la clase.
+
+El proceso comunica su resultado con un **código de salida**: 0 significa éxito y cualquier otro número, fallo. Para
+escribir, cada proceso tiene dos canales: **`System.out`**, la salida estándar, y `System.err`, la salida de error.
+Ambos son objetos `PrintStream` con los métodos `print` y `println`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que ocurre con `java Argumentos cotizar --sku CAF-0001`:
 
 ```mermaid
 flowchart LR
-  CMD["java Argumentos cotizar --sku CAF-0001"] --> LOAD["carga Argumentos.class"]
-  LOAD --> FIND{"¿hay main?"}
+  CMD["java Argumentos cotizar --sku CAF-0001"] --> SPLIT["la terminal separa las palabras"]
+  SPLIT --> LOAD["la JVM carga Argumentos"]
+  LOAD --> FIND{"¿hay un main válido?"}
   FIND -- no --> ERR["Error: Main method not found"]
-  FIND -- sí --> ARGS["args = [cotizar, --sku, CAF-0001]"]
-  ARGS --> RUN["ejecuta main(args)"]
-  RUN --> EXIT["código de salida: 0 o System.exit(n)"]
+  FIND -- sí --> ARGS["args = cotizar, --sku, CAF-0001"]
+  ARGS --> RUN["ejecuta main con args"]
+  RUN --> EXIT["código de salida: 0 o System.exit con n"]
 ```
 
-Desde Java 25, el lanzador también acepta un `main` sin `static` y sin parámetros: crea un objeto y lo llama. La
-firma clásica sigue siendo la que ves en todo el código existente y la única que entiende Java 21. El Tema 9
-retoma la forma corta.
+1. **La terminal separa las palabras.** Lo hace Bash, no Java. Las comillas agrupan: `'Café Aurora'` llega como un
+   solo argumento, como viste en el Problema resuelto 3.1.
+2. **El lanzador carga la clase.** Busca `Argumentos` en el classpath y la verifica, como viste en el Tema 1.
+3. **El lanzador busca `main`.** Si no lo encuentra, se detiene con `Main method not found in class …`.
+4. **Construye `args`.** Crea un `String[]` con las palabras restantes. El nombre de la clase no entra: `args[0]`
+   ya es `cotizar`. Sin palabras, el arreglo existe y tiene longitud 0; no es `null`.
+5. **Inicializa la clase e invoca `main(args)`.** Antes de la llamada se ejecutan los inicializadores estáticos.
+   Los campos `static`, como `creados` en `Contador`, quedan listos aquí. Como `main` es `static`, no hace falta
+   ningún objeto.
+6. **Termina el proceso.** Si `main` acaba normalmente, el código de salida es 0. Si llamas a `System.exit(n)`,
+   el proceso termina en ese instante con `n`.
+
+Un detalle del paso 6 merece prueba. Si `main` lanza una excepción que nadie atrapa, la JVM imprime la traza por
+`System.err` y termina con código 1:
+
+```java
+public class Falla {
+    public static void main(String[] args) {
+        System.out.println("Pedido recibido: " + args[0]);
+    }
+}
+```
+
+```text
+$ java Falla; echo "código de salida: $?"
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
+	at Falla.main(Falla.java:3)
+código de salida: 1
+```
+
+Lee la traza: el hilo se llama `main`, la excepción dice que pediste el índice 0 de un arreglo de longitud 0, y la
+última línea señala el archivo y la línea. El arreglo vacío del paso 4 explica el fallo.
+
+Ahora mira la diferencia entre `static` e instancia dentro de la memoria. Un campo `static` existe una sola vez,
+ligado a la clase. Un campo de instancia existe una vez por cada objeto creado con `new`. Por eso `Contador.creados`
+vale 2 y cada contador conserva su propio `nombre`. Un método `static` no recibe `this`, la referencia al objeto
+actual. Por eso no puede llamar a `saludar()` sin un objeto delante.
+
+##### 4. Reglas, variantes y casos límite
+
+En Java 21 el lanzador exige exactamente un método `public static void main(String[] args)`. Si falta `static`,
+responde `Main method is not static`, como muestra el recuadro de este tema.
+
+Java 25 amplió la regla con la JEP 512 (*Compact Source Files and Instance Main Methods*). Según la JLS, un `main`
+candidato puede tener un parámetro `String[]` o ninguno, y acceso `public`, `protected` o de paquete. Si hay
+candidato con parámetro, se prefiere ese; si no, se usa el que no tiene parámetros.
+
+Si el candidato elegido es de instancia, la JVM crea antes un objeto con el constructor sin parámetros. Ese
+constructor debe existir y no ser `private`. Así funciona el `main` sin `static` del recuadro «Prevenir errores».
+
+Algunas reglas no cambiaron. `main` debe devolver `void`: el resultado del proceso va por el código de salida. Puedes
+escribir `String... args` en lugar de `String[] args`, porque ambos declaran un arreglo. El nombre `args` es solo
+una convención: cualquier nombre de parámetro vale.
+
+Los códigos de salida tienen un límite que no pone Java. En Linux y macOS, el sistema conserva solo los 8 bits
+bajos, así que el rango útil va de 0 a 255. La convención de Tienda Aurora es simple: 0 éxito, 1 fallo inesperado y
+2 uso incorrecto.
+
+Un último caso límite: `return` dentro de `main` termina el método, pero el código sigue siendo 0. Úsalo cuando el
+caso no es un error, como `TiendaAuroraApp` al mostrar la ayuda sin argumentos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 terminaba con «la JVM ejecuta `main`». Ahora sabes por qué busca esa firma y qué recibe. El classpath del
+Tema 1 decide dónde encuentra la clase; este tema decide qué método invoca dentro de ella.
+
+En Fundamentos escribías `void main()` en un archivo compacto. Era la variante de Java 25 de este mismo mecanismo:
+un `main` de instancia sin parámetros dentro de una clase implícita. El Tema 9 la retoma con detalle.
+
+Los arreglos como `args` se estudian en el Tema 7, y el `switch` que elige el comando, en el Tema 6. Los
+modificadores `public` y `private`, los constructores y los objetos vuelven en el Módulo 1, donde son el centro.
 
 #### Problema resuelto 3.1
 Escribe un programa que muestre los argumentos recibidos y termine con código 2 si no recibe ninguno.
@@ -2529,24 +2788,55 @@ si un pedido grande se vuelve negativo o si dos variables cambian a la vez sin q
 - **Error típico:** leer solo la primera línea del error; la segunda (`at Referencias.main(Referencias.java:26)`) dice la línea exacta.
 
 #### ► CÓMO FUNCIONA
-Java tiene ocho tipos primitivos y todos los demás son referencias a objetos. La diferencia no es cosmética: los
-primitivos guardan el valor en la variable; las referencias guardan la dirección de un objeto en el heap. Esa
-distinción decide qué se copia al pasar un argumento, qué puede ser `null` y dónde aparecen los errores de precisión.
+
+##### 1. La idea en lenguaje sencillo
+
+Imagina dos maneras de pasarle a un compañero el stock de una bodega. Puedes escribir el número en un papel: si él
+lo tacha y anota otro, tu papel sigue igual. O puedes darle la dirección de la bodega: si él saca cajas, tú también
+verás menos cajas al llegar.
+
+Java usa las dos maneras. Los **tipos primitivos** son el papel con el número. Los **tipos referencia** son la
+dirección de la bodega. Elegir uno u otro decide qué se copia, qué puede estar vacío y qué errores pueden aparecer.
+
+En Tienda Aurora la elección tiene consecuencias de dinero. El molino cuesta 34,90 € y tres unidades deben sumar
+104,70 € exactos. Con un `double` el total sale `104.69999999999999`. Con un `long` de centavos sale `10470`, exacto.
+Este tema explica por qué.
+
+##### 2. Definición formal y vocabulario
+
+La JLS divide los tipos de Java en dos familias. Un **tipo primitivo** es uno de los ocho tipos predefinidos: su
+variable contiene el valor mismo. Un **tipo referencia** es una clase, interfaz o arreglo: su variable contiene una
+referencia, la indicación de dónde está el objeto en el **heap**. El heap es la zona de memoria donde la JVM guarda
+los objetos.
 
 | Tipo | Tamaño | Rango o uso | En Tienda Aurora |
 | --- | --- | --- | --- |
 | `byte` | 8 bits | −128 a 127 | banderas compactas |
 | `short` | 16 bits | −32 768 a 32 767 | poco usado |
-| `int` | 32 bits | ±2 147 483 647 | stock, cantidades |
+| `int` | 32 bits | −2 147 483 648 a 2 147 483 647 | stock, cantidades |
 | `long` | 64 bits | ±9,22 × 10¹⁸ | centavos de dinero |
 | `float` | 32 bits | decimal aproximado | nunca para dinero |
 | `double` | 64 bits | decimal aproximado | medidas, no importes |
-| `char` | 16 bits | un carácter Unicode | iniciales, separadores |
-| `boolean` | JVM-dependiente | `true` / `false` | condiciones |
+| `char` | 16 bits | una unidad de código UTF-16 | iniciales, separadores |
+| `boolean` | no fijado por la especificación | `true` / `false` | condiciones |
+
+Un **literal** es un valor escrito en el código, y su forma fija el tipo. `40` es `int`, `3_490L` es `long`,
+`0.25f` es `float`, `18.5` es `double` y `'C'` es `char`. El valor **`null`** solo existe para referencias: indica
+que la variable no apunta a ningún objeto.
+
+Dos fenómenos completan el vocabulario. El **desbordamiento** ocurre cuando un resultado entero no cabe en su tipo:
+Java conserva los bits bajos y el valor «da la vuelta». El **punto flotante** es la representación binaria
+aproximada de `float` y `double`, definida por el estándar IEEE 754. Y la **`NullPointerException`** es la excepción
+que lanza la JVM cuando usas una referencia `null` como si tuviera objeto.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `Referencias.java`, el Problema resuelto 4.2. Cada llamada a un método tiene un **marco** (*frame*): una zona
+con sus variables locales. Los objetos viven aparte, en el heap.
 
 ```mermaid
 flowchart LR
-  subgraph VARS["variables de main"]
+  subgraph VARS["marco de main: variables locales"]
     A["a: 40"]
     B["b: 39"]
     CAFE["cafe: ref"]
@@ -2560,13 +2850,85 @@ flowchart LR
   MISMO --> P
 ```
 
-Asignar `int b = a` copia el número: cambiar `b` no toca `a`. Asignar `Producto mismo = cafe` copia la dirección:
-ambos nombres llegan al mismo objeto. Esa diferencia explica por qué `Catalogo` necesita copias defensivas (Tema 7)
-y por qué comparar objetos con `==` casi nunca es lo que quieres.
+1. `int a = 40;` guarda el número 40 en la casilla de `a`, dentro del marco.
+2. `int b = a;` copia ese número a la casilla de `b`. Restar 1 a `b` cambia solo `b`.
+3. `new Producto("Café Aurora", 40)` reserva un objeto en el heap y ejecuta el constructor. La variable `cafe`
+   recibe la referencia a ese objeto, no el objeto.
+4. `Producto mismo = cafe;` copia la referencia. Ahora dos casillas apuntan al mismo objeto, como muestra el
+   diagrama. Por eso `mismo.stock - 1` también se ve en `cafe.stock`: ambos imprimen 39.
+5. `cafe == mismo` compara las dos referencias. Son iguales porque apuntan al mismo objeto, y el resultado es `true`.
+6. `Producto vacio = null;` deja la casilla sin objeto. Leer `vacio.nombre` obliga a la JVM a seguir una referencia
+   inexistente, y lanza `NullPointerException`.
 
-Las conversiones siguen una regla simple. De un tipo más pequeño a uno más grande (`int` a `long`, `int` a
-`double`) hay *widening* y el compilador lo acepta sin ceremonia. Al revés hay *narrowing* y exige un cast
-explícito, porque puede perder información: `(int) 3.9` da `3`, no `4`. El Tema 5 lo practica con código.
+Desde JDK 14 el mensaje explica qué falló: *Cannot read field "nombre" because "vacio" is null*. El nombre de la
+variable aparece solo si compilas con `javac -g`. Sin esa opción, el `.class` no guarda nombres locales y verás
+`"<local5>"`, como en la salida real del tema.
+
+El desbordamiento ocurre a nivel de bits. Un `int` tiene 32 bits en complemento a dos. `Integer.MAX_VALUE + 1`
+produce el patrón del mínimo negativo, `-2147483648`. La JVM no comprueba nada: la instrucción `imul` o `iadd`
+simplemente descarta lo que sobra. Solo los métodos como `Math.multiplyExact` revisan y lanzan `ArithmeticException`.
+
+El punto flotante falla por otra razón. 34,90 no tiene representación binaria exacta, igual que 1/3 no la tiene en
+decimal. El `double` guarda la fracción binaria más cercana, y multiplicarla arrastra ese pequeño error.
+
+##### 4. Reglas, variantes y casos límite
+
+La aritmética entera y la flotante reaccionan distinto ante los casos extremos. Este fragmento lo muestra:
+
+```java
+public class Limites {
+    public static void main(String[] args) {
+        double sinStock = 0.0;
+        System.out.println(1.0 / sinStock);
+        System.out.println(0.0 / sinStock);
+        double nan = 0.0 / sinStock;
+        System.out.println(nan == nan);
+        System.out.println(Double.isNaN(nan));
+        System.out.println(1 / 0);
+    }
+}
+```
+
+```text
+$ java Limites; echo "código de salida: $?"
+Infinity
+NaN
+false
+true
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at Limites.main(Limites.java:9)
+código de salida: 1
+```
+
+Dividir un `double` entre cero no es error: da `Infinity`, o `NaN` (*not a number*) si el numerador también es
+cero. `NaN` ni siquiera es igual a sí mismo, así que se detecta con `Double.isNaN`. La división entera entre cero,
+en cambio, lanza `ArithmeticException`.
+
+Las reglas de los literales también importan. Un literal entero sin sufijo es `int` y debe caber en 32 bits; si no,
+el error es de compilación: `integer number too large`. El guion bajo para separar dígitos existe desde Java 7 y no
+cambia el valor.
+
+Los campos de un objeto reciben un valor por defecto: 0, `false` o `null`. Las variables locales no. Si usas una
+local `x` antes de asignarla, `javac` responde `variable x might not have been initialized`.
+
+Desde Java 17, toda la aritmética de punto flotante sigue las reglas estrictas de IEEE 754 en cualquier plataforma.
+La palabra `strictfp` quedó obsoleta, y el compilador avisa si la usas.
+
+Por último, `char` guarda una unidad UTF-16 de 16 bits, no un carácter completo. Los emojis y algunos símbolos
+necesitan dos `char`. Para texto completo se usa `String`, que es referencia.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Fundamentos escribías `34.90 * 3` sin pensar en el tipo. Java te obliga a declararlo, y ahora sabes qué cuesta
+cada elección. El Tema 3 te presentó clases y objetos; aquí viste dónde viven esos objetos y qué guarda la variable.
+
+Este tema es la base de varios que siguen. El Tema 5 convierte entre tipos y explica por qué `String` se compara con
+`equals`. El Tema 7 usa la diferencia entre valor y referencia para explicar arreglos, *wrappers* como `Integer` y
+copias defensivas.
+
+La clase `Dinero` del proyecto aplica todo lo anterior. Guarda `long` de centavos, multiplica con
+`Math.multiplyExact` y falla en el acto ante un desbordamiento. En el Módulo 1 verás los `record`, la forma moderna de
+declarar valores inmutables como este.
 
 #### Problema resuelto 4.1
 Declara una variable de cada tipo primitivo y un `String`, y muestra su valor y su rango.
@@ -2968,21 +3330,131 @@ compara cadenas sin normalizar, el mismo producto se comporta como dos. Además,
 - **Error típico:** escribir texto en la misma línea de las `"""` de apertura: `illegal text block open delimiter sequence, missing line terminator`.
 
 #### ► CÓMO FUNCIONA
-Una variable Java tiene un tipo fijo desde que se declara. Cuando el valor viene de otro tipo, el compilador decide:
-si la conversión no puede perder información, la hace sola (*widening*); si puede perder, exige un cast. Los textos
-nunca se convierten solos en números: hay que leerlos con `parseInt` o `parseDouble`.
+
+##### 1. La idea en lenguaje sencillo
+
+En una oficina de correos, cada casillero tiene una etiqueta: «solo sobres», «solo paquetes pequeños». Puedes pasar
+un sobre a un casillero de paquetes, porque cabe. Al revés, alguien tiene que doblar el paquete y aceptar que algo se
+arrugue.
+
+Las variables de Java funcionan igual. Cada una tiene un tipo fijo. Pasar un valor a un tipo más amplio es automático.
+Pasarlo a uno más estrecho exige que lo autorices por escrito, porque puedes perder información.
+
+El texto tiene sus propias reglas. En Tienda Aurora, el SKU llega escrito por una persona: `"  caf_0001 "`. La
+cantidad llega como texto, `"12"`. Antes de usarlos, el programa debe limpiar el SKU y convertir la cantidad en
+número. Ambas cosas dependen de entender cómo trata Java las cadenas.
+
+##### 2. Definición formal y vocabulario
+
+Una **variable con tipo declarado** asocia un nombre a un valor de un tipo que no cambia durante su vida. Con
+**`var`** el compilador deduce ese tipo a partir del valor inicial, pero el tipo sigue siendo fijo. `var` solo sirve
+para variables locales.
+
+La JLS llama **widening** (*ampliación*) a la conversión automática hacia un tipo numérico de mayor rango, como de
+`int` a `long`. La conversión contraria, *narrowing*, exige un **cast**: la expresión `(tipo) valor`, con la que
+declaras que aceptas la pérdida. Un texto nunca se convierte solo en número. Para eso existen métodos como
+**`parseInt`**, que leen los dígitos y devuelven un `int` o lanzan `NumberFormatException`.
+
+**`String`** es la clase de `java.lang` que representa texto. Es un tipo referencia y es **inmutable**: ningún método
+cambia el objeto; los que parecen hacerlo devuelven un `String` nuevo. Para comparar contenido se usa **`equals`**.
+El operador `==` compara si dos referencias apuntan al mismo objeto.
+
+Tres herramientas completan el tema. Un **`Locale`** identifica idioma y región, y altera mayúsculas y formatos. Un
+**`StringBuilder`** es un búfer de caracteres mutable para construir texto por partes. Un **text block** es un
+literal multilínea entre `"""`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El compilador decide cada conversión antes de ejecutar nada. El diagrama resume los caminos:
 
 ```mermaid
 flowchart LR
-  TXT["texto '12'"] -->|Integer.parseInt| INT["int 12"]
+  TXT["texto 12"] -->|Integer.parseInt| INT["int 12"]
   INT -->|automático| LONG["long 12"]
   INT -->|automático| DBL["double 12.0"]
-  DBL -->|"(int) cast: corta decimales"| INT
+  DBL -->|"cast (int): corta decimales"| INT
   INT -->|String.valueOf| TXT
 ```
 
-Con `String` el modelo es otro: es un objeto inmutable. `strip()`, `toUpperCase()` o `replace()` devuelven un
-`String` nuevo y dejan el original intacto. Por eso las transformaciones se encadenan.
+1. **Comprobación de tipos.** En `long centavos = unidades;`, `javac` ve un `int` a la derecha y un `long` a la
+   izquierda. La conversión es de ampliación, así que la acepta y genera la instrucción que extiende el valor.
+2. **Rechazo del narrowing.** En `int entero = precio;` con `precio` `double`, el compilador se detiene con
+   `possible lossy conversion from double to int`. El error ocurre al compilar, no al ejecutar.
+3. **Cast explícito.** `(int) 3.9` compila y, en ejecución, descarta la parte decimal: da 3. `(byte) 300` conserva
+   los 8 bits bajos de 300, que valen 44.
+4. **Lectura de texto.** `Integer.parseInt("12")` recorre los caracteres, comprueba que sean dígitos y acumula el
+   valor. Ante cualquier carácter extra, como en `"3 unidades"`, lanza la excepción con el texto exacto.
+
+Con las cadenas, el mecanismo es la inmutabilidad. Observa esta línea del Problema resuelto 5.2:
+
+```java
+String limpio = crudo.strip().toUpperCase(Locale.ROOT).replace("_", "-");
+```
+
+Cada método crea un objeto `String` nuevo y lo entrega al siguiente. `strip()` produce `"caf_0001"`,
+`toUpperCase` produce `"CAF_0001"` y `replace` produce `"CAF-0001"`. El objeto de `crudo` nunca cambia. Si llamas a
+`crudo.toUpperCase(Locale.ROOT);` sin guardar el resultado, el objeto nuevo se pierde.
+
+La comparación sigue otro camino. Los literales iguales del código se comparten en un **depósito de cadenas**
+(*string pool*), pero `new String("CAF-0001")` crea siempre un objeto aparte. Por eso `a == b` da `false` y
+`a.equals(b)` da `true`: `equals` recorre los caracteres; `==` solo mira la referencia.
+
+`StringBuilder` evita copias. Mantiene un arreglo interno con espacio de sobra; `append` escribe al final y solo
+amplía el arreglo cuando se llena. `toString()` crea el `String` final una sola vez.
+
+##### 4. Reglas, variantes y casos límite
+
+Las reglas de conversión tienen excepciones que conviene conocer. Este programa las reúne:
+
+```java
+public class Promocion {
+    public static void main(String[] args) {
+        byte cajas = 10;
+        byte bolsas = 20;
+        byte total = (byte) (cajas + bolsas);
+        total += 300;
+        System.out.println("total = " + total);
+        long ventas = 123_456_789_012_345_678L;
+        double aproximado = ventas;
+        System.out.println(aproximado + " -> " + ((long) aproximado == ventas));
+    }
+}
+```
+
+```text
+$ java Promocion
+total = 74
+1.2345678901234568E17 -> false
+```
+
+`byte cajas = 10;` compila sin cast porque 10 es una constante que cabe en un `byte`. Pero `cajas + bolsas` es
+`int`: Java promueve a `int` los operandos `byte`, `short` y `char` antes de operar. Sin el cast, `javac` rechaza la
+línea. El operador compuesto `+=` sí incluye un cast oculto: 30 + 300 da 330, que en un `byte` queda en 74.
+
+La última línea muestra que el widening no siempre es exacto. De `long` a `double` cabe la magnitud, pero un
+`double` guarda unos 15 o 16 dígitos significativos. El número de 18 cifras pierde los últimos.
+
+`var` tiene sus límites. Existe desde Java 10 y solo vale para locales con valor inicial. `var x = null;` falla con
+`cannot infer type for local variable x`, porque `null` no revela un tipo. Tampoco puedes usarlo en campos ni en
+parámetros de métodos.
+
+En cuanto a versiones: `strip()` llegó en Java 11 y reconoce los espacios Unicode que `trim()` ignora. Los text
+blocks son estándar desde Java 15. Su delimitador de apertura `"""` debe ir seguido de un salto de línea.
+
+`toUpperCase()` sin argumento usa el `Locale` de la máquina. En turco, la «i» pasa a «İ» con punto, como viste en la
+salida de `Turco`. Para identificadores como el SKU, usa siempre `Locale.ROOT`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 4 separó primitivos y referencias. Este tema lo aplica: las conversiones numéricas son entre primitivos y
+`String` es una referencia. Por eso `==` falla con textos por la misma razón que fallaba con `Producto`.
+
+En Fundamentos, los textos y números convivían con menos reglas. Java exige declarar cada paso. A cambio, muchos
+errores aparecen al compilar, antes de que un cliente vea un total equivocado.
+
+La normalización del SKU reaparece en `Sku.de`, el punto único donde Tienda Aurora limpia la entrada. El Tema 8 usa
+`parseInt` con `Scanner` para leer cantidades del teclado y capturar `NumberFormatException`. Y `equals` vuelve en el
+Módulo 2, donde las colecciones dependen de que esté bien definido.
 
 #### Problema resuelto 5.1
 Convierte valores entre tipos numéricos y desde texto, y observa cuándo se pierde información.
@@ -3412,24 +3884,126 @@ Necesitas expresar esas reglas sin que un paréntesis mal puesto o un caso olvid
 - **Error típico:** escribir `i <= arreglo.length`; la última vuelta lee una posición que no existe.
 
 #### ► CÓMO FUNCIONA
-Una expresión se evalúa según la precedencia y, a igual precedencia, de izquierda a derecha. El tipo de los
-operandos decide el del resultado: dos `int` dan `int`, aunque la cuenta tenga decimales. Las condiciones son
-expresiones `boolean` que deciden qué rama se ejecuta o si un bucle da otra vuelta.
+
+##### 1. La idea en lenguaje sencillo
+
+Una cajera aplica reglas sin pensarlas: si la compra pasa de cierto monto, hay descuento; si es sábado, la entrega se
+corre al lunes. Detrás de cada regla hay una cuenta y una decisión. Si la cuenta se hace en otro orden, el resultado
+cambia.
+
+Un programa necesita escribir esas reglas con precisión total. Los **operadores** hacen las cuentas, las
+**condiciones** eligen el camino y los **bucles** repiten un paso hasta cumplir una meta.
+
+En Tienda Aurora la política tiene dos umbrales: 5 % desde 50 € y 10 % desde 100 €. La entrega se promete en tres
+días laborables. Un paréntesis mal puesto cambia el descuento; un `if` en mal orden deja un tramo inalcanzable; un
+bucle mal cerrado cuenta un día de más.
+
+##### 2. Definición formal y vocabulario
+
+Un **operador aritmético** (`+`, `-`, `*`, `/`, `%`) calcula un número a partir de dos operandos. Cuando ambos son
+enteros, `/` hace **división entera**: descarta la parte decimal. La **precedencia** fija qué operador se evalúa
+primero sin paréntesis. La **asignación compuesta** (`+=`, `-=`, `++`, `--`) combina una operación con la
+asignación.
+
+Un **operador relacional** (`==`, `!=`, `<`, `<=`, `>`, `>=`) produce un `boolean`. Un **operador lógico** (`&&`,
+`||`, `!`) combina valores `boolean`. `&&` y `||` aplican **cortocircuito**: no evalúan el lado derecho si el
+izquierdo ya decide el resultado.
+
+Las instrucciones de control usan esos `boolean`. **`if`** ejecuta un bloque si la condición es verdadera. El
+**operador ternario** `c ? a : b` es una expresión que elige entre dos valores. **`switch`** elige entre varios
+casos según un valor. Un **`enum`** es un tipo con una lista cerrada de constantes, ideal para esos casos. Los
+bucles **`while`** y **`for`** repiten un bloque mientras su condición sea verdadera.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el cálculo del descuento de `Tramos.java` para un subtotal de 10470 centavos:
 
 ```mermaid
 flowchart TB
-  S["subtotal en centavos"] --> C1{"¿>= 10 000?"}
+  S["subtotal en centavos"] --> C1{"¿mayor o igual a 10000?"}
   C1 -- sí --> ORO["ORO: 10 %"]
-  C1 -- no --> C2{"¿>= 5 000?"}
+  C1 -- no --> C2{"¿mayor o igual a 5000?"}
   C2 -- sí --> PLATA["PLATA: 5 %"]
   C2 -- no --> BASE["BASE: 0 %"]
-  ORO --> D["descuento = (subtotal * % + 50) / 100"]
+  ORO --> D["descuento = (subtotal * pct + 50) / 100"]
   PLATA --> D
   BASE --> D
 ```
 
-El `+ 50` antes de dividir entre 100 implementa el redondeo *half-up* para valores positivos: 2555 centavos al 5 %
-dan 127,75, que debe redondear a 128. Sin el 50, la división entera truncaría a 127.
+1. **Evaluación de la condición.** `subtotalCentavos >= 10_000` compara dos `long` y produce `true`. El `if`
+   ejecuta `return Tramo.ORO;` y no mira las ramas siguientes.
+2. **Selección del porcentaje.** La expresión `switch (tramo)` salta directamente al caso `ORO` y devuelve 10. No
+   recorre los casos uno por uno como una cadena de `if`.
+3. **Cálculo.** En `(subtotal * porcentaje(t) + 50) / 100`, Java respeta paréntesis y precedencia. Primero
+   `10470 * 10` da 104700; luego suma 50; al final divide entre 100. El resultado entero es 1047.
+4. **Tipo del resultado.** Los operandos se convierten al tipo más amplio de la operación. `long` por `int` da
+   `long`. Si los dos fueran `int`, el resultado sería `int`, aunque la cuenta tuviera decimales.
+
+El `+ 50` antes de dividir implementa el redondeo *half-up* para valores positivos. 2555 centavos al 5 % dan
+12775 / 100 = 127,75, que debe quedar en 128. Sin el 50, la división entera truncaría a 127. `Dinero.porcentaje`
+hace la misma cuenta con `Math.floorDiv(bruto + 50, 100)`.
+
+El cortocircuito también tiene un mecanismo concreto. `cantidad > 0 && stock / cantidad >= 1` se compila como dos
+saltos. Si la primera comparación es falsa, el bytecode salta por encima de la división. Con `&`, ambos lados se
+evalúan siempre, y por eso `Operadores.java` termina con `/ by zero`.
+
+El `while` de las entregas repite tres acciones: avanza `dia`, calcula si es laborable y descuenta `restantes`. La
+condición `restantes > 0` se evalúa antes de cada vuelta. Si nunca la actualizaras, el bucle no terminaría.
+
+##### 4. Reglas, variantes y casos límite
+
+La división entera trunca hacia cero, también con negativos. Eso la diferencia de `Math.floorDiv`, que redondea
+hacia abajo:
+
+```java
+public class Negativos {
+    public static void main(String[] args) {
+        System.out.println("-7 / 2 = " + (-7 / 2));
+        System.out.println("-7 % 2 = " + (-7 % 2));
+        System.out.println("floorDiv(-7, 2) = " + Math.floorDiv(-7, 2));
+        System.out.println("floorMod(-7, 2) = " + Math.floorMod(-7, 2));
+    }
+}
+```
+
+```text
+$ java Negativos
+-7 / 2 = -3
+-7 % 2 = -1
+floorDiv(-7, 2) = -4
+floorMod(-7, 2) = 1
+```
+
+El signo de `%` sigue al del dividendo, así que `-7 % 2` da -1. Para importes que pueden ser negativos, como una
+devolución, `floorDiv` y `floorMod` dan un resultado consistente.
+
+El `switch` tiene dos formas. La clásica, `case X:`, «cae» al caso siguiente si olvidas `break`. La forma con
+flechas, `case X ->`, ejecuta solo su rama. Las expresiones `switch` que devuelven valor son estándar desde Java 14.
+
+Una expresión `switch` debe ser **exhaustiva**: cubrir todos los valores posibles. Con un `enum`, basta con listar
+todas sus constantes. Si falta una, `javac` responde `the switch expression does not cover all possible input
+values`. Desde Java 21 el `switch` también admite patrones de tipo, que verás en módulos posteriores.
+
+`switch` acepta `int` y los enteros menores, `char`, `String`, `enum` y sus *wrappers*. En Java 25 no acepta `long`,
+`float`, `double` ni `boolean` como selector. Los patrones primitivos que lo permitirían siguen en vista previa.
+
+La condición de `if`, `while` y `for` debe ser `boolean`. Java no convierte números en verdadero o falso. Por eso
+`if (stock = 0)` es un error de compilación y no un fallo silencioso.
+
+Por último, `++` y `--` tienen forma prefija y posfija: `++i` devuelve el valor nuevo e `i++` el anterior. Úsalos
+como instrucción propia para no depender de esa diferencia.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 4 mostró que un `int` desborda en silencio. Aquí ves de dónde salen esos números: de operadores que no
+revisan nada. El Tema 5 explicó la promoción de tipos; este tema la aplica dentro de cada expresión aritmética.
+
+En Fundamentos ya usabas `if` y bucles. La diferencia en Java es el tipado estricto de las condiciones y el
+`switch` exhaustivo sobre `enum`. El compilador te avisa si añades un tramo y olvidas tratarlo.
+
+El `for` mejorado recorre arreglos, que el Tema 7 estudia a fondo. El Tema 8 reutiliza el bucle de días laborables
+con `java.time` y `DayOfWeek`, en lugar de números del 1 al 7. Y el `switch` con patrones reaparece cuando el curso
+modele jerarquías de tipos.
 
 #### Problema resuelto 6.1
 Comprueba cómo calculan los operadores aritméticos, la precedencia y el cortocircuito.
@@ -3853,9 +4427,39 @@ se copia y qué se comparte.
 - **Error típico:** confundir `length` (arreglos) con `size()` (listas). El Módulo 2 trata las colecciones a fondo.
 
 #### ► CÓMO FUNCIONA
-Un arreglo es un objeto: la variable guarda su referencia. Pasarlo a un método copia la referencia, así que el
-método puede cambiar sus elementos, pero no puede hacer que tu variable apunte a otro arreglo. Con primitivos, el
-método recibe una copia del número y nada de lo que haga sale de él.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una estantería con casilleros numerados. Tiene un número fijo de huecos y cada uno guarda una cosa del
+mismo tipo. Si le das a un compañero la dirección de la estantería, él puede cambiar lo que hay dentro. Si le das
+una fotocopia del inventario, puede tachar lo que quiera sin tocar tus estantes.
+
+Un **arreglo** de Java es esa estantería. La variable no guarda los casilleros: guarda la dirección. Por eso importa
+tanto decidir cuándo compartes la dirección y cuándo entregas una copia.
+
+En Tienda Aurora, `Catalogo` guarda los productos en un arreglo. Si otra parte del sistema recibe ese arreglo y
+pone un `null` en un casillero, el catálogo queda roto. Y cuando una cantidad se guarda como `Integer` en lugar de
+`int`, aparece otra sorpresa: `==` funciona con 100 unidades y falla con 200.
+
+##### 2. Definición formal y vocabulario
+
+La JLS define un **arreglo** como un objeto con un número fijo de componentes del mismo tipo. Su tipo se escribe
+`T[]`. Cada componente se alcanza por un **índice** entero de 0 a `length - 1`. Un índice fuera de ese rango hace
+que la JVM lance **`ArrayIndexOutOfBoundsException`**. La clase utilitaria **`Arrays`** ofrece métodos estáticos
+para copiar, comparar, ordenar y mostrar arreglos.
+
+Java pasa los argumentos por un único mecanismo: **paso por valor**. El método recibe una copia de cada argumento.
+Si el argumento es una referencia, se copia la referencia, no el objeto. La **copia defensiva** aprovecha esa regla:
+la clase copia el objeto mutable al recibirlo o entregarlo, y así nadie comparte su estado interno.
+
+Un **wrapper** es una clase que envuelve un primitivo en un objeto: `Integer`, `Long`, `Double` y los demás. El
+compilador convierte entre ambos solo. El **autoboxing** pasa de `int` a `Integer`; el **unboxing** hace lo
+contrario. La **caché de `Integer`** reutiliza los objetos de −128 a 127. Una **`List`** es una colección ordenada de
+tamaño variable que solo guarda objetos; por eso necesita wrappers.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `Arreglos.java`, el Problema resuelto 7.1. El diagrama muestra qué ve cada método:
 
 ```mermaid
 flowchart LR
@@ -3864,19 +4468,92 @@ flowchart LR
     C["cantidad: 5"]
   end
   subgraph METODO["duplicarPrimero / reemplazar / incrementar"]
-    P["stock (copia de la ref)"]
-    Q["cantidad (copia: 5 → 6)"]
+    P["stock: copia de la ref"]
+    Q["cantidad: copia, 5 pasa a 6"]
   end
-  ARR["arreglo [80, 25, 10]"]
-  NUEVO["arreglo nuevo [0, 0, 0]"]
+  ARR["arreglo 80, 25, 10"]
+  NUEVO["arreglo nuevo 0, 0, 0"]
   S --> ARR
   P -->|"stock[0] = ... cambia el original"| ARR
   P -.->|"stock = new ... solo la copia"| NUEVO
   C -.->|"se copia"| Q
 ```
 
-Los wrappers existen porque muchas partes de Java (las colecciones, `Optional`) solo aceptan objetos. El compilador
-convierte entre `int` e `Integer` sin que lo pidas, y esa comodidad tiene dos trampas: `null` y `==`.
+1. **Creación.** `int[] stock = {40, 25, 10};` reserva un objeto en el heap con tres casillas y una longitud fija,
+   3. `new String[3]` crea tres casillas con el valor por defecto `null`.
+2. **Llamada.** `duplicarPrimero(stock)` copia la referencia en el parámetro. Las dos variables apuntan al mismo
+   arreglo.
+3. **Escritura por índice.** `stock[0] = stock[0] * 2;` sigue la referencia y escribe en el arreglo compartido. Al
+   volver, `main` ve 80.
+4. **Reasignación del parámetro.** `reemplazar` ejecuta `stock = new int[] {0, 0, 0};`. Cambia solo su copia de la
+   referencia, que ahora apunta a un arreglo nuevo. La variable de `main` no se entera.
+5. **Primitivo.** `incrementar(cantidad)` recibe el número 5 copiado. Sumarle 1 no sale del método.
+6. **Comprobación de límites.** En cada acceso, la JVM compara el índice con `length`. `stock[3]` falla con
+   `Index 3 out of bounds for length 3`.
+
+Los wrappers funcionan con conversiones que escribe el compilador. Esta línea de `Wrappers.java`:
+
+```java
+int total = sinDato + 1;
+```
+
+se compila como `sinDato.intValue() + 1`. Si `sinDato` es `null`, la llamada oculta lanza `NullPointerException`.
+El mensaje lo delata: *Cannot invoke "java.lang.Integer.intValue()"*.
+
+El autoboxing usa `Integer.valueOf`. Para valores de −128 a 127 devuelve siempre el mismo objeto guardado en caché.
+Fuera de ese rango crea objetos nuevos. Por eso `127 == 127` da `true` y `128 == 128` da `false` entre `Integer`.
+
+##### 4. Reglas, variantes y casos límite
+
+La longitud de un arreglo se fija al crearlo y no cambia. Para crecer necesitas otro arreglo, como hace
+`Arrays.copyOf` con una longitud mayor, o una `List`.
+
+`Arrays.copyOf` hace una **copia superficial**: copia las casillas, no los objetos a los que apuntan. Con `int[]`
+eso basta. Con `Producto[]`, la copia y el original comparten los mismos productos. `Catalogo` protege qué
+productos tiene, pero el `stock` de cada `Producto` sigue siendo mutable.
+
+Los arreglos de referencias tienen una regla heredada: son **covariantes**. Un `String[]` puede asignarse a una
+variable `Object[]`. La JVM vigila cada escritura y rechaza el tipo incorrecto en ejecución:
+
+```java
+public class Covarianza {
+    public static void main(String[] args) {
+        String[] skus = {"CAF-0001", "TAZ-0002"};
+        Object[] objetos = skus;
+        System.out.println(objetos == skus);
+        objetos[0] = 40;
+    }
+}
+```
+
+```text
+$ java Covarianza
+true
+Exception in thread "main" java.lang.ArrayStoreException: java.lang.Integer
+	at Covarianza.main(Covarianza.java:6)
+```
+
+El compilador aceptó el código porque `40` se convierte en `Integer`, que es un `Object`. Solo la JVM sabía que el
+arreglo real era de `String`. Las listas genéricas del Módulo 2 detectan este error al compilar.
+
+Sobre los wrappers, la JLS solo garantiza el mismo objeto al hacer boxing de `int`, `short` y `byte` entre −128 y
+127, de `char` hasta 127 y de `boolean`. La JVM puede ampliar el límite superior de `Integer`, así que nunca dependas
+de él. Los constructores
+como `new Integer(5)` están obsoletos y marcados para eliminación desde Java 16; usa `Integer.valueOf`.
+
+Por último, `Arrays.equals` compara contenido de arreglos de una dimensión. Para arreglos anidados existe
+`Arrays.deepEquals`, porque un arreglo bidimensional es un arreglo de arreglos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 4 separó valor y referencia con `Producto`. Este tema aplica la misma idea a los arreglos y a los
+parámetros: Java siempre copia, pero a veces copia una dirección. El Tema 3 ya usaba un arreglo, `String[] args`.
+
+`equals` frente a `==` aparece por tercera vez: con `String` en el Tema 5, ahora con arreglos y wrappers. La regla
+no cambia: `==` pregunta si es el mismo objeto.
+
+El Módulo 1 usa la copia defensiva para proteger el estado de las clases. El Módulo 2 sustituye los arreglos por
+`List`, `Set` y `Map`, y estudia los genéricos que hacen seguras esas colecciones.
 
 #### Problema resuelto 7.1
 Crea arreglos, pásalos a métodos, cópialos, compáralos y ordénalos.
@@ -4207,23 +4884,124 @@ laborables y guarda la hora del pedido para la pasarela de pagos, que vive en ot
 - **Error típico:** compartir un `SimpleDateFormat` entre hilos; no es seguro y produce fechas corruptas.
 
 #### ► CÓMO FUNCIONA
-La entrada nunca es confiable. El patrón es un bucle: pedir, leer una línea, intentar convertir y repetir hasta
-obtener un valor válido. Si la entrada se acaba, el programa termina con un código de salida distinto de 0.
+
+##### 1. La idea en lenguaje sencillo
+
+Un dependiente que toma pedidos por teléfono no anota lo primero que oye. Si el cliente dice «tres», lo convierte en
+3. Si dice «menos dos», le pide que repita. Y cuando promete una entrega, cuenta días hábiles en el calendario, no
+días sueltos.
+
+Un programa que atiende personas necesita esas dos habilidades. Debe leer texto que puede venir mal y convertirlo
+con cuidado. También debe calcular fechas sin confundir un día del calendario con un instante exacto en el mundo.
+
+En Tienda Aurora, el comando `interactivo` lee SKU y cantidades del teclado. El recibo promete una entrega en tres
+días laborables. Y la pasarela de pagos, que vive en otra zona horaria, necesita la hora del pedido sin ambigüedad.
+
+##### 2. Definición formal y vocabulario
+
+La **entrada estándar** es el flujo de bytes que el proceso recibe del exterior. En Java es `System.in`, un
+`InputStream`. **`Scanner`** envuelve ese flujo y lo separa en líneas o piezas de texto. Para convertir el texto en
+número usas `parseInt`. Para atrapar el fallo usas **`try` y `catch`**: el bloque `try` ejecuta el código arriesgado
+y `catch` atiende la excepción si ocurre.
+
+El paquete `java.time` modela el tiempo con tipos separados. **`LocalDate`** es una fecha de calendario sin hora ni
+zona. **`LocalDateTime`** añade la hora, todavía sin zona. **`Instant`** es un punto exacto de la línea de tiempo,
+contado en UTC desde el 1 de enero de 1970. **`ZonedDateTime`** une fecha y hora con una zona horaria, incluidas sus
+reglas de horario de verano.
+
+**`DateTimeFormatter`** convierte entre fechas y texto según un patrón. Todas estas clases son inmutables. Las
+clases antiguas **`Date` y `Calendar`**, de `java.util`, son anteriores a Java 8: son mutables y numeran los meses
+desde 0.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El bucle de lectura de `LeerCantidad` sigue este recorrido:
 
 ```mermaid
 flowchart TB
-  P["imprime 'Cantidad: '"] --> H{"¿hay otra línea?"}
-  H -- no --> FIN["mensaje + System.exit(1)"]
-  H -- sí --> L["nextLine().strip()"]
+  P["imprime Cantidad:"] --> H{"¿hay otra línea?"}
+  H -- no --> FIN["mensaje y System.exit con 1"]
+  H -- sí --> L["nextLine y strip"]
   L --> T{"parseInt"}
-  T -- NumberFormatException --> E1["'x' no es un entero válido"] --> P
-  T -- "≤ 0" --> E2["Debe ser mayor que cero"] --> P
-  T -- "> 0" --> OK["Cantidad aceptada"]
+  T -- NumberFormatException --> E1["no es un entero válido"] --> P
+  T -- "menor o igual a 0" --> E2["Debe ser mayor que cero"] --> P
+  T -- "mayor que 0" --> OK["Cantidad aceptada"]
 ```
 
-`java.time` separa tres conceptos que `Date` mezclaba. `LocalDate` es una fecha sin hora ni zona; `LocalDateTime`
-es fecha y hora locales; `Instant` es un punto absoluto en UTC. `ZonedDateTime` une una hora local con su zona y
-permite pasar de una a otro. Todas son inmutables: `plusDays` devuelve una fecha nueva y la original no cambia.
+1. **Espera.** `hasNextLine()` se bloquea hasta que llega una línea o hasta que la entrada se cierra. Con una tubería
+   como `printf 'tres\n' |`, el cierre llega cuando `printf` termina.
+2. **Lectura.** `nextLine()` devuelve la línea sin el salto final. `strip()` quita los espacios de los bordes.
+3. **Conversión.** `Integer.parseInt` analiza los caracteres. Con `"tres"` lanza `NumberFormatException`.
+4. **Desvío.** La JVM abandona el `try` en el punto exacto de la excepción. Busca un `catch` cuyo tipo coincida y
+   ejecuta su bloque. Después, el `while` sigue con la siguiente vuelta.
+5. **Validación.** Un número bien escrito puede ser inválido para el negocio. El `if (cantidad <= 0)` lo rechaza sin
+   necesidad de excepción.
+
+El cálculo de fechas tiene su propio recorrido. Observa estas líneas de `Fechas.java`:
+
+```java
+LocalDateTime creado = LocalDateTime.of(2026, 11, 22, 10, 30);
+ZonedDateTime madrid = creado.atZone(ZoneId.of("Europe/Madrid"));
+ZonedDateTime bogota = madrid.withZoneSameInstant(ZoneId.of("America/Bogota"));
+```
+
+`atZone` consulta las reglas de `Europe/Madrid` para esa fecha. El 22 de noviembre el desplazamiento es `+01:00`, y
+así obtiene un instante concreto. `withZoneSameInstant` conserva ese instante y lo expresa con las reglas de Bogotá,
+`-05:00`. Por eso las 10:30 de Madrid son las 04:30 de Bogotá.
+
+Las reglas de cada zona salen de la base de datos de zonas horarias de IANA, que el JDK incluye. Cuando un país
+cambia su horario, una actualización del JDK trae las reglas nuevas.
+
+`plusDays(1)` no modifica `pedido`. Crea otro `LocalDate` y lo devuelve. Por eso el bucle de días laborables de
+`CalendarioComercial` reasigna la variable en cada vuelta.
+
+##### 4. Reglas, variantes y casos límite
+
+El horario de verano crea horas que no existen. Este fragmento lo muestra, junto con una trampa de los patrones:
+
+```java
+LocalDateTime hueco = LocalDateTime.of(2026, 3, 29, 2, 30);
+System.out.println(hueco.atZone(ZoneId.of("Europe/Madrid")));
+LocalDate fin = LocalDate.of(2026, 12, 28);
+System.out.println(fin.format(DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ROOT)));
+System.out.println(fin.format(DateTimeFormatter.ofPattern("dd/MM/YYYY", Locale.ROOT)));
+```
+
+```text
+$ java Bordes
+2026-03-29T03:30+02:00[Europe/Madrid]
+28/12/2026
+28/12/2027
+```
+
+El 29 de marzo de 2026, en Madrid, el reloj salta de las 02:00 a las 03:00. Las 02:30 no existen. `atZone` no
+falla: adelanta la hora la duración del salto y devuelve las 03:30. En el cambio de otoño, una hora se repite, y
+`atZone` elige por defecto el desplazamiento anterior.
+
+En los patrones, mayúsculas y minúsculas cambian el significado. `yyyy` es el año del calendario. `YYYY` es el año
+de la semana, y el 28 de diciembre de 2026 ya pertenece a la primera semana de 2027. Lo mismo pasa con `MM` (mes) y
+`mm` (minuto), o con `HH` (0 a 23) y `hh` (1 a 12).
+
+`LocalDate.parse` sin formateador solo acepta el formato ISO 8601, como `2026-11-25`. Cualquier otro texto requiere
+un `DateTimeFormatter`. A diferencia de `SimpleDateFormat`, este es inmutable y puede compartirse entre hilos.
+
+Con `Scanner`, no mezcles `nextInt()` y `nextLine()`. `nextInt()` deja pendiente el salto de línea, y el siguiente
+`nextLine()` devuelve una línea vacía. Leer siempre líneas completas evita el problema.
+
+En cuanto a versiones: `java.time` llegó en Java 8 para reemplazar a `Date` y `Calendar`. Desde Java 18 el juego de
+caracteres por defecto es UTF-8, lo que hace más predecible leer acentos desde la entrada.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 5 te presentó `parseInt` y la inmutabilidad de `String`. Aquí `parseInt` se protege con `try` y `catch`, y
+la inmutabilidad reaparece en todas las clases de `java.time`. El Tema 3 explicó los códigos de salida; `LeerCantidad`
+los usa cuando la entrada se agota.
+
+El Tema 7 explica la trampa de `Date`: un método que recibe la referencia puede modificar la fecha del llamador.
+`LocalDate` elimina ese riesgo porque ningún método cambia el objeto.
+
+El Módulo 3 estudia las excepciones a fondo: tipos comprobados y no comprobados, `try-with-resources` y por qué un
+`catch` vacío es un error. El Tema 9 de este módulo simplifica la entrada con la clase `IO` de Java 25.
 
 #### Problema resuelto 8.1
 Lee una cantidad por teclado y no avances hasta recibir un entero positivo.
@@ -4664,21 +5442,135 @@ necesita calcular el valor de su inventario con un archivo que quepa en una pant
 - **Error típico:** usar `-source` y `-target` sueltos; `--release` además restringe la API a la de esa versión.
 
 #### ► CÓMO FUNCIONA
-Java 25 incorpora tres piezas que reducen la ceremonia: archivos compactos con métodos `main` de instancia,
-`import module` y la clase `java.lang.IO`. El lanzador reconoce un archivo sin declaración de clase, crea la clase
-implícita, construye un objeto y llama a `main`.
+
+##### 1. La idea en lenguaje sencillo
+
+Para dejar una nota en la nevera no redactas una carta formal con membrete y firma. Escribes dos líneas y ya. Pero
+si mandas un contrato, el formato completo sí importa.
+
+Java tuvo durante años un solo formato: incluso un saludo necesitaba una clase pública y `public static void main`.
+Java 25 añade el formato de nota rápida. Un archivo puede contener solo un método `main` y algunas declaraciones, y
+el lanzador se encarga del resto.
+
+En Tienda Aurora, el cálculo del valor del inventario es una de esas notas. Cabe en una pantalla, no lo importa
+ningún otro código y se ejecuta con `java scripts/Inventario.java`. La aplicación de la tienda, en cambio, sigue con
+su estructura completa de paquetes y build.
+
+##### 2. Definición formal y vocabulario
+
+Un **archivo compacto** (*compact source file*) es una unidad de compilación definida en la JLS de Java 25. Está
+formada por declaraciones de miembros: métodos, campos, clases o interfaces, con al menos un método. No contiene una declaración
+de clase que los envuelva.
+
+El compilador crea una **clase implícita** para alojar esos miembros. Es una clase de nivel superior, `final`, que
+extiende `Object` y vive en el paquete sin nombre. Su nombre lo decide el sistema: en el JDK, el nombre del archivo.
+
+La clase implícita debe tener un **`main` de instancia** o estático que sirva como punto de entrada. Un `main` de
+instancia no lleva `static`; el lanzador crea un objeto y lo invoca. Puede recibir `String[] args` o no recibir nada.
+
+La clase **`IO`**, de `java.lang`, ofrece métodos estáticos para la consola: `println`, `print` y `readln`. La
+declaración **`import module`** importa todos los paquetes que exporta un módulo, como `java.base`.
+
+Dos piezas ya conocidas cobran protagonismo. Un **`record`** declara una clase de datos inmutable en una línea. El
+**lanzador de código fuente** es el modo de `java` que compila un `.java` en memoria y lo ejecuta. La opción
+**`--release`** fija qué versión del lenguaje y de la API acepta `javac`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que ocurre con `java scripts/Inventario.java`:
 
 ```mermaid
 flowchart LR
-  F["Inventario.java<br/>import module + void main + record"] -->|"java Inventario.java"| C["compila en memoria"]
+  F["Inventario.java<br/>import module, void main, record"] -->|"java Inventario.java"| C["compila en memoria"]
   C --> K["clase implícita final Inventario"]
   K --> O["new Inventario()"]
-  O --> M["main(args)"]
+  O --> M["main con args"]
   F -->|"javac --release 21"| X["error: not supported in -source 21"]
 ```
 
-Esta forma es ideal para utilidades pequeñas y para aprender, pero no reemplaza la estructura de una aplicación. Un
-proyecto con pruebas, dependencias y varios paquetes sigue necesitando `src/main/java`, un build y clases explícitas.
+1. **Detección del modo.** El lanzador ve que el argumento termina en `.java`. En lugar de buscar una clase en el
+   classpath, activa el modo de código fuente.
+2. **Compilación en memoria.** Invoca al compilador sobre el archivo. El bytecode queda en memoria, no en disco.
+3. **Clase implícita.** El compilador ve métodos en el nivel superior y los envuelve en `final class Inventario`. El
+   `record Producto` queda como clase anidada, `Inventario$Producto`, como mostró `javap`.
+4. **Importaciones.** Todo archivo compacto importa de forma implícita los tipos públicos de los paquetes que exporta
+   `java.base`. Por eso `List` funciona incluso sin `import module java.base;`.
+5. **Selección de `main`.** El lanzador busca candidatos con las reglas del Tema 3. Prefiere el que recibe `String[]`
+   y, si es de instancia, crea un objeto con el constructor sin parámetros.
+6. **Ejecución.** Llama a `main`. Dentro, `IO.println` escribe en la consola igual que `System.out.println`.
+
+Puedes comprobar el paso 4 con un archivo que no importa nada:
+
+```java
+void main() {
+    var stock = List.of(40, 25, 10);
+    IO.println("Unidades: " + stock);
+}
+```
+
+```text
+$ java Stock.java
+Unidades: [40, 25, 10]
+```
+
+`List` está en `java.util`, que `java.base` exporta. En `Inventario.java`, la línea `import module java.base;` es
+redundante, pero deja explícito de dónde salen los tipos.
+
+Cuando compilas el mismo archivo con `javac -d out`, el resultado se guarda en disco y puedes inspeccionarlo. `javap`
+mostró `final class Inventario` sin `public` y `void main(java.lang.String[])` sin `static`. Esa es la huella exacta
+de la clase implícita y del `main` de instancia.
+
+##### 4. Reglas, variantes y casos límite
+
+Un archivo compacto no puede declarar constructores ni bloques inicializadores. Si lo intentas, el compilador no lo
+reconoce como constructor:
+
+```java
+String tienda = "Tienda Aurora";
+Tienda() { }
+void main() { IO.println(tienda); }
+```
+
+```text
+$ java Tienda.java
+Tienda.java:2: error: invalid method declaration; return type required
+Tienda() { }
+^
+1 error
+error: compilation failed
+```
+
+Para inicializar estado, usa campos con valor inicial, como `tienda` en la primera línea. La clase implícita tampoco
+puede tener `package`, ni extender otra clase, ni implementar interfaces.
+
+Otra regla: ningún otro código puede referirse a la clase implícita por su nombre. Sirve como programa, no como
+librería. Si necesitas reutilizar algo, conviértelo en una clase normal.
+
+`IO` exige el prefijo. Durante las vistas previas sus métodos se importaban solos; en la versión final de Java 25
+escribes `IO.println`, o añades un `import static` explícito.
+
+`import module` no sustituye a Gradle ni a Maven. Solo importa paquetes de módulos que el compilador ya ve: los del
+JDK o los de tu proyecto modular. Si dos módulos importados exportan clases con el mismo nombre, el nombre simple es
+ambiguo y debes importar la clase concreta.
+
+La historia de versiones explica los mensajes de error. Las clases implícitas aparecieron como vista previa en Java
+21, con el nombre *unnamed classes*. Siguieron en vista previa hasta Java 24 y son estándar desde Java 25, por la
+JEP 512. `import module` siguió un camino similar y es estándar desde Java 25, por la JEP 511.
+
+Por eso `--release 21` rechaza ambas construcciones. Esa opción fija también `-source 21`: el compilador analiza el
+código con la gramática de Java 21 y se detiene antes de llegar a `IO`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Fundamentos escribías archivos compactos sin saberlo. Ahora conoces la maquinaria: una clase implícita, un `main`
+de instancia y el lanzador de código fuente del Tema 1, que compila en memoria.
+
+El Tema 3 explicó las reglas de selección de `main` en Java 25. Este tema muestra el caso donde más se notan. Y el
+`long` de centavos del Tema 4 sigue siendo la base del cálculo del inventario, aunque el archivo sea pequeño.
+
+El `record` aparece aquí como herramienta; el Módulo 1 lo estudia a fondo, con sus reglas de inmutabilidad y sus
+constructores compactos. Los módulos del JDK, que `import module` aprovecha, son los mismos que `jlink` empaquetó en
+el Tema 2.
 
 #### Problema resuelto 9.1
 Escribe el programa más corto posible en Java 25 y compruébalo con Java 21.

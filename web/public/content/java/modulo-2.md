@@ -16,7 +16,7 @@ En este módulo construimos `tienda-aurora-colecciones`, una extensión de la ti
 
 **Entorno de referencia verificado (2026-11-23):** JDK 27.0.1.0.2 (`javac 27.0.1.0.2`), Gradle 9.9.1, macOS arm64. El proyecto se compiló con `--release 25` y se ejecutó; las salidas son transcripciones reales de `./gradlew -q run --args="..."`. La inspección de bytecode se hizo con `javap -private -s` del JDK 27 y el error de borrado de tipos se capturó con `javac` sobre un archivo de demostración aislado.
 
-**Entorno de las salidas nuevas de los Temas 1–6 (2026-11-24):** OpenJDK 21.0.13.1 en Ubuntu 24.04 (Linux x86_64). Cada programa de un solo archivo se compiló con `javac -Xlint:all` y se ejecutó con `java`; no usa paquetes externos ni funciones posteriores a Java 21, así que se comporta igual con el JDK 25 del curso. Las trazas de pila muestran números de línea internos del JDK 21 (por ejemplo, `ImmutableCollections.java:159`); con otro JDK esos números pueden cambiar, pero no el tipo de excepción, el mensaje ni la línea de tu archivo. Los milisegundos del Problema resuelto 1.2 cambian en cada corrida. Las salidas del proyecto `tienda-aurora-colecciones` son las capturadas en el entorno de referencia de arriba.
+**Entorno de las salidas nuevas de los Temas 1–6 (2026-11-24):** OpenJDK 21.0.13.1 en Ubuntu 24.04 (Linux x86_64). Cada programa de un solo archivo se compiló con `javac -Xlint:all` y se ejecutó con `java`; no usa paquetes externos ni funciones posteriores a Java 21, así que se comporta igual con el JDK 25 del curso. Las trazas de pila muestran números de línea internos del JDK 21 (por ejemplo, `ImmutableCollections.java:159`); con otro JDK esos números pueden cambiar, pero no el tipo de excepción, el mensaje ni la línea de tu archivo. Los milisegundos del Problema resuelto 1.2 cambian en cada corrida. Las salidas del proyecto `tienda-aurora-colecciones` son las capturadas en el entorno de referencia de arriba. Los fragmentos de la teoría («Cómo funciona») se ejecutaron con OpenJDK 25.0.5.1 en la misma máquina.
 
 ## Apertura del módulo
 
@@ -160,27 +160,50 @@ Las estructuras abstractas ya están definidas en Fundamentos, Módulo 2: **list
 - **Error típico:** `List.of(...).add("regalo")` termina con `java.lang.UnsupportedOperationException`.
 
 #### ► CÓMO FUNCIONA
-`List<E>` modela una secuencia. Mantiene un orden y permite acceder por índice. `ArrayList` está respaldada por un arreglo que crece; leer por índice es barato, insertar en el medio cuesta desplazar elementos porque el arreglo tiene que hacer hueco. `LinkedList` es una lista doblemente enlazada; insertar o quitar en extremos es barato, pero acceder por índice implica recorrer nodos desde un extremo. En la práctica de negocio, `ArrayList` es la opción por defecto y `LinkedList` solo se justifica con un motivo medido. Cuando dudes entre ambas, piensa en la operación dominante: si vas a leer por posición o recorrer en orden, `ArrayList` suele ganar; si vas a hacer muchas inserciones y eliminaciones en el medio con un iterador ya posicionado, la lista enlazada tiene sentido, pero ese caso es menos común de lo que parece.
 
-`Set<E>` modela unicidad. `HashSet` usa una tabla hash: no garantiza orden, pero `add`, `contains` y `remove` son O(1) en promedio siempre que `hashCode` distribuya bien. `LinkedHashSet` conserva el orden de inserción. `TreeSet` mantiene los elementos ordenados por su orden natural o por un `Comparator`, con operaciones O(log n). La unicidad en `HashSet` no es magia: depende de `equals` y `hashCode`. La unicidad en `TreeSet` depende del comparador; si el comparador dice que dos elementos son equivalentes, el set solo guarda uno.
+##### 1. La idea en lenguaje sencillo
 
-`Map<K, V>` asocia claves con valores. No es una `Collection`, aunque se relaciona con ellas: `keySet()` devuelve un `Set`, `values()` una colección y `entrySet()` un conjunto de pares. `HashMap` es la implementación general: rápida, sin orden. `LinkedHashMap` conserva orden de inserción o de acceso. `TreeMap` ordena por clave. `put` sobre una clave existente reemplaza el valor; por eso el catálogo usa `putIfAbsent` cuando quiere rechazar duplicados.
+En un almacén, cada mueble responde a una pregunta. La cinta de llegada guarda los paquetes en orden, aunque se
+repitan. El tablero de etiquetas tiene cada etiqueta una sola vez. El fichero de clientes se consulta por nombre. Nadie
+guarda las fichas de clientes en la cinta: buscar una exigiría revisar todos los paquetes.
 
-La tabla resume la decisión. La columna «costo» usa la notación O grande de Fundamentos, Módulo 2, Tema 4.
+Las **colecciones** de Java son esos muebles. Cada una promete un comportamiento: si hay orden, si admite repetidos y
+cómo se busca. Elegir colección es elegir esa promesa, no solo un lugar para guardar datos.
 
-| Pregunta del código | Interfaz | Implementación por defecto | Si además necesitas… |
-|---|---|---|---|
-| ¿Qué hay en la posición *i*? | `List` | `ArrayList` (`get` O(1)) | insertar mucho en extremos: `ArrayDeque` (Tema 6) |
-| ¿Ya está este valor? | `Set` | `HashSet` (`contains` O(1) promedio) | orden de llegada: `LinkedHashSet`; orden alfabético: `TreeSet` |
-| ¿Qué valor tiene esta clave? | `Map` | `HashMap` (`get` O(1) promedio) | orden de llegada: `LinkedHashMap`; orden por clave: `TreeMap` |
+Tienda Aurora tiene las tres preguntas el mismo día. El lector registra cada escaneo, aunque se repita. El inventario
+necesita las etiquetas sin duplicados. El mostrador pide el stock de un SKU concreto. Con un arreglo tendrías que
+recorrerlo todo para cada respuesta.
+
+##### 2. Definición formal y vocabulario
+
+**`Collection`** es la interfaz raíz de `java.util` para grupos de elementos. Declara `add`, `remove`, `contains`,
+`size` e `iterator`. De ella derivan tres contratos:
+
+- **`List`** es una secuencia ordenada por posición que admite repetidos. Sus implementaciones principales son
+  **`ArrayList`**, sobre un arreglo que crece, y **`LinkedList`**, una lista doblemente enlazada.
+- **`Set`** no admite elementos repetidos según `equals`. **`HashSet`** usa una tabla hash y no garantiza orden.
+  **`LinkedHashSet`** recuerda el orden de inserción. **`TreeSet`** mantiene los elementos ordenados con un árbol.
+- `Queue` y `Deque`, para colas y pilas, se estudian en el Tema 6.
+
+**`Map`** asocia cada clave única a un valor. No extiende `Collection`, pero ofrece vistas que sí lo son: `keySet()`,
+`values()` y `entrySet()`. **`HashMap`** usa tabla hash, **`LinkedHashMap`** conserva el orden de inserción y
+**`TreeMap`** ordena por clave.
+
+Una **colección inmodificable** rechaza cualquier escritura con `UnsupportedOperationException`. La crean `List.of`,
+`Set.of`, `Map.of` y `List.copyOf`. Los términos *tabla hash*, *árbol binario de búsqueda* y notación O grande vienen de
+Fundamentos, Módulo 2.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El primer paso es traducir la pregunta del código a una interfaz. El diagrama resume la decisión:
 
 ```mermaid
 flowchart TD
   P["¿Qué pregunta responde la colección?"] --> Q1{"¿Buscas por posición<br/>y admites repetidos?"}
-  Q1 -- sí --> L["List → ArrayList"]
+  Q1 -- sí --> L["List: ArrayList"]
   Q1 -- no --> Q2{"¿Buscas por clave?"}
   Q2 -- sí --> M["Map"]
-  Q2 -- no --> S["Set (unicidad)"]
+  Q2 -- no --> S["Set: unicidad"]
   M --> MO{"¿Orden?"}
   S --> SO{"¿Orden?"}
   MO -- ninguno --> HM["HashMap"]
@@ -191,11 +214,25 @@ flowchart TD
   SO -- natural --> TS["TreeSet"]
 ```
 
-Declara la variable con la interfaz y crea el objeto con la implementación: `List<String> escaneos = new ArrayList<>();`. Así puedes cambiar la implementación en una sola línea sin tocar el resto del código. Las interfaces ya las viste en Java, Módulo 1, Tema 3. Los `<String>` y `<>` son genéricos: aquí basta leerlos como «lista de textos»; el Tema 4 los explica a fondo.
+Después, cada implementación resuelve sus operaciones de forma distinta:
 
-En Tienda Aurora el catálogo usa varias a la vez porque cada pregunta tiene una forma natural. `LinkedHashMap<Sku, Producto>` responde “dame el producto por SKU” y además conserva el orden de alta, que es el que ve el operador en `catalogo`. `TreeMap<String, Set<Sku>>` responde “dame las etiquetas ordenadas alfabéticamente”. `TreeSet<Sku>` responde “dame los SKUs de esta etiqueta sin duplicados y en orden”.
+1. **`ArrayList.get(i)`** calcula la posición en el arreglo interno y la lee: O(1). **`add(0, x)`** desplaza todos
+   los elementos una casilla: O(n). Cuando el arreglo se llena, crea uno mayor y copia los elementos.
+2. **`LinkedList.addFirst(x)`** crea un nodo y lo enlaza al frente: O(1). Pero **`get(i)`** recorre nodos desde el
+   extremo más cercano: O(n). Por eso la medición del Problema resuelto 1.2 favorece a `LinkedList` solo en un caso
+   extremo.
+3. **`HashMap.put(k, v)`** llama a `k.hashCode()`, mezcla los bits y elige un cubo de la tabla. Si en ese cubo ya hay
+   claves, las compara con `equals`. Si encuentra una igual, reemplaza el valor y devuelve el anterior.
+4. **`HashSet.add(x)`** usa por dentro un `HashMap` con `x` como clave. Por eso su unicidad depende de `equals` y
+   `hashCode`, como verás en el Tema 2.
+5. **`TreeMap.put(k, v)`** desciende por un árbol rojo-negro comparando claves con `compareTo` o un `Comparator`. Cada
+   comparación descarta una rama: O(log n). Recorrerlo devuelve las claves en orden.
 
-La salida de `catalogo` muestra el orden de alta tal cual se insertó en el `LinkedHashMap`:
+Las variantes `Linked…` añaden una lista enlazada interna que une las entradas en orden de llegada. Cuestan algo más
+de memoria a cambio de un recorrido predecible.
+
+En Tienda Aurora el catálogo combina varias colecciones. `LinkedHashMap<Sku, Producto>` busca por SKU y conserva el
+orden de alta. La salida real de `catalogo` muestra ese orden:
 
 ```text
 Catálogo en orden de alta (5 productos)
@@ -206,24 +243,63 @@ Catálogo en orden de alta (5 productos)
   CUR-0100  Curso de barismo     $49.00  [digital, formacion]
 ```
 
-Y la salida de `etiquetas` muestra el `TreeMap` ordenado y el `TreeSet` de SKUs dentro de `cafe`:
+`TreeMap<String, Set<Sku>>` agrupa por etiqueta en orden alfabético, y un `TreeSet<Sku>` guarda los SKU de cada
+etiqueta sin repetir. Por eso el comando `etiquetas` lista `bebida`, `cafe`, `consumible`… en ese orden.
+
+##### 4. Reglas, variantes y casos límite
+
+Declara la variable con la interfaz y crea el objeto con la implementación: `List<String> escaneos = new
+ArrayList<>();`. Así cambias de implementación en una línea sin tocar el resto del código.
+
+Las colecciones guardan objetos, no primitivos. `List<int>` no compila; se usa `List<Integer>` con autoboxing. Y
+`map.get(clave)` devuelve `null` si la clave no existe: asignarlo a un `int` lanza `NullPointerException`.
+
+`HashSet` y `HashMap` no garantizan orden de recorrido. El orden puede cambiar cuando la tabla crece. Nunca copies ese
+orden en una prueba. Si una prueba necesita orden, usa la variante `Linked…` o `Tree…`.
+
+Las colecciones de `List.of` y similares tienen reglas propias. Rechazan escrituras y también rechazan `null`, incluso
+al crearlas. Java 21 añadió además las **colecciones secuenciadas**: `List`, `Deque`, `LinkedHashSet` y
+`LinkedHashMap` comparten métodos como `getFirst`, `getLast` y `reversed`. Este programa usa ambas cosas:
+
+```java
+import java.util.*;
+
+public class Secuencias {
+    public static void main(String[] args) {
+        List<String> escaneos = new ArrayList<>(List.of("CAF-0001", "TAZ-0002", "MOL-0003"));
+        System.out.println(escaneos.getFirst() + " ... " + escaneos.getLast());
+        System.out.println(escaneos.reversed());
+        System.out.println(List.of("CAF-0001", null));
+    }
+}
+```
 
 ```text
-Conteo por etiqueta
-  bebida       1
-  cafe         3
-  consumible   1
-  destacado    1
-  digital      1
-  equipo       2
-  formacion    1
-  regalo       1
-
-Productos con la etiqueta 'cafe'
-  CAF-0001  Café Aurora
-  FIL-0004  Filtros x100
-  MOL-0003  Molino manual
+$ java Secuencias
+CAF-0001 ... MOL-0003
+[MOL-0003, TAZ-0002, CAF-0001]
+Exception in thread "main" java.lang.NullPointerException
+	at java.base/java.util.Objects.requireNonNull(Objects.java:220)
+	at java.base/java.util.ImmutableCollections$List12.<init>(ImmutableCollections.java:591)
+	at java.base/java.util.List.of(List.java:952)
+	at Secuencias.main(Secuencias.java:8)
 ```
+
+`reversed()` no copia la lista: devuelve una vista en orden inverso. La línea 8 falla al construir, no al usar.
+
+Un último detalle de `HashMap`: desde Java 8, si un cubo acumula muchas claves, lo convierte en un árbol. Así un mal
+`hashCode` degrada la búsqueda a O(log n) en vez de O(n), aunque sigue siendo un problema que conviene evitar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0, Tema 7, el catálogo vivía en un arreglo de tamaño fijo. Las colecciones crecen solas y expresan la
+intención del código. La copia defensiva que hacías con `Arrays.copyOf` ahora se hace con `List.copyOf`.
+
+Las interfaces del Módulo 1, Tema 3, explican por qué declaras `List` y creas `ArrayList`: dependes del contrato, no
+de la clase concreta. Los `<String>` son genéricos; por ahora léelos como «de textos».
+
+El Tema 2 explica de qué depende la unicidad de `HashSet` y `HashMap`. El Tema 4 estudia los genéricos a fondo. El
+Tema 5 muestra cómo ordenan `TreeSet` y `TreeMap`, y el Tema 6 completa el mapa con colas y pilas.
 
 #### Problema resuelto 1.1
 Tienda Aurora recibe tres escaneos (`CAF-0001`, `TAZ-0002`, `CAF-0001`). Guárdalos tal cual, obtén los SKUs sin repetir, lleva el stock por SKU y muestra cómo ordena cada implementación.
@@ -521,9 +597,38 @@ La **tabla hash**, la **cubeta** (*bucket*), la **función hash** y la **colisi�
 - **Error típico:** pasarle campos distintos de los que usa `equals`; usa siempre los mismos.
 
 #### ► CÓMO FUNCIONA
-Las colecciones hash no buscan comparando un elemento con todos los demás. Primero calculan el `hashCode()` de la clave, lo convierten en un índice de bucket y solo después usan `equals()` dentro de ese bucket para distinguir colisiones. Ese atajo es la razón de su velocidad y también la razón de su fragilidad: si `equals` y `hashCode` no están de acuerdo, la estructura se comporta de forma incorrecta sin lanzar una excepción.
 
-El contrato es preciso. Si dos objetos son iguales según `equals`, deben devolver el mismo `hashCode`. Si dos objetos tienen el mismo `hashCode`, no tienen que ser iguales: eso es una colisión y `equals` la resuelve. `equals` debe ser reflexivo (`x.equals(x)`), simétrico, transitivo, consistente y devolver `false` ante `null`. `hashCode` debe ser consistente mientras no cambien los campos usados por `equals`.
+##### 1. La idea en lenguaje sencillo
+
+En un guardarropa, el encargado no revisa todos los abrigos cuando le entregas un ticket. Mira el número, va al
+gancho correspondiente y solo entonces compara el abrigo con tu descripción. Si el número del ticket estuviera mal,
+iría al gancho equivocado y diría que tu abrigo no está, aunque esté colgado dos filas más allá.
+
+Las colecciones hash trabajan igual. Usan un número, el **hash**, para ir directo a un lugar. Solo allí comparan con
+detalle. Si el número y la comparación no se ponen de acuerdo, la colección se equivoca sin avisar.
+
+En Tienda Aurora, el inventario guarda SKU en un `HashSet` para no contar dos veces el mismo producto. Si la clase
+`Sku` define mal esos dos métodos, el reporte muestra dos `CAF-0001` y nadie ve una excepción.
+
+##### 2. Definición formal y vocabulario
+
+La distinción de partida es **identidad frente a igualdad**. `a == b` pregunta si ambas referencias apuntan al mismo
+objeto. `a.equals(b)` pregunta si representan el mismo valor lógico, según defina la clase.
+
+**`equals`** es el método `public boolean equals(Object otro)` de `Object`. Por defecto compara identidad. Las
+colecciones lo usan para decidir pertenencia y duplicados. **`hashCode`** es el método `public int hashCode()` de
+`Object`. Las colecciones hash lo usan para elegir la cubeta donde guardan o buscan.
+
+El **contrato de igualdad** está escrito en la documentación de `Object`. `equals` debe ser reflexivo, simétrico,
+transitivo y consistente, y devolver `false` ante `null`. Además, si `a.equals(b)` es `true`, `a.hashCode()` debe ser
+igual a `b.hashCode()`. Lo contrario no se exige: dos objetos distintos pueden compartir hash. Eso es una colisión.
+
+**`Objects.hash`** es un método de ayuda que combina los hash de varios valores. Por dentro aplica la fórmula
+`31 * resultado + hash` a cada argumento. Para un solo valor, `Objects.hash(valor)` es `31 + valor.hashCode()`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `correctos.add(b)` cuando el conjunto ya contiene `a`, igual a `b`:
 
 ```mermaid
 sequenceDiagram
@@ -531,19 +636,102 @@ sequenceDiagram
   participant H as HashSet
   participant B as Cubeta elegida
   C->>H: add(b)
-  H->>H: b.hashCode() → número de cubeta
+  H->>H: b.hashCode() da el número de cubeta
   H->>B: ¿hay elementos aquí?
-  B-->>H: a (mismo hash)
-  H->>H: b.equals(a)?
+  B-->>H: a, con el mismo hash
+  H->>H: ¿b.equals(a)?
   alt equals = true
-    H-->>C: false (ya estaba)
+    H-->>C: false, ya estaba
   else equals = false
     H->>B: guarda b junto a a
-    H-->>C: true (agregado)
+    H-->>C: true, agregado
   end
 ```
 
-Observa el orden: primero `hashCode`, después `equals`. Si `hashCode` manda el objeto a otra cubeta, `equals` nunca se consulta.
+1. **Cálculo del hash.** `HashSet` llama a `b.hashCode()`. Para el `Sku` correcto da `409449253`, el mismo valor que
+   `a`, como mostró la salida real.
+2. **Elección de cubeta.** La tabla mezcla los bits del hash y los reduce al tamaño de la tabla. Objetos con el mismo
+   hash van siempre a la misma cubeta.
+3. **Comparación rápida.** Dentro de la cubeta, compara primero los hash guardados. Si no coinciden, ni siquiera
+   llama a `equals`.
+4. **Comparación completa.** Si los hash coinciden, llama a `equals`. Si devuelve `true`, `add` responde `false`: el
+   elemento ya estaba.
+
+Ahora repite el recorrido con `SkuSinHash`. Redefine `equals` pero hereda `hashCode` de `Object`, que suele dar números
+distintos para objetos distintos. En el paso 2, `r2` cae en otra cubeta. `equals` nunca se consulta y el conjunto
+termina con `tamaño -> 2`.
+
+El orden es la clave de todo el tema: primero `hashCode`, después `equals`. Un `equals` perfecto no sirve si
+`hashCode` envía el objeto al lugar equivocado.
+
+Esta es la implementación correcta del Problema resuelto 2.1:
+
+```java
+@Override
+public boolean equals(Object otro) {
+    return otro instanceof Sku s && valor.equals(s.valor);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(valor);
+}
+```
+
+Ambos métodos usan el mismo campo, `valor`. `instanceof` con patrón comprueba el tipo, descarta `null` y crea la
+variable `s` en una sola expresión.
+
+##### 4. Reglas, variantes y casos límite
+
+La firma importa. `equals(Sku otro)` no sobrescribe `equals(Object)`: lo sobrecarga. Las colecciones seguirían usando
+el de `Object`. Con `@Override`, `javac` detecta el error.
+
+La simetría se rompe con facilidad. Este record intenta ser «amable» y acepta también textos:
+
+```java
+record SkuLaxo(String valor) {
+    @Override
+    public boolean equals(Object otro) {
+        if (otro instanceof String texto) return valor.equalsIgnoreCase(texto);
+        return otro instanceof SkuLaxo s && valor.equals(s.valor);
+    }
+}
+```
+
+```text
+$ java Simetria
+true false
+```
+
+`sku.equals("caf-0001")` da `true`, pero `"caf-0001".equals(sku)` da `false`, porque `String` no conoce a `SkuLaxo`.
+Una colección puede comparar en cualquiera de los dos sentidos, así que el resultado dependería del orden de las
+llamadas. La regla práctica: compara solo con objetos de tu propio tipo.
+
+La herencia plantea otro dilema. Con `instanceof`, una subclase puede ser igual a su base, y añadir campos en la
+subclase rompe la simetría o la transitividad. Con `getClass() != otro.getClass()`, solo son iguales objetos de la
+misma clase exacta. Las clases `final` y los records evitan el dilema.
+
+Un `hashCode` constante, como `return 1;`, cumple el contrato pero mete todo en una cubeta. El conjunto funciona,
+aunque cada búsqueda compara con todos los elementos.
+
+`Objects.hash` crea un arreglo para sus argumentos en cada llamada. Para la mayoría de las clases da igual. En código
+muy caliente puedes combinar los hash a mano con la misma fórmula.
+
+`javac -Xlint:all` avisa con `[overrides]` cuando redefines `equals` sin `hashCode`. El proyecto usa además `-Werror`,
+que convierte el aviso en error de compilación.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0 comparaste `String` y wrappers con `==` y `equals`. En el Módulo 1, Tema 1, viste que una clase sin
+`equals` propio compara identidad. Este tema explica por qué las colecciones necesitan que redefinas ambos métodos a la
+vez.
+
+Los records del Módulo 1, Tema 5, generan `equals` y `hashCode` coherentes con sus componentes. Por eso el `Sku` real
+de Tienda Aurora es un record. Su constructor compacto normaliza el texto, así que `" CAF_0001 "` y `"caf-0001"` dan
+el mismo valor y el mismo hash.
+
+El Tema 3 muestra el fallo que queda: un objeto cuyo hash cambia después de entrar en la colección. El Tema 5 presenta
+`compareTo`, que en `TreeSet` cumple el papel de `equals`.
 
 #### Problema resuelto 2.1
 Escribe dos versiones de `Sku`: una que redefine solo `equals` y otra que redefine `equals` y `hashCode`. Mete dos instancias con el mismo texto en un `HashSet` y compara.
@@ -799,26 +987,70 @@ La integración con el proveedor antiguo de Tienda Aurora usa un `CodigoLegado` 
 - **Error típico:** asignar `this.lineas = lineas;` sin copiar: cualquier cambio externo altera el pedido.
 
 #### ► CÓMO FUNCIONA
-El contrato de `equals`/`hashCode` tiene una consecuencia que muchos bugs de producción ignoran: el hash se calcula cuando la clave entra a la estructura. Si después mutas un campo que participa en `equals`/`hashCode`, el objeto sigue guardado en el bucket viejo, pero la próxima búsqueda calcula un hash nuevo y mira en otro bucket. El mapa no perdió la entrada por corrupción de memoria; la perdió porque la clave dejó de ser la misma clave.
+
+##### 1. La idea en lenguaje sencillo
+
+Imagina una bodega donde cada caja se guarda en el estante que indica la primera letra de su etiqueta. La caja
+«Pedido Bogotá» va al estante B. Una noche alguien tacha la etiqueta y escribe «Pedido Quito», pero no mueve la
+caja. Al día siguiente, quien busca «Pedido Quito» va al estante Q y no la encuentra. Quien busca «Pedido Bogotá» va
+al B, ve la caja, lee la etiqueta nueva y concluye que no es la suya.
+
+Eso le pasa a un `HashMap` cuando cambias una clave que ya está dentro. La entrada sigue ahí, pero ninguna búsqueda
+la encuentra.
+
+En Tienda Aurora, la integración con el proveedor antiguo usa `CodigoLegado` como clave. Un proceso nocturno cambia
+`PROV-001` por `PROV-999`. A la mañana siguiente, `get` devuelve `null` con los dos códigos y el mapa dice que tiene
+una entrada.
+
+##### 2. Definición formal y vocabulario
+
+Una **clave mutable** es un objeto usado como clave de un `HashMap`, o como elemento de un `HashSet`, cuyo estado puede
+cambiar después de insertarlo. El problema aparece cuando cambia un campo que usan `equals` y `hashCode`. La
+documentación de `Map` lo advierte. Si una clave cambia de forma que afecte a `equals` mientras está en el mapa, el
+comportamiento no está definido.
+
+Un **objeto inmutable** no cambia después de su constructor. Tiene campos `private final`, ningún método que los
+modifique y no expone referencias a partes mutables. `String`, los wrappers y un record con componentes inmutables lo
+son.
+
+La **copia defensiva** protege la última condición. Un objeto copia la colección que recibe o entrega, para no
+compartir su estado interno con el llamador. `List.copyOf` y `Set.copyOf` crean copias inmodificables.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue la clave de `ClaveMutable.java` desde que entra hasta que se pierde:
 
 ```mermaid
 flowchart LR
-  subgraph Antes["put(clave PROV-001)"]
-    H1["hash(PROV-001)"] --> B1["cubeta A: PROV-001 → Café Aurora"]
+  subgraph Antes["put con clave PROV-001"]
+    H1["hash de PROV-001"] --> B1["cubeta A: PROV-001 y Café Aurora"]
   end
-  subgraph Despues["clave.reasignar(PROV-999)"]
-    B2["cubeta A: PROV-999 → Café Aurora<br/>(no se movió)"]
+  subgraph Despues["clave.reasignar a PROV-999"]
+    B2["cubeta A: PROV-999 y Café Aurora<br/>no se movió"]
   end
-  subgraph Busqueda["get(...)"]
-    G1["get(PROV-001) → cubeta A → equals falla → null"]
-    G2["get(PROV-999) → hash nuevo → cubeta B vacía → null"]
+  subgraph Busqueda["get"]
+    G1["get PROV-001: cubeta A, equals falla, null"]
+    G2["get PROV-999: hash nuevo, otra cubeta, null"]
   end
   Antes --> Despues --> Busqueda
 ```
 
-Las dos búsquedas fallan por razones distintas. Con el texto viejo, Java llega a la cubeta correcta, pero `equals` compara contra el valor nuevo y falla. Con el texto nuevo, Java calcula otro hash y mira otra cubeta.
+1. **Inserción.** `indice.put(clave, "Café Aurora")` calcula el hash de `PROV-001` y guarda un nodo en la cubeta
+   correspondiente. El nodo guarda la clave, el valor y **el hash calculado en ese momento**.
+2. **Mutación.** `clave.reasignar("PROV-999")` cambia el campo `valor`. El mapa no se entera: nadie le avisa. El nodo
+   sigue en la cubeta A con el hash viejo.
+3. **Búsqueda con el texto viejo.** `get(new CodigoLegado("PROV-001"))` calcula el hash viejo y llega a la cubeta A.
+   El hash guardado coincide, así que llama a `equals`. Pero la clave guardada ahora dice `PROV-999`, y `equals` falla.
+4. **Búsqueda con el texto nuevo.** `get(new CodigoLegado("PROV-999"))` calcula otro hash. Mira otra cubeta, o
+   compara con el hash guardado y no coincide. Devuelve `null`.
+5. **Búsqueda con la misma referencia.** `get(clave)` también falla. `HashMap` compara primero el hash guardado con el
+   hash actual; como difieren, ni siquiera llega a comprobar que es el mismo objeto.
 
-Tienda Aurora conserva `CodigoLegado` para mostrar este caso. Es una clase mutable con `equals`/`hashCode` basados en `valor`. La auditoría inserta la clave, la muta y luego la busca:
+La entrada no desapareció. `size()` sigue dando 1 y recorrer el mapa la muestra, porque recorrer no busca por hash.
+La salida real lo confirma: `al recorrer -> {PROV-999=Café Aurora}`. Ese «medio funcionar» hace el fallo difícil de
+detectar.
+
+La auditoría de Tienda Aurora reproduce el caso con el proyecto completo:
 
 ```text
 2. Clave mutable en un HashMap
@@ -829,7 +1061,57 @@ Tienda Aurora conserva `CodigoLegado` para mostrar este caso. Es una clase mutab
   con Sku inmutable -> Café Aurora
 ```
 
-Hay tres observaciones importantes en esa salida. `get` devuelve `null` aunque el mapa sigue teniendo tamaño 1. La entrada no desapareció: está en el bucket equivocado. Y al recorrer los valores, aparece `Café Aurora`, porque la iteración no depende de buscar por hash de la clave mutada. Ese comportamiento es especialmente dañino porque el sistema parece “medio funcionar”.
+Con `record Sku(String valor)` no existe ningún método que cambie la clave. El paso 2 es imposible y la búsqueda
+funciona siempre.
+
+##### 4. Reglas, variantes y casos límite
+
+Un record no es inmutable por definición. Si un componente es una `ArrayList`, la lista puede cambiar por fuera, y con
+ella el hash del record. El ejemplo `RecordConLista` del tema muestra `contains -> false` tras modificar la lista.
+
+No toda protección es una copia. `Collections.unmodifiableList` devuelve una **vista**: impide escribir a través de
+ella, pero refleja los cambios de la lista original. `List.copyOf` sí copia:
+
+```java
+List<String> lineas = new ArrayList<>(List.of("CAF-0001 x2"));
+List<String> vista = Collections.unmodifiableList(lineas);
+List<String> copia = List.copyOf(lineas);
+lineas.add("TAZ-0002 x1");
+System.out.println("vista -> " + vista);
+System.out.println("copia -> " + copia);
+System.out.println("copia de copia es la misma -> " + (List.copyOf(copia) == copia));
+```
+
+```text
+$ java Vista
+vista -> [CAF-0001 x2, TAZ-0002 x1]
+copia -> [CAF-0001 x2]
+copia de copia es la misma -> true
+```
+
+La última línea muestra una optimización documentada: si la lista ya es inmodificable, `copyOf` puede devolverla sin
+copiar. No hay riesgo, porque nadie puede cambiarla.
+
+La copia es superficial. `List.copyOf` copia las referencias, no los objetos. Si los elementos son mutables, siguen
+compartidos. Por eso las claves y los elementos de colecciones hash deben ser inmutables en profundidad.
+
+El problema no es exclusivo de las tablas hash. En un `TreeMap`, cambiar un campo que usa `compareTo` deja la clave en
+una rama del árbol que ya no le corresponde. La búsqueda baja por otra rama y falla igual.
+
+Si una entidad necesita cambiar, no la uses como clave. Usa su identificador inmutable, como el `Sku`, y guarda la
+entidad como valor.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 2 estableció el contrato: objetos iguales, hash iguales. Este tema añade la dimensión del tiempo: el hash debe
+seguir siendo el mismo mientras el objeto esté dentro de la colección.
+
+La inmutabilidad viene del Módulo 1. Los campos `final` del Tema 1 y los records del Tema 5 son las herramientas para
+construir claves seguras. La copia defensiva apareció en el Módulo 0 con `Arrays.copyOf`; aquí se hace con
+`List.copyOf`.
+
+El Tema 5 muestra el mismo riesgo con `TreeSet` y comparadores. El laboratorio integrador usa `Sku` como clave del
+catálogo por estas razones.
 
 #### Problema resuelto 3.1
 Reproduce la pérdida con una clave mutable, comprueba que un `record` no tiene el problema y protege una lista con una copia defensiva.
@@ -1125,30 +1407,59 @@ Las colecciones `List`, `ArrayList` y `Map` vienen del Tema 1 de este módulo. L
 - **Error típico:** sobrecargar `procesar(List<String>)` y `procesar(List<Integer>)`: `name clash ... have the same erasure`.
 
 #### ► CÓMO FUNCIONA
-Los genéricos permiten parametrizar tipos. `Repositorio<T, ID>` no sabe qué es `T`; sabe que `guardar` recibe un `ID` y un `T`, y que `buscar` devuelve un `Optional<T>`. El llamador concreta el contrato: `Repositorio<Producto, Sku>`. El compilador comprueba que no guardes un `Pedido` donde se esperan productos y que no trates el resultado como si fuera otra cosa. Sin genéricos, el mismo repositorio devolvería `Object` y los errores aparecerían como `ClassCastException` en runtime.
 
-Los wildcards expresan flexibilidad controlada. `? extends Producto` significa “algún subtipo desconocido de `Producto`”. Puedes leer elementos como `Producto`, pero no puedes agregar un `Producto` cualquiera porque el tipo real podría ser una lista de `ProductoFisico`. `? super Producto` significa “algún supertipo desconocido de `Producto`”. Puedes escribir un `Producto`, pero al leer solo obtienes `Object`. La regla práctica se conoce como PECS: *Producer Extends, Consumer Super*. Si el parámetro produce valores que vas a leer, usa `extends`. Si consume valores que vas a escribir, usa `super`.
+##### 1. La idea en lenguaje sencillo
 
-En el proyecto, `Catalogo.valorDe(List<? extends Producto> productos)` usa `extends` porque solo lee productos para sumar precios. Eso permite pasar una `List<Producto>` sin problemas, y también permitiría pasar una lista de un subtipo. `Pagina.map` usa `Function<? super T, ? extends R>` por el mismo motivo: acepta funciones más flexibles que la firma mínima.
+Una empresa de mensajería usa el mismo modelo de casillero para sobres, paquetes y documentos legales. El diseño del
+casillero no cambia. Lo que cambia es la etiqueta de la puerta: «solo sobres». Si alguien intenta meter una caja, el
+encargado lo impide en la entrada, no cuando el cliente abre el casillero.
+
+Los **genéricos** son esa etiqueta. Escribes una clase o un método una vez, con un hueco para el tipo, y cada uso
+rellena el hueco. El compilador vigila que nadie meta algo distinto.
+
+Tienda Aurora necesita repositorios para productos, pedidos y clientes. Sin genéricos tendrías dos malas opciones:
+copiar el mismo código tres veces o guardar `Object` y hacer un *cast* en cada lectura. Con la segunda, un error de
+tipo aparece en producción como `ClassCastException`. Con genéricos, `Repositorio<Producto, Sku>` lo detecta al
+compilar.
+
+##### 2. Definición formal y vocabulario
+
+Un **tipo genérico** es una clase o interfaz declarada con **parámetros de tipo** entre `< >`, como `class Caja<T>`.
+Al usarla, escribes un **argumento de tipo** que ocupa el lugar del parámetro: en `Caja<Integer>`, el argumento es
+`Integer`. El **operador diamante** `<>` deja que el compilador deduzca ese argumento en un `new`.
+
+Un **método genérico** declara sus propios parámetros de tipo antes del tipo de retorno: `static <E> E primero(List<E>
+lista)`. Un **tipo crudo** es un genérico usado sin argumentos, como `List`; existe por compatibilidad con código
+anterior a Java 5 y desactiva las comprobaciones.
+
+Los genéricos de Java tienen **invariancia**: `List<Integer>` no es subtipo de `List<Number>`, aunque `Integer` sí lo
+sea de `Number`. Para relajar esa regla existen los **wildcards**. `? extends X` acepta X o sus subtipos. `? super X`
+acepta X o sus supertipos. La regla **PECS** (*Producer Extends, Consumer Super*) dice cuál usar.
+
+Por último, el **type erasure** o borrado de tipos. El compilador comprueba los genéricos y luego los reemplaza en el
+bytecode por su límite, `Object` si no hay otro, e inserta los *casts* necesarios.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue `Caja<String>` desde el código fuente hasta la JVM:
 
 ```mermaid
 flowchart LR
-  F["Caja.java<br/>clase Caja con parámetro T<br/>T sacar()"] --> C["javac comprueba tipos:<br/>en una Caja de String, sacar() da String"]
-  C --> B["bytecode: Object sacar()<br/>+ cast (String) en el llamador"]
+  F["Caja.java<br/>clase Caja con parámetro T<br/>T sacar"] --> C["javac comprueba tipos:<br/>en una Caja de String, sacar da String"]
+  C --> B["bytecode: Object sacar<br/>más cast a String en el llamador"]
   B --> R["JVM: una sola clase Caja,<br/>sin argumento de tipo"]
 ```
 
-El borrado de tipos (*type erasure*) es la contrapartida. El compilador usa los genéricos para verificar tipos, pero en bytecode la mayoría de esa información parametrizada se borra. `List<String>` y `List<Integer>` son dos tipos distintos para el compilador; en runtime, ambos son `ArrayList`. La auditoría lo muestra:
+1. **Comprobación.** En `Caja<String> etiqueta = new Caja<>("CAF-0001")`, `javac` sustituye `T` por `String` y
+   verifica cada uso. Meter un `Integer` sería un error de compilación.
+2. **Borrado.** Al generar el bytecode, `T` desaparece. El campo y el método quedan con `Object`. Solo hay una clase
+   `Caja` para todos los argumentos posibles.
+3. **Inserción de casts.** Donde el llamador escribe `String s = etiqueta.sacar();`, el compilador añade un cast a
+   `String`. Es seguro porque el paso 1 ya lo garantizó.
+4. **Metadatos.** La firma genérica se conserva en un atributo `Signature` del `.class`. Sirve al compilador y a la
+   reflexión, pero la JVM no la usa para ejecutar.
 
-```text
-3. Borrado de tipos
-  List<String> y List<Integer> comparten clase -> true
-  clase en ejecución -> ArrayList
-  valor con List<Producto> -> $109.15
-  valor con List<? extends Producto> -> $109.15
-```
-
-`javap` muestra el borrado en la clase `Caja` del Problema resuelto 4.1. La firma conserva `T` como metadato, pero el descriptor que ejecuta la JVM dice `Object`:
+`javap` muestra los pasos 2 y 4 en la clase `Caja` del Problema resuelto 4.1:
 
 ```text
 $ javap -p -s Caja.class
@@ -1170,7 +1481,71 @@ public class Caja<T> {
 }
 ```
 
-El borrado no significa que los genéricos “no existan”. Existen en compilación, existen en firmas y metadatos de reflexión (`Signature` en `javap`), y existen para que el compilador inserte casts seguros. Significa que el runtime no conoce el argumento de tipo de una instancia concreta de `ArrayList`. Diseñar con esa realidad evita trucos frágiles.
+La firma conserva `T`, pero el descriptor que ejecuta la JVM dice `Object`. Por eso `List<String>` y `List<Integer>`
+comparten clase en ejecución. La auditoría del proyecto lo muestra:
+
+```text
+3. Borrado de tipos
+  List<String> y List<Integer> comparten clase -> true
+  clase en ejecución -> ArrayList
+  valor con List<Producto> -> $109.15
+  valor con List<? extends Producto> -> $109.15
+```
+
+Los wildcards actúan en el paso 1. En `sumar(List<? extends Number> valores)`, el compilador sabe que cada elemento es
+algún `Number`. Puedes leer como `Number`, pero no añadir: la lista real podría ser de `Long`. En `agregarUnidades(List<?
+super Integer> destino)`, sabe que la lista acepta `Integer`. Puedes escribir enteros, pero al leer solo obtienes
+`Object`.
+
+##### 4. Reglas, variantes y casos límite
+
+El borrado explica casi todas las restricciones de los genéricos. Como la JVM no conoce `T`, el compilador rechaza
+lo que necesitaría ese dato en ejecución:
+
+```java
+class Borrado<T> {
+    T[] crear() { return new T[10]; }
+    boolean es(Object o) { return o instanceof List<String>; }
+}
+```
+
+```text
+$ javac Borrado.java
+Borrado.java:3: error: generic array creation
+    T[] crear() { return new T[10]; }
+                         ^
+Borrado.java:4: error: Object cannot be safely cast to List<String>
+    boolean es(Object o) { return o instanceof List<String>; }
+                                  ^
+2 errors
+```
+
+Por la misma razón no puedes escribir `new T()`, usar primitivos como argumento ni sobrecargar `procesar(List<String>)`
+y `procesar(List<Integer>)`. Esto último produce `name clash … have the same erasure`.
+
+Los tipos crudos son el agujero del sistema. `List crudo = new ArrayList()` acepta cualquier cosa y solo genera un
+aviso. El error aparece después, al leer, como `ClassCastException`. Compila con `-Xlint:all` para ver avisos
+`[rawtypes]` y `[unchecked]`.
+
+La invariancia contrasta con los arreglos. En el Módulo 0, Tema 7, viste que `String[]` es subtipo de `Object[]` y que
+el error aparecía en ejecución con `ArrayStoreException`. Los genéricos prefieren rechazar el código al compilar.
+
+En cuanto a versiones: los genéricos llegaron en Java 5. El diamante apareció en Java 7, y desde Java 9 también
+funciona con clases anónimas.
+
+Un parámetro de tipo puede tener límite superior: `<T extends Comparable<T>>` exige que `T` sepa compararse. El
+borrado usa ese límite en lugar de `Object`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Desde el Tema 1 escribes `List<String>` y `Map<Sku, Producto>`. Ahora sabes qué significan los `< >`. También sabes por
+qué las colecciones guardan `Integer` y no `int`: el borrado necesita tipos referencia, como los wrappers del Módulo 0.
+
+La herencia del Módulo 1, Tema 2, explica por qué la invariancia sorprende. Los wildcards devuelven la flexibilidad sin
+perder seguridad. En el proyecto, `Catalogo.valorDe(List<? extends Producto>)` solo lee, así que usa `extends`.
+
+El Tema 5 usa límites como `<T extends Comparable<T>>` y wildcards en `Comparator<? super T>`. Allí también verás los
+métodos puente que el compilador genera por culpa del borrado.
 
 #### Problema resuelto 4.1
 Escribe una `Caja<T>` que guarde un valor de cualquier tipo, un método genérico `primero` y compáralo con una lista cruda.
@@ -1532,24 +1907,139 @@ En Tienda Aurora el catálogo se ve por SKU en el inventario, por precio en la t
 - **Error típico:** usarlo sobre `List.of(...)`; copia antes con `new ArrayList<>(...)`.
 
 #### ► CÓMO FUNCIONA
-`Comparable<T>` define el orden natural. `Sku implements Comparable<Sku>` dice que un SKU sabe compararse con otro SKU. `Producto implements Comparable<Producto>` delega en el SKU. `Dinero implements Comparable<Dinero>` compara centavos. El contrato de `compareTo` devuelve un negativo si `this` va antes, cero si son equivalentes en ese orden y un positivo si va después. Debe ser consistente con `equals` siempre que sea posible: si `compareTo` devuelve 0 pero `equals` devuelve `false`, estructuras ordenadas como `TreeSet` pueden considerar dos objetos equivalentes y descartar uno.
 
-`Comparator<T>` define un orden externo. `Comparadores.POR_PRECIO` ordena por precio y desempata por SKU. `POR_NOMBRE` usa `String.CASE_INSENSITIVE_ORDER` y desempata por SKU. `POR_PRIORIDAD` ordena por la prioridad del enum y después por número de pedido. Ninguno de estos órdenes es “el” orden natural de producto o pedido; son vistas.
+##### 1. La idea en lenguaje sencillo
+
+Un archivador de expedientes puede ordenarse de muchas maneras: por número, por fecha o por apellido. Uno de esos
+órdenes suele ser el «de siempre», el que viene impreso en la carpeta. Los demás dependen de quién consulta: contabilidad
+ordena por fecha y atención al cliente por apellido.
+
+Java separa igual las dos ideas. Una clase puede declarar su **orden natural**, el de siempre. Cualquier código puede
+además definir un orden propio, externo a la clase, para su caso de uso.
+
+En Tienda Aurora, el inventario ordena por SKU, la tienda en línea por precio y el mostrador por nombre. Y antes de
+facturar hay que quitar del carrito los productos agotados mientras se recorre. Ambas tareas tienen trampas: un orden
+mal definido hace desaparecer productos, y un borrado mal hecho rompe el recorrido.
+
+##### 2. Definición formal y vocabulario
+
+**`Comparable<T>`** es la interfaz del orden natural. Declara `int compareTo(T otro)`, que devuelve un negativo si
+`this` va antes, cero si empatan y un positivo si va después. El **orden natural** es el que usan `TreeSet`, `TreeMap`
+y `List.sort(null)` cuando no reciben otro.
+
+**`Comparator<T>`** define un orden externo con `int compare(T a, T b)`. Es una interfaz funcional: tiene un único
+método abstracto. Por eso se puede escribir con una **expresión lambda**, como `(a, b) -> …`, o con una **referencia a
+método**, como `Producto::precio`. Sus métodos `comparing`, `thenComparing` y `reversed` construyen órdenes
+compuestos.
+
+Para recorrer, toda colección entrega un **`Iterator`** con `hasNext()`, `next()` y `remove()`. El `for-each` lo usa
+por dentro. Si la colección cambia por otra vía durante el recorrido, el iterador lanza
+**`ConcurrentModificationException`**. **`removeIf`** borra los elementos que cumplen una condición sin que tengas
+que manejar el iterador.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El primer paso es decidir quién define el orden:
 
 ```mermaid
 flowchart TD
   Q{"¿Quién define el orden?"} -->|"el objeto: un único orden razonable"| C["Comparable<br/>compareTo en la clase"]
   Q -->|"el caso de uso: varios órdenes"| K["Comparator externo"]
   K --> K1["comparing / comparingInt"]
-  K1 --> K2["thenComparing (desempate)"]
-  K2 --> K3["reversed (invertir)"]
-  C --> U["sort(null), TreeSet, TreeMap"]
-  K3 --> U2["sort(comp), TreeSet con comp"]
+  K1 --> K2["thenComparing para desempatar"]
+  K2 --> K3["reversed para invertir"]
+  C --> U["sort con null, TreeSet, TreeMap"]
+  K3 --> U2["sort con comparador, TreeSet con comparador"]
 ```
 
-`List.sort` es estable: si dos elementos empatan, conservan el orden que tenían. Por eso, al ordenar por precio, `FIL-0004` sigue antes que `TAZ-0002`: así estaban tras ordenar por SKU.
+Sigue `catalogo.sort(porPrecio)` en el Problema resuelto 5.1:
 
-La iteración es la otra mitad del problema. Recorrer una colección mientras la modificas con la API equivocada produce `ConcurrentModificationException` o comportamiento inesperado. La regla simple es: para eliminar durante el recorrido, usa `Iterator.remove()`, `removeIf(...)` o construye una nueva colección. No hagas `lista.remove(...)` dentro de un `for-each` sobre la misma lista. En el código de este módulo, la paginación y los reportes recorren colecciones sin modificarlas, y cuando `ColaPedidos` necesita exponer pendientes ordenados crea una copia antes de ordenar.
+1. **Construcción del comparador.** `Comparator.comparingInt(Producto::precio)` crea un objeto que, dados dos
+   productos, extrae sus precios y los compara con `Integer.compare`.
+2. **Ordenación.** `List.sort` copia los elementos a un arreglo y aplica un algoritmo de mezcla. Cada vez que necesita
+   decidir, llama a `compare(a, b)` y mira solo el signo.
+3. **Estabilidad.** La documentación garantiza que la ordenación es estable: los elementos que empatan conservan su
+   orden previo. Por eso `FIL-0004` sigue delante de `TAZ-0002`.
+4. **Escritura.** Los elementos ordenados vuelven a la lista.
+
+En un `TreeSet`, el comparador cumple además otro papel: decide los duplicados. Al insertar, el árbol desciende
+comparando. Si `compare` devuelve 0, el `TreeSet` considera que el elemento ya está y no lo guarda. Por eso
+`TreeSet(porPrecio)` guarda 3 de 4: dos productos cuestan 800. Con `thenComparing(Producto::sku)`, el desempate evita
+el cero y guarda los cuatro.
+
+El recorrido con borrado funciona así. `ArrayList` mantiene un contador de modificaciones estructurales, `modCount`.
+Al crear el iterador, este guarda una copia. En cada `next()`, compara ambos números. Si `carrito.remove(sku)`
+cambió la lista, los números difieren y `next()` lanza la excepción. En cambio, `it.remove()` borra y actualiza la copia
+del iterador, así que el recorrido continúa.
+
+##### 4. Reglas, variantes y casos límite
+
+El contrato de `compareTo` exige signos coherentes: si `a` va antes que `b`, `b` va después que `a`. También exige
+transitividad. Restar enteros para comparar, como `a - b`, puede desbordar y dar el signo contrario. Usa
+`Integer.compare(a, b)`.
+
+La documentación recomienda que `compareTo` sea consistente con `equals`, aunque no lo exige. `BigDecimal` es el
+ejemplo clásico de inconsistencia:
+
+```java
+import java.math.BigDecimal;
+import java.util.*;
+
+public class Coherencia {
+    public static void main(String[] args) {
+        List<BigDecimal> precios = List.of(new BigDecimal("8.0"), new BigDecimal("8.00"));
+        System.out.println("HashSet -> " + new HashSet<>(precios).size());
+        System.out.println("TreeSet -> " + new TreeSet<>(precios).size());
+    }
+}
+```
+
+```text
+$ java Coherencia
+HashSet -> 2
+TreeSet -> 1
+```
+
+Para `equals`, `8.0` y `8.00` difieren en escala. Para `compareTo`, valen lo mismo. Cada conjunto aplica su propia
+regla y obtiene un tamaño distinto.
+
+La detección de modificaciones tampoco es una garantía. La documentación de `ArrayList` dice que el comportamiento
+*fail-fast* se ofrece «en la medida de lo posible». Borrar el penúltimo elemento lo demuestra:
+
+```java
+List<String> carrito = new ArrayList<>(List.of("CAF-0001", "AGO-0000", "TAZ-0002"));
+for (String sku : carrito) {
+    System.out.println("visito " + sku);
+    if (sku.startsWith("AGO")) carrito.remove(sku);
+}
+System.out.println("sin excepción -> " + carrito);
+```
+
+```text
+$ java FailFast
+visito CAF-0001
+visito AGO-0000
+sin excepción -> [CAF-0001, TAZ-0002]
+```
+
+No hubo excepción, pero `TAZ-0002` nunca se visitó. Tras el borrado, la lista tiene dos elementos y el cursor ya está
+en 2: `hasNext()` devuelve `false` antes de que `next()` compruebe nada. El código parece funcionar y salta un
+elemento. Por eso la regla es usar siempre `Iterator.remove()` o `removeIf`.
+
+En cuanto a versiones: las lambdas, las referencias a método, `removeIf` y los métodos `comparing` llegaron en Java 8.
+`removeIf` sobre `List.of(...)` lanza `UnsupportedOperationException`, porque esa lista es inmodificable.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 presentó `TreeSet` y `TreeMap`; aquí ves que ordenan con `compareTo` o con un comparador. El Tema 2 explicó
+que `HashSet` decide duplicados con `equals`; `TreeSet` lo hace con la comparación. Por eso conviene que ambos
+coincidan.
+
+Las interfaces del Módulo 1, Tema 3, explican por qué una lambda puede ocupar el lugar de un `Comparator`: implementa
+su único método abstracto. Los wildcards del Tema 4 aparecen en firmas como `Comparator<? super T>`.
+
+El Tema 6 usa comparadores para dar prioridad a los pedidos en una `PriorityQueue`. En el proyecto, `ColaPedidos`
+copia los pendientes antes de ordenarlos, para no modificar la colección mientras otros la recorren.
 
 #### Problema resuelto 5.1
 Ordena el catálogo por SKU (orden natural), por precio, por precio descendente con desempate y por nombre sin distinguir mayúsculas. Luego mete los productos en dos `TreeSet` con comparadores distintos.
@@ -1854,21 +2344,55 @@ La **pila** (LIFO) y la **cola** (FIFO) como ideas abstractas están en Fundamen
 - **Error típico:** usar `toString()` o un recorrido para «ver la cola en orden»; copia y ordena, o saca con `poll`.
 
 #### ► CÓMO FUNCIONA
-Una cola modela espera. Una pila modela deshacer. La interfaz `Queue<E>` define operaciones de cola: `offer`/`add` para encolar, `poll`/`remove` para desencolar, `peek`/`element` para mirar el frente. La interfaz `Deque<E>` es una cola de doble extremo: permite insertar y quitar por ambos lados, así que puede comportarse como cola FIFO o como pila LIFO.
 
-`ArrayDeque` es la implementación moderna de uso general para pilas y colas en memoria. Es más eficiente que la vieja clase `Stack`, que hereda de `Vector` y sincroniza métodos. También suele ser mejor opción que `LinkedList` como cola pura, porque no crea nodos por elemento. Para usarla como pila, usa `push` y `pop` (o `addFirst`/`removeFirst`). Para usarla como cola, usa `addLast`/`offerLast` y `pollFirst`/`removeFirst`.
+##### 1. La idea en lenguaje sencillo
 
-`PriorityQueue` es otra cosa: no entrega por orden de llegada, sino por prioridad. Internamente es un heap. El elemento que sale con `poll()` es el menor según el `Comparator` o el orden natural. Eso es perfecto para “atiende primero lo más urgente”, pero tiene una trampa: iterar la `PriorityQueue` no recorre en orden ordenado. Si necesitas mostrar los pendientes en orden, crea una copia y ordénala, como hace `ColaPedidos.pendientes()`.
+En una oficina de correos hay tres esperas distintas. La fila de la ventanilla atiende por orden de llegada. La pila
+de formularios del escritorio se procesa de arriba abajo: el último que pusiste es el primero que tomas. Y la mesa de
+urgencias atiende primero los envíos refrigerados, aunque hayan llegado después.
+
+Java tiene una estructura para cada espera. Una **cola** entrega en orden de llegada. Una **pila** entrega lo último
+que entró. Una **cola de prioridad** entrega lo más urgente según una regla.
+
+En Tienda Aurora, la mesa de preparación recibe pedidos EXPRESS, ESTÁNDAR y ECONÓMICOS mezclados, y los EXPRESS salen
+primero. El operador puede deshacer su última atención. Y el mostrador recibe los avisos en el orden en que se
+generaron. Son tres esperas y tres estructuras.
+
+##### 2. Definición formal y vocabulario
+
+**`Queue<E>`** es la interfaz para elementos en espera. `offer` encola, `poll` saca la cabeza y `peek` la mira sin
+sacarla. **`Deque<E>`**, *double-ended queue*, extiende `Queue` con operaciones en ambos extremos. Por eso sirve como
+cola y también como pila, con `push`, `pop` y `peek`.
+
+**`ArrayDeque`** implementa `Deque` sobre un arreglo circular que crece cuando se llena. Sus operaciones en los extremos
+son O(1) amortizado. No admite `null`.
+
+**`PriorityQueue`** implementa `Queue` sin seguir el orden de llegada. `poll` saca siempre el menor elemento según el
+orden natural o un `Comparator`. Por dentro usa un **montículo binario**: un árbol binario completo guardado en un
+arreglo, donde cada padre es menor o igual que sus hijos. Los hijos de la posición *i* están en *2i+1* y *2i+2*.
+
+Cada operación de `Queue` existe en dos versiones. Una lanza excepción si no puede cumplir; la otra devuelve un valor
+especial:
+
+| Operación | Lanza excepción si no puede | Devuelve un valor especial |
+|---|---|---|
+| Encolar | `add(e)` | `offer(e)` devuelve `false` |
+| Sacar la cabeza | `remove()` | `poll()` devuelve `null` |
+| Mirar la cabeza | `element()` | `peek()` devuelve `null` |
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra las tres estructuras del Problema resuelto 6.1:
 
 ```mermaid
 flowchart LR
-  subgraph FIFO["Queue (ArrayDeque): offer → poll"]
+  subgraph FIFO["Queue con ArrayDeque: offer y poll"]
     direction LR
     a1["AUR-1001"] --> a2["AUR-1002"] --> a3["AUR-1003"]
   end
-  subgraph LIFO["Deque como pila: push → pop"]
+  subgraph LIFO["Deque como pila: push y pop"]
     direction TB
-    p1["AUR-1004 (cima)"] --> p2["AUR-1002"]
+    p1["AUR-1004, cima"] --> p2["AUR-1002"]
   end
   subgraph HEAP["PriorityQueue: montículo en arreglo"]
     direction TB
@@ -1879,13 +2403,73 @@ flowchart LR
   end
 ```
 
-El montículo del diagrama es el arreglo real de la `PriorityQueue` del Problema resuelto 6.1: su recorrido lo imprime en ese orden. Cada `poll` saca la raíz, sube el último elemento a la raíz y lo hunde hasta que el padre vuelve a ser el menor.
+`ArrayDeque` guarda dos índices sobre su arreglo: la cabeza y la cola. `offer` escribe en la cola y avanza el índice.
+`poll` lee en la cabeza y la avanza. Cuando un índice llega al final del arreglo, vuelve al principio: por eso se
+llama circular. Si el arreglo se llena, crea uno mayor y copia los elementos. `push` y `pop` trabajan en la cabeza,
+así que la misma clase hace de pila.
 
-| Operación | Lanza excepción si no puede | Devuelve un valor especial |
-|---|---|---|
-| Encolar | `add(e)` | `offer(e)` → `false` |
-| Sacar la cabeza | `remove()` | `poll()` → `null` |
-| Mirar la cabeza | `element()` | `peek()` → `null` |
+`PriorityQueue` trabaja de otra forma. Sigue un `offer` y un `poll`:
+
+1. **`offer(e)`** coloca el elemento al final del arreglo, en la primera hoja libre del árbol.
+2. **Subida.** Compara el elemento con su padre. Si es menor, intercambian posiciones. Repite hasta que el padre sea
+   menor o igual. Como el árbol es completo, tiene altura log n: O(log n).
+3. **`poll()`** guarda la raíz, que es el mínimo, para devolverla.
+4. **Reemplazo.** Mueve el último elemento del arreglo a la raíz.
+5. **Hundimiento.** Compara la nueva raíz con su hijo menor. Si es mayor, intercambian. Repite hasta restaurar la
+   regla del montículo. También es O(log n).
+
+`peek()` solo lee la posición 0: O(1). El diagrama muestra el arreglo real de la cola del Problema resuelto 6.1. Por
+eso recorrerla con `for-each` imprime `[AUR-1002, AUR-1004, AUR-1003, AUR-1001, AUR-1005]`: es el orden del
+arreglo, no el de salida.
+
+##### 4. Reglas, variantes y casos límite
+
+La regla del montículo solo ordena padres frente a hijos. No dice nada de elementos que empatan. Por eso
+`PriorityQueue` no conserva el orden de llegada entre iguales. Este fragmento usa `record Pedido(String numero, int
+prioridad)`:
+
+```java
+PriorityQueue<Pedido> cola = new PriorityQueue<>(Comparator.comparingInt(Pedido::prioridad));
+cola.offer(new Pedido("AUR-1", 2)); cola.offer(new Pedido("AUR-2", 2)); cola.offer(new Pedido("AUR-3", 2));
+cola.offer(new Pedido("AUR-4", 1)); cola.offer(new Pedido("AUR-5", 2));
+List<String> salida = new ArrayList<>();
+while (!cola.isEmpty()) salida.add(cola.poll().numero());
+System.out.println(salida);
+```
+
+```text
+$ java Empates
+[AUR-4, AUR-5, AUR-2, AUR-3, AUR-1]
+```
+
+`AUR-4` sale primero porque tiene prioridad 1. Entre los demás, `AUR-1` llegó primero y sale el último. Si necesitas
+justicia por llegada, añade un desempate, como hace `POR_PRIORIDAD` en el proyecto con el número de pedido.
+
+Ni `ArrayDeque` ni `PriorityQueue` admiten `null`: `offer(null)` lanza `NullPointerException`. La razón es práctica:
+`poll` y `peek` usan `null` para decir «vacía», y un `null` guardado sería ambiguo.
+
+La clase `Stack` existe desde Java 1.0, pero hereda de `Vector` y sincroniza cada método. Su propia documentación
+recomienda usar `Deque` para pilas. `LinkedList` también implementa `Deque`, pero crea un nodo por elemento;
+`ArrayDeque` suele ser más rápida como cola pura.
+
+Ninguna de estas clases es segura entre hilos. Para colas compartidas entre hilos existen las de
+`java.util.concurrent`, como `ArrayBlockingQueue` o `PriorityBlockingQueue`. Algunas tienen capacidad fija: ahí
+`offer` devuelve `false` cuando están llenas.
+
+En cuanto a versiones: `Queue` y `PriorityQueue` llegaron en Java 5; `Deque` y `ArrayDeque`, en Java 6. Desde Java 21,
+`Deque` es también una colección secuenciada, con `reversed()`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La pila, la cola y el árbol binario vienen de Fundamentos, Módulo 2. Este tema muestra sus nombres en Java y cómo
+están construidas. El Tema 1 comparó `ArrayList` y `LinkedList`; aquí `ArrayDeque` ocupa el lugar de ambas cuando
+solo importan los extremos.
+
+El Tema 5 te dio los comparadores. `PriorityQueue` los usa para decidir la prioridad, igual que `TreeSet`. La
+diferencia es que `TreeSet` mantiene todo ordenado y descarta empates, mientras el montículo solo garantiza el mínimo.
+
+El laboratorio integrador combina las tres esperas en `ColaPedidos`. Más adelante, cuando el curso trate concurrencia,
+verás las colas bloqueantes de `java.util.concurrent`.
 
 #### Problema resuelto 6.1
 Modela las tres esperas de la mesa de preparación: avisos FIFO, historial LIFO y pedidos por prioridad.

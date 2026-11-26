@@ -80,8 +80,7 @@ Al terminar este tema podrás:
 - explicar por qué un `Container(width: 100)` a veces mide 300;
 - corregir el error «Vertical viewport was given unbounded height».
 
-**Conceptos clave:** restricción estricta, restricción suelta, restricción sin límite, `ConstrainedBox`,
-`LayoutBuilder`, *viewport*
+**Conceptos clave:** restricción estricta, restricción suelta, restricción sin límite, `ConstrainedBox`, `LayoutBuilder`, viewport
 
 #### El problema
 Pides un recuadro de 100 × 60 y Flutter dibuja uno de 300 × 90. Pones una lista debajo de un encabezado y la pantalla
@@ -127,7 +126,7 @@ Este tema usa las **restricciones** y el **árbol de render** (Módulo 1, Tema 6
 - **Ejemplo:** el `Medidor` de este tema escribe dentro las restricciones que recibió.
 - **Error típico:** leer `constraints.maxWidth` cuando vale infinito (dentro de una `Row`) y usarlo como ancho.
 
-***viewport***
+**viewport**
 - **Definición técnica:** objeto de render de las listas y vistas desplazables (`RenderViewport`) que muestra una ventana de un contenido más largo; necesita un tamaño finito en el eje de desplazamiento.
 - **En palabras sencillas:** la ventanilla por la que se ve una parte de la lista.
 - **Dónde se rompe la comparación:** la ventanilla necesita medidas; si el padre le dice «lo que quieras», no tiene cómo decidir.
@@ -135,9 +134,41 @@ Este tema usa las **restricciones** y el **árbol de render** (Módulo 1, Tema 6
 - **Error típico:** «arreglarlo» con `shrinkWrap: true`, que construye todas las filas y pierde la ventaja del Módulo 1, Tema 5.
 
 #### ► CÓMO FUNCIONA
-La maquetación recorre el árbol de render una vez: cada padre entrega restricciones a su hijo, el hijo elige un tamaño
-dentro de ellas y lo devuelve, y el padre decide dónde ubicarlo. El hijo nunca elige su posición, y nunca puede
-salirse de las restricciones.
+
+##### 1. La idea en lenguaje sencillo
+Cuando despachas un paquete en una bodega, el encargado te da una caja de cartón. Tú puedes rellenarla como
+quieras, pero no puedes hacerla más grande de lo que es. Y no decides en qué estante va: eso lo decide él.
+
+La maquetación de Flutter es esa conversación entre un padre y su hijo. El padre dice «puedes medir entre esto y
+esto». El hijo elige un tamaño dentro de ese rango y lo informa. El padre lo ubica donde le parece.
+
+Con esa regla se explican los dos misterios del tema. El recuadro de 100 × 60 midió 300 × 90 porque su padre no le
+dejó opción. La lista en blanco falló porque su padre le dijo «mide lo que quieras», y una lista quiere todo.
+
+##### 2. Definición formal y vocabulario
+Una restricción en Flutter es un objeto `BoxConstraints` con cuatro números: ancho mínimo, ancho máximo, alto
+mínimo y alto máximo. Un hijo debe elegir un tamaño que cumpla los cuatro.
+
+Según esos números, la restricción tiene un nombre. Es una **restricción estricta** (*tight*) cuando el mínimo y el
+máximo coinciden: el hijo no elige. Es una **restricción suelta** (*loose*) cuando el mínimo es cero y el máximo es
+finito. Es una **restricción sin límite** (*unbounded*) cuando el máximo es infinito en alguna dimensión.
+
+Dos widgets manipulan restricciones de forma explícita. **`ConstrainedBox`** combina unas restricciones propias con
+las que recibe. **`LayoutBuilder`** te deja leer las que recibió y construir según ellas. Las listas usan un
+***viewport***, que necesita un tamaño finito en la dirección del desplazamiento.
+
+##### 3. Cómo funciona por dentro, paso a paso
+La documentación de Flutter resume el algoritmo en una frase: las restricciones bajan, los tamaños suben y el padre
+ubica. Ocurre en una sola pasada por el árbol de render del Módulo 1, Tema 6. Mira el caso 2 de la galería:
+
+1. El `SizedBox` del marco tiene `width: 300, height: 90`. Le entrega a su hijo, `Center`, la restricción estricta
+   300 × 90.
+2. `Center` no tiene opción: medirá 300 × 90. Pero antes afloja la restricción para su hijo: `0–300 × 0–90`.
+3. El `Medidor` es un `LayoutBuilder`. Durante la maquetación ejecuta su `builder` con esas restricciones y construye
+   el `Container` con `width: 100, height: 60`.
+4. El `Container` pide 100 × 60. Como cabe en el rango suelto, ese es su tamaño, y lo devuelve hacia arriba.
+5. `Center` conoce ahora el tamaño del hijo y lo ubica en el medio: desplazado 100 a la derecha y 15 hacia abajo.
+6. `Center` informa su propio tamaño, 300 × 90, al marco.
 
 ```mermaid
 flowchart TD
@@ -146,6 +177,58 @@ flowchart TD
     C -->|"tamaño 100 × 60"| B
     B -->|"tamaño 300 × 90 y ubica al hijo en (100, 15)"| A
 ```
+
+La salida real del caso 2 lo confirma: `recibe BoxConstraints(0.0<=w<=300.0, 0.0<=h<=90.0), mide Size(100.0,
+60.0)`. En el caso 1 no hay `Center`, así que el `Container` recibe directamente 300 × 90 estricto y mide eso.
+
+Si un hijo pide un tamaño fuera del rango, Flutter lo ajusta al valor permitido más cercano. Eso pasa en el caso 3:
+
+```dart
+ConstrainedBox(
+  constraints: const BoxConstraints(maxWidth: 160),
+  child: const Medidor(key: Key('c3'), ancho: 250, alto: 60, color: Colors.deepOrange),
+)
+```
+
+El `ConstrainedBox` recibe `0–300` de ancho y lo combina con su tope: el hijo recibe `0–160`. El `Container` pide 250
+y mide 160, como muestra la salida.
+
+Ahora la lista en columna. Recuerda del Módulo 1, Tema 2 que una `Column` mide a sus hijos sin `Expanded` sin límite
+en su eje principal. El `ListView` recibe entonces un alto máximo infinito. Su *viewport* necesita una altura finita
+para saber cuántas filas mostrar, y lanza `Vertical viewport was given unbounded height.`
+
+Con `Expanded`, la columna primero mide al encabezado. Luego le da a la lista exactamente el alto sobrante, como
+restricción estricta. En la prueba son 272 puntos: 400 de pantalla menos 56 de la barra y 72 del encabezado.
+
+##### 4. Reglas, variantes y casos límite
+Un hijo **nunca** puede salirse de las restricciones de su padre. Ningún widget interno puede ampliar lo que un
+ancestro prohibió. Por eso un `ConstrainedBox` dentro de una restricción estricta no tiene efecto.
+
+Un hijo tampoco elige su posición. Solo conoce su tamaño. Esto permite a Flutter maquetar cada caja, en general, una
+sola vez por cuadro, y hace que el costo crezca en proporción al número de cajas.
+
+Leer `constraints.maxWidth` dentro de una `Row` devuelve infinito, como en el caso 4. Si lo usas como ancho, un
+`Container(width: double.infinity)` falla. Comprueba `hasBoundedWidth` antes de usarlo.
+
+`shrinkWrap: true` hace que la lista mida su contenido en vez de pedir el máximo. Evita el error, pero construye
+todas las filas para medirlas y pierde la construcción perezosa del Módulo 1, Tema 5.
+
+Existen widgets que rompen la regla a propósito. `UnconstrainedBox` deja que su hijo mida lo que quiera y luego lo
+recorta o avisa con un desborde. `OverflowBox` entrega a su hijo restricciones distintas de las que recibió. Úsalos
+solo cuando sepas qué estás saltando.
+
+Cuando una caja falla en la maquetación, Flutter informa un error por cada caja afectada. La prueba sin corregir
+registró 14 errores: el primero es la causa y los demás son consecuencias.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En el Módulo 1, Tema 6 viste por primera vez una restricción, `BoxConstraints(w=768.0, h=568.0)`, y el árbol de
+render. Este tema convierte esa observación en una regla que puedes usar para predecir tamaños.
+
+El desborde del Módulo 1, Tema 3 es el mismo fenómeno visto desde otro lado. Un texto en una `Row` recibe ancho sin
+límite, mide su largo completo y la fila desborda. `Expanded` arregla ambos casos por la misma razón: da un límite.
+
+El Tema 2 aplica esta regla al reparto de espacio en `Row` y `Column`. El Tema 3 usa `LayoutBuilder` para decidir
+qué mostrar según el espacio que recibe una parte de la pantalla.
 
 #### Problema resuelto 1.1
 Haz una galería que muestre, para cuatro padres distintos, qué restricciones recibe una caja y cuánto mide. Después
@@ -433,7 +516,7 @@ Este tema usa **restricción sin límite** (Tema 1) y **`Expanded`** (Módulo 1,
 
 #### Glosario del tema
 
-**eje principal**
+**eje principal y eje cruzado**
 - **Definición técnica:** dirección en la que una `Row` (horizontal) o `Column` (vertical) coloca a sus hijos; el **eje cruzado** es el perpendicular.
 - **En palabras sencillas:** la dirección de la fila de personas; el eje cruzado es su estatura.
 - **Dónde se rompe la comparación:** cambia con el widget: el eje principal de una `Column` es el vertical.
@@ -469,9 +552,40 @@ Este tema usa **restricción sin límite** (Tema 1) y **`Expanded`** (Módulo 1,
 - **Error típico:** usar varios `SizedBox` de ancho «a ojo» para empujar, que se rompen al cambiar el ancho de pantalla.
 
 #### ► CÓMO FUNCIONA
-Una `Row` maqueta en dos pasadas. Primero mide a los hijos que no son flexibles, con ancho sin límite. Después reparte
-lo que sobra entre los flexibles según su `flex`: a los `Expanded` les entrega una porción estricta y a los
-`Flexible` una suelta. Por último aplica `mainAxisAlignment` al espacio que quedó libre.
+
+##### 1. La idea en lenguaje sencillo
+En un estante de bodega pones cajas de tamaño fijo y queda un hueco. Con ese hueco puedes hacer tres cosas. Dejarlo
+al final, repartirlo entre las cajas, o dárselo a una caja de cartón plegable que se estira para llenarlo.
+
+Una fila de Flutter enfrenta la misma decisión. En la tarjeta de entrega, el ícono de «copiar» debe quedar pegado al
+texto. Los botones «Entregar» y «Novedad» deben repartirse el ancho en proporción. Las etiquetas deben irse a los
+extremos.
+
+Cada caso usa una herramienta distinta, y todas responden la misma pregunta: ¿qué hago con el espacio que sobra?
+Este tema te da el algoritmo completo para predecir el resultado antes de ejecutar.
+
+##### 2. Definición formal y vocabulario
+Ya conoces el **eje principal** y el cruzado del Módulo 1, Tema 2. **`mainAxisAlignment`** decide dónde va el
+espacio libre del eje principal: `start`, `end`, `center`, `spaceBetween`, `spaceAround` o `spaceEvenly`.
+
+Un hijo **flexible** es el que recibe una parte del espacio sobrante en vez de medir por su cuenta. **`Flexible`**
+le da esa parte como restricción suelta: puede ocupar menos. `Expanded` es un `Flexible` con `fit: FlexFit.tight`:
+debe ocupar exactamente su parte.
+
+El **factor `flex`** es un entero que dice cuántas porciones del sobrante recibe cada hijo flexible. **`Spacer`** es
+un flexible vacío que solo ocupa espacio, como un resorte entre dos vecinos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El objeto de render de una `Row` es un `RenderFlex`. Sigue su algoritmo con los botones de la galería, en una fila
+de 358 puntos (390 menos 16 de margen a cada lado):
+
+1. Recorre los hijos y separa los flexibles de los fijos. Aquí los fijos son solo el `SizedBox` de 8.
+2. Mide cada hijo fijo con ancho sin límite, como viste en el Tema 1. El `SizedBox` mide 8.
+3. Calcula el sobrante: 358 − 8 = 350.
+4. Suma los factores `flex` de los flexibles: 2 + 1 = 3. Cada porción vale 350 / 3.
+5. Mide cada flexible con su parte. A un `Expanded` le da una restricción estricta; a un `Flexible`, una suelta con
+   esa parte como máximo. «Entregar» recibe 233,3 y «Novedad», 116,7.
+6. Suma los tamaños reales. Si queda espacio libre, lo distribuye según `mainAxisAlignment` y coloca a cada hijo.
 
 ```mermaid
 flowchart LR
@@ -482,6 +596,59 @@ flowchart LR
     D --> F["3. Alinea lo que sobre: nada"]
     E --> F
 ```
+
+La salida real lo confirma: `Entregar mide 233.33333333333334, Novedad mide 116.66666666666667`. Como los dos son
+`Expanded`, no sobra nada en el paso 6 y la alineación no tiene efecto.
+
+El paso 5 explica la diferencia entre `Flexible` y `Expanded` con el texto corto:
+
+```dart
+Row(children: [
+  Flexible(child: Text('Calle 80 # 68-45', overflow: TextOverflow.ellipsis)),
+  Icon(Icons.copy, size: 18),
+])
+```
+
+El ícono es fijo y mide 18. El texto recibe como máximo todo el resto, pero `Flexible` le permite medir menos: mide
+lo que necesita. El ícono queda justo después, en `x=120.9873046875`. Con `Expanded`, el texto debe llenar su parte
+y el ícono termina en `x=356.0`.
+
+Con el texto largo, `Flexible` actúa como tope. El texto quiere más de lo que hay, recibe el máximo y se corta con
+«…». Por eso `Flexible` sirve tanto para textos cortos como largos.
+
+Las alineaciones del paso 6 siguen fórmulas simples. Con `n` hijos y un espacio libre `L`, `spaceBetween` pone `L /
+(n − 1)` entre cada par y nada en los bordes. `spaceAround` da a cada hijo `L / n`, repartido mitad a cada lado.
+`spaceEvenly` hace `n + 1` huecos iguales de `L / (n + 1)`, bordes incluidos.
+
+##### 4. Reglas, variantes y casos límite
+Si una fila tiene al menos un `Expanded` o un `Spacer`, el espacio libre del paso 6 es cero. En ese caso
+`mainAxisAlignment` no hace nada. Con `Flexible`, en cambio, puede quedar espacio libre.
+
+Los flexibles necesitan un sobrante finito. Si la fila recibe un ancho sin límite, por ejemplo dentro de una lista
+horizontal, un `Expanded` o un `Spacer` falla. No hay forma de dividir el infinito en porciones.
+
+Con `mainAxisSize: MainAxisSize.min`, la fila mide lo que suman sus hijos. Si además no tiene flexibles, no sobra
+nada, y `spaceBetween` tampoco tiene efecto.
+
+En el eje cruzado, `crossAxisAlignment` ofrece `start`, `end`, `center`, `stretch` y `baseline`. `stretch` les da a
+los hijos una restricción estricta con el alto de la fila. `baseline` alinea los textos por su línea base, y exige
+indicar `textBaseline`.
+
+El sentido del eje principal depende de `textDirection` en una `Row`: en idiomas que se leen de derecha a izquierda,
+`start` es la derecha. En una `Column`, `verticalDirection: VerticalDirection.up` invierte el orden vertical.
+
+Desde Flutter 3.27, `Row` y `Column` aceptan `spacing`, un espacio fijo entre hijos. Ese espacio se resta antes de
+repartir el sobrante, igual que el `SizedBox` de 8 de este ejemplo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Módulo 1, Tema 2 presentó el flex y `Expanded` como herramienta. Este tema completa el algoritmo con `Flexible`,
+`flex`, `Spacer` y las fórmulas de alineación. El Tema 1 explica por qué los hijos fijos se miden sin límite.
+
+Si conoces CSS, `flex: 2` y `flex: 1` se parecen a `flex-grow`. La diferencia es que en Flutter un hijo es fijo o
+flexible, nunca las dos cosas: los fijos se miden primero y solo los flexibles se reparten lo que queda.
+
+El Tema 3 decidirá cuándo cambiar una `Row` por una `Column` según el espacio disponible. El Tema 6 reemplazará los
+números sueltos, como 8 y 16, por una escala de espacios con nombre.
 
 #### Problema resuelto 2.1
 Arma una galería con los casos típicos de una fila: tres alineaciones, `Flexible` contra `Expanded`, un texto largo y
@@ -762,9 +929,47 @@ Este tema usa **`LayoutBuilder`** y **restricciones** (Tema 1) y **`Expanded`** 
 - **Error típico:** elegir el punto de quiebre por el modelo de teléfono en lugar de por el contenido que debe caber.
 
 #### ► CÓMO FUNCIONA
-`MediaQuery` responde con el tamaño de la ventana, que es el mismo para todos los widgets de la pantalla.
-`LayoutBuilder` responde con las restricciones que recibió ese widget, que dependen de dónde está. Una pantalla
-completa puede usar cualquiera de los dos; un componente reutilizable debe usar `LayoutBuilder`.
+
+##### 1. La idea en lenguaje sencillo
+Un empleado de bodega quiere saber si una caja grande cabe en el estante. Puede mirar el plano del edificio, que
+dice «la bodega mide 50 metros». O puede medir el estante con una cinta. Solo la segunda respuesta le sirve.
+
+En Flutter existen las dos preguntas. `MediaQuery` responde «¿cuánto mide la ventana?». `LayoutBuilder` responde
+«¿cuánto espacio me dieron a mí?». En una pantalla completa coinciden; dentro de un panel, no.
+
+El resumen del turno preguntó por la ventana. En el teléfono funcionó, porque ocupaba todo el ancho. En el tablero
+de 1024 puntos, el resumen vivía en un panel de 340 y creyó tener espacio de sobra. Las palabras se partieron.
+
+##### 2. Definición formal y vocabulario
+**`MediaQuery`** es un widget heredado que expone a sus descendientes los datos de la ventana. Un **widget heredado**
+(*InheritedWidget*) es un ancestro cuyos datos puede leer cualquier descendiente a través del `BuildContext`, sin
+recibirlos como parámetro.
+
+Los datos de `MediaQuery` incluyen tamaño, densidad, márgenes del sistema, teclado, escala de texto y brillo.
+**`MediaQuery.sizeOf`** lee solo el tamaño y registra la dependencia solo de ese dato.
+
+`LayoutBuilder`, que ya usaste en el Tema 1, entrega las restricciones que recibió ese widget. Con él construyes un
+**componente adaptable**: uno que cambia su estructura según su propio espacio. El ancho donde cambia es su **punto
+de quiebre**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Las dos herramientas trabajan en fases distintas del cuadro. `MediaQuery` actúa en la construcción;
+`LayoutBuilder`, en la maquetación. Sigue la versión con `MediaQuery` en el tablero:
+
+1. Al iniciar, Flutter coloca un `MediaQuery` cerca de la raíz con los datos de la vista. Lo viste en la salida del
+   Módulo 1, Tema 6: `_MediaQueryFromView` y `MediaQuery` aparecen sobre tu app.
+2. En la fase de construcción, `ResumenTurno.build` llama a `MediaQuery.sizeOf(context)`. El contexto sube por el
+   árbol, encuentra ese `MediaQuery` y devuelve 1024 de ancho.
+3. Además registra una **dependencia**: si el tamaño de la ventana cambia, este widget se reconstruirá.
+4. `_forma(1024)` elige una fila de cuatro. Recién después, en la maquetación, el panel le da 316 puntos a esa fila.
+5. Cada tarjeta recibe 79 de ancho, y la salida lo confirma: `cada tarjeta mide 79.0 de ancho`.
+
+La versión con `LayoutBuilder` sigue otro orden:
+
+1. En la construcción, `LayoutBuilder` no llama a su `builder`. Solo crea un objeto de render especial.
+2. En la maquetación, ese objeto recibe sus restricciones del padre: un ancho máximo de 316.
+3. Con esas restricciones ejecuta el `builder`, que construye los hijos en ese momento: dos filas de dos.
+4. Maqueta a esos hijos de inmediato. Cada tarjeta mide 158.
 
 ```mermaid
 flowchart TD
@@ -775,6 +980,51 @@ flowchart TD
     RT -.->|"MediaQuery.sizeOf: 1024 → una fila"| X["4 tarjetas de 79: palabras partidas"]
     RT -.->|"LayoutBuilder: 316 → dos filas"| Y["4 tarjetas de 158"]
 ```
+
+El diagrama muestra la causa del error. `MediaQuery` responde lo mismo en cualquier punto del árbol. El
+`LayoutBuilder` responde según su lugar: 316 dentro del panel, 390 en el teléfono.
+
+La decisión, `_forma(ancho)`, es la misma para las dos versiones. Solo cambia de dónde sale el ancho:
+
+```dart
+@override
+Widget build(BuildContext context) {
+  if (!conLayoutBuilder) return _forma(MediaQuery.sizeOf(context).width);   // la ventana
+  return LayoutBuilder(builder: (context, c) => _forma(c.maxWidth));       // su espacio
+}
+```
+
+Separar la decisión del origen del dato hace fácil probarla en varios anchos.
+
+##### 4. Reglas, variantes y casos límite
+`MediaQuery.of(context)` devuelve todos los datos y crea una dependencia de todos ellos. Si se abre el teclado,
+cambian los márgenes inferiores y el widget se reconstruye, aunque solo usara el tamaño. Desde Flutter 3.10 existen
+métodos por dato, como `sizeOf`, `paddingOf`, `viewInsetsOf` y `textScalerOf`, que reconstruyen solo cuando cambia
+ese dato.
+
+`LayoutBuilder` vuelve a ejecutar su `builder` cuando cambian sus restricciones o cuando el padre lo reconstruye. No
+puedes leer el tamaño final de los hijos dentro del `builder`: todavía no se han maquetado.
+
+`constraints.maxWidth` puede ser infinito, como viste en el Tema 1. Si un `LayoutBuilder` vive dentro de una `Row` sin
+`Expanded`, su `builder` recibe un ancho sin límite. Comprueba `hasBoundedWidth` antes de comparar con un punto de
+quiebre.
+
+Un componente adaptable cambia de **estructura**, no solo de escala. Encoger la letra para que todo quepa produce
+textos ilegibles. Pasar de una fila a dos filas mantiene la legibilidad.
+
+El punto de quiebre de un componente sale de su contenido. Aquí, cuatro tarjetas legibles necesitan unos 130 puntos
+cada una, así que el umbral es 560. Los puntos de quiebre de pantallas completas siguen otra regla, en el Tema 4.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te enseñó a leer restricciones con `LayoutBuilder` para entender tamaños. Aquí lo usas para decidir qué
+construir. El `BuildContext` del Módulo 1, Tema 1 es el mismo mecanismo que permite a `MediaQuery` llegar a cualquier
+descendiente, como el tema.
+
+Si conoces CSS, `MediaQuery` equivale a las *media queries*, que miran la ventana. `LayoutBuilder` se parece a las
+*container queries*, que miran el contenedor. La regla de bolsillo es la misma en los dos mundos.
+
+El Tema 4 usa `MediaQuery.sizeOf` donde sí corresponde: en la pantalla completa, para elegir la navegación según la
+clase de ventana. El Tema 5 lee otros datos de `MediaQuery`: los márgenes del sistema, el teclado y la escala de texto.
 
 #### Problema resuelto 3.1
 Escribe el resumen del turno en sus dos versiones, ponlo en el panel lateral del tablero y compara la decisión que toma
@@ -1070,9 +1320,43 @@ Este tema usa **`MediaQuery.sizeOf`** (Tema 3), **`Expanded`** (Tema 2) y **`Sta
 - **Error típico:** perder el estado al cambiar de estructura: aquí la guía elegida vive en el `State`, por encima de las dos estructuras.
 
 #### ► CÓMO FUNCIONA
-La pantalla lee el ancho de la ventana (es una pantalla completa, así que puede usar `MediaQuery`), calcula la clase y
-construye una de tres estructuras. Lo que debe sobrevivir al cambio, como la guía elegida, se guarda en el `State` que
-contiene a las tres.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de envíos usa tres tipos de vehículo: moto, furgón y camión. No fabrica un solo vehículo que se estira
+según la carga. Elige el vehículo adecuado para cada tamaño de pedido, y la carga es la misma en los tres.
+
+Con las pantallas pasa algo parecido. El conductor usa un teléfono, el supervisor una tableta y el despachador un
+navegador ancho. Estirar la pantalla del teléfono a 1100 puntos no funciona: las filas se alargan y el espacio se
+desperdicia.
+
+La solución es definir pocas categorías de ancho y una estructura para cada una. Una barra abajo en el teléfono, un
+riel al costado en la tableta, y lista con detalle en el escritorio. Los datos, como la guía elegida, se conservan al
+pasar de una a otra.
+
+##### 2. Definición formal y vocabulario
+Material 3 define la **clase de tamaño de ventana** según el ancho en puntos lógicos. Compacta es menos de 600.
+Mediana va de 600 a 839. Expandida empieza en 840. Las guías actuales agregan grande, desde 1200, y extragrande,
+desde 1600.
+
+Para cada clase, Material recomienda un componente de navegación. **`NavigationBar`** es la barra inferior, con 3 a 5
+destinos. **`NavigationRail`** es el riel vertical al costado; con `extended: true` muestra las etiquetas junto a
+los íconos.
+
+El patrón de **lista y detalle** muestra la lista y el elemento elegido lado a lado cuando hay espacio. Todo esto
+forma un **diseño adaptable**: cambiar la estructura y los componentes según la clase, no solo estirarlos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa cuando la ventana del navegador cambia de 700 a 1100 puntos con la app abierta:
+
+1. El sistema informa a Flutter el nuevo tamaño de la vista. El `MediaQuery` de la raíz cambia su `size`.
+2. `_PantallaEntregasState` dependía de ese dato por `MediaQuery.sizeOf`, como viste en el Tema 3. Flutter lo marca
+   para reconstruir.
+3. En `build`, `ClaseVentana.de(1100)` devuelve `expandida`. Antes devolvía `mediana`.
+4. `build` devuelve otra estructura: el riel extendido, una lista de 320 puntos y el detalle con el resto.
+5. La reconciliación del Módulo 1, Tema 6 compara el árbol nuevo con el viejo. Lo que cambió de lugar o de tipo se
+   reemplaza; lo que coincide se reutiliza.
+6. `_seleccionada` sigue valiendo `EN-4472`, porque vive en el `State` de la pantalla, por encima de las tres
+   estructuras. El detalle aparece ya con esa guía.
 
 ```mermaid
 flowchart TD
@@ -1081,6 +1365,55 @@ flowchart TD
     B -->|"600 a 839"| D["Row: NavigationRail con etiquetas + lista"]
     B -->|"840 o más"| E["Row: NavigationRail extendido + lista de 320 + detalle"]
 ```
+
+El diagrama es el `if` de `build`. Fíjate en que la decisión se toma una sola vez, arriba, y cada rama arma un árbol
+completo. Así cada estructura se lee entera sin condiciones repartidas por todo el código.
+
+La clasificación es una función pura, fácil de probar en sus bordes:
+
+```dart
+static ClaseVentana de(double ancho) => ancho < 600
+    ? compacta
+    : ancho < 840
+        ? mediana
+        : expandida;
+```
+
+La prueba del tema comprueba justo los bordes: `599.0 → compacta`, `600.0 → mediana` y `840.0 → expandida`.
+
+El paso 6 es la razón de dónde vive cada dato. Al pasar de compacta a mediana, la lista cambia de posición en el
+árbol: deja de ser el `body` del `Scaffold` y pasa a ser hija de una `Row`. Su elemento se recrea. Si la selección
+viviera en la lista, se perdería.
+
+##### 4. Reglas, variantes y casos límite
+La clase se calcula con el ancho de la **ventana**, no con el tipo de aparato. Una tableta con dos apps en pantalla
+dividida puede ofrecer una ventana compacta. Un teléfono plegable abierto puede ser mediano.
+
+Los anchos están en puntos lógicos, no en píxeles físicos. Un teléfono de 1170 píxeles con densidad 3 mide 390
+puntos: compacto. Por eso las pruebas fijan la densidad junto con el tamaño.
+
+`NavigationRail` no es una propiedad del `Scaffold`. Va dentro de una `Row`, junto al contenido, normalmente con un
+`VerticalDivider`. Si usas `extended: true`, el `labelType` debe quedar sin valor o en `none`; las etiquetas ya se
+muestran al lado.
+
+`NavigationBar` admite de 3 a 5 destinos. Es el componente de Material 3 que reemplaza a `BottomNavigationBar`. Si
+tienes más destinos, los demás van en un menú o en un cajón lateral.
+
+En la clase expandida, los dos paneles no deben ser iguales. La lista tiene un ancho fijo cómodo, 320 aquí, y el
+detalle recibe el resto con `Expanded`. Con dos `Expanded` iguales, las filas de la lista quedan demasiado anchas.
+
+En el teléfono no hay espacio para el detalle al lado. Allí el detalle es otra pantalla, y llegar a ella es
+navegación, el tema del Módulo 3.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 3 estableció la regla: las pantallas completas pueden mirar la ventana con `MediaQuery`. Este tema es el caso
+de uso correcto. El reparto de la lista fija y el detalle flexible es el algoritmo del Tema 2.
+
+La decisión de dónde guardar `_seleccionada` aplica lo que aprendiste sobre el `State` en el Módulo 1, Temas 4 y 6. Un
+dato que debe sobrevivir a un cambio de estructura vive por encima de las estructuras que cambian.
+
+El Módulo 3, Tema 3 usará `NavigationBar` con pestañas que recuerdan su estado entre cambios de destino. El Tema 5
+de este módulo atiende otra fuente de cambios en la ventana: el teclado y la muesca.
 
 #### Problema resuelto 4.1
 Construye la pantalla de entregas para las tres clases de ventana y obtén un pantallazo de cada una. Imprime en la
@@ -1369,8 +1702,7 @@ Al terminar este tema podrás:
 - diseñar tarjetas que crezcan cuando el usuario elige letra grande, en lugar de desbordar;
 - simular en pruebas la muesca, el teclado y la escala de texto.
 
-**Conceptos clave:** relleno del sistema, `SafeArea`, inserciones de la vista (*view insets*), escala de texto,
-alto mínimo
+**Conceptos clave:** relleno del sistema, `SafeArea`, inserciones de la vista (view insets), escala de texto, alto mínimo
 
 #### El problema
 En el simulador de diseño la pantalla de confirmación se ve perfecta. En un teléfono real, el número de guía queda
@@ -1397,7 +1729,7 @@ del Módulo 1, Tema 3.
 - **Ejemplo:** con `SafeArea`, el título pasa de y=16 a y=63 (47 + 16).
 - **Error típico:** envolver toda la app en `SafeArea`: el fondo de color también se recorta y aparecen franjas en los bordes.
 
-**inserciones de la vista (*view insets*)**
+**inserciones de la vista (view insets)**
 - **Definición técnica:** partes de la ventana tapadas por elementos del sistema que no son fijos, sobre todo el teclado; Flutter las expone en `MediaQuery.viewInsetsOf(context)`.
 - **En palabras sencillas:** lo que el teclado le quita a la pantalla cuando aparece.
 - **Dónde se rompe la comparación:** el `Scaffold` ya encoge su cuerpo para el teclado (`resizeToAvoidBottomInset`); el problema es que el contenido no quepa en el espacio que queda.
@@ -1419,10 +1751,40 @@ del Módulo 1, Tema 3.
 - **Error típico:** usar `SizedBox(height: 64)` para que todas las tarjetas «midan lo mismo».
 
 #### ► CÓMO FUNCIONA
-El sistema operativo informa a Flutter qué zonas están ocupadas y qué escala de texto quiere el usuario; Flutter lo
-pone en el `MediaQuery` de la ventana. `SafeArea` y `Scaffold` leen esos datos y reducen el espacio del contenido. Si
-el contenido no cabe en lo que queda, se desplaza (`SingleChildScrollView`) o crece (alto mínimo); si tiene tamaños
-fijos, desborda.
+
+##### 1. La idea en lenguaje sencillo
+Cuando pegas una etiqueta de envío en una caja, evitas las esquinas dobladas y la cinta. La caja mide lo que mide,
+pero no toda su superficie sirve para escribir. Y si el cliente pide la etiqueta en letra grande, necesitas más
+espacio.
+
+La pantalla de un teléfono tiene la misma limitación. La cámara, la barra de estado y la barra de inicio ocupan los
+bordes. El teclado aparece y tapa media pantalla. El usuario puede elegir letra al doble de tamaño.
+
+Ninguna de esas condiciones aparece en una prueba con valores por defecto. Por eso el tema te enseña de dónde vienen,
+cómo las informa Flutter y cómo simularlas para comprobar que la pantalla sigue usable.
+
+##### 2. Definición formal y vocabulario
+El **relleno del sistema** son las zonas que el sistema ocupa o recorta en los bordes. Flutter lo expone en
+`MediaQuery.paddingOf(context)`. **`SafeArea`** es el widget que agrega ese relleno alrededor de su hijo.
+
+Las **inserciones de la vista** (*view insets*) son zonas tapadas por elementos del sistema que aparecen y
+desaparecen, sobre todo el teclado. Flutter las expone en `MediaQuery.viewInsetsOf(context)`.
+
+La **escala de texto** es el tamaño de letra que eligió el usuario en la accesibilidad del teléfono. Flutter la aplica
+a cada `Text` con `MediaQuery.textScalerOf(context)`. Para que una caja crezca con el texto usas un **alto mínimo**:
+una restricción con piso y sin techo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Todo empieza fuera de Flutter. Sigue lo que pasa cuando el conductor toca un campo del formulario de novedad:
+
+1. El sistema operativo muestra el teclado y le informa al motor de Flutter cuánto tapa: 300 puntos abajo.
+2. El motor actualiza los datos de la vista. El `MediaQuery` de la raíz cambia su `viewInsets.bottom` a 300.
+3. El `Scaffold` depende de ese dato. Con `resizeToAvoidBottomInset`, que vale `true` por defecto, resta los 300 al
+   alto de su cuerpo. En la prueba quedan 344 puntos: 700 − 56 de la barra − 300.
+4. El cuerpo recibe una restricción de 344 de alto. Si es una `Column` que necesita más, desborda. La salida real lo
+   muestra: `A RenderFlex overflowed by 24 pixels on the bottom.`
+5. Con `SingleChildScrollView`, la columna recibe alto sin límite y mide lo que necesita. El *scroll* muestra una
+   ventana de 344 sobre ese contenido, y no hay error.
 
 ```mermaid
 flowchart LR
@@ -1433,6 +1795,58 @@ flowchart LR
     SC --> SCR["SingleChildScrollView: el formulario se desplaza"]
     TX --> MIN["Alto mínimo: la tarjeta crece"]
 ```
+
+El diagrama muestra que las tres condiciones llegan por el mismo canal, el `MediaQuery`. Cada consumidor toma el dato
+que le interesa y reduce o agranda el espacio de su contenido.
+
+`SafeArea` hace dos cosas a la vez. Lee el relleno, 47 arriba y 34 abajo en la prueba, y lo agrega como `Padding`.
+Además, entrega a sus descendientes un `MediaQuery` con ese relleno ya descontado. Así, un `SafeArea` anidado no
+vuelve a sumarlo. El resultado se ve en la salida: el título pasa de `y=16.0` a `y=63.0`.
+
+La escala de texto actúa en la maquetación del texto. Con el doble de letra, el párrafo mide el doble de alto. Si su
+caja tiene alto fijo, el contenido no cabe:
+
+```dart
+ConstrainedBox(
+  constraints: const BoxConstraints(minHeight: 64, minWidth: double.infinity),
+  child: columna,   // mide al menos 64, y más si el texto lo pide
+)
+```
+
+Con este piso, la tarjeta mantiene su medida de diseño con letra normal. Con letra al 200 %, crece, y el desborde de
+48 píxeles desaparece.
+
+##### 4. Reglas, variantes y casos límite
+`MediaQuery` distingue tres datos parecidos. `viewPadding` es el relleno físico del sistema y no cambia con el
+teclado. `viewInsets` es lo que tapa el teclado. `padding` es `viewPadding` menos lo que ya tapa el teclado, para no
+contar dos veces el borde inferior.
+
+`AppBar` y `NavigationBar` ya respetan su borde de la pantalla. Por eso `SafeArea` se necesita sobre todo en
+pantallas a sangre, sin barra superior, como `ConfirmarEntrega`. Puedes activarlo solo en algunos lados con `top`,
+`bottom`, `left` y `right`, y fijar un relleno mínimo con `minimum`.
+
+Envolver toda la app en `SafeArea` recorta también los fondos de color. Aparecen franjas en los bordes. Es mejor
+dejar que el fondo llegue al borde y proteger solo el contenido.
+
+Poner `resizeToAvoidBottomInset: false` elimina el desborde, pero el teclado tapa el botón. Corrige el contenido para
+que se desplace, no el aviso.
+
+Desde Flutter 3.16 la escala se representa con `TextScaler`, que reemplazó a `textScaleFactor`. El cambio permite
+escalas no lineales, como las de Android 14, donde las letras grandes crecen menos que las pequeñas. Si una pantalla
+densa lo exige, `MediaQuery.withClampedTextScaling` limita la escala solo en ese subárbol.
+
+En las pruebas, `tester.view.padding` y `tester.view.viewInsets` se expresan en píxeles físicos. Por eso la prueba
+multiplica por 2, la densidad simulada.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 3 presentó `MediaQuery` y sus métodos por dato. Aquí usas `paddingOf`, `viewInsetsOf` y `textScalerOf`. El
+alto mínimo es un `ConstrainedBox` del Tema 1, ahora con un piso en vez de un tope.
+
+El desborde del teclado es el mismo error del Módulo 1, Tema 3, causado por otra fuente: no un texto largo, sino un
+espacio que se encoge. La corrección también es distinta: desplazar en vez de cortar.
+
+El Tema 6 elegirá los tamaños de letra con estilos con nombre, que escalan con el usuario. El Módulo 10 profundiza en
+accesibilidad, con lectores de pantalla y contraste.
 
 #### Problema resuelto 5.1
 Prueba tres pantallas con las condiciones de un teléfono real: muesca y barra de inicio, teclado abierto y letra al
@@ -1732,8 +2146,7 @@ Al terminar este tema podrás:
 - usar los roles de color del tema (`colorScheme`) para que la pantalla funcione en modo claro y oscuro;
 - auditar una pantalla con una prueba que cuenta los valores de espacio, letra y color que usa.
 
-**Conceptos clave:** sistema de diseño, escala de espacios, *token*, estilos de texto del tema, roles de color,
-jerarquía visual
+**Conceptos clave:** sistema de diseño, escala de espacios, token, estilos de texto del tema, roles de color, jerarquía visual, `abstract final class`
 
 #### El problema
 La pantalla de detalle se construyó de prisa: un margen de 13 aquí, 7 allá, letras de 11, 12, 13, 14, 15, 17 y 22 y
@@ -1741,8 +2154,8 @@ colores escritos a mano. Se ve «más o menos bien», pero nadie sabe por qué, 
 y cuando el usuario activa el modo oscuro el texto gris oscuro queda sobre fondo negro. Un sistema de diseño
 reemplaza decisiones sueltas por unas pocas reglas.
 
-Este tema usa **`Padding` y `SizedBox`** (Módulo 1, Tema 2), **`Theme.of(context)`** (Módulo 1, Tema 1) y
-**`abstract final class`** (Módulo 0, Tema 2).
+Este tema usa **`Padding` y `SizedBox`** (Módulo 1, Tema 2), **`Theme.of(context)`** (Módulo 1, Tema 1) y los
+modificadores de clase de Dart 3, como `sealed` (Módulo 0, Tema 6); **`abstract final class`** se explica aquí.
 
 #### Glosario del tema
 
@@ -1760,12 +2173,19 @@ Este tema usa **`Padding` y `SizedBox`** (Módulo 1, Tema 2), **`Theme.of(contex
 - **Ejemplo:** `Espacio.xs = 4`, `s = 8`, `m = 16`, `l = 24`.
 - **Error típico:** «ajustar a ojo» con 13 o 7; las diferencias pequeñas se ven como errores, no como intención.
 
-***token***
+**token**
 - **Definición técnica:** valor de diseño con nombre (un espacio, un color, un radio) que se usa en lugar del número o el color literal.
 - **En palabras sencillas:** un nombre para una decisión.
 - **Dónde se rompe la comparación:** el nombre describe su papel (`Espacio.m`), no su valor (`dieciseis`), para poder cambiar el valor sin renombrar.
 - **Ejemplo:** `const SizedBox(height: Espacio.l)`.
 - **Error típico:** crear un *token* por cada valor que ya existía; se obtiene la misma desorganización con nombres.
+
+**`abstract final class`**
+- **Definición técnica:** combinación de dos modificadores de clase de Dart 3.0: `abstract` impide crear instancias y `final` impide extender o implementar la clase fuera de su biblioteca.
+- **En palabras sencillas:** una caja cerrada que solo sirve para guardar constantes con nombre: nadie la fabrica ni la copia.
+- **Dónde se rompe la comparación:** dentro de su propio archivo sí se puede extender; la restricción de `final` aplica a las demás bibliotecas.
+- **Ejemplo:** `abstract final class Espacio { static const m = 16.0; }` y `print('margen: ${Espacio.m}')` imprime `margen: 16.0`.
+- **Error típico:** escribir `Espacio()` o `class MiEspacio extends Espacio {}` en otro archivo; `dart analyze` responde `Abstract classes can't be instantiated.` y `The class 'Espacio' can't be extended outside of its library because it's a final class.`
 
 **estilos de texto del tema**
 - **Definición técnica:** los 15 estilos de `TextTheme` de Material 3 (de `displayLarge` a `labelSmall`), agrupados por rol: *display*, *headline*, *title*, *body* y *label*.
@@ -1789,9 +2209,54 @@ Este tema usa **`Padding` y `SizedBox`** (Módulo 1, Tema 2), **`Theme.of(contex
 - **Error típico:** separar la etiqueta de su dato más que de la sección anterior, como en «antes» (7 y 22 sin regla).
 
 #### ► CÓMO FUNCIONA
-Los tres ingredientes se resuelven en lugares distintos: los espacios salen de una clase de constantes propia; los
-estilos de texto y los colores salen del tema, que `MaterialApp` entrega a toda la app y que cambia completo al pasar
-a modo oscuro. Una prueba recorre la pantalla construida y cuenta los valores distintos de cada ingrediente.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de envíos con buena imagen no deja que cada sucursal elija sus colores y sus letreros. Tiene un manual:
+tres tamaños de caja, dos tipos de letra y una paleta fija. Cualquier sucursal se reconoce al instante.
+
+La pantalla de detalle se construyó sin manual. Tiene márgenes de 13, 7, 10 y 22, siete tamaños de letra y grises
+escritos a mano. Cada decisión se tomó sola. El resultado se ve «casi bien» y falla en modo oscuro.
+
+Un **sistema de diseño** es el manual escrito en código. Reemplaza decenas de decisiones sueltas por pocas reglas con
+nombre. Además, como vive en el código, una prueba puede comprobar que se cumple.
+
+##### 2. Definición formal y vocabulario
+Un sistema de diseño reúne tres ingredientes. La **escala de espacios** es una lista corta de medidas permitidas,
+aquí 4, 8, 16 y 24. Cada medida se usa con un ***token***: un nombre para una decisión de diseño, como `Espacio.m`.
+
+Los **estilos de texto del tema** son los 15 estilos de `TextTheme` en Material 3. Se agrupan en cinco roles
+(*display*, *headline*, *title*, *body*, *label*) con tres tamaños cada uno. Eliges el estilo por la función del
+texto, no por su tamaño.
+
+Los **roles de color** son los colores de `ColorScheme` nombrados por su uso, como `onSurfaceVariant` para texto
+secundario. Con estos tres ingredientes construyes la **jerarquía visual**: el orden en que el ojo lee la pantalla.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Los tres ingredientes llegan a la pantalla por caminos distintos. Los espacios son constantes de Dart:
+
+```dart
+abstract final class Espacio {
+  static const xs = 4.0;
+  static const s = 8.0;
+  static const m = 16.0;
+  static const l = 24.0;
+}
+```
+
+`abstract final class` impide crear instancias y heredar desde otra biblioteca: la clase solo agrupa
+constantes. El compilador sustituye cada `Espacio.m` por `16.0`, así que el *token* no cuesta nada al ejecutar.
+
+Los estilos y los colores, en cambio, salen del tema. Este es su recorrido:
+
+1. Al crear `ThemeData(colorSchemeSeed: Colors.indigo)`, Flutter genera un `ColorScheme` completo a partir de ese
+   color semilla. Calcula tonos con el algoritmo de color de Material 3 y asigna cada tono a un rol.
+2. Hace lo mismo con `brightness: Brightness.dark` para el tema oscuro. Los roles se llaman igual, pero sus colores
+   cambian.
+3. `MaterialApp` instala el tema activo en el árbol con un widget heredado, como el `MediaQuery` del Tema 3.
+4. En `build`, `Theme.of(context).colorScheme.onSurfaceVariant` sube por el árbol y obtiene el color de ese rol en
+   el modo activo.
+5. Si el usuario cambia a modo oscuro, el tema instalado cambia. Todo widget que leyó `Theme.of` se reconstruye con
+   los colores nuevos.
 
 ```mermaid
 flowchart LR
@@ -1802,6 +2267,49 @@ flowchart LR
     CS --> P
     P --> A["Prueba: ¿cuántos valores distintos usa?"]
 ```
+
+El diagrama muestra los dos orígenes y el control final. La prueba de auditoría recorre los `Padding`, `SizedBox` y
+`Text` ya construidos y junta sus valores en conjuntos. Si aparece un 13 o un `fontSize` suelto, lo cuenta.
+
+El paso 5 explica el fallo de la versión «antes». `Color(0xFF333333)` es un valor fijo, no un rol. En modo oscuro el
+fondo se vuelve casi negro y ese gris sigue igual. En cambio, `onSurface` cambia a un tono claro, porque el tema
+garantiza el contraste con `surface`.
+
+La jerarquía nace de combinar los tres ingredientes. La función `dato` pone la etiqueta en `labelMedium` y
+`onSurfaceVariant`, a 4 puntos de su valor en `bodyLarge`. Entre datos hay 16, y entre secciones, 24. La cercanía
+dice qué va junto.
+
+##### 4. Reglas, variantes y casos límite
+Cada rol de color tiene su pareja de contraste. `primary` va con `onPrimary`, y `tertiaryContainer` con
+`onTertiaryContainer`. El tema garantiza que cada pareja se lea bien. Si mezclas roles de parejas distintas, pierdes
+esa garantía.
+
+Desde Flutter 3.22, `ColorScheme` incluye los roles de superficie de Material 3, como `surfaceContainerLow` y
+`surfaceContainerHighest`. Reemplazan a roles antiguos como `background` y `surfaceVariant`, que quedaron obsoletos.
+
+Un `TextStyle(fontSize: 17)` suelto no usa la fuente ni la altura de línea del tema. Si necesitas variar un estilo,
+parte de uno del tema con `copyWith`, como hace `labelMedium?.copyWith(color: ...)`. Los estilos del tema pueden ser
+`null`, por eso se usa `?.`.
+
+La escala de texto del Tema 5 se aplica sobre cualquier estilo, del tema o no. Usar estilos del tema no reemplaza
+probar con letra grande.
+
+Los componentes de Material traen sus propios rellenos internos, como los de botones y chips. Esos valores no son
+tuyos y la auditoría los salta. La escala se aplica a los espacios que tú decides.
+
+Un *token* nombra un papel, no un valor. `Espacio.m` puede pasar de 16 a 20 sin renombrar nada. Un nombre como
+`dieciseis` obligaría a cambiar cada uso.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Módulo 1, Tema 2 introdujo la escala de espaciado, `TextTheme` y `ColorScheme` en una tarjeta. Este tema los
+convierte en reglas para toda la app y agrega la auditoría. `abstract final class` usa los modificadores de clase de
+Dart 3.0, la misma familia que `sealed` en el Módulo 0, Tema 6.
+
+`Theme.of(context)` funciona por el mismo mecanismo de widget heredado que `MediaQuery` en el Tema 3. Ambos son datos
+de un ancestro que cualquier descendiente puede leer, y ambos reconstruyen a quien depende de ellos.
+
+El Módulo 10 construye un tema completo de la app, mide el contraste con números y agrega componentes de Cupertino.
+El proyecto de este módulo combina todo: una pantalla de detalle en tres tamaños, en modo claro y oscuro.
 
 #### Problema resuelto 6.1
 Rehaz la pantalla de detalle con una escala de espacios, los estilos de texto y los roles de color del tema. Audita las

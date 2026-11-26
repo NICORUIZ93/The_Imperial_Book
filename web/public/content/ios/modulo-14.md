@@ -60,8 +60,7 @@ Al terminar este tema podrás:
 - calcular el valor de una curva en cualquier instante y dibujar una tira de fotogramas en una prueba;
 - comprobar que tu modelo de una curva coincide con el de SwiftUI.
 
-**Conceptos clave:** animación explícita, resorte (duración y rebote), fotograma clave, `TimelineView`, tira de
-fotogramas
+**Conceptos clave:** animación explícita, resorte (duración y rebote), fotograma clave, `TimelineView`, tira de fotogramas
 
 #### El problema
 Cuando el camión llega al destino, la marca de «entregada» debe saltar con un pequeño rebote, y el camión debe
@@ -110,9 +109,43 @@ ventana de la app** (Módulo 9).
 - **Error típico:** «probar» una animación con `sleep` y un pantallazo: el instante exacto nunca es el mismo.
 
 #### ► CÓMO FUNCIONA
-Una animación es una curva: para cada instante, un valor. SwiftUI la evalúa en cada cuadro de pantalla. Una prueba
-puede evaluarla en los instantes que quiera, dibujar la vista con cada valor y juntar los dibujos. Y como la curva de
-un resorte tiene fórmula, se puede escribir en el núcleo, probar en Linux y comparar con la de SwiftUI.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una puerta con cierre hidráulico. Si está bien ajustada, se cierra rápido al principio y frena al final,
+sin golpe. Si el ajuste está flojo, rebota contra el marco antes de quedarse quieta. Nadie piensa en ecuaciones al
+verla, pero el movimiento sigue una curva precisa.
+
+Una **animación** en SwiftUI es eso: una curva que dice, para cada instante, dónde está la propiedad que cambia. El
+camión que llega al destino con un pequeño rebote sigue la curva de un **resorte**. La marca de «entregada» que
+crece, se pasa y vuelve sigue un guion de **fotogramas clave**.
+
+El problema del tema es que una animación ajustada a ojo no se puede revisar en una prueba si solo se mira en
+movimiento. La idea central es otra: como la curva es una función del tiempo, puedes evaluarla en instantes fijos.
+Con esos valores dibujas viñetas y las comparas.
+
+##### 2. Definición formal y vocabulario
+
+Una **animación explícita** se declara con `withAnimation(_:_:)`. Envuelve un cambio de estado, y SwiftUI anima
+todas las propiedades animables de las vistas que dependen de ese estado, con la curva indicada.
+
+Un **resorte** se describe con `Spring(duration:bounce:)`. Es un oscilador amortiguado: con rebote 0 llega sin
+pasarse, y con rebote mayor se pasa del destino y vuelve. Su método `value(target:time:)` da la posición en
+cualquier instante.
+
+Un **fotograma clave** es un valor que una propiedad debe alcanzar en un momento, con la curva para llegar:
+`LinearKeyframe`, `CubicKeyframe` o `SpringKeyframe`. Una `KeyframeTrack` agrupa los de una propiedad, y una
+`KeyframeTimeline` reúne las pistas.
+
+**`TimelineView`** es una vista que se redibuja según un horario. Con `.animation`, se redibuja en cada cuadro de
+pantalla y entrega la fecha de cada redibujo a su contenido.
+
+Una **tira de fotogramas** es una imagen con la vista dibujada en varios instantes. Se obtiene calculando el valor
+de la curva en cada instante, sin esperar a que pase el tiempo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La misma curva alimenta la app, la prueba y la comparación con el núcleo:
 
 ```mermaid
 flowchart LR
@@ -126,6 +159,80 @@ flowchart LR
     V2 --> TIRA2["tira de la marca"]
     K --> TL["TimelineView en la app"]
 ```
+
+1. **Cambias el estado dentro del bloque.** `withAnimation(.spring(duration: 3, bounce: 0.3)) { progreso = 1 }`
+   marca esa transacción con una curva. SwiftUI calcula la vista con el valor final de inmediato.
+2. **SwiftUI interpola.** Para cada propiedad animable que cambió, guarda el valor de origen y el de destino. En
+   cada cuadro de pantalla evalúa la curva en el tiempo transcurrido y dibuja el valor intermedio.
+3. **El resorte tiene fórmula.** Usa masa 1, rigidez (2π / duración)² y razón de amortiguamiento 1 − rebote.
+   Con eso, la posición sale de la ecuación del oscilador amortiguado. El núcleo la escribe en `Resorte.valor(en:)`:
+
+```swift
+let wd = w0 * (1 - zeta * zeta).squareRoot()
+let desplazamiento = exp(-zeta * w0 * t) * (cos(wd * t) + zeta * w0 / wd * sin(wd * t))
+return 1 - desplazamiento
+```
+
+   `w0` es la frecuencia natural y `zeta` la razón de amortiguamiento. La exponencial apaga la oscilación; el coseno
+   y el seno la producen. Con `zeta` igual a 1, el código usa la fórmula del caso crítico, sin oscilación.
+4. **La prueba compara curvas.** Evalúa `Spring.value` y `Resorte.valor` en 201 instantes. La diferencia máxima
+   real fue del orden de 10⁻¹⁶, el error de redondeo de un `Double`: SwiftUI usa ese mismo oscilador.
+5. **Los fotogramas clave avanzan en pistas paralelas.** Cada `KeyframeTrack` recorre sus fotogramas en orden,
+   con su propio reloj. La línea de tiempo dura lo que su pista más larga: 0,45 s para la marca.
+
+```swift
+let linea = MarcaEntregada.lineaDeTiempo()
+let valores = linea.value(time: 0.3)
+let vista = MarcaEntregada(valores: valores)
+```
+
+   `value(time:)` devuelve un `ValoresMarca` con escala y giro en ese instante. La vista no anima nada por sí
+   misma: dibuja los valores que recibe.
+6. **En la app, `TimelineView` pone el reloj.** En cada cuadro calcula el tiempo desde que empezó la marca y pide
+   `lineaDeTiempo().value(time: t)`. En la prueba, el reloj lo pones tú.
+
+##### 4. Reglas, variantes y casos límite
+
+**Solo lo que cambia dentro del bloque.** Un cambio de estado fuera de `withAnimation` salta sin animación. Si el
+cambio llega desde un `Task`, envuélvelo ahí mismo.
+
+**Implícita frente a explícita.** `.animation(_:value:)` anima una vista cuando cambia un valor concreto. La forma
+sin `value:` quedó obsoleta en iOS 15, porque animaba cambios que no querías.
+
+**La duración es perceptiva.** Con rebote bajo, el resorte se aquieta cerca de la duración: 0,529 s con rebote 0 y
+0,524 s con 0,3. Con rebote 0,7 tarda 1,140 s, más del doble. Si otra acción espera el final, usa la finalización de
+`withAnimation`, disponible desde iOS 17.
+
+**Dos formas de describir un resorte.** `.spring(response:dampingFraction:)` existe desde iOS 13.
+`Spring(duration:bounce:)`, `KeyframeTimeline` y `KeyframeAnimator` llegaron en iOS 17. No mezcles las dos formas
+sin convertir los números.
+
+**Las conversiones no son oficiales.** Las fórmulas de rigidez y amortiguamiento del tema vienen de los foros de
+desarrolladores de Apple, no de la documentación. Por eso la prueba las compara con `Spring.value` en lugar de
+darlas por buenas.
+
+**`TimelineView` cuesta.** Con el horario `.animation`, redibuja en cada cuadro aunque nada cambie. Págalo solo
+mientras la animación corre y usa `paused:` el resto del tiempo.
+
+**`Double` también redondea.** La tira del resorte salió con 6 fotogramas en vez de 7. Sumar 0,1 seis veces da
+0,6000000000000001, que supera el límite de `stride(through:)`. Si necesitas instantes exactos, multiplica un
+entero por el paso.
+
+**La tira no es la pantalla.** Muestra los valores de la curva, no la animación real, que depende de la frecuencia
+de cuadros. Los pantallazos en vivo del tema confirman el orden, con instantes aproximados.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema parte de `@State` del Módulo 2, Tema 1: una animación siempre es la transición entre dos estados. La
+espera antes de mover el camión usa `Task.sleep` del Módulo 4. Las capturas con una ventana de la app vienen del
+Módulo 9, Tema 4, y aquí dibujan viñetas en lugar de pantallas completas.
+
+Separar la vista que se dibuja de lo que la anima es la misma idea que el Módulo 12 aplicó a las capas. La vista
+sin lógica recibe valores; otra pieza decide cuáles.
+
+No confundas una animación con un cambio de diseño. `AnyLayout`, del Módulo 10, Tema 3, cambia cómo se colocan las
+vistas y, al conservar su identidad, permite animar ese cambio. El Tema 2 de este módulo escribe un `Layout` propio,
+y SwiftUI también puede animar la transición entre sus posiciones.
 
 #### Problema resuelto 1.1
 Escribe la curva del resorte en el núcleo y su tabla de valores. En la app, mueve el camión con un resorte y haz
@@ -586,8 +693,7 @@ Al terminar este tema podrás:
 - manejar la propuesta sin ancho (`nil`) y los elementos más anchos que el espacio;
 - reconocer en una captura los dos errores más comunes de un `Layout` propio.
 
-**Conceptos clave:** protocolo `Layout`, propuesta de tamaño, `sizeThatFits`, `placeSubviews` y `bounds`,
-`replacingUnspecifiedDimensions`
+**Conceptos clave:** protocolo `Layout`, propuesta de tamaño, `sizeThatFits`, `placeSubviews` y `bounds`, `replacingUnspecifiedDimensions`
 
 #### El problema
 Cada entrega tiene etiquetas: «Frágil», «Contraentrega», «Refrigerado», «Portería», «Llamar antes», «Segundo
@@ -635,9 +741,43 @@ Este tema usa **cómo SwiftUI propone tamaños a las vistas** (Módulo 1) y **la
 - **Error típico:** usarlo «para no lidiar con opcionales».
 
 #### ► CÓMO FUNCIONA
-El padre propone un tamaño. `sizeThatFits` pregunta a cada etiqueta su tamaño ideal, le pasa los tamaños y el ancho
-propuesto a `DistribucionFlujo.distribuir` (núcleo) y responde con el tamaño total. Después, `placeSubviews` recibe
-el rectángulo asignado, vuelve a distribuir con su ancho y coloca cada etiqueta sumando el origen.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en cómo escribes en un cuaderno. Pones palabras de izquierda a derecha, y cuando la siguiente no cabe en el
+renglón, bajas al de abajo. No partes la palabra ni la aprietas: la mueves entera. Al final sabes cuántos
+renglones usaste.
+
+Las etiquetas de una entrega necesitan ese comportamiento. «Frágil», «Contraentrega» o «Llamar antes» tienen
+anchos distintos, y su número cambia de una entrega a otra. Ningún contenedor de SwiftUI lo resuelve: un `HStack`
+las comprime, un `LazyVGrid` las mete en celdas iguales y un `ScrollView` horizontal las esconde.
+
+El **protocolo `Layout`** te deja escribir tu propio contenedor. Le enseñas a SwiftUI cuánto mide y dónde va cada
+hija, y él se encarga de dibujar, animar y redimensionar. Este tema escribe `FlujoEtiquetas` con el cálculo
+separado en el núcleo y probado en Linux.
+
+##### 2. Definición formal y vocabulario
+
+El **protocolo `Layout`** define un contenedor con dos métodos obligatorios: `sizeThatFits(proposal:subviews:cache:)`
+y `placeSubviews(in:proposal:subviews:cache:)`. Lo usas como un stack: `FlujoEtiquetas { … }`. No dibuja ni tiene
+estado.
+
+La **propuesta de tamaño** es un `ProposedViewSize`: el ancho y el alto que el padre ofrece. Cada dimensión puede
+ser un número, `nil` («tu tamaño ideal»), 0 o infinito. El padre puede preguntar varias veces con propuestas
+distintas.
+
+**`sizeThatFits`** responde cuánto mide el contenedor para una propuesta. `FlujoEtiquetas` pregunta a cada hija su
+tamaño ideal y reparte en filas.
+
+**`placeSubviews`** coloca cada hija con `place(at:anchor:proposal:)` dentro de **`bounds`**, el rectángulo que el
+padre asignó. Las coordenadas de `bounds` son las del padre, así que su origen casi nunca es (0, 0).
+
+**`replacingUnspecifiedDimensions`** cambia cada dimensión `nil` por un valor por defecto, que es 10 si no indicas
+otro. Para un contenedor que reparte en filas, eso significa una etiqueta por fila.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La negociación entre padre, contenedor e hijas ocurre en dos fases:
 
 ```mermaid
 sequenceDiagram
@@ -654,6 +794,76 @@ sequenceDiagram
     P->>F: placeSubviews(in: bounds)
     F->>E: place(at: bounds.origin + posición)
 ```
+
+1. **El padre propone.** Un `VStack` en una pantalla de 390 puntos ofrece un ancho concreto. Un `ScrollView`
+   horizontal ofrece ancho `nil`, porque su contenido puede medir lo que quiera.
+2. **El contenedor pregunta a sus hijas.** `subviews` es una colección de proxies. Cada proxy responde
+   `sizeThatFits(.unspecified)` con el tamaño ideal de la etiqueta, sin colocarla todavía.
+3. **El núcleo reparte.** `DistribucionFlujo.distribuir` recibe los tamaños y el ancho máximo. Recorre los
+   elementos y decide si cada uno cabe en la fila actual.
+
+```swift
+for tamano in tamanos {
+    if x > 0 && x + tamano.ancho > limite {
+        y += altoFila + espacio
+        x = 0
+        altoFila = 0
+    }
+    posiciones.append(Punto(x, y))
+    x += tamano.ancho + espacio
+    altoFila = max(altoFila, tamano.alto)
+}
+```
+
+   La condición `x > 0` evita una fila vacía cuando un elemento es más ancho que el espacio. Sin ella, ese elemento
+   bajaría de fila y dejaría una fila vacía encima. `limite` vale infinito cuando el ancho es `nil`, así que todo cabe en una fila.
+4. **El contenedor responde.** Devuelve el tamaño total ocupado, no el propuesto. Con 220 puntos y las cuatro
+   etiquetas de la prueba, el total es 208 × 68: dos filas.
+5. **El padre asigna un rectángulo.** Decide dónde va el contenedor y llama a `placeSubviews` con ese `bounds`.
+6. **El contenedor coloca.** Vuelve a distribuir con `bounds.width` y coloca cada etiqueta en `bounds.origin` más
+   su posición. SwiftUI dibuja después, y si la colocación cambia dentro de una animación, interpola las posiciones.
+
+##### 4. Reglas, variantes y casos límite
+
+**Desde cuándo.** El protocolo `Layout` llegó en iOS 16, junto con `AnyLayout`, `HStackLayout` y `VStackLayout`.
+Antes, un contenedor así exigía `GeometryReader` y desplazamientos a mano.
+
+**Sin efectos y rápido.** `sizeThatFits` se llama muchas veces, con propuestas distintas. No guardes estado ni
+hagas trabajo caro dentro. Si el cálculo pesa, el protocolo ofrece una caché con `makeCache(subviews:)`;
+`FlujoEtiquetas` no la necesita, por eso su tipo de caché es `()`.
+
+**El ancho puede ser `nil`.** Suponer que siempre es un número rompe el contenedor dentro de un `ScrollView`
+horizontal. Trata `nil` como «sin límite», no lo reemplaces por 10.
+
+**Suma el origen.** Colocar en la posición sin sumar `bounds.origin` funciona solo cuando el contenedor está en la
+esquina de la pantalla. En cualquier otro lugar, las etiquetas aparecen desplazadas: es la variante `.sinOrigen`.
+
+**Qué propones a las hijas.** Al colocar, `FlujoEtiquetas` propone `.unspecified`: cada etiqueta usa su tamaño
+ideal. Si propusieras un ancho menor, el texto podría partirse en varias líneas.
+
+**El espacio cuenta.** La prueba fallida del tema lo muestra. Sin sumar los 8 puntos entre etiquetas, la cuenta a
+mano dice tres filas con 165 puntos; el algoritmo, correctamente, da cuatro.
+
+**Datos por hija.** Si una hija necesita un dato para el contenedor, como una prioridad, se declara con
+`LayoutValueKey` y se lee desde el proxy. Este tema no lo necesita.
+
+**Texto grande.** Con Dynamic Type, las etiquetas crecen, y el mismo algoritmo produce más filas. No hay que
+escribir un caso especial.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema explica por dentro lo que el Módulo 1, Tema 3, usó desde fuera: cómo un stack propone tamaños y coloca a
+sus hijas. Ahora el contenedor eres tú. Las pruebas con tabla de anchos usan los argumentos de Swift Testing del
+Módulo 9, Tema 2.
+
+En el Módulo 10, Tema 3, `AnyLayout` envolvía `HStackLayout` y `VStackLayout`. `FlujoEtiquetas` cumple el mismo
+protocolo, así que también podría ir dentro de un `AnyLayout`.
+
+Separar el cálculo en `DistribucionFlujo` repite la idea del Módulo 12: la lógica pura vive en el núcleo y la
+vista solo traduce. No confundas `Layout` con `LazyVGrid`: la cuadrícula carga celdas bajo demanda en filas iguales;
+`Layout` coloca todas sus hijas con tus reglas.
+
+El Tema 3 sale de SwiftUI: envuelve una vista de UIKit, `UITextView`, que mide y se coloca con otras reglas.
 
 #### Problema resuelto 2.1
 Escribe el reparto en filas como función pura y pruébalo con una tabla de anchos. Úsalo en un `Layout` propio y
@@ -1116,9 +1326,44 @@ XCUITest** (Módulo 9).
 - **Error típico:** fijar un alto con `.frame(height:)` y que el texto largo quede escondido.
 
 #### ► CÓMO FUNCIONA
-SwiftUI crea la vista de UIKit una vez y el coordinador queda como su delegado. Cuando la persona escribe, UIKit
-pregunta al coordinador si acepta el cambio (el límite de 140) y le avisa del texto nuevo; el coordinador escribe en
-el `Binding`, SwiftUI vuelve a calcular y llama a `updateUIView`, que **compara** antes de escribir en la vista.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un electrodoméstico comprado en otro país. Funciona bien, pero su enchufe no entra en tu pared. No lo
+botas ni lo desarmas: le pones un adaptador. Y si el aparato tiene un botón que avisa algo, necesitas a alguien que
+traduzca ese aviso a tu idioma.
+
+La app de reparto ya tenía un `UITextView` de UIKit bien configurado para las observaciones. Crece con el texto,
+respeta la fuente del sistema y aplica un límite de 140 caracteres. **`UIViewRepresentable`** es el adaptador que
+lo pone dentro de una pantalla de SwiftUI. El **coordinador** es el traductor que lleva los avisos de UIKit de
+vuelta a SwiftUI.
+
+El problema del tema surge en la frontera. Un cambio que llega desde SwiftUI no siempre aparecía en la vista, y
+nadie sabía si reescribir el texto movía el cursor. Para responder hay que entender cuándo llama SwiftUI a cada
+método.
+
+##### 2. Definición formal y vocabulario
+
+**`UIViewRepresentable`** es el protocolo de SwiftUI para usar una `UIView` como vista. Exige `makeUIView(context:)`,
+que la crea, y `updateUIView(_:context:)`, que la actualiza. Opcionalmente ofrece `makeCoordinator()`,
+`sizeThatFits(_:uiView:context:)` y `dismantleUIView(_:coordinator:)`.
+
+El **ciclo `make`/`update`** describe cuándo se llaman. `makeUIView` se llama una vez por identidad de la vista.
+`updateUIView` se llama cada vez que cambia algo de lo que depende el `struct`: sus propiedades, el entorno o un
+`Binding`.
+
+El **coordinador** es un objeto que crea `makeCoordinator()`. Vive tanto como la vista de UIKit y llega a los otros
+métodos en `context.coordinator`. Se usa como delegado o como objetivo de acciones.
+
+El **delegado** es el patrón de UIKit en que una vista pregunta y avisa a otro objeto. `UITextView` pregunta
+«¿acepto este cambio?» con `shouldChangeTextIn` y avisa «cambié» con `textViewDidChange`.
+
+**`sizeThatFits` de un representable** recibe la propuesta de SwiftUI y devuelve el tamaño de la vista de UIKit.
+Devolver `nil` usa el comportamiento por defecto.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El texto da una vuelta completa entre los dos mundos:
 
 ```mermaid
 sequenceDiagram
@@ -1135,6 +1380,75 @@ sequenceDiagram
     C->>S: padre.texto = vista.text
     S->>R: updateUIView → iguales: no toca la vista
 ```
+
+1. **SwiftUI crea el coordinador y la vista.** Llama primero a `makeCoordinator()` y después a `makeUIView`, que
+   configura el `UITextView` y le asigna `context.coordinator` como delegado. SwiftUI guarda los dos.
+2. **SwiftUI actualiza.** Llama a `updateUIView` justo después de crear y cada vez que cambia una dependencia. Allí
+   el representable renueva la copia del coordinador y compara antes de escribir.
+
+```swift
+func updateUIView(_ vista: UITextView, context: Context) {
+    context.coordinator.padre = self
+    if vista.text != texto {
+        vista.text = texto
+    }
+}
+```
+
+   El coordinador guarda una copia del `struct`; sin la primera línea, seguiría usando un `Binding` viejo. La
+   comparación evita pisar lo que la persona acaba de escribir si el texto que vuelve es distinto.
+3. **La persona escribe.** Antes de aplicar cada cambio, UIKit pregunta al delegado. El rango llega como
+   `NSRange`, en unidades UTF-16, y el coordinador lo convierte a caracteres de Swift con `NSString`. Después
+   decide con `LimiteTexto.acepta`, una función pura del núcleo.
+4. **UIKit avisa del cambio.** `textViewDidChange` escribe el texto nuevo en `padre.texto`, el `Binding`. Así el
+   dato vuelve al estado de SwiftUI.
+5. **SwiftUI vuelve a evaluar.** Las vistas que leen ese estado se recalculan, y `updateUIView` se llama otra vez.
+   Ahora los textos son iguales, así que no toca la vista.
+6. **SwiftUI pregunta el tamaño.** `sizeThatFits` recibe el ancho propuesto y mide el texto con
+   `vista.sizeThatFits`. Como `isScrollEnabled` es `false`, el `UITextView` reporta el alto de todo su contenido.
+
+##### 4. Reglas, variantes y casos límite
+
+**No guardes la vista.** El `struct` es un valor que SwiftUI crea y descarta muchas veces. La `UIView` vive en
+SwiftUI, y tú la recibes como parámetro. Crearla en `updateUIView` la reemplazaría en cada cambio.
+
+**El delegado debe ser un objeto que viva.** UIKit guarda al delegado con referencia débil. Un `struct` no puede
+serlo, y un objeto creado como variable local en `makeUIView` desaparece al salir. El coordinador vive lo que vive
+la vista.
+
+**`updateUIView` necesita una dependencia.** El hallazgo del tema: con el representable montado solo, un cambio
+externo no llegó a la vista. Con un padre que lee el estado, como la pantalla real, sí llegó. Prueba el
+representable dentro de la vista donde se usa.
+
+**El cursor.** En iOS 27.2, asignar a `text` el mismo texto que ya tenía no movió la selección. El salto del cursor
+no se pudo reproducir con texto idéntico. La comparación sigue valiendo: evita trabajo y no pisa texto distinto.
+
+**UTF-16 frente a caracteres.** «📦» ocupa dos unidades UTF-16 pero es un solo carácter de Swift. Contar con
+`NSString.length` daría otro límite que el que ve la persona. Por eso la regla cuenta con `String.count`.
+
+**Versiones.** `UIViewRepresentable` existe desde iOS 13. El método `sizeThatFits` del representable llegó en iOS
+16. Antes, el tamaño dependía de las restricciones y la prioridad de contenido de la vista de UIKit.
+
+**Limpieza.** Si la vista de UIKit registra observadores o temporizadores, quítalos en `dismantleUIView`, que
+SwiftUI llama antes de descartarla.
+
+**Datos del entorno.** `context.environment` trae el entorno de SwiftUI, como el esquema de color. Así la vista de
+UIKit puede adaptarse sin propiedades extra.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El `Binding` del representable es el mismo `@Binding` del Módulo 2, Tema 2: una referencia a un estado que vive en
+otra vista. La pantalla lo obtiene con `@Bindable` sobre un modelo `@Observable`, como en el Módulo 2, Tema 3.
+
+El delegado de UIKit cumple el papel que en SwiftUI cumplen los cierres y los `Binding`. El coordinador traduce
+entre los dos estilos. La regla del límite en el núcleo repite la separación del Módulo 12: la frontera solo
+traduce.
+
+`sizeThatFits` es la misma negociación del Tema 2, ahora con una vista de UIKit que se mide a sí misma. No
+confundas este método con el del protocolo `Layout`: aquel coloca hijas, este solo mide una vista.
+
+El Tema 4 recorre el camino en las dos direcciones. Pone un controlador de UIKit dentro de SwiftUI, y celdas de
+SwiftUI dentro de una lista de UIKit.
 
 #### Problema resuelto 3.1
 Envuelve el `UITextView` con un coordinador que aplique el límite de 140 caracteres y devuelva el texto a SwiftUI.
@@ -1730,8 +2044,7 @@ Al terminar este tema podrás:
 - pasar la selección de UIKit a SwiftUI y los datos de SwiftUI a UIKit sin recargar de más;
 - probar la integración llamando al delegado de la lista y tocando la celda con XCUITest.
 
-**Conceptos clave:** `UIHostingConfiguration`, `UIViewControllerRepresentable`, `UIHostingController`, celda de lista
-con registro, recarga de datos
+**Conceptos clave:** `UIHostingConfiguration`, `UIViewControllerRepresentable`, `UIHostingController`, celda de lista con registro, recarga de datos
 
 #### El problema
 La app tiene una lista de entregas hecha en UIKit, con `UICollectionView`, que funciona y que nadie quiere reescribir.
@@ -1767,7 +2080,7 @@ Este tema usa **el Tema 3** (representables y coordinador) y **`@Bindable`** (M�
 **celda de lista con registro**
 - **Definición técnica:** `UICollectionView.CellRegistration` define cómo configurar una celda para un dato; `dequeueConfiguredReusableCell(using:for:item:)` la reutiliza y la configura.
 - **En palabras sencillas:** el molde de la celda, que se usa una y otra vez.
-- **Dónde se rompe la comparación:** el registro debe crearse una sola vez (aquí, `lazy var`), no en cada `cellForItemAt`.
+- **Dónde se rompe la comparación:** el registro debe crearse una sola vez (aquí, `private let`, creado junto con el controlador), no en cada `cellForItemAt`.
 - **Ejemplo:** `registro` en `ListaEntregasViewController`.
 - **Error típico:** crear el registro dentro de `cellForItemAt`, también sin querer, con un `lazy var`: UIKit lanza `NSInternalInconsistencyException` y la app se cierra.
 
@@ -1779,9 +2092,42 @@ Este tema usa **el Tema 3** (representables y coordinador) y **`@Bindable`** (M�
 - **Error típico:** recargar siempre: se pierde el desplazamiento y la animación de selección.
 
 #### ► CÓMO FUNCIONA
-La pantalla de SwiftUI contiene el representable, que crea una vez el controlador de UIKit y le pasa un *closure* que
-llama al coordinador. Cada celda pinta una tarjeta de SwiftUI. Al tocar una celda, UIKit llama a
-`didSelectItemAt`, el *closure* avisa al coordinador y este escribe en el `Binding`: la etiqueta de SwiftUI cambia.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una casa vieja que se remodela por partes. No se tumba entera: se cambia la cocina y se deja la sala. Al
+final conviven las dos épocas, y las puertas entre ellas tienen que abrir bien en los dos sentidos.
+
+Las apps de iOS con años de historia viven así. Tienen pantallas de UIKit que funcionan y que nadie quiere
+reescribir, y pantallas nuevas en SwiftUI. Apple ofrece puertas en las dos direcciones. **`UIHostingConfiguration`**
+y **`UIHostingController`** ponen SwiftUI dentro de UIKit. **`UIViewControllerRepresentable`** pone una pantalla de
+UIKit dentro de SwiftUI.
+
+El problema del tema usa las dos a la vez. Una lista de UIKit con `UICollectionView` dibuja tarjetas de SwiftUI en
+sus celdas. Esa misma lista va dentro de una pantalla de SwiftUI, y la entrega que tocas en UIKit aparece en un
+texto de SwiftUI.
+
+##### 2. Definición formal y vocabulario
+
+**`UIHostingConfiguration`** es una configuración de contenido que dibuja una vista de SwiftUI dentro de una celda
+de `UICollectionView` o `UITableView`. Se asigna con `celda.contentConfiguration = UIHostingConfiguration { … }`.
+
+**`UIViewControllerRepresentable`** es el equivalente de `UIViewRepresentable` para un `UIViewController`. Exige
+`makeUIViewController` y `updateUIViewController`, y admite coordinador.
+
+**`UIHostingController`** es un `UIViewController` cuyo contenido es una vista de SwiftUI. Sirve para mostrar
+SwiftUI como pantalla o dentro de un contenedor de UIKit.
+
+Una **celda de lista con registro** se define con `UICollectionView.CellRegistration`, que dice cómo configurar una
+celda para un dato. `dequeueConfiguredReusableCell(using:for:item:)` reutiliza una celda y la configura con ese
+registro.
+
+La **recarga de datos** es `reloadData()`, o un *diffable data source*: la lista vuelve a pedir sus celdas. Desde
+SwiftUI se hace en `updateUIViewController`, y solo si los datos cambiaron.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La selección cruza la frontera de UIKit hacia SwiftUI a través del coordinador:
 
 ```mermaid
 flowchart TB
@@ -1798,6 +2144,80 @@ flowchart TB
     VC -->|"didSelectItemAt → alSeleccionar"| C["Coordinador"]
     C -->|"padre.seleccionada = guía"| P
 ```
+
+1. **SwiftUI crea el controlador.** `makeUIViewController` crea `ListaEntregasViewController` y conecta su cierre
+   `alSeleccionar` con el coordinador. SwiftUI lo agrega como hijo de su propio controlador, así que `viewDidLoad`
+   y `viewWillAppear` ocurren como en cualquier app de UIKit.
+2. **SwiftUI pasa los datos.** `updateUIViewController` renueva la copia del coordinador y recarga solo si las
+   entregas cambiaron:
+
+```swift
+context.coordinator.padre = self
+if controlador.entregas != entregas {
+    controlador.entregas = entregas
+    controlador.collectionView.reloadData()
+}
+```
+
+   La comparación exige que `Entrega` sea `Equatable`. Cambiar la selección también provoca esta llamada, pero no recarga.
+3. **UIKit pide celdas.** Para cada posición, `cellForItemAt` reutiliza una celda con el registro creado junto con
+   el controlador. El registro asigna un `UIHostingConfiguration` con la tarjeta de SwiftUI.
+
+```swift
+private let registro = UICollectionView.CellRegistration<UICollectionViewListCell, Entrega> {
+    celda, _, entrega in
+    celda.contentConfiguration = UIHostingConfiguration { TarjetaCompacta(entrega: entrega) }
+    celda.accessories = [.disclosureIndicator()]
+}
+```
+
+   La celda sigue siendo de UIKit: la selección, la flecha y la reutilización son suyas. SwiftUI solo pinta el
+   contenido, y la celda toma su alto del contenido de SwiftUI.
+4. **La persona toca una celda.** UIKit llama a `didSelectItemAt`. El controlador quita el resaltado y llama a
+   `alSeleccionar` con la entrega.
+5. **El coordinador escribe en el `Binding`.** `padre.seleccionada = entrega.guia` cambia el estado observable. Es
+   `@MainActor` porque escribe en el estado de la interfaz.
+6. **SwiftUI redibuja.** El `Text` que lee `estado.seleccionada` muestra la guía nueva, y `updateUIViewController`
+   se llama otra vez. Como las entregas no cambiaron, la lista no se recarga.
+
+##### 4. Reglas, variantes y casos límite
+
+**El registro se crea una sola vez.** UIKit verifica que un registro no se cree dentro de `cellForItemAt`. Si lo
+detecta, lanza `NSInternalInconsistencyException` y la app se cierra, como en la primera ronda del tema. Un `lazy
+var` también cae en la trampa: se crea la primera vez que se pide una celda.
+
+**No recargues de más.** `reloadData()` en cada actualización pierde el desplazamiento y la animación de selección.
+Para listas que cambian por partes, un *diffable data source* anima solo las diferencias.
+
+**Una configuración, no un controlador por celda.** Poner un `UIHostingController` completo en cada celda es más
+pesado y complica el tamaño. `UIHostingConfiguration` está hecho para celdas.
+
+**`UIHostingController` en un contenedor.** Si lo agregas a mano dentro de otra pantalla de UIKit, llama a
+`addChild`, agrega su vista y llama a `didMove(toParent:)`. Para que el contenedor use el tamaño de SwiftUI, fija
+`sizingOptions = .intrinsicContentSize`.
+
+**Versiones.** `UIViewControllerRepresentable` existe desde iOS 13, y `CellRegistration`, desde iOS 14.
+`UIHostingConfiguration` y `sizingOptions` llegaron en iOS 16.
+
+**Cierres y ciclos de retención.** El controlador guarda `alSeleccionar`, y ese cierre captura el coordinador, no
+el controlador. Así no se forma un ciclo entre los dos.
+
+**Accesibilidad dentro de la celda.** La tarjeta combina sus textos para VoiceOver y lleva un identificador. XCUITest
+la encuentra y la toca como a cualquier celda.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema es el espejo del Tema 3. Allí envolviste una `UIView`; aquí un `UIViewController`, con el mismo ciclo
+`make`/`update` y el mismo coordinador que renueva su copia del `struct`.
+
+`UIHostingController` ya lo usaste sin nombrarlo. Las capturas del Módulo 9, Tema 4, y `Montaje` de este
+módulo ponen vistas de SwiftUI en una ventana con él. El `@Bindable` de la pantalla viene del Módulo 2, Tema 3.
+
+No confundas las dos direcciones. Con `UIHostingConfiguration`, UIKit manda y SwiftUI pinta una parte. Con un
+representable, SwiftUI manda y UIKit vive dentro de una de sus vistas.
+
+El Proyecto 51 reúne el módulo en una pantalla de detalle. Junta la animación de llegada, el `Layout` de
+etiquetas, el campo de observaciones y la lista heredada, cada uno con sus pruebas.
 
 #### Problema resuelto 4.1
 Haz una lista de UIKit cuyas celdas son tarjetas de SwiftUI, ponla en una pantalla de SwiftUI con

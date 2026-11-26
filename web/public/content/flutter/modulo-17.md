@@ -92,7 +92,7 @@ generaste un modelo; aquí configuras la generación para un paquete entero y la
 - **Ejemplo:** `dart run build_runner build`.
 - **Error típico:** usar `--delete-conflicting-outputs` por costumbre: en 2.17.1 esa opción ya no existe y se ignora.
 
-**`part` / `part of`**
+**`part`/`part of`**
 - **Definición técnica:** `part 'envio.g.dart';` declara que otro archivo forma parte de la misma biblioteca; ese archivo empieza con `part of 'envio.dart';` y puede usar lo privado (`_`) de la biblioteca.
 - **En palabras sencillas:** dos hojas grapadas que se leen como un solo documento.
 - **Dónde se rompe la comparación:** el generador solo escribe la hoja si la grapa ya está: sin el `part`, avisa y no genera nada.
@@ -114,10 +114,71 @@ generaste un modelo; aquí configuras la generación para un paquete entero y la
 - **Error típico:** seguir un tutorial de 2024 con `@JsonCodable` y perder una tarde.
 
 #### ► CÓMO FUNCIONA
-`build_runner` lee el `pubspec.yaml`, encuentra los generadores de tus `dev_dependencies` y los compila una vez. Cada
-generador recorre las bibliotecas anotadas y produce un trozo (`.json_serializable.g.part`) en `.dart_tool`. Un
-último paso, el `combining_builder` de `source_gen`, une todos los trozos de un archivo en un solo `.g.dart` junto a
-tu código. `--only-check` hace todo eso sin escribir y falla si el disco no coincide.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una notaría que llena cientos de formularios iguales. Nadie copia a mano los datos del cliente en cada hoja:
+alguien llena una ficha y una plantilla produce el resto. Si la ficha cambia, se vuelve a imprimir. Lo que no se hace
+es corregir a mano la hoja impresa, porque la siguiente impresión borra la corrección.
+
+En la app de reparto, la ficha es el modelo `Envio` con sus anotaciones. La hoja impresa es `envio.g.dart`, con el
+`fromJson` y el `toJson` que nadie quiere escribir. Cuando el servidor agrega un campo, cambias el modelo y vuelves a
+generar. Los dos sentidos quedan siempre de acuerdo, porque salen de la misma ficha.
+
+Este tema va más allá del Módulo 5. Allí generaste un modelo. Aquí configuras la generación para un paquete entero,
+la compruebas en el CI y averiguas qué pasó con las macros, la alternativa que se anunció en 2024.
+
+##### 2. Definición formal y vocabulario
+
+En la **generación de código**, un programa llamado **generador** lee tu código ya analizado y escribe archivos
+`.dart` nuevos antes de compilar. El compilador no distingue entre código generado y código escrito a mano:
+para él todo es Dart.
+
+**`build_runner`** es la herramienta que coordina los generadores, que en su vocabulario se llaman **_builders_**. Los
+encuentra en tus dependencias, los compila, los ejecuta sobre los archivos que cambiaron y guarda en
+`.dart_tool/build` qué produjo cada uno. Así sabe qué rehacer la próxima vez.
+
+El código generado vive en otro archivo gracias a **`part` y `part of`**. `part 'envio.g.dart';` declara que ese
+archivo forma parte de la misma **biblioteca**: la unidad de privacidad de Dart. El archivo generado empieza con
+`part of 'envio.dart';`. Por eso puede definir `_$EnvioFromJson`, una función privada que el modelo usa.
+
+**`build.yaml`** es la configuración de `build_runner` en cada paquete. Dice en qué archivos corre cada generador
+(`generate_for`) y con qué opciones, como `checked: true`.
+
+Las **macros** eran una propuesta de metaprogramación estática: código que genera código durante la compilación, sin
+archivos aparte. El equipo de Dart detuvo ese trabajo en 2025, y en Dart 3.14 no se pueden usar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando ejecutas `dart run build_runner build` en el paquete `modelos_envio`.
+
+1. **Descubrimiento.** `build_runner` lee el `pubspec.yaml` y encuentra los *builders* que declaran tus
+   `dev_dependencies`, aquí `json_serializable` y `source_gen`. Lee también tu `build.yaml`.
+2. **Compilación de los generadores.** La primera vez compila un programa con todos los *builders*. En el tema tardó
+   55 de los 59 s totales. Las siguientes veces reutiliza ese programa.
+3. **Análisis.** Cada *builder* recibe las bibliotecas ya analizadas, con sus tipos resueltos. `json_serializable`
+   busca las clases con `@JsonSerializable`.
+4. **Producción de trozos.** Por cada archivo anotado escribe un trozo intermedio, `envio.json_serializable.g.part`,
+   dentro de `.dart_tool`. No toca tu carpeta `lib`.
+5. **Combinación.** El `combining_builder` de `source_gen` une los trozos de un archivo en un solo `.g.dart`, junto a
+   tu código. Si varios generadores trabajan sobre el mismo modelo, todo termina en el mismo archivo.
+6. **Registro.** `build_runner` anota qué entradas produjeron qué salidas. La segunda ejecución tardó 0 s y escribió 0
+   archivos: nada había cambiado.
+
+```dart
+part 'envio.g.dart'; // el archivo que escribe build_runner
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class Envio {
+  // ...campos y constructor...
+  factory Envio.fromJson(Map<String, dynamic> json) => _$EnvioFromJson(json);
+  Map<String, dynamic> toJson() => _$EnvioToJson(this);
+}
+```
+
+Observa las tres piezas. El `part` reserva el lugar del archivo generado. La anotación dice qué generar y con qué
+reglas: aquí, claves en `snake_case`. Los dos métodos delegan en funciones que todavía no existen hasta que generas.
+Antes de generar, el analizador reporta 5 errores, todos por eso.
 
 ```mermaid
 flowchart LR
@@ -129,6 +190,50 @@ flowchart LR
     CB --> G["lib/src/envio.g.dart<br/>(se versiona)"]
     G -.->|"part of"| M
 ```
+
+Hay tres modos de ejecutar. `build` genera una vez. `watch` queda abierto y regenera cada vez que guardas.
+`--only-check` hace todo el trabajo sin escribir y termina con código 1 si el disco no coincide con lo que generaría.
+
+##### 4. Reglas, variantes y casos límite
+
+**Sin `part`, no hay error.** Si olvidas `part 'envio.g.dart';`, el generador avisa y no escribe nada. La compilación
+termina con código 0. Busca primero la directiva antes de sospechar del generador.
+
+**Las opciones del paquete van en `build.yaml`.** Allí `checked: true` vale para todos los modelos. Con esa opción, un
+JSON mal formado dice la clase y la clave que falló, en lugar de un `_TypeError` anónimo.
+
+**El formato del archivo combinado.** En `source_gen` 4.3.1, el `combining_builder` escribe a 80 columnas y no marca el
+ancho. Con `page_width: 120`, `dart format` reescribía el archivo y el CI fallaba. La opción `preamble` agrega el
+comentario `// dart format width=80`, y el formateador lo respeta.
+
+**Una opción que desapareció.** Desde `build_runner` 2.16.0, `build` corrige solo los archivos generados incorrectos.
+`--delete-conflicting-outputs` se ignora con el aviso `These options have been removed and were ignored`.
+
+**`unknownEnumValue` pierde información.** Un estado nuevo, como `en_bodega`, se lee como `desconocido`. Si el modelo
+vuelve al servidor, el valor original ya no está. Úsalo solo en modelos de lectura, o guarda el texto original aparte.
+
+**Elementos de mapa con `?`.** El código generado usa `'notas': ?instance.notas`, una sintaxis de Dart 3.8: si el
+valor es nulo, la clave no se escribe.
+
+**Las macros no compilan.** El paquete `json` depende de `_macros`, que el SDK ya no trae. La bandera
+`--enable-experiment=macros` no da error, pero `macro class` no se entiende. El anuncio oficial es del 29 de enero de
+2025.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 5, Tema 2, ya sabes anotar un modelo y generar su `fromJson`. Este tema no repite eso: estudia la maquinaria
+y su configuración. Del Módulo 0, Tema 2, vienen los constructores `factory` y los `enum` que el generador usa.
+
+Los modelos viven en su propio paquete dentro de un **_workspace_** de pub. Un *workspace* agrupa varios paquetes con
+una sola resolución de versiones y un solo `pubspec.lock`; existe desde Dart 3.6. Es la idea de capas del Módulo 12,
+Tema 1, aplicada a paquetes.
+
+Compara la generación con escribir el código a mano y con las macros. A mano, nadie garantiza que `fromJson` y
+`toJson` sigan de acuerdo. Las macros prometían generar sin archivos, pero no llegaron. La generación produce archivos
+visibles, que se versionan y se revisan en el CI con `--only-check`.
+
+El Tema 2 abre la caja que los generadores usan por dentro: el árbol sintáctico que entrega `package:analyzer`. El
+Tema 3 escribe un generador propio con `source_gen`, el mismo que aquí combinó los trozos.
 
 #### Problema resuelto 1.1
 Crea el *workspace* y el paquete `modelos_envio` con `Envio` y `Direccion` anotados. El JSON usa `snake_case`, la
@@ -671,9 +776,74 @@ tema** (Módulo 10, Tema 1), **los tres árboles y `const`** (Módulo 1, Tema 6)
 - **Error típico:** pasar rutas relativas: deben ser absolutas y normalizadas.
 
 #### ► CÓMO FUNCIONA
-El auditor crea una colección de contextos sobre `lib/` de la app, pide cada archivo resuelto y lo recorre con un
-visitante. El visitante mira los nodos que le interesan, consulta sus elementos (¿es el `print` de `dart:core`?, ¿el
-constructor es `const`?) y anota un hallazgo con la línea y la columna que da `LineInfo`.
+
+##### 1. La idea en lenguaje sencillo
+
+En el colegio analizabas oraciones: sujeto, verbo, complemento. No mirabas las letras sueltas, sino la estructura.
+Además, para saber si «banco» era un asiento o una entidad, necesitabas el contexto, a veces el diccionario. Un
+programa que revisa código hace lo mismo: primero arma la estructura y después decide qué significa cada nombre.
+
+La guía de estilo de la app de reparto tiene tres reglas: nada de `print`, colores solo en `tema.dart` y `const` donde
+se pueda. Buscarlas con texto falla: un `print` en un comentario no cuenta, y un método propio llamado `print`
+tampoco. Necesitas leer el código como lo lee el compilador.
+
+Este tema construye un **auditor**: un programa que recorre `lib/` de la app, entiende cada expresión y reporta cada
+problema con archivo, línea y columna. `flutter analyze` encontró 2 problemas; el auditor encuentra los 8 reales.
+
+##### 2. Definición formal y vocabulario
+
+El **AST** (*abstract syntax tree*, árbol sintáctico abstracto) representa el código como un árbol de nodos tipados.
+Hay nodos como `MethodInvocation`, `ArgumentList` o `IntegerLiteral`. Las hojas son los **_tokens_**: los trozos
+mínimos del texto, como `(`, `0xFFB26A00` o `)`. Cada nodo conoce su posición en el archivo.
+
+Hay dos niveles de lectura. El **análisis sin resolver** (`parseFile`, `parseString`) solo lee la sintaxis de un
+archivo. El **análisis resuelto** (`getResolvedUnit`) además carga los `import`, decide qué es cada nombre y anota
+tipos y elementos en el árbol. Es leer con diccionario.
+
+Un **elemento** es la declaración a la que apunta un nombre en el árbol resuelto. `ConstructorElement`,
+`TopLevelFunctionElement` y `GetterElement` son ejemplos. El elemento dice de qué biblioteca viene, si es `const` y qué
+parámetros tiene. Si el código no compila, el elemento es `null`.
+
+Un **visitante** es una clase con un método `visitX` por tipo de nodo. `RecursiveAstVisitor` recorre todo el árbol y
+llama a tu método cuando encuentra ese tipo. Tú decides qué tipos te interesan.
+
+**`AnalysisContextCollection`** es el punto de entrada de `package:analyzer`. A partir de unas carpetas, encuentra sus
+`pubspec.yaml` y `package_config.json`, crea los contextos de análisis y entrega unidades resueltas. Es el analizador
+de `dart analyze`, usado como biblioteca.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el recorrido del auditor sobre un archivo de la app.
+
+1. **Contexto.** `AnalysisContextCollection(includedPaths: [...])` lee la configuración del paquete y sabe dónde está
+   cada dependencia, incluido Flutter.
+2. **Resolución.** `getResolvedUnit` analiza el archivo y todo lo que importa. La primera vez debe resumir Flutter y el
+   SDK: en el tema tardó 26 913 ms sin caché y 3 086 ms con la caché llena.
+3. **Reescritura de nodos.** Durante la resolución, el analizador corrige lo que la sintaxis no podía saber. Un
+   `MethodInvocation` cuyo nombre resulta ser una clase se reescribe como `InstanceCreationExpression`.
+4. **Recorrido.** Llamas a `unidad.accept(visitante)`. El visitante baja por el árbol y en cada nodo llama al
+   `visitX` que le corresponde.
+5. **Consulta del elemento.** En el nodo, preguntas por su elemento: de qué biblioteca viene, si su constructor es
+   `const`. Ahí decides si es un hallazgo.
+6. **Posición.** `LineInfo.getLocation(nodo.offset)` convierte el desplazamiento en línea y columna.
+
+```dart
+@override
+void visitMethodInvocation(MethodInvocation node) {
+  final funcion = node.methodName.element;
+  if (node.target == null &&
+      node.methodName.name == 'print' &&
+      funcion is TopLevelFunctionElement &&
+      funcion.library.isDartCore) {
+    _anotar(node, Regla.printOlvidado);
+  }
+  super.visitMethodInvocation(node);
+}
+```
+
+Observa que el nombre no basta. La regla exige que el elemento sea una función global de `dart:core`. Así, el `print`
+propio de la prueba no se reporta. La última línea, `super.visitMethodInvocation`, hace que el recorrido siga hacia
+los hijos del nodo.
 
 ```mermaid
 flowchart LR
@@ -685,6 +855,46 @@ flowchart LR
     P --> H["Hallazgo<br/>archivo:línea:columna"]
     K --> H
 ```
+
+La regla de colores compara la clase del constructor (`Color` de `dart:ui`), no el texto. Por eso también detecta
+`Color.fromARGB(255, 11, 95, 255)`.
+
+##### 4. Reglas, variantes y casos límite
+
+**Sin resolver, `Color(...)` no es una creación.** El analizador no sabe si `Color` es una clase o una función: se
+escriben igual. Un auditor con `parseFile` que busque `InstanceCreationExpression` solo vería los escritos con
+`const` o `new`.
+
+**Si no llamas a `super`, no bajas.** Un `visitX` que omite `super.visitX(node)` no entra a los hijos. Un `print`
+dentro de otra llamada quedaría sin revisar.
+
+**Resolver cuesta memoria.** Una app Flutter exige resumir todo Flutter. En el equipo de pruebas el proceso usó cerca
+de 1 GB, y el sistema lo mató dos veces con código 137. Resuelve solo cuando necesitas tipos.
+
+**La API cambia entre versiones mayores.** En `analyzer` 13.0.0 se eliminó `NamedExpression`. Los argumentos con
+nombre ahora son `NamedArgument`, y su expresión se lee con `argument.argumentExpression`. Este módulo usa `analyzer`
+14.7.0; fija la versión mayor y lee el `CHANGELOG` antes de subirla.
+
+**La caché en disco no es API pública.** `FileByteStore` se importa de `src/`. Esa API puede cambiar incluso en una
+versión de parche. Aísla esos `import` en un archivo con una prueba que lo use.
+
+**Las rutas deben ser absolutas.** `includedPaths` exige rutas absolutas y normalizadas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0, Tema 4, configuraste lints en `analysis_options.yaml`. Esas reglas recorren este mismo AST. La
+diferencia es que aquí escribes la regla tú. Primero busca si ya existe: `prefer_const_constructors` cubre los `const`,
+pero `flutter_lints` la quitó en la versión 5.0.0.
+
+Del Módulo 1, Tema 6, sabes por qué importa `const` en los widgets: Flutter reutiliza las instancias constantes. Del
+Módulo 10, Tema 1, viene la idea de centralizar los colores en el tema. El auditor convierte esas dos convenciones en
+comprobaciones automáticas.
+
+Compara el auditor con una búsqueda por texto, como `grep`. La búsqueda ve caracteres; el auditor ve estructura y
+significado. Por eso distingue el `print` de `dart:core` de uno propio, y un campo de una constante.
+
+El Tema 3 usa estas mismas ideas desde dentro de un generador. `source_gen` te entrega el elemento de la clase
+anotada, y tú recorres sus campos y su constructor para escribir código nuevo.
 
 #### Problema resuelto 2.1
 Dibuja el árbol de `Color(0xFFB26A00)` sin resolver y resuelto, y explica la diferencia.
@@ -1325,10 +1535,80 @@ analizador del Tema 2** y **las pruebas unitarias** (Módulo 9, Tema 1).
 - **Error típico:** comparar el texto exacto del código generado, con sus saltos de línea: dependen del formateador.
 
 #### ► CÓMO FUNCIONA
-La anotación vive en `copiable`, que la app usa en producción. El generador vive en `copiable_generador`, que solo es
-dependencia de desarrollo. `build_runner` lee el `build.yaml` del generador, lo compila con los demás y, para cada
-biblioteca con `@Copiable`, le pasa el elemento de la clase. El generador lee el constructor, escribe la extensión y
-el `combining_builder` la junta con lo de `json_serializable`.
+
+##### 1. La idea en lenguaje sencillo
+
+En la bodega, cada caja lleva una etiqueta adhesiva: «frágil», «refrigerado». La etiqueta no hace nada por sí misma.
+Quien la lee es el operario, que sabe qué hacer con cada una. Si inventas una etiqueta nueva, también debes enseñarle
+al operario a leerla.
+
+En el Tema 1 usaste etiquetas que otros inventaron: `@JsonSerializable` y su generador. Ahora la app necesita algo que
+nadie ofrece así: un `copyWith` para cada modelo y un texto para los registros que no muestre el teléfono. Vas a
+inventar la etiqueta, `@Copiable`, y también el operario que la lee, `GeneradorCopiable`.
+
+La separación importa. La etiqueta viaja con la app, porque los modelos la llevan. El operario solo trabaja en tu
+equipo, mientras programas. Por eso cada uno vive en su propio paquete.
+
+##### 2. Definición formal y vocabulario
+
+Una **anotación** es una expresión constante precedida de `@`, como `@Copiable(ocultar: {'telefono'})`. El
+compilador la guarda en el elemento anotado. Un generador la lee con **`ConstantReader`**, que consulta el valor
+constante sin ejecutar tu código.
+
+**`GeneratorForAnnotation<T>`** es una clase de `source_gen`. Recorre los elementos de primer nivel de una biblioteca,
+filtra los que llevan la anotación `T` y llama a `generateForAnnotatedElement`. Ese método recibe el elemento, la
+anotación y el paso de compilación, y devuelve el código como texto.
+
+Un **_builder_** es la unidad que `build_runner` ejecuta. **`SharedPartBuilder`** es un *builder* que envuelve uno o
+varios generadores y escribe un trozo `.<id>.g.part` en `.dart_tool`. Después, el `combining_builder` une los trozos
+de todos los generadores en el `.g.dart` de la biblioteca.
+
+El **`build.yaml` del generador** declara el *builder* en su sección `builders:`. Dice qué función lo crea, qué
+extensiones de archivo produce, a quién se aplica y dónde escribe. Es la ficha que `build_runner` lee para saber que tu
+generador existe.
+
+**`build_test`** ejecuta un *builder* en memoria con archivos de prueba mediante `testBuilder`. Devuelve lo escrito y
+los errores, sin tocar el disco.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el viaje de la clase `Parada`, desde la anotación hasta `parada.g.dart`.
+
+1. **Descubrimiento.** `modelos_envio` tiene `copiable_generador` como dependencia de desarrollo. `build_runner` lee su
+   `build.yaml` y, por `auto_apply: dependents`, aplica el *builder* a este paquete.
+2. **Compilación.** Como el conjunto de generadores cambió, `build_runner` los vuelve a compilar. En el tema tardó
+   181 s; cada cambio en el generador repite ese costo.
+3. **Filtro.** `GeneratorForAnnotation<Copiable>` revisa la biblioteca `parada.dart` y encuentra la clase con
+   `@Copiable`.
+4. **Lectura.** El generador recibe el `ClassElement` de `Parada`: el elemento del Tema 2. Lee su constructor sin
+   nombre, sus parámetros y sus tipos, y la opción `ocultar` de la anotación.
+5. **Escritura.** Devuelve el texto de una extensión con `copiarCon` y `describir`. `SharedPartBuilder` lo guarda como
+   `parada.copiable.g.part`, en la caché.
+6. **Combinación.** El `combining_builder` une ese trozo con el de `json_serializable`. El resultado es un solo
+   `parada.g.dart`, con una sección por generador.
+
+```dart
+Builder copiableBuilder(BuilderOptions opciones) =>
+    SharedPartBuilder([GeneradorCopiable()], 'copiable');
+```
+
+Esta es la función que nombra `builder_factories` en el `build.yaml`. El `id` `'copiable'` da el nombre del trozo y
+debe ser único entre todos los generadores del proyecto.
+
+```dart
+final parametros = constructor.formalParameters;
+final posicionales = parametros.where((p) => !p.isNamed).map((p) => p.name);
+if (posicionales.isNotEmpty) {
+  throw InvalidGenerationSource(
+    'El constructor de $clase tiene parámetros posicionales: ${posicionales.join(', ')}. '
+    'Usa solo parámetros con nombre, por ejemplo {required this.${posicionales.first}}.',
+    element: element,
+  );
+}
+```
+
+Antes de escribir, el generador valida. `InvalidGenerationSource` detiene la generación con un mensaje y una posición.
+Con `element: element`, el error señala la clase en el código fuente, con archivo, línea y columna.
 
 ```mermaid
 flowchart LR
@@ -1342,6 +1622,46 @@ flowchart LR
     CB --> GD["parada.g.dart"]
     T["build_test<br/>testBuilder"] -.->|"en memoria"| G
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**La anotación debe ser constante.** No puede depender de variables ni de llamadas. `const copiable = Copiable();`
+permite escribir `@copiable` sin paréntesis.
+
+**Solo el primer nivel.** `GeneratorForAnnotation` mira clases, funciones y variables globales. Una anotación sobre un
+campo no lo activa: si la necesitas, la lees desde la clase.
+
+**`build_to: cache` con `SharedPartBuilder`.** Los trozos van a `.dart_tool`; solo el `.g.dart` combinado llega a
+`lib/`. `PartBuilder` es la alternativa, pero obliga a un `part` distinto por generador.
+
+**Los mensajes de error se prueban.** En `source_gen` 4.3.1, `toString()` no imprime el parámetro `todo`. Pon la pista
+en el mensaje y pasa el elemento de la clase. Con el elemento del constructor, no pudo calcular la posición.
+
+**`nota ?? this.nota` no borra.** Con ese patrón, pasar `null` y no pasar nada son lo mismo. `copiarCon(nota: null)`
+conservó `recibió portería`. `freezed` 4.0.3 lo resuelve con un valor centinela como valor por defecto.
+
+**`build_test` solo ve lo que le das.** Sin `loadIsolateSources`, `package:copiable` no existe en memoria y la prueba
+falla con `Could not resolve annotation`. La primera ejecución resume el SDK y puede pasar el límite de 30 s de
+`package:test`.
+
+**Un *workspace* comparte la resolución.** `freezed` 2.x necesita `build` 2.x; `copiable_generador` necesita
+`build` 5. En el *workspace*, ese conflicto bloquea a todos los paquetes.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El código generado es una **extensión** del Módulo 0, Tema 7. Agrega `copiarCon` y `describir` a `Parada` sin tocar la
+clase. Por eso el generador no necesita reescribir tu modelo.
+
+Del Tema 1 vienen el `part`, el `build.yaml` y el `combining_builder`; ahora los ves desde el lado del generador. Del
+Tema 2 vienen los elementos: `ClassElement`, sus constructores y sus parámetros. La diferencia es que el auditor
+reportaba hallazgos y el generador escribe código.
+
+Las pruebas con `build_test` son pruebas unitarias del Módulo 9, Tema 1. Comprueban fragmentos con `contains`, no el
+texto completo, porque el formateador puede cambiar los saltos de línea.
+
+La opción `ocultar` conecta con el Módulo 13: los registros terminan en el reporte de errores y no deben llevar
+teléfonos. El Tema 4 trata la otra cara: cómo entregar un paquete, como `copiable`, para que otros lo usen sin
+sorpresas.
 
 #### Problema resuelto 3.1
 Escribe `@Copiable` con una opción `ocultar` y su generador. Para cada clase anotada debe generar `copiarCon(...)` y
@@ -1920,6 +2240,13 @@ Este tema usa **las clases y `factory`** (Módulo 0, Tema 2), **las pruebas** (M
 - **Ejemplo:** `[Ruta.agregar]` da `warning: unresolved doc reference`.
 - **Error típico:** no versionar `doc/api` en `.gitignore` y publicarlo dentro del paquete.
 
+**`dart pub publish --dry-run`**
+- **Definición técnica:** hace todas las comprobaciones locales de una publicación sin subir nada: arma la lista de archivos del paquete (respetando `.gitignore` y `.pubignore`), mide el tamaño y valida `LICENSE`, `CHANGELOG.md` y `pubspec.yaml`; termina con código 65 si hay un error.
+- **En palabras sencillas:** el ensayo de la entrega, con todo empacado pero sin despacharlo.
+- **Dónde se rompe la comparación:** revisa requisitos, no contenido: la descripción de la plantilla y un README con «TODO» pasaron sin queja.
+- **Ejemplo:** después de agregar `LICENSE`, `repository` y el `CHANGELOG.md` de `0.1.0`, termina con `Package has 0 warnings.`
+- **Error típico:** ejecutarlo sin `LICENSE`: `* You must have a LICENSE file in the root directory.` y `Sorry, your package is missing a requirement and can't be published yet.`
+
 **`pana`**
 - **Definición técnica:** la herramienta con la que pub.dev puntúa los paquetes (160 puntos): convenciones, documentación, plataformas, análisis estático y dependencias; se ejecuta en local con `dart pub global activate pana`.
 - **En palabras sencillas:** el examen de pub.dev antes del examen.
@@ -1928,10 +2255,75 @@ Este tema usa **las clases y `factory`** (Módulo 0, Tema 2), **las pruebas** (M
 - **Error típico:** fiarse solo de `--dry-run`, que no revisa la descripción ni el formato.
 
 #### ► CÓMO FUNCIONA
-El paquete expone una sola biblioteca, `guias_bogota.dart`, que exporta solo `Guia`, `Localidad` y `Zona`. Antes de
-publicar se ejecutan tres comprobaciones: `dart doc` (que la documentación se genera sin avisos),
-`dart pub publish --dry-run` (que el paquete cumple los requisitos de pub.dev, sin subirlo) y `pana` (la puntuación
-que tendrá).
+
+##### 1. La idea en lenguaje sencillo
+
+Una ferretería tiene mostrador y bodega. El cliente pide en el mostrador lo que está en el catálogo; lo de la bodega
+puede cambiar de lugar sin avisarle. Cuando cambia un producto, la etiqueta dice si es el mismo modelo mejorado o uno
+nuevo que no encaja con el anterior. Y cada producto trae su manual.
+
+Hoy dos equipos copian el código de guías y localidades de la app. Cada copia tiene sus propios errores. Convertirlo en
+el paquete `guias_bogota` exige las mismas tres cosas: un mostrador claro, la **API pública**; etiquetas honestas, las
+versiones; y un manual, la documentación.
+
+Antes de entregarlo, lo revisas como lo revisará pub.dev. Este tema llega hasta esa revisión, con `--dry-run` y
+`pana`, sin publicar nada.
+
+##### 2. Definición formal y vocabulario
+
+La **API pública** de un paquete es lo que exportan las bibliotecas de `lib/` que están fuera de `lib/src/`. Lo que
+vive en `lib/src/` es privado del paquete por convención. El lint `implementation_imports` avisa a quien lo importe
+desde otro paquete.
+
+El **versionado semántico** usa números `MAYOR.MENOR.PARCHE`. El parche corrige, el menor agrega funciones compatibles
+y el mayor rompe. En `0.x`, la convención de Dart corre todo un lugar: `0.2.0` rompe y `0.1.3` agrega. La
+**restricción** `^1.2.0` significa `>=1.2.0 <2.0.0`.
+
+El **`CHANGELOG.md`** tiene una sección por versión con sus cambios. pub.dev lo muestra, y `pana` comprueba que
+mencione la versión actual.
+
+**`dart doc`** genera la documentación HTML a partir de los comentarios `///`. Esos comentarios usan Markdown y
+referencias entre corchetes, como `[Guia.parse]`. El resultado queda en `doc/api`.
+
+**`dart pub publish --dry-run`** hace todas las comprobaciones locales de la publicación sin subir el paquete.
+**`pana`** es la herramienta con la que pub.dev puntúa los paquetes, sobre 160 puntos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el camino desde el código hasta el paquete validado.
+
+1. **El mostrador.** `lib/guias_bogota.dart` es la única biblioteca pública. Exporta con `show` solo los nombres que
+   decides: `Guia`, `Localidad` y `Zona`.
+2. **El manual.** `dart doc` analiza esa biblioteca, sigue los `export` y escribe una página por elemento público.
+   Cada referencia entre corchetes se resuelve contra la API; si no existe, avisa con archivo y línea.
+3. **La lista de archivos.** `--dry-run` reúne los archivos que irían en el paquete. Respeta `.gitignore` y
+   `.pubignore`.
+4. **Los requisitos.** `--dry-run` comprueba `LICENSE`, `CHANGELOG.md`, `pubspec.yaml` y tamaño. Un error termina con
+   código 65; los avisos se cuentan aparte.
+5. **La puntuación.** `pana` copia el paquete a una carpeta temporal y revisa convenciones, documentación,
+   plataformas, análisis estático y dependencias. Puede ejecutar `pub downgrade` para analizar con las versiones más
+   viejas permitidas.
+
+```dart
+library;
+
+export 'src/guia.dart' show Guia;
+export 'src/localidad.dart' show Localidad, Zona;
+```
+
+Esta es toda la biblioteca pública. `show` funciona como una lista blanca: lo que no se nombra no sale. Si mañana
+agregas una función auxiliar pública en `src/guia.dart`, no entra en la API sin que lo decidas.
+
+```dart
+/// Lee una guía como `EN-4471` o `EN-4471/KEN` (con la localidad de destino).
+///
+/// Lanza [FormatException] si el texto no tiene ese formato.
+factory Guia.parse(String texto) =>
+    tryParse(texto) ?? (throw FormatException('Guía no válida (se espera EN-0000 o EN-0000/ABC)', texto));
+```
+
+El comentario `///` es la documentación. `[FormatException]` es una referencia que `dart doc` convierte en enlace. Si
+escribes un nombre que no existe, como `[Ruta.agregar]`, aparece `warning: unresolved doc reference`.
 
 ```mermaid
 flowchart LR
@@ -1942,6 +2334,45 @@ flowchart LR
     V["pubspec.yaml: version<br/>CHANGELOG.md: ## 0.1.0"] --> DR
     V --> PA
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**`src/` es un acuerdo, no un candado.** Nada impide técnicamente importar `package:guias_bogota/src/guia.dart`. Quien
+lo hace se expone a cambios sin aviso, y el lint se lo advierte.
+
+**Empieza en `0.x`.** Mientras la API cambie, `0.2.0` basta para avisar de un cambio que rompe. Con `1.x`, cada ruptura
+obliga a una versión mayor nueva. pub no detecta un cambio que rompe publicado como parche: la responsabilidad es tuya.
+
+**El `-0` de las restricciones.** `^0.1.0` equivale a `>=0.1.0 <0.2.0-0`. El `-0` excluye también las versiones
+preliminares, como `0.2.0-dev`.
+
+**`dart doc` no falla por avisos.** El aviso de referencia terminó con código 0. En el CI, comprueba que la salida diga
+`Found 0 warnings`.
+
+**El tamaño puede crecer sin aviso.** La plantilla de `dart create` no ignora `doc/api`. Tras `dart doc`, el paquete
+pasó de 3 KB a 140 KB. Agrega `doc/api/` a `.gitignore`; usa `.pubignore` para excluir algo solo del paquete.
+
+**Las herramientas miden la forma.** `--dry-run` no se quejó de la descripción de la plantilla. `pana` dio 5 de 5 a un
+`README.md` con «TODO» y no restó por una dependencia sin usar. La documentación pide al menos 20 % de elementos
+documentados.
+
+**`final class` protege la evolución.** `Guia` es `final class`, un modificador de Dart 3.0. Nadie fuera del paquete
+puede extenderla ni implementarla. Por eso agregarle un miembro no rompe a quien la usa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 0, Tema 2, vienen los constructores `factory` y privados. `Guia._` obliga a crear guías con `parse` o
+`tryParse`, que validan. Así, una `Guia` mal formada no puede existir.
+
+Del Tema 1 viene el *workspace*: `guias_bogota` es uno de sus cinco paquetes y comparte la resolución de versiones.
+Del Tema 3 viene la separación entre `copiable` y `copiable_generador`, que también es diseño de paquetes: qué viaja
+con la app y qué no.
+
+Compara este paquete con el código copiado entre equipos. La copia no tiene versión ni contrato: nadie sabe cuál es la
+buena. El paquete tiene un número que dice si puedes actualizar sin mirar y un `CHANGELOG.md` que dice qué cambió.
+
+Las pruebas del Módulo 9, Tema 1, protegen el comportamiento; `--dry-run` y `pana` protegen la entrega. Juntas van en
+el CI del módulo, y el Proyecto 34 las reúne con el resto de lo visto.
 
 #### Problema resuelto 4.1
 Diseña el paquete `guias_bogota` (guías `EN-4471/KEN` y las 20 localidades con su zona), documéntalo y déjalo listo

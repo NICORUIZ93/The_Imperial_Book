@@ -202,9 +202,60 @@ Este tema usa **`Future`, `async` y `await`** (Módulo 0, Tema 3) y **las excepc
 - **Error típico:** mostrar ese texto en la pantalla.
 
 #### ► CÓMO FUNCIONA
-La petición puede terminar de cuatro formas: llega una respuesta 200 (datos), llega una respuesta con otro código
-(error del servidor o del cliente), no llega nada antes del límite (tiempo agotado) o no se puede ni conectar (sin
-conexión). El código debe distinguirlas porque cada una pide una acción distinta.
+
+##### 1. La idea en lenguaje sencillo
+Cuando llamas por teléfono a una bodega para preguntar por un paquete, pueden pasar cuatro cosas. Te contestan y te
+dan el dato. Te contestan «hoy no atendemos». Timbra y nadie contesta, y tú decides colgar al minuto. O la llamada ni
+siquiera entra porque no tienes señal.
+
+Una petición HTTP termina de las mismas cuatro formas. La app pide las entregas al servidor y recibe datos, recibe una
+respuesta de error, se cansa de esperar o no logra conectarse. Cada caso pide algo distinto: mostrar la lista, explicar
+el problema, ofrecer reintentar o revisar la conexión.
+
+El error más común del principiante es tratar las cuatro como si fueran una. Este tema enseña a separarlas desde la
+primera línea de código.
+
+##### 2. Definición formal y vocabulario
+HTTP es un protocolo de petición y respuesta. El cliente envía un método (`GET`), una dirección y unas cabeceras. El
+servidor responde con un **código de estado**, sus propias cabeceras y un **cuerpo de la respuesta**.
+
+En Dart, `package:http` ofrece la clase `http.Client`. Un **cliente HTTP** envía peticiones y conserva abiertas las
+conexiones para reutilizarlas. Por eso lo creas una vez y lo cierras con `close()` cuando terminas.
+
+El código de estado agrupa respuestas por familias: 2xx éxito, 4xx error del cliente y 5xx error del servidor. En el
+servidor de práctica, `/falla` responde 503 y `/no-existe` responde 404.
+
+**`timeout`** no es parte de `package:http`: es un método de `Future` en `dart:async`. Si el `Future` no termina a
+tiempo, lo completa con `TimeoutException`. **`ClientException`** sí es de `package:http`: representa un fallo de
+transporte, cuando la petición ni siquiera obtuvo respuesta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la llamada a `pedirEntregas(cliente)` del problema resuelto, en Linux:
+
+1. `Uri.parse('$base$ruta')` convierte el texto en un `Uri` con esquema, host, puerto y ruta. Un error de escritura
+   aquí falla antes de tocar la red.
+2. `cliente.get` arma una petición `GET` con la cabecera `Accept: application/json`. En Linux, `http.Client()` crea
+   un `IOClient`, que usa el `HttpClient` de `dart:io`.
+3. `dart:io` abre una conexión TCP con `127.0.0.1:8085`. Si nadie escucha en ese puerto, el sistema operativo la
+   rechaza y el `Future` termina con `ClientException`.
+4. El servidor recibe la petición, imprime su línea en la terminal y responde: código, cabeceras y cuerpo.
+5. `package:http` lee el cuerpo completo y lo guarda como bytes en `bodyBytes`. Recién entonces el `Future` de `get`
+   termina con un `Response`.
+6. `.timeout` vigila los pasos 2 a 5. Si pasa un segundo sin `Response`, el `Future` termina con `TimeoutException`.
+7. Con la respuesta en la mano, el código revisa `statusCode`. Un 503 o un 404 no lanzan nada por sí solos.
+8. `utf8.decode` convierte los bytes en texto, y `jsonDecode` convierte el texto en listas y mapas de Dart.
+
+```dart
+final respuesta = await cliente
+    .get(Uri.parse('$base$ruta'), headers: {'Accept': 'application/json'})
+    .timeout(const Duration(seconds: 1));                         // sin esto, espera lo que diga el sistema
+if (respuesta.statusCode != 200) {                                // http NO lanza error por un 4xx o 5xx
+  throw HttpError(respuesta.statusCode, respuesta.body);
+}
+```
+
+Este fragmento concentra la decisión del tema. El límite de tiempo y la revisión del código convierten dos fallos
+silenciosos en excepciones con nombre: `TimeoutException` y `HttpError`.
 
 ```mermaid
 flowchart TD
@@ -214,6 +265,42 @@ flowchart TD
     A -->|"más de 1 s"| T["TimeoutException"]
     A -->|"no se pudo conectar"| C["ClientException"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+`package:http` no lanza excepciones por códigos 4xx o 5xx. La regla es deliberada: una respuesta de error sigue siendo
+una respuesta. Solo lanza `ClientException` cuando falla el transporte.
+
+Las funciones sueltas como `http.get` existen, pero cada llamada crea un cliente y lo cierra al terminar. Para varias
+peticiones al mismo servidor, un `http.Client` compartido reutiliza la conexión.
+
+`timeout` deja de esperar, pero no cancela la petición. El servidor de práctica no se entera del límite: sigue con
+`/lento` sus 3 segundos completos, aunque la app ya no espere la respuesta. Desde la versión 1.5.0, `package:http`
+admite peticiones abortables, como `AbortableRequest` con su `abortTrigger`, si el cliente lo soporta.
+
+La decodificación del cuerpo cambió entre versiones. `body` usa el `charset` de la cabecera `Content-Type`. Desde la
+versión 1.4.0, si `application/json` llega sin `charset`, `body` usa UTF-8; antes usaba Latin-1 y rompía las tildes.
+`utf8.decode(bodyBytes)` no depende de la cabecera ni de la versión, y por eso lo usa el tema.
+
+`jsonDecode` devuelve `dynamic`. En la salida aparece `_Map<String, dynamic>`: es la clase interna con la que Dart
+implementa los mapas. El tipo declarado que te interesa es `Map<String, dynamic>`.
+
+En web, el mismo código usa otro cliente. `http.Client()` crea un `BrowserClient`, que desde la versión 1.3.0 usa la
+API Fetch del navegador. Ahí aplican las reglas del navegador, como CORS, que el servidor de práctica no configura.
+
+Por último, el límite de tiempo es una decisión de producto, no técnica. Un segundo sirve para mostrar el fallo en el
+tema. En la calle, una lista puede merecer unos segundos más, y una foto bastantes más.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`Future`, `async`, `await` y las excepciones con `try`, `catch` y `finally` vienen del Módulo 0, Tema 3. Aquí el
+`finally` garantiza que el cliente se cierre aunque falle una petición.
+
+En el Módulo 4, Tema 4, el repositorio de demostración simulaba la espera con `Future.delayed`. Ahora la espera es real
+y puede fallar de cuatro maneras. El `AsyncNotifier` de ese tema no cambia: sigue recibiendo un `Future` que termina
+con datos o con error.
+
+Este tema deja mapas sin tipo y cuatro excepciones distintas. El Tema 2 convierte los mapas en objetos `Entrega` y
+detecta datos mal formados. El Tema 3 reemplaza `http` por `dio` y traduce las excepciones a un solo tipo del dominio.
+El Tema 4 diseña un mensaje para cada una.
 
 #### Problema resuelto 1.1
 Pide las entregas públicas y después tres rutas que fallan de formas distintas. Prueba también un servidor que no
@@ -440,9 +527,74 @@ Este tema usa **patrones** y **`switch` de expresión** (Módulo 0, Tema 6) y **
 - **Error típico:** atrapar todas las excepciones de la conversión y seguir con una lista vacía: la app muestra «no hay entregas» cuando el problema son los datos.
 
 #### ► CÓMO FUNCIONA
-La respuesta decodificada pasa por una sola función de conversión por tipo. Si el mapa tiene la forma esperada, sale
-un objeto con tipos; si no, sale un error en ese punto, que la capa de red puede traducir (Tema 3). `toJson` hace el
-camino inverso, y `jsonEncode` lo llama solo.
+
+##### 1. La idea en lenguaje sencillo
+En una bodega, los paquetes llegan con etiquetas escritas a mano por muchos remitentes. Antes de entrar al sistema,
+alguien en la puerta los revisa y les pega una etiqueta estándar. Si a un paquete le falta la dirección, se queda en
+la puerta, con una nota que dice qué falta.
+
+El JSON que llega del servidor es la etiqueta escrita a mano: texto que, decodificado, se vuelve mapas y listas sin
+tipo. La app necesita objetos `Entrega` con campos de tipo conocido. La revisión en la puerta es la función que
+convierte uno en otro, en un solo lugar.
+
+Si esa revisión falla, debe fallar ahí, al recibir. Un mapa mal formado que llega hasta la pantalla produce un error
+lejano, difícil de rastrear y muchas veces visible para el conductor.
+
+##### 2. Definición formal y vocabulario
+La **deserialización** convierte datos de un formato de transporte, como JSON, en objetos del lenguaje. La operación
+inversa, de objetos a JSON, es la serialización.
+
+En Dart, `jsonDecode` de `dart:convert` hace la primera mitad del trabajo. Devuelve `dynamic`: mapas
+`Map<String, dynamic>`, listas, `String`, `num`, `bool` o `null`. La segunda mitad, de mapa a `Entrega`, es tuya.
+
+Tienes dos formas de escribirla. La manual usa un **patrón de mapa** de Dart 3: comprueba que el valor es un mapa, que
+tiene ciertas claves y que cada valor coincide con un subpatrón con tipo. La generada usa **`json_serializable`**, que
+lee la anotación `@JsonSerializable()` y escribe `_$EntregaFromJson` y `_$EntregaToJson`.
+
+Ese **código generado** vive en `entrega.g.dart` y se une a tu clase con `part`. Una **`FormatException`** es la
+excepción de Dart para datos con forma inesperada; la versión manual la lanza en su caso `_`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el JSON malformado de `/publico/malformada` por las dos conversiones:
+
+1. `jsonDecode` convierte el texto en una lista con un mapa. Ese mapa no tiene `direccion`, y `pesoGramos` es el texto
+   `'900'`.
+2. Con el código generado, `Entrega.fromJson` llama a `_$EntregaFromJson`. Evalúa los argumentos en orden.
+3. `json['guia'] as String` y `json['destinatario'] as String` funcionan.
+4. `json['direccion']` devuelve `null`, porque la clave no existe. `null as String` lanza el `_TypeError` de la salida.
+5. Con la versión manual, el `switch` prueba el patrón de mapa completo. Falta una clave, así que no coincide.
+6. El `switch` pasa al caso `_`, que lanza `FormatException` y conserva el mapa recibido.
+
+El patrón de mapa tiene dos reglas que conviene ver en acción. Ignora las claves que no menciona, y un subpatrón `int`
+exige que el valor ya sea entero:
+
+```dart
+import 'dart:convert';
+
+String forma(Object? json) => switch (json) {
+      {'guia': String guia, 'pesoGramos': int peso} => 'entrega $guia de ${peso}g',
+      _ => 'forma inesperada',
+    };
+
+void main() {
+  print(forma(jsonDecode('{"guia":"EN-4471","pesoGramos":1200,"extra":true}')));
+  print(forma(jsonDecode('{"guia":"EN-4471","pesoGramos":1200.0}')));
+  print(forma(jsonDecode('{"guia":"EN-4480","pesoGramos":"900"}')));
+}
+```
+
+```text
+$ dart run patron.dart
+entrega EN-4471 de 1200g
+forma inesperada
+forma inesperada
+```
+
+La primera línea coincide aunque sobre la clave `extra`. La segunda no: en la VM de Dart, `1200.0` se decodifica como
+`double`. Por eso el código generado usa `(json['pesoGramos'] as num).toInt()`, que acepta los dos.
+
+En la otra dirección, `jsonEncode` recibe un objeto que no sabe codificar y llama a su `toJson()`. Por eso
+`jsonEncode(buenas.first)` funciona sin que llames a `toJson` tú.
 
 ```mermaid
 flowchart LR
@@ -452,6 +604,42 @@ flowchart LR
     F -->|"falta un campo o tipo distinto"| X["error en la frontera"]
     O -->|"toJson + jsonEncode"| J2["JSON de vuelta"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+El caso del entero depende de la plataforma. En la VM, `1200` y `1200.0` son `int` y `double`. En web compilada a
+JavaScript, los números son de JavaScript, y `1200.0 is int` es verdadero. Convertir con `num` y `toInt()` evita
+depender de eso.
+
+Un `switch` de expresión debe ser exhaustivo. Como `Object?` admite infinitos valores, el caso `_` es obligatorio. Haz
+que lance un error, nunca que devuelva una entrega «vacía»: eso esconde el problema.
+
+`json_serializable` acepta opciones en la anotación o en `build.yaml`. Algunas útiles:
+
+- `checked: true` envuelve cada conversión y lanza `CheckedFromJsonException`, que sí nombra la clave que falló.
+- `fieldRename: FieldRename.snake` traduce `pesoGramos` a `peso_gramos` si el servidor usa ese estilo.
+- `@JsonKey(name: ..., defaultValue: ...)` ajusta un campo concreto.
+- `explicitToJson: true` llama a `toJson` de los objetos anidados dentro del mapa generado.
+
+El archivo `.g.dart` lleva la marca `GENERATED CODE - DO NOT MODIFY BY HAND`. Si cambias la clase, ejecuta otra vez
+`dart run build_runner build`. Con `watch` en lugar de `build`, el generador queda atento y regenera al guardar.
+
+Hubo un intento de evitar la generación. El equipo de Dart experimentó con macros, incluida una para JSON, y detuvo ese
+trabajo a comienzos de 2025. En Dart 3.14, la vía para generar la conversión sigue siendo `build_runner`.
+
+Una regla de diseño cierra el tema. La conversión se hace en la frontera, en la capa que recibe de la red. Las
+pantallas solo ven objetos `Entrega`, nunca mapas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Los patrones de mapa, los subpatrones con tipo y el `switch` de expresión vienen del Módulo 0, Tema 6. Aquí resuelven
+un problema real: validar la forma de un dato desconocido y extraer sus campos en un solo paso.
+
+Del Tema 1 viene `pedirEntregas`, que devolvía `List<dynamic>`. Ahora esa lista se convierte en `List<Entrega>`. La
+diferencia entre las dos versiones es de mantenimiento: la manual es explícita y corta; la generada escala a modelos
+grandes.
+
+El Tema 3 usa este modelo dentro de un repositorio con `dio` y traduce el error de conversión a un fallo del dominio,
+`DatosInvalidos`. El Tema 4 le da a ese fallo su propio mensaje. En el Módulo 6, el mismo `toJson` sirve para guardar
+entregas en el teléfono.
 
 #### Problema resuelto 2.1
 Escribe el modelo `Entrega` con `json_serializable`, genera su código y conviértelo en las dos direcciones. Escribe la
@@ -718,9 +906,65 @@ exhaustivo** (Módulo 0, Tema 6) y **el repositorio como interfaz** (Módulo 4, 
 - **Error típico:** devolver `Response` de `dio` desde el repositorio.
 
 #### ► CÓMO FUNCIONA
-La pantalla llama al repositorio. El repositorio usa un `Dio` configurado; la petición pasa por los interceptores,
-viaja, y la respuesta o el error vuelve por ellos. El repositorio convierte el JSON en entregas o traduce el error a
-un `FalloRed`, y eso es lo único que ve la pantalla.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de mensajería no repite en cada viaje a qué ciudad ir, cuánto esperar en una portería y qué formulario
+llenar. Esas reglas están escritas una vez. Además, en la salida y en la llegada hay un
+puesto de control que anota la hora de cada paquete.
+
+Con `http`, cada petición repetía la dirección base, el límite de tiempo y la revisión del código. `dio` permite
+escribir esas reglas una sola vez, en un objeto configurado. También permite poner puestos de control, los
+interceptores, en el camino de ida y vuelta.
+
+Falta un tercer cambio. Cuando algo sale mal, el conductor no necesita saber que hubo un `receiveTimeout`. Necesita
+saber que el servidor tardó demasiado. El repositorio traduce el informe técnico al idioma de la app.
+
+##### 2. Definición formal y vocabulario
+**`Dio`** es un cliente HTTP para Dart. Agrupa una configuración base, una cadena de interceptores y un transformador
+que convierte el cuerpo de la respuesta. Lo creas una vez y lo reutilizas.
+
+**`BaseOptions`** reúne las opciones comunes: `baseUrl`, `connectTimeout` (tiempo para conectar), `receiveTimeout`
+(tiempo esperando la respuesta) y `headers`. Cada petición puede ajustarlas con un objeto `Options`.
+
+Un **interceptor** es una clase con tres métodos: `onRequest`, `onResponse` y `onError`. Cada uno recibe un `handler`
+y decide qué hacer: dejar seguir con `next`, responder él mismo con `resolve` o fallar con `reject`.
+
+Cuando algo sale mal, `dio` lanza **`DioException`**. Su campo `type` dice la causa, y `response` trae la respuesta si
+la hubo. El **fallo del dominio** es tu propio tipo, `FalloRed`, que traduce esas causas a seis situaciones. El
+**repositorio remoto** es la clase que hace las peticiones y solo deja salir entregas o `FalloRed`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la petición a `/falla` del problema resuelto, la que dibuja el diagrama:
+
+1. `repo.entregas(ruta: '/falla')` llama a `dio.get<List<dynamic>>('/falla')`. `dio` une la ruta con `baseUrl` y
+   arma un `RequestOptions` con las opciones comunes.
+2. Los interceptores reciben la petición en el orden en que los agregaste. `Bitacora.onRequest` guarda la hora en
+   `options.extra` y llama a `handler.next`.
+3. El adaptador de `dio` envía la petición. En Linux usa el `HttpClient` de `dart:io`, igual que `http`.
+4. El servidor responde 503. `dio` aplica `validateStatus`, que por defecto solo acepta códigos de 200 a 299.
+5. Como 503 no pasa, `dio` crea una `DioException` de tipo `badResponse` con la respuesta adentro.
+6. La excepción recorre los `onError`. `Bitacora` anota `badResponse 503` con su duración y la deja seguir.
+7. El `await` del repositorio lanza la `DioException`. El `catch` la entrega a `traducir`, que devuelve
+   `ServidorCaido(503)`.
+
+```dart
+FalloRed traducir(DioException e) => switch (e.type) {
+      DioExceptionType.connectionError => const SinConexion(),
+      DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => const TiempoAgotado(),
+      DioExceptionType.badResponse => switch (e.response!.statusCode!) {
+          401 => const NoAutorizado(),
+          404 => NoEncontrado(e.requestOptions.path),
+          final estado => ServidorCaido(estado),
+        },
+      _ => ServidorCaido(e.response?.statusCode ?? 0),
+    };
+```
+
+El orden de la traducción importa. Primero decide por el tipo, y solo en `badResponse` mira el código. Ahí el `!` es
+seguro, porque `badResponse` siempre trae respuesta.
+
+Cuando la respuesta es buena, el transformador de `dio` decodifica el JSON según la cabecera `Content-Type`. Por eso
+`r.data` ya es una lista, sin `jsonDecode`.
 
 ```mermaid
 sequenceDiagram
@@ -735,6 +979,41 @@ sequenceDiagram
     B-->>R: onError: "badResponse 503 (6 ms)"
     R-->>P: throw ServidorCaido(503)
 ```
+
+##### 4. Reglas, variantes y casos límite
+La diferencia principal con `http` es una regla: `dio` lanza `DioException` también para 4xx y 5xx. Puedes cambiarla
+con `validateStatus` en `BaseOptions` o en una petición, pero hacerlo devuelve el problema del Tema 1.
+
+`DioExceptionType` tiene ocho valores: `connectionTimeout`, `sendTimeout`, `receiveTimeout`, `badCertificate`,
+`badResponse`, `cancel`, `connectionError` y `unknown`. La traducción del tema agrupa los que no menciona en el caso
+`_`.
+
+Si no defines los límites de tiempo, son `null`: `dio` no impone límite propio. Por eso el tema los fija en
+`BaseOptions`. En la salida, `/lento` se cortó por `receiveTimeout` en algo más de un segundo.
+
+Un interceptor siempre debe llamar a su `handler`. Si un método termina sin `next`, `resolve` ni `reject`, la petición
+queda esperando para siempre, sin excepción. Es el error más difícil de encontrar de este tema.
+
+`dio` cambió en la serie 5. En la versión 5.0.0, los límites de tiempo pasaron de enteros a `Duration`. En la 5.2.0,
+`DioError` quedó obsoleto en favor de `DioException`. En la 5.5.0, `FusedTransformer` pasó a ser el transformador por
+defecto. Si encuentras `DioError` en un ejemplo, es código anterior.
+
+Hay dos variantes útiles. `CancelToken` permite cancelar una petición en curso, y el fallo llega como tipo `cancel`.
+`QueuedInterceptor` atiende las peticiones de una en una; el Tema 5 lo necesita para renovar la sesión.
+
+El repositorio tiene una regla de frontera. Atrapa `DioException` y también `TypeError`, que es lo que lanza el código
+generado con datos malos. Nada de `dio` ni de la conversión sale de él.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las cuatro formas de fallar del Tema 1 siguen ahí: `connectionError` es la `ClientException`, `receiveTimeout` es la
+`TimeoutException` y `badResponse` es el `HttpError`. Lo nuevo es que `dio` las reúne en un solo tipo con `type`.
+
+La jerarquía `sealed` y el `switch` exhaustivo vienen del Módulo 0, Tema 6. Gracias a ellos, si agregas un fallo nuevo
+a `FalloRed`, el analizador señala cada `switch` que no lo cubre. `Entrega.fromJson` viene del Tema 2.
+
+El repositorio remoto cumple la interfaz de repositorio del Módulo 4, Tema 4. En las pruebas se reemplaza como en el
+Tema 6 de ese módulo. El Tema 4 de este módulo diseña un mensaje para cada `FalloRed`, y el Tema 5 agrega un
+interceptor de sesión.
 
 #### Problema resuelto 3.1
 Crea el `Dio` de la app, el interceptor de registro, la traducción de fallos y el repositorio. Ejecútalo contra todas
@@ -896,7 +1175,7 @@ GET /publico/entregas → connectionError  (1 ms)
 ```
 
 **Explicación por partes.**
-- La bitácora muestra cada petición con su resultado y su tiempo: `/lento` se cortó a los 1008 ms por
+- La bitácora muestra cada petición con su resultado y su tiempo: `/lento` se cortó a los 1007 ms por
   `receiveTimeout`.
 - `/entregas` responde 401 porque exige token; queda como `NoAutorizado`, que el Tema 5 resuelve.
 - `/publico/malformada` respondió 200, pero la conversión falló: `DatosInvalidos`. Es un fallo que el código de
@@ -988,8 +1267,7 @@ Al terminar este tema podrás:
 - escribir mensajes que digan qué pasó y qué puede hacer la persona;
 - mostrar el mensaje en la pantalla real, con reintento, a partir del repositorio del Tema 3.
 
-**Conceptos clave:** mensaje de error accionable, `switch` exhaustivo sobre una clase `sealed`, record con nombre,
-acción de recuperación
+**Conceptos clave:** mensaje de error accionable, `switch` exhaustivo sobre una clase `sealed`, record con nombre, acción de recuperación
 
 #### El problema
 El Tema 3 dejó seis fallos con nombre. Si la pantalla muestra «Ocurrió un error» para todos, el conductor sin señal
@@ -1030,9 +1308,58 @@ Tema 4).
 - **Error típico:** «Reintentar» en todos los mensajes, incluso donde siempre fallará.
 
 #### ► CÓMO FUNCIONA
-El repositorio lanza un `FalloRed`; la pantalla lo atrapa (con `FutureBuilder` o con un `AsyncNotifier`) y llama a
-`mensajePara`, que devuelve el record con lo que hay que dibujar. `PantallaFallo` lo dibuja con el diseño de los
-módulos anteriores y conecta el botón con la acción.
+
+##### 1. La idea en lenguaje sencillo
+En un aeropuerto, el tablero no dice «error» cuando un vuelo no sale. Dice «retrasado», «cancelado» o «cambio de
+puerta», y cada palabra lleva a una acción distinta: esperar, ir al mostrador o caminar a otra sala. Un solo mensaje
+para todo dejaría a cada pasajero sin saber qué hacer.
+
+La app de entregas tiene el mismo problema con la red. El Tema 3 ya distingue seis fallos. Imagina que la pantalla los
+muestra todos como «Ocurrió un error». El conductor sin señal reintenta sin parar, y el de la sesión vencida nunca
+vuelve a ingresar.
+
+Este tema convierte cada fallo en un mensaje completo: un ícono, un título, un texto y, si sirve, un botón. Y usa el
+compilador para garantizar que ningún fallo se quede sin su mensaje.
+
+##### 2. Definición formal y vocabulario
+Un **mensaje de error accionable** nombra el problema en el lenguaje de la persona y le ofrece una salida. No incluye
+nombres de excepciones ni trazas; el detalle técnico va al registro de la app.
+
+Esa salida es la **acción de recuperación**: reintentar, volver a ingresar o ninguna. Solo se ofrece si puede
+funcionar. Reintentar ante `DatosInvalidos` fallaría igual, así que ese mensaje no tiene botón.
+
+El mensaje se representa con un **record con nombre**: un tipo de Dart que agrupa valores con etiqueta sin declarar
+una clase. El `typedef Mensaje` le da un nombre corto a `({IconData icono, String titulo, String texto, String?
+accion})`.
+
+La garantía viene del **`switch` exhaustivo sobre una clase `sealed`**. Como `FalloRed` es `sealed`, el analizador
+conoce todas sus subclases. Un `switch` de expresión sin comodín debe cubrirlas todas, o el programa no compila.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el caso de `main.dart` con el servidor apagado:
+
+1. `PantallaRuta` crea el repositorio y lanza `_repo.entregas()` una sola vez, al crear el `State`. Guarda el `Future`
+   en `_carga`.
+2. `FutureBuilder` escucha ese `Future`. Mientras espera, el `AsyncSnapshot` no tiene datos ni error, y el `switch`
+   cae en el indicador de carga.
+3. `dio` no logra conectar. El repositorio traduce la `DioException` y lanza `SinConexion()`.
+4. `FutureBuilder` recibe el error y se reconstruye. El patrón `AsyncSnapshot(error: final FalloRed f)` coincide.
+5. `PantallaFallo` llama a `mensajePara(f)`. El `switch` elige el caso `SinConexion()` y devuelve su record.
+6. La pantalla dibuja ícono, título y texto. Como `accion` no es `null`, también dibuja el botón «Reintentar».
+7. El toque llama a `setState` y asigna un `Future` nuevo a `_carga`. `FutureBuilder` vuelve al paso 2.
+
+```dart
+if (m.accion case final accion?) ...[
+  const SizedBox(height: 24),
+  FilledButton(onPressed: alActuar, child: Text(accion)),
+],
+```
+
+Esta línea usa un patrón *null-check* dentro de un `if` de colección. Si `accion` no es `null`, el patrón la extrae ya
+como `String` y agrega el botón. Si es `null`, no agrega nada, y no queda un hueco en la columna.
+
+El paso 7 explica por qué el `Future` vive en un campo. Si lo crearas dentro de `build`, cada reconstrucción haría una
+petición nueva al servidor.
 
 ```mermaid
 flowchart LR
@@ -1041,6 +1368,43 @@ flowchart LR
     M --> F["PantallaFallo: ícono, título, texto, botón"]
     F -->|"Reintentar"| R
 ```
+
+##### 4. Reglas, variantes y casos límite
+La exhaustividad tiene una condición: el `switch` no debe tener comodín. Si agregas `Conflicto` a `FalloRed` y no le
+das un caso, el analizador responde con un error que empieza así: `The type 'FalloRed' isn't exhaustively matched by
+the switch cases since it doesn't match the pattern 'Conflicto()'`.
+
+El mismo mensaje sugiere «agregar un patrón comodín». No lo hagas aquí. Un `_ => mensajeGenerico` compila, pero los
+fallos futuros caerían en él sin que nadie lo note.
+
+`sealed` tiene una regla que hace posible todo esto. Las subclases directas deben estar en la misma biblioteca; sin
+`part`, eso significa el mismo archivo. Por eso `fallos.dart` reúne a las seis.
+
+Los patrones de objeto pueden extraer campos con `:final nombre`. `NoEncontrado(:final que)` es la forma corta de
+`NoEncontrado(que: final que)`. Si el campo tiene otro nombre en tu código, usa la forma larga.
+
+Los records con nombre comparan por valor y por forma. Dos records con los mismos campos y valores son iguales. El
+orden de los campos con nombre no importa, pero sus nombres sí: un error de escritura en una etiqueta produce otro tipo.
+
+Sobre el texto, hay reglas de redacción que se aplican a todos los mensajes del tema. Dicen qué pasó, no qué falló por
+dentro. Dicen qué puede hacer la persona. Y tranquilizan solo con hechos: «tus entregas se guardan en el teléfono»
+exige que la app de verdad las guarde.
+
+El color también comunica. Un fallo de red en la calle es normal, y por eso el tema usa el color `outline` del tema, no
+el color de error. El rojo se reserva para algo que la persona debe corregir.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Los records, los patrones de objeto y el `switch` exhaustivo sobre `sealed` vienen del Módulo 0, Tema 6. Aquí producen
+una garantía de producto: cada fallo tiene su mensaje.
+
+El diseño de `PantallaFallo` es el de las pantallas de mensaje del Módulo 2, Tema 6, y del `_Mensaje` del Módulo 4,
+Tema 4. Allí había un solo estado de error; aquí hay seis, con acciones distintas.
+
+Compáralo con el Tema 3. Allí la traducción iba de `DioException` a `FalloRed`, de lo técnico al dominio. Aquí va de
+`FalloRed` a la pantalla. Son dos `switch` separados a propósito: cambiar de biblioteca de red no toca los mensajes.
+
+El botón «Ingresar» de `NoAutorizado` prepara el Tema 5, que renueva la sesión antes de rendirse. El texto de
+`SinConexion` promete que las entregas se guardan; el Módulo 6 cumple esa promesa con almacenamiento local.
 
 #### Problema resuelto 4.1
 Diseña el mensaje de cada fallo y obtén los pantallazos de los cuatro más frecuentes. Conecta la pantalla real con el
@@ -1307,8 +1671,7 @@ Al terminar este tema podrás:
 - renovar el token al recibir un 401 y repetir la petición, una sola vez aunque fallen varias a la vez;
 - cerrar la sesión cuando la renovación falla y llevar a la persona al login.
 
-**Conceptos clave:** token de acceso, token de renovación, cabecera `Authorization`, `QueuedInterceptor`,
-renovación única, almacenamiento seguro
+**Conceptos clave:** token de acceso, token de renovación, cabecera `Authorization`, `QueuedInterceptor`, renovación única, almacenamiento seguro
 
 #### El problema
 El servidor exige un token en cada petición, y el token vence pronto (aquí, a los 2 segundos; en la vida real, en
@@ -1364,10 +1727,64 @@ Este tema usa **interceptores** y **`traducir`** (Tema 3), **`redirect` y la ses
 - **Error típico:** guardar los tokens en `shared_preferences`, que no está cifrado.
 
 #### ► CÓMO FUNCIONA
-Cada petición sale con el token guardado. Si el servidor responde 401, la cola de errores la atiende: si el token de
-esa petición es el guardado, renueva con un `Dio` aparte (sin interceptores, para no entrar en un ciclo), guarda el par
-nuevo y repite; si el token guardado ya es otro, solo repite. Si la renovación falla, borra los tokens y avisa a la app
-para que muestre el login.
+
+##### 1. La idea en lenguaje sencillo
+En un edificio de oficinas, la recepción te pide la cédula una vez y te entrega una credencial de visitante que vence
+en la tarde. Con ella pasas por todas las puertas sin volver a identificarte. Si vence, cambias un comprobante en la
+recepción por una credencial nueva, sin repetir todo el registro.
+
+Una sesión con tokens funciona igual. El conductor escribe su usuario y su clave una vez. El servidor le entrega dos
+credenciales: un token de acceso que vence pronto y un token de renovación para conseguir otro. La app muestra el de
+acceso en cada petición y cambia el de renovación cuando el primero vence.
+
+La dificultad aparece cuando varias peticiones descubren al mismo tiempo que el token venció. Si las tres corren a la
+recepción con el mismo comprobante de un solo uso, solo la primera obtiene la credencial. Las otras dos fallan y la
+app cierra la sesión sin motivo.
+
+##### 2. Definición formal y vocabulario
+Este esquema es el de OAuth 2.0. El **token de acceso** es una credencial de corta duración que identifica al usuario
+ante el servidor. El **token de renovación** dura más y solo sirve para pedir un par nuevo. En el servidor de práctica
+es de un solo uso: al renovar, el viejo deja de servir.
+
+El token de acceso viaja en la **cabecera `Authorization`** con el esquema `Bearer`: `Authorization: Bearer
+acceso-1`. «Bearer» significa portador: quien lo presenta, lo usa. Por eso, fuera del laboratorio, solo viaja sobre
+HTTPS.
+
+Un **`QueuedInterceptor`** es un interceptor de `dio` que atiende sus llamadas en cola, de una en una. La **renovación
+única** se apoya en esa cola: antes de renovar, compara el token con que salió la petición con el guardado. Si ya son
+distintos, otra petición renovó primero.
+
+El **almacenamiento seguro** guarda los tokens cifrados en el teléfono: Llavero en iOS y Keystore en Android, a través
+de `flutter_secure_storage`. Este tema usa la interfaz `AlmacenTokens` con una versión en memoria.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el paso 4 del programa: tres peticiones simultáneas con el token vencido.
+
+1. `Future.wait` lanza las tres peticiones. Cada `onRequest` lee `acceso-1` del almacén y lo pone en la cabecera.
+2. El servidor responde 401 a las tres. Su registro lo muestra: tres `GET` con `acceso-1`.
+3. Los tres errores llegan a `onError`. Como es un `QueuedInterceptor`, el primero entra y los otros dos esperan.
+4. El primero compara: usó `acceso-1` y el almacén tiene `acceso-1`. Nadie ha renovado, así que renueva.
+5. La renovación usa `_renovador`, un `Dio` sin interceptores, y recibe `acceso-2`. El almacén guarda el par nuevo.
+6. El primero repite su petición con `acceso-2` y `extra['repetida']`, y resuelve con la respuesta 200.
+7. Sale el segundo error de la cola. Usó `acceso-1`, pero el almacén ya tiene `acceso-2`: no renueva, solo repite.
+8. El tercero hace lo mismo. Resultado: una sola renovación y tres respuestas 200.
+
+```dart
+final usado = (err.requestOptions.headers['Authorization'] as String?)?.replaceFirst('Bearer ', '');
+var par = await almacen.leer();
+if (par == null) return handler.next(err);
+if (par.acceso == usado) {                                      // nadie lo renovó todavía: renovar
+  // renovar con _renovador y guardar el par nuevo
+} else {
+  anotar('${err.requestOptions.path}: el token ya fue renovado por otra petición');
+}
+```
+
+La comparación funciona porque la cola garantiza el orden. Sin cola, los tres errores leerían `acceso-1` antes de que
+el primero terminara de renovar, y los tres renovarían.
+
+La marca `extra['repetida']` evita el otro peligro. Si la petición repetida vuelve a dar 401, el interceptor no
+intenta renovar otra vez: deja pasar el error.
 
 ```mermaid
 sequenceDiagram
@@ -1385,6 +1802,47 @@ sequenceDiagram
     Q->>Q: B usó acceso-1 y ya hay acceso-2: no renueva
     Q->>S: repite B con acceso-2 → 200
 ```
+
+##### 4. Reglas, variantes y casos límite
+Las reglas del esquema `Bearer` están en la especificación RFC 6750. Un servidor que rechaza un token responde 401. El
+de práctica agrega en el cuerpo `{"error":"token"}` para que lo leas en la consola.
+
+Que el token de renovación sea de un solo uso se llama rotación. Las recomendaciones de seguridad de OAuth 2.0, RFC
+9700, la proponen para clientes públicos como una app móvil. Si alguien roba un token de renovación ya usado, el
+servidor lo detecta.
+
+`QueuedInterceptor` mantiene colas separadas para peticiones, respuestas y errores. Por eso la petición repetida desde
+`onError` puede pasar por `onRequest` sin quedar bloqueada detrás del error que la originó.
+
+El renovador no lleva interceptores. Si usara el mismo `Dio`, un 401 de `/renovar` entraría en `onError` y pediría
+renovar otra vez, en ciclo. Por la misma razón, el interceptor de sesión se inserta en la posición 0: atiende el 401
+antes que la bitácora.
+
+Si la renovación falla, la sesión termina. El interceptor borra los tokens, llama a `alCerrarSesion` y deja pasar el
+error original. La pantalla recibe `NoAutorizado`, que en el Tema 4 muestra «Tu sesión venció» con el botón
+«Ingresar».
+
+Hay reglas de lo que nunca se guarda. La clave del usuario no se guarda para reingresar solo: los tokens se pueden
+revocar y la clave no. Y los tokens no van a `shared_preferences`, que no cifra.
+
+Cerrar sesión en la app no invalida el token en el servidor. `salir()` solo borra el almacén. Si el servidor ofrece una
+ruta para revocar tokens, llámala también.
+
+La duración de 2 segundos es exclusiva del laboratorio. En producción, el acceso suele durar minutos u horas y la
+renovación, días o semanas, según la política del equipo de seguridad.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema reúne piezas de tres módulos. Los interceptores y `traducir` vienen del Tema 3. `Future.wait`, que lanza las
+tres peticiones a la vez, viene del Módulo 0, Tema 3.
+
+La salida de la sesión conecta con el Módulo 3, Tema 4. Allí, `redirect` y `refreshListenable` llevaban al login
+cuando la sesión cambiaba. Aquí, `alCerrarSesion` es el punto donde la red avisa a esa misma `Sesion`.
+
+Compáralo con un interceptor normal. `Bitacora` del Tema 3 podía atender varias peticiones a la vez porque solo
+anotaba. Renovar cambia un estado compartido, el par de tokens, y por eso necesita turno.
+
+El almacenamiento seguro real necesita Android o iOS. El Módulo 6 estudia el almacenamiento local, y el Módulo 7 trata
+la integración con la plataforma que hace posible `flutter_secure_storage`.
 
 #### Problema resuelto 5.1
 Implementa la sesión: ingreso con clave mala y buena, una petición protegida, tres peticiones simultáneas con el token

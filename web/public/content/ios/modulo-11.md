@@ -72,8 +72,7 @@ Al terminar este tema podrás:
 - mover los ajustes de cada entorno a archivos `.xcconfig` y leerlos en la app desde el `Info.plist`;
 - evitar las dos trampas de los `.xcconfig`: el comentario `//` y la precedencia del objetivo.
 
-**Conceptos clave:** versión, número de compilación, configuración de compilación, archivo `.xcconfig`,
-sustitución en `Info.plist`
+**Conceptos clave:** versión, número de compilación, configuración de compilación, archivo `.xcconfig`, sustitución en `Info.plist`
 
 #### El problema
 El equipo cambia a mano la URL del servidor antes de cada entrega a pruebas, y una vez se le olvidó volver a
@@ -121,8 +120,44 @@ Este tema usa **`Comparable` y `struct`** (Módulo 0) y **las pruebas alojadas e
 - **Error típico:** leer el valor en cada pantalla en lugar de validarlo una vez al arrancar (`ConfiguracionEntorno`).
 
 #### ► CÓMO FUNCIONA
-Cada configuración tiene su `.xcconfig`, que incluye `Base.xcconfig` y cambia lo suyo. Xcode calcula los ajustes
-finales, los sustituye en el `Info.plist` y la app los valida al leerlos.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un libro que se reimprime. La portada dice «segunda edición»: eso es lo que ve el lector. En la
+imprenta, cada tirada lleva además un número interno, porque de la segunda edición puede haber cinco tiradas con
+correcciones. Y la editorial imprime pruebas en papel barato antes de la tirada final, sin reescribir el libro.
+
+Una app tiene las mismas tres ideas. La **versión** es la edición que ve la persona en la App Store. El **número
+de compilación** identifica cada tirada que subes. Y los **entornos** (desarrollo, pruebas, producción) son la
+misma app compilada con otra receta: otro servidor, otro nombre, otro identificador.
+
+El problema del tema nace de mezclar las tres. El equipo cambiaba la URL a mano y un día publicó la app apuntando
+al servidor de pruebas. Aquí aprendes a sacar esos valores del código y a ponerlos en archivos de configuración
+revisables.
+
+##### 2. Definición formal y vocabulario
+
+La **versión** es la clave `CFBundleShortVersionString` del `Info.plist`. Según Apple, son exactamente tres
+enteros separados por puntos: mayor, menor y parche. En Xcode la produce el ajuste `MARKETING_VERSION`.
+
+El **número de compilación** es la clave `CFBundleVersion`: de uno a tres enteros separados por puntos, y los que
+faltan valen cero. En Xcode la produce `CURRENT_PROJECT_VERSION`. App Store Connect exige que cada subida de una
+misma versión traiga uno mayor.
+
+Una **configuración de compilación** es un conjunto de ajustes con nombre: Debug, Release y las que agregues, como
+Staging. `xcodebuild -configuration Staging` elige cuál usar. No cambia el código fuente; cambia los ajustes con
+que se compila.
+
+Un **archivo `.xcconfig`** guarda ajustes como líneas `AJUSTE = valor`, en texto plano. Lo asignas a una
+configuración y Xcode lo combina con el resto de ajustes. Admite `#include`, referencias `$(OTRO)` y comentarios
+que empiezan con `//`.
+
+La **sustitución en `Info.plist`** ocurre al compilar: cada `$(AJUSTE)` del `Info.plist` se reemplaza por su valor
+final. La app lee el resultado en tiempo de ejecución con `Bundle.main`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El valor viaja del archivo de texto a la app instalada:
 
 ```mermaid
 flowchart LR
@@ -133,6 +168,77 @@ flowchart LR
     X --> I["Info.plist<br/>$(URL_SERVIDOR) → valor"]
     I --> A["la app: ConfiguracionEntorno(info:)"]
 ```
+
+1. **Xcode elige la configuración.** El esquema dice cuál: Debug al ejecutar, Release al archivar. Con
+   `xcodebuild` la eliges con `-configuration`.
+2. **Lee el `.xcconfig` asignado.** Primero resuelve los `#include`, en orden. Si un ajuste aparece dos veces, gana
+   la última línea. Así `Staging.xcconfig` incluye `Base.xcconfig` y redefine solo cuatro ajustes:
+
+```text
+#include "Base.xcconfig"
+PRODUCT_BUNDLE_IDENTIFIER = com.academia.reparto.staging
+NOMBRE_ENTORNO = pruebas
+URL_SERVIDOR = https:/$()/pruebas.reparto.example
+```
+
+3. **Apila los niveles.** Con un `.xcconfig` en el objetivo, Xcode aplica primero los ajustes del proyecto.
+   Después aplica los del archivo y al final los de la pestaña Build Settings del objetivo. El último nivel que
+   define un ajuste gana, según la documentación de Xcode.
+4. **Resuelve las referencias.** Cada `$(NOMBRE)` se reemplaza por el valor final de ese ajuste. `$()` es una
+   referencia a un ajuste vacío: no aporta nada, pero separa las dos barras para que `//` no abra un comentario.
+5. **Genera el `Info.plist`.** Mezcla tu archivo con las claves que produce a partir de ajustes como
+   `INFOPLIST_KEY_CFBundleDisplayName`, y sustituye los `$(…)`. El resultado queda dentro del paquete `.app`.
+6. **La app lo lee y lo valida una vez.** El tipo del núcleo convierte el diccionario en un valor con tipos.
+
+```swift
+let entorno = try ConfiguracionEntorno(info: Bundle.main.infoDictionary ?? [:])
+print(entorno.nombre, entorno.servidor)
+```
+
+   Si la URL llega como `https:`, el inicializador lanza `urlCortada` al arrancar, no en la primera petición. Usa
+   `throws(Problema)`, los errores con tipo del Módulo 5, Tema 1.
+
+##### 4. Reglas, variantes y casos límite
+
+**Formatos exactos.** «1.4», «v1.4.0» y «1.4.0-beta» no son versiones válidas: Apple pide tres enteros, solo
+dígitos y puntos. Para el número de compilación, «37» equivale a «37.0.0». La comparación es numérica, parte por
+parte: 1.10.0 es mayor que 1.9.0, aunque como texto ocurra lo contrario.
+
+**Qué se puede subir.** Una versión mayor puede volver a empezar la numeración de compilaciones. La misma versión
+necesita una compilación mayor que la última aceptada. Repetir la pareja es una subida redundante y se rechaza.
+
+**El comentario `//`.** Según la documentación de Xcode, todo lo que sigue a `//` es comentario hasta el
+final de la línea. Por eso `https://api…` queda en `https:` sin ningún aviso. La salida
+real con `Roto.xcconfig` lo muestra.
+
+**La pestaña del objetivo gana.** Si `MARKETING_VERSION` sigue escrito en Build Settings del objetivo, tu
+`.xcconfig` no tiene efecto. Al migrar, borra esos valores del objetivo; `xcodebuild -showBuildSettings` te dice el
+valor final.
+
+**Ajustes condicionales.** Un ajuste admite condiciones entre corchetes, como `[config=Debug]`, `[sdk=iphoneos*]`
+o `[arch=arm64]`. Úsalas con moderación: un archivo por configuración se lee mejor.
+
+**Código distinto por entorno.** Si de verdad necesitas otro código, usa `#if DEBUG` o una condición propia en
+`SWIFT_ACTIVE_COMPILATION_CONDITIONS`. No compares textos como `entorno == "pruebas"` escritos a mano.
+
+**Nada secreto.** Todo lo que llega al `Info.plist` viaja en texto plano dentro de la app. Una clave de API ahí la
+lee cualquiera que descargue la app. Los secretos van al llavero, como verás en el Módulo 13, Tema 1.
+
+**Identificadores distintos.** Staging usa `com.academia.reparto.staging`. Por eso las dos apps conviven en el
+mismo teléfono: para iOS son apps diferentes, con datos separados.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`VersionApp` y `NumeroCompilacion` aplican `Comparable` del Módulo 0. Implementas `<` con
+`lexicographicallyPrecedes` y obtienes gratis `>`, `<=` y la ordenación. La prueba que lee `Bundle.main` es una
+prueba alojada del Módulo 9: en el simulador, el paquete principal es la app anfitriona compilada.
+
+No confundas un `.xcconfig` con `UserDefaults`, del Módulo 6. El `.xcconfig` fija valores al compilar y no cambian
+en el teléfono; `UserDefaults` guarda preferencias que la app cambia mientras corre.
+
+Lo que sigue usa estos ajustes. El Tema 2 agrega `ASSETCATALOG_COMPILER_APPICON_NAME` y la pantalla de inicio al
+mismo `Info.plist`. El Tema 3 archiva con la configuración Release, y el Tema 4 revisa ese `Info.plist` antes de
+subirlo. En el Módulo 12, Tema 2, `ClienteAPI(base:)` recibe una URL base, el valor que aquí sale de la configuración.
 
 #### Problema resuelto 1.1
 Escribe las reglas de versión y entorno en el paquete, pruébalas en Linux y configura la app con tres entornos en
@@ -710,8 +816,7 @@ Al terminar este tema podrás:
 - comprobar qué generó Xcode dentro de la app compilada;
 - explicar por qué la pantalla de inicio no es una pantalla de presentación.
 
-**Conceptos clave:** catálogo de recursos, ícono de una sola imagen, variantes de apariencia, `UILaunchScreen`,
-arranque
+**Conceptos clave:** catálogo de recursos, ícono de una sola imagen, variantes de apariencia, `UILaunchScreen`, arranque
 
 #### El problema
 La app de pruebas tiene el ícono en blanco de Xcode, y alguien propone «una pantalla de bienvenida de 3 segundos con
@@ -758,8 +863,43 @@ Este tema usa **las pautas de interfaz (HIG)** (Módulo 10) y **los `.xcconfig`*
 - **Error típico:** trabajo pesado y síncrono en el `init` de la app: la persona mira el telón mientras tanto.
 
 #### ► CÓMO FUNCIONA
-Al compilar, `actool` convierte el catálogo en `Assets.car` y genera los archivos del ícono que el sistema necesita;
-el `Info.plist` final apunta a ellos y a la pantalla de inicio.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en el letrero de una tienda y en la cortina metálica que sube por la mañana. El letrero tiene que leerse
+desde lejos y desde cerca, de día y de noche. La cortina no es parte de la tienda. Solo cubre la entrada mientras
+alguien abre por dentro, y nadie quiere que se quede abajo más de la cuenta.
+
+En una app, el **ícono** es el letrero. Aparece en la pantalla de inicio, en Ajustes, en la búsqueda y en la App
+Store, cada vez con otro tamaño. La **pantalla de inicio** es la cortina. El sistema la muestra en cuanto tocas el
+ícono y la retira cuando la app dibuja su primer cuadro.
+
+El problema del tema reúne los dos malentendidos típicos. Un ícono con transparencia que el sistema rellena de
+negro, y una «pantalla de bienvenida» de tres segundos que solo retrasa el trabajo. Aquí ves qué hace el sistema
+con cada recurso y por qué la cortina no se decora.
+
+##### 2. Definición formal y vocabulario
+
+Un **catálogo de recursos** es una carpeta `.xcassets`. Cada recurso es una subcarpeta (`.appiconset`, `.colorset`,
+`.imageset`) con un `Contents.json` que describe sus variantes. Al compilar, Xcode la convierte en un archivo
+binario, `Assets.car`.
+
+El **ícono de una sola imagen** es la forma actual de declarar el ícono en iOS. Entregas una imagen de
+1024 × 1024 y el sistema genera los demás tamaños. El ajuste `ASSETCATALOG_COMPILER_APPICON_NAME` dice qué conjunto del catálogo es
+el ícono.
+
+Las **variantes de apariencia** son versiones del ícono para el estilo claro, el oscuro y el tintado. Se declaran
+en el mismo `Contents.json`, con la clave `appearances`.
+
+**`UILaunchScreen`** es una clave del `Info.plist` que describe la pantalla de inicio sin storyboard. Sus
+subclaves nombran un color del catálogo (`UIColorName`), una imagen (`UIImageName`) y barras opcionales.
+
+El **arranque** es el intervalo entre el toque en el ícono y el primer cuadro de la app. La pantalla de inicio
+cubre exactamente ese intervalo, ni más ni menos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El catálogo pasa por el compilador de recursos y termina en dos lugares del paquete:
 
 ```mermaid
 flowchart LR
@@ -771,6 +911,79 @@ flowchart LR
     P["Config/Info.plist<br/>UILaunchScreen"] --> INFO["Reparto.app/Info.plist<br/>CFBundleIcons · UILaunchScreen"]
     INFO --> SO["el sistema: ícono y telón de arranque"]
 ```
+
+1. **`actool` lee el catálogo.** Es el compilador de catálogos de recursos de Xcode. Recorre cada `Contents.json` y
+   valida que las imágenes existan y tengan el tamaño declarado.
+2. **Genera el ícono en varios tamaños.** Escala la imagen de 1024 × 1024 y escribe archivos sueltos como
+   `AppIcon60x60@2x.png`, de 120 × 120 píxeles. Los deja sueltos porque el sistema los lee sin abrir la app.
+3. **Compila el resto en `Assets.car`.** Colores, imágenes y variantes quedan en un solo archivo indexado. En
+   SwiftUI los pides por nombre:
+
+```swift
+Color("ColorInicio")
+Image("LogoInicio")
+```
+
+   El nombre es el de la carpeta sin extensión. Si te equivocas, no hay error al compilar: la vista queda vacía.
+4. **Escribe las claves en el `Info.plist`.** Agrega `CFBundleIcons` con `CFBundleIconName = AppIcon` y copia tu
+   `UILaunchScreen`. La salida de `plutil -p` del tema muestra las dos.
+5. **El sistema instala la app.** SpringBoard es el proceso que dibuja la pantalla de inicio de iOS. Toma el ícono
+   y prepara una imagen del telón a partir de `UILaunchScreen`.
+6. **Tocas el ícono.** El sistema muestra el telón al instante, lanza el proceso y ejecuta el `init` de tu `App`.
+   Cuando SwiftUI entrega el primer cuadro, el telón se retira:
+
+```swift
+init() {
+    if UserDefaults.standard.string(forKey: "escena") == "arranque-lento" {
+        Thread.sleep(forTimeInterval: 4)
+    }
+}
+```
+
+   El argumento `-escena` llega a `UserDefaults`. Con `arranque-lento`, este `init` bloquea el hilo principal
+   4 segundos. Durante ese tiempo no hay primer cuadro, así que el telón sigue visible. Por eso la foto tomada al
+   segundo lo muestra.
+
+##### 4. Reglas, variantes y casos límite
+
+**Sin transparencia.** El ícono principal debe ser opaco: exporta el PNG en RGB, sin canal alfa. El sistema aplica
+su propia máscara de esquinas redondeadas, así que tampoco las dibujes. La única excepción es la variante oscura,
+que la documentación pide con fondo transparente.
+
+**Variantes opcionales.** Si no das la variante oscura o la tintada, el sistema genera un tratamiento automático.
+La tintada se entrega en escala de grises, porque el sistema la colorea con el tono que elige la persona.
+
+**Cambios entre versiones.** Xcode 14 permitió el ícono de una sola imagen; antes había que entregar cada tamaño.
+Las variantes oscura y tintada llegaron con iOS 18. Xcode también ofrece Icon Composer para íconos con capas. Si
+apuntas a versiones antiguas, revisa qué tamaños pide el catálogo.
+
+**Una sola fuente para el telón.** `UILaunchScreen` existe desde iOS 14. La alternativa es un storyboard de
+arranque. Si el objetivo genera la pantalla automáticamente (`INFOPLIST_KEY_UILaunchScreen_Generation = YES`) y
+además escribes tu clave, tienes dos fuentes: elige una.
+
+**El telón es estático.** No ejecuta código, no se anima y no muestra texto traducido de forma fiable. La
+documentación de Xcode pide que se parezca a la primera pantalla de la app, para que el cambio no se note.
+
+**El arranque lo alarga el código.** Trabajo síncrono en el `init` de la app o de la primera vista retrasa el
+primer cuadro. Si un arranque se demora demasiado, iOS puede terminar la app. Carga los datos después, con
+`.task`, como en el Módulo 4.
+
+**Caché del sistema.** iOS guarda la imagen del telón. Si cambias el color y no lo ves, borra la app del simulador
+y vuelve a instalarla.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema continúa el Tema 1: `ASSETCATALOG_COMPILER_APPICON_NAME` vive en `Base.xcconfig`, y `UILaunchScreen` está
+en el mismo `Config/Info.plist` que recibe `$(URL_SERVIDOR)`. Los dos archivos se revisan como código.
+
+Los colores del catálogo funcionan como los colores dinámicos del Módulo 10, Tema 4. Un `.colorset` con variante
+oscura es la versión declarativa de `UIColor(dynamicProvider:)`, y el contraste de cada versión se mide igual.
+
+El arranque conecta con la medición del Módulo 10, Tema 1. Si el telón dura mucho, mide el `init` con un signpost
+antes de culpar a los recursos.
+
+Lo que sigue usa el paquete compilado. El Tema 3 lo firma y lo archiva, y el Tema 4 revisa su `Info.plist` antes
+de subirlo. La App Store compara el ícono de la app con el de la ficha de la tienda.
 
 #### Problema resuelto 2.1
 Crea el ícono (con variante oscura), el color y la imagen de la pantalla de inicio, y configúralos. Compila, mira
@@ -971,8 +1184,7 @@ Al terminar este tema podrás:
 - archivar la app para un iPhone real y revisar qué contiene el archivo;
 - leer los errores que da Xcode al pedir firma sin equipo y al exportar sin certificado.
 
-**Conceptos clave:** equipo, identidad de firma (certificado + clave privada), perfil de aprovisionamiento,
-archivo (`.xcarchive`), exportación
+**Conceptos clave:** equipo, identidad de firma (certificado + clave privada), perfil de aprovisionamiento, archivo (`.xcarchive`), exportación
 
 #### El problema
 La app funciona en el simulador, pero el simulador no necesita firma. Al intentar instalarla en un iPhone o subirla,
@@ -992,7 +1204,7 @@ Módulo 9).
 - **Ejemplo:** el error «Signing for "Reparto" requires a development team» de este tema.
 - **Error típico:** publicar con el equipo personal de alguien que luego se va.
 
-**identidad de firma**
+**identidad de firma (certificado + clave privada)**
 - **Definición técnica:** un certificado emitido por Apple (de desarrollo o de distribución) junto con su clave privada en el llavero de la Mac; `codesign` la usa para firmar el binario.
 - **En palabras sencillas:** el sello y la mano que lo pone: el certificado sin la clave privada no sirve.
 - **Dónde se rompe la comparación:** hoy Xcode puede usar certificados administrados en la nube y no siempre hace falta exportar nada; si se exporta, es un `.p12` con contraseña que hay que cuidar como una llave maestra ([Apple](https://developer.apple.com/documentation/xcode/sharing-your-teams-signing-certificates)).
@@ -1021,8 +1233,44 @@ Módulo 9).
 - **Error típico:** copiar un `ExportOptions.plist` viejo con métodos que cambiaron de nombre.
 
 #### ► CÓMO FUNCIONA
-El equipo es dueño de todo. El certificado (con su clave privada) firma; el perfil autoriza esa firma para un
-identificador, unas capacidades y un destino. Archivar compila Release; exportar firma para el destino.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un medicamento. La farmacia no vende un frasco sin etiqueta: necesita saber qué laboratorio lo fabricó y
+que nadie lo abrió por el camino. El sello de seguridad del frasco y el registro sanitario cumplen esa función.
+Sin ellos, el producto puede ser bueno, pero no llega al estante.
+
+iOS aplica la misma regla a cada app que se instala en un iPhone. Solo ejecuta código **firmado**: un sello
+criptográfico que dice quién lo produjo y garantiza que nadie cambió un byte desde entonces. Y solo lo ejecuta si
+un permiso emitido por Apple autoriza esa firma para esa app y ese destino.
+
+El simulador no exige nada de esto, por eso la app funcionó sin problemas hasta ahora. El problema del tema aparece
+al salir del simulador: errores que hablan de equipos, certificados y perfiles. Aquí aprendes qué es cada pieza y
+qué se rompe cuando falta.
+
+##### 2. Definición formal y vocabulario
+
+El **equipo** es la cuenta, persona u organización, dueña de todo lo demás. Se identifica con un *Team ID* de diez
+caracteres, que en Xcode es el ajuste `DEVELOPMENT_TEAM`. Un Apple Account sin membresía tiene un «Personal Team»
+con límites.
+
+La **identidad de firma** es un certificado emitido por Apple junto con su clave privada. El certificado contiene
+la clave pública y el nombre del equipo; la clave privada vive en el llavero de la Mac. Sin la clave privada, el
+certificado no firma nada.
+
+El **perfil de aprovisionamiento** es un archivo firmado por Apple. Une un identificador de app, un equipo, los
+certificados permitidos y las capacidades (*entitlements*). En desarrollo también lista los dispositivos
+autorizados.
+
+El **archivo** (`.xcarchive`) es la compilación Release de la app junto con sus símbolos de depuración (`dSYM`). Es
+el punto de partida de toda distribución.
+
+La **exportación** toma el archivo y lo firma con la identidad y el perfil del método elegido. Después produce
+un `.ipa` o lo sube a App Store Connect.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El equipo es dueño de todo; el archivo y la exportación son los dos momentos de la cadena:
 
 ```mermaid
 flowchart LR
@@ -1035,6 +1283,79 @@ flowchart LR
     P --> E
     E --> IPA[".ipa firmado → App Store Connect"]
 ```
+
+1. **Generas la identidad.** La Mac crea un par de claves. La pública viaja a Apple en una solicitud y vuelve
+   dentro de un certificado firmado por la autoridad de Apple. La privada nunca sale del llavero.
+2. **Apple emite el perfil.** Con firma automática, Xcode lo pide y lo renueva solo. El perfil dice: esta app, de
+   este equipo, firmada con estos certificados, puede usar estas capacidades.
+3. **Archivas.** `xcodebuild archive` compila en Release para `generic/platform=iOS`, es decir, para cualquier
+   iPhone real, en `arm64`. Guarda la app y sus `dSYM` en el paquete `.xcarchive`.
+4. **`codesign` sella el binario.** Calcula un resumen criptográfico (*hash*) de cada parte del código y de los
+   recursos. Firma esa lista con la clave privada y copia el perfil dentro del `.app` como
+   `embedded.mobileprovision`.
+5. **Exportas para un destino.** `ExportOptions.plist` dice el método. Para `app-store-connect`, la exportación
+   firma con una identidad de distribución y un perfil de App Store.
+
+```text
+<key>method</key>
+<string>app-store-connect</string>
+<key>destination</key>
+<string>export</string>
+```
+
+   Con `destination` en `export`, deja el `.ipa` en una carpeta; con `upload`, lo sube directamente.
+6. **El dispositivo verifica.** Al instalar y al abrir, iOS comprueba la cadena del certificado hasta Apple.
+   También comprueba que los resúmenes coincidan y que el perfil autorice ese identificador y esas
+   capacidades. Un solo byte cambiado invalida la firma.
+
+En el laboratorio, la cadena se rompe en dos puntos, y la salida real lo muestra. El archivo sin firma funciona,
+pero `codesign -dv` responde «code object is not signed at all». Al pedir firma sin equipo, Xcode falla con
+«requires a development team». Al exportar, falla con «No Team Found in Archive».
+
+##### 4. Reglas, variantes y casos límite
+
+**Cuenta gratuita frente a programa.** Según la comparación de membresías de Apple, el equipo personal instala en
+tus propios dispositivos. Tiene límites: pocos identificadores y dispositivos, y perfiles que vencen a los 7 días. No
+da acceso a TestFlight ni a la App Store; para eso necesitas el Apple Developer Program.
+
+**Tipos de certificado.** El de desarrollo («Apple Development») firma para instalar en dispositivos registrados.
+El de distribución («Apple Distribution») firma para TestFlight, la App Store y la distribución *ad hoc*. Un
+certificado de desarrollo no exporta para la tienda.
+
+**Métodos de exportación.** La clave `method` decide la firma: `app-store-connect` firma para TestFlight y la App
+Store, y otros métodos firman para dispositivos registrados. Antes de reutilizar un `ExportOptions.plist` heredado,
+revisa con `xcodebuild -help` los valores que acepta tu versión de Xcode.
+
+**La App Store vuelve a firmar.** El perfil de App Store no lista dispositivos. Cuando Apple distribuye la app,
+reemplaza tu firma de distribución por la suya; por eso cualquier iPhone la acepta.
+
+**Capacidades y perfil.** Si agregas una capacidad, como notificaciones o iCloud, el perfil debe incluirla. Con
+firma manual hay que regenerarlo; si no, la instalación falla por *entitlements* que el perfil no autoriza.
+
+**Archivar sin firma.** `CODE_SIGNING_ALLOWED = NO` permite archivar en la integración continua sin cuenta, como
+hace el laboratorio. Sirve para detectar errores propios de Release, pero ese archivo no se puede instalar en un
+teléfono.
+
+**Guarda los archivos.** Los `dSYM` traducen las direcciones de memoria de un informe de fallo a nombres de función
+y líneas. Si borras el archivo de una versión publicada, sus fallos quedan ilegibles.
+
+**La clave privada es el activo.** Si se pierde, el certificado no sirve. Con certificados administrados en la
+nube, Xcode crea otro; con firma manual hay que revocar, regenerar y actualizar los perfiles.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema usa las configuraciones del Tema 1: archivar elige Release, y el identificador `com.academia.reparto`
+sale de `Base.xcconfig`. Staging, con `.staging`, necesitaría su propio identificador y su propio perfil. Usa
+también `xcodebuild` del Módulo 9, ahora con las acciones `archive` y `-exportArchive` en lugar de `test`.
+
+No confundas este llavero con el del Módulo 13, Tema 1. Aquí el llavero de la Mac guarda la clave privada del
+equipo. Allá el llavero del iPhone guarda los secretos de la persona usuaria dentro de tu app.
+
+La firma tampoco es cifrado. Garantiza autoría e integridad, no oculta el código: el `Info.plist` del archivo se lee
+con `plutil -p`, como hizo el problema resuelto.
+
+El Tema 4 sigue la cadena. Revisa el `Info.plist` y el manifiesto de privacidad del archivo, y explica qué pasa
+cuando el `.ipa` llega a TestFlight y a la revisión de Apple.
 
 #### Problema resuelto 3.1
 Sin cuenta de desarrollador, archiva la app para un iPhone real sin firma y revisa el archivo; después pide la firma
@@ -1306,8 +1627,7 @@ Al terminar este tema podrás:
 - explicar qué pasa en TestFlight con probadores internos y externos;
 - preparar la revisión de la App Store y saber qué hacer si la rechazan.
 
-**Conceptos clave:** manifiesto de privacidad, API con motivo obligatorio, TestFlight, revisión de la App Store,
-revisión previa a la subida
+**Conceptos clave:** manifiesto de privacidad, API con motivo obligatorio, TestFlight, revisión de la App Store, revisión previa a la subida
 
 #### El problema
 App Store Connect devuelve un correo: la app usa `UserDefaults` y no declara el motivo. La primera compilación para
@@ -1354,9 +1674,44 @@ Este tema usa **`UserDefaults`** (Módulo 6), **el `Info.plist` y la versión** 
 - **Error típico:** descubrir en el correo de App Store Connect lo que una prueba habría visto en un segundo.
 
 #### ► CÓMO FUNCIONA
-Antes de subir, la compilación se revisa (propio y Xcode). Al subir, App Store Connect procesa la compilación y
-revisa el manifiesto. TestFlight la reparte a internos de inmediato y a externos tras la primera revisión; la
-versión para la tienda pasa por la revisión completa.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un producto que llega al supermercado. Antes del estante pasa por tres filtros. El fabricante revisa su
+propia etiqueta, un grupo de clientes lo prueba en una degustación y el supermercado comprueba que cumpla sus
+normas. Cada filtro atrapa errores distintos, y el más barato es el primero.
+
+Publicar una app sigue el mismo orden. Tú revisas la compilación antes de subirla. **TestFlight** la reparte a
+personas que la prueban en sus teléfonos. Y la **revisión de la App Store** decide si cumple las pautas de Apple.
+Además, la app lleva su propia etiqueta: el **manifiesto de privacidad**, que declara qué datos usa y para qué.
+
+El problema del tema recorre los tres filtros con sus fallos típicos. Un motivo de privacidad sin declarar, una
+compilación externa «esperando revisión» y un rechazo por falta de cuenta de prueba. Aquí entiendes qué pide cada
+uno y cómo adelantarte.
+
+##### 2. Definición formal y vocabulario
+
+El **manifiesto de privacidad** es el archivo `PrivacyInfo.xcprivacy`, un *plist* dentro del paquete de la app o
+de un SDK. Tiene cuatro claves de primer nivel: `NSPrivacyTracking`, `NSPrivacyTrackingDomains`,
+`NSPrivacyCollectedDataTypes` y `NSPrivacyAccessedAPITypes`.
+
+Las **API con motivo obligatorio** son cinco categorías que podrían servir para identificar un dispositivo. Son las marcas
+de tiempo de archivos, tiempo desde el arranque, espacio en disco, teclados activos y `UserDefaults`. Cada una se
+declara con al menos un motivo aprobado, un código como `CA92.1`.
+
+**TestFlight** es el servicio de Apple para distribuir versiones de prueba. Admite hasta 100 probadores internos,
+que son usuarios de App Store Connect del equipo, y hasta 10 000 externos. Cada compilación se puede probar durante
+90 días.
+
+La **revisión de la App Store** evalúa cada versión según las *App Review Guidelines*. Es una revisión humana con
+apoyo automático, y su resultado es aprobar o rechazar citando una pauta.
+
+La **revisión previa a la subida** es tuya. Es un programa que comprueba el `Info.plist` y el manifiesto de la
+compilación antes de que salga de tu Mac. En este tema son `Revisor` y el ejecutable `revisar`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La compilación atraviesa los filtros en este orden:
 
 ```mermaid
 flowchart LR
@@ -1369,6 +1724,76 @@ flowchart LR
     AR -->|"aprobada"| T["App Store"]
     AR -->|"rechazada"| C["corregir, responder o apelar"]
 ```
+
+1. **Revisas en tu Mac.** `revisar` lee los dos *plists*, en XML o binarios, y devuelve hallazgos con nivel. Sale
+   con código 1 si hay errores, así que la integración continua puede detenerse ahí.
+
+```swift
+let hallazgos = Revisor.revisar(info: info, privacidad: privacidad)
+let errores = hallazgos.filter { $0.nivel == .error }.count
+exit(errores == 0 ? 0 : 1)
+```
+
+   `revisar` no se detiene en el primer problema. Acumula todos y los imprime. Por eso la salida sobre `Info-mala.plist`
+   muestra los siete errores a la vez.
+2. **Validas con Xcode.** *Validate App*, en el Organizer, aplica las comprobaciones de Apple sin publicar nada.
+   Detecta problemas de firma, de formato y de recursos.
+3. **Subes.** App Store Connect procesa la compilación: comprueba que la pareja versión y compilación sea nueva,
+   analiza el binario y lee el manifiesto. Si usas una API con motivo obligatorio sin declararla, recibes un correo
+   con el problema.
+4. **TestFlight interno.** En cuanto termina el procesamiento, las personas del equipo pueden instalarla. No hay
+   revisión de Apple en este paso.
+5. **TestFlight externo.** La primera compilación que agregas a un grupo externo pasa por una revisión beta. Las
+   siguientes de la misma versión pueden no necesitar una completa.
+6. **Revisión de la App Store.** Envías una compilación con su ficha, capturas y notas para el revisor. Si la app
+   pide iniciar sesión, la pauta 2.1 exige una cuenta de prueba y un servidor encendido.
+7. **Resultado.** Si aprueban, publicas cuando quieras. Si rechazan, respondes al mensaje de la revisión en App
+   Store Connect, corriges y vuelves a enviar, o apelas.
+
+##### 4. Reglas, variantes y casos límite
+
+**Fechas.** Apple presentó los manifiestos de privacidad en 2023, con Xcode 15. Según Apple, desde el 1 de mayo de
+2024 App Store Connect no acepta apps que usen una API con motivo obligatorio sin declararla.
+
+**El motivo limita el uso.** `CA92.1` permite leer y escribir `UserDefaults` solo con datos de la misma app. Un
+motivo de otra categoría no vale: `35F9.1` es de tiempo de arranque. El revisor del tema lo comprueba con la prueba
+`motivoQueNoEsDeUserDefaults`.
+
+**Cada SDK declara lo suyo.** El manifiesto de la app no cubre lo que hace una biblioteca de terceros. Los SDK
+distribuidos como paquete traen su propio `PrivacyInfo.xcprivacy`, y Xcode los combina en el informe de privacidad
+del archivo.
+
+**Rastreo.** Si `NSPrivacyTracking` es `true`, debes listar los dominios de rastreo y pedir permiso con App Tracking
+Transparency. Sin ese permiso, iOS bloquea las conexiones a los dominios listados.
+
+**Datos recogidos.** Cada tipo de dato que envías a tu servidor se declara con su propósito. También
+declaras si está ligado a la persona y si se usa para rastrear. La app del tema declara la ubicación precisa, ligada a la persona, para la
+funcionalidad de la ruta.
+
+**Plazos de revisión.** Según Apple, suele revisar la mitad de los envíos en menos de 24 horas y el 90 % en menos de
+48. Puedes pedir una revisión acelerada ante un fallo grave, pero no es un derecho.
+
+**Pautas frecuentes.** La 2.1 pide versiones completas y probadas, con cuenta de prueba. La 2.3 exige metadatos
+exactos. La 5.1.1 cubre la recogida de datos y los permisos.
+
+**Lo que no ve ningún filtro.** La revisión prueba lo que puede alcanzar con la información que le das. No sustituye
+tus pruebas ni las de TestFlight.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema cierra el módulo. Usa la versión y el entorno del Tema 1: `revisar` reutiliza `VersionApp` y
+`ConfiguracionEntorno`. Se ejecuta sobre la app del archivo Release del Tema 3, y el manifiesto viaja dentro del
+mismo paquete que el ícono del Tema 2.
+
+La declaración de `UserDefaults` conecta con el Módulo 6. Allí guardabas preferencias; aquí declaras ese uso. La
+app lo usa también para leer el argumento `-escena`.
+
+No confundas el manifiesto con el texto de los permisos del `Info.plist`, como `NSCameraUsageDescription`. Ese
+texto se muestra a la persona al pedir acceso; el manifiesto lo lee Apple y alimenta la etiqueta de privacidad de
+la ficha.
+
+El revisor también avisa de `NSAllowsArbitraryLoads`, que desactiva App Transport Security. El Módulo 13, Tema 2,
+explica qué protege ATS y cómo fijar certificados.
 
 #### Problema resuelto 4.1
 Escribe el manifiesto de privacidad de la app y un revisor que compruebe el `Info.plist` y el manifiesto de

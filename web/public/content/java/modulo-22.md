@@ -536,14 +536,40 @@ tiene dos `BOG` repetidas y un mapa «pierde» una entrada que sigue ahí. ¿Qu�
 - **Error típico:** silenciarlo con `@SuppressWarnings("overrides")` fuera de un contraejemplo didáctico.
 
 #### ► CÓMO FUNCIONA
-La copia defensiva protege el estado interno cuando recibes o expones objetos mutables. Guardar la `List` que te pasaron sin copiarla permite que el llamador la modifique después del constructor; devolver la lista interna permite que el consumidor altere el objeto sin pasar por su API. `ClienteInmutable` copia al entrar (`new ArrayList<>(tags)`, `new Direccion(...)`) y al salir (`List.copyOf(tags)`, nueva `Direccion`). Salida verificada: `TAGS=[vip]` aunque el llamador agregó `"hack"` a la lista original.
 
-La igualdad es la otra mitad del contrato de un objeto de valor. `Direccion` sobrescribe `equals` **y** `hashCode` con los mismos campos: dos direcciones iguales caen en el mismo cubo y `new HashSet<>(List.of(new Direccion("BOG"), new Direccion("BOG"))).size()` es `1`. `SinHashCode` es el mal ejemplo deliberado: `equals` dice que dos instancias con `"X"` son iguales, pero al no sobrescribir `hashCode` probablemente caen en cubos distintos. Salida verificada: `IGUALES=true`, `HASHSET_SIN=2`, `HASHSET_CON=1`. Con `-Xlint:all -Werror`, javac avisa de este descuido; el contraejemplo lleva `@SuppressWarnings("overrides")` en el único sitio donde se tolera.
+##### 1. La idea en lenguaje sencillo
 
-Una clave de `HashMap` debe ser inmutable. `ClaveMutable` calcula `hashCode` desde `valor`, que cambia con `setValor`: al mutarla después de `put`, la entrada sigue en el mapa pero ya no se encuentra por clave equivalente. Salidas verificadas: `CLAVE_ANTES=valor`, `CLAVE_DESPUES=null`, `CLAVE_ITER={B=valor}`. El `toString()` del mapa muestra el nuevo valor de la clave porque la entrada conserva la misma referencia; `get(new ClaveMutable("B"))` devuelve `null` porque busca otro cubo. Regla práctica: usa claves inmutables —`String`, `record` con componentes inmutables, enum, o una clase con `equals`/`hashCode` sobre campos finales—.
+Cuando un notario recibe un documento, no se queda con el original del cliente: hace una copia certificada y archiva
+esa copia. Si el cliente tacha su original al salir, el archivo no cambia. Y cuando alguien pide el documento, el
+notario entrega otra copia, nunca la del archivo.
 
-Una búsqueda en un `HashMap` tiene dos filtros en orden. Primero el `hashCode` elige el cubo; después `equals` compara
-solo dentro de ese cubo. Si cualquiera de los dos falla, la entrada no aparece, aunque esté guardada.
+Un objeto que guarda datos mutables necesita la misma disciplina. El perfil de Tienda Aurora guardó la lista que le
+dieron y la entregó tal cual: marketing la cambió por fuera. Los otros dos fallos vienen de la misma raíz. Un
+`HashSet` y un `HashMap` archivan cada objeto en un casillero calculado a partir de su contenido. Si el objeto no
+calcula bien su número, o si su contenido cambia después de archivarlo, el casillero deja de corresponder.
+
+##### 2. Definición formal y vocabulario
+
+La **copia defensiva** es crear una copia propia de un dato mutable en el borde del objeto. Se aplica en dos sitios:
+la **copia de entrada y de salida**. La de entrada ocurre al recibir el dato en el constructor o en un *setter*. La
+de salida ocurre al entregarlo en un accesor.
+
+Una **vista no modificable** es un envoltorio que rechaza escrituras pero lee de la colección original.
+`Collections.unmodifiableList` devuelve una. No es una copia: refleja los cambios que otro haga en el original.
+
+El contrato de `Object.hashCode`, en su documentación oficial, tiene tres reglas. Dos objetos iguales según `equals`
+deben tener el mismo `hashCode`. El valor debe mantenerse mientras no cambien los datos que usa `equals`. Dos
+objetos distintos pueden compartir valor.
+
+Un **cubo de hash** es la posición del arreglo interno de un `HashMap` donde se guarda una entrada. Se calcula con el
+`hashCode` de la clave. Un `HashSet` es, por dentro, un `HashMap` cuyas claves son los elementos.
+
+El **aviso `[overrides]`** de `javac` señala una clase que sobrescribe `equals` y no `hashCode`. Aparece con
+`-Xlint:overrides` o con `-Xlint:all`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Una búsqueda en un `HashMap` aplica dos filtros en orden, como muestra el diagrama:
 
 ```mermaid
 flowchart LR
@@ -553,6 +579,74 @@ flowchart LR
   E -- sí --> V["devuelve el valor"]
   E -- no --> N["null<br/>(aunque la entrada esté en otro cubo)"]
 ```
+
+Sigue `mapa.put(clave, "valor")` con `ClaveMutable("A")` en un mapa de 16 cubos:
+
+1. `HashMap` llama a `clave.hashCode()`. Para el texto `"A"` vale `65`.
+2. Mezcla el valor con `h ^ (h >>> 16)`, que lleva los bits altos a los bajos. Con `65` no cambia nada.
+3. Reduce al tamaño de la tabla con `& 15`. El resultado es el cubo `1`.
+4. Crea una entrada con la clave, el valor y el hash calculado, y la guarda en el cubo `1`.
+
+Ahora sigue `get(new ClaveMutable("B"))` después de `clave.setValor("B")`:
+
+1. El hash de `"B"` es `66`, y el cubo es el `2`.
+2. El cubo `2` está vacío. `get` devuelve `null` sin mirar el cubo `1`.
+3. La entrada sigue en el cubo `1`, con el hash viejo guardado. Al recorrer el mapa aparece como `{B=valor}`, porque
+   la clave es el mismo objeto mutado.
+
+`SinHashCode` falla en el primer filtro. Hereda el `hashCode` de `Object`, que se basa en la identidad del objeto.
+Dos instancias con `"X"` reciben valores distintos y casi siempre caen en cubos distintos. `equals` nunca llega a
+compararlas, y el set queda con `2`.
+
+La copia defensiva tiene su propio paso a paso. Una regla importante es copiar antes de validar:
+
+```java
+Perfil(List<String> tags) {
+    this.tags = List.copyOf(tags);                  // primero copia
+    if (this.tags.isEmpty()) {                      // después valida la copia
+        throw new IllegalArgumentException("sin etiquetas");
+    }
+}
+```
+
+Si validas el original y copias después, otro hilo puede cambiar la lista entre las dos operaciones. Validar la copia
+garantiza que lo que guardas es exactamente lo que comprobaste.
+
+##### 4. Reglas, variantes y casos límite
+
+`List.copyOf`, `Set.copyOf` y `Map.copyOf` existen desde Java 10. Devuelven colecciones inmodificables y rechazan
+`null` con `NullPointerException`. Como el resultado ya es inmutable, sirve a la vez como copia de entrada y de
+salida. El accesor puede devolverlo sin copiar otra vez.
+
+La copia de una colección es superficial: copia las referencias a los elementos. Si los elementos son mutables, como
+una `DireccionMutable`, el objeto sigue expuesto. Con `String` o con un `record` de valores inmutables no hay riesgo.
+
+Un `record` genera `equals` y `hashCode` a partir de todos sus componentes. Por eso las dos `Direccion("BOG")` caen en
+el mismo cubo, el `11`. Si un componente es mutable, el `record` hereda el problema de la clave mutable.
+
+La tabla de un `HashMap` tiene siempre un tamaño potencia de dos. Por defecto empieza en 16 cubos y crece al superar
+el 75 % de ocupación. Al crecer, recalcula el cubo de cada entrada con el hash que guardó, no con uno nuevo.
+
+Desde Java 8, un cubo con muchas colisiones se convierte en un árbol balanceado cuando la tabla es grande. Eso
+mejora el peor caso de búsqueda, pero no arregla un `hashCode` incoherente con `equals`.
+
+El aviso `[overrides]` es solo un aviso. Sin `-Werror` el programa compila y falla en silencio. El proyecto del
+módulo compila con `-Xlint:all -Werror` y por eso el contraejemplo necesita `@SuppressWarnings("overrides")`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La copia defensiva y la inmutabilidad superficial vienen de Java, Módulo 1, Tema 5. Aquí las aplicas en los dos
+bordes del objeto y distingues la copia de una vista, que no protege del dueño del original.
+
+`equals`, `hashCode` y las claves mutables se presentaron en Java, Módulo 2, Temas 2 y 3. Este tema muestra el
+mecanismo: el cubo calculado y el hash guardado explican por qué la entrada «se pierde» sin desaparecer.
+
+La función hash y las colisiones de Fundamentos, Módulo 2, Tema 6 son la teoría general. `HashMap` es su
+implementación concreta, con mezcla de bits y tabla potencia de dos.
+
+El Tema 2 extiende la copia a objetos con otros objetos dentro: copia superficial frente a profunda. También muestra
+por qué un `enum` es la clave más segura posible, con `EnumMap`. El Tema 3 muestra otra forma en que un objeto queda
+atado a otro sin que lo veas: la referencia `this$0`.
 
 #### Problema resuelto 1.1
 Compara tres formas de guardar la lista de etiquetas de un cliente y qué ve cada una cuando el llamador la cambia.
@@ -847,9 +941,38 @@ nuevo, los envíos entregados aparecen «en ruta». ¿Qué se copió mal y qué 
 - **Error típico:** usar `HashMap<EstadoEnvio, …>`: funciona, pero el orden de recorrido no es el de los estados y gasta más memoria.
 
 #### ► CÓMO FUNCIONA
-Copiar un objeto con referencias mutables obliga a elegir. Una copia superficial copia campos: si el campo es una referencia, copia la referencia. Una copia profunda copia también los objetos alcanzados. `Perfil.clone()` es superficial y comparte `DireccionMutable` y `List`; `Perfil.deepCopy()` crea otra dirección y otra lista. Salidas verificadas: `SHALLOW_DIR=MED`, `DEEP_DIR=BOG`, `SHALLOW_TAGS=2`, `DEEP_TAGS=1`.
 
-`clone()` es el mecanismo histórico y tiene limitaciones reales: requiere `Cloneable`, `Object.clone()` hace shallow copy por defecto, obliga a manejar `CloneNotSupportedException` y su contrato es confuso. En código moderno prefiere constructores de copia, factories explícitas `copy()` o inmutabilidad. `Perfil.tags()` y `Perfil.direccion()` están marcados como mal ejemplo: exponen la referencia interna a propósito para observar el aliasing.
+##### 1. La idea en lenguaje sencillo
+
+Fotocopiar una carpeta no es lo mismo que fotocopiar su contenido. Si la carpeta solo trae notas que dicen «el
+contrato está en el cajón 3», la fotocopia trae las mismas notas. Las dos carpetas apuntan al mismo contrato. Si
+alguien lo modifica, ambas «cambian».
+
+El perfil duplicado de Tienda Aurora sufrió eso: la copia apuntaba a la misma dirección que el original. El segundo
+fallo es parecido. La base de datos guardaba el puesto de cada estado en la fila, no su identidad. Cuando alguien
+metió un estado nuevo en medio, todos los puestos siguientes se corrieron. Este tema explica cómo copiar objetos con
+objetos dentro y cómo dar a cada estado una identidad que no dependa del orden.
+
+##### 2. Definición formal y vocabulario
+
+Una **copia superficial** crea un objeto nuevo y copia cada campo tal cual. Si el campo es una referencia, copia la
+referencia, no el objeto. Una **copia profunda** también copia los objetos mutables alcanzados. Que dos referencias
+apunten al mismo objeto se llama **aliasing**.
+
+`Object.clone()` es, según su documentación, una copia superficial: crea una instancia de la misma clase e inicializa
+cada campo «como por asignación». Exige que la clase implemente `Cloneable`; si no, lanza `CloneNotSupportedException`.
+Un **constructor de copia** recibe otro objeto del mismo tipo y decide campo por campo qué copiar.
+
+Un **enum con comportamiento** es un `enum` cuyas constantes reciben datos por un constructor privado y pueden
+sobrescribir métodos con un cuerpo propio. Cada constante es la única instancia de su valor.
+
+**`ordinal()`** devuelve la posición de la constante en la declaración, desde `0`. El método estático **`valueOf` de
+un enum** busca una constante por su nombre exacto. **`EnumMap`** es un `Map` para claves de un enum, respaldado por
+un arreglo indexado por el ordinal.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra qué objetos comparte cada copia en el Problema resuelto 2.1:
 
 ```mermaid
 flowchart LR
@@ -867,11 +990,75 @@ flowchart LR
   end
 ```
 
-Un `enum` da seguridad de tipo y permite estado/comportamiento por constante. `EstadoEnvio` guarda un `codigo` estable y define `siguiente()` por constante. Salidas verificadas: `ENUM=EN_RUTA`, `CODIGO=2`, `RUTA=PENDIENTE->EN_RUTA`. `Transiciones.ruta` usa un switch expression sin `default`: el compilador exige las cuatro constantes. Para demostrarlo se compiló una variante con una quinta constante `CANCELADO` y el compilador respondió `the switch expression does not cover all possible input values`, con `missing patterns: EstadoEnvio.CANCELADO`. Guardar el enum por su `ordinal()` sería frágil: reordenar constantes cambiaría el valor persistido; el `codigo()` explícito es parte del contrato.
+1. `p.clone()` llama a `super.clone()`. La JVM comprueba que `Perfil` implementa `Cloneable`.
+2. Reserva un `Perfil` nuevo sin ejecutar ningún constructor y copia los bits de cada campo.
+3. Los campos `direccion` y `tags` guardan referencias, así que la copia apunta a `D1` y `L1`, los mismos del original.
+4. `p.direccion().setCiudad("MED")` cambia `D1`. La copia superficial ve `MED`, y `==` confirma `superficial=true`.
+5. `new Perfil(p)` ejecuta código normal: crea `D2` y, en el constructor principal, `L2`. No comparte nada mutable.
 
-En el proyecto, los códigos `0` a `3` de `EstadoEnvio` coinciden hoy con los ordinales. Por eso el Problema resuelto
-2.3 usa códigos distintos (`10`, `20`, `30`, `90`): así se ve que el código sobrevive a un reordenamiento y el
-ordinal no.
+El paso 2 explica por qué `clone()` choca con los campos `final`. El campo ya quedó asignado sin pasar por un
+constructor, y no puedes reasignarlo después para hacerlo profundo: `cannot assign a value to final variable tags`.
+
+Ahora sigue un enum con cuerpo por constante. El compilador traduce `PENDIENTE(10) { ... }` así:
+
+1. Crea una subclase anónima del enum, `EstadoEnvio$1`, con el método `siguiente()` de esa constante.
+2. En la inicialización estática del enum, crea una única instancia de cada constante, pasando su código.
+3. Genera los métodos estáticos `values()` y `valueOf(String)`.
+
+Por eso `getClass()` devuelve `EstadosEnvio$EstadoEnvio$1` y `getDeclaringClass()` el tipo del enum.
+
+El `switch` sin `default` se compila con una comprobación de exhaustividad. Si agregas `CANCELADO` y recompilas el
+`switch`, el compilador falla. Si recompilas solo el enum, el `switch` viejo no se entera hasta ejecutarse:
+
+```java
+return switch (e) {
+    case PENDIENTE -> "preparando";
+    case EN_RUTA -> "en camino";
+    case ENTREGADO -> "entregado";
+    case FALLIDO -> "fallido";
+};
+```
+
+En una prueba con OpenJDK 25.0.5.1, ese `switch` compilado antes de agregar `CANCELADO` terminó con
+`java.lang.MatchException` al recibir la constante nueva.
+
+##### 4. Reglas, variantes y casos límite
+
+La JLS §8.9 fija las reglas del enum. Su constructor es privado aunque no lo escribas. No puedes crear instancias con
+`new`, y `Enum.clone()` es `final` y lanza `CloneNotSupportedException`. Por eso cada constante es única y comparar
+con `==` es correcto.
+
+Los `switch` con flecha que devuelven valor llegaron como estándar en Java 14. La exhaustividad sin `default` aplica a
+esas expresiones. Java 21 extendió el `switch` a patrones y fijó `MatchException` como el error cuando, en ejecución,
+llega un valor que no se cubrió al compilar.
+
+`valueOf` distingue mayúsculas: `"en_ruta"` produce `No enum constant EstadosEnvio.EstadoEnvio.en_ruta`. Normaliza el
+texto antes o busca por un código propio.
+
+`ordinal()` es estable solo mientras nadie inserte, borre ni reordene constantes. La documentación de `Enum` dice que
+la mayoría de los programadores no lo necesitarán, porque está pensado para estructuras como `EnumMap` y `EnumSet`.
+JPA lo persiste por defecto con `@Enumerated`; declara `EnumType.STRING` o un convertidor al código.
+
+`EnumMap` y `EnumSet` existen desde Java 5. Usan el ordinal solo en memoria, dentro de un proceso, así que reordenar
+constantes no corrompe nada guardado. Recorren en orden de declaración y ocupan menos memoria que un `HashMap`.
+
+Los arreglos son el caso donde `clone()` sigue siendo cómodo. `arreglo.clone()` es público, no lanza excepciones y
+devuelve el mismo tipo. Sigue siendo superficial: copia referencias si el arreglo es de objetos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La copia superficial de Fundamentos, Módulo 9, Tema 6 y el Prototype de Java, Módulo 12, Tema 5 presentaron el
+problema. Aquí ves el mecanismo exacto de `clone()` y por qué el constructor de copia lo reemplaza.
+
+En el Tema 1 copiaste listas en los bordes de un objeto. Este tema lleva esa idea un nivel más abajo: los objetos
+mutables dentro de los objetos también necesitan su copia.
+
+El `switch` exhaustivo de Java, Módulo 7, Tema 2 aparece aquí como herramienta de diseño: sin `default`, cada estado
+nuevo obliga a revisar cada decisión. En el Módulo 21 viste que un cambio puede romper binarios sin romper la fuente;
+el `MatchException` es un caso más de esa diferencia.
+
+El Tema 3 muestra otra referencia oculta, `this$0`. Igual que el aliasing, ata un objeto a otro sin que aparezca en
+el código que escribiste.
 
 #### Problema resuelto 2.1
 Copia un perfil de las dos formas y demuestra con `==` qué comparten.
@@ -1262,51 +1449,47 @@ tarea. ¿Por qué una tarea pequeña mantiene viva una pantalla entera?
 - **Error típico:** registrar *listeners* o tareas anónimas en un objeto de larga vida y nunca quitarlos.
 
 #### ► CÓMO FUNCIONA
-Java tiene cuatro formas de clases anidadas. La diferencia que importa en memoria es si capturan la instancia exterior:
 
-- **Static nested class**: no captura instancia externa; es una clase normal con namespace.
-- **Inner class**: no estática; conserva una referencia implícita `this$0` a la instancia exterior.
-- **Local class**: declarada dentro de un método o bloque; puede capturar variables efectivamente finales.
-- **Anonymous class**: local sin nombre, usada en el punto de consumo.
+##### 1. La idea en lenguaje sencillo
 
-`Contenedor` tiene las cuatro formas. Salidas verificadas: `STATIC=ID-7`, `INNER=AURORA:X`, `LOCAL=AURORA:L`, `ANON=AURORA:A`. La inner y las clases local/anónima leen `prefijo` de la instancia exterior; la static nested no podría hacerlo sin una referencia explícita.
+Imagina un llavero con muchas llaves. Solo necesitas la del buzón, pero llevas el llavero entero porque la llave está
+soldada a él. Mientras tengas esa llave en el bolsillo, cargas todo lo demás.
 
-```mermaid
-flowchart LR
-  G["PENDIENTES (static)<br/>vive todo el programa"] --> T["tarea anónima<br/>Pantalla$1"]
-  T -- "this$0" --> P["Pantalla<br/>20 MB de imágenes"]
-  G --> L["lambda<br/>solo captura 'copia'"]
-  L -. "sin referencia" .-> P2["Pantalla<br/>recolectable"]
-```
+Una clase interna funciona así. Es una clase declarada dentro de otra, y cada objeto suyo puede llevar soldada una
+referencia al objeto que lo creó. La tarea de refresco de Tienda Aurora es pequeña, pero está soldada a la pantalla
+de checkout. Mientras la lista global guarde la tarea, el recolector de basura no puede liberar la pantalla ni sus 20
+MB de imágenes. Este tema muestra dónde está esa soldadura, por qué la pone el compilador y cómo evitarla.
 
-`javap` confirma la retención:
+##### 2. Definición formal y vocabulario
+
+La Especificación del Lenguaje Java (JLS §8.1.3) llama **clase anidada** a toda clase declarada dentro de otra. Hay
+cuatro formas:
+
+- **Clase anidada estática**: declarada con `static`. No está ligada a ninguna instancia exterior.
+- **Clase interna**: anidada sin `static`. Cada instancia queda ligada a una instancia de la clase exterior.
+- **Clase local**: declarada dentro de un método o bloque, con nombre, y visible solo ahí.
+- **Clase anónima**: clase local sin nombre, declarada e instanciada en la misma expresión `new Tipo() { ... }`.
+
+Las tres últimas son clases internas en sentido amplio. Si se declaran en un contexto de instancia, tienen una
+**instancia envolvente**: el objeto exterior al que pertenecen.
+
+**`this$0`** es el campo sintético con el que `javac` guarda esa instancia envolvente. Una **variable efectivamente
+final** es una variable local que nunca se reasigna; solo esas pueden capturarse. La **retención** es el efecto: un
+objeto vivo mantiene alcanzable a otro que ya nadie usa.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La JVM no conoce las clases internas: solo conoce clases de primer nivel. `javac` traduce cada forma anidada a un
+`.class` propio, como muestra el `ls out` del Problema resuelto 3.1. Sigue la traducción de `Interna`:
+
+1. `javac` crea `Contenedor$Interna.class`, una clase independiente para la JVM.
+2. Detecta que `etiqueta` lee `prefijo`, un campo de la instancia exterior. Agrega el campo `final Contenedor this$0`.
+3. Agrega al constructor un parámetro oculto de tipo `Contenedor`. Por eso `javap` muestra
+   `public Contenedor$Interna(Contenedor)` aunque el fuente no declara ninguno.
+4. En el cuerpo del constructor, comprueba que el exterior no sea `null` y lo guarda, incluso antes de llamar a
+   `super()`. Este es el inicio real del constructor en el proyecto, en el entorno de referencia:
 
 ```text
-Compiled from "Contenedor.java"
-public class com.aurora.obj.Contenedor$Interna {
-  final com.aurora.obj.Contenedor this$0;
-  public com.aurora.obj.Contenedor$Interna(com.aurora.obj.Contenedor);
-  public java.lang.String etiqueta(java.lang.String);
-}
-```
-
-La static nested no tiene ese campo:
-
-```text
-Compiled from "Contenedor.java"
-public class com.aurora.obj.Contenedor$Estatica {
-  public com.aurora.obj.Contenedor$Estatica();
-  public java.lang.String id(int);
-}
-```
-
-Y el constructor de la inner lo asigna con `putfield` (`javap -c -p` completo):
-
-```text
-Compiled from "Contenedor.java"
-public class com.aurora.obj.Contenedor$Interna {
-  final com.aurora.obj.Contenedor this$0;
-
   public com.aurora.obj.Contenedor$Interna(com.aurora.obj.Contenedor);
     Code:
          0: aload_0
@@ -1318,19 +1501,70 @@ public class com.aurora.obj.Contenedor$Interna {
         10: aload_0
         11: invokespecial #13                 // Method java/lang/Object."<init>":()V
         14: return
-
-  public java.lang.String etiqueta(java.lang.String);
-    Code:
-         0: aload_0
-         1: getfield      #7                  // Field this$0:Lcom/aurora/obj/Contenedor;
-         4: getfield      #19                 // Field com/aurora/obj/Contenedor.prefijo:Ljava/lang/String;
-         7: aload_1
-         8: invokedynamic #25,  0             // InvokeDynamic #0:makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-        13: areturn
-}
 ```
 
-Esas tres salidas son del proyecto `tienda-aurora-java-m22` (entorno de referencia). Consecuencias prácticas: una inner class mantiene viva la instancia exterior mientras viva, lo que importa en callbacks, listeners y tareas diferidas; además, no puedes crearla sin una instancia exterior. El test `innerCapturaThis0YStaticNestedNo` comprueba por reflexión que `this$0` existe en `Interna` y no en `Estatica`.
+5. Traduce `prefijo` dentro de `etiqueta` como `this$0.prefijo`. En el bytecode es la pareja
+   `getfield ... this$0` seguida de `getfield ... Contenedor.prefijo`.
+6. Traduce `cont.new Interna()` como una llamada al constructor que pasa `cont` como argumento oculto.
+
+Las clases locales y anónimas agregan un paso más. Copian cada variable local que usan en un campo `val$`: por eso
+`Contenedor$1Local` tiene `val$msg`. La copia se hace al crear el objeto. Si la variable pudiera cambiar después, la
+copia quedaría desactualizada; esa es la razón de la regla de «efectivamente final».
+
+El diagrama muestra la cadena de retención del Problema resuelto 3.2:
+
+```mermaid
+flowchart LR
+  G["PENDIENTES (static)<br/>vive todo el programa"] --> T["tarea anónima<br/>Pantalla$1"]
+  T -- "this$0" --> P["Pantalla<br/>20 MB de imágenes"]
+  G --> L["lambda<br/>solo captura 'copia'"]
+  L -. "sin referencia" .-> P2["Pantalla<br/>recolectable"]
+```
+
+1. `PENDIENTES` es estática: el recolector la considera siempre alcanzable.
+2. La tarea anónima está en la lista y su campo `this$0` apunta a la `Pantalla`.
+3. Por esa cadena, la pantalla sigue alcanzable y el `WeakReference` no se limpia: `pantalla viva: true`.
+4. La lambda solo captura `copia`, un `String`. No usa `this`, así que no guarda ninguna referencia a la pantalla.
+
+##### 4. Reglas, variantes y casos límite
+
+Una clase anidada estática solo accede a miembros estáticos del exterior, pero incluye los `private`. Desde Java 11,
+las clases anidadas son **nestmates** de su clase exterior: la JVM les permite leer miembros privados entre sí sin
+métodos de acceso sintéticos, como los `access$000` que antes generaba `javac`.
+
+Desde JDK 18, `javac` omite `this$0` si la clase interna nunca usa la instancia exterior. `InternaSinUso` lo muestra:
+su constructor sigue recibiendo un `Contenedor`, pero no lo guarda. No conviene depender de esto: basta leer un campo
+del exterior para que el campo vuelva.
+
+Crear una clase interna exige una instancia exterior. Desde un método `static` no la hay, y `javac` responde
+`non-static variable this cannot be referenced from a static context`. Desde otra clase, el mensaje es `an enclosing
+instance that contains Contenedor.Interna is required`.
+
+Las lambdas siguen otra regla. No generan un `.class` propio en disco ni un campo `this$0` fijo: capturan `this` solo
+si su cuerpo lo usa, directa o indirectamente. Una lambda que llama a un método de instancia sí captura `this`.
+
+Una clase anónima declarada en un método `static` no tiene instancia envolvente, así que no retiene nada exterior.
+
+Desde Java 16, una clase interna puede declarar miembros `static`, algo que antes estaba prohibido. Llegó con los
+`record` (JEP 395), que pueden anidarse y son implícitamente estáticos.
+
+`System.gc()` es una petición al recolector, no una orden. Por eso el Problema resuelto 3.2 repite la petición hasta
+cinco veces y usa un `WeakReference` como testigo, en lugar de medir memoria.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`static` de Java, Módulo 1, Tema 1 decide aquí algo concreto: si cada objeto anidado lleva o no una referencia al
+exterior. Es la decisión de diseño más barata del tema.
+
+Las referencias débiles y el recolector de Java, Módulo 11, Temas 1 y 3 explican la prueba. Un objeto se libera solo
+si ninguna cadena de referencias fuertes lo alcanza, y `this$0` es una de esas cadenas.
+
+La captura de variables es la misma regla que viste en las lambdas de Java, Módulo 4, Tema 1. Este tema muestra su
+origen: la copia en un campo `val$` al crear el objeto.
+
+Del Tema 2 traes la idea de referencia compartida. `this$0` es aliasing que no escribiste. En el Módulo 21 viste que
+el compilador agrega métodos puente; aquí agrega campos y parámetros. En ambos casos, `javap -p` es la forma de ver lo
+que el fuente no muestra.
 
 #### Problema resuelto 3.1
 Declara las cuatro formas en un solo archivo y averigua qué guarda cada `.class`.

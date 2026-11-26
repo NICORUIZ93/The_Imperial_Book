@@ -64,8 +64,7 @@ Al terminar este tema podrás:
 - empujar, retroceder y volver al inicio cambiando el arreglo, y comprobar que el botón «Atrás» también lo cambia;
 - reconocer los errores de un valor sin destino y de un destino declarado en el lugar equivocado.
 
-**Conceptos clave:** `NavigationStack`, camino (`path`), `NavigationLink(value:)`, `navigationDestination(for:)`,
-`NavigationPath`
+**Conceptos clave:** `NavigationStack`, camino (`path`), `NavigationLink(value:)`, `navigationDestination(for:)`, `NavigationPath`
 
 #### El problema
 La lista de paradas lleva al detalle, el detalle a la firma y la firma, al guardar, debe volver a la lista. Con
@@ -114,9 +113,47 @@ valores asociados** (Módulo 0, Tema 3).
 - **Error típico:** usarla por defecto cuando todas las pantallas caben en un solo `enum`.
 
 #### ► CÓMO FUNCIONA
-El `Navegador` guarda `rutaEnvios: [Destino]`. La pila lo enlaza con `$editable.rutaEnvios`. Tocar un enlace agrega
-un valor; el código también puede agregar, quitar o vaciar; el botón «Atrás» quita el último. Para cada valor,
-`navigationDestination` construye la vista.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un tablero de recorridos colgado en la bodega. No muestra pantallas: muestra una lista de paradas, «guía
+EN-4472, luego firma de EN-4472». Quien mira el tablero sabe dónde está el repartidor. Si el jefe borra la lista, el
+repartidor vuelve al inicio; si agrega una parada, el repartidor avanza.
+
+`NavigationStack` con un camino tipado funciona igual. La pila de pantallas no se guarda como vistas, sino como un
+arreglo de valores. Cada valor dice adónde ir, y SwiftUI construye la pantalla que corresponde. Cambiar el arreglo es
+navegar, sin tocar la pantalla.
+
+En la app de la ruta eso resuelve los dos problemas del tema. La firma vuelve a la lista vaciando el arreglo, sin
+funciones pasadas por tres vistas. Una notificación de la guía EN-4473 abre su detalle agregando `.envio(guia:
+"EN-4473")`.
+
+##### 2. Definición formal y vocabulario
+**`NavigationStack`** es una vista que muestra una vista raíz y una pila de vistas encima. Con `init(path:root:)`
+recibe un `Binding` a una colección de valores `Hashable`. Esa colección es el **camino (`path`)**: describe qué está
+apilado sobre la raíz.
+
+Un valor es **`Hashable`** cuando se puede comparar y resumir en un número, llamado hash. SwiftUI lo necesita para
+saber qué valores del camino son nuevos y cuáles ya tenían pantalla. El `enum Destino` del tema lo cumple porque sus
+datos asociados son textos.
+
+**`NavigationLink(value:)`** es un control que agrega su valor al camino de la pila más cercana. No sabe qué vista se
+mostrará. **`navigationDestination(for:)`** registra, para un tipo de valor, la función que construye la vista.
+
+**`NavigationPath`** es una colección de SwiftUI que admite valores `Hashable` de tipos distintos. Borra el tipo de
+cada elemento, como el `any` del Módulo 0, Tema 3. El tema prefiere un arreglo de `Destino`, que conserva el tipo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la salida real de `t1-pila.txt`, paso a paso:
+
+1. Al montar, `rutaEnvios` vale `[]`. La pila muestra solo la raíz, `ListaParadas`, con el título «Ruta de hoy».
+2. La prueba llama a `nav.abrir(.envio(guia: "EN-4471"))`. El arreglo crece a un elemento. Como `Navegador` es
+   `@Observable` y `PilaRuta` leyó la propiedad a través del enlace, SwiftUI evalúa de nuevo la pila.
+3. La pila compara el camino nuevo con el que ya mostraba. Hay un valor de tipo `Destino` sin pantalla.
+4. Busca una `navigationDestination` registrada para `Destino`. La encuentra en la raíz y llama a su closure con el
+   valor. El closure devuelve `VistaDestino`, que elige `DetalleParada`.
+5. La pila empuja esa vista con la animación del sistema. Lo mismo pasa con `.firma`.
+6. Cuando se simula el botón «Atrás» con `popViewController`, la pila quita su pantalla de arriba. Luego escribe el
+   camino nuevo por el `Binding`: `[envio(guia: "EN-4471")]`. Nadie del código tocó el arreglo.
 
 ```mermaid
 flowchart LR
@@ -129,6 +166,63 @@ flowchart LR
     D -->|".firma"| V2["FirmaVista"]
     D -->|".barrio"| V3["BarrioVista"]
 ```
+
+El enlace funciona en las dos direcciones, como cualquier `Binding` del Módulo 2, Tema 2. El código escribe para
+navegar, y la pila escribe cuando la persona retrocede. Por eso el arreglo y la pantalla nunca se separan.
+
+Para obtener ese enlace, `PilaRuta` lee el navegador del entorno y declara `@Bindable var editable = nav` dentro del
+`body`. Un objeto leído con `@Environment` no ofrece `$`. `@Bindable` sí, y se puede declarar como variable local de
+un `body` desde iOS 17.
+
+Si el paso 4 no encuentra destino, la pila igual empuja una pantalla. Está vacía y muestra un triángulo amarillo. En
+iOS 27.2 eso ocurre sin ningún aviso en la consola, como mostró la escena `sin-destino`.
+
+Con el destino dentro de las filas de una `List`, el paso 4 falla de otra forma. La `List` es perezosa y crea sus
+filas solo al mostrarlas. SwiftUI detecta el modificador mal ubicado, lo ignora y lo avisa con `[Invalid
+Configuration]`.
+
+Navegar desde el código se reduce a escribir el arreglo. Estas son las tres acciones del tema:
+
+```swift
+nav.rutaEnvios.append(.envio(guia: "EN-4473"))  // avanza una pantalla
+nav.rutaEnvios.removeLast()                     // retrocede una
+nav.rutaEnvios.removeAll()                      // vuelve a la raíz
+```
+
+##### 4. Reglas, variantes y casos límite
+`NavigationStack` existe desde iOS 16 y reemplazó a `NavigationView`, que quedó obsoleta. En la misma versión llegaron
+`NavigationLink(value:)`, `navigationDestination(for:)` y `NavigationPath`.
+
+Los valores del camino deben ser `Hashable`. Si no lo son, el error se ve al compilar:
+`initializer 'init(_:value:)' requires that 'Parada' conform to 'Hashable'`. Si además son `Codable`, el camino se
+puede guardar en JSON, como hará el Tema 4.
+
+Pon `navigationDestination` dentro del `NavigationStack` y fuera de contenedores perezosos. Lo normal es colocarlo en
+la vista raíz. Puedes registrar varios, uno por tipo, pero no dos para el mismo tipo en la misma pila.
+
+Hay dos variantes para casos puntuales. `navigationDestination(isPresented:)`, de iOS 16, empuja una vista mientras un
+`Binding<Bool>` sea verdadero. `navigationDestination(item:)`, de iOS 17, empuja una vista mientras un opcional tenga
+valor.
+
+`NavigationLink(destination:)` también sigue disponible. Crea la vista destino directamente, sin pasar por el camino.
+Sirve para una navegación simple, pero no puedes leer ni escribir esa pila desde el código.
+
+No anides un `NavigationStack` dentro de otro. Una pantalla empujada ya está dentro de la pila. Si declara su propia
+pila, aparecen dos barras de navegación, y el camino deja de describir lo que ves.
+
+`NavigationPath` ofrece la propiedad `codable` para guardarla, solo si todos sus elementos son `Codable`. A cambio de
+aceptar tipos mezclados, pierdes la posibilidad de preguntar qué hay en cada posición sin decodificar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`Destino` es un `enum` con valores asociados, igual que `EstadoEnvio` del Módulo 0, Tema 3. Allí modelaba los estados
+de un envío; aquí modela las pantallas posibles, y el `switch` de `VistaDestino` es exhaustivo por la misma razón.
+
+El `Navegador` es un modelo `@Observable` del Módulo 2, Tema 3, puesto en el entorno como enseñó el Tema 4 de ese
+módulo. El camino es un dato con una sola fuente de verdad, y la pila es solo una vista que lo muestra.
+
+El Tema 2 aplica la misma idea a lo que aparece encima: hojas y alertas controladas por un opcional del navegador. El
+Tema 3 da a cada pestaña su propio camino. El Tema 4 construye el arreglo a partir de una URL y lo guarda en JSON para
+restaurarlo.
 
 #### Problema resuelto 1.1
 Modela la pila de la ruta como un arreglo de `Destino` dentro de un `Navegador` observable. Navega desde el código
@@ -773,8 +867,7 @@ Al terminar este tema podrás:
 - pedir confirmación con `.alert` y `.confirmationDialog`, con botones de rol destructivo y de cancelar;
 - conectar una alerta a un estado opcional sin escribir `Binding(get:set:)`.
 
-**Conceptos clave:** `.sheet(item:)`, `presentationDetents`, `dismiss`, `.alert(isPresented:presenting:)`,
-`confirmationDialog`
+**Conceptos clave:** `.sheet(item:)`, `presentationDetents`, `dismiss`, `.alert(isPresented:presenting:)`, `confirmationDialog`
 
 #### El problema
 Desde el detalle de una guía, la repartidora reporta una novedad (motivo, detalle, si se reintenta) o marca la
@@ -823,9 +916,48 @@ Este tema usa **el navegador y la pila** (Tema 1), **enlaces** (Módulo 2, Tema 
 - **Error típico:** usar una alerta con cuatro botones en vez de un diálogo.
 
 #### ► CÓMO FUNCIONA
-Las presentaciones también son estado del navegador: `hoja: Hoja?`, `confirmacion: Confirmacion?` y
-`preguntandoCierre: Bool`. La vista las enlaza; cuando la persona cierra, SwiftUI escribe `nil` o `false`. La
-propiedad calculada `hayConfirmacion` traduce el opcional al `Bool` que pide la alerta.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en la recepción de una bodega. Cuando llega un formulario de novedad, la recepcionista lo pone encima del
+escritorio, sobre lo que estaba haciendo. Cuando alguien pide borrar un registro, ella pregunta «¿seguro?» y no sigue
+hasta oír la respuesta. Las dos cosas aparecen encima y desaparecen, pero no cambian el lugar donde ella está.
+
+Las hojas, las alertas y los diálogos de confirmación cumplen ese papel en la app. No se apilan como el detalle o la
+firma del Tema 1. Se presentan encima de la pantalla actual y, al cerrarse, la persona sigue donde estaba.
+
+La lección central del tema es la misma del Tema 1: una presentación es un dato. La hoja de novedad existe mientras
+`nav.hoja` tenga un valor, y ese valor dice de qué guía es la novedad. Así la hoja nunca muestra la guía anterior,
+porque el dato y la condición son la misma cosa.
+
+##### 2. Definición formal y vocabulario
+**`.sheet(item:)`** presenta una hoja mientras un enlace a un opcional `Identifiable` tenga valor. El contenido recibe
+el valor ya desenvuelto. Cuando la persona cierra la hoja, SwiftUI escribe `nil` en el enlace. Un tipo es
+`Identifiable` cuando tiene una propiedad `id` que lo distingue.
+
+**`presentationDetents`** define las alturas que puede tomar la hoja: `.medium`, `.large`, una fracción o una altura
+fija. **`dismiss`** es una acción del entorno que cierra la presentación de la vista que la lee.
+
+**`.alert(isPresented:presenting:)`** muestra una alerta del sistema mientras un `Binding<Bool>` sea verdadero. Con
+`presenting:`, sus botones y su mensaje reciben el dato que se confirma. Cada botón puede llevar un **rol**:
+`.cancel` lo ubica como cancelar y `.destructive` lo pinta en rojo.
+
+**`confirmationDialog`** muestra una lista de acciones para elegir. Sirve cuando hay varias opciones, o cuando la
+acción necesita explicación. En iOS 27.2, en el iPhone, apareció como un globo junto al botón que lo abrió.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el ciclo de la hoja de novedad de EN-4472:
+
+1. En el detalle, el botón «Reportar novedad» asigna `nav.hoja = .novedad(guia: "EN-4472")`. Es una escritura en el
+   modelo `@Observable`.
+2. `PilaRuta` leyó `nav.hoja` a través del enlace `$editable.hoja`, así que SwiftUI la evalúa de nuevo. El modificador
+   `.sheet(item:)` ve un valor donde antes había `nil`.
+3. SwiftUI llama al closure del `.sheet` con el valor desenvuelto. El closure devuelve `VistaHoja`, con
+   `presentationDetents` aplicado al contenido.
+4. La hoja aparece a media altura. `HojaNovedad` tiene su propio `NavigationStack`, por eso muestra título y botones
+   en una barra.
+5. Al tocar «Cancelar», `HojaNovedad` llama a `cerrar()`. La acción `dismiss` cierra la presentación más cercana, que
+   es la hoja.
+6. Al cerrarse, SwiftUI escribe `nil` en `nav.hoja`. El estado y la pantalla vuelven a coincidir.
 
 ```mermaid
 stateDiagram-v2
@@ -836,6 +968,67 @@ stateDiagram-v2
     Alerta --> Detalle: Cancelar (hayConfirmacion = false)
     Alerta --> Lista: Marcar fallida (marcarFallida + volverAlInicio)
 ```
+
+El paso 6 ocurre igual si la persona desliza la hoja hacia abajo. Por eso no hace falta que la hoja avise a nadie de
+que se cerró: el enlace ya lo dice.
+
+La identidad del valor también importa. El `id` de `Hoja.novedad` incluye la guía. Si con la hoja abierta asignas una
+novedad de otra guía, el `id` cambia y SwiftUI cierra la hoja vieja y abre otra.
+
+La alerta pide un `Binding<Bool>`, pero el navegador guarda un `Confirmacion?`. La propiedad calculada
+`hayConfirmacion` traduce entre los dos:
+
+```swift
+public var hayConfirmacion: Bool {
+    get { confirmacion != nil }
+    set { if !newValue { confirmacion = nil } }
+}
+```
+
+Al leerla, la alerta sabe si debe mostrarse. Al cerrarse, SwiftUI escribe `false`, y el `set` borra la confirmación.
+Como tiene `get` y `set`, `$editable.hayConfirmacion` produce un enlace válido, igual que una propiedad almacenada.
+
+`dismiss` funciona como una función porque el tipo `DismissAction` implementa `callAsFunction`. Esa función de Swift
+5.2 (SE-0253) permite llamar a un valor como si fuera una función: `cerrar()` en lugar de `cerrar.callAsFunction()`.
+
+##### 4. Reglas, variantes y casos límite
+`presentationDetents` se aplica al contenido de la hoja, dentro del closure de `.sheet`. Si lo pones en la vista que
+presenta, no tiene efecto. Las alturas llegaron con iOS 16, igual que `presentationDragIndicator` para mostrar el asa.
+
+Hay otras presentaciones con la misma forma. `.fullScreenCover(item:)` cubre toda la pantalla y no se cierra
+deslizando. `.popover` muestra un globo, que en el iPhone puede convertirse en hoja. Las tres aceptan `item:` o
+`isPresented:`.
+
+`.interactiveDismissDisabled()` impide cerrar una hoja deslizando. Úsalo cuando la hoja tenga cambios sin guardar y
+quieras obligar a elegir «Guardar» o «Cancelar».
+
+`dismiss` cierra la presentación de la vista que lo lee. Si lo lee una vista empujada en una pila, retrocede una
+pantalla. Si lo lee la vista que presentó la hoja, no cierra la hoja. Llegó en iOS 15 y reemplaza al antiguo
+`presentationMode`.
+
+Las alertas y los diálogos con botones y roles, en la forma que usa el tema, existen desde iOS 15. Reemplazaron a
+`Alert` y `ActionSheet`, que se construían como valores. Un botón sin rol queda como acción normal, y el sistema decide
+el orden según la plataforma.
+
+Una alerta es para una pregunta corta con una o dos respuestas. Un diálogo de confirmación es para elegir entre varias
+acciones. En iOS 27.2, el diálogo se cancela tocando fuera del globo, así que su título y su mensaje deben explicar la
+acción solos.
+
+Por último, `PilaRuta` vuelve a poner el navegador en el entorno del contenido de la hoja con `.environment(nav)`. Así
+la hoja puede leerlo aunque se presente desde otra pila.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema extiende la idea del Tema 1: la navegación vive en el `Navegador` como datos. Allí era un arreglo; aquí son
+un opcional para la hoja, otro para la confirmación y un `Bool` para el cierre. Las tres se pueden probar sin pantalla,
+como hace `cerrarLaAlertaBorraLaConfirmacion` en Linux.
+
+Del Módulo 2, Tema 2 viene el enlace que la hoja y la alerta escriben al cerrarse. Del Tema 4 de ese módulo viene
+`dismiss`, que es un valor del entorno. Los `@State` del formulario son estado propio de la hoja, como enseñó el Tema 1
+de ese módulo.
+
+Frente a empujar una pantalla, presentar una hoja no cambia el camino. Si la persona cierra la hoja, vuelve al mismo
+detalle. El Tema 3 usa un diálogo de confirmación en Ajustes, y el Tema 4 cierra cualquier hoja o alerta abierta
+cuando llega un enlace profundo.
 
 #### Problema resuelto 2.1
 Desde el detalle de EN-4472, abre la hoja de novedad con su formulario y pide confirmación para marcarla fallida;
@@ -1117,8 +1310,47 @@ Este tema usa **el navegador y la pila** (Tema 1) y **el entorno** (Módulo 2, T
 - **Error típico:** calcular el número en otro lugar y olvidar actualizarlo; aquí se lee del modelo y se actualiza solo.
 
 #### ► CÓMO FUNCIONA
-La raíz es un `TabView` enlazado a `nav.pestana`. Cada `Tab` contiene una vista con su propio `NavigationStack`, que
-enlaza su propio camino. Al cambiar de pestaña, la otra pila queda como estaba.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un archivador con separadores: rutas, novedades, configuración. Puedes estar a mitad de un expediente en el
+primer separador, abrir el segundo para revisar algo y volver. El expediente sigue abierto en la misma página, porque
+cada separador guarda su propio montón de hojas.
+
+Las pestañas de una app funcionan así. Cada pestaña es una sección de primer nivel, y la barra de abajo permite saltar
+entre ellas. Lo importante es que saltar no destruye nada. La ruta puede quedar en la firma de EN-4472 mientras miras el
+historial, y al volver la firma sigue ahí.
+
+En la primera versión del problema, el historial era una pantalla empujada desde la ruta. Volver de él quitaba esa
+pantalla y obligaba a perder el lugar. Con pestañas, la ruta y el historial son ramas paralelas, cada una con su propio
+camino.
+
+##### 2. Definición formal y vocabulario
+**`TabView`** es un contenedor que muestra una de varias vistas hijas y una barra para cambiar entre ellas. Mantiene
+vivo el estado de cada pestaña mientras no se ve. Con `init(selection:)` recibe un enlace a la pestaña activa.
+
+**`Tab`** es la forma de declarar cada pestaña desde iOS 18. Recibe un título, un símbolo, un `value` que la
+identifica y el contenido. El `value` debe ser del mismo tipo que la **selección de pestaña**.
+
+La selección es un dato como cualquier otro estado. SwiftUI la escribe cuando la persona toca una pestaña y la lee
+para saber cuál mostrar. Si el código la cambia, la pantalla cambia.
+
+Una **pila por pestaña** significa que cada pestaña contiene su propio `NavigationStack`, con su propio camino. En el
+tema son `rutaEnvios` y `rutaHistorial`. **`badge`** muestra un número o un texto corto sobre la pestaña, el
+globito que indica algo pendiente.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que pasa al abrir la app con la escena `historial`:
+
+1. La app crea el `Navegador` con `pestana = .ruta` y monta `Raiz`. El `TabView` muestra la pestaña cuyo `value`
+   coincide con la selección: Ruta.
+2. SwiftUI construye el contenido de la pestaña visible. `PilaRuta` crea su `NavigationStack` enlazado a
+   `rutaEnvios`. La insignia lee las paradas no fallidas y muestra 3.
+3. Medio segundo después, la escena llama a `marcarFallida("EN-4473")` y cambia `pestana` a `.historial`. Son dos
+   escrituras en el modelo `@Observable`.
+4. `Raiz` leyó `nav.pestana` por el enlace y `nav.paradas` al calcular la insignia. SwiftUI la evalúa de nuevo.
+5. El `TabView` ve una selección distinta y muestra la pestaña Historial. La pestaña Ruta no se destruye: su pila y
+   su estado quedan guardados.
+6. La insignia ahora cuenta 2 paradas no fallidas. `PilaHistorial` filtra las fallidas y muestra la fila de EN-4473.
 
 ```mermaid
 flowchart TD
@@ -1130,6 +1362,59 @@ flowchart TD
     H --> PH["PilaHistorial: NavigationStack(path: rutaHistorial)"]
     A --> PA["AjustesVista: NavigationStack sin camino"]
 ```
+
+El paso 5 es la razón de tener dos arreglos en el navegador. Si las dos pilas enlazaran el mismo arreglo, empujar un
+detalle en el historial lo empujaría también en la ruta. Con un arreglo por pestaña, cada camino solo cambia por lo
+que pasa en su pestaña.
+
+La estructura del árbol también importa. El `NavigationStack` va **dentro** de cada pestaña. Así la barra de pestañas
+queda debajo de todas las pilas y sigue visible al empujar pantallas. Al revés, con una pila envolviendo al `TabView`,
+una pantalla empujada taparía la barra.
+
+La insignia no necesita código propio para actualizarse. Se calcula en el `body` de `Raiz` a partir del modelo:
+
+```swift
+.badge(nav.paradas.filter { !$0.fallida }.count)
+```
+
+Como `Raiz` leyó `nav.paradas`, el seguimiento del Módulo 2, Tema 3 la avisa cuando cambia una parada. El número se
+recalcula solo, sin una variable aparte que alguien pueda olvidar.
+
+##### 4. Reglas, variantes y casos límite
+La API `Tab` llegó con iOS 18. Antes, cada pestaña era una vista con `.tabItem { Label(…) }` y `.tag(valor)`. Ese
+estilo sigue funcionando, pero los dos no se mezclan dentro del mismo `TabView`.
+
+El tipo de `value` debe coincidir exactamente con el de la selección. Con un `enum` como `Pestana`, cada pestaña tiene
+un nombre fijo. Con números, reordenar las pestañas cambia el significado de cada número y rompe los enlaces que las
+abren.
+
+`badge` acepta un entero o un texto. Con el entero 0 no se muestra nada. Para indicar «hay algo nuevo» sin un número,
+usa un texto corto. El modificador existe desde iOS 15.
+
+iOS 18 trae más variantes de la misma API. `TabSection` agrupa pestañas, y `.tabViewStyle(.sidebarAdaptable)` convierte
+la barra en una barra lateral en el iPad. `Tab(role: .search)` crea una pestaña de búsqueda con el aspecto del
+sistema.
+
+`TabView` también tiene un estilo de páginas, `.tabViewStyle(.page)`, que muestra las vistas como tarjetas que se
+deslizan. No es navegación por secciones: sirve para carruseles o para una introducción.
+
+`ContentUnavailableView`, que usa el historial vacío, existe desde iOS 17. Muestra un ícono, un título y una
+descripción con el aspecto del sistema.
+
+Una pestaña sin pila de navegación propia, como Ajustes, puede usar un `NavigationStack` sin camino. Así tiene barra y
+título, y su diálogo de confirmación se presenta igual que en el Tema 2.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te enseñó a modelar una pila como un arreglo de `Destino`. Este tema repite esa pieza una vez por pestaña,
+con un arreglo propio cada vez. La pestaña activa es otro dato del `Navegador`, junto a la hoja y la confirmación del
+Tema 2.
+
+Comparado con empujar una pantalla, cambiar de pestaña no tiene «Atrás». Las pestañas son ramas paralelas y la
+persona salta entre ellas cuando quiere. Una pila, en cambio, es un recorrido con orden.
+
+El Tema 4 usa estas piezas juntas. Un enlace profundo elige la pestaña, reemplaza el camino de esa pestaña y cierra
+lo que estuviera presentado, todo con escrituras en el `Navegador`. En el Módulo 8, la arquitectura MVVM retoma la
+navegación con un coordinador por funcionalidad.
 
 #### Problema resuelto 3.1
 Organiza la app en tres pestañas con la API `Tab`, cada una con su pila, un número de paradas pendientes en la
@@ -1384,9 +1669,48 @@ Este tema usa **el navegador** (Temas 1 a 3), **`Codable`** (Módulo 0, Tema 3) 
 - **Error típico:** guardar objetos enteros en vez de identificadores y restaurar datos desactualizados.
 
 #### ► CÓMO FUNCIONA
-El sistema entrega la URL a `onOpenURL`; el navegador la pasa a `EnlaceProfundo.interpretar`, una función pura del
-núcleo que devuelve un resultado (pestaña y pila) o un rechazo con motivo. Si es válida, el navegador cierra lo que
-estuviera presentado y aplica la pestaña y la pila; si no, muestra el aviso.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en la dirección de una casa: ciudad, barrio, calle, número. Con ella, un mensajero llega a la puerta exacta sin
+recorrer la ciudad. Pero un buen mensajero también revisa la dirección antes de salir. Si dice «calle borrar-todo,
+número cero», no la busca: la devuelve con una nota que explica el problema.
+
+Un **enlace profundo** es la dirección de una pantalla dentro de la app. `envios://envio/EN-4473/firma` dice: pestaña
+Ruta, detalle de EN-4473 y, encima, su firma. Soporte puede enviar ese enlace y la repartidora llega directo, sin
+buscar la guía a mano.
+
+El tema añade la otra cara del mismo dato. Si la pila de pantallas es un arreglo de destinos, se puede guardar como
+texto al salir y recuperar al volver. Así, cuando el sistema cierra la app en segundo plano, la persona vuelve a la
+pantalla donde estaba.
+
+##### 2. Definición formal y vocabulario
+Un **esquema de URL** es el prefijo antes de `://`. La app declara el suyo, `envios`, en la clave `CFBundleURLTypes`
+de su `Info.plist`. Cuando alguien abre una URL con ese esquema, iOS busca qué app lo declaró y se la entrega.
+
+**`onOpenURL`** es el modificador que recibe esas URL dentro de la app. Funciona tanto si la app estaba abierta como
+si el enlace la abrió.
+
+La **validación de entrada** consiste en comprobar cada parte de la URL antes de usarla. Se revisan el esquema, el
+destino, el formato de la guía y que no sobren partes. Si algo falla, se devuelve un rechazo con motivo. El tema lo
+modela con `Result`, un `enum` de la biblioteca estándar con dos casos: `.success` y `.failure`.
+
+La **restauración** es guardar el estado de navegación al salir y aplicarlo al volver. Aquí se guarda el arreglo de
+destinos en JSON, un formato de texto para datos estructurados, gracias a que `Destino` cumple `Codable`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el enlace `envios://envio/EN-4473/firma` desde que se abre fuera de la app:
+
+1. iOS lee el esquema `envios` y busca una app que lo declare. Encuentra `Navegacion` por su `Info.plist`.
+2. En iOS 27.2, si el enlace viene de fuera, el sistema pregunta «¿Abrir en "Navegacion"?». Solo si la persona
+   acepta, la app recibe la URL.
+3. `onOpenURL` llama a `nav.abrir(url)`. El navegador no interpreta nada por sí mismo: llama a
+   `EnlaceProfundo.interpretar`.
+4. `interpretar` es una función pura. Separa la URL en partes, normaliza la guía a mayúsculas y la valida con una
+   expresión regular. Devuelve un `Resultado` con pestaña y pila, o un `Rechazo`.
+5. Si es `.success`, el navegador cierra la hoja y la alerta, cambia la pestaña y reemplaza el camino. Si es
+   `.failure`, solo guarda el mensaje en `avisoEnlace` y deja la pila como estaba.
+6. Las vistas observan el navegador. La pestaña Ruta aparece con el detalle y la firma apilados, igual que si la
+   persona los hubiera tocado.
 
 ```mermaid
 flowchart TD
@@ -1397,6 +1721,67 @@ flowchart TD
     I -->|"success"| OK["hoja = nil · pestana = .ruta · rutaEnvios = [envio, firma]"]
     I -->|"failure(rechazo)"| KO["avisoEnlace = rechazo.mensaje"]
 ```
+
+El paso 4 se apoya en cómo `URL` divide un texto. Este fragmento muestra las partes que usa `interpretar`, compilado
+en modo Swift 6:
+
+```swift
+import Foundation
+
+let url = URL(string: "envios://envio/en-4472/firma")!
+print(url.scheme ?? "-", url.host() ?? "-", url.pathComponents)
+print("EN-4472".wholeMatch(of: /EN-\d{4}/) != nil, "EN-44721".wholeMatch(of: /EN-\d{4}/) != nil)
+```
+
+```text
+envios envio ["/", "en-4472", "firma"]
+true false
+```
+
+El destino va en el host, `envio`. La ruta empieza con `"/"`, y por eso `interpretar` lo filtra. `wholeMatch` exige
+que la expresión cubra el texto completo: `EN-44721` tiene un dígito de más y se rechaza.
+
+La restauración usa la conformidad `Codable` que Swift genera para `Destino`. Para un `enum` con valores asociados,
+cada caso se codifica como un objeto con su nombre. La salida real lo muestra:
+`[{"envio":{"guia":"EN-4472"}},{"firma":{"guia":"EN-4472"}}]`. `restaurarPila` hace el camino inverso.
+
+##### 4. Reglas, variantes y casos límite
+Un esquema propio no pertenece a nadie. Otra app puede declarar `envios` también, y cualquiera puede escribir un
+enlace con él. Por eso el contenido de la URL es entrada no confiable y se valida siempre.
+
+Para enlaces que solo tu app puede reclamar existen los **enlaces universales**: URL `https://` de un dominio tuyo.
+Exigen publicar un archivo de asociación en el dominio y declarar el dominio asociado en la app. Este módulo no los
+usa, como avisa su cabecera.
+
+Validar el formato no es autorizar. Que `EN-4473` tenga la forma correcta no significa que la persona pueda verla.
+Esa comprobación se hace al cargar los datos, en las capas que verás más adelante.
+
+Si ninguna app declara el esquema, el sistema ni siquiera pregunta. `simctl openurl` con `pedidos://` termina con
+`LSApplicationWorkspaceErrorDomain error 115`, como muestra la salida real.
+
+Las expresiones regulares literales, como `/EN-\d{4}/`, llegaron con Swift 5.7 (SE-0354). En modo Swift 5 necesitan un
+indicador del compilador; en modo Swift 6 están activas siempre. El método `URL.host()` llegó a Foundation con iOS 16,
+junto con otras APIs nuevas de `URL`.
+
+La conformidad `Codable` automática para `enum` con valores asociados existe desde Swift 5.5 (SE-0295). El formato
+JSON depende de los nombres de los casos. Si renombras un caso, los datos guardados con el nombre viejo dejan de
+decodificarse.
+
+Para guardar la pila en SwiftUI se usa a menudo `@SceneStorage`, que guarda valores pequeños por escena y los
+restaura al volver. Acepta tipos simples como `String` o `Data`, así que el JSON de la pila encaja. Lo restaurado
+también puede estar viejo, y se valida como un enlace.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema reúne todo el módulo. El camino tipado del Tema 1 es lo que se construye y se guarda. La hoja y la alerta del
+Tema 2 son lo que el enlace cierra. La pestaña del Tema 3 es lo que el enlace elige.
+
+Del Módulo 0 vienen tres piezas. `Destino` es un `enum` con valores asociados del Tema 3. `Result` y los rechazos con
+motivo siguen la idea de los errores tipados del Tema 1. `interpretar` es una función pura que se prueba en Linux, sin
+pantalla.
+
+Comparado con un toque, un enlace llega por otra puerta pero termina en el mismo `Navegador`. Esa es la regla que
+evita dos navegaciones distintas. En el Módulo 8, la arquitectura MVVM retoma la navegación con un coordinador por
+funcionalidad. En el Módulo 9, las pruebas de interfaz tocarán la pantalla de verdad.
 
 #### Problema resuelto 4.1
 Declara el esquema `envios`, interpreta los enlaces en el núcleo con sus rechazos, pruébalos en Linux y ábrelos en el

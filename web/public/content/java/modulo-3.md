@@ -124,11 +124,38 @@ lenguajes no tienen: el compilador revisa algunas excepciones antes de ejecutar.
 
 #### ► CÓMO FUNCIONA
 
-Una excepción checked es aquella que el compilador obliga a declarar o manejar si puede salir de un método. En Java, esto aplica a las subclases de `Exception` que no son `RuntimeException`. Existe para hacer visible una condición externa o recuperable en el contrato del método: leer un archivo puede fallar por I/O, parsear una fuente externa puede fallar por formato, una llamada remota puede fallar por red. El llamador debería decidir si reintenta, usa un fallback, pide otro input o reporta el error.
+##### 1. La idea en lenguaje sencillo
 
-Una excepción unchecked es una `RuntimeException` o `Error`. El compilador no obliga a declararla. Se usa cuando el problema normalmente representa un bug de programación, una violación de precondición o un estado que el llamador debió evitar: índice fuera de rango, argumento nulo, estado inválido, SKU mal formado. Obligar a capturarla en todas partes suele generar ruido y `catch` vacíos.
+Un repartidor puede fallar una entrega por dos motivos muy distintos. A veces la calle está cortada por obras. No es
+culpa de nadie en la empresa, y el repartidor debe avisar para que alguien decida otra ruta. Otras veces el paquete
+llegó sin dirección. Es un error de quien lo preparó, y la solución es corregir el proceso, no improvisar en la calle.
 
-La decisión no es dogmática. Pregunta: “¿el llamador inmediato tiene una acción razonable de recuperación?”. Si la respuesta es sí y el fallo es externo/esperable, una checked puede ser apropiada en la frontera. Si la respuesta es no, o es un contrato violado, unchecked es más clara. En el proyecto, `ImportacionException` es checked porque importar desde archivo es una operación de frontera; `DatoInvalidoException` y `StockInsuficienteException` son unchecked porque expresan violación de contrato o regla de negocio que la capa superior debe manejar de forma consciente, no por obligación sintáctica en cada llamada.
+Java distingue esos dos tipos de fallo. Para los fallos externos y previsibles, el compilador obliga a que alguien
+decida qué hacer. Para los errores de programación o de reglas violadas, no obliga, porque la solución es corregir el
+código.
+
+Tienda Aurora tiene un ejemplo de cada uno. El archivo `productos.csv` puede no existir: es un fallo externo. Pedir 99
+unidades cuando hay 3 viola una regla de negocio. Este tema explica cómo se expresa cada caso y quién debe reaccionar.
+
+##### 2. Definición formal y vocabulario
+
+**`Throwable`** es la clase raíz de todo lo que Java puede lanzar. Tiene dos ramas. `Exception` agrupa los fallos que
+un programa puede tratar. `Error` agrupa fallos graves de la JVM, como `OutOfMemoryError`.
+
+La JLS clasifica las excepciones en dos grupos. Una **excepción checked** es una subclase de `Exception` que no hereda
+de `RuntimeException`. El compilador exige capturarla o declararla en cada método por el que pueda salir. Una
+**excepción unchecked** es una subclase de `RuntimeException` o de `Error`; el compilador no exige nada.
+
+**`throw`** es la instrucción que lanza un objeto `Throwable`. **`throws`** es la cláusula de la firma que declara qué
+excepciones checked pueden salir del método. El bloque **`try-catch`** ejecuta el código de `try` y, si se lanza una
+excepción compatible, salta al `catch` correspondiente.
+
+Cuando ninguna parte del programa captura la excepción, la JVM imprime la **traza de pila**. Muestra el tipo, el
+mensaje y cada método activo, del más reciente al más antiguo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La jerarquía decide si una excepción es checked o unchecked:
 
 ```mermaid
 flowchart TD
@@ -139,8 +166,99 @@ flowchart TD
   R --> R1["IllegalStateException<br/>DatoInvalidoException"]
 ```
 
-Cuando un método lanza, la JVM sube por la pila de llamadas buscando un `catch` compatible. Si llega a `main` sin
-encontrarlo, imprime la traza de pila y el programa termina con código de salida 1.
+La comprobación ocurre al compilar. Sigue `leerPrimeraLinea` del Problema resuelto 1.2:
+
+1. `Files.readAllLines(ruta)` declara `throws IOException` en su firma.
+2. `javac` ve que esa excepción podría salir de `leerPrimeraLinea`. Busca un `catch` que la cubra o una cláusula
+   `throws` en la firma. Encuentra `throws IOException` y acepta el método.
+3. En `main`, la llamada a `leerPrimeraLinea` está dentro de un `try` con `catch (IOException e)`. El compilador
+   vuelve a quedar conforme.
+4. Si faltara alguna de las dos cosas, el error sería `unreported exception IOException; must be caught or declared
+   to be thrown`.
+
+La ejecución es otra historia. Cuando se ejecuta `throw`, la JVM busca quién atiende la excepción:
+
+1. **Creación.** `new IllegalStateException(...)` construye el objeto y, en ese momento, guarda la traza de pila.
+2. **Búsqueda en el método actual.** Cada método compilado tiene una **tabla de excepciones**: qué rango de
+   instrucciones protege cada `catch` y para qué tipo.
+3. **Subida por la pila.** Si el método no tiene un `catch` compatible, termina en el acto. La JVM repite la búsqueda
+   en el método que lo llamó, y así sucesivamente.
+4. **Final.** Si llega más allá de `main`, imprime la traza y el proceso termina con código de salida 1.
+
+Puedes ver la tabla del paso 2 con `javap -c`. Este método convierte texto en cantidad:
+
+```java
+public class Tabla {
+    static int cantidad(String texto) {
+        try {
+            return Integer.parseInt(texto);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+}
+```
+
+```text
+$ javap -c Tabla.class
+...
+  static int cantidad(java.lang.String);
+    Code:
+         0: aload_0
+         1: invokestatic  #7                  // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+         4: ireturn
+         5: astore_1
+         6: iconst_0
+         7: ireturn
+      Exception table:
+         from    to  target type
+             0     4     5   Class java/lang/NumberFormatException
+```
+
+La fila dice: si entre las instrucciones 0 y 4 salta una `NumberFormatException`, continúa en la 5. Ahí empieza el
+`catch`. Un `try` no cuesta nada mientras no se lance nada: es solo una fila en esa tabla.
+
+##### 4. Reglas, variantes y casos límite
+
+Los `catch` se revisan en orden, y uno general oculta a los específicos que vengan después. El compilador lo detecta:
+
+```text
+$ javac Orden.java
+Orden.java:9: error: exception FileNotFoundException has already been caught
+        } catch (FileNotFoundException e) {
+          ^
+1 error
+```
+
+`FileNotFoundException` hereda de `IOException`, así que el `catch (IOException e)` anterior ya la atrapaba. Pon
+siempre primero los tipos más específicos.
+
+Desde Java 7, un solo `catch` puede atender varios tipos sin relación: `catch (IOException | DatoInvalidoException e)`.
+Los tipos no pueden ser padre e hijo entre sí.
+
+El compilador también rechaza capturar una checked que el bloque no puede lanzar: `exception IOException is never
+thrown in body of corresponding try statement`. Esa regla no se aplica a `Exception` ni a las unchecked.
+
+La obligación de las checked es solo del compilador. La JVM no la verifica al ejecutar. Por eso otros lenguajes de la
+JVM, como Kotlin, no tienen excepciones checked y llaman a métodos Java sin `try`.
+
+La decisión de diseño no es dogmática. Pregunta: ¿el llamador inmediato tiene una recuperación razonable? Si el fallo es
+externo y esperable, una checked en la frontera tiene sentido. Si es un contrato violado o un bug, unchecked es más
+clara. En el proyecto, `ImportacionException` es checked y `StockInsuficienteException` es unchecked.
+
+Capturar `Throwable` o `Error` «por si acaso» es un error. También atrapas `OutOfMemoryError`, que el programa no puede
+arreglar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0, Tema 8, usaste `try` y `catch` para leer cantidades del teclado. Atrapabas `NumberFormatException`,
+que es unchecked. Ahora sabes por qué el compilador no te obligó.
+
+La jerarquía de excepciones es herencia normal, como la del Módulo 1, Tema 2. Un `catch (IOException e)` atrapa sus
+subclases por la misma razón que una variable `Producto` acepta un `ProductoFisico`.
+
+El Tema 2 resuelve el otro problema de los archivos: cerrarlos siempre, incluso si algo falla. El Tema 3 crea las
+excepciones propias de Tienda Aurora y explica por qué un `catch` vacío destruye el diagnóstico.
 
 #### Problema resuelto 1.1
 Muestra el linaje de cuatro excepciones del JDK y clasifícalas como checked o unchecked.
@@ -402,11 +520,39 @@ Las fichas de `throw`, `try-catch` y traza de pila están en el Tema 1.
 
 #### ► CÓMO FUNCIONA
 
-`try-with-resources` es la forma segura de manejar recursos que deben cerrarse: archivos, streams, conexiones JDBC, sockets, locks con `AutoCloseable`. Un recurso que implementa `AutoCloseable` o `Closeable` se declara en la cabecera del `try`; Java llama a `close()` al salir del bloque, tanto si termina normal como si lanza excepción.
+##### 1. La idea en lenguaje sencillo
 
-El mecanismo importa porque el cierre manual con `finally` es fácil de hacer mal: hay que cuidar nulls, no perder la excepción original si el cierre también falla, y no olvidar el cierre en ramas tempranas. `try-with-resources` hace esto correctamente. Si el cuerpo lanza una excepción y `close()` lanza otra, la excepción del cuerpo se mantiene como principal y la del cierre se adjunta como *suppressed*. Puedes verla con `Throwable.getSuppressed()`.
+Cuando sacas una furgoneta del garaje de la empresa, firmas su salida. Al volver, la devuelves, aunque el reparto haya
+salido mal o te hayan cancelado la ruta a medio camino. Si nadie la devuelve, el garaje se queda sin vehículos y el
+resto de los repartidores no puede salir.
 
-En `ImportadorProductos`, el `BufferedReader` se abre en el try-with-resources. Si la lectura falla a mitad de archivo, el reader se cierra igual. En `auditoria()`, `RecursoRuidoso` demuestra la excepción suprimida: el cuerpo lanza “falló el cuerpo” y el cierre lanza “falló el cierre”; la principal es la del cuerpo, la secundaria queda suprimida.
+Un programa toma prestadas cosas del sistema operativo: archivos abiertos, conexiones de red, bloqueos. Debe
+devolverlas siempre, también cuando algo falla. **`try-with-resources`** es la construcción de Java que garantiza esa
+devolución.
+
+En Tienda Aurora, el importador abre `productos.csv`. Si la fila 4 trae datos rotos y el código sale con una
+excepción, el archivo debe cerrarse igual. Cada archivo abierto ocupa un descriptor del sistema operativo. Con cientos
+de importaciones fallidas, el proceso se queda sin descriptores y deja de abrir archivos.
+
+##### 2. Definición formal y vocabulario
+
+Un **recurso** es un objeto que reserva algo externo a la memoria de Java: un descriptor de archivo, una conexión o un
+socket. Debe liberarse de forma explícita. El recolector de basura no lo hace a tiempo, porque solo vigila la memoria.
+
+**`AutoCloseable`** es la interfaz de `java.lang` con un único método, `void close() throws Exception`. `Closeable`,
+de `java.io`, es su hija y limita `close()` a `IOException`. Cualquier clase que implemente una de ellas puede usarse
+como recurso.
+
+**`try-with-resources`** es la forma de `try` que declara recursos entre paréntesis. Al salir del bloque, Java llama a
+`close()` de cada uno, en orden inverso al de apertura, haya excepción o no. El bloque **`finally`** es la herramienta
+anterior: se ejecuta siempre al salir de un `try`, termine como termine.
+
+Una **excepción suprimida** aparece cuando el cuerpo lanza una excepción y después `close()` lanza otra. La del cuerpo
+sigue siendo la principal. La del cierre se adjunta a ella y se consulta con `getSuppressed()`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra el orden de `try (Recurso archivo = …; Recurso conexion = …)`:
 
 ```mermaid
 sequenceDiagram
@@ -420,6 +566,78 @@ sequenceDiagram
   C->>R1: close()
   Note over C,R1: si close() falla tras un fallo del cuerpo,<br/>se adjunta como suprimida
 ```
+
+La JLS define `try-with-resources` traduciéndolo a un `try` y un `finally` generados por el compilador. Esto es lo que
+ocurre:
+
+1. **Apertura.** Se evalúan los inicializadores de izquierda a derecha. Cada variable de recurso es implícitamente
+   `final`.
+2. **Cuerpo.** Se ejecutan las instrucciones del bloque.
+3. **Cierre en orden inverso.** Al salir, termine bien o con excepción, se llama a `close()` empezando por el último
+   recurso abierto. Así la conexión se cierra antes que el archivo del que depende.
+4. **Excepción del cierre sin fallo previo.** Si el cuerpo terminó bien pero `close()` lanza, esa excepción se propaga
+   como principal.
+5. **Excepción del cierre con fallo previo.** Si el cuerpo ya había lanzado, la excepción del cierre se adjunta con
+   `addSuppressed`. La principal sigue siendo la del cuerpo.
+6. **`catch` y `finally` propios.** Si escribiste `catch` o `finally` en el mismo `try`, se ejecutan después de cerrar
+   los recursos. Por eso el Problema resuelto 2.1 imprime `cierra archivo` antes de `capturada después del cierre`.
+
+El paso 5 es la diferencia con un `finally` manual. En el Problema resuelto 2.2, el `finally` llama a `recurso.close()`,
+que lanza. Esa nueva excepción sustituye a la del cuerpo, que se pierde. La salida real lo muestra: con
+`try-with-resources` la principal es `falló el cuerpo`; con `finally` manual es `falló el cierre` y hay 0 suprimidas.
+
+##### 4. Reglas, variantes y casos límite
+
+Si la creación de un recurso falla, solo se cierran los que ya se abrieron. Este programa abre un archivo y luego
+intenta crear un recurso inválido:
+
+```java
+public class Apertura {
+    record Recurso(String nombre) implements AutoCloseable {
+        Recurso { if (nombre.isBlank()) throw new IllegalArgumentException("recurso sin nombre"); }
+        @Override public void close() { System.out.println("cierra " + nombre); }
+    }
+    public static void main(String[] args) {
+        try (Recurso archivo = new Recurso("archivo"); Recurso vacio = new Recurso(" ")) {
+            System.out.println("cuerpo");
+        } catch (IllegalArgumentException e) { System.out.println("capturada: " + e.getMessage()); }
+    }
+}
+```
+
+```text
+$ java Apertura
+cierra archivo
+capturada: recurso sin nombre
+```
+
+El cuerpo nunca se ejecutó, pero `archivo` sí se cerró. El segundo recurso no llegó a existir, así que no hay nada que
+cerrar.
+
+Un recurso que vale `null` no provoca error: Java simplemente no llama a su `close()`. El compilador, en cambio,
+rechaza un tipo que no implementa `AutoCloseable` con `try-with-resources not applicable to variable type`.
+
+Las versiones cambiaron la sintaxis. `try-with-resources` y las excepciones suprimidas llegaron en Java 7. Desde Java
+9, puedes poner en los paréntesis una variable ya declarada, si es `final` o efectivamente final: `try (lector) { …
+}`.
+
+`try-with-resources` no captura excepciones. Solo garantiza el cierre. Si no escribes `catch`, la excepción sigue
+subiendo por la pila después de cerrar.
+
+Con `-Xlint:all`, `javac` avisa si declaras un recurso que nunca usas dentro del bloque. El aviso es `[try]
+auto-closeable resource … is never referenced`. Suele indicar un recurso que no debería estar ahí.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 explicó cómo sube una excepción por la pila. Este tema añade lo que ocurre al salir de cada bloque: los
+recursos se cierran antes de que la excepción siga su camino.
+
+En el Módulo 0, Tema 8, creaste un `Scanner` sobre `System.in` sin cerrarlo. Ahí era aceptable, porque cerrar el
+`Scanner` cerraría también la entrada estándar del proceso. Con archivos propios, el cierre es obligatorio.
+
+`AutoCloseable` es una interfaz como las del Módulo 1, Tema 3. El Tema 3 de este módulo muestra cómo conservar la
+causa de un error al traducirlo a una excepción propia. Es el complemento natural de no perder la excepción del
+cuerpo.
 
 #### Problema resuelto 2.1
 Abre dos recursos, úsalos y observa el orden de cierre. Luego provoca un fallo a mitad de uso.
@@ -696,19 +914,132 @@ Las fichas de excepción checked y unchecked están en el Tema 1.
 
 #### ► CÓMO FUNCIONA
 
-Una excepción personalizada tiene sentido cuando el tipo comunica algo que las excepciones estándar no comunican bien, o cuando necesitas transportar contexto estructurado. `StockInsuficienteException` lleva SKU, disponible y solicitado; eso es más útil que un `IllegalStateException` con un string genérico. Pero no se crean clases por crear: si `IllegalArgumentException` con buen mensaje basta, úsala.
+##### 1. La idea en lenguaje sencillo
 
-Una buena excepción personalizada define: tipo correcto (checked/unchecked), mensaje claro con contexto, causa cuando traduce otro error, y solo los campos necesarios. No debe exponer secretos ni datos sensibles en mensajes que puedan terminar en logs públicos.
+Imagina un parte de incidencias de una empresa de envíos. Uno dice «falló la entrega». Otro dice «no se entregó el
+pedido AUR-1001 porque la dirección no existe; el cartero devolvió el paquete el martes». El segundo permite actuar; el
+primero obliga a investigar desde cero. Y hay algo peor que un parte pobre: un parte que nadie escribe. El cliente
+nunca recibe el paquete y el sistema dice que todo fue bien.
 
-Ese catch elimina la señal de fallo. El sistema sigue como si nada, pero el estado puede estar incompleto. Tampoco es correcto solo loguear y continuar cuando el fallo invalida la operación. Las respuestas válidas son: manejar realmente (fallback, reintento, valor por defecto justificado), traducir y relanzar con causa, o dejar propagar. En `importarSilenciosoIncorrecto` del demo, el catch incorrecto se corrige propagando; en producción, la decisión depende del contrato.
+Las excepciones son esos partes. Una **excepción personalizada** lleva el nombre exacto del problema y sus datos. El
+**encadenamiento** conserva el informe original del cartero dentro del informe de la oficina. Y **tragar una
+excepción** es no escribir el parte.
+
+En Tienda Aurora, el importador informa «importadas 0 filas» y nadie sabe si el archivo estaba vacío o no existía.
+Alguien escribió un `catch` vacío. Además, cuando una reserva falla, la tienda necesita saber cuántas unidades faltan,
+no solo leer un texto.
+
+##### 2. Definición formal y vocabulario
+
+Una **excepción personalizada** es una clase propia que hereda de `Exception`, si debe ser checked, o de
+`RuntimeException`, si debe ser unchecked. Su nombre describe el problema del dominio. Sus campos llevan contexto
+estructurado, como el SKU y las cantidades.
+
+El **encadenamiento de excepciones** guarda una excepción como **causa** de otra. Se hace pasando la original al
+constructor: `super(mensaje, causa)`. Se recupera con `getCause()`, y la traza la muestra en la sección `Caused by:`.
+
+La **traducción de excepciones** consiste en capturar un error de una capa inferior y lanzar otro del nivel del
+llamador, con la original como causa. Así la capa de importación habla de «importación fallida» y no de descriptores
+de archivo.
+
+**Tragar una excepción** es capturarla y no hacer nada que preserve el contrato: ni manejarla, ni relanzarla, ni
+traducirla. Por último, **`serialVersionUID`** es una constante que identifica la versión de una clase serializable.
+`Throwable` implementa `Serializable`, así que toda excepción propia hereda esa condición.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama compara el camino correcto con el `catch` vacío:
 
 ```mermaid
 flowchart LR
-  IO["NoSuchFileException<br/>(capa de archivos)"] -->|"catch + new ImportacionException(msg, e)"| IMP["ImportacionException<br/>(capa de importación)"]
-  IMP -->|"getCause()"| IO
+  IO["NoSuchFileException<br/>capa de archivos"] -->|"catch y new ImportacionException con causa"| IMP["ImportacionException<br/>capa de importación"]
+  IMP -->|"getCause"| IO
   IMP --> CLI["CLI decide:<br/>mensaje al usuario, código de salida"]
-  X["catch vacío"] -.->|"la señal desaparece"| N["«importadas 0 filas»"]
+  X["catch vacío"] -.->|"la señal desaparece"| N["importadas 0 filas"]
 ```
+
+Sigue `importar(ruta)` del Problema resuelto 3.2 cuando el archivo no existe:
+
+1. **Fallo de bajo nivel.** `Files.readAllLines` no encuentra el archivo y lanza `NoSuchFileException`, una subclase de
+   `IOException`. Al crearse, la excepción guarda su traza de pila.
+2. **Captura.** El `catch (IOException e)` la recibe en la variable `e`.
+3. **Traducción.** `new ImportacionException("no se pudo importar " + ruta, e)` crea una excepción nueva. Su
+   constructor llama a `super(mensaje, causa)`, y `Throwable` guarda `e` en su campo de causa.
+4. **Relanzamiento.** `throw` envía la nueva excepción hacia arriba. Como es checked, `importar` la declara con
+   `throws ImportacionException`.
+5. **Decisión.** `main` la captura, registra el mensaje en `System.err` y consulta `getCause()` para el diagnóstico:
+   `NoSuchFileException -> inventario-noviembre.csv`.
+
+Si nadie captura una excepción encadenada, la JVM imprime ambas trazas. La salida real de `SinCausa` lo muestra:
+primero `IllegalArgumentException: cantidad inválida: 'tres'` y después `Caused by: java.lang.NumberFormatException`.
+La línea final `... 1 more` indica que el último marco de la causa coincide con uno ya impreso arriba, y Java lo omite.
+
+Las excepciones personalizadas guardan datos tipados. Este es el núcleo de `StockInsuficienteException`:
+
+```java
+StockInsuficienteException(String sku, int disponible, int solicitado) {
+    super("stock insuficiente para " + sku + ": disponible=" + disponible + ", solicitado=" + solicitado);
+    this.sku = sku;
+    this.disponible = disponible;
+    this.solicitado = solicitado;
+}
+int faltan() { return solicitado - disponible; }
+```
+
+El mensaje sirve a las personas. Los campos sirven al código: el `catch` llama a `e.faltan()` en lugar de recortar el
+texto del mensaje.
+
+##### 4. Reglas, variantes y casos límite
+
+`Throwable` ofrece cuatro constructores públicos: sin argumentos, con mensaje, con causa y con mensaje y causa. Tus
+excepciones deberían exponer al menos el de mensaje y causa si van a traducir errores. Si la causa llega después de
+crear la excepción, existe `initCause`, que solo puede llamarse una vez.
+
+La causa no se adivina. Si construyes la nueva excepción sin pasarla, `getCause()` devuelve `null`. La salida de
+`SinCausa` lo muestra: `sin causa -> getCause() = null`.
+
+El compilador no avisa de un `catch` vacío, ni siquiera con `-Xlint:all`. La disciplina depende de ti y de la revisión
+de código. Sí avisa, con `[serial]`, si una excepción no declara `serialVersionUID`. Con `-Werror`, como en el
+laboratorio, ese aviso detiene el build.
+
+A veces ignorar una excepción es una decisión legítima. Desde Java 22, puedes marcarlo con una variable sin nombre:
+
+```java
+static int cantidadOpcional(String texto) {
+    try {
+        return Integer.parseInt(texto);
+    } catch (NumberFormatException _) {
+        return 1;
+    }
+}
+```
+
+```text
+$ java Opcional
+3 1
+```
+
+Aquí no se traga nada. El contrato del método dice que la cantidad es opcional y vale 1 por defecto. El `_` declara
+que la excepción no se usa, y el valor de retorno es una decisión explícita.
+
+Los mensajes de excepción terminan en registros que mucha gente lee. No incluyas contraseñas, tokens ni datos
+personales. Incluye identificadores útiles, como el SKU o la ruta del archivo.
+
+No crees una clase por cada mensaje. Si `IllegalArgumentException` con buen texto basta, úsala. Crea una propia cuando
+el tipo deba distinguirse en un `catch` o cuando necesites campos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 te dio la regla para elegir entre checked y unchecked. Aquí la aplicas a tus clases: `ImportacionException`
+es checked y `StockInsuficienteException` es unchecked. El Tema 2 evitó perder la excepción del cuerpo durante el
+cierre; este tema evita perderla durante la traducción.
+
+Las excepciones propias son clases normales. Heredan como en el Módulo 1, Tema 2, y validan como en el Módulo 1, Tema
+1. La regla de diseño del Módulo 1 se repite: el objeto lleva sus datos, y el llamador no tiene que analizar texto.
+
+El laboratorio integrador `tienda-aurora-excepciones` combina los tres temas. `ImportadorProductos` abre el CSV con
+`try-with-resources`, rechaza cada fila rota con `LineaInvalidaException` y traduce `IOException` a
+`ImportacionException` conservando la causa.
 
 #### Problema resuelto 3.1
 Crea `StockInsuficienteException` con el SKU, lo disponible y lo solicitado. El llamador debe calcular cuántas

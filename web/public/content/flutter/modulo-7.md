@@ -83,8 +83,7 @@ Al terminar este tema podrás:
 - responder errores con un código desde el nativo y traducirlos en Dart;
 - reconocer `MissingPluginException` y saber qué la causa.
 
-**Conceptos clave:** canal de plataforma, `MethodChannel`, códec estándar, `PlatformException`,
-`MissingPluginException`, prueba de integración
+**Conceptos clave:** canal de plataforma, `MethodChannel`, códec estándar, `PlatformException`, `MissingPluginException`, prueba de integración
 
 #### El problema
 La app necesita datos que solo el sistema operativo conoce: la versión del sistema, los procesadores, el contenido de
@@ -140,9 +139,62 @@ dominio** (Módulo 5, Tema 3).
 - **Error típico:** querer cubrirlo todo con pruebas de integración; se reservan para lo que necesita la plataforma.
 
 #### ► CÓMO FUNCIONA
-Al arrancar, el código nativo registra un manejador para el nombre `academia/dispositivo`. Dart invoca un método: el
-mensaje se codifica, cruza al hilo de la plataforma, el manejador decide según el nombre del método y responde con
-éxito, error o «no implementado»; la respuesta vuelve y completa el `Future` en Dart.
+
+##### 1. La idea en lenguaje sencillo
+En una empresa con dos oficinas que hablan idiomas distintos, nadie entra a la otra oficina a buscar papeles. Hay una
+línea telefónica con una extensión fija. Uno llama y dice el nombre del trámite y los datos. El otro
+contesta con el resultado, con un «no se pudo» o con un «ese trámite no lo hacemos aquí».
+
+Flutter funciona igual. Tu código Dart corre en el motor de Flutter y no puede llamar directamente a las funciones del
+sistema operativo. El código nativo, C++ en Linux, Kotlin en Android y Swift en iOS, sí puede. El canal de plataforma
+es la línea telefónica entre los dos.
+
+En este tema, Dart pregunta por la versión del sistema y por la primera línea de un archivo. El C++ consulta al
+sistema y responde. Si algo falla, responde con un código de error que Dart sabe interpretar.
+
+##### 2. Definición formal y vocabulario
+Un **canal de plataforma** envía mensajes asincrónicos entre Dart y el código de la plataforma. Los dos lados lo
+identifican con el mismo nombre, aquí `academia/dispositivo`, y lo transportan con un `BinaryMessenger`.
+
+Un **`MethodChannel`** es el canal de llamadas a método. Dart invoca un nombre de método con argumentos. El lado nativo
+responde con una de tres cosas: éxito con un valor, error con un código o «no implementado».
+
+Los mensajes viajan como bytes, codificados con el **códec estándar**. Este admite nulos, booleanos, números, textos,
+listas, mapas y arreglos de bytes. En C++, esos valores se construyen como `FlValue`.
+
+Cuando el nativo responde con error, Dart recibe una **`PlatformException`** con `code`, `message` y `details`. Cuando
+nadie atiende el canal o el método, Dart recibe una **`MissingPluginException`**. Para probar todo esto con el código
+nativo de verdad hace falta una **prueba de integración**, que corre dentro de la app compilada.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la llamada `infoSistema` de la prueba del tema:
+
+1. Al arrancar la app de Linux, el runner llama a `registrar_canales(view)`. El C++ crea el canal y le asigna
+   `manejar_llamada` como manejador.
+2. En Dart, `invokeMapMethod<String, Object?>('infoSistema')` arma una llamada con el nombre del método y sin
+   argumentos.
+3. El códec estándar convierte esa llamada en bytes. El `BinaryMessenger` los entrega al motor con el nombre del canal.
+4. El motor busca quién atiende `academia/dispositivo` y entrega los bytes al manejador de C++, ya decodificados como
+   `FlMethodCall`.
+5. `manejar_llamada` compara el nombre del método, llama a `uname` y `sysconf`, y arma un mapa `FlValue`.
+6. `fl_method_call_respond` envía la respuesta. El códec la vuelve bytes, y el motor la devuelve a Dart.
+7. En Dart, el códec reconstruye el mapa y completa el `Future`. `Dispositivo` convierte el mapa en un record con tipos.
+
+```dart
+final m = await _canal.invokeMapMethod<String, Object?>('infoSistema');   // viaja con el códec estándar
+return (
+  sistema: m!['sistema']! as String,
+  version: m['version']! as String,
+  arquitectura: m['arquitectura']! as String,
+  procesadores: m['procesadores']! as int,
+);
+```
+
+El paso 7 tiene una regla importante. Un mapa del códec llega como `Map<Object?, Object?>`. `invokeMapMethod` lo
+convierte por ti al tipo de mapa que pides, y luego cada valor se convierte a su tipo.
+
+En la salida, `procesadores: 2` llegó como `int` y la versión como texto. El códec conserva los tipos básicos de un
+lado al otro.
 
 ```mermaid
 sequenceDiagram
@@ -159,6 +211,48 @@ sequenceDiagram
     D->>C: invokeMethod("vibrar")
     N-->>D: not implemented → MissingPluginException
 ```
+
+##### 4. Reglas, variantes y casos límite
+Las llamadas son siempre asincrónicas, aunque el nativo responda al instante. Por eso todo método del canal devuelve
+un `Future`, y por eso no se puede usar uno dentro de un `build` sin esperar.
+
+El nombre del canal y los nombres de los métodos son texto. Si un lado escribe `infoSistema` y el otro `infosistema`,
+el compilador no lo detecta: Dart recibe `MissingPluginException` en tiempo de ejecución. Usa nombres con prefijo,
+como `academia/...`, para no chocar con plugins.
+
+`MissingPluginException` tiene tres causas frecuentes. El nativo respondió «no implementado», como con `vibrar`. Nadie
+registró el canal. O el código nativo no está compilado en la app, por ejemplo tras un *hot reload*: el código nativo
+solo cambia al recompilar.
+
+`PlatformException` es un acuerdo entre los dos lados. El `code`, como `NO_EXISTE`, es el contrato estable; el
+`message` es texto para personas y puede cambiar. Decide siempre por el código.
+
+El manejador nativo no debe lanzar excepciones propias del lenguaje. Una excepción de C++ o de Kotlin sin atrapar
+cierra la app. Responde siempre con un error del canal.
+
+El modelo de hilos cambió en versiones recientes. Flutter unió el hilo de la interfaz y el de la plataforma por
+etapas. Lo hizo en Android e iOS con la versión 3.29, en macOS y Windows con la 3.35, y en Linux con la 3.39. La
+documentación indica que esto no debería afectar a tu app.
+
+Aun con los hilos unidos, el manejador corre en el hilo principal de la plataforma. Un trabajo largo ahí congela la
+app. Si el trabajo tarda, hazlo en otro hilo nativo y responde al terminar.
+
+En `flutter test` normal no hay código nativo. Por eso los canales se prueban con `integration_test` y `-d linux`, o
+se simulan en pruebas unitarias.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`Future`, `async` y las excepciones vienen del Módulo 0, Tema 3. Los records con nombre, como `InfoSistema`, vienen
+del Módulo 0, Tema 6.
+
+`Dispositivo` sigue la idea del repositorio del Módulo 5, Tema 3. Allí, `RepositorioRemoto` escondía `dio` y traducía
+`DioException` a `FalloRed`. Aquí, `Dispositivo` esconde el canal y traduce `NO_EXISTE` a `null`. El resto de la app
+no conoce el nombre del canal ni los mapas.
+
+Compáralo con una petición HTTP. Las dos son asincrónicas y pueden fallar. Pero el canal no sale del teléfono: cruza
+del motor de Flutter al código nativo dentro del mismo proceso.
+
+El Tema 2 usa un `EventChannel`, donde el nativo envía datos sin que Dart pregunte cada vez. El Tema 3 reemplaza los
+nombres en texto por código generado con Pigeon, que el compilador sí puede comprobar.
 
 #### Problema resuelto 1.1
 Implementa en C++ un canal con dos métodos (información del sistema y primera línea de un archivo) con su error
@@ -451,8 +545,7 @@ Al terminar este tema podrás:
 - mostrar en una pantalla un dato que llega una vez (`FutureBuilder`) y otro que llega en vivo (`StreamBuilder`);
 - dibujar una línea con `CustomPaint` a partir de las lecturas.
 
-**Conceptos clave:** `EventChannel`, flujo de eventos nativo, `onListen` y `onCancel`, `StreamBuilder`,
-`CustomPaint`
+**Conceptos clave:** `EventChannel`, flujo de eventos nativo, `onListen` y `onCancel`, `StreamBuilder`, `CustomPaint`
 
 #### El problema
 Algunos datos cambian sin que nadie pregunte: la ubicación, la batería, un sensor, la memoria. Preguntar cada 200 ms
@@ -500,9 +593,60 @@ Tema 6).
 - **Error típico:** dibujar con valores fijos de píxeles: se usa `tamano` para escalar.
 
 #### ► CÓMO FUNCIONA
-Cuando la pantalla monta el `StreamBuilder`, Dart se suscribe y el nativo recibe `onListen`: lee la memoria y crea un
-temporizador de 200 ms que envía un evento cada vez. Cada evento reconstruye el `StreamBuilder`. Al cerrar la
-pantalla, Dart cancela y el nativo recibe `onCancel` y destruye el temporizador.
+
+##### 1. La idea en lenguaje sencillo
+Para saber el estado del tráfico, puedes llamar a la central cada cinco minutos y preguntar. O puedes encender la
+radio, que transmite los reportes a medida que ocurren. Si apagas la radio, no gastas nada; si nadie la escucha, la
+emisora puede dejar de transmitir.
+
+El `MethodChannel` del Tema 1 es la llamada: una pregunta y una respuesta. Para datos que cambian solos, como la
+memoria, la batería o un sensor, preguntar una y otra vez gasta energía aunque nadie mire. El `EventChannel` es la
+radio: el código nativo envía datos mientras alguien escuche.
+
+La parte delicada es apagar. Cuando el conductor cierra la pantalla, el código nativo debe enterarse y detener el
+temporizador o el sensor. Si no, la batería se agota con la app en segundo plano.
+
+##### 2. Definición formal y vocabulario
+Un **`EventChannel`** es un canal en el que el código nativo envía una secuencia de eventos. Dart la recibe como un
+`Stream`, con `receiveBroadcastStream()`. Usa el mismo códec estándar del Tema 1.
+
+El **flujo de eventos nativo** son esos valores. En C++ se envían con `fl_event_channel_send`, en Kotlin con
+`EventSink.success` y en Swift con el `FlutterEventSink`. Además de datos, el nativo puede enviar un error o el fin del
+flujo.
+
+Del lado nativo, **`onListen` y `onCancel`** son las funciones que el canal llama cuando Dart se suscribe y cuando
+cancela. En este tema se llaman `al_escuchar` y `al_cancelar`.
+
+Del lado de la pantalla, **`StreamBuilder`** se suscribe al `Stream` al montarse y se reconstruye con cada evento.
+**`CustomPaint`** dibuja sobre un `Canvas` lo que ningún widget ofrece, aquí la línea de la memoria.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la pantalla real desde que se abre hasta que se cierra:
+
+1. `_PantallaDispositivoState` crea `_memoria` una sola vez, con `late final`. Todavía nadie escucha.
+2. `StreamBuilder` se monta y llama a `listen`. Es el primer oyente, así que el lado Dart del canal envía al nativo un
+   mensaje de suscripción.
+3. El motor entrega ese mensaje al C++, que ejecuta `al_escuchar`. Este envía una lectura inmediata y crea un
+   temporizador de GLib de 200 ms.
+4. Cada 200 ms, `enviar_memoria` lee `/proc/meminfo` y llama a `fl_event_channel_send` con los MB disponibles.
+5. Cada evento cruza al lado Dart, entra al `Stream` como `int` y reconstruye el `StreamBuilder`.
+6. El `builder` agrega el valor al historial y `CustomPaint` dibuja la línea otra vez.
+7. Al cerrar la pantalla, `StreamBuilder` cancela su suscripción. No quedan oyentes, y Dart envía al nativo un mensaje
+   de cancelación.
+8. El C++ ejecuta `al_cancelar` y destruye el temporizador con `g_source_remove`.
+
+```dart
+const _canal = EventChannel('academia/memoria');
+
+/// Megabytes de memoria disponible, cada 200 ms, mientras alguien escuche.
+Stream<int> memoriaDisponible() => _canal.receiveBroadcastStream().cast<int>();
+```
+
+`receiveBroadcastStream` devuelve un flujo de difusión: varios oyentes de Dart comparten una sola suscripción nativa.
+`cast<int>()` da tipo a los eventos, que llegan del códec como valores sin tipo.
+
+El paso 3 explica la medición de la prueba. En 700 ms llegaron 4 lecturas: una inmediata en `al_escuchar` y tres del
+temporizador.
 
 ```mermaid
 sequenceDiagram
@@ -518,6 +662,45 @@ sequenceDiagram
     P->>C: cancel (se cierra la pantalla)
     C->>N: al_cancelar → g_source_remove
 ```
+
+##### 4. Reglas, variantes y casos límite
+La suscripción nativa sigue a la de Dart. El nativo recibe `onListen` con el primer oyente y `onCancel` cuando se va el
+último. Con varios oyentes en Dart, el nativo ve una sola suscripción.
+
+Cada llamada a `receiveBroadcastStream()` crea un flujo nuevo. Si la haces dentro de `build`, cada reconstrucción
+suscribe otra vez. Por eso la pantalla guarda el `Stream` en un campo `late final`, igual que el `Future` de la tarjeta.
+
+`StreamBuilder` tiene la misma regla que `FutureBuilder`. El `Stream` debe ser el mismo objeto entre reconstrucciones.
+Si cambia, el widget cancela la suscripción vieja y abre una nueva.
+
+Un error enviado por el nativo llega al `Stream` de Dart como `PlatformException`. Si `onListen` mismo falla, también
+lo recibe el oyente. Un `StreamBuilder` lo muestra en `snapshot.error`.
+
+El nativo envía desde el hilo principal de la plataforma. En C++, el temporizador de GLib ya corre en el bucle
+principal. Si un sensor entrega datos en otro hilo, hay que pasarlos al principal antes de enviarlos.
+
+La frecuencia es una decisión de diseño. Una línea que una persona mira no necesita más de unos pocos eventos por
+segundo. Más frecuencia gasta batería y reconstruye la pantalla sin que nadie note la diferencia.
+
+`CustomPainter` decide si repinta con `shouldRepaint`. Aquí devuelve siempre `true`, porque cada evento trae datos
+nuevos. En un dibujo que cambia poco, compara los datos viejos con los nuevos.
+
+El dibujo debe escalar con el tamaño que recibe. `_Linea` calcula cada punto a partir de `tamano.width` y
+`tamano.height`, no con píxeles fijos, para verse bien en cualquier pantalla.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`Stream`, `listen` y `cancel` vienen del Módulo 0, Tema 5. Allí los flujos nacían en Dart; aquí nacen en C++, pero
+la suscripción y la cancelación son las mismas.
+
+Compáralo con el Tema 1. El `MethodChannel` responde una vez por pregunta; el `EventChannel` envía muchas respuestas a
+una sola suscripción. La tarjeta de la pantalla usa el primero con `FutureBuilder`; la memoria usa el segundo con
+`StreamBuilder`.
+
+Compáralo también con el Módulo 4, Tema 2. `ChangeNotifier` avisaba cambios dentro de Dart. El `EventChannel` trae
+cambios desde fuera de Dart, del sistema operativo.
+
+El Tema 3 empaqueta estos canales en un plugin con Pigeon. Los plugins de sensores, ubicación o batería que usarás en
+proyectos reales están construidos sobre este mismo mecanismo.
 
 #### Problema resuelto 2.1
 Emite desde C++ la memoria disponible cada 200 ms, compruébalo con la prueba de integración y construye la pantalla
@@ -788,9 +971,68 @@ Tema 6).
 - **Error típico:** dejar la prueba de la plantilla (`getPlatformVersion`) y no probar los métodos propios.
 
 #### ► CÓMO FUNCIONA
-La definición en `pigeon/messages.dart` genera el código de los canales en cada idioma. La app usa la API pública,
-que llama a la instancia de la interfaz de plataforma; por defecto es la implementación con Pigeon, que llama al
-canal generado; del otro lado, el código generado llama a tu función de cada plataforma.
+
+##### 1. La idea en lenguaje sencillo
+Un electrodoméstico que se vende en varios países trae el mismo aparato y un adaptador de enchufe por país. El
+fabricante no rediseña la licuadora para cada mercado: define una forma de conexión y fabrica un adaptador para cada
+toma. Además, el manual viene traducido a todos los idiomas a partir de un solo texto original.
+
+Un plugin federado aplica esa idea al código nativo. La app ve una sola API en Dart: `LectorEtiquetas`. Detrás hay un
+contrato, la interfaz de plataforma, y una implementación por sistema: C++ en Linux, Kotlin en Android y Swift en iOS.
+
+Pigeon es el traductor del manual. Escribes una vez, en Dart, qué métodos y qué datos cruzan el canal. Pigeon genera
+el código de los dos lados en cada idioma, y los errores de nombre o de tipo del Tema 1 desaparecen.
+
+##### 2. Definición formal y vocabulario
+Un **plugin** es un paquete de Dart con código nativo por plataforma. Flutter lo compila dentro de la app y lo
+registra solo; en Linux, con `fl_register_plugins`, sin tocar el runner.
+
+Un **plugin federado** separa tres papeles: la API pública que usa la app, la **interfaz de plataforma** y las
+implementaciones. La interfaz es una clase abstracta que extiende `PlatformInterface`, con una `instance`
+intercambiable protegida por un token.
+
+**Pigeon** es un generador de código. Lee una definición en Dart y escribe los canales con tipos para Dart, Kotlin,
+Java, Swift, Objective-C, C++ y GObject para Linux.
+
+En esa definición, **`@HostApi`** marca una API que implementa la plataforma y llama Dart. `@FlutterApi` marca la
+dirección contraria. La **app de ejemplo**, en `example/`, depende del plugin y sirve para probarlo en cada plataforma.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, lo que pasa al generar:
+
+1. Editas `pigeon/messages.dart`: agregas la clase `Etiqueta` y el método `leerEtiqueta` en la API `@HostApi`.
+2. `dart run pigeon --input pigeon/messages.dart` lee las salidas de `PigeonOptions` y escribe un archivo por
+   lenguaje.
+3. En Dart, la API generada tiene `leerEtiqueta` como método que devuelve `Future<Etiqueta>`.
+4. En C++, Pigeon genera la clase de datos, las funciones de respuesta y una tabla de métodos que tú llenas.
+
+Después, lo que pasa en una llamada de la prueba de integración:
+
+1. La app llama a `LectorEtiquetas().leerEtiqueta('EN-4472|350|F')`.
+2. La API pública delega en `LectorEtiquetasPlatform.instance`. En la app real, esa instancia es la implementación con
+   Pigeon.
+3. El código Dart generado codifica el texto y lo envía por su canal, con un nombre que Pigeon eligió y nadie escribe a
+   mano.
+4. El código C++ generado recibe el mensaje, lo decodifica y llama a `handle_leer_etiqueta`, la función de la tabla.
+5. Tu función valida el formato y devuelve una respuesta generada: con una `Etiqueta` o con un error con código.
+6. El código generado codifica la respuesta. En Dart, llega como objeto `Etiqueta` o como `PlatformException`.
+
+```dart
+@HostApi()
+abstract class LectorEtiquetasPluginApi {
+  /// Returns the system version of the host platform.
+  String getPlatformVersion();
+
+  /// Interpreta el texto de una etiqueta («EN-4472|350|F»). Lanza un error si no tiene ese formato.
+  Etiqueta leerEtiqueta(String texto);
+}
+```
+
+Observa que el método se declara sincrónico en la definición. Pigeon lo convierte en `Future` del lado de Dart,
+porque todo cruce de canal es asincrónico.
+
+En la salida, `pesoGramos` llegó como `int` y `fragil` como `bool`. Ya no hay mapas ni conversiones con `as`: los
+tipos los garantiza el código generado.
 
 ```mermaid
 flowchart LR
@@ -805,6 +1047,48 @@ flowchart LR
     GS --> IS["leerEtiqueta (Swift)"]
     PI -.->|"en pruebas"| MK["MockLectorEtiquetasPlatform"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+Pigeon usa el códec estándar, así que admite los tipos de los canales de plataforma. Además admite clases propias,
+tipos anidados y enumeraciones. Un tipo fuera de esa lista, como `DateTime`, debe viajar convertido, por ejemplo en
+milisegundos.
+
+Los errores siguen el mismo camino del Tema 1. En Kotlin lanzas `FlutterError`; en Swift, `PigeonError`; en C++
+devuelves una respuesta de error. En los tres casos, Dart recibe `PlatformException` con el código que elegiste, como
+`FORMATO` o `PESO`.
+
+Si un método nativo necesita esperar, por ejemplo a la cámara, la definición lo marca con `@async`. Pigeon genera
+entonces una firma asincrónica en cada lenguaje.
+
+No todo se genera en todos los lenguajes. La documentación de Pigeon indica que `@EventChannelApi`, para flujos de
+eventos, solo existe en los generadores de Swift, Kotlin y Dart. En Linux, un flujo sigue necesitando el
+`EventChannel` manual del Tema 2.
+
+Los archivos `.g` no se editan. Si cambias la definición, vuelves a ejecutar Pigeon. Si agregas una plataforma al
+plugin, también debes agregar su salida a `PigeonOptions`, o esa plataforma no tendrá código generado.
+
+La interfaz de plataforma protege su `instance` con un token. Una clase que la implemente sin extenderla falla al
+asignarse. Las pruebas usan `MockPlatformInterfaceMixin` para saltar esa comprobación.
+
+Federar no obliga a separar paquetes desde el principio. La plantilla pone todo en uno. Se separa en paquetes
+distintos cuando otro equipo mantiene una plataforma, por ejemplo una implementación para web.
+
+Las pruebas tienen dos niveles. `flutter test` prueba la parte Dart con la interfaz reemplazada, sin código nativo. La
+prueba de integración de la app de ejemplo prueba el código nativo, plataforma por plataforma.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema empaqueta los Temas 1 y 2. Debajo del código generado siguen habiendo canales, el códec estándar y
+`PlatformException`. Lo que cambia es quién escribe los nombres y las conversiones.
+
+Compáralo con `json_serializable` del Módulo 5, Tema 2. Los dos generan código a partir de una definición, y los dos
+convierten errores de ejecución en errores de compilación. La diferencia es el alcance: Pigeon genera para varios
+lenguajes a la vez.
+
+La interfaz de plataforma reemplazable es la misma idea de los overrides del Módulo 4, Tema 6: una dependencia que la
+prueba cambia sin tocar el código que la usa.
+
+El Tema 4 usa plugins hechos así. Pedir un permiso de cámara o de ubicación es una llamada a la plataforma que alguien
+empaquetó en un plugin con este mismo diseño.
 
 #### Problema resuelto 3.1
 Crea el plugin `lector_etiquetas` con la plantilla, agrega a Pigeon un método que convierta el texto de una etiqueta
@@ -1101,15 +1385,14 @@ Al terminar este tema podrás:
 - ofrecer una alternativa cuando el usuario dice que no, y llevarlo a los ajustes cuando el «no» es definitivo;
 - probar el flujo completo con un servicio de permisos reemplazado.
 
-**Conceptos clave:** permiso en tiempo de ejecución, explicación previa, denegado, denegado para siempre, servicio
-de permisos
+**Conceptos clave:** permiso en tiempo de ejecución, explicación previa, denegado, denegado para siempre, servicio de permisos
 
 #### El problema
 La foto de la entrega necesita la cámara. Si la app pide el permiso apenas abre, sin explicar, muchos usuarios dicen
 que no. En Android, después de dos «no», el sistema deja de preguntar; en iOS, deja de preguntar después del primero.
 A partir de ahí, si la app no lo maneja, el botón de la cámara simplemente no hace nada y el conductor no sabe por qué.
 
-Este tema usa **`StatefulWidget`** y **`mounted`** (Módulo 1, Tema 4), **la pantalla de mensaje** (Módulo 5,
+Este tema usa **`StatefulWidget`** (Módulo 1, Tema 4), **`mounted`** después de `await` (Módulo 3, Tema 1), **la pantalla de mensaje** (Módulo 5,
 Tema 4) y **servicios reemplazables** (Módulo 4, Tema 6).
 
 #### Glosario del tema
@@ -1150,9 +1433,56 @@ Tema 4) y **servicios reemplazables** (Módulo 4, Tema 6).
 - **Error típico:** llamar a `permission_handler` directamente en el widget: el flujo no se puede probar.
 
 #### ► CÓMO FUNCIONA
-Al abrir la pantalla se consulta el estado, sin pedir. Si nunca se preguntó, se muestra la explicación; el botón pide
-el permiso y el sistema muestra su diálogo. Cada respuesta lleva a una pantalla distinta: con permiso, la cámara; sin
-él, una alternativa; con el «no» definitivo, el camino a los ajustes.
+
+##### 1. La idea en lenguaje sencillo
+Si un desconocido toca a tu puerta y pide pasar sin decir para qué, cierras. Si primero se presenta y explica que
+viene a leer el medidor de la luz, abres. Y si le dices que no, un buen visitante no insiste cada cinco minutos: deja
+una nota con otra forma de hacer el trámite.
+
+Pedir un permiso es tocar esa puerta. La cámara, la ubicación y las notificaciones son de la persona, no de la app. El
+sistema operativo hace la pregunta con su propio diálogo, y la app solo decide cuándo y con qué explicación previa.
+
+La respuesta puede ser «sí», «ahora no» o «no, y no vuelvas a preguntar». Este tema diseña una pantalla para cada caso,
+de modo que el conductor siempre sepa qué está pasando y qué puede hacer.
+
+##### 2. Definición formal y vocabulario
+Un **permiso en tiempo de ejecución** es una autorización que el sistema pide al usuario mientras la app está abierta.
+Además, la app debe declararlo: en Android, en `AndroidManifest.xml`; en iOS, en `Info.plist`, con un texto que explica
+el uso.
+
+La **explicación previa** es una pantalla propia, mostrada antes del diálogo del sistema. Dice para qué se usa el
+permiso y cuándo. No reemplaza al diálogo: lo prepara.
+
+El estado **denegado** significa que el usuario rechazó, pero el sistema todavía puede volver a preguntar. El estado
+**denegado para siempre** significa que el sistema ya no mostrará el diálogo; solo se cambia en los ajustes del
+sistema. `permission_handler` lo llama `permanentlyDenied`.
+
+El **servicio de permisos** es la interfaz propia del tema, `ServicioPermisos`. En la app la implementa
+`permission_handler`; en las pruebas, un falso que responde lo que la prueba necesita.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la prueba del conductor que dice que no dos veces:
+
+1. `initState` llama a `estado()`. Solo consulta, no pide: abrir la pantalla nunca dispara un diálogo.
+2. El estado es `sinPreguntar`. El `switch` del `build` muestra la explicación con el botón «Permitir cámara».
+3. El toque llama a `pedir()`. En el teléfono, aquí el plugin cruza el canal y el sistema muestra su diálogo.
+4. La respuesta es `denegado`. Antes de `setState`, el código comprueba `mounted`, porque hubo un `await`.
+5. La pantalla ofrece la alternativa real, la firma, y la opción de intentar otra vez.
+6. El segundo pedido responde `denegadoSiempre`. La pantalla cambia la acción: ahora es «Abrir ajustes».
+7. El toque llama a `abrirAjustes()`. La salida lo confirma: `pedidos al sistema: 2; ajustes abiertos: 1`.
+
+```dart
+Future<void> _pedir() async {
+  final e = await widget.permisos.pedir();
+  if (mounted) setState(() => _estado = e);
+}
+```
+
+Este método es todo el contacto con el sistema. La pantalla no sabe si detrás hay `permission_handler` o un falso;
+solo traduce un `EstadoPermiso` en una pantalla.
+
+En el servicio real hay una sutileza del paso 2. En Android, `permission_handler` devuelve `denied` tanto si nunca se
+preguntó como si se rechazó una vez. Por eso `PermisosDelSistema` recuerda con `_preguntado` si ya pidió.
 
 ```mermaid
 stateDiagram-v2
@@ -1165,6 +1495,43 @@ stateDiagram-v2
     Denegado --> Bloqueado: intentar de nuevo → no (definitivo)
     Bloqueado --> [*]: Abrir ajustes
 ```
+
+##### 4. Reglas, variantes y casos límite
+Cada sistema tiene sus reglas sobre cuántas veces se puede preguntar. En Android, desde la versión 11, si el usuario
+rechaza dos veces el mismo permiso, el sistema deja de mostrar el diálogo. En iOS, el diálogo aparece una sola vez: el
+primer rechazo ya es definitivo.
+
+La declaración es obligatoria. En iOS, acceder a la cámara sin la clave `NSCameraUsageDescription` en `Info.plist`
+hace que el sistema cierre la app. En Android, pedir un permiso no declarado en el manifiesto falla sin mostrar
+diálogo.
+
+`PermissionStatus` de `permission_handler` tiene más estados que los cuatro del tema. `limited` aparece en iOS cuando
+el usuario da acceso solo a algunas fotos. `restricted` aparece cuando un control parental impide conceder el permiso.
+El tema agrupa `limited` con concedido y `restricted` con bloqueado.
+
+Android también ofrece permisos de una sola vez para cámara, micrófono y ubicación, desde la versión 11. Si el usuario
+elige «Solo esta vez», el permiso se pierde después. Por eso la pantalla consulta el estado cada vez que se abre.
+
+Al volver de los ajustes, la app no recibe un aviso de que el permiso cambió. Consulta el estado otra vez cuando la
+app vuelve a primer plano, por ejemplo con `AppLifecycleListener`.
+
+Pide cada permiso cuando se usa, no todos al abrir la app. Un pedido en contexto, después de la explicación, tiene más
+probabilidades de recibir un «sí». Y nunca pidas en un ciclo: el sistema lo bloqueará y el usuario también.
+
+Las pruebas tienen un límite claro. El falso prueba cómo responde la app a cada estado. El diálogo real solo se prueba
+en un teléfono de cada sistema.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El ciclo de vida de `State`, con `initState` y `setState`, viene del Módulo 1, Tema 4. La regla de comprobar `mounted`
+después de un `await` viene del Módulo 3, Tema 1.
+
+Las pantallas de explicación siguen las reglas de los mensajes del Módulo 5, Tema 4: qué pasó, qué puedes hacer y una
+sola acción. Un «no» al permiso no es un error del usuario, igual que la falta de red.
+
+`ServicioPermisos` es otro servicio reemplazable, como el repositorio del Módulo 4, Tema 6. Y `permission_handler` es
+un plugin federado como el del Tema 3: por debajo, cada consulta cruza un canal hacia el código de Android o iOS.
+
+El Tema 5 usa el resultado de esta pantalla. Con el permiso concedido, la foto se toma y viaja al servidor.
 
 #### Problema resuelto 4.1
 Diseña la pantalla de la foto de entrega con sus cuatro estados de permiso y prueba la secuencia de un conductor que
@@ -1469,8 +1836,7 @@ Al terminar este tema podrás:
 - recibir y validar el archivo en un servidor de prueba;
 - diseñar la tarjeta de una carga: qué se envía, cuánto falta y cómo detenerla.
 
-**Conceptos clave:** `multipart/form-data`, `FormData`, `MultipartFile`, progreso de envío, `CancelToken`, firma de
-archivo
+**Conceptos clave:** `multipart/form-data`, `FormData`, `MultipartFile`, progreso de envío, `CancelToken`, firma de archivo
 
 #### El problema
 La foto de una entrega pesa 1 o 2 MB, y la red en la calle es lenta. Sin progreso, el conductor no sabe si la app se
@@ -1518,9 +1884,64 @@ red** (Módulo 6, Tema 3).
 - **Error típico:** confiar en el nombre del archivo o en el tipo que declara el cliente.
 
 #### ► CÓMO FUNCIONA
-La app arma un `FormData` con la guía y la foto. `dio` abre la petición y escribe el cuerpo por bloques, leyendo el
-archivo del disco: después de cada bloque llama a `onSendProgress`. El servidor separa las partes por el límite,
-recibe la foto y responde. Si el conductor cancela, `dio` corta la conexión y la petición termina con `cancel`.
+
+##### 1. La idea en lenguaje sencillo
+Cuando envías por correo un formulario con una foto adjunta, metes las dos cosas en el mismo sobre, separadas, y cada
+una con su etiqueta. Si el sobre es grande y la ventanilla es lenta, te gustaría saber cuánto falta. Y si te
+equivocaste de foto, quieres poder retirarlo antes de que salga.
+
+La foto de la entrega pesa más de un megabyte, y la red en la calle es lenta. La app debe enviar la guía y la foto
+juntas, mostrar cuánto falta y permitir cancelar. Hasta ahora, todas las peticiones del curso enviaban JSON pequeño;
+este tema envía un archivo grande.
+
+La pantalla tiene su propio trabajo. Una tarjeta muestra qué se envía, cuántos megabytes van y un botón para
+detenerlo. Sin ella, el conductor no sabe si la app se colgó.
+
+##### 2. Definición formal y vocabulario
+**`multipart/form-data`** es un formato del cuerpo HTTP, definido en la RFC 7578. Envía varias partes, como campos de
+texto y archivos, separadas por un límite (*boundary*) que se declara en la cabecera `Content-Type`.
+
+En `dio`, **`FormData` y `MultipartFile`** construyen ese cuerpo. `FormData.fromMap` recibe los campos, y
+`MultipartFile.fromFile` agrega un archivo que se lee del disco mientras se envía, sin cargarlo entero en memoria.
+
+El **progreso de envío** llega por `onSendProgress(enviados, total)`, una función que `dio` llama a medida que escribe
+el cuerpo. **`CancelToken`** es el objeto que cancela una petición en curso; esta termina con `DioException` de tipo
+`cancel`.
+
+Del lado del servidor, la **firma de archivo** son los primeros bytes que identifican el tipo. Un JPEG empieza con
+`FF D8`. Es más confiable que el nombre del archivo, que el cliente puede escribir como quiera.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la primera carga del programa del tema:
+
+1. `CargaEvidencia.enviar` arma el `FormData` con dos partes: `guia` con el texto y `foto` con el archivo.
+2. `dio` genera un límite aleatorio y calcula el tamaño total del cuerpo: el archivo más las cabeceras y los límites
+   de cada parte.
+3. `dio` envía las cabeceras de la petición, con `Content-Type: multipart/form-data; boundary=...`.
+4. Escribe el cuerpo por bloques. Para la parte `foto`, lee el archivo del disco a medida que avanza.
+5. Después de cada bloque llama a `onSendProgress`. La salida muestra 0, 27, 54, 76 y 100 %.
+6. El servidor lee el límite de la cabecera y separa las partes con `MimeMultipartTransformer`.
+7. Para cada parte, lee `content-disposition`: `name` dice qué campo es y `filename` indica que es un archivo.
+8. Comprueba la firma, responde `{"ok": true, "partes": 2}` y `dio` completa el `Future`.
+
+```dart
+final formulario = FormData.fromMap({
+  'guia': guia,                                                  // campos de texto
+  'foto': await MultipartFile.fromFile(rutaFoto, filename: '$guia.jpg'),   // el archivo, sin cargarlo entero en memoria
+});
+final r = await dio.post<Map<String, dynamic>>(
+  '/evidencias',
+  data: formulario,
+  onSendProgress: alProgresar,                                   // dio informa cuánto ha enviado
+  cancelToken: cancelacion,
+);
+```
+
+El paso 2 explica una cifra de la salida. El total, 1 451 833 bytes, es mayor que la foto, de 1 451 589. La diferencia
+son los límites y las cabeceras de las partes.
+
+En la segunda carga, el `CancelToken` se activa al pasar un tercio. `dio` corta la conexión y la petición termina con
+`cancel` y el motivo que se le dio.
 
 ```mermaid
 sequenceDiagram
@@ -1536,6 +1957,45 @@ sequenceDiagram
     T->>D: Cancelar (otra carga)
     D-->>T: DioException.cancel
 ```
+
+##### 4. Reglas, variantes y casos límite
+El progreso llega por bloques, no byte a byte. Un archivo pequeño puede ir en un solo bloque, y entonces solo verás 0
+y 100 %. Al escribir este tema, la primera foto de prueba, de 22 KB, se comportó así.
+
+`onSendProgress` puede llamarse muchas veces con un archivo grande. Si cada llamada reconstruye la pantalla, haces
+trabajo de más. Actualiza solo cuando el porcentaje cambie de forma visible, como hace el programa cada 25 %.
+
+Un `FormData` se envía una sola vez, porque el archivo ya se leyó. Para reintentar, crea uno nuevo. Lo mismo vale para
+el `CancelToken`: una vez cancelado, sigue cancelado; usa uno nuevo para cada carga.
+
+Cancelar en el cliente no deshace nada en el servidor. Si el servidor ya recibió el cuerpo completo, la entrega de la
+foto pudo quedar registrada aunque el cliente no espere la respuesta.
+
+Del lado del servidor, una carga cortada produce un error al leer el cuerpo. El servidor del tema atrapa ese
+`HttpException`; la primera versión no lo hacía y se caía.
+
+La cancelación no es un fallo de red. Revisa `DioExceptionType.cancel` antes de traducir el error: la pantalla no debe
+mostrar «Sin conexión» cuando el conductor tocó «Cancelar». En la traducción del Módulo 5, Tema 3, ese tipo caía en
+el caso general.
+
+Enviar la foto en JSON con base64 es una variante que conviene evitar. Base64 aumenta el tamaño en un tercio y obliga a
+tener todo el archivo en memoria.
+
+La firma confirma el tipo, no que el archivo sea seguro. El servidor real también debe limitar el tamaño y validar la
+imagen. La app, por su parte, puede reducir la foto antes de enviarla para ahorrar datos móviles.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`dio`, `BaseOptions`, `DioException` y su `type` vienen del Módulo 5, Tema 3. `CancelToken` apareció allí como
+variante; aquí se usa para darle al conductor el control.
+
+Compáralo con el Módulo 5, Tema 1. Allí `timeout` dejaba de esperar sin cancelar la petición. Aquí `CancelToken` sí
+corta la conexión, y el servidor lo nota.
+
+El archivo sale del disco, como los del Módulo 6, Tema 5. La tarjeta sigue el sistema de diseño del Módulo 2, Tema 6,
+con `Card.outlined` y `LinearProgressIndicator`.
+
+Este tema cierra el recorrido del módulo. El permiso del Tema 4 abre la cámara; esta carga envía su resultado. La cola
+del Módulo 6, Tema 3, es el lugar natural para una foto que no pudo salir por falta de red.
 
 #### Problema resuelto 5.1
 Envía una foto de 1,4 MB con la guía en una petición multipart, imprime el progreso, valida en el servidor que es un
@@ -1711,9 +2171,9 @@ class TarjetaCarga extends StatelessWidget {
 - El total (1 451 833 bytes) es el archivo más los límites y cabeceras de las partes: unos 244 bytes extra.
 - El progreso llegó por bloques: 0, 27, 54, 76 y 100 %. Con la primera foto de prueba, de 22 KB, la salida mostró
   solo 0 % y 100 %: entró en un solo bloque.
-- El servidor recibió los dos campos y comprobó la firma del JPEG. **La primera versión comparaba con
-  `bytes.take(4).toList() == [137, 80, 78, 71]` y siempre daba `false`**: en Dart, dos listas distintas no son `==`
-  aunque tengan los mismos elementos (Módulo 4, Tema 3). Se comparan los bytes uno por uno.
+- El servidor recibió los dos campos y comprobó la firma del JPEG: `bytes[0] == 0xFF && bytes[1] == 0xD8`. Se
+  comparan los bytes uno por uno porque, en Dart, dos listas distintas no son `==` aunque tengan los mismos elementos
+  (Módulo 4, Tema 3).
 - La segunda carga terminó con `cancel` y el motivo. La primera versión del servidor se caía al cortarse la conexión;
   ahora atrapa el `HttpException`.
 - La tarjeta del pantallazo usa los valores reales de la salida (786 643 de 1 451 833 bytes, 54 %).

@@ -390,16 +390,65 @@ no arranca nunca. ¿Qué garantiza que un hilo vea lo que otro escribió, y en q
 - **Error típico:** escribir la bandera antes del dato (`listo = true; valor = 42;`): un lector que vea `listo` puede leer `valor == 0`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `VisibilidadDemo` escribe `valor = 42` y después `listo = true`, donde `listo` es `volatile`. Esa escritura volatile establece una relación *happens-before* con la lectura del hilo lector: al observar `listo == true`, el lector ve `valor == 42`. `CountDownLatch` da la espera acotada y `Thread.onSpinWait()` evita un bucle ocupado agresivo.
 
-**Por qué existe.** Dos hilos comparten heap, pero el JIT y la CPU pueden reordenar instrucciones y cachear valores. Sin una garantía de orden, un booleano plano “eventualmente se verá” puede fallar bajo carga aunque pase en pruebas.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** `volatile` aporta visibilidad y orden, no atomicidad compuesta: `contador++` sigue siendo una secuencia no atómica. Para actualizaciones atómicas se usan `AtomicInteger`/`VarHandle`; para coordinación rica, locks, colas o barreras.
+Dos cocineros comparten una pizarra. Uno escribe «salsa lista» y el otro, que espera ese aviso, empieza a servir. El
+problema es que cada cocinero copió la pizarra en una libreta al empezar el turno y trabaja con su copia. Si nadie le
+obliga a volver a mirar la pizarra, puede esperar para siempre un aviso que ya está escrito.
 
-**Confusión común.** Usar `volatile` como sustituto de `synchronized`. Aquí basta porque solo hay una señal y una publicación; en cuanto aparezca una operación de varios pasos, hace falta una primitiva más fuerte.
+Eso pasó en Tienda Aurora. Un hilo carga los precios y pone una bandera en `true`. Otro hilo gira esperando la
+bandera. En `VisibilidadRota.java`, el lector seguía vivo tras 2 segundos: `lector sigue vivo tras 2 s: true`.
 
-Las reglas se encadenan. Dentro de un hilo vale el orden del programa; entre hilos solo cuentan las acciones
-sincronizadas. Esta es la cadena del proyecto y lo que pasa cuando falta el eslabón `volatile`:
+Java no promete que un hilo vea al instante lo que escribe otro. Solo lo promete cuando entre las dos acciones existe
+una relación concreta. Este tema enseña cuáles son esas relaciones y cómo construirlas a propósito.
+
+##### 2. Definición formal y vocabulario
+
+El **modelo de memoria de Java** (JMM, por *Java Memory Model*) es el capítulo 17 de la especificación del lenguaje.
+Define qué valores puede devolver cada lectura de un campo compartido entre hilos. No describe cachés ni núcleos:
+describe resultados permitidos.
+
+Su pieza central es **happens-before**. Si la acción A *happens-before* la acción B, B ve todo lo que A escribió. En
+lenguaje sencillo: una cadena de «esto pasó antes que aquello» que obliga a ver los cambios. La relación no tiene que
+ver con el reloj. Dos acciones pueden ocurrir una tras otra en el tiempo sin estar relacionadas.
+
+Cuando dos hilos acceden al mismo campo, al menos uno escribe y no hay happens-before entre ellos, el JMM lo llama
+**carrera de datos** (*data race*). En una carrera, leer un valor viejo es un resultado legal.
+
+El **reordenamiento** es el permiso que tienen el JIT y la CPU para cambiar el orden de lecturas y escrituras. Solo
+deben respetar que el propio hilo no note la diferencia. Un caso extremo es el *hoisting*: sacar la lectura de un campo
+fuera de un bucle porque, dentro de ese hilo, nadie la cambia.
+
+La **publicación segura** es entregar un dato a otro hilo con una acción que crea happens-before. Así el receptor ve
+el estado completo y no una versión a medias.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue primero el fallo de `VisibilidadRota.java`:
+
+1. El hilo lector entra en `while (!listo)`. Al principio el intérprete ejecuta el bucle y lee `listo` en cada vuelta.
+2. Tras miles de vueltas, el bucle se vuelve «caliente» y el JIT lo compila a código nativo.
+3. El JIT analiza el cuerpo y ve que nada en ese hilo escribe `listo`. Como el campo no es `volatile`, puede leerlo una
+   sola vez y convertir el bucle en uno infinito.
+4. `main` escribe `listo = true` en memoria. El lector ya no mira el campo y nunca sale.
+5. Con `-Xint` no hay JIT. El intérprete relee el campo en cada vuelta y el programa imprime `lector vio valor=42`.
+
+Ahora sigue el arreglo de `VisibilidadDemo`, la clase del proyecto:
+
+```java
+private volatile boolean listo = false;
+private int valor = 0;
+// en el hilo principal:
+valor = 42;
+listo = true;   // escritura volatile: publica valor=42
+```
+
+1. `main` escribe `valor = 42`. Por el orden del programa, esta escritura ocurre antes que la siguiente.
+2. `main` escribe `listo = true`. Al ser `volatile`, la JVM emite las barreras de memoria que la arquitectura necesite.
+3. El lector lee `listo` en cada vuelta, porque el JIT no puede eliminar una lectura `volatile`.
+4. Cuando la lectura devuelve `true`, la regla de `volatile` crea happens-before con la escritura de `main`.
+5. Por transitividad, el lector también ve `valor == 42`, aunque `valor` sea un campo normal.
 
 ```mermaid
 flowchart LR
@@ -408,6 +457,53 @@ flowchart LR
   C -->|orden del programa| D["lector: lee valor → 42"]
   E["bandera sin volatile"] -. "sin relación: el JIT<br/>la lee una sola vez" .-> F["el lector gira para siempre"]
 ```
+
+El diagrama muestra la cadena de cuatro eslabones. Si quitas el `volatile`, el eslabón central desaparece y queda la
+rama inferior.
+
+##### 4. Reglas, variantes y casos límite
+
+La especificación (JLS §17.4.5) enumera las fuentes de happens-before. Las más usadas son estas:
+
+- dentro de un hilo, cada acción ocurre antes que la siguiente en el orden del programa;
+- una escritura `volatile` ocurre antes que toda lectura posterior de ese campo;
+- liberar un monitor (`synchronized`) ocurre antes que el siguiente bloqueo del mismo monitor;
+- la llamada a `start()` ocurre antes que cualquier acción del hilo iniciado;
+- todo lo que hace un hilo ocurre antes de que otro vuelva con éxito de su `join()`.
+
+La relación es transitiva. `ReglasHappensBefore.java` lo demuestra: dos campos normales bastan, porque `start()` y
+`join()` crean los eslabones. Por eso `main ve resultado=99`.
+
+`volatile` da visibilidad y orden, pero no atomicidad compuesta. `contador++` es leer, sumar y escribir. En
+`ContadorVolatile.java` una corrida dio `volatile=191609` en vez de `200000`. Para eso usas `AtomicInteger` o un lock.
+
+Dormir no sincroniza. `Thread.sleep` no crea happens-before, así que esperar 500 ms antes de leer no garantiza nada.
+
+Hay casos límite con tipos de 64 bits. Según JLS §17.7, una escritura de `long` o `double` no `volatile` puede dividirse
+en dos mitades de 32 bits. Otro hilo podría leer una mezcla. Con `volatile`, la escritura es indivisible.
+
+Los campos `final` tienen su propia garantía (JLS §17.5). Si el constructor no deja escapar `this`, cualquier hilo que
+vea el objeto ve sus campos `final` inicializados. Es otra forma de publicación segura.
+
+El modelo actual nació con JSR-133 en Java 5. Desde Java 9, `VarHandle` (JEP 193) ofrece modos de acceso más finos,
+como *acquire* y *release*. `Thread.onSpinWait()`, también de Java 9, solo avisa a la CPU de que el hilo gira; no
+crea ninguna relación de memoria.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema formaliza ideas de Java, Módulo 5: `Thread`, `start` y `join` (Tema 1), `CountDownLatch` (Tema 3) y
+`volatile` con `AtomicInteger` (Tema 4). La relación sucedió-antes ya apareció en Arquitectura, Módulo 1, Tema 5, entre
+servicios. Aquí la ves entre hilos de un mismo proceso.
+
+El JIT de Java, Módulo 11, Tema 2 explica por qué el fallo aparece solo tras calentar el bucle. Es la misma
+optimización que hace rápido tu código la que rompe el programa mal sincronizado.
+
+No confundas visibilidad con atomicidad. La primera responde «¿lo ve el otro hilo?». La segunda responde «¿puede otro
+hilo meterse en medio?». `volatile` resuelve solo la primera.
+
+En el Tema 2 de este módulo verás al JIT desde el otro lado: cómo elimina código cuyo resultado nadie usa y por qué eso
+invalida un cronómetro ingenuo. En el Módulo 13, el `ConcurrentHashMap` del repositorio ya publicaba los pedidos de
+forma segura entre virtual threads.
 
 #### Problema resuelto 1.1
 Reproduce el fallo de visibilidad del problema y averigua quién lo provoca.
@@ -641,7 +737,7 @@ ejecutó aquí.
 
 </details>
 
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenua · Avanzado · 45 min
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
 
 <details open>
 <summary><strong>Capa 1 — Lectura</strong></summary>
@@ -687,18 +783,53 @@ midiendo realmente?
 - **Error típico:** usar JMH sin `Blackhole` ni `return`: el JIT elimina el cálculo y JMH mide un método vacío.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `CronometroIngenuo.medirUnaVez()` rodea una sola llamada a `suma(10_000)` con `System.nanoTime()`. La comparación con `Integer.MIN_VALUE` evita que el compilador elimine el resultado por dead-code obvio.
 
-**Por qué existe.** El JIT compila código caliente con inlining y optimizaciones; el GC, el scheduler y la carga de clases añaden ruido. Una sola medición sin warmup mide el arranque, no el algoritmo.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** El número obtenido (`ns=true` solo indica que es no negativo) no sirve para comparar implementaciones ni para decidir arquitectura. Para medir de verdad se usa JMH: warmup, forks, modos de medición y blackholes. Para diagnosticar se usa JFR (en este proyecto se genera `build/recording.jfr`) y logs de GC.
+Si cronometras a un corredor en su primer paso, cuando apenas se levanta del bloque, no sabes nada de su velocidad en
+la recta. Si además el corredor, al ver que nadie mira la meta, deja de correr la última parte, tu cronómetro miente
+dos veces.
 
-**Confusión común.** Repetir `nanoTime()` en un bucle casero y creer que eso arregla el problema. Repetir sin controlar warmup, forks ni dead-code solo produce un número más estable, no un benchmark válido.
+En la JVM pasan las dos cosas. El primer tiempo de un método corresponde al intérprete, no al código optimizado. Y si
+nadie usa el resultado, el JIT puede quitar trabajo. En `MedicionIngenua.java`, la ronda 1 midió `106866 ns`; el mismo
+método ya compilado midió `3526 ns`; y descartando su resultado, `326 ns`.
 
-**Nota honesta y no verificable en este entorno.** JMH y jcstress **no están instalados ni declarados** en el proyecto verificado: `./gradlew -q dependencies --configuration testRuntimeClasspath | grep -iE "jmh|jcstress"` no devuelve coincidencias y `command -v jmh` / `command -v jcstress` fallan. No se muestra una salida de benchmark JMH ni de estrés jcstress porque no se ejecutaron. Para hacerlos ejecutables habría que añadir `org.openjdk.jmh:jmh-core`, `org.openjdk.jmh:jmh-generator-annprocess` y la dependencia de jcstress al build, y ejecutarlos como tareas separadas; esa ampliación no forma parte de esta verificación.
+Por eso el número de tu compañero de Tienda Aurora no prueba nada. Este tema explica qué hay detrás de cada cifra y qué
+herramienta da una medición defendible.
 
-Una medición ingenua mezcla tres cosas que JMH separa: el arranque en el intérprete, la compilación del JIT y el
-código final, que puede haber perdido trabajo.
+##### 2. Definición formal y vocabulario
+
+Un **microbenchmark** mide el tiempo de una porción muy pequeña de código, aislada del resto de la aplicación. En
+lenguaje sencillo: cronometrar un solo gesto del atleta. Su dificultad es que, en la JVM, el código medido cambia
+mientras lo mides.
+
+La **eliminación de código muerto** (*dead-code elimination*) es una optimización del compilador JIT. Borra cálculos
+cuyo resultado nadie lee y que no tienen efectos visibles. Para el programa no hay diferencia; para el cronómetro, sí.
+
+**JMH** (*Java Microbenchmark Harness*) es la herramienta de OpenJDK para escribir microbenchmarks. Genera el código
+de medición, separa iteraciones de **calentamiento** y de medición, repite la prueba en varias JVM nuevas
+(**forks**) y entrega los resultados a un objeto `Blackhole` para que no se conviertan en código muerto.
+
+Conviene recordar dos términos del Módulo 11. **OSR** (*on-stack replacement*) es reemplazar un bucle que ya se está
+ejecutando por su versión compilada. **Desoptimización** es volver al intérprete o a un nivel inferior cuando una
+suposición del JIT deja de valer.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que hace HotSpot con `suma(10_000)` durante `MedicionIngenua.java`:
+
+1. Las primeras llamadas las ejecuta el **intérprete** (nivel 0). Lee bytecode instrucción por instrucción y cuenta
+   invocaciones y vueltas de bucle.
+2. Cuando el bucle supera un umbral, el compilador C1 genera una versión OSR con perfilado (nivel 3). En
+   `-XX:+PrintCompilation` aparece como `%` y `@ 4`, el índice del bytecode donde empieza el bucle.
+3. Con el perfil reunido, C2 compila la versión optimizada (nivel 4). Las versiones de nivel 3 quedan
+   `made not entrant`: ya no se usan.
+4. En el bucle que descarta el resultado, C2 ve que el valor devuelto no llega a ninguna parte. Puede eliminar parte
+   del cálculo, y la medición cae a `326 ns`.
+5. En el bucle que suma a `acumulado`, el valor alimenta una variable que se imprime al final. El trabajo se conserva.
+
+La salida de `PrintCompilation` del Problema resuelto 2.2 confirma el orden. Las cinco rondas aparecen antes que la
+primera línea de `MedicionIngenua::suma`. Todas midieron el intérprete.
 
 ```mermaid
 flowchart LR
@@ -708,6 +839,58 @@ flowchart LR
   D -->|sí| U["se mide el trabajo"]
   D -->|no| E["eliminación de código muerto<br/>se mide casi nada"]
 ```
+
+El cronómetro del proyecto, `CronometroIngenuo`, intenta defenderse del código muerto con un truco:
+
+```java
+long t0 = System.nanoTime();
+int r = suma(10_000);
+long t1 = System.nanoTime();
+if (r == Integer.MIN_VALUE) System.out.println("nunca"); // el resultado "se usa"
+return t1 - t0;
+```
+
+La comparación obliga a conservar `r`. Pero el método sigue midiendo una sola llamada, normalmente en el intérprete.
+Por eso la prueba del proyecto solo comprueba que el valor no sea negativo (`ns=true`).
+
+##### 4. Reglas, variantes y casos límite
+
+`System.nanoTime()` devuelve un reloj monótono, útil solo para restar dos lecturas. La documentación dice que ofrece
+precisión de nanosegundos, no necesariamente resolución de nanosegundos. No tiene relación con la hora del día.
+
+`System.currentTimeMillis()` sí es la hora del día, en milisegundos. Su granularidad depende del sistema operativo y
+puede ser mayor que un milisegundo. Para una llamada corta imprime `tardó 0 ms`, que significa «menos que la
+resolución», no «gratis».
+
+La compilación por niveles (*tiered compilation*) está activa por defecto en HotSpot desde Java 8. Los umbrales y
+niveles son detalles de HotSpot, no de la especificación. Otra JVM, u otra versión, puede optimizar distinto.
+
+JMH ataca cada fuente de error por separado. El calentamiento deja que el JIT termine. Los forks evitan que un
+benchmark herede el perfil de otro. `Blackhole.consume` impide la eliminación de código muerto. Además, JMH recomienda
+leer las entradas de campos de estado (`@State`) para que el JIT no precalcule un argumento constante.
+
+Ninguna herramienta corrige un benchmark que mide lo que no importa. Si la carga real hace E/S, un microbenchmark de
+CPU no responde nada útil. Para buscar el cuello de botella se usa un perfilador como JFR.
+
+Este curso no muestra salidas de JMH. JMH no está declarado en el build del proyecto verificado y no se ejecutó. Para
+usarlo, se agregan `org.openjdk.jmh:jmh-core` y `org.openjdk.jmh:jmh-generator-annprocess` y se ejecuta como tarea
+aparte.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El compilador JIT, OSR, la desoptimización, el calentamiento y JFR vienen de Java, Módulo 11, Tema 2. Aquí ves su
+efecto sobre una medición. `System.nanoTime` y la complejidad temporal vienen de Fundamentos, Módulo 2. El percentil,
+de Fundamentos, Módulo 7, Tema 6, es la forma correcta de resumir muchas mediciones.
+
+Este tema es la otra cara del Tema 1. Allí el JIT leía un campo una sola vez y rompía un programa mal sincronizado.
+Aquí borra trabajo sin uso y rompe una medición mal diseñada. En ambos casos el JIT cumple sus reglas; el error está
+en las suposiciones del programador.
+
+No confundas microbenchmark con perfilado. El primero compara dos versiones de un fragmento. El segundo busca dónde se
+va el tiempo en la aplicación completa.
+
+En el Tema 5 de este módulo volverás a medir, esta vez el arranque de la JVM con CDS y caché AOT. Allí también
+repetirás corridas y desconfiarás de una sola cifra.
 
 #### Problema resuelto 2.1
 Mide `suma(10_000)` de tres formas y compara: una llamada en frío, un millón de llamadas en caliente con el resultado
@@ -965,16 +1148,65 @@ suficiente defensa, o algo ya ocurrió antes del cast?
 - **Error típico:** usar una lista de bloqueados (`!com.peligrosa.*`): siempre aparece una clase que no estaba en la lista.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `DeserializacionSegura.serializar()` usa `ObjectOutputStream`; `deserializarSeguro()` instala un `ObjectInputFilter` con allow-list (`Mensaje` y `String`, `!*` para el resto) antes de `readObject()`.
 
-**Por qué existe.** La deserialización Java nativa reconstruye grafos y puede ejecutar código durante la lectura. Si la entrada no es confiable, el problema no es solo dato malo: es permitir tipos inesperados dentro del proceso.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** El test `deserializacionPermiteTipoAutorizado` obtiene `Mensaje[texto=ok]`; `deserializacionRechazaTipoNoAutorizado` comprueba que un `Integer` serializado es rechazado. La defensa preferida es no usar Java serialization con datos no confiables; el filtro es la segunda línea.
+Imagina que recibes un mueble desarmado. La caja trae las piezas y una etiqueta que dice qué técnico debe venir a
+armarlo. Tú no eliges al técnico: lo elige la etiqueta. Y el técnico empieza a trabajar en tu casa antes de que veas
+qué mueble era.
 
-**Confusión común.** Creer que un filtro convierte serialization en un formato seguro por diseño. Sigue siendo un mecanismo que instancia tipos; JSON con mapeo explícito es una frontera más estrecha cuando es posible.
+La serialización nativa de Java funciona así. Los bytes traen el nombre de la clase que debe reconstruir el objeto.
+`ObjectInputStream` busca esa clase, crea la instancia y ejecuta sus métodos especiales. Solo después tu código recibe
+el resultado y puede revisarlo.
 
-El filtro actúa al leer el descriptor de cada clase, antes de crear la instancia y antes de llamar su `readObject`.
-El cast de tu código llega mucho después:
+En el servicio de Tienda Aurora, el cast a `Mensaje` parecía una defensa. `DeserializarEjecuta.java` demuestra que no:
+primero aparece `readObject de Tarea ejecutado: borrar-cache` y solo después `ClassCastException`. El código del
+remitente ya corrió.
+
+##### 2. Definición formal y vocabulario
+
+La **serialización nativa de Java** es el mecanismo de `java.io` que convierte un grafo de objetos `Serializable` en
+bytes con `ObjectOutputStream.writeObject`. `ObjectInputStream.readObject` hace el camino inverso. El flujo incluye,
+por cada clase, un **descriptor** con su nombre, su `serialVersionUID` y sus campos.
+
+Una **cadena de gadgets** es una secuencia de clases que ya están en tu classpath. Cada una tiene un método que se
+ejecuta al deserializar, como `readObject`, `readResolve` o un `hashCode` invocado al reconstruir un mapa. Encadenadas
+con bytes manipulados, producen un efecto peligroso. En 2015 se publicaron cadenas que usaban la biblioteca Apache
+Commons Collections, y muchas aplicaciones la tenían sin saberlo.
+
+**`ObjectInputFilter`** es la interfaz que `ObjectInputStream` consulta antes de crear objetos. Para cada clase, y
+también para profundidad, número de referencias y tamaño, responde `ALLOWED`, `REJECTED` o `UNDECIDED`. En lenguaje
+sencillo: un portero que lee la etiqueta de cada caja antes de dejarla abrir.
+
+Una **lista de permitidos** (*allow-list*) enumera lo aceptado y rechaza todo lo demás. En la sintaxis del filtro, ese
+«todo lo demás» se escribe `!*` al final.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `readObject()` sobre los bytes de una `Tarea`, sin filtro:
+
+1. `ObjectInputStream` lee la cabecera del flujo y encuentra un objeto nuevo.
+2. Lee el descriptor de clase y obtiene el nombre `DeserializarEjecuta$Tarea`.
+3. Carga esa clase con el cargador de clases de la aplicación. Si existe en el classpath, sigue.
+4. Crea la instancia **sin llamar al constructor de `Tarea`**. Solo ejecuta el constructor sin argumentos de la primera
+   superclase que no es `Serializable`, aquí `Object`.
+5. Si la clase declara un método privado `readObject`, lo invoca por reflexión. Ahí se imprime la línea del ataque.
+6. Devuelve el objeto como `Object`. Recién entonces tu cast a `Mensaje` falla.
+
+Con filtro, el paso 2 cambia. Al leer el descriptor, el flujo llama al filtro con el nombre de la clase. Si la
+respuesta es `REJECTED`, lanza `InvalidClassException: filter status: REJECTED` y no ejecuta los pasos 3 a 6.
+
+```java
+ObjectInputFilter filtro = ObjectInputFilter.Config.createFilter(
+        "DeserializarConFiltro$Mensaje;java.lang.String;!*");
+try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+    in.setObjectInputFilter(filtro);   // antes de leer
+    return in.readObject();
+}
+```
+
+`createFilter` traduce el patrón en reglas. El punto y coma separa reglas; `$` separa la clase anidada de su clase
+externa. La última regla, `!*`, rechaza cualquier nombre no listado.
 
 ```mermaid
 flowchart LR
@@ -985,6 +1217,49 @@ flowchart LR
   N --> R["ejecuta readObject de la clase"]
   R --> C["tu cast a Mensaje"]
 ```
+
+El diagrama marca la distancia entre las dos defensas. El filtro actúa en el segundo nodo; tu cast, en el último.
+
+##### 4. Reglas, variantes y casos límite
+
+`ObjectInputFilter` llegó en Java 9 con JEP 290. Java 17 añadió, con JEP 415, las fábricas de filtros: la propiedad
+`jdk.serialFilterFactory` permite combinar un filtro global con filtros por contexto.
+
+Las reglas del patrón se evalúan de izquierda a derecha y la primera que coincide con el nombre decide. `pkg.*` cubre
+las clases de un paquete; `pkg.**`, también sus subpaquetes. Un `!` delante rechaza. Si ninguna regla coincide, el
+resultado es `UNDECIDED`, y `ObjectInputStream` lo acepta. Por eso, sin `!*`, la `Tarea` pasó en el recuadro del
+error común.
+
+Los límites `maxdepth`, `maxrefs`, `maxbytes` y `maxarray` se revisan aparte. Si uno se supera, la respuesta es
+`REJECTED` aunque la clase esté permitida. Cortan grafos gigantes que buscan agotar memoria.
+
+Hay dos niveles de filtro. `in.setObjectInputFilter(...)` protege un flujo concreto y debe llamarse antes de la
+primera lectura. `-Djdk.serialFilter=...` instala un filtro para todo el proceso, incluidas las bibliotecas que
+deserializan por su cuenta.
+
+Observa el caso de los `record`. Desde Java 16, un `record` se deserializa llamando a su **constructor canónico**. Sus
+validaciones se ejecutan. Una clase `Serializable` normal, en cambio, se crea sin su constructor, así que sus
+invariantes no se comprueban.
+
+El filtro no valida datos. Un `Mensaje` permitido puede traer un texto malicioso. Esa validación sigue siendo tuya.
+
+La defensa principal es no usar serialización nativa con datos que cruzan un límite de confianza. Un formato como
+JSON trae datos y tú eliges la clase destino. El filtro es la segunda línea.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Serialización, deserialización y JSON vienen de Java, Módulo 6, Tema 2; `serialVersionUID`, de Módulo 3, Tema 3. El
+límite de confianza y la validación de entrada vienen de Seguridad, Módulo 0, Temas 1 y 4. Aquí ves por qué un formato
+que elige la clase cruza ese límite de forma peligrosa.
+
+Compara con JSON. Con JSON, el código receptor decide en qué tipo convertir los datos. Con serialización nativa, lo
+decide el emisor. Esa diferencia es la raíz del problema, no un detalle de implementación.
+
+El `record` también conecta con el Módulo 12, Tema 1: allí el constructor compacto protegía invariantes. Aquí descubres
+que la serialización de un `record` respeta esa protección.
+
+En el Tema 4 de este módulo pasarás de qué entra al proceso a cómo arranca y se apaga. En el Tema 6, `jdeprscan`
+revisará APIs obsoletas, otra forma de reducir superficie de riesgo al migrar.
 
 #### Problema resuelto 3.1
 Comprueba si el cast a `Mensaje` protege al servicio cuando llega otra clase.
@@ -1247,16 +1522,62 @@ consola. ¿Cómo apagas el proceso de forma ordenada y qué parte del runtime ne
 - **Error típico:** probar el apagado solo con `Ctrl+C` (`SIGINT`, código 130) y suponer que `kill -9` se comporta igual.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `CicloVidaApp.registrarApagado()` mantiene un shutdown hook registrado hasta que la JVM termina; al apagarse imprime `shutdown-demo: limpieza ejecutada`. `simular()` es la variante de prueba que registra y retira el hook para no contaminar el worker de JUnit. A partir del JAR modular se construye una imagen con `jlink` que contiene `com.aurora.jvm`, `java.base` y `jdk.jfr`.
 
-**Por qué existe.** Una aplicación necesita arranque, dependencias, señales de apagado y limpieza. Además, distribuir el JDK completo para una app de consola es innecesario: `jlink` genera solo los módulos requeridos.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** La imagen verificada ocupa 33 Mbytes y se ejecuta con `id -u -un = nicolasruiz` (usuario no root, el mismo que invoca el comando: jlink no añade privilegios). Se ejecutó con `-Xmx64m`, `-XX:MaxMetaspaceSize=64m` y `-XX:StartFlightRecording:filename=build/recording.jfr,duration=2s`; se generó `build/recording.jfr` de 343 Kbytes y el hook se ejecutó al terminar. `jlink` no actualiza vulnerabilidades: quien publica la imagen debe reconstruirla con cada JDK parcheado.
+Cerrar una tienda tiene un orden. Primero dejas de recibir clientes, luego atiendes a los que están adentro, cuadras
+la caja y apagas las luces. Si el dueño del local corta la electricidad de golpe, nada de eso ocurre: la caja queda sin
+cuadrar.
 
-**Confusión común.** Pensar que el shutdown hook cubre `kill -9`, un crash o un corte de energía. No los cubre. Debe ser breve e idempotente y combinarse con timeouts, persistencia segura y observabilidad.
+Un servicio de Tienda Aurora vive lo mismo en cada despliegue. El orquestador pide al proceso que termine y, si tarda
+demasiado, lo mata. En el primer caso el programa alcanza a vaciar métricas y cerrar conexiones. En el segundo no
+alcanza a nada.
 
-El orquestador (Docker, Kubernetes, systemd) envía `SIGTERM`, espera un plazo y, si el proceso sigue vivo, envía
-`SIGKILL`. Los hooks solo corren en la primera rama:
+El tema tiene una segunda mitad: qué parte del runtime viaja con la aplicación. Una app de consola no necesita el JDK
+completo. Con `jlink` construyes una imagen que lleva solo los módulos que usa, y la imagen pasa a ser parte del
+artefacto que despliegas.
+
+##### 2. Definición formal y vocabulario
+
+Un **shutdown hook** es un hilo creado pero no iniciado que registras con
+`Runtime.getRuntime().addShutdownHook(...)`. La JVM lo arranca cuando comienza su secuencia de apagado. En lenguaje
+sencillo, es la lista de tareas antes de salir de casa.
+
+El **apagado ordenado** (*graceful shutdown*) es la secuencia en la que el proceso deja de aceptar trabajo, termina o
+abandona lo pendiente con un plazo y libera recursos. El hook es una pieza; el plazo y la idempotencia son las otras.
+
+**SIGTERM y SIGKILL** son señales POSIX. `SIGTERM` (15) pide terminar, y la JVM la atiende iniciando el apagado.
+`SIGKILL` (9) la ejecuta el núcleo del sistema operativo: el proceso desaparece sin ejecutar ni una instrucción más.
+Por convención de la shell, el código de salida de un proceso muerto por señal es 128 más su número: `143` para
+`SIGTERM`, `130` para `SIGINT` y `137` para `SIGKILL`.
+
+Un **runtime personalizado** es una imagen de JVM generada por `jlink` con un subconjunto de módulos. Para incluir tu
+aplicación, `jlink` necesita un **módulo con nombre**, es decir, un JAR con `module-info.class`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando `kill -TERM` llega a `ApagadoOrdenado`:
+
+1. El núcleo entrega `SIGTERM` al proceso. La JVM tiene un manejador instalado para esa señal.
+2. El manejador inicia la secuencia de apagado. Desde ese momento, registrar un hook nuevo lanza
+   `IllegalStateException`.
+3. La JVM arranca todos los hooks registrados, en un orden no especificado y de forma concurrente.
+4. Espera a que todos terminen. Los demás hilos, incluido `main` dormido en `sleep`, no reciben aviso y siguen hasta
+   que la JVM se detiene.
+5. La JVM sale. La shell ve un proceso terminado por la señal 15 y reporta `143`.
+
+Con `kill -KILL` no hay paso 1 para la JVM. El núcleo destruye el proceso. La salida real solo muestra el pid y el
+código `137`.
+
+```java
+Thread hook = new Thread(
+        () -> System.out.println("shutdown-demo: limpieza ejecutada"),
+        "shutdown-demo");
+Runtime.getRuntime().addShutdownHook(hook);   // registrado, no iniciado
+```
+
+Este fragmento de `CicloVidaApp.registrarApagado()` explica la última línea de la ejecución del proyecto. El hook
+corre cuando `main` termina y la JVM se apaga de forma normal.
 
 ```mermaid
 flowchart LR
@@ -1266,6 +1587,54 @@ flowchart LR
   O -. "vence el plazo" .-> K["SIGKILL (9)"]
   K --> M["el núcleo mata el proceso<br/>sin hooks · código 137"]
 ```
+
+Ahora sigue `jlink` en el Problema resuelto 4.2:
+
+1. Lee el descriptor del módulo `com.aurora.jvm` y encuentra `requires java.base`.
+2. Agrega `jdk.jfr` porque lo pediste en `--add-modules`, y resuelve sus dependencias.
+3. Copia solo esos módulos del JDK y genera un lanzador `bin/java` propio.
+4. Aplica `--strip-debug`, quita cabeceras y páginas de manual, y comprime con `zip-6`.
+
+El resultado ocupó `43M` en Linux, y `--list-modules` muestra exactamente tres módulos.
+
+##### 4. Reglas, variantes y casos límite
+
+La documentación de `Runtime.addShutdownHook` define cuándo corren los hooks: al terminar el último hilo no daemon, al
+llamar a `System.exit` o ante una interrupción del usuario o un evento del sistema. En una terminación anormal, como
+`SIGKILL` o un fallo interno de la JVM, no hay garantía.
+
+Registrar el mismo hilo dos veces lanza `IllegalArgumentException: Hook previously registered`. Llamar a `System.exit`
+desde un hook bloquea para siempre, porque el apagado ya está en curso. `Runtime.halt` detiene la JVM sin ejecutar
+hooks.
+
+En contenedores, el plazo lo decide el orquestador. `docker stop` espera 10 segundos por defecto; Kubernetes usa 30.
+Si el hook no termina antes, llega `SIGKILL`. El código `137` también aparece cuando el sistema mata el proceso por
+falta de memoria.
+
+`jlink` existe desde Java 9 (JEP 282). No acepta **módulos automáticos**, que son JAR sin `module-info.class`: responde
+`automatic module cannot be used with jlink`. La opción de compresión cambió en Java 21. Los valores `zip-0` a `zip-9`
+reemplazaron a `0`, `1` y `2`, que ahora producen un aviso de obsolescencia.
+
+La imagen congela la versión del JDK. `java.base@25.0.5.1` en `--list-modules` es la versión que debes reconstruir
+cuando salga un parche de seguridad. `jlink` no actualiza nada por sí mismo.
+
+La imagen tampoco cambia privilegios. Se ejecuta con el usuario que la invoca. En un contenedor, configura un usuario
+sin privilegios.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Señales, `kill`, procesos en segundo plano y contenedores vienen de Fundamentos, Módulo 5; el código de salida, de
+Fundamentos, Módulo 0, Tema 4. `module-info.java` y `jlink` vienen de Java, Módulo 10, Temas 1 y 2. JFR, que la imagen
+incluye con `jdk.jfr`, viene de Java, Módulo 11, Tema 2.
+
+En el Módulo 13, el executor del caso de uso se cerraba con try-with-resources. Un hook real haría lo equivalente
+para todo el proceso: cerrar pools con `awaitTermination` y un plazo menor que el del orquestador.
+
+No confundas apagado ordenado con tolerancia a fallos. El hook mejora el caso normal. Contra `kill -9`, un crash o un
+corte de energía necesitas persistencia segura y operaciones idempotentes.
+
+En el Tema 5 de este módulo reutilizarás el mismo JAR del proyecto para reducir el arranque con CDS y caché AOT.
+En el laboratorio integrador, el runbook de producción combina hooks, imagen y diagnóstico.
 
 #### Problema resuelto 4.1
 Comprueba qué señales ejecutan el shutdown hook y con qué código de salida termina la JVM en cada caso.
@@ -1510,28 +1879,59 @@ en cada ejecución, y qué condiciones debe cumplir para que se aplique?
 - **Error típico:** usar la caché con otro classpath: `shared class paths mismatch` y la JVM arranca sin ella.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** Con el JAR en el classpath (no un directorio de clases), `-XX:ArchiveClassesAtExit=build/aurora.jsa` crea un archive dinámico al terminar la app; `-Xshare:on -XX:SharedArchiveFile=build/aurora.jsa` lo reutiliza en una segunda ejecución.
 
-**Por qué existe.** El arranque incluye carga, verificación y linking de clases. CDS reutiliza metadatos precalculados y puede reducir ese costo en CLIs y procesos de vida corta.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** En esta corrida se generó `build/aurora.jsa` de 816 Kbytes y la segunda ejecución con `-Xshare:on` terminó con la misma salida funcional. El primer intento con `-cp build/classes/java/main` falló con este error real:
+Cada mañana, un empleado llega a la oficina, abre el archivador, saca las carpetas que usará y las ordena en el
+escritorio. Si cada noche dejara el escritorio tal como lo necesita al día siguiente, empezaría a trabajar al llegar.
+Eso solo funciona si mañana usa las mismas carpetas y el mismo escritorio.
 
-```text
-[0.191s][error][cds] Error: non-empty directory 'build/classes/java/main'
-Error occurred during CDS dumping
-Cannot have non-empty directory in paths
-```
+La JVM repite un trabajo parecido en cada arranque. Busca cada clase, lee su bytecode, la verifica y la enlaza. Para
+un servicio que vive días, ese costo no importa. Para las tareas cortas de Tienda Aurora, que concilian pagos cada
+pocos minutos, el arranque pesa casi tanto como el trabajo.
 
-La corrección fue usar el JAR como classpath. CDS depende de JDK, flags y classpath: hay que medir en el runtime objetivo, no asumir ganancia.
+CDS y la caché AOT guardan ese trabajo en un archivo y lo reutilizan. En la medición real del tema, el arranque pasó de
+`287 ms` sin compartir nada a `91 ms` con la caché AOT.
 
-**Confusión común.** Confundir CDS con AOT. En el JDK 27 instalado `command -v jaotc` no encuentra la herramienta AOT clásica, así que no se muestra una compilación AOT. CDS sí quedó reproducible con los comandos de la sección de verificación.
+##### 2. Definición formal y vocabulario
 
-**Corrección y ampliación (captura con JDK 25).** `jaotc`, la herramienta AOT clásica, se eliminó en JDK 17; por eso
-`command -v jaotc` no la encuentra. Desde JDK 24 existe otra forma de AOT, construida sobre CDS: la caché AOT. JDK 25
-la simplifica con un solo comando, `-XX:AOTCacheOutput`. Esta edición la ejecutó con OpenJDK 25.0.5.1 en Linux.
+**CDS** (*Class Data Sharing*) es un mecanismo de HotSpot. Guarda en un archivo los metadatos de clases ya cargadas y
+verificadas, y en el siguiente arranque los **mapea** en memoria en vez de reconstruirlos. Mapear significa que el
+sistema operativo asocia el archivo a una zona de memoria sin copiarlo byte a byte. El JDK incluye un archivo CDS por
+defecto con sus propias clases.
 
-Las tres capas se suman. El archivo del JDK cubre sus clases; el dinámico agrega las de la aplicación; la caché AOT
-guarda además clases enlazadas y perfiles:
+Un **archivo CDS dinámico** es un archivo `.jsa` que la JVM escribe al terminar una ejecución con
+`-XX:ArchiveClassesAtExit`. Contiene las clases de la aplicación que se cargaron en esa ejecución. Se apila sobre el
+archivo del JDK; por eso el registro de carga lo llama `shared objects file (top)`.
+
+La **caché AOT** es el paso siguiente, del proyecto OpenJDK Leyden. Además de las clases cargadas, guarda clases ya
+enlazadas y, desde JDK 25, perfiles de métodos para que el JIT empiece con información. Se crea con
+`-XX:AOTCacheOutput` y se usa con `-XX:AOTCache`.
+
+La ejecución que produce cualquiera de estos archivos se llama **ejecución de entrenamiento**. Lo que no se cargó en
+ella no entra en el archivo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la creación y el uso del archivo dinámico:
+
+1. Ejecutas la aplicación con `-XX:ArchiveClassesAtExit=build/aurora.jsa` y el JAR en el classpath.
+2. La aplicación trabaja normalmente. La JVM carga clases como siempre y las recuerda.
+3. Al terminar, la JVM recorre las clases cargadas y escribe sus metadatos en el archivo. Omite las que no puede
+   guardar, como las clases de eventos JFR; de ahí los avisos `Skipping ... JFR event class`.
+4. En el siguiente arranque, con `-XX:SharedArchiveFile=build/aurora.jsa`, la JVM valida que el JDK y el classpath
+   coincidan con los del entrenamiento.
+5. Si coinciden, mapea el archivo. `com.aurora.jvm.App` aparece con `source: shared objects file (top)`.
+
+La caché AOT de JDK 25 sigue un camino parecido, pero en dos procesos:
+
+1. Con `-XX:AOTCacheOutput`, la JVM ejecuta la aplicación y registra una configuración temporal
+   (`build/aurora.aot.config`).
+2. Al terminar, lanza un proceso hijo con `-XX:AOTMode=create`. La línea `Picked up JAVA_TOOL_OPTIONS` de la salida
+   real es la forma en que le pasa esas opciones.
+3. El hijo lee la configuración y escribe la caché: `AOTCache creation is complete: build/aurora.aot 12328960 bytes`.
+4. En los arranques siguientes, `-XX:AOTCache` mapea clases cargadas y enlazadas. En la prueba real, 1156 de 1179
+   clases vinieron precargadas.
 
 ```mermaid
 flowchart LR
@@ -1543,6 +1943,46 @@ flowchart LR
   C -->|sí| OK["arranque más corto"]
   C -->|no| NO["se ignora el archivo<br/>(o falla con AOTMode=on)"]
 ```
+
+El rombo del diagrama es la condición que más se olvida. El archivo describe un JDK y un classpath concretos. Si
+cualquiera cambia, el trabajo guardado deja de ser válido.
+
+##### 4. Reglas, variantes y casos límite
+
+CDS tiene una historia larga. JDK 10 abrió AppCDS para clases de aplicación (JEP 310). JDK 12 empezó a incluir un
+archivo por defecto (JEP 341). JDK 13 añadió el archivo dinámico (JEP 350). La caché AOT llegó en JDK 24 (JEP 483).
+JDK 25 simplificó su creación con `-XX:AOTCacheOutput` (JEP 514) y agregó perfiles de métodos (JEP 515).
+
+No confundas la caché AOT con la compilación AOT clásica. `jaotc` generaba código máquina y se eliminó en JDK 17
+(JEP 410). La caché actual no contiene código compilado: el JIT sigue compilando en cada ejecución.
+
+El classpath de entrenamiento debe estar formado por archivos JAR. Un directorio no vacío falla con
+`Error: non-empty directory 'build/classes'`. La solución es empaquetar las clases y usar el JAR.
+
+El desajuste de classpath es silencioso por defecto. La JVM imprime `shared class paths mismatch`, arranca sin la caché
+y termina con código `0`. Con `-XX:AOTMode=on` el desajuste se vuelve un error y lo detectas en el despliegue.
+
+`-Xshare:off` desactiva todo el mecanismo, incluso el archivo del JDK. En la medición, `-Xshare:off` cargó 1139 clases
+desde cero. Si mides el arranque con esa opción sin saberlo, culparás al código de un costo que no es suyo.
+
+Los tiempos dependen de la máquina. Los números de este tema vienen de un equipo Linux con dos núcleos y quince
+arranques por modo. Mide en el runtime objetivo antes de decidir.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El classpath y el bytecode vienen de Java, Módulo 0, Tema 1; el artefacto, de Módulo 8, Tema 4. El JIT y el
+calentamiento, de Módulo 11, Tema 2, explican lo que la caché AOT no hace: el código sigue empezando en el intérprete,
+aunque con perfiles previos.
+
+Este tema continúa el Tema 4. Allí `jlink` reducía qué módulos viajan con la aplicación. Aquí reduces cuánto trabajo
+repite cada arranque. Ambos tratan el runtime como parte del artefacto, con la misma regla: reconstruir cuando cambia
+el JDK.
+
+También conecta con el Tema 2. Una cifra de arranque es una medición, y necesita repeticiones y contexto como
+cualquier microbenchmark.
+
+En el Tema 6 cambiarás de versión de JDK. Recuerda que cada archivo CDS y cada caché AOT están atados a la versión
+que los creó; una migración obliga a regenerarlos.
 
 #### Problema resuelto 5.1
 Cuenta cuántas clases del proyecto llegan de un archivo compartido en cada modo.
@@ -1807,18 +2247,57 @@ inventario antes de cambiar la versión en producción?
 - **Error típico:** compilar con JDK 25 sin `--release` y ejecutar en 21: `UnsupportedClassVersionError ... (class file version 69.0)`.
 
 #### ► CÓMO FUNCIONA
-**Mecanismo.** `jdeprscan --release 17|21|25` contrasta el JAR con el conjunto de APIs deprecadas de cada release; `jdeps -s` resume dependencias de módulo y `jdeps --jdk-internals` busca uso de APIs internas de JDK. `ApiObsoletaDemo` usa deliberadamente `new Integer("7")` y `System.getSecurityManager()` con `@SuppressWarnings` para que `-Werror` no oculte el hallazgo de `jdeprscan`.
 
-**Por qué existe.** Antes de subir de LTS hay que saber si el código usa APIs marcadas para eliminación o detalles internos del JDK. Los avisos de compilación solo cubren lo que compila tu JDK actual; estas herramientas cruzan la superficie de cada release.
+##### 1. La idea en lenguaje sencillo
 
-**Implicaciones.** Los tres escaneos encontraron las dos APIs deprecadas con `forRemoval=true` en 17 y 21; en 25 `Integer(String)` aparece como deprecada (sin el marcador `forRemoval` en ese release) y `getSecurityManager()` sigue `forRemoval=true`. `jdeps -s` dice `com.aurora.jvm -> java.base` y `--jdk-internals` no imprime nada. La migración real consiste en sustituir esas dos llamadas y volver a escanear.
+Antes de mudarte, revisas qué muebles caben en la casa nueva y cuáles ya no sirven. No esperas al día del trasteo para
+descubrir que la nevera no entra por la puerta. Haces el inventario con tiempo, con las medidas de la casa nueva en la
+mano.
 
-**Confusión común.** Creer que `jdeprscan --release 17` implica compilar con un JDK 17. Solo selecciona el conjunto de APIs contra el que se escanea. En este entorno solo hay JDK 26 y 27 (`/usr/libexec/java_home -V`), por lo que **no se compiló ni ejecutó con JDK 17, 21 o 25**; no se muestra salida de esas versiones. Para una certificación completa hace falta una matriz de CI con esos JDK.
+Tienda Aurora corre en Java 17 y quiere pasar a 21 o a 25. El riesgo no está en el código que usas a diario, sino en
+lo que el JDK nuevo ya no ofrece. `ApiObsoletaDemo` del proyecto usa dos APIs de ese tipo: `new Integer("7")` y
+`System.getSecurityManager()`.
 
-**Ampliación (captura con JDK 21 y 25).** Esta edición pudo ejecutar JDK 21.0.13.1 y 25.0.5.1 en Linux. Los escaneos
-coinciden con los del Mac. JDK 17 sigue sin ejecutarse en ninguno de los dos entornos.
+Este tema enseña a hacer el inventario con herramientas del JDK. Cada una responde una pregunta distinta, y la matriz
+de versiones confirma las respuestas ejecutando el código.
 
-El inventario tiene tres preguntas y una herramienta para cada una. La matriz responde la última:
+##### 2. Definición formal y vocabulario
+
+Una versión **LTS** (*Long-Term Support*) es una versión del JDK que los proveedores mantienen con parches durante
+años. Desde Java 17 aparece una cada dos años: 17, 21 y 25. Las versiones intermedias reciben parches solo hasta la
+siguiente, unos seis meses.
+
+La **deprecación** marca una API que no deberías usar. Desde Java 9 (JEP 277), la anotación `@Deprecated` tiene dos
+atributos. `since` indica desde qué versión, y **`forRemoval`** anuncia que la API se eliminará. En lenguaje sencillo,
+la primera dice «hay algo mejor» y la segunda «este puente se cierra».
+
+**jdeprscan** es la herramienta que analiza clases compiladas y lista los usos de APIs deprecadas del JDK. La opción
+`--release N` elige el «reglamento» de la versión N. **jdeps** analiza dependencias entre módulos y, con
+`--jdk-internals`, busca usos de clases internas del JDK.
+
+Una **matriz de versiones** es el conjunto de JDK en los que el pipeline compila y prueba el mismo código. Es la única
+de estas herramientas que ejecuta tu programa.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `jdeprscan --release 21` sobre el JAR del proyecto:
+
+1. Abre el JAR y recorre cada archivo `.class`. No necesita el código fuente.
+2. Lee el **pool de constantes** de cada clase, la tabla donde el bytecode guarda las referencias a métodos y campos.
+3. Para cada referencia a una API del JDK, consulta los datos de deprecación de la versión 21. El JDK los trae
+   empaquetados para cada release soportado.
+4. Si la API está deprecada, imprime la clase que la usa, la firma interna y, si aplica, `(forRemoval=true)`.
+
+Por eso la salida usa firmas como `java/lang/Integer::<init>(Ljava/lang/String;)V`. Es el constructor de `Integer`
+que recibe un `String`, escrito como lo ve la JVM.
+
+`javac` hace una revisión parecida al compilar, pero con otro resultado. Emite un aviso por cada uso:
+
+1. `[removal]` si la API tiene `forRemoval = true` en el release elegido.
+2. `[deprecation]` si solo está deprecada.
+
+En el Problema resuelto 6.2, `Integer(String)` produce `[removal]` con `--release 21` y `[deprecation]` con
+`--release 25`. El mismo código cambió de categoría porque cambió el reglamento.
 
 ```mermaid
 flowchart LR
@@ -1830,6 +2309,58 @@ flowchart LR
   D3 --> M
   M --> P["sustituir APIs<br/>y volver a escanear"]
 ```
+
+Si mantienes una biblioteca propia, usas la misma anotación para avisar a quienes dependen de ti:
+
+```java
+/** @deprecated usa {@link #calcular(long)}; se elimina en la versión 3.0. */
+@Deprecated(since = "2.4", forRemoval = true)
+public static int calcularViejo(int centavos) { return centavos * 2; }
+```
+
+`since` documenta la versión de tu biblioteca, no la de Java. La etiqueta `@deprecated` del Javadoc explica qué usar en
+su lugar.
+
+##### 4. Reglas, variantes y casos límite
+
+Los usos `[deprecation]` se resumen en una nota (`uses or overrides a deprecated API`) si no activas
+`-Xlint:deprecation`. Los `[removal]` se muestran siempre, uno por uso, incluso con `-nowarn`: la salida real conserva
+los tres avisos. Para silenciar uno de eliminación tienes que escribir `@SuppressWarnings("removal")` en el código, una
+decisión visible en revisión.
+
+`--release N` existe desde Java 9 (JEP 247). Compila contra la API pública de la versión N y genera bytecode para
+ella. Sin esa opción, un `.class` compilado con JDK 25 tiene **versión de class file** 69 y JDK 21 lo rechaza con
+`UnsupportedClassVersionError`, porque solo reconoce hasta la 65. La versión mayor es el número de Java más 44.
+
+`jdeprscan --release 17` no ejecuta nada en Java 17. Solo compara contra su lista. En este módulo, JDK 17 no se ejecutó
+en ningún entorno; los resultados de 21 y 25 sí vienen de ejecuciones reales.
+
+`jdeprscan` solo conoce las APIs del JDK. Las deprecaciones de tus bibliotecas requieren otras herramientas o los
+avisos de `javac`.
+
+Las clases internas del JDK tienen su propia historia. Java 16 las encapsuló por defecto (JEP 396) y Java 17 eliminó la
+opción que permitía relajar ese bloqueo (JEP 403). Por eso `jdeps --jdk-internals` importa al salir de Java 8 u 11. En
+este proyecto no imprimió nada.
+
+El Security Manager muestra cómo evoluciona una eliminación. Java 17 lo marcó para eliminación (JEP 411). JDK 24 lo
+desactivó de forma permanente (JEP 486). En JDK 25, `getSecurityManager()` devuelve `null`, pero activarlo detiene la
+JVM. Una API deprecada no siempre «sigue funcionando igual».
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+La deprecación y el cambio compatible vienen de Arquitectura, Módulo 0, Tema 4. La versión de class file viene de Java,
+Módulo 0, Tema 1, y `--release`, de Módulo 0, Tema 9. `jdeps` apareció en Módulo 10, Tema 2, para preparar `jlink`.
+Aquí lo usas para auditar.
+
+Compara las tres herramientas. `jdeprscan` responde «¿qué APIs están marcadas?». `jdeps` responde «¿de qué módulos e
+internos dependo?». La matriz responde «¿funciona de verdad?». Ninguna reemplaza a las otras.
+
+Este tema cierra el módulo uniendo los anteriores. Cambiar de JDK invalida la imagen de `jlink` del Tema 4 y los
+archivos CDS y AOT del Tema 5. También puede cambiar decisiones del JIT, así que las mediciones del Tema 2 deben
+repetirse.
+
+En el Módulo 15 llevarás esta disciplina al build. Fijarás versiones de herramientas y dependencias, exigirás el JDK
+con Enforcer y armarás un pipeline local de calidad, la base sobre la que se monta la matriz.
 
 #### Problema resuelto 6.1
 Repite el inventario del Mac con los JDK de Linux y compara los resultados.
@@ -2248,7 +2779,7 @@ cuánto tarda en arrancar y en qué JDK corre. Un runbook con comandos y salidas
 ## Checklist de cierre
 
 - [ ] Puedo explicar por qué compartir memoria requiere *happens-before*.
-- [ ] Sé por qué un cronómetro ingenua no es un benchmark y qué aportaría JMH.
+- [ ] Sé por qué un cronómetro ingenuo no es un benchmark y qué aportaría JMH.
 - [ ] Sé aplicar `ObjectInputFilter` y cuándo evitar Java serialization.
 - [ ] Generé una imagen `jlink` modular, la ejecuté con JFR y límites y vi el hook de apagado.
 - [ ] Generé y reutilicé un archive CDS con comandos reproducibles.

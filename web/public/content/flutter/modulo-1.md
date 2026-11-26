@@ -176,9 +176,51 @@ Este tema usa **clase**, **constructor `const`** y **parámetros con nombre** (M
 - **Error típico:** probar solo con los ojos en el emulador: el siguiente cambio puede romper la pantalla sin que nadie lo note.
 
 #### ► CÓMO FUNCIONA
-`runApp` recibe el widget raíz. `MaterialApp` prepara el tema y muestra `home`. El `Scaffold` reparte la pantalla: la
-`AppBar` arriba, el `body` en el centro, el botón flotante abajo a la derecha. Dentro del cuerpo, `Center` centra a su
-hijo y `Column` apila los suyos de arriba abajo. Cada widget solo sabe de sus hijos directos.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en el plano de una bodega. No describe cada ladrillo: dice «aquí va la oficina, dentro un escritorio, encima
+una báscula». Cada zona contiene otras zonas más pequeñas. Con ese plano, cualquier constructor levanta el mismo
+edificio.
+
+Flutter trabaja igual. Tú no dibujas píxeles ni ubicas cosas con coordenadas. Escribes una descripción anidada: una
+app que contiene una pantalla, que contiene una barra, un cuerpo y un botón. Flutter lee esa descripción y dibuja.
+
+En la app de entregas, la primera pantalla dice «Hoy tienes 5 entregas» y ofrece un botón para escanear. Toda esa
+descripción, incluidos el centrado y el espacio entre el ícono y el texto, se escribe con widgets.
+
+##### 2. Definición formal y vocabulario
+La documentación de Flutter define un **widget** como una descripción inmutable de una parte de la interfaz.
+«Inmutable» significa que sus campos no cambian después de crearse. Un widget no es lo que ves en pantalla: es la
+configuración que Flutter usa para producirlo.
+
+Un **`StatelessWidget`** es un widget cuya apariencia depende solo de sus campos y del contexto heredado. Define un
+**método `build`**, que devuelve otros widgets. Al anidar unos dentro de otros se forma el **árbol de widgets**.
+
+En la raíz suele estar **`MaterialApp`**, que configura el tema, la navegación y los textos del sistema para toda la
+app. Cada pantalla usa un **`Scaffold`**, que reserva lugares fijos para la barra, el cuerpo y el botón flotante.
+
+El parámetro de `build` es un **`BuildContext`**: la posición de este widget dentro del árbol. Con él consultas lo
+que heredan los ancestros, como el tema. Para comprobar todo sin teléfono escribes una **prueba de widgets**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Todo empieza en `main`, con una sola línea:
+
+```dart
+void main() {
+  runApp(const AppEntregas());
+}
+```
+
+`runApp` pone en marcha una secuencia que se repite en cada cuadro (*frame*) que Flutter dibuja:
+
+1. `runApp` inicializa el **binding**: la capa que conecta tu código Dart con el motor de Flutter y el sistema.
+2. Toma `AppEntregas` como raíz del árbol y pide dibujar un cuadro.
+3. Cuando la pantalla está lista para un cuadro nuevo, Flutter entra en la **fase de construcción**. Llama a
+   `AppEntregas.build`, que devuelve un `MaterialApp`.
+4. Sigue bajando: el `build` de `MaterialApp` arma su estructura interna y muestra `home`, que es `PantallaInicio`.
+5. `PantallaInicio.build` devuelve el `Scaffold` con sus partes. Así hasta llegar a widgets que ya saben dibujarse.
+6. En la **fase de maquetación** (*layout*) cada caja recibe su espacio y decide su tamaño.
+7. En la **fase de pintado** (*paint*) se generan las órdenes de dibujo, y el motor las convierte en píxeles.
 
 ```mermaid
 flowchart TD
@@ -193,6 +235,48 @@ flowchart TD
     COL --> E["SizedBox<br/>height: 16"]
     COL --> T["Text<br/>'Hoy tienes 5 entregas'"]
 ```
+
+El diagrama es el árbol que produce el código del Problema resuelto 1.1. Cada widget solo conoce a sus hijos
+directos. `Scaffold` no sabe que dentro de `Center` hay una columna; solo sabe que su `body` es un `Center`.
+
+El `BuildContext` es lo que permite subir por el árbol. Cuando escribes `Theme.of(context)`, Flutter recorre los
+ancestros de ese punto hasta encontrar el tema que instaló `MaterialApp`. Por eso un widget dentro de la app «ve»
+los colores índigo sin recibirlos como parámetro.
+
+El constructor `const` del Módulo 0, Tema 2 importa aquí. Un `const Text(...)` es el mismo objeto en cada
+construcción. Flutter detecta que nada cambió y salta esa rama sin volver a construirla.
+
+Una prueba de widgets recorre los mismos pasos en un entorno simulado. `tester.pumpWidget` instala el widget como raíz,
+igual que `runApp`, y dibuja un cuadro. Luego, los *finders* como `find.text` buscan en el árbol resultante, sin pantalla real.
+
+##### 4. Reglas, variantes y casos límite
+`build` debe ser rápido y sin efectos secundarios. Flutter puede llamarlo muchas veces, por ejemplo en cada cuadro
+de una animación. Una llamada de red dentro de `build` se repetiría en cada reconstrucción.
+
+Los campos de un `StatelessWidget` deben ser `final`. Si declaras uno que no lo es, el analizador avisa con
+`must_be_immutable`. Para datos que cambian existe `StatefulWidget`, que verás en el Tema 4.
+
+En cuanto al tema visual, Material 3 es el diseño por defecto desde Flutter 3.16. `colorSchemeSeed` genera toda la
+paleta a partir de un color. Según el entorno de este módulo, desde Flutter 3.50 los widgets de Material se importan
+del paquete `material_ui`, no de `package:flutter/material.dart`.
+
+En una prueba, la pantalla simulada mide 800 × 600 puntos lógicos con densidad 3 si no la cambias. Por eso el
+laboratorio usa `tamanoPantalla`, que simula un teléfono de 390 × 760.
+
+El *hot reload* inyecta el código nuevo en la app que corre y vuelve a ejecutar los `build`. Conserva el estado. Si
+cambias `main` o lo que se ejecuta una sola vez al iniciar, necesitas un *hot restart* (`R`), que reinicia la app.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+De Fundamentos (Módulo 3, Tema 3) conoces el DOM: el documento HTML como árbol de nodos. El árbol de widgets se
+parece, pero con una diferencia clave. En HTML el centrado y los márgenes son propiedades CSS; en Flutter son nodos
+del árbol, como `Center` y `SizedBox`.
+
+Del Módulo 0 usas tres cosas: constructores `const`, parámetros con nombre (Tema 2) y null safety (Tema 1). Por
+ejemplo, `onPressed` es un parámetro anulable, y pasar `null` deshabilita el botón.
+
+Lo que sigue construye sobre esta base. El Tema 2 maquetará una tarjeta completa con filas y columnas. El Tema 4
+introduce el estado que cambia. El Tema 6 explicará que, detrás del árbol de widgets, Flutter mantiene otros dos
+árboles, y por qué eso hace barato reconstruir.
 
 #### Problema resuelto 1.1
 Construye la pantalla de inicio del conductor y comprueba con una prueba que muestra el título, el resumen y el botón.
@@ -317,7 +401,8 @@ Si quitas `Center` y dejas la `Column` como `body`, ¿dónde aparece el contenid
 
 Respuesta: arriba a la izquierda. Sin `Center`, la columna toma el ancho de su hijo más ancho (el texto) y centra el
 ícono sobre ese ancho; el `Scaffold` coloca el cuerpo en la esquina superior izquierda. Una prueba lo confirma: el
-texto empieza en `x = 0, y = 80` y el ícono queda encima, centrado respecto del texto. `Center` es lo que lleva el
+texto empieza en `Offset(0.0, 136.0)` (56 de la barra, 64 del ícono y 16 del espacio) y el ícono queda encima,
+centrado respecto del texto. `Center` es lo que lleva el
 bloque al medio de la pantalla.
 
 </details>
@@ -460,9 +545,45 @@ Módulo 3, Tema 4) como comparación.
 - **Error típico:** poner etiquetas en un `Row`: en un teléfono angosto desbordan.
 
 #### ► CÓMO FUNCIONA
-La maquetación se piensa como cajas: primero la estructura (qué va al lado de qué), después el espacio (cuánto separa
-a cada cosa) y al final la jerarquía (qué resalta). En código, la estructura son `Row` y `Column`; el espacio,
-`Padding` y `SizedBox` con una escala fija; la jerarquía, los estilos y colores del tema.
+
+##### 1. La idea en lenguaje sencillo
+Una guía de envío impresa no pone todos los datos en el mismo tamaño ni en una sola columna. El destinatario va
+grande, la dirección justo debajo y los códigos de control en letra pequeña, en una esquina. Con un vistazo sabes
+a quién va el paquete.
+
+La tarjeta de entrega necesita lo mismo. El conductor lleva el teléfono en el soporte del vehículo y lo mira por
+un segundo. Si los cinco datos están apilados y centrados, todos compiten. Si están ordenados, la dirección salta.
+
+Maquetar es tomar tres decisiones en orden. Primero la **estructura**: qué va al lado de qué. Luego el **espacio**:
+cuánto separa cada cosa. Al final la **jerarquía**: qué resalta y qué pasa a segundo plano.
+
+##### 2. Definición formal y vocabulario
+**`Row` y `Column`** son widgets de maquetación *flex*: colocan a sus hijos en una línea. `Row` lo hace en
+horizontal y `Column` en vertical. Ambos son variantes del widget `Flex`, que recibe la dirección como parámetro.
+
+Cada flex tiene dos ejes. El **eje principal** es la dirección en que coloca a los hijos. El **eje cruzado** es el
+perpendicular. `mainAxisAlignment` alinea sobre el principal y `crossAxisAlignment` sobre el cruzado.
+
+**`Expanded`** reparte el espacio sobrante del eje principal entre los hijos que lo usan. **`Padding`** agrega
+espacio alrededor de un hijo y **`SizedBox`** es una caja de tamaño fijo, útil como separador. Esos espacios salen
+de una **escala de espaciado**: pocas medidas que se repiten, como 4, 8 y 16.
+
+La **jerarquía visual** se construye con el tema. **`TextTheme`** contiene los estilos de texto con nombre, como
+`titleMedium`. **`ColorScheme`** contiene los roles de color de Material 3, como `onSurfaceVariant`. **`Card`** da
+una superficie con forma y elevación, y **`Wrap`** coloca elementos en línea y salta de renglón si no caben.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Una `Row` no adivina dónde poner a cada hijo. Sigue un algoritmo fijo que el objeto de render del flex ejecuta en
+la fase de maquetación. Con la cabecera de `TarjetaPaso2` ocurre esto:
+
+1. La fila recibe del padre un ancho máximo: el de la pantalla menos el `Padding` de 16 a cada lado.
+2. Mide primero a los hijos **sin** `Expanded`: el ícono, los dos `SizedBox` de 16 y el texto de la hora. A cada uno
+   le pregunta su tamaño sin límite de ancho, para saber cuánto necesita de verdad.
+3. Suma esos anchos y los resta del máximo. El resultado es el **espacio sobrante**.
+4. Reparte el sobrante entre los hijos `Expanded`, según su factor `flex`. Aquí solo hay uno, así que la columna de
+   textos recibe todo, como un ancho exacto.
+5. Calcula su propia altura: la del hijo más alto en el eje cruzado.
+6. Coloca a los hijos de izquierda a derecha según `mainAxisAlignment`, y en vertical según `crossAxisAlignment`.
 
 ```mermaid
 flowchart TD
@@ -477,6 +598,58 @@ flowchart TD
     X --> S4["SizedBox 4"]
     X --> D["dirección · onSurfaceVariant"]
 ```
+
+El diagrama corresponde a `TarjetaPaso3`. Fíjate en el `Expanded` de la fila: es el que absorbe el ancho libre, y
+por eso la dirección larga se ajusta en varias líneas en lugar de empujar al avatar.
+
+El paso 4 explica el efecto del Paso 2 en la tarjeta. Sin `Expanded`, los textos medirían solo su contenido y la
+hora quedaría pegada a ellos. Con `Expanded`, los textos se estiran y la hora termina en el borde derecho.
+
+El paso 6 explica el Paso 1. Una `Column` centra a sus hijos en el eje cruzado por defecto. Por eso los cinco
+textos aparecen centrados. La corrección es una sola línea en la columna de textos:
+
+```dart
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,   // eje cruzado de una Column: horizontal
+  children: [Text(e.cliente), const SizedBox(height: 4), Text(e.direccion)],
+)
+```
+
+La jerarquía se resuelve con `Theme.of(context)`. Como viste en el Tema 1, esa llamada sube por el árbol hasta el
+tema de `MaterialApp`. La tarjeta pide «el estilo de título mediano» y «el color de texto secundario», y el tema
+responde con valores concretos.
+
+##### 4. Reglas, variantes y casos límite
+`Expanded` debe ser hijo **directo** de un `Row`, `Column` o `Flex`. Si lo envuelves en un `Padding`, Flutter
+informa un uso incorrecto de `ParentDataWidget` al construir. La forma correcta es poner el `Padding` dentro.
+
+`Expanded` obliga a su hijo a ocupar exactamente su parte. Su pariente `Flexible` le permite ocupar menos. Con
+varios `Expanded`, el factor `flex` decide la proporción: `flex: 2` recibe el doble que `flex: 1`.
+
+Por defecto, `mainAxisSize` vale `max`: la fila ocupa todo el ancho que le permiten. Con `MainAxisSize.min` ocupa
+solo lo que miden sus hijos, como la columna del Tema 1. `CrossAxisAlignment.stretch` estira a los hijos en el eje
+cruzado.
+
+Un flex no hace *scroll*. Si sus hijos no caben, desborda y Flutter dibuja una franja de aviso, como verás en el
+Tema 3. `Wrap` evita ese problema para etiquetas, porque pasa al renglón siguiente. A cambio, no reparte el espacio
+sobrante.
+
+Desde Flutter 3.27, `Row` y `Column` aceptan un parámetro `spacing`, que pone el mismo espacio entre todos los
+hijos. Este tema usa `SizedBox` porque las distancias cambian: 4 dentro de un bloque y 16 entre bloques.
+
+`TextTheme` de Material 3 define quince estilos: cinco grupos (*display*, *headline*, *title*, *body*, *label*) en
+tres tamaños. Pedir estilos por nombre evita tamaños sueltos como `fontSize: 17`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te dio el árbol de widgets y el `BuildContext`. Ahora el árbol crece en profundidad y el contexto trae el
+tema hasta cada texto.
+
+Si conoces CSS (Fundamentos, Módulo 3, Tema 4), `Row` y `Column` equivalen a *flexbox* con `flex-direction`.
+`Expanded` se parece a `flex: 1`. La diferencia está en el espacio: en CSS cada caja tiene `margin`; en Flutter el
+espacio es un widget más del árbol.
+
+El Tema 3 mostrará qué pasa cuando el contenido no cabe y cómo superponer capas. El Módulo 2, Tema 1 explicará la
+regla general detrás del paso 2 de este algoritmo: las restricciones que cada padre impone a sus hijos.
 
 #### Problema resuelto 2.1
 Convierte los cinco datos de una entrega en una tarjeta legible, en tres pasos, y compara los pantallazos.
@@ -773,7 +946,7 @@ Al terminar este tema podrás:
 - decorar una caja con color, degradado, bordes redondeados, borde y sombra usando `BoxDecoration`;
 - reconocer el error de desborde, leer su mensaje y corregirlo con `Expanded` y `TextOverflow.ellipsis`.
 
-**Conceptos clave:** `Stack`, `Positioned`, `BoxDecoration`, degradado, radio de borde, sombra, desborde (*overflow*), `TextOverflow.ellipsis`
+**Conceptos clave:** `Stack`, `Positioned`, `BoxDecoration`, degradado, radio de borde, sombra, desborde (overflow), `TextOverflow.ellipsis`
 
 #### El problema
 El detalle de un pedido necesita un encabezado vistoso: un fondo de color, la foto del paquete apoyada sobre el borde
@@ -821,7 +994,7 @@ Módulo 3, Tema 4) como comparación.
 - **Ejemplo:** la foto con radio 20 y una sombra de 12 de desenfoque, 4 hacia abajo, negra al 20 %.
 - **Error típico:** sombras muy oscuras y opacas: se ven sucias; una sombra sutil comunica elevación.
 
-**desborde (*overflow*)**
+**desborde (overflow)**
 - **Definición técnica:** situación en la que los hijos de un flex necesitan más espacio del que el flex tiene en su eje principal; en modo debug, Flutter dibuja franjas amarillas y negras y registra `A RenderFlex overflowed by N pixels`.
 - **En palabras sencillas:** meter más cosas de las que caben en la caja; la cinta de peligro marca por dónde se salen.
 - **Dónde se rompe la comparación:** en la app publicada no hay franjas: el contenido simplemente se corta.
@@ -836,10 +1009,39 @@ Módulo 3, Tema 4) como comparación.
 - **Error típico:** poner `ellipsis` y no ver ningún efecto, porque falta el `Expanded`.
 
 #### ► CÓMO FUNCIONA
-El `Stack` toma el tamaño de su padre (aquí, un `SizedBox` de 180 de alto) y pinta a sus hijos en orden. Cada
-`Positioned` se mide contra los bordes del `Stack`. En una `Row`, en cambio, cada hijo sin `Expanded` pide su ancho
-natural; si la suma pasa del ancho disponible, hay desborde. `Expanded` le dice al hijo: «tu ancho máximo es lo que
-sobra», y con ese límite el texto puede cortarse.
+
+##### 1. La idea en lenguaje sencillo
+En un tablero de corcho pegas primero un cartel de fondo, luego una foto y al final una nota adhesiva. Lo último que
+pegas queda encima. Si mueves la foto, la mides desde los bordes del tablero, no desde la pared.
+
+El encabezado del pedido funciona así. Primero un fondo de color, luego la foto del paquete, luego la insignia
+«URGENTE» y el título. `Row` y `Column` ponen cosas una al lado de otra; para ponerlas una sobre otra existe `Stack`.
+
+El tema trae un segundo problema: el contenido que no cabe. Una dirección larga en una fila se sale del borde, y
+Flutter lo marca con una franja amarilla y negra. Entender por qué pasa te da la corrección exacta, sin adivinar.
+
+##### 2. Definición formal y vocabulario
+Un **`Stack`** coloca a sus hijos uno encima de otro, en el orden de la lista. El primero se pinta al fondo y el
+último arriba. Un hijo envuelto en **`Positioned`** fija su lugar con distancias a los bordes del `Stack`: `top`,
+`bottom`, `left` y `right`.
+
+**`BoxDecoration`** describe cómo pintar una caja. Admite un color o un **degradado**, un **radio de borde** para
+redondear esquinas, un borde y una lista de **sombras**. Decora, pero no decide tamaño ni posición.
+
+Un **desborde** (*overflow*) ocurre cuando los hijos de un flex necesitan más espacio del que el flex tiene en su
+eje principal. **`TextOverflow.ellipsis`** corta un texto que no cabe y le agrega «…», siempre que el texto conozca
+su ancho máximo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Empieza por el `Stack` del encabezado. En la fase de maquetación ocurre lo siguiente:
+
+1. El `SizedBox(height: 180)` le da al `Stack` una altura exacta y el ancho disponible de la pantalla.
+2. El `Stack` mide primero a los hijos **sin** `Positioned`. Ellos deciden su tamaño. Aquí no hay ninguno, así que
+   el `Stack` toma el mayor tamaño permitido: todo el ancho y 180 de alto.
+3. Luego mide a cada `Positioned`. Si fija `left` y `right`, el ancho del hijo queda determinado. Si fija solo uno,
+   el hijo mide lo que necesita.
+4. Coloca cada hijo según sus distancias. `left: 16, bottom: 16` deja la foto a 16 del borde izquierdo e inferior.
+5. En la fase de pintado recorre la lista en orden. Cada capa se dibuja encima de las anteriores.
 
 ```mermaid
 flowchart LR
@@ -850,6 +1052,65 @@ flowchart LR
         F3 --> F4["4. Positioned left 128, right 16, bottom 24<br/>título"]
     end
 ```
+
+El diagrama sigue el orden de pintura. Por eso el Checkpoint 3.1 funciona como dice: si el fondo pasa al final de
+la lista, se pinta último y tapa todo lo demás.
+
+La decoración también tiene un orden interno. Al pintar la foto, Flutter dibuja primero la sombra, luego el fondo
+recortado con el radio y al final el borde. La sombra se pinta fuera de la caja, pero no ocupa espacio en la
+maquetación. Si no hay margen alrededor, otro widget puede taparla.
+
+Ahora el desborde. Recuerda del Tema 2 que una `Row` mide a sus hijos sin `Expanded` sin límite de ancho. Con la
+dirección larga ocurre esto:
+
+1. La fila tiene 358 puntos de ancho: 390 menos 16 de `Padding` a cada lado.
+2. Mide el ícono y el `SizedBox` de 8. Luego mide el texto **sin límite**: el texto ocupa su largo completo en una
+   línea.
+3. Como el texto nunca supo que le faltaba espacio, `ellipsis` no tiene dónde cortar.
+4. La suma pasa del ancho de la fila. En modo *debug*, Flutter dibuja la franja y registra
+   `A RenderFlex overflowed by 170 pixels on the right.`, el mensaje de la salida real.
+
+Con `Expanded` cambia el paso 2. El texto recibe como ancho máximo exactamente lo que sobra. Con ese límite,
+`maxLines: 1` y `ellipsis` cortan en el lugar correcto:
+
+```dart
+Row(
+  children: [
+    const Icon(Icons.place_outlined),
+    const SizedBox(width: 8),
+    const Expanded(child: direccion),   // el texto recibe un ancho máximo
+  ],
+)
+```
+
+##### 4. Reglas, variantes y casos límite
+Un hijo `Positioned` admite dos de estas tres medidas en cada eje: `left`, `right` y `width`. Si das las tres,
+sobra una y Flutter lo rechaza con una aserción. Lo mismo pasa con `top`, `bottom` y `height`.
+
+`Positioned.fill` equivale a poner las cuatro distancias en cero. Para hijos sin posición, el `Stack` usa su
+`alignment`, que por defecto es arriba a la izquierda. Por defecto, el `Stack` recorta lo que se sale de sus bordes.
+
+`Container` ofrece un atajo `color`, pero no puedes usarlo junto con `decoration`. Si pasas los dos, una aserción lo
+rechaza: el color va dentro de `BoxDecoration`. Cuando solo necesitas pintar, `DecoratedBox` es más directo.
+
+Un radio de borde mayor que la mitad de la caja la vuelve una píldora. Por eso la insignia usa `999`. Los colores de
+sombra suelen llevar transparencia: `0x33000000` es negro con un 20 % de opacidad.
+
+El aviso de desborde solo existe en modo *debug*. En la app publicada no hay franjas ni mensaje, así que el error
+pasa inadvertido. En una prueba, `tester.takeException()` recoge ese error para examinarlo, como en `tema3_test.dart`.
+
+Otras salidas del texto son `TextOverflow.fade`, que desvanece, y `TextOverflow.clip`, que corta en seco. Todas
+necesitan un ancho límite para funcionar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te dio el algoritmo del flex y `Expanded`. Aquí ves la otra cara: qué pasa cuando no lo usas. Los colores
+salen del **`ColorScheme`**, en pares que el tema garantiza legibles, como `errorContainer` y `onErrorContainer`.
+
+Si conoces CSS (Fundamentos, Módulo 3, Tema 4), `Stack` con `Positioned` se parece a `position: absolute` dentro de
+un contenedor `relative`. La diferencia es que en Flutter el orden de la lista reemplaza al `z-index`.
+
+El Módulo 2, Tema 1 generaliza lo que viste en el desborde: cada padre impone restricciones a sus hijos, y «sin
+límite» es una de ellas. En el Módulo 3, Tema 5, `Hero` anima una foto entre pantallas usando capas superpuestas.
 
 #### Problema resuelto 3.1
 Construye el encabezado del pedido con cuatro capas y decoración.
@@ -1190,20 +1451,101 @@ suscripciones** (Módulo 0, Tema 5).
 - **Error típico:** dejar el botón activo y mostrar un error al tocarlo; es mejor deshabilitarlo y explicar con el contador.
 
 #### ► CÓMO FUNCIONA
-Flutter crea el `State` una vez (`initState`), lo dibuja (`build`) y lo conserva. Cada `setState` vuelve a llamar a
-`build` en el siguiente cuadro. Si el padre entrega una configuración nueva, llama a `didUpdateWidget` y después a
-`build`. Cuando la pantalla sale del árbol, llama a `dispose`.
+
+##### 1. La idea en lenguaje sencillo
+Un supervisor de bodega recibe cada mañana una lista impresa de paquetes. Mientras cargan el vehículo, marca con un
+lápiz cada caja que sube. La lista impresa no cambia; lo que cambia son sus marcas, que anota en una hoja aparte.
+
+Hasta ahora todos tus widgets eran listas impresas: `StatelessWidget`. No pueden recordar marcas. La pantalla de
+carga necesita esa hoja aparte para saber qué paquetes subieron, contar el avance y habilitar «Salir a ruta».
+
+La hoja también tiene un ciclo. Se prepara al empezar, se actualiza con cada marca y se archiva al terminar. Si al
+irte dejas un reloj corriendo sobre la mesa, sigue gastando pilas. En la app, ese reloj es un `Timer` sin cancelar.
+
+##### 2. Definición formal y vocabulario
+Un **`StatefulWidget`** es un widget inmutable que crea un **objeto `State`** mediante `createState`. El widget es
+la lista impresa: configuración que llega del padre. El `State` es la hoja aparte: datos que cambian y que
+sobreviven a las reconstrucciones.
+
+Desde el `State` lees la configuración vigente con **`widget.`**, por ejemplo `widget.guias`. Cuando cambias un dato,
+llamas a **`setState`**, que avisa a Flutter de que esta parte debe reconstruirse.
+
+El ciclo de vida tiene métodos con nombre. **`initState`** se llama una vez, al insertar el `State` en el árbol.
+**`didUpdateWidget`** se llama cuando el padre entrega una configuración nueva. **`dispose`** se llama cuando el
+`State` sale del árbol para siempre. Un **botón deshabilitado** es aquel cuyo `onPressed` es `null`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la bitácora de la segunda prueba de `tema4_test.dart` y verás cada paso del ciclo:
+
+1. `pumpWidget` inserta `ListaCarga` en el árbol. Flutter llama a `createState` y obtiene un `_ListaCargaState`.
+2. Llama a `initState`. La bitácora anota `initState: 4 guías`. Aquí ya existe `widget`.
+3. Llama a `didChangeDependencies` y luego a `build`. La bitácora anota `build: 0 de 4`.
+4. El toque ejecuta `_alternar`. Dentro de `setState`, la guía entra al conjunto. Luego `setState` marca este
+   elemento como **sucio** (*dirty*): pendiente de reconstruir.
+5. En el siguiente cuadro, la fase de construcción vuelve a llamar a `build`. Aparece `build: 1 de 4`.
+6. El padre entrega una `ListaCarga` nueva con dos guías, en la misma posición. Flutter **conserva** el `State`,
+   actualiza `widget` y llama a `didUpdateWidget`. La bitácora muestra `didUpdateWidget: 4 → 2 guías`.
+7. Llama a `build` otra vez: `build: 1 de 2`. La guía marcada sobrevivió, porque el `State` no se recreó.
+8. El padre cambia a `RelojSalida`, un tipo distinto. Flutter saca el `State` viejo, llama a `deactivate` y luego a
+   `dispose`. La bitácora anota `dispose`.
 
 ```mermaid
 stateDiagram-v2
     [*] --> initState: createState
-    initState --> build
+    initState --> didChangeDependencies
+    didChangeDependencies --> build
     build --> build: setState
     build --> didUpdateWidget: el padre cambia la configuración
     didUpdateWidget --> build
-    build --> dispose: sale del árbol
+    build --> deactivate: sale del árbol
+    deactivate --> dispose
     dispose --> [*]
 ```
+
+El paso 5 explica un detalle de la primera prueba. Dos toques seguidos y un solo `pumpAndSettle` produjeron un solo
+`build: 2 de 4`. `setState` no reconstruye en el acto: marca y espera al cuadro siguiente, así que varios cambios
+se agrupan en una sola reconstrucción.
+
+El reloj muestra por qué existe `dispose`. Un `Timer.periodic` no pertenece al árbol de widgets: lo gestiona el
+bucle de eventos del Módulo 0, Tema 3. Si nadie lo cancela, sigue disparando aunque la pantalla ya no exista:
+
+```dart
+@override
+void dispose() {
+  _timer.cancel();   // el Timer deja de disparar
+  super.dispose();
+}
+```
+
+En `dispose` llamas a `super.dispose()` al final, después de liberar lo tuyo. En `initState` llamas a
+`super.initState()` al principio, antes de lo tuyo.
+
+##### 4. Reglas, variantes y casos límite
+La función que pasas a `setState` debe ser síncrona. Si devuelve un `Future`, Flutter lanza un error. El patrón
+correcto es esperar primero con `await` y luego llamar a `setState` con el resultado.
+
+Después de un `await`, la pantalla pudo cerrarse. La propiedad `mounted` indica si el `State` sigue en el árbol.
+Si no lo está, `setState` lanza `setState() called after dispose()`. Por eso se comprueba `if (!mounted) return;`.
+
+En `initState` no puedes depender de datos heredados que cambian, como `Theme.of(context)` en algunos casos. Para
+eso existe `didChangeDependencies`, que Flutter llama después de `initState` y cada vez que esos datos cambian.
+
+`didUpdateWidget` solo ocurre si el widget nuevo tiene el **mismo tipo** y la misma *key* que el anterior en esa
+posición. Si cambia el tipo, Flutter destruye el `State` y crea uno nuevo, como pasó al llegar `RelojSalida`.
+
+El *hot reload* conserva el `State`: no vuelve a llamar a `initState`. Si cambias código de `initState`, necesitas
+un *hot restart* para verlo. En las pruebas, el binding de prueba avisa si al terminar queda un `Timer` pendiente.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te dio el `StatelessWidget` y `build`. Un `StatefulWidget` mantiene esa idea: el `build` sigue
+describiendo la pantalla a partir de datos, solo que ahora algunos datos viven en el `State`.
+
+`dispose` es la versión de Flutter de lo que viste en el Módulo 0, Tema 5: cancelar suscripciones cuando ya no
+interesan. El campo `late final Timer _timer` usa el `late` del Módulo 0, Tema 1, asignado en `initState`.
+
+El Tema 5 mostrará qué pasa cuando varios `State` iguales cambian de posición en una lista, y por qué las *keys*
+deciden a qué fila sigue cada uno. El Tema 6 explicará dónde vive realmente el `State`: en el árbol de elementos.
+En el Módulo 4 verás cómo compartir estado entre pantallas sin pasarlo de mano en mano.
 
 #### Problema resuelto 4.1
 Construye la lista de carga: casillas, contador, barra de avance y un botón que se habilita al terminar. Registra el
@@ -1558,29 +1900,106 @@ Este tema usa el **`StatefulWidget`** y **`setState`** (Tema 4) y la **iteració
 - **Error típico:** creer que el `State` pertenece al dato; pertenece al elemento, y el elemento se asigna por posición si no hay key.
 
 #### ► CÓMO FUNCIONA
-Al reconstruir una lista, Flutter recorre los hijos nuevos y los empareja con los anteriores. Sin keys, empareja por
-posición: el primer hijo nuevo con el primer elemento viejo, y así. Cada elemento conserva su `State`. Si quitaste la
-primera fila, todos los datos «suben un puesto», pero los estados se quedan donde estaban. Con keys, Flutter empareja
-por la key y cada `State` sigue a su dato.
+
+##### 1. La idea en lenguaje sencillo
+Imagina una fila de casilleros numerados en la bodega. Cada mañana alguien pega en ellos las etiquetas de las
+entregas del día. Si un conductor deja una nota adhesiva en el casillero 2, la nota pertenece al casillero, no a la
+entrega. Si las etiquetas se corren un puesto, la nota queda junto a otra entrega.
+
+Eso le pasó a la estrella de prioridad. Flutter recuerda el estado de cada fila por su **puesto** en la lista, salvo
+que le digas cómo reconocer la fila. La solución es ponerle a cada fila un nombre propio: su número de guía.
+
+El tema empieza con otro problema de listas: el tamaño. Una ruta puede tener mil paradas, pero la pantalla muestra
+diez. Construir las mil es trabajo perdido. `ListView.builder` construye solo las que ves, como una cocina que
+prepara el plato cuando el cliente lo pide.
+
+##### 2. Definición formal y vocabulario
+Un **`ListView`** es un widget desplazable que coloca a sus hijos en una dirección. Con un *builder* aplica
+**construcción perezosa**: llama a `itemBuilder` solo para los índices que necesita pintar, más un margen.
+**`ListView.separated`** añade un `separatorBuilder` para el widget que va entre dos filas.
+
+Una **key** es un identificador opcional de un widget. Flutter la usa, junto con el tipo, para decidir si un widget
+nuevo corresponde al mismo elemento que uno anterior. Una **`ValueKey`** compara por valor: dos `ValueKey('EN-4472')`
+son iguales.
+
+La **identidad de un widget** sale de esa regla. Un widget nuevo «es el mismo» que el anterior si tiene el mismo
+tipo y la misma key, o ninguna, en su posición entre hermanos. Si es el mismo, conserva el `State` del Tema 4.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Empieza por la construcción perezosa. Cuando `ListaLarga` aparece con 520 puntos de alto:
+
+1. El `ListView` crea un **viewport**: la ventana visible por la que se ve una parte del contenido.
+2. Le pide al *builder* la fila del índice 0, la mide y la coloca. Luego la 1, la 2, y así.
+3. Se detiene cuando las filas llenan la ventana más una franja extra llamada **cacheExtent**, que por defecto es
+   de 250 píxeles. La salida real lo confirma: `filas construidas al abrir: 10 de 1000`.
+4. Al desplazar, construye las filas que entran por abajo y descarta las que salen de la franja por arriba.
+5. Tras desplazar 3000 puntos, el contador marca `51` en total. Nunca llegó a mil.
+
+Ahora el emparejamiento. Cuando `entregarPrimera` llama a `setState`, la `Column` de `Paradas` se reconstruye con
+tres hijos en vez de cuatro. Flutter tiene que decidir qué elemento viejo corresponde a cada widget nuevo:
+
+1. Toma el primer widget nuevo y el primer elemento viejo. Compara tipo y key con la regla `Widget.canUpdate`.
+2. Sin keys, ambos son `FilaParada` con key `null`: coinciden. El elemento viejo del puesto 1 recibe el widget
+   nuevo, que ahora dice `EN-4472`. Conserva su `State`, sin estrella.
+3. Repite con el puesto 2. El elemento viejo del puesto 2 tenía el `State` con la estrella. Ahora recibe `EN-4475`.
+4. Sobra el último elemento viejo, y Flutter lo destruye con `dispose`.
+5. Con `ValueKey`, el paso 1 cambia. La key `EN-4472` no coincide con la del elemento viejo del puesto 1,
+   `EN-4471`. Flutter busca entre los viejos el que tenga `EN-4472` y lo mueve, con su `State` y su estrella.
 
 ```mermaid
 flowchart LR
-    subgraph Antes
+    subgraph ANTES["Antes"]
         A1["puesto 1: EN-4471"]
         A2["puesto 2: EN-4472 ★"]
         A3["puesto 3: EN-4475"]
     end
-    subgraph Sin keys
+    subgraph SIN["Sin keys"]
         B1["puesto 1: EN-4472"]
-        B2["puesto 2: EN-4475 ★ (el State del puesto 2)"]
+        B2["puesto 2: EN-4475 ★, el State del puesto 2"]
     end
-    subgraph Con ValueKey
-        C1["EN-4472 ★ (su State lo siguió)"]
+    subgraph CON["Con ValueKey"]
+        C1["EN-4472 ★, su State lo siguió"]
         C2["EN-4475"]
     end
     A2 -.-> B2
     A2 -.-> C1
 ```
+
+El diagrama resume la salida real: sin keys, `la estrella quedó en EN-4475`; con keys, `quedó en EN-4472`. La key
+es lo único que cambia en el código:
+
+```dart
+for (final g in guias)
+  FilaParada(key: ValueKey(g), guia: g),   // la identidad sale del dato
+```
+
+##### 4. Reglas, variantes y casos límite
+Las keys deben ser únicas entre hermanos. Dos hijos con la misma key en la misma lista producen un error de keys
+duplicadas. Fuera de esos hermanos, la misma key puede repetirse sin problema.
+
+Hay varias clases de key. `ValueKey` compara por igualdad de valor. `ObjectKey` compara por identidad del objeto.
+`UniqueKey` es distinta de cualquier otra, incluso de otra `UniqueKey`: si la creas en cada `build`, el estado se
+pierde en cada reconstrucción. `GlobalKey` es única en toda la app y permite mover un widget entre padres.
+
+Una key hecha con el índice, como `ValueKey(i)`, no ayuda. Cuando quitas una fila, los índices se corren igual que
+los puestos, como comprueba el Ejercicio verificable 2.
+
+La construcción perezosa tiene un costo oculto. Una fila que sale de la franja visible se destruye, y su `State`
+con ella. Al volver a verla, se construye de cero. Por eso el estado importante va arriba, no en la fila.
+
+`ListView(children: [...])` con la lista escrita a mano construye todos los hijos al crearse. Solo el constructor
+con *builder* es perezoso. Además, un `ListView` dentro de una `Column` necesita un alto limitado; si no, Flutter
+lanza un error de altura ilimitada, que verás en el Módulo 2.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La construcción perezosa es la misma idea del **iterable perezoso** del Módulo 0, Tema 3: no calcular hasta que hace
+falta. La diferencia es que aquí también se **descartan** las filas que ya no se ven.
+
+Del Tema 4 viene el `State` y su ciclo de vida. Este tema responde una pregunta que allí quedó abierta: cuando el
+padre se reconstruye, ¿cómo sabe Flutter qué `State` corresponde a cada hijo? La respuesta es tipo, key y posición.
+
+El Tema 6 abre la caja: el emparejamiento ocurre en el árbol de elementos, que es donde vive el `State`. En el
+Módulo 2 verás las restricciones que explican por qué una lista necesita un alto limitado.
 
 #### Problema resuelto 5.1
 Muestra una ruta de mil paradas y mide cuántas filas se construyen. Después reproduce la estrella que «salta» y
@@ -1822,7 +2241,7 @@ Al terminar este tema podrás:
 - comprobar que al cambiar un dato Flutter reutiliza el elemento en lugar de crear otro;
 - leer las restricciones y el tamaño de un objeto de render.
 
-**Conceptos clave:** árbol de elementos, `Element`, árbol de render, `RenderObject`, reconciliación, restricciones (*constraints*)
+**Conceptos clave:** árbol de elementos, `Element`, árbol de render, `RenderObject`, reconciliación, restricciones (constraints)
 
 #### El problema
 Si los widgets son inmutables y `build` se llama muchas veces por segundo, ¿por qué la app no se vuelve lenta, y cómo
@@ -1870,7 +2289,7 @@ Este tema usa el **árbol de widgets** (Tema 1), el **objeto `State`** (Tema 4) 
 - **Ejemplo:** `¿mismo Element tras cambiar el dato? true`.
 - **Error típico:** cambiar el tipo de un widget en un `if` (de `Text` a `RichText`) y perder su estado sin saber por qué.
 
-**restricciones (*constraints*)**
+**restricciones (constraints)**
 - **Definición técnica:** rango de anchos y altos permitidos (`BoxConstraints`) que un padre entrega a su hijo; el hijo elige su tamaño dentro de ese rango.
 - **En palabras sencillas:** «puedes medir entre esto y esto».
 - **Dónde se rompe la comparación:** cuando el mínimo y el máximo son iguales (restricción estricta), el hijo no tiene opción.
@@ -1878,10 +2297,54 @@ Este tema usa el **árbol de widgets** (Tema 1), el **objeto `State`** (Tema 4) 
 - **Error típico:** fijar `width` en un hijo que recibe una restricción estricta y no ver ningún cambio (Módulo 2).
 
 #### ► CÓMO FUNCIONA
-Cuando escribes widgets, Flutter crea un elemento por cada uno, y algunos elementos crean un objeto de render. En cada
-reconstrucción, los widgets nuevos se comparan con los elementos: si coinciden tipo y key, el elemento se reutiliza y
-solo se actualiza la configuración de su objeto de render. Las restricciones bajan por el árbol de render, los tamaños
-suben y el padre ubica a cada hijo.
+
+##### 1. La idea en lenguaje sencillo
+Una obra tiene tres cosas distintas. Los **planos** dicen cómo debe quedar cada pieza. El **edificio** es lo que
+existe y dura. Los **obreros** miden, cortan y pintan. Si el cliente cambia el color de una pared, se dibuja un
+plano nuevo, pero nadie derrumba el edificio: un obrero repinta esa pared.
+
+Flutter funciona igual. Los widgets son planos baratos que se tiran y se rehacen en cada `build`. Detrás hay dos
+árboles más duraderos: uno que representa la estructura real y otro que mide y pinta.
+
+Esto responde la pregunta del tema. Reconstruir parece caro, pero solo se rehacen los planos. La estructura se
+conserva y solo se repinta lo que cambió. Por eso la estrella del Tema 5 y la lista de carga del Tema 4 recuerdan
+su estado.
+
+##### 2. Definición formal y vocabulario
+El **árbol de elementos** es el árbol de objetos **`Element`** que Flutter mantiene vivos entre reconstrucciones.
+Un `Element` es la instancia de un widget en una posición concreta del árbol. Guarda referencias a su widget
+actual, a su padre, a sus hijos y, si corresponde, al `State`.
+
+El `BuildContext` que recibe `build` es, de hecho, el `Element`. Por eso puede subir por el árbol para buscar el
+tema: conoce a sus ancestros.
+
+El **árbol de render** es el árbol de objetos **`RenderObject`**. Un `RenderObject` recibe **restricciones**
+(*constraints*) de su padre, decide su tamaño, ubica a sus hijos, se pinta y detecta toques. `RenderBox` es la
+familia para cajas rectangulares, con restricciones de tipo `BoxConstraints`.
+
+La **reconciliación** es el proceso que, tras cada `build`, compara los widgets nuevos con los elementos existentes.
+Decide si cada elemento se reutiliza, se actualiza o se reemplaza.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cuando un widget entra al árbol por primera vez, Flutter lo **infla** (*inflate*):
+
+1. Llama a `widget.createElement()`. Un `StatelessWidget` crea un `StatelessElement`; un `Padding`, un
+   `SingleChildRenderObjectElement`.
+2. **Monta** el elemento en su posición del árbol de elementos.
+3. Si el widget es de render, el elemento llama a `createRenderObject` y engancha el objeto al árbol de render.
+   `Padding` crea un `RenderPadding` y `Row` crea un `RenderFlex`.
+4. Si el widget solo compone otros, como `Resumen`, el elemento llama a `build` e infla a cada hijo que devuelve.
+
+Cuando cambia un dato, el recorrido es distinto. Al pasar de 5 a 6 entregas:
+
+1. El elemento de `Resumen` recibe un widget nuevo y vuelve a llamar a `build`.
+2. Para cada hijo, compara el widget nuevo con el elemento viejo usando `Widget.canUpdate`: mismo tipo y misma key.
+3. Si coinciden, el elemento se queda y recibe el widget nuevo con `update`. Si es de render, llama a
+   `updateRenderObject`, que copia la configuración nueva al objeto existente.
+4. Si no coinciden, desmonta el elemento viejo y su subárbol, e infla uno nuevo. Ahí se pierde cualquier `State`.
+5. El objeto de render que cambió se marca para volver a maquetar o pintar en el cuadro siguiente.
+
+La salida real confirma el paso 3: `¿mismo Element tras cambiar el dato? true`. El texto cambió, el elemento no.
 
 ```mermaid
 flowchart LR
@@ -1898,6 +2361,42 @@ flowchart LR
     W2 -.-> E2 -.-> R2
     W3 -.-> E3 -.-> R3
 ```
+
+El diagrama muestra que no todos los widgets llegan al árbol de render. `Resumen` tiene elemento, pero no objeto de
+render. `Text` tampoco pinta: por dentro construye un `RichText`, que es quien crea el `RenderParagraph`.
+
+Luego viene la maquetación, que la documentación de Flutter resume en una frase: las restricciones bajan, los
+tamaños suben y el padre decide la posición. En la prueba, la vista de 800 × 600 obliga al `RenderPadding` a medir
+exactamente eso. El padding resta 16 por lado y pasa a `RenderFlex` la restricción que muestra la salida:
+`BoxConstraints(w=768.0, h=568.0)`.
+
+##### 4. Reglas, variantes y casos límite
+Hay una optimización que explica el valor de `const`. Si el widget nuevo es **el mismo objeto** que el anterior,
+`identical`, Flutter ni siquiera llama a `update`: salta ese subárbol. Un widget `const` es siempre el mismo objeto.
+
+Los elementos se dividen en dos familias. Los **de componente** (`StatelessElement`, `StatefulElement`) solo
+construyen hijos. Los **de render** (`RenderObjectElement` y sus variantes de uno o varios hijos) administran un
+`RenderObject`. El `State` vive siempre en un `StatefulElement`.
+
+Un `RenderObject` solo tiene tamaño después de la maquetación. Si intentas leer el tamaño dentro de `build`, todavía
+no existe. En las pruebas lo lees después de `pumpWidget`, como hace `tester.renderObject`.
+
+Una restricción es **estricta** (*tight*) cuando el mínimo y el máximo coinciden: el hijo no tiene opción. Es
+**suelta** (*loose*) cuando el mínimo es cero. Un `Center` convierte una restricción estricta en suelta.
+
+Cambiar la estructura también cambia la identidad. Si un `if` envuelve un widget en `Opacity` solo a veces, el hijo
+pasa a otra profundidad y su elemento no coincide. El `State` de ese hijo se pierde, aunque el tipo no cambió.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 presentó el árbol de widgets y el `BuildContext`. Ahora sabes que ese contexto es el elemento. El Tema 4
+mostró que el `State` sobrevive a `setState`; aquí ves que sobrevive porque su elemento se reutiliza.
+
+El Tema 5 enseñó la regla de tipo y key para las listas. Es la misma regla de la reconciliación, aplicada a una
+lista de hermanos. El DOM de HTML tiene un solo árbol; Flutter separa la descripción, la estructura y el dibujo.
+
+El Módulo 2, Tema 1 se dedica entero a las restricciones que asomaron aquí. Verás por qué una fila en la raíz ocupa
+toda la pantalla y cómo cambiarlo. El Tema 7 usará el árbol de render para algo más: decidir qué widget recibe un
+toque.
 
 #### Problema resuelto 6.1
 Imprime los tres árboles de una fila de resumen, cambia el dato y comprueba si el elemento se reutiliza. Lee las
@@ -2064,8 +2563,8 @@ Respuesta esperada: `RenderConstrainedBox`, como muestra la salida: impone un ta
 Intermedio. Con el Paso 4, ¿qué restricciones recibe la `Row` y cuánto mide?
 
 Respuesta esperada: restricciones sueltas (de 0 a 768 de ancho y de 0 a 568 de alto), porque `Center` afloja las
-restricciones; la `Row` mide lo que ocupa su contenido de ancho y la altura de su hijo más alto. En el Módulo 2 se
-estudian estas reglas.
+restricciones. La `Row` mide `Size(768.0, 24.0)`: con `mainAxisSize` en `max` (el valor por defecto) ocupa todo el
+ancho permitido, y de alto toma el de su hijo más alto. En el Módulo 2 se estudian estas reglas.
 
 #### Ejercicio verificable 3
 Reto. En `Resumen`, cambia `const Icon(...)` por `entregas > 5 ? const Icon(Icons.warning) : const Icon(Icons.local_shipping)`.
@@ -2148,10 +2647,42 @@ Este tema usa el **`StatefulWidget`** y **`setState`** (Tema 4) y las **keys** (
 - **Error típico:** anidar dos detectores del mismo gesto y esperar que los dos reaccionen; gana el más profundo.
 
 #### ► CÓMO FUNCIONA
-Cuando el dedo toca la fila, el `InkWell` y el `Dismissible` entran a la arena. Si el dedo se levanta sin moverse,
-gana el toque. Si se mantiene, gana la pulsación larga. Si se mueve en horizontal más allá de un umbral, el arrastre
-acepta y los demás pierden: la fila se desplaza y aparece el fondo. Al soltar más allá de la mitad, `Dismissible`
-termina la animación y llama a `onDismissed`.
+
+##### 1. La idea en lenguaje sencillo
+Cuando alguien levanta la mano en una reunión, al principio no sabes qué quiere. Puede pedir la palabra, saludar o
+señalar la puerta. Esperas un instante y el movimiento se aclara. Solo entonces respondes.
+
+La pantalla vive el mismo problema con el dedo del conductor. Al tocar una fila, el dedo podría estar empezando un
+toque, una pulsación larga o un deslizamiento. Flutter no adivina: observa unos milisegundos y unos pocos puntos de
+movimiento, y entonces decide.
+
+En la lista de paradas, cada gesto tiene un significado. Tocar abre la entrega, mantener muestra opciones y deslizar
+a la izquierda la marca como entregada. Además, mientras desliza, el conductor ve un letrero que anuncia la acción.
+
+##### 2. Definición formal y vocabulario
+Un **gesto** es la interpretación de una secuencia de eventos de puntero como una intención. Un **evento de
+puntero** es cada dato que envía el sistema: el dedo bajó, se movió o subió, con su posición.
+
+**`GestureDetector`** es un widget sin apariencia que reconoce gestos sobre su hijo. **`InkWell`** hace lo mismo para
+toques y pulsaciones largas, pero además dibuja la onda de Material. **`Dismissible`** convierte un arrastre en una
+acción, y muestra un **fondo de deslizamiento** mientras la fila se mueve.
+
+Detrás de todos ellos hay **reconocedores** (*gesture recognizers*): objetos especializados en un gesto, como el de
+toque o el de arrastre horizontal. Cuando varios observan el mismo dedo, compiten en la **arena de gestos**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el deslizamiento de `EN-4475` en la prueba, desde que el dedo baja hasta que la fila desaparece:
+
+1. **Prueba de impacto** (*hit testing*). El evento «bajó» llega a la raíz del árbol de render del Tema 6. Flutter
+   pregunta a cada objeto de render si el punto cae dentro de él y arma una lista, del más profundo al más externo.
+2. Cada detector de esa lista recibe el evento. El `InkWell` agrega sus reconocedores de toque y pulsación larga. El
+   `Dismissible` agrega su reconocedor de arrastre horizontal. Todos entran a la arena de ese dedo.
+3. La arena se cierra para nuevos competidores. Ninguno actúa todavía: el toque podría ser un arrastre.
+4. El dedo se mueve. Cuando el desplazamiento horizontal supera un umbral pequeño, el reconocedor de arrastre
+   **acepta** el gesto. La arena lo declara ganador y los demás pierden.
+5. El `Dismissible` mueve la fila con cada evento y deja ver el fondo «Entregada». Ese es el primer pantallazo.
+6. Al subir el dedo, compara la distancia recorrida con su umbral. Como la superó, anima la salida, encoge el espacio
+   y llama a `onDismissed`. Allí `setState` quita la guía, como registra `deslizó: EN-4475 entregada`.
 
 ```mermaid
 sequenceDiagram
@@ -2159,7 +2690,7 @@ sequenceDiagram
     participant A as Arena
     participant I as InkWell (toque)
     participant S as Dismissible (arrastre)
-    D->>A: baja sobre EN-4475
+    D->>A: baja sobre EN-4475, prueba de impacto
     A->>I: compite
     A->>S: compite
     D->>A: se mueve 100 puntos a la izquierda
@@ -2168,6 +2699,44 @@ sequenceDiagram
     D->>A: sube después de 360 puntos
     S->>S: onDismissed → setState
 ```
+
+En el toque rápido sobre `EN-4471` la historia es otra. Nadie acepta mientras el dedo está abajo. Al subir sin
+moverse, el arrastre se retira y el toque gana. Por eso un toque se confirma al **levantar** el dedo, no al bajarlo.
+
+En la pulsación larga sobre `EN-4472`, el reconocedor de pulsación larga tiene un temporizador. Si el dedo sigue
+quieto cuando vence, acepta. El toque pierde y `onLongPress` se ejecuta.
+
+La onda de `InkWell` no se pinta en el propio `InkWell`. Se pinta en el widget `Material` más cercano hacia arriba.
+Por eso la fila necesita un `Material` detrás que no esté tapado por algo opaco.
+
+##### 4. Reglas, variantes y casos límite
+Los umbrales vienen de constantes de Flutter. Para empezar un arrastre, el dedo debe moverse más de `kTouchSlop`, 18
+puntos lógicos. La pulsación larga espera `kLongPressTimeout`, 500 milisegundos. Esto evita que un temblor del
+dedo se confunda con un arrastre.
+
+Si nadie acepta y el dedo sube, la arena aplica una regla de desempate: gana el reconocedor del widget más profundo.
+Por eso, con dos detectores de toque anidados, solo reacciona el de adentro.
+
+`Dismissible` exige una key única, porque la fila debe identificarse aunque la lista cambie, como en el Tema 5. En
+`onDismissed` debes quitar el dato de la lista. Si no lo haces, Flutter lanza
+`A dismissed Dismissible widget is still part of the tree`.
+
+El umbral para completar un deslizamiento es el 40 % del ancho, según `dismissThresholds`. Con
+`DismissDirection.horizontal`, `background` corresponde al deslizamiento hacia el final y `secondaryBackground` al
+deslizamiento hacia el inicio. `confirmDismiss` permite preguntar antes de completar.
+
+Un `GestureDetector` sobre un área vacía no detecta nada por defecto. Su `behavior` (`HitTestBehavior`) decide si la
+zona transparente participa en la prueba de impacto. `HitTestBehavior.opaque` la incluye.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Este tema usa el árbol de render del Tema 6 para algo distinto de medir y pintar: la prueba de impacto recorre los
+mismos objetos. La key de cada fila viene del Tema 5, y el `setState` de `onDismissed`, del Tema 4.
+
+Compara `InkWell` con `GestureDetector`. Los dos usan los mismos reconocedores, pero solo `InkWell` da respuesta
+visual. En la web, el equivalente serían los eventos `click` y `pointerdown`, sin la arena que resuelve conflictos.
+
+En el Módulo 3, Tema 6 verás el `SnackBar`, ideal para ofrecer «Deshacer» después de un deslizamiento. En el
+Módulo 10, dedicado a la accesibilidad, volverás sobre el tamaño mínimo de 48 × 48 para cada objetivo táctil.
 
 #### Problema resuelto 7.1
 Haz una lista de paradas donde tocar abre, mantener muestra un menú y deslizar a la izquierda marca como entregada.
@@ -2346,7 +2915,10 @@ En `onDismissed`, muestra `ScaffoldMessenger.of(context).showSnackBar(...)` con 
 guía en su posición.
 
 #### Paso 5 · Cambia la dirección
-Permite deslizar a la derecha para «Reprogramar» con `secondaryBackground` y `DismissDirection.horizontal`.
+Permite deslizar a la derecha para «Reprogramar» con `DismissDirection.horizontal`. Con esa dirección, `background`
+se ve al deslizar hacia la derecha y `secondaryBackground` al deslizar hacia la izquierda: pon «Reprogramar» en
+`background` y mueve el fondo «Entregada» a `secondaryBackground`. En una prueba con arrastres de 100 puntos, a la
+derecha aparece solo «Reprogramar» y a la izquierda solo «Entregada».
 
 #### Resumen
 - Un **gesto** es la intención detrás del movimiento del dedo.

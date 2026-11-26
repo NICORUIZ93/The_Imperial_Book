@@ -126,21 +126,133 @@ clases con las que Java los representa.
 - **Error típico:** llamar `get()` sin límite de tiempo sobre una tarea que puede colgarse para siempre.
 
 #### ► CÓMO FUNCIONA
-`ExecutorService` separa “qué tarea ejecutar” de “qué hilo la ejecuta”. En lugar de crear `new Thread(...)` por tarea, envías tareas a un executor que administra un pool. Eso permite reutilizar hilos, limitar concurrencia y controlar el ciclo de vida. `submit` devuelve un `Future`, que representa un resultado futuro: `get()` bloquea hasta obtenerlo o hasta timeout.
 
-El ciclo de vida importa. Un executor que no se cierra deja hilos vivos y puede impedir que la JVM termine. Desde Java 19, `ExecutorService` implementa `AutoCloseable` y su `close()` espera terminación, lo que hace natural el try-with-resources. En `cotizarConExecutor` se usa un pool fijo de 2 porque hay dos tareas bloqueantes independientes.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una tintorería con dos empleados. Si un solo empleado lava y luego plancha, el cliente espera la suma de
+los dos trabajos. Si cada empleado hace uno al mismo tiempo, el cliente espera solo lo que tarda el más lento.
+
+La cotización de Tienda Aurora tiene esa forma. El precio tarda 120 ms y el stock 90 ms, y ninguna consulta
+necesita a la otra. Si las lanzas a la vez, esperas cerca de 120 ms en lugar de 210 ms.
+
+Java te ofrece dos maneras de conseguir esos empleados. La primera es contratarlos uno por uno con `Thread`: tú los
+creas, los arrancas y los esperas. La segunda es pedirlos a un jefe de turno, el `ExecutorService`, que mantiene un
+grupo de empleados y les reparte tareas.
+
+El jefe de turno tiene una responsabilidad que a menudo se olvida: alguien debe mandarlo a casa. Si no lo cierras,
+sus empleados siguen esperando trabajo y el programa nunca termina, como muestra `SinCerrar.java`.
+
+##### 2. Definición formal y vocabulario
+
+Un **Thread** es el objeto de `java.lang` que representa un hilo de ejecución de la JVM. Tiene nombre, estado y su
+propia pila de llamadas. La tarea que ejecuta se describe con un **Runnable**, una interfaz funcional con el método
+`void run()`.
+
+El ciclo de vida se controla con **`start` y `join`**. `start()` pide a la JVM un hilo nuevo que ejecuta `run()`.
+`join()` bloquea al hilo que llama hasta que el otro termina. Los hilos que crea `new Thread` son **hilos de
+plataforma**: cada uno está respaldado por un hilo del sistema operativo.
+
+Un **ExecutorService** es la interfaz de `java.util.concurrent` que recibe tareas y las ejecuta en hilos que
+administra. La implementación habitual mantiene un **pool de hilos**: hilos creados una vez y reutilizados para
+muchas tareas, que toman de una cola.
+
+Para tareas con resultado usas **Callable**, cuyo método `V call()` devuelve un valor y puede lanzar excepciones
+comprobadas. `submit` no devuelve ese valor: devuelve un **Future**, que representa el resultado pendiente. Lo
+reclamas con `get()`, preferiblemente con un tiempo límite.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el recorrido de `CotizadorExecutor.java`, del Problema resuelto 1.2:
+
+```java
+try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+    Future<BigDecimal> precio = executor.submit(tareaPrecio);
+    Future<Integer> stock = executor.submit(() -> stock("CAF-100"));
+    System.out.println("precio=" + precio.get(2, TimeUnit.SECONDS)
+            + " stock=" + stock.get(2, TimeUnit.SECONDS));
+}
+```
+
+1. `newFixedThreadPool(2)` crea un `ThreadPoolExecutor` con una cola de tareas sin límite. Todavía no hay hilos.
+2. El primer `submit` envuelve el `Callable` en un `FutureTask`. Ese objeto es a la vez la tarea y su `Future`.
+3. Como el pool tiene menos de dos hilos, crea uno, `pool-1-thread-1`, y le entrega la tarea. El segundo `submit`
+   crea `pool-1-thread-2`.
+4. `submit` vuelve enseguida. Por eso `isDone()` imprime `false`: el precio todavía duerme sus 120 ms.
+5. `precio.get(2, TimeUnit.SECONDS)` bloquea a `main` hasta que el `FutureTask` guarde el resultado o pasen 2
+   segundos.
+6. Cuando el hilo del pool termina `call()`, guarda el valor en el `FutureTask` y despierta a `main`.
+7. Al salir del `try`, se llama `close()`. Ese método deja de aceptar tareas, espera a que terminen las pendientes
+   y libera los hilos.
 
 ```mermaid
 flowchart LR
-  M["main"] -->|submit Callable| Q["cola del executor"]
+  M["main"] -->|"submit Callable"| Q["cola del executor"]
   Q --> T1["pool-1-thread-1: precio 120 ms"]
   Q --> T2["pool-1-thread-2: stock 90 ms"]
   T1 --> F1["Future precio"]
   T2 --> F2["Future stock"]
-  F1 -->|get con timeout| R["main combina el resultado"]
-  F2 -->|get con timeout| R
+  F1 -->|"get con timeout"| R["main combina el resultado"]
+  F2 -->|"get con timeout"| R
   R --> C["close: espera y libera los hilos"]
 ```
+
+El paso 7 explica `SinCerrar.java`. La JVM termina cuando acaban todos los hilos que no son *daemon*. Los hilos de
+`newFixedThreadPool` no son daemon y, al quedarse sin tareas, esperan en la cola indefinidamente. `main` acaba,
+pero la JVM sigue viva.
+
+Hay una garantía de memoria detrás de `start` y `join`. El Modelo de Memoria de Java (JLS, sección 17.4.5)
+establece relaciones *happens-before*. Todo lo que `main` escribió antes de `start()` es visible para el hilo
+nuevo. Todo lo que el hilo escribió es visible para `main` cuando `join()` retorna.
+
+`Future.get()` da la misma garantía: el valor que devuelve y todo lo que la tarea escribió antes son visibles para
+quien lo lee. Sin estas reglas, un hilo podría ver datos viejos de otro.
+
+##### 4. Reglas, variantes y casos límite
+
+Un objeto `Thread` solo se arranca una vez. Una segunda llamada a `start()` lanza `IllegalThreadStateException`,
+aunque el hilo ya haya terminado. `run()` llamado a mano es una llamada normal: la tarea corre en el hilo actual.
+
+Un hilo pasa por seis estados, definidos en el enum `Thread.State`: `NEW`, `RUNNABLE`, `BLOCKED`, `WAITING`,
+`TIMED_WAITING` y `TERMINATED`. Un hilo creado con `unstarted` está en `NEW`. Uno dormido en `Thread.sleep(120)`
+está en `TIMED_WAITING`.
+
+`ExecutorService` ofrece tres formas de cerrar:
+
+- `shutdown()` deja de aceptar tareas nuevas y deja terminar las que hay. No espera.
+- `shutdownNow()` interrumpe las tareas en curso y devuelve las que no empezaron.
+- `close()` hace `shutdown()` y espera la terminación. Si el hilo que espera es interrumpido, llama a
+  `shutdownNow()`.
+
+Algunos cambios por versión son importantes para este curso. `ExecutorService` implementa `AutoCloseable` desde
+Java 19, por eso funciona en try-with-resources. `Thread.ofPlatform()` y `Thread.ofVirtual()` son estándar desde
+Java 21. Java 19 añadió también `Future.state()` y `resultNow()`.
+
+Si la tarea lanza una excepción, `get()` no la propaga tal cual. La envuelve en `ExecutionException` y la original
+queda en `getCause()`. Si se agota el tiempo, `get` lanza `TimeoutException` y la tarea **sigue corriendo**: el
+límite es para quien espera, no para la tarea.
+
+`submit` también acepta un `Runnable`. En ese caso el `Future` devuelve `null` al completarse. Úsalo cuando solo te
+interesa saber que la tarea acabó o si falló.
+
+`newFixedThreadPool` usa una cola sin límite. Si llegan tareas más rápido de lo que se procesan, la cola crece
+hasta agotar la memoria. En producción se configura un `ThreadPoolExecutor` con cola acotada.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los conceptos de **hilo** y **concurrencia** vienen de Fundamentos, Módulo 5, Tema 2. Aquí ves las clases con que
+Java los representa. Las tareas se escriben como las lambdas del Java, Módulo 4, y el executor se cierra con el
+try-with-resources del Java, Módulo 3.
+
+En el Java, Módulo 4, Tema 4 usaste el ForkJoinPool común sin crearlo. Ese pool está pensado para dividir cálculos
+de CPU. Un `ExecutorService` propio sirve para tareas independientes, incluidas las que esperan red o disco. No
+mezcles esperas bloqueantes en el pool común.
+
+`Future` tiene un límite: solo puedes esperar con `get()`. No puedes decir «cuando termine el precio, calcula el
+total». El Tema 2 resuelve eso con `CompletableFuture`.
+
+El Tema 3 cambia el tipo de hilo: los hilos virtuales hacen barato tener miles de tareas bloqueadas. El Tema 4
+trata lo que pasa cuando dos hilos tocan el mismo dato. El Tema 7 explica cómo cancelar la tarea que sigue
+corriendo después de un `TimeoutException`.
 
 #### Problema resuelto 1.1
 Lanza las consultas de catálogo e inventario en dos hilos creados a mano, con nombre, y espera a que terminen.
@@ -452,20 +564,140 @@ Este tema usa **ExecutorService**, **Callable** y **Future** (ficha en el Tema 1
 - **Error típico:** mandar consultas bloqueantes al pool común y frenar también los streams paralelos de la aplicación.
 
 #### ► CÓMO FUNCIONA
-`CompletableFuture` representa una computación asincrónica que puede componerse. `supplyAsync` ejecuta una tarea que devuelve valor; `thenApply/thenCompose/thenCombine` encadenan o combinan resultados; `exceptionally/handle` manejan fallos; `orTimeout` impone límite temporal. A diferencia de `Future`, permite construir pipelines sin bloquear inmediatamente.
 
-En `cotizarConCompletableFuture` se lanzan dos consultas en paralelo y se combinan con `thenCombine`. El executor pasado a `supplyAsync` es importante: si omites el executor, usa el ForkJoinPool común, que no es ideal para I/O bloqueante. El laboratorio usa un executor de virtual threads por tarea (Tema 3); en este tema usas un pool fijo.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una cocina de restaurante. Un cocinero no se queda mirando la olla hasta que hierve para luego picar la
+cebolla. Deja instrucciones: «cuando hierva el agua, echa la pasta; cuando estén la pasta y la salsa, sirve el
+plato».
+
+Con el `Future` del Tema 1, `main` se queda mirando la olla. Llama a `get()` y no hace nada más hasta que llega el
+resultado. Si quieres combinar dos resultados, primero esperas uno, luego el otro y después combinas a mano.
+
+`CompletableFuture` es el cocinero que deja instrucciones. Describes el flujo completo antes de que llegue ningún
+dato. Cuando cada resultado está listo, la instrucción correspondiente se ejecuta sola.
+
+En Tienda Aurora el flujo es: «cuando lleguen precio y stock, arma la cotización; si el precio falla, usa 0». Con
+`CompletableFuture` escribes esa frase casi literalmente. `main` solo espera una vez, al final, cuando pide la
+cotización ya armada.
+
+##### 2. Definición formal y vocabulario
+
+La documentación define **CompletableFuture** como un `Future` que puede completarse de forma explícita, con su
+valor y su estado. Además implementa `CompletionStage`: una etapa de un cálculo que realiza una acción cuando otra
+etapa termina.
+
+Las etapas se crean con métodos que empiezan por `then`. **thenApply** transforma el resultado con una función.
+**thenCombine** espera a dos futuros independientes y une sus resultados. **thenCompose** usa el resultado para
+lanzar otro futuro y devuelve el resultado de ese segundo, sin anidar.
+
+El punto de partida suele ser **supplyAsync**, que ejecuta un `Supplier` en otro hilo. Si no le pasas un executor,
+la tarea va al **ForkJoinPool común**, el pool global que comparten los streams paralelos del Java, Módulo 4.
+
+Un futuro puede terminar de dos formas: con un valor o con una excepción. A esto último se le llama **completarse
+excepcionalmente**. **exceptionally** es la etapa que solo actúa en ese caso y devuelve un valor de reemplazo. Al
+final, el **`join` de CompletableFuture** espera y devuelve el valor.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la primera sección del Problema resuelto 2.1:
+
+```java
+CompletableFuture<BigDecimal> precio = CompletableFuture.supplyAsync(() -> precio("MOL-200"), executor);
+CompletableFuture<Integer> stock = CompletableFuture.supplyAsync(() -> stock("MOL-200"), executor);
+String resumen = precio.thenCombine(stock, (p, s) -> "MOL-200 precio=" + p + " stock=" + s).join();
+```
+
+1. Cada `supplyAsync` crea un `CompletableFuture` vacío y envía al executor una tarea que, al terminar, lo
+   completará. Vuelve enseguida.
+2. `thenCombine` crea un tercer futuro vacío. Registra en `precio` y en `stock` una acción dependiente: «cuando
+   ambos estén completos, aplica la función».
+3. Cada futuro guarda sus acciones dependientes en una pila interna. Registrar una acción no ejecuta nada.
+4. `main` llama a `join()` sobre el tercer futuro y se bloquea.
+5. A los 90 ms, el hilo del stock completa su futuro. Revisa la pila de dependientes: la combinación todavía
+   necesita el precio, así que no se ejecuta.
+6. A los 120 ms, el hilo del precio completa el suyo. Ahora ambos están listos y ese mismo hilo ejecuta la función
+   de combinación.
+7. El resultado completa el tercer futuro y `join()` despierta a `main` con el texto `MOL-200 precio=79.90
+   stock=3`.
 
 ```mermaid
 flowchart LR
   P["supplyAsync precio"] --> C{"thenCombine"}
   S["supplyAsync stock"] --> C
   C --> R1["cotización"]
-  P2["supplyAsync precio"] --> A["thenApply ×2"]
+  P2["supplyAsync precio"] --> A["thenApply: por 2"]
   A --> K["thenCompose: consulta stock"]
-  K --> R2["subtotal + stock"]
-  X["supplyAsync XXX-999"] -->|falla| E["exceptionally → 0"]
+  K --> R2["subtotal y stock"]
+  X["supplyAsync XXX-999"] -->|"falla"| E["exceptionally: 0"]
 ```
+
+El paso 6 muestra una regla importante. Una etapa sin el sufijo `Async` corre en el hilo que completó la etapa
+anterior. Si la anterior ya estaba completa al registrarla, corre en el hilo que llama. Verificado con OpenJDK
+25.0.5.1:
+
+```java
+CompletableFuture.completedFuture("x")
+        .thenApply(s -> Thread.currentThread().getName())
+        .thenAccept(System.out::println);
+```
+
+Imprime `main`, porque el futuro ya estaba completo cuando se registró `thenApply`.
+
+Los fallos viajan por la misma cadena. Si `precio` lanza `IllegalArgumentException`, su futuro se completa
+excepcionalmente. Las etapas siguientes no ejecutan su función: se completan con la misma excepción, envuelta en
+`CompletionException`. `exceptionally` es la primera etapa que la recibe y la convierte en un valor.
+
+##### 4. Reglas, variantes y casos límite
+
+Casi cada etapa existe en tres variantes. `thenApply(f)` corre en el hilo que completa la etapa anterior.
+`thenApplyAsync(f)` corre en el pool común. `thenApplyAsync(f, executor)` corre en el executor que indicas. Si `f`
+bloquea, usa la tercera.
+
+`thenApply` y `thenCompose` se diferencian por lo que devuelve la función. Si devuelve un valor normal, usas
+`thenApply`. Si devuelve otro `CompletableFuture`, usas `thenCompose`; con `thenApply` obtendrías
+`CompletableFuture<CompletableFuture<String>>`, como dice el Checkpoint 2.1.
+
+Hay tres formas de reaccionar a un fallo:
+
+- `exceptionally(fn)` solo actúa si hubo excepción y devuelve un reemplazo.
+- `handle((valor, ex) -> ...)` actúa siempre y recibe ambos; uno de los dos es `null`.
+- `whenComplete((valor, ex) -> ...)` actúa siempre, pero no cambia el resultado. Sirve para registrar.
+
+`join()` y `get()` esperan igual, pero fallan distinto. `join()` lanza `CompletionException`, que no es comprobada.
+`get()` lanza `ExecutionException`, que es comprobada y obliga a capturarla. Por eso `join()` es más cómodo dentro
+de lambdas.
+
+`supplyAsync` recibe un `Supplier`, cuyo método no declara `throws`. Cualquier excepción comprobada, como la
+`InterruptedException` de `Thread.sleep`, debe capturarse dentro de la lambda. Ese es el error de compilación del
+recuadro `LambdaChecked.java`.
+
+`CompletableFuture` existe desde Java 8. Java 9 añadió `orTimeout`, que completa con `TimeoutException` si se pasa
+el tiempo, y `completeOnTimeout`, que completa con un valor por defecto. Java 12 añadió `exceptionallyCompose`, que
+recupera un fallo lanzando otro futuro.
+
+`allOf(f1, f2, ...)` devuelve un futuro que se completa cuando terminan todos. `anyOf` se completa con el primero
+que termine. `allOf` devuelve `CompletableFuture<Void>`: los valores los lees después con `join()` en cada futuro
+original.
+
+`cancel(true)` sobre un `CompletableFuture` lo completa con `CancellationException`, pero **no interrumpe** el hilo
+que hace el trabajo. La tarea sigue corriendo hasta terminar por su cuenta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema parte del Tema 1. `CompletableFuture` implementa `Future`, así que también tiene `get()` e `isDone()`. Lo
+nuevo son las etapas que reaccionan al resultado sin bloquear a quien las registra.
+
+Las etapas se parecen a las operaciones intermedias de un stream del Java, Módulo 4: `thenApply` hace el papel de
+`map` y `thenCompose` el de `flatMap`. La diferencia es el tiempo. Un stream procesa muchos elementos ya
+disponibles. Un `CompletableFuture` procesa un solo valor que todavía no existe.
+
+El pool común de este tema es el mismo de los streams paralelos. Una consulta lenta enviada sin executor ocupa un
+hilo que también necesitan los pipelines `parallel()` de toda la aplicación.
+
+El Tema 3 cambia el executor por uno de hilos virtuales, que hace barato bloquear. El Tema 5 presenta
+`StructuredTaskScope`, una alternativa que escribe el mismo flujo como código secuencial. El Tema 7 retoma
+`orTimeout` y la cancelación que `cancel(true)` no resuelve.
 
 #### Problema resuelto 2.1
 Cotiza `MOL-200` de tres formas: combinando dos consultas independientes, encadenando una dependiente y
@@ -752,19 +984,133 @@ Este tema usa **hilo de plataforma**, **ExecutorService** y **Future** (ficha en
 - **Error típico:** medir solo la CPU y concluir que «el sistema está libre» mientras miles de peticiones esperan.
 
 #### ► CÓMO FUNCIONA
-Los virtual threads (Java 21+) son hilos ligeros administrados por la JVM, no mapeados 1:1 con hilos del sistema operativo. Permiten escribir código bloqueante de estilo simple mientras la JVM monta/desmonta el virtual thread de un carrier thread cuando hay bloqueo. Esto hace viable tener miles o cientos de miles de tareas concurrentes I/O-bound.
 
-No son magia para CPU-bound: si la tarea consume CPU continuamente, sigues limitado por cores. Tampoco eliminan la necesidad de sincronización sobre estado compartido. Su valor principal es escalar I/O bloqueante con un modelo de programación familiar.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una oficina de trámites con cuatro ventanillas. Si cada cliente ocupa una ventanilla mientras espera que
+le traigan un documento del archivo, la fila no avanza. Las ventanillas están ocupadas, pero nadie trabaja.
+
+Una oficina mejor organizada hace otra cosa. El cliente que espera un documento se sienta en la sala y deja libre
+la ventanilla. Cuando llega el documento, vuelve a la primera ventanilla libre. Con cuatro ventanillas puedes
+atender a cientos de clientes que pasan casi todo el tiempo esperando.
+
+Un **hilo virtual** es ese cliente con ficha propia. Las ventanillas son los **hilos portadores**, pocos y caros.
+Cuando el hilo virtual se bloquea en una espera, la JVM lo saca de la ventanilla. Lo guarda en memoria hasta que la
+espera termina.
+
+En el día de ofertas de Tienda Aurora, cada cotización espera 100 ms al inventario. Con 20 hilos de plataforma, mil
+cotizaciones hacen fila durante 5 segundos. Con un hilo virtual por cotización, todas esperan a la vez y el lote
+tarda 132 ms en la salida del Problema resuelto 3.2.
+
+##### 2. Definición formal y vocabulario
+
+La documentación de `java.lang.Thread` distingue dos tipos de hilo. Un **hilo de plataforma** es una envoltura
+delgada sobre un hilo del sistema operativo y lo ocupa durante toda su vida. Un **hilo virtual** no está atado a un
+hilo del sistema concreto; la JVM lo programa sobre hilos de plataforma.
+
+El hilo de plataforma que ejecuta un hilo virtual en un momento dado se llama **hilo portador** (*carrier thread*).
+Cuando el hilo virtual hace una operación bloqueante compatible, la JVM lo **desmonta**: guarda su pila en el heap
+y libera el portador. Al terminar la espera, lo vuelve a montar en un portador libre.
+
+Para tu código, un hilo virtual es un `Thread` normal. Tiene nombre, `sleep`, `join` e interrupciones. Lo creas con
+`Thread.ofVirtual()` o con **`newVirtualThreadPerTaskExecutor`**, un executor que crea un hilo virtual nuevo para
+cada tarea, sin pool ni cola.
+
+Los hilos virtuales sirven para **tareas limitadas por E/S**, las que pasan casi todo el tiempo esperando red,
+disco o una base de datos. Para esperar a muchas tareas sin guardar un `Future` por cada una, el tema usa
+**CountDownLatch**, un contador que bloquea `await()` hasta llegar a cero.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el hilo virtual del Problema resuelto 3.1:
+
+```java
+Thread virtual = Thread.ofVirtual().name("aurora-virtual").start(() -> {
+    System.out.println("antes de bloquear: " + Thread.currentThread());
+    try {
+        Thread.sleep(50);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    System.out.println("después de bloquear: " + Thread.currentThread());
+});
+```
+
+1. `start` crea un objeto `VirtualThread`. No pide ningún hilo al sistema operativo. Por dentro, la tarea se
+   envuelve en una **continuación**: un objeto que puede pausar y reanudar su propia pila.
+2. La JVM entrega el hilo virtual a su planificador, un `ForkJoinPool` propio llamado `ForkJoinPool-1`. No es el
+   pool común del Tema 2.
+3. Un trabajador del planificador, `ForkJoinPool-1-worker-1`, monta el hilo virtual y ejecuta la continuación. Por
+   eso la salida muestra `@ForkJoinPool-1-worker-1`.
+4. `Thread.sleep(50)` detecta que el hilo actual es virtual. En lugar de bloquear al portador, programa un
+   temporizador y pausa la continuación.
+5. Pausar significa copiar los marcos de la pila al heap. El portador queda libre y toma otro hilo virtual de su
+   cola.
+6. Al vencer el temporizador, la JVM devuelve el hilo virtual al planificador. Un portador libre lo monta, copia de
+   vuelta los marcos y sigue en la línea siguiente al `sleep`.
 
 ```mermaid
 flowchart LR
-  V1["hilo virtual A"] -->|montado| P1["portador worker-1"]
-  V1 -->|sleep o E/S| H["pila guardada en el heap"]
-  H -->|respuesta lista| P2["cualquier portador libre"]
-  V2["hilo virtual B"] -->|ocupa el portador libre| P1
+  V1["hilo virtual A"] -->|"montado"| P1["portador worker-1"]
+  V1 -->|"sleep o E/S"| H["pila guardada en el heap"]
+  H -->|"respuesta lista"| P2["cualquier portador libre"]
+  V2["hilo virtual B"] -->|"ocupa el portador libre"| P1
   P1 --> SO["hilo del sistema operativo"]
   P2 --> SO2["hilo del sistema operativo"]
 ```
+
+Este mecanismo explica la salida del Problema resuelto 3.3. Cien mil hilos virtuales dormidos no ocupan portadores:
+son objetos en el heap. El pico fue de 10 hilos del sistema. Con hilos de plataforma, cada espera retiene un hilo
+del sistema, y 10 000 tareas necesitaron 5853.
+
+El desmontaje funciona con las operaciones bloqueantes del JDK que se adaptaron: `sleep`, `join`, los sockets de
+`java.net`, los locks de `java.util.concurrent` y las colas bloqueantes. El código de tu aplicación no cambia;
+cambia lo que la JVM hace mientras esperas.
+
+##### 4. Reglas, variantes y casos límite
+
+Los hilos virtuales fueron vista previa en Java 19 (JEP 425) y Java 20 (JEP 436). Son estándar desde Java 21 (JEP
+444). La documentación fija varias reglas sobre ellos:
+
+- Siempre son *daemon*: no impiden que la JVM termine. `setDaemon(false)` lanza `IllegalArgumentException`.
+- Su prioridad es siempre `NORM_PRIORITY`; `setPriority` no tiene efecto.
+- No se agrupan en pools. Crear uno es barato, así que se crea uno por tarea y se descarta.
+
+El planificador tiene por defecto tantos portadores como núcleos disponibles. Puedes ajustarlo con la propiedad
+`jdk.virtualThreadScheduler.parallelism`. Normalmente no hace falta.
+
+Hay casos en que el hilo virtual no puede desmontarse y retiene su portador. A esto se le llama **pinning** (quedar
+fijado). Ocurre durante la ejecución de código nativo. En Java 21 a 23 ocurría también dentro de un bloque
+`synchronized`. Java 24 eliminó ese caso con el JEP 491. El Tema 4 lo mide.
+
+Un hilo virtual no acelera el cálculo. Si la tarea usa la CPU sin pausa, no hay espera que aprovechar. El límite
+sigue siendo el número de núcleos, como muestra el Ejercicio verificable 2.
+
+`newVirtualThreadPerTaskExecutor` no pone límite a cuántas tareas corren a la vez. Si un servicio remoto aguanta 50
+conexiones, tú pones el límite con un `Semaphore`. Meter hilos virtuales en un pool fijo devuelve el problema
+original: en el recuadro de error, 1000 consultas tardaron 5029 ms.
+
+`ThreadMXBean.getPeakThreadCount()` solo cuenta hilos de plataforma. Por eso el Problema resuelto 3.3 lo usa como
+medida de hilos del sistema operativo.
+
+Cada hilo virtual puede tener variables `ThreadLocal`, pero con miles de hilos esa memoria se multiplica. El Tema 6
+presenta una alternativa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema reutiliza el **hilo de plataforma**, el **ExecutorService** y el **Future** del Tema 1. La API es la
+misma: cambias `newFixedThreadPool(20)` por `newVirtualThreadPerTaskExecutor()` y el resto del código sigue igual.
+
+Compara con `CompletableFuture` del Tema 2. Allí evitabas bloquear describiendo etapas que reaccionan al resultado.
+Con hilos virtuales bloqueas sin miedo, porque bloquear ya no retiene un hilo del sistema. Son dos respuestas al
+mismo problema; muchas bases de código nuevas prefieren la segunda por su simpleza.
+
+La idea de hilo *daemon* viene de Fundamentos, Módulo 5, Tema 5. Como los hilos virtuales siempre lo son, `main`
+debe esperarlos con `join()` o cerrando el executor.
+
+El Tema 4 muestra que miles de hilos virtuales que tocan el mismo dato producen condiciones de carrera, igual que
+los de plataforma. El Tema 5 organiza grupos de hilos virtuales con `StructuredTaskScope`. El Tema 6 resuelve cómo
+pasarles contexto sin `ThreadLocal`.
 
 #### Problema resuelto 3.1
 Crea un hilo virtual, muestra en qué portador corre antes y después de bloquearse, y compruébalo con `isVirtual()`.
@@ -1039,7 +1385,7 @@ Este tema usa **hilo**, **memoria compartida**, **condición de carrera**, **sec
 - **Error típico:** sincronizar sobre objetos distintos en cada hilo: cada uno tiene su propio candado y no se excluyen.
 
 **`volatile`**
-- **Definición técnica:** modificador de campo que obliga a leer y escribir siempre en memoria principal y establece un orden *happens-before* entre la escritura y las lecturas posteriores; no hace atómico `valor++`.
+- **Definición técnica:** modificador de campo que garantiza visibilidad y orden: según el Modelo de Memoria de Java (JLS 17.4.5), cada escritura del campo *happens-before* toda lectura posterior del mismo campo, y el compilador no puede reordenar los accesos a su alrededor; no hace atómico `valor++`.
 - **En palabras sencillas:** un tablón de anuncios: todos leen la última versión publicada, no una copia vieja.
 - **Dónde se rompe la comparación:** ver el último valor no evita que dos hilos lo pisen al escribir.
 - **Ejemplo:** `static volatile boolean detenerVolatile` en `Visibilidad.java`.
@@ -1081,9 +1427,45 @@ Este tema usa **hilo**, **memoria compartida**, **condición de carrera**, **sec
 - **Error típico:** migrar a hilos virtuales en JDK 21 con bibliotecas llenas de `synchronized` y no ver ninguna mejora.
 
 #### ► CÓMO FUNCIONA
-Una condición de carrera ocurre cuando el resultado depende del orden no controlado de acceso concurrente a estado mutable compartido. `valor++` no es atómico: lee, incrementa y escribe. Dos hilos pueden leer el mismo valor y perder incrementos.
 
-`contarConRace()` lanza 1000 incrementos en paralelo sobre un `int` sin protección. El resultado observado puede ser menor que 1000. `contarSinRace()` usa `synchronized` para garantizar exclusión mutua y visibilidad. Otras herramientas son `AtomicInteger`, `LongAdder`, locks, colas concurrentes o, mejor, evitar estado compartido.
+##### 1. La idea en lenguaje sencillo
+
+Imagina un cuaderno de ventas en el mostrador. Para anotar una venta, el cajero lee el último total, le suma uno y
+escribe el nuevo total. Si dos cajeros leen el mismo total al mismo tiempo, los dos escriben el mismo número. Se
+vendieron dos unidades y el cuaderno registra una.
+
+Eso es una **condición de carrera**: el resultado depende del orden en que los hilos se cruzan. En `Carrera.java`,
+cuatro cajas venden 400 000 unidades y el contador dice 373 820. En la corrida siguiente dice 387 783. El código es
+el mismo; cambió el cruce.
+
+Hay dos formas de arreglar el cuaderno. La primera es un candado: solo quien tiene la llave escribe, y los demás
+esperan. La segunda es un contador mecánico con torniquete, que suma uno en un paso que nadie puede partir.
+
+Java ofrece las dos, y algunas más. Este tema también muestra dos fallos vecinos: un hilo que no ve lo que otro
+escribió y dos hilos que se esperan para siempre.
+
+##### 2. Definición formal y vocabulario
+
+El **estado mutable compartido** es cualquier dato que varios hilos pueden leer y escribir: un campo `static`, un
+mapa o un objeto alcanzable desde varios hilos. Sin coordinación, sus lecturas y escrituras se intercalan de forma
+impredecible.
+
+Una **operación atómica** es la que otros hilos ven como indivisible: o no ocurrió o ocurrió completa.
+`sinProteger++` no lo es, porque son tres pasos: leer, sumar y escribir. `incrementAndGet()` de **`AtomicInteger`**
+sí lo es.
+
+**`synchronized`** adquiere el **monitor** de un objeto antes de entrar a un bloque y lo libera al salir, incluso
+con excepción. Cada objeto de Java tiene un monitor, que es su lock intrínseco. **`ReentrantLock`** hace lo mismo
+de forma explícita, con `lock()` y `unlock()`.
+
+**`volatile`** es un modificador de campo que garantiza visibilidad y orden, pero no atomicidad.
+**`ConcurrentHashMap`** es un mapa seguro para hilos con actualizaciones atómicas por clave. Un **deadlock** es el
+interbloqueo de Fundamentos en Java. El **pinning** es el caso en que un hilo virtual no puede soltar su portador.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El compilador convierte `sinProteger++` en tres instrucciones de la JVM: leer el campo, sumar uno y escribir el
+campo. El diagrama muestra cómo dos cajas pierden una venta:
 
 ```mermaid
 sequenceDiagram
@@ -1096,6 +1478,82 @@ sequenceDiagram
   B->>M: escribe 42
   Note over M: dos ventas, un solo incremento
 ```
+
+Con `synchronized`, la secuencia cambia así:
+
+```java
+synchronized (CANDADO) {
+    sincronizado++;
+}
+```
+
+1. Al entrar, el hilo intenta adquirir el monitor de `CANDADO`. Si otro hilo lo tiene, este queda en estado
+   `BLOCKED`.
+2. Con el monitor tomado, ejecuta los tres pasos del `++` sin que ningún otro hilo entre al bloque.
+3. Al salir, libera el monitor. La JVM despierta a uno de los hilos que esperaban.
+4. El Modelo de Memoria de Java (JLS, sección 17.4.5) garantiza que liberar un monitor *happens-before* la
+   siguiente adquisición del mismo monitor. El hilo siguiente ve el valor escrito, no una copia vieja.
+
+`AtomicInteger` no usa monitores. `incrementAndGet()` termina en una instrucción atómica del procesador, que lee,
+suma y escribe sin dejar huecos. Otras operaciones, como `compareAndSet(esperado, nuevo)`, escriben solo si el
+valor actual sigue siendo el esperado. Si no, el método informa el fallo y el código reintenta.
+
+`volatile` resuelve otro problema: la visibilidad. El compilador JIT puede leer un campo normal una vez y guardarlo
+en un registro del procesador. En `Visibilidad.java`, el bucle sin `volatile` nunca volvió a leer `detenerNormal`.
+Con `volatile`, cada lectura ve la última escritura de cualquier hilo.
+
+`ConcurrentHashMap.merge` bloquea solo la posición de la tabla donde cae la clave. Dos hilos que actualizan claves
+distintas no se esperan. Dos hilos con la misma clave se turnan, y ninguno pierde su suma.
+
+##### 4. Reglas, variantes y casos límite
+
+`synchronized` es **reentrante**: un hilo que ya tiene un monitor puede volver a entrar a otro bloque del mismo
+objeto sin bloquearse. `ReentrantLock` también lo es, como dice su nombre.
+
+Un método `synchronized` de instancia usa el monitor de `this`. Un método `static synchronized` usa el monitor del
+objeto `Class`. Sincronizar sobre objetos distintos no excluye nada, como muestra el Ejercicio verificable 2.
+
+`volatile` tiene límites precisos:
+
+- Garantiza que una escritura sea visible para las lecturas posteriores de otros hilos.
+- Impide que el compilador reordene las lecturas y escrituras alrededor del campo.
+- No hace atómico `contador++`. Por eso `static volatile int sinProteger` no arregla la carrera (Checkpoint 4.1).
+
+`ReentrantLock` ofrece lo que `synchronized` no tiene. `tryLock(tiempo, unidad)` deja de esperar tras un límite.
+`lockInterruptibly()` permite interrumpir la espera. Su costo es que `unlock()` va siempre en un `finally`; si lo
+olvidas, nadie lo libera.
+
+`ConcurrentHashMap` no admite claves ni valores `null`. La función de `merge` o `compute` debe ser corta y no
+modificar el mismo mapa. Cada llamada es atómica, pero `get` seguido de `put` no lo es.
+
+Para contadores con mucha disputa existe `LongAdder`, desde Java 8. Reparte la suma en varias celdas y las junta al
+leer con `sum()`. Escribe más rápido que `AtomicLong`, pero su lectura no es una foto instantánea.
+
+Un deadlock exige las cuatro condiciones de Fundamentos, entre ellas la espera circular. El orden global de
+adquisición rompe esa condición. La JVM detecta ciclos de monitores con `ThreadMXBean.findDeadlockedThreads()`,
+pero no los resuelve.
+
+El pinning cambió entre versiones. En Java 21 a 23, un hilo virtual que bloquea dentro de `synchronized` retiene su
+portador. Java 24 eliminó ese caso con el JEP 491; por eso la salida de JDK 25 baja de 815 ms a 197 ms. La
+propiedad `jdk.tracePinnedThreads` se retiró en Java 24. El evento `jdk.VirtualThreadPinned` de JDK Flight Recorder
+sigue informando el pinning que queda, como el de código nativo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema traduce a Java los conceptos de Fundamentos, Módulo 5: **sección crítica** y **lock** del Tema 2, e
+**interbloqueo** y **orden global de recursos** del Tema 5. El `synchronized` de Java es ese lock, integrado en
+cada objeto.
+
+En el Java, Módulo 4, Tema 4 viste una `ArrayList` que perdía elementos en un stream paralelo. Era el mismo
+fenómeno que `sinProteger++`. La solución allí fue no compartir estado y producir el resultado con `toList()`;
+sigue siendo la mejor cuando es posible.
+
+El error de compilación de `ContadorLocal.java` viene del Java, Módulo 4, Tema 1: una lambda no puede modificar una
+variable local. Java impide así la carrera más obvia antes de ejecutar nada.
+
+El Tema 3 presentó los hilos portadores; aquí ves cuándo un hilo virtual no puede soltarlos. El Tema 6 muestra
+`ScopedValue`, que pasa datos inmutables entre hilos sin estado compartido. El laboratorio integrador usa
+`AtomicInteger` y `synchronized` en `CheckoutService`.
 
 #### Problema resuelto 4.1
 Reproduce la carrera de las cuatro cajas y corrígela de dos formas.
@@ -1560,7 +2018,7 @@ el Tema 3) y la interrupción, que verás a fondo en el Tema 7.
 - **Error típico:** sacar una `Subtask` fuera del bloque y esperar usarla después.
 
 **`StructuredTaskScope`**
-- **Definición técnica:** clase de `java.util.concurrent`, en vista previa en Java 25 (JEP 505), que implementa la concurrencia estructurada; `open()` crea un scope que falla si falla cualquier subtarea.
+- **Definición técnica:** interfaz de `java.util.concurrent`, en vista previa en Java 25 (JEP 505), que implementa la concurrencia estructurada; `open()` crea un scope que falla si falla cualquier subtarea.
 - **En palabras sencillas:** la mesa de trabajo del checkout: todas las consultas se hacen sobre ella y se recoge al salir.
 - **Dónde se rompe la comparación:** la mesa se recoge sola: `close()` cancela lo que siga abierto.
 - **Ejemplo:** `StructuredTaskScope.open()` en `CheckoutEstructurado.java`, línea 25.
@@ -1595,21 +2053,132 @@ el Tema 3) y la interrupción, que verás a fondo en el Tema 7.
 - **Error típico:** copiar código de structured concurrency de un artículo de JDK 21 (`ShutdownOnFailure`) a JDK 25, donde esa API ya no existe.
 
 #### ► CÓMO FUNCIONA
-Structured Concurrency trata subtareas concurrentes como parte de un bloque con entrada y salida claras. En lugar de lanzar futuros sueltos que pueden sobrevivir al método que los creó, abres un scope, forkeas subtareas, haces `join()` y el scope garantiza el ciclo de vida. Si el scope termina, las subtareas no quedan huérfanas.
 
-En `checkoutConStructuredConcurrency` se usa `StructuredTaskScope.open()` (API preview en esta configuración de JDK 25) para consultar precio y stock. El resultado se combina solo después de `join()`. Esto mejora legibilidad y manejo de fallos respecto a futuros sueltos.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un jefe de cocina que reparte un pedido: uno prepara la carne, otro la ensalada. Si la carne se quema y
+el pedido se cancela, el jefe avisa a todos y espera a que dejen los cuchillos. Nadie sigue picando lechuga para un
+plato que ya no existe.
+
+Con los futuros del Tema 2 no hay jefe. En `Huerfana.java`, el precio falla a los 50 ms, el checkout informa el
+error y el inventario sigue trabajando 450 ms más. Esa consulta es una **tarea huérfana**: gasta una conexión y su
+resultado nunca se usará.
+
+La **concurrencia estructurada** pone al jefe. Las subtareas se lanzan dentro de un bloque, y el bloque no termina
+hasta que todas acabaron. Si una falla, el bloque cancela a las demás y espera a que se detengan.
+
+En el checkout de Tienda Aurora, esto significa que precio y stock viven y mueren con el método `checkout`. Cuando
+el método retorna, con éxito o con error, no queda ninguna consulta suelta.
+
+##### 2. Definición formal y vocabulario
+
+El JEP 505 define la concurrencia estructurada como un enfoque que trata un grupo de tareas relacionadas como una
+sola unidad de trabajo. Esas tareas corren en hilos distintos. El objetivo declarado es simplificar el manejo de
+errores y la cancelación, y mejorar la observabilidad.
+
+En Java 25, **`StructuredTaskScope`** es una interfaz de `java.util.concurrent` en **vista previa**. Una **API en
+vista previa** está completa pero puede cambiar; solo se compila con `--enable-preview` y la versión exacta del
+JDK.
+
+Abres un scope con `StructuredTaskScope.open()`. Dentro usas **`fork` y `join` del scope**. `fork` lanza una tarea
+en un hilo virtual nuevo y devuelve una **Subtask**, el recibo de esa tarea. `join` espera a que todas terminen o a
+que una falle.
+
+Si una subtarea falla, `join` lanza **FailedException**, una excepción no comprobada cuya causa es la excepción
+original. El scope se declara en un try-with-resources, porque su `close()` garantiza que ninguna subtarea
+sobreviva al bloque.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el checkout con `XXX-999` del Problema resuelto 5.2:
+
+```java
+try (var scope = StructuredTaskScope.open()) {
+    Subtask<BigDecimal> precio = scope.fork(() -> precio(sku, 50));
+    Subtask<Integer> stock = scope.fork(() -> stock(sku));
+    scope.join();
+    return sku + " precio=" + precio.get() + " stock=" + stock.get();
+}
+```
+
+1. `open()` crea el scope con su política por defecto. El hilo que lo abre pasa a ser su **dueño**.
+2. Cada `fork` crea un hilo virtual nuevo, lo registra como hijo del scope y lo arranca. Devuelve la `Subtask` de
+   inmediato.
+3. `join()` bloquea al dueño. El scope queda esperando eventos de sus hijos.
+4. A los 50 ms, el precio lanza `IllegalArgumentException`. El scope recibe la falla y aplica la política: cancela
+   el scope.
+5. Cancelar significa interrumpir a todos los hilos hijos que siguen vivos. El stock recibe `InterruptedException`
+   dentro de `Thread.sleep`, imprime `inventario cancelado para XXX-999` y relanza.
+6. Cuando todos los hijos terminaron, `join()` despierta al dueño y lanza `FailedException` con la falla del precio
+   como causa.
+7. La excepción sale del `try` y se ejecuta `close()`. Como ya no hay hijos vivos, cierra sin esperar.
 
 ```mermaid
 flowchart TB
-  O["open(): abre el scope"] --> F1["fork precio"]
+  O["open: abre el scope"] --> F1["fork precio"]
   O --> F2["fork stock"]
-  F1 -->|falla a los 50 ms| J{"join()"}
-  F2 -->|interrumpida| J
-  J -->|todas bien| OK["combinar resultados"]
-  J -->|una falla| X["FailedException + cancelar el resto"]
-  OK --> C["close(): ninguna subtarea viva"]
+  F1 -->|"falla a los 50 ms"| J{"join"}
+  F2 -->|"interrumpida"| J
+  J -->|"todas bien"| OK["combinar resultados"]
+  J -->|"una falla"| X["FailedException y cancelar el resto"]
+  OK --> C["close: ninguna subtarea viva"]
   X --> C
 ```
+
+El paso 5 explica el orden de la salida. En `Huerfana.java`, el mensaje del inventario sale después del fallo. En
+`CheckoutEstructurado.java`, `inventario cancelado` sale antes de `falló:`, porque `join()` no devuelve el control
+hasta que los hijos terminan.
+
+La política por defecto de `open()` es «esperar a que todas tengan éxito o fallar con la primera». Internamente la
+representa un **Joiner**, un objeto que decide, ante cada subtarea terminada, si el scope debe cancelarse y qué
+devuelve `join()`.
+
+##### 4. Reglas, variantes y casos límite
+
+La API ha cambiado mucho entre versiones. Fue incubadora en Java 19 y 20, y vista previa desde Java 21. En Java 21
+a 24 se usaban subclases como `ShutdownOnFailure`. Java 25 (JEP 505) las reemplazó por `open()` y la interfaz
+`Joiner`. Código de un artículo de JDK 21 no compila en JDK 25.
+
+`StructuredTaskScope.Joiner` trae fábricas para otras políticas:
+
+- `awaitAllSuccessfulOrThrow()`: la de `open()` sin argumentos; `join()` devuelve `null`.
+- `allSuccessfulOrThrow()`: como la anterior, pero `join()` devuelve un stream con las subtareas.
+- `anySuccessfulResultOrThrow()`: devuelve el primer resultado exitoso y cancela las demás.
+- `awaitAll()`: espera a todas sin cancelar por fallas; tú revisas cada `Subtask`.
+
+`open(joiner, config -> config.withTimeout(Duration.ofSeconds(2)))` añade un límite de tiempo al scope. La
+configuración también admite `withName` y `withThreadFactory`.
+
+Las reglas de uso son estrictas. Verificado con OpenJDK 25.0.5.1:
+
+- Solo el dueño llama a `fork` y `join`. Otro hilo, incluso una subtarea, recibe `WrongThreadException: Current
+  thread not owner`.
+- `fork` después de `join` lanza `IllegalStateException: Already joined or scope is closed`.
+- `Subtask.get()` antes de `join` lanza `IllegalStateException: join not called`, como dice el Checkpoint 5.2.
+
+Una `Subtask` tiene tres estados en `Subtask.State`. `SUCCESS` tiene valor, `FAILED` tiene excepción y
+`UNAVAILABLE` no tiene ninguno, por ejemplo porque fue cancelada.
+
+La cancelación es cooperativa. El scope interrumpe al hilo; si la tarea ignora la interrupción y sigue calculando,
+`close()` la espera. El Tema 7 muestra cómo escribir tareas que respetan la interrupción.
+
+Los scopes pueden anidarse: una subtarea puede abrir su propio scope. Los volcados de hilos en formato JSON
+muestran ese árbol de scopes y sus hilos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema compara directamente con el Tema 2. `CompletableFuture` encadena etapas sin bloquear, pero cada futuro
+vive por su cuenta. Un fallo en uno no cancela a los otros: eso produce la huérfana del Problema resuelto 5.1.
+
+`StructuredTaskScope` usa los hilos virtuales del Tema 3. Por eso puedes escribir cada subtarea como código
+bloqueante normal. Lanzar un hilo virtual por `fork` es barato.
+
+El bloque `try` del scope sigue la misma idea que el try-with-resources del Java, Módulo 3: lo que se abre dentro
+se cierra al salir. Aquí lo que se cierra son hilos, no archivos.
+
+El Tema 6 muestra cómo un `ScopedValue` llega automáticamente a las subtareas de un scope. El Tema 7 añade tiempos
+límite y explica cómo una subtarea responde a la interrupción. El laboratorio usa este patrón en
+`checkoutConStructuredConcurrency`.
 
 #### Problema resuelto 5.1
 Demuestra la tarea huérfana: el precio falla rápido y el inventario sigue trabajando.
@@ -1877,19 +2446,130 @@ y **`fork` y `join` del scope** (ficha en el Tema 5).
 - **Error típico:** comprobar `isBound()` y olvidar el caso `false`; `requestIdActual()` devuelve `sin-request` para cubrirlo.
 
 #### ► CÓMO FUNCIONA
-`ScopedValue` permite pasar contexto inmutable a lo largo de una llamada y sus subtareas, incluyendo virtual threads. A diferencia de `ThreadLocal`, el valor está acotado al scope: se establece con `ScopedValue.where(...).call/run(...)` y no queda contaminando el hilo después. Eso lo hace más seguro para concurrencia estructurada y virtual threads.
 
-`ThreadLocal` es mutable y vive hasta que se elimina o el hilo muere. Con pools y virtual threads masivos, es fácil filtrar contexto o heredar datos incorrectos. `ScopedValue` favorece inmutabilidad y alcance léxico.
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un evento donde te entregan una credencial en la puerta. Mientras estás dentro, cualquier persona del
+personal puede leerla y saber quién eres. Al salir, te la quitan. El siguiente asistente recibe la suya; nunca
+hereda la tuya.
+
+Ahora piensa en un casillero de gimnasio que nadie vacía. Un socio deja sus cosas, se va, y el siguiente que usa
+ese casillero las encuentra. Eso hace un `ThreadLocal` en un pool de hilos cuando olvidas `remove()`: la petición B
+ve el `req-cliente-A` de otro cliente.
+
+El problema de Tienda Aurora es el contexto de una petición. Cada checkout trae un `requestId` que debe aparecer en
+todos sus logs, incluidos los de sus subtareas. Pasarlo como parámetro por diez métodos ensucia las firmas.
+Guardarlo en el hilo es cómodo pero arriesgado.
+
+`ScopedValue` es la credencial del evento. Lo enlazas al entrar a un bloque de código, lo leen todos los métodos
+que ese bloque llama, y desaparece al salir. Las subtareas de un `StructuredTaskScope` creadas dentro lo ven
+también.
+
+##### 2. Definición formal y vocabulario
+
+Un **ID de correlación** es un identificador asignado a una petición al entrar y propagado a cada log, subtarea y
+llamada saliente. Sirve para reconstruir el recorrido de una petición entre miles de líneas de log.
+
+**ThreadLocal** es una clase de `java.lang` que guarda un valor distinto por hilo. `set`, `get` y `remove` actúan
+sobre la copia del hilo actual, que vive hasta que la borras o el hilo muere. **InheritableThreadLocal** es una
+subclase que copia el valor del padre al crear un hilo hijo.
+
+La documentación define **ScopedValue** como un valor que puede compartirse de forma segura y eficiente con
+métodos, sin pasarlo como parámetro. Es inmutable mientras está enlazado y solo existe durante una ejecución
+acotada.
+
+El **enlace de un ScopedValue** se crea con `ScopedValue.where(clave, valor)`, que devuelve un `Carrier`. Después
+llamas `run(Runnable)` o `call(...)` sobre él. El enlace dura exactamente lo que dura esa llamada, ni un instante
+más.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la primera parte de `ContextoScoped.java`, del Problema resuelto 6.2:
+
+```java
+ScopedValue.where(REQUEST_ID, "req-7f3a").run(() -> {
+    System.out.println("dentro: " + requestIdActual());
+    ScopedValue.where(REQUEST_ID, "req-reintento").run(() ->
+            System.out.println("anidado: " + requestIdActual()));
+    System.out.println("de vuelta: " + requestIdActual());
+});
+```
+
+1. `where` crea un objeto `Carrier` que empareja la clave `REQUEST_ID` con `"req-7f3a"`. Todavía no enlaza nada.
+2. `run` guarda el conjunto de enlaces actual del hilo y lo reemplaza por uno nuevo. El nuevo contiene el par
+   recién creado y apunta al conjunto anterior.
+3. Dentro del `Runnable`, `REQUEST_ID.get()` busca la clave en ese conjunto, del enlace más reciente al más
+   antiguo. Encuentra `req-7f3a`.
+4. El `where` anidado repite el paso 2. Ahora el enlace más reciente es `req-reintento`, que oculta al exterior sin
+   borrarlo.
+5. Al terminar el `run` interior, el hilo restaura el conjunto que había antes. `get()` vuelve a encontrar
+   `req-7f3a`.
+6. Al terminar el `run` exterior, el hilo restaura el conjunto vacío. Fuera, `isBound()` devuelve `false`.
 
 ```mermaid
 flowchart LR
-  W["where(REQUEST_ID, req-9b21)"] --> R["call: bloque enlazado"]
-  R --> D["requestIdActual() = req-9b21"]
-  R --> S["scope.fork(subtarea)"]
+  W["where REQUEST_ID req-9b21"] --> R["call: bloque enlazado"]
+  R --> D["requestIdActual: req-9b21"]
+  R --> S["scope.fork subtarea"]
   S --> H["subtarea en hilo virtual ve req-9b21"]
-  R -->|al salir| F["fuera: sin-request"]
-  TL["ThreadLocal.set en un pool"] -.->|sin remove| N["la siguiente tarea del hilo lo ve"]
+  R -->|"al salir"| F["fuera: sin-request"]
+  TL["ThreadLocal.set en un pool"] -.->|"sin remove"| N["la siguiente tarea del hilo lo ve"]
 ```
+
+La restauración de los pasos 5 y 6 ocurre aunque el bloque lance una excepción. No hay `remove()` que olvidar: el
+enlace no puede sobrevivir a su llamada.
+
+Las subtareas heredan los enlaces así. `StructuredTaskScope.open()` toma una foto de los enlaces del hilo dueño.
+Cada `fork` arranca su hilo virtual con esa misma foto. Como los valores son inmutables, todos los hijos comparten
+la foto sin copiarla.
+
+`ThreadLocal` funciona al revés. Cada `Thread` tiene un mapa propio, y `set` escribe en el mapa del hilo actual.
+Nadie lo borra al terminar la tarea. En un pool, el hilo sigue vivo y su mapa también.
+
+##### 4. Reglas, variantes y casos límite
+
+`ScopedValue` pasó por una incubadora en Java 20 y por varias vistas previas desde Java 21. Es estándar desde Java
+25 (JEP 506). `StructuredTaskScope`, en cambio, sigue en vista previa en Java 25. Por eso `ContextoScoped.java`
+necesita `--enable-preview`.
+
+La API de Java 25 tiene pocas piezas:
+
+- `get()` devuelve el valor enlazado o lanza `NoSuchElementException: ScopedValue not bound`.
+- `isBound()` dice si hay enlace, sin lanzar nada.
+- `orElse(otro)` devuelve el valor o `otro`. `orElseThrow(proveedor)` lanza la excepción que tú eliges.
+- `where(...).where(...)` encadena varios enlaces en un mismo `Carrier`.
+
+`call` recibe un `ScopedValue.CallableOp`, una interfaz funcional cuyo método puede lanzar un tipo de excepción
+concreto. El compilador conoce ese tipo y no te obliga a capturar `Exception` genérica.
+
+No existe `set`. Para usar otro valor dentro de un bloque, abres un enlace anidado, como `req-reintento`. Esta
+restricción es la que hace seguro compartir el valor entre muchos hilos.
+
+Los enlaces solo pasan a las subtareas de `StructuredTaskScope`. Un hilo creado a mano con `Thread.start` dentro
+del bloque no los ve, como explica el Checkpoint 6.2.
+
+`ThreadLocal` sigue siendo útil cuando necesitas un valor **mutable** por hilo, como un formateador costoso que no
+es seguro para hilos. En ese caso, escribe `set` y `remove()` en el mismo método, con `remove()` en un `finally`.
+
+Con hilos virtuales, `ThreadLocal` funciona pero cuesta. Cada uno de 100 000 hilos virtuales puede tener su copia.
+`InheritableThreadLocal` empeora el caso, porque copia el valor en cada hijo.
+`Thread.Builder.inheritInheritableThreadLocals(false)` desactiva esa copia, como prueba el Ejercicio verificable 2.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema depende del Tema 5. Un `ScopedValue` muestra su valor real cuando se combina con `StructuredTaskScope`:
+el contexto llega a cada subtarea sin pasarlo como parámetro y sin copias.
+
+El Tema 4 resolvía el estado compartido mutable con candados y atómicos. `ScopedValue` toma otro camino: comparte
+solo valores inmutables y con duración acotada. Si nada cambia, no hay carrera.
+
+Compara también con el `Optional` del Java, Módulo 4, Tema 2. `orElse` tiene el mismo sentido en ambos: «el valor,
+o este reemplazo si no hay». El método `requestIdActual()` del tema podría escribirse como
+`REQUEST_ID.orElse("sin-request")`.
+
+El Tema 7 completa el checkout con tiempos límite y cancelación. En el laboratorio,
+`checkoutConStructuredConcurrency` enlaza `REQUEST_ID` antes de abrir el scope y lo incluye en el resultado como
+`requestId=req-7f3a`.
 
 #### Problema resuelto 6.1
 Demuestra la fuga de un `ThreadLocal` en un pool de un hilo, corrígela con `remove()` y observa la herencia en un hijo.
@@ -2175,23 +2855,139 @@ Este tema usa **Future** y **ExecutorService** (ficha en el Tema 1), **Completab
 - **Error típico:** cerrar recursos al final del bloque `try` en lugar de usar try-with-resources o `finally`.
 
 #### ► CÓMO FUNCIONA
-El timeout evita esperar indefinidamente por una tarea lenta o colgada. `Future.get(timeout, unit)` y `CompletableFuture.orTimeout(...)` son mecanismos básicos. Pero cancelar no es magia: Java interrumpe hilos cooperativamente. El código bloqueable debe responder a `InterruptedException`, restaurar el estado de interrupción cuando corresponda y salir limpiamente.
 
-La cancelación cooperativa significa que la tarea revisa si debe parar. `Thread.sleep`, `Object.wait`, algunas operaciones bloqueantes de I/O y APIs concurrentes responden a interrupción; bucles CPU-bound deben comprobar `Thread.currentThread().isInterrupted()` o recibir una señal. Abandonar recursos ocurre cuando se cancela por fuera pero la tarea sigue con un socket, archivo o lock abierto.
+##### 1. La idea en lenguaje sencillo
+
+Imagina que llamas a un proveedor y nadie contesta. Después de un rato cuelgas. Colgar resuelve tu problema: ya no
+esperas. Pero si dejaste a alguien buscando un dato en el archivo, esa persona sigue buscando para nadie, con el
+archivo abierto.
+
+En Java pasa lo mismo. Un **timeout** limita cuánto esperas. No detiene la tarea que calculaba el resultado. Si la
+tarea abrió una conexión al inventario de Tienda Aurora, la conexión sigue ocupada mientras la tarea siga viva.
+
+Detener una tarea de verdad requiere dos pasos. Primero le avisas que debe parar. Después la tarea, que es la única
+que sabe qué tiene abierto, cierra sus recursos y sale. A este acuerdo se le llama **cancelación cooperativa**.
+
+Java no tiene una forma segura de matar un hilo desde fuera. Lo que ofrece es una señal, la **interrupción**, y una
+convención: los métodos que esperan responden a ella, y tu código también debe hacerlo.
+
+##### 2. Definición formal y vocabulario
+
+Un **timeout** es el tiempo máximo que aceptas esperar una operación. Cuando se agota, los métodos de espera lanzan
+**TimeoutException**, una excepción comprobada de `java.util.concurrent` que no trae mensaje.
+
+La **interrupción** es una bandera booleana de cada hilo. `hilo.interrupt()` la levanta. El hilo destino la
+consulta con `isInterrupted()`. Si está bloqueado en `sleep`, `wait`, `join` o en una cola bloqueante, recibe
+**InterruptedException** y la bandera vuelve a `false`.
+
+**`Future.cancel`** pide cancelar una tarea. Con `cancel(true)`, si la tarea ya corre en un executor, interrumpe su
+hilo. **`orTimeout` y `completeOnTimeout`** son métodos de `CompletableFuture` que completan el futuro cuando vence
+el plazo. El primero usa una excepción y el segundo un valor por defecto; ninguno toca la tarea.
+
+Una **fuga de recursos** ocurre cuando el código que debía cerrar una conexión, un archivo o un lock nunca se
+ejecuta. Una tarea abandonada sin cancelar es la causa más común en código concurrente.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `Cancelacion.java`, del Problema resuelto 7.1:
+
+```java
+Future<Integer> stock = executor.submit(Cancelacion::consultaLenta);
+try {
+    stock.get(350, TimeUnit.MILLISECONDS);
+} catch (TimeoutException e) {
+    boolean cancelada = stock.cancel(true);
+}
+```
+
+1. `submit` arranca `consultaLenta` en un hilo virtual. La tarea abre `conexion-1` con try-with-resources y entra a
+   un bucle con `Thread.sleep(100)`.
+2. `get(350, ...)` bloquea a `main`. Pasan 350 ms sin resultado y `get` lanza `TimeoutException`. La tarea no se
+   enteró de nada.
+3. `cancel(true)` cambia el estado del `Future` a `CANCELLED` y llama a `interrupt()` sobre el hilo de la tarea.
+4. La tarea está dentro de `Thread.sleep`. La JVM la despierta, limpia la bandera y lanza `InterruptedException`.
+5. La excepción sale del bucle. Al abandonar el bloque `try`, Java llama a `close()` de la conexión y se imprime
+   `cerrada conexion-1`.
+6. La excepción sale del método y la tarea termina. El `Future` ya estaba cancelado, así que nadie la ve.
+7. El `close()` del executor no encuentra tareas vivas y retorna enseguida.
 
 ```mermaid
 sequenceDiagram
   participant M as main
   participant F as Future
   participant T as tarea
-  M->>F: get(350 ms)
+  M->>F: get 350 ms
   F-->>M: TimeoutException
-  M->>F: cancel(true)
-  F->>T: interrupt()
+  M->>F: cancel true
+  F->>T: interrupt
   T->>T: sleep lanza InterruptedException
   T->>T: try-with-resources cierra la conexión
-  M->>M: close() del executor: nada queda vivo
+  M->>M: close del executor: nada queda vivo
 ```
+
+El paso 4 depende de que la tarea esté en un método que responde a la interrupción. Un bucle de cálculo puro nunca
+llama a esos métodos. En `InterrupcionCpu.java`, el bucle que ignora la bandera trabaja 2011 ms. El que la revisa
+en cada vuelta sale a los 217 ms:
+
+```java
+if (revisa && Thread.currentThread().isInterrupted()) {
+    break;
+}
+```
+
+`orTimeout` sigue otro camino. Programa un temporizador interno. Si vence antes que la tarea, completa el futuro
+con `TimeoutException`. No guarda ninguna referencia al hilo que calcula, así que no puede interrumpirlo. Por eso
+`TimeoutFuture.java` imprime dos veces que la consulta lenta terminó de todos modos.
+
+##### 4. Reglas, variantes y casos límite
+
+La regla más importante es no perder la señal. Al lanzar `InterruptedException`, Java limpia la bandera. Si la
+capturas, tienes dos opciones correctas:
+
+- Relanzarla, declarando `throws InterruptedException` en el método.
+- Restaurar la bandera con `Thread.currentThread().interrupt()` y salir. Así el código que te llamó todavía la ve.
+
+Un `catch` vacío es la opción incorrecta: la cancelación desaparece, como muestra `TragarInterrupcion.java`.
+
+Hay dos formas de leer la bandera. `isInterrupted()` la consulta sin cambiarla. El método estático
+`Thread.interrupted()` la consulta **y la limpia**. Usa el segundo solo si vas a manejar la interrupción en ese
+mismo punto.
+
+`cancel` se comporta distinto según el tipo de `Future`:
+
+- En un `Future` de `ExecutorService`, `cancel(true)` interrumpe el hilo si la tarea ya empezó.
+- `cancel(false)` no interrumpe: el `Future` queda `CANCELLED`, pero la tarea sigue (Checkpoint 7.1).
+- En un `CompletableFuture`, el argumento no tiene efecto. Solo marca el futuro como cancelado (Ejercicio
+  verificable 3).
+- Una tarea que todavía no empezó no llega a ejecutarse en ningún caso.
+
+`Future.state()` y `resultNow()` existen desde Java 19. `orTimeout` y `completeOnTimeout` existen desde Java 9.
+
+`Thread.stop()` no es alternativa. Detenía el hilo en cualquier punto y podía dejar objetos a medio modificar.
+Desde Java 20 lanza `UnsupportedOperationException`.
+
+No todas las esperas responden a la interrupción. Los flujos clásicos de `java.io` pueden quedarse bloqueados en
+una lectura de red sin enterarse. Para ellos se configura un timeout propio de lectura, como dice el recuadro
+«Prevenir errores».
+
+Con `StructuredTaskScope` (Tema 5), la cancelación sigue el mismo mecanismo. Cerrar o cancelar el scope interrumpe
+a los hilos hijos. Si un hijo ignora la interrupción, `close()` lo espera igual.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 dejó una pregunta abierta: tras un `TimeoutException`, la tarea seguía corriendo. Aquí la respuesta es
+`cancel(true)` más una tarea que coopera. El executor del Tema 1 se cierra solo cuando ya no queda nada vivo.
+
+El Tema 2 presentó `orTimeout` como límite de espera. Este tema precisa su alcance: limita la espera del
+consumidor, no la tarea. Para detener la consulta necesitas un `Future` de executor o una tarea que revise un plazo
+propio.
+
+El try-with-resources del Java, Módulo 3 es la pieza que cierra la conexión. Sin él, la interrupción sacaría a la
+tarea del bucle pero dejaría la conexión abierta.
+
+La **tarea huérfana** del Tema 5 es el problema que este tema evita a mano. `StructuredTaskScope` automatiza esa
+cancelación: cuando una subtarea falla, interrumpe a las demás. El laboratorio integrador combina ambas ideas en
+`CheckoutService`.
 
 #### Problema resuelto 7.1
 Espera el stock como máximo 350 ms; si no llega, cancela la consulta y comprueba que la conexión se cierra.

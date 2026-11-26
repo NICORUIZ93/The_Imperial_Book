@@ -153,80 +153,134 @@ categoría y cuáles están agotados. Con bucles `for` necesitas cuatro acumulad
 
 #### ► CÓMO FUNCIONA
 
-Un stream no es una colección ni un hilo: es una secuencia de valores sobre la que se construye un pipeline. El mecanismo tiene tres piezas. La **fuente** produce elementos (`lista.stream()`, `Stream.of(...)`, un generador, un archivo). Las **operaciones intermedias** (`filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`, `skip`) devuelven otro stream y son perezosas: registran una transformación, pero no recorren datos. La **operación terminal** (`collect`, `reduce`, `forEach`, `findFirst`, `count`, `toList`, `anyMatch`) consume el pipeline, dispara el trabajo y produce un valor o un efecto. Después de la terminal, el stream queda consumido: intentar reutilizarlo lanza `IllegalStateException`.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe:** en lugar de escribir cómo avanza un `for` —índice, acumulador, bandera— describes qué transformación quieres. Eso hace que el código se lea como una cadena de decisiones de negocio y permita cambiar la estrategia de ejecución sin reescribir la lógica. La ganancia no es “menos líneas”: es separar la intención (`filtrar activos`, `agrupar por categoría`, `sumar unidades`) del mecanismo de iteración.
+Piensa en una línea de empaque de una bodega. Las cajas entran por un extremo, pasan por una mesa que descarta las
+dañadas, otra que les pone etiqueta y, al final, alguien las cuenta. Nadie mueve una caja hasta que el encargado
+del final pide el conteo.
 
-**Implicación práctica:** la pereza importa. En `productos.stream().filter(...).map(...).toList()`, ni `filter` ni `map` hacen trabajo hasta que `toList()` lo pide. Eso permite que `findFirst()` o `limit(2)` corten el recorrido antes de procesar toda la fuente. Pero `sorted()` es una operación intermedia *stateful*: necesita ver todos los elementos antes de emitir el primero. Saber esto evita sorpresas de rendimiento.
+Un stream de Java funciona igual. Tú describes las estaciones: «descarta lo que no tiene stock», «toma el nombre»,
+«júntalo en una lista». Java no recorre nada mientras describes. Recorre cuando pides el resultado final, y lo hace
+una sola vez.
+
+En Tienda Aurora esto cambia la forma de escribir los reportes. Con un `for` mezclas tres cosas: cómo avanzar por
+la lista, qué condición aplicar y dónde acumular. Con un stream escribes solo las dos últimas. El recorrido lo pone
+la librería.
+
+La ganancia real no es escribir menos líneas. Es que el código se lee como la pregunta de negocio: «productos con
+stock, en mayúsculas, en una lista». Cuando la pregunta cambia, cambias una estación y no reescribes el bucle
+entero.
+
+##### 2. Definición formal y vocabulario
+
+La documentación del paquete `java.util.stream` define un **Stream** como una secuencia de elementos que admite
+operaciones agregadas, secuenciales o paralelas. Un stream no almacena datos: los toma de una **fuente**, como una
+colección, un arreglo o un generador. En palabras sencillas, es la cinta, no la bodega.
+
+Las operaciones se combinan en un **pipeline** (cadena de procesamiento). Tiene una fuente, cero o más
+**operaciones intermedias** y una **operación terminal**. Las intermedias devuelven otro `Stream` y son
+**perezosas**: registran el trabajo sin hacerlo. La terminal consume el stream y produce un valor o un efecto.
+
+Las estaciones reciben su comportamiento como **lambda**. Una lambda implementa el único método abstracto de una
+**interfaz funcional**. `filter` espera un `Predicate<T>`, `map` espera una `Function<T,R>` y `reduce` espera un
+`BinaryOperator<T>`. Cuando la lambda solo llama a un método existente, la abrevias con una **referencia a
+método**, como `Producto::sku`.
+
+Las intermedias que más usarás son **`filter`**, que decide qué elementos pasan, y **`map`**, que transforma cada
+uno en exactamente otro. **`flatMap`** transforma cada elemento en un stream y concatena todos. Las terminales de
+este tema son **`reduce`**, que combina todo en un valor, y **`collect`**, que acumula en un contenedor.
+**Collectors** trae los contenedores ya hechos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que ocurre con el pipeline de nombres del Problema resuelto 1.1:
+
+```java
+List<String> nombres = productos.stream()
+        .filter(conStock)
+        .map(p -> p.nombre().toUpperCase())
+        .collect(Collectors.toList());
+```
+
+1. El compilador traduce cada lambda en una instrucción `invokedynamic`. Al ejecutarla por primera vez, la JVM crea
+   un objeto que implementa la interfaz funcional esperada.
+2. `productos.stream()` crea la etapa fuente. Por dentro guarda un **Spliterator**, el objeto que sabe recorrer la
+   lista y partirla en trozos.
+3. `filter` y `map` no recorren nada. Cada una crea una etapa nueva enlazada a la anterior y guarda su lambda. Por
+   eso el Problema resuelto 1.2 imprime `pipeline armado: nada se ha recorrido` antes que cualquier `filter`.
+4. `collect` es la terminal. Encadena las etapas de atrás hacia adelante en receptores internos: cada etapa sabe a
+   quién pasar lo que produce.
+5. El Spliterator empuja los elementos uno a uno. Cada elemento atraviesa todas las estaciones antes de que entre
+   el siguiente: es un recorrido vertical, no por etapas completas.
+6. Al terminar, la etapa fuente queda marcada como consumida. Una segunda terminal lanza `IllegalStateException`.
 
 ```mermaid
 flowchart LR
-  F["Fuente<br/>productos.stream()"] --> I1["filter<br/>intermedia, perezosa"]
-  I1 --> I2["map<br/>intermedia, perezosa"]
-  I2 --> T["collect / reduce / toList<br/>terminal: dispara el recorrido"]
-  T --> R["List, Map, número"]
+  F["Fuente: productos.stream()"] --> I1["filter: intermedia, perezosa"]
+  I1 --> I2["map: intermedia, perezosa"]
+  I2 --> T["collect, reduce o toList: terminal"]
+  T --> R["List, Map o número"]
   T -.->|"segundo uso"| X["IllegalStateException"]
 ```
 
-En Tienda Aurora, `Pedido.total()` muestra un pipeline mínimo y legible:
+El paso 5 explica la salida del Problema resuelto 1.2. `MOL-200` entra, no pasa el filtro y se descarta. `CAF-100`
+pasa el filtro, entra a `map` y llega a `limit(1)`. Como ya hay un resultado, el recorrido se corta y `FIL-300`
+nunca se toca. A ese corte se le llama **cortocircuito**.
+
+`reduce` combina con una identidad y una función. La identidad responde a «¿cuánto vale la suma de cero
+elementos?». En `Pedido.total()` del laboratorio la identidad es `BigDecimal.ZERO`:
 
 ```java
-public BigDecimal total() {
-    return lineas.stream()
-            .map(LineaPedido::subtotal)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-}
+return lineas.stream()
+        .map(LineaPedido::subtotal)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
 ```
 
-Cada línea se transforma en su subtotal (`map`, uno a uno) y todos los subtotales se combinan (`reduce`). La identidad `BigDecimal.ZERO` responde “¿qué vale la suma de cero líneas?”. `BigDecimal::add` es asociativo: `(a + b) + c == a + (b + c)`. Sin esas dos propiedades, el resultado podría cambiar si el stream se ejecuta en paralelo.
+`collect` es más general. Un `Collector` describe cuatro funciones: crear el contenedor, acumular un elemento,
+combinar dos contenedores parciales y entregar el resultado. Por eso `groupingBy` puede recibir otro collector,
+llamado *downstream*, que decide qué se acumula dentro de cada grupo.
 
-`map` y `flatMap` no son intercambiables. `map` produce un resultado por elemento de entrada. `flatMap` produce cero, uno o muchos elementos y los aplana en un solo stream. En `ReporteVentas.unidadesPorSku()`, cada pedido contiene varias líneas:
+##### 4. Reglas, variantes y casos límite
 
-```java
-public Map<String, Long> unidadesPorSku() {
-    return pedidos.stream()
-            .flatMap(p -> p.lineas().stream())
-            .collect(Collectors.groupingBy(
-                    LineaPedido::sku,
-                    Collectors.summingLong(LineaPedido::cantidad)));
-}
-```
+La API de streams llegó en Java 8. Desde entonces la documentación exige tres condiciones a las lambdas que pasas:
 
-Si ahí usaras `map(p -> p.lineas().stream())`, tendrías un `Stream<Stream<LineaPedido>>`: un stream de streams, no un stream de líneas. `flatMap` es la herramienta correcta cuando la entrada es un contenedor y lo que quieres es su contenido.
+- **No interferir**: no modifiques la fuente mientras el pipeline la recorre. Si lo haces, `ArrayList` suele lanzar
+  `ConcurrentModificationException`.
+- **Sin estado**: el resultado de la lambda no debe depender de algo que cambie durante el recorrido.
+- **Asociatividad** en `reduce`: `(a + b) + c` debe dar lo mismo que `a + (b + c)`. En secuencial casi no se nota;
+  en paralelo (Tema 4) cambia el resultado.
 
-`reduce` condensa todo el stream en un único valor. Es la elección natural para sumas, máximos o concatenaciones simples. `collect` es más general: delega en un `Collector`, que describe cómo crear un contenedor, cómo acumular, cómo combinar particiones y cómo entregar el resultado. Por eso `groupingBy`, `joining`, `summingLong` y `toUnmodifiableMap` viven en `collect`, no en `reduce`.
+Las intermedias se dividen en dos clases. Las **sin estado** (`filter`, `map`, `flatMap`) procesan cada elemento
+sin mirar a los demás. Las **con estado** (`sorted`, `distinct`) necesitan recordar elementos; `sorted` consume la
+fuente entera antes de emitir el primero. Un `findFirst` después de `sorted` no ahorra el ordenamiento.
 
-En `CatalogoProductos.valorInventarioPorCategoria()` se ve un collector con downstream:
+Las variables locales que usa una lambda deben ser *effectively final*: no pueden reasignarse después. Por eso
+`total += s` dentro de `forEach` no compila, como muestra el recuadro de error de este tema.
 
-```java
-public Map<Categoria, BigDecimal> valorInventarioPorCategoria() {
-    return productos.stream()
-            .filter(Producto::activo)
-            .collect(Collectors.groupingBy(
-                    Producto::categoria,
-                    Collectors.reducing(BigDecimal.ZERO, Producto::valorInventario, BigDecimal::add)
-            ));
-}
-```
+Hay cambios por versión que conviene conocer. Java 9 añadió `takeWhile`, `dropWhile` y `Stream.ofNullable`. Java 16
+añadió `Stream.toList()` y `mapMulti`. `toList()` devuelve una lista inmodificable. `Collectors.toList()` no
+garantiza tipo ni mutabilidad; hoy devuelve un `ArrayList`, pero la documentación no lo promete.
 
-El `groupingBy` crea un mapa por categoría; el segundo collector decide qué se acumula dentro de cada grupo. Es una composición: primero filtrar, después agrupar, después sumar. La salida verificada de `demo` confirma el resultado:
+Con `Collectors.toMap`, una clave repetida lanza `IllegalStateException: Duplicate key`. Lo resuelves con una
+función de mezcla como tercer argumento o con `groupingBy`. `groupingBy` devuelve un `HashMap` sin orden
+garantizado; si necesitas orden, pasas `TreeMap::new`, como en el Problema resuelto 1.1.
 
-```text
-Valor inventario por categoria:
-  ACCESORIOS=237.50
-  BEBIDAS=284.20
-  MOLIENDA=239.70
-```
+Para números existen streams primitivos: `IntStream`, `LongStream` y `DoubleStream`.
+`mapToInt(Producto::stock).sum()` evita convertir cada `int` en un objeto `Integer`. Es la alternativa directa al
+`reduce(0, (a, b) -> a + b)` del Problema resuelto 1.1.
 
-Y el `flatMap` de ventas produce:
+##### 5. Relación con lo que ya sabes y lo que viene
 
-```text
-Unidades por SKU:
-  CAF-100=3
-  FIL-300=3
-  TEA-100=3
-  MOL-200=1
-```
+Este tema se apoya en tres módulos anteriores. Los `record` del Java, Módulo 1 son los datos que viajan por la
+cinta. Las `List`, `Map` y `Comparator` del Java, Módulo 2 son fuentes y destinos del pipeline. La
+`IllegalStateException` del Java, Módulo 3 es la que ves al reutilizar un stream.
+
+Un stream no es una colección. Una `List` guarda elementos y la recorres cuantas veces quieras. Un stream no guarda
+nada y se consume una vez. Si necesitas recorrer dos veces, vuelves a pedir `stream()` a la colección.
+
+`Optional`, en el Tema 2, nace de terminales como `findFirst()` y `max()`, que pueden no encontrar nada. Los
+gatherers del Tema 3 añaden estaciones con memoria, como ventanas y acumulados. El Tema 4 ejecuta el mismo pipeline
+en varios hilos y pone a prueba las reglas de asociatividad de la subsección anterior.
 
 #### Problema resuelto 1.1
 Responde cuatro preguntas sobre el catálogo: nombres con stock, unidades totales, productos por categoría y SKUs agotados.
@@ -531,64 +585,133 @@ Las fichas de lambda, interfaz funcional, `map` y `filter` están en el Tema 1.
 
 #### ► CÓMO FUNCIONA
 
-`Optional<T>` es un contenedor de cero o un valor. No es una colección de muchos elementos ni una caja mágica que elimina la ausencia: hace que la ausencia aparezca en la firma del método. El mecanismo es simple. `Optional.of(valor)` exige un valor no nulo; `Optional.ofNullable(valor)` produce `empty` si recibe `null`; `Optional.empty()` representa ausencia explícita. Sobre esa caja se aplican transformaciones (`map`, `flatMap`, `filter`) y se cierra con una operación que decide qué hacer si no hay valor (`orElse`, `orElseGet`, `orElseThrow`, `ifPresentOrElse`).
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe:** con `null`, la ausencia es invisible. El compilador no obliga a comprobarla y el fallo aparece como `NullPointerException` en un punto lejano al origen. Con `Optional<Producto>` como retorno, el contrato dice: “puede no haber producto; decide qué hacer”. La decisión se traslada al llamador, donde está el contexto de negocio.
+Imagina que pides un repuesto en un mostrador. El empleado puede volver con la pieza o con las manos vacías. Si
+vuelve con las manos vacías y no dice nada, tú sigues armando el aparato y descubres el problema mucho después.
 
-**Implicación práctica:** `map` transforma el valor solo si está presente. `buscarPorSku("MOL-200").map(Producto::nombre)` produce `Optional<String>`; si el SKU no existe, sigue siendo `empty` sin lanzar. `flatMap` se usa cuando la función de mapeo ya devuelve `Optional`: evita terminar con `Optional<Optional<X>>`. `filter` conserva el valor solo si cumple una condición. Todas estas operaciones son perezosas en el sentido de que no producen efectos fuera de la cadena; el valor final se obtiene al cerrar con una terminal.
+Eso hace `null` en Java. El método `buscarConNull` promete un `Producto` y, a veces, entrega nada sin avisar. El
+fallo no aparece en el buscador: aparece donde alguien llama `.nombre()`, como muestra la línea 47 del Problema
+resuelto 2.1.
+
+`Optional` es el empleado que vuelve con una caja rotulada «puede venir vacía». Antes de usar lo que hay dentro,
+tienes que decidir qué haces si no hay nada. La ausencia deja de ser una sorpresa y pasa a ser parte del contrato.
+
+En Tienda Aurora la pregunta «¿existe este SKU?» es normal, no un error. Un cliente puede escribir mal un código.
+`Optional<Producto>` dice eso en la firma del método, y el compilador obliga al llamador a abrir la caja de forma
+explícita.
+
+##### 2. Definición formal y vocabulario
+
+La documentación de `java.util.Optional<T>` lo define como un objeto contenedor que puede o no contener un valor no
+nulo. Está pensado sobre todo como **tipo de retorno** cuando hace falta representar «sin resultado» y usar
+**null** probablemente causaría errores.
+
+Un **Optional** tiene dos estados: presente, con un valor, o vacío. Lo creas con tres fábricas. **`Optional.of`**
+exige un valor no nulo y lanza `NullPointerException` si recibe `null`. `Optional.ofNullable` convierte `null` en
+vacío. `Optional.empty()` crea uno vacío de forma explícita.
+
+Sobre la caja aplicas transformaciones que ya conoces del Tema 1: `map`, `filter` y `flatMap`. Después la cierras
+con una decisión. **`orElse`** devuelve el valor o un reemplazo ya calculado. **`orElseGet`** recibe un
+**Supplier**, una interfaz funcional sin parámetros que calcula el reemplazo solo cuando se pide.
+
+**`orElseThrow`** devuelve el valor o lanza una excepción; úsalo cuando la ausencia es un error de negocio.
+**`ifPresentOrElse`** ejecuta una de dos acciones: un `Consumer` si hay valor y un `Runnable` si no. No devuelve
+nada; sirve para efectos como imprimir o registrar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Por dentro, `Optional` es una clase pequeña con un solo campo, `value`. Si el campo es `null`, el contenedor está
+vacío. Todas las instancias vacías comparten un único objeto constante. Sigue esta cadena del Problema resuelto
+2.1:
+
+```java
+String nombre = buscar("XXX-999")
+        .map(Producto::nombre)
+        .orElse("sin nombre");
+```
+
+1. `buscar` arma un stream con `filter` y termina con `findFirst()`. Como ningún producto cumple el filtro,
+   `findFirst` devuelve el `Optional` vacío compartido.
+2. `map` pregunta primero si la caja está vacía. Si lo está, devuelve otra vez vacío y **no llama** a
+   `Producto::nombre`.
+3. Si hubiera valor, `map` aplicaría la función y envolvería el resultado con `ofNullable`. Si la función
+   devolviera `null`, el resultado sería vacío, no un error.
+4. `orElse("sin nombre")` mira el campo: como es `null`, devuelve el reemplazo. La salida es `con orElse: sin
+   nombre`.
 
 ```mermaid
 flowchart LR
-  B["buscar(sku)"] --> O{"Optional"}
-  O -->|"presente"| M["map / filter<br/>transforman el valor"]
-  O -->|"vacío"| E["map / filter<br/>no hacen nada"]
-  M --> C["cierre: orElse, orElseGet,<br/>orElseThrow, ifPresentOrElse"]
+  B["buscar sku"] --> O{"¿Optional con valor?"}
+  O -->|"presente"| M["map y filter transforman el valor"]
+  O -->|"vacío"| E["map y filter devuelven vacío sin ejecutar"]
+  M --> C["cierre: orElse, orElseGet, orElseThrow, ifPresentOrElse"]
   E --> C
 ```
 
-En `CatalogoProductos` la ausencia es parte del contrato:
+La diferencia entre `orElse` y `orElseGet` está en el orden de evaluación de Java. Java evalúa todos los argumentos
+**antes** de llamar a un método. Observa la línea 15 del Problema resuelto 2.2:
 
 ```java
-public Optional<Producto> buscarPorSku(String sku) {
-    String buscado = sku == null ? "" : sku.trim().toUpperCase();
-    return productos.stream()
-            .filter(p -> p.sku().equals(buscado))
-            .findFirst();
-}
+String a = presente.orElse(consultarProveedor());
 ```
 
-`findFirst()` devuelve `Optional<Producto>` porque un stream puede estar vacío. El método no devuelve `null` ni lanza una excepción de negocio: entrega la ausencia al llamador. En el `main`, `ifPresentOrElse` hace explícitas las dos ramas:
+Primero se ejecuta `consultarProveedor()` y se imprime `(consulta costosa al proveedor)`. Después `orElse` recibe
+ese texto, ve que la caja tiene `Cafe Aurora` y lo descarta. La consulta se hizo para nada.
 
-```java
-catalogo.buscarPorSku("MOL-200")
-        .ifPresentOrElse(
-                p -> System.out.println("SKU MOL-200: " + p.nombre()),
-                () -> System.out.println("SKU MOL-200: no encontrado")
-        );
-```
+Con `orElseGet(respaldo)` el argumento es la lambda misma, no su resultado. Crear la lambda no ejecuta su cuerpo.
+`orElseGet` solo llama a `respaldo.get()` si la caja está vacía. Por eso la consulta no aparece en la segunda parte
+de la salida.
 
-Salida real del proyecto verificado:
+`flatMap` resuelve otro caso. Si la función de transformación ya devuelve `Optional`, `map` te dejaría un
+`Optional<Optional<Integer>>`. `flatMap` no vuelve a envolver: devuelve directamente el `Optional` que produjo la
+función.
 
-```text
-SKU MOL-200: Molino Manual
-SKU XXX-999: no encontrado
-```
+##### 4. Reglas, variantes y casos límite
 
-La auditoría muestra el cierre con `map` y `orElse`:
+`Optional` llegó en Java 8 con `of`, `ofNullable`, `empty`, `map`, `flatMap`, `filter`, `orElse`, `orElseGet`,
+`orElseThrow(Supplier)` e `ifPresent`. Las versiones siguientes completaron la API:
 
-```java
-Optional<String> presente = Optional.of("CAF-100");
-Optional<String> ausente = Optional.empty();
-System.out.println("Optional presente: " + presente.map(String::toLowerCase).orElse("NA"));
-System.out.println("Optional ausente: " + ausente.map(String::toLowerCase).orElse("NA"));
-```
+- Java 9 añadió `ifPresentOrElse`, `or` y `stream()`. `stream()` convierte la caja en un stream de cero o un
+  elemento.
+- Java 10 añadió `orElseThrow()` sin argumentos, equivalente a `get()` pero con un nombre que avisa del riesgo.
+- Java 11 añadió `isEmpty()`, el opuesto de `isPresent()`.
 
-Resultado observado:
+La documentación fija reglas de uso. Una variable de tipo `Optional` nunca debe ser `null`: debe apuntar siempre a
+una instancia. Si devuelves `null` desde un método que promete `Optional`, rompes el contrato que querías crear.
 
-```text
-Optional presente: caf-100
-Optional ausente: NA
-```
+`Optional` es una **clase basada en valor**. Eso significa que no debes compararla con `==` ni usarla para
+sincronizar hilos. Dos `Optional` con el mismo contenido se comparan con `equals`, que compara los valores
+internos.
+
+`get()` sobre una caja vacía lanza `NoSuchElementException` con el mensaje `No value present`. La documentación
+recomienda `orElseThrow()` en su lugar porque el nombre deja claro que puede fallar.
+
+No uses `Optional` en campos, parámetros ni colecciones. En un parámetro, el llamador puede pasar `null` y tendrías
+dos tipos de ausencia. Una colección vacía ya expresa «no hay elementos»; `Optional<List<T>>` duplica la idea.
+
+Para tipos primitivos existen `OptionalInt`, `OptionalLong` y `OptionalDouble`. Los devuelven terminales como
+`IntStream.max()` y evitan crear objetos `Integer`.
+
+El mensaje largo del `NullPointerException` de la salida, con `because the return value of ... is null`, viene de
+los **mensajes útiles de NPE**. Llegaron en Java 14 y están activos por defecto desde Java 15.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los métodos de `Optional` reciben las interfaces funcionales del Tema 1: `Predicate` en `filter`, `Function` en
+`map` y `Supplier` en `orElseGet`. El buscador del Problema resuelto 2.1 es un pipeline del Tema 1 que termina en
+`findFirst()`.
+
+`orElseThrow` conecta con las excepciones unchecked del Java, Módulo 3. Ahí aprendiste a lanzar
+`IllegalArgumentException` con un mensaje de dominio. Aquí la ausencia de un valor se convierte en esa excepción en
+el punto exacto donde importa.
+
+`Optional` se parece a una lista de cero o un elementos, pero no es una colección. No implementa `Iterable` ni se
+recorre con `for`. Si necesitas tratarlo como stream, usas `stream()`, disponible desde Java 9.
+
+Los gatherers del Tema 3 y los reportes del laboratorio devuelven `Optional` cuando un cálculo puede no tener
+resultado. En proyectos con Spring Data, `findById` devuelve `Optional<Entidad>`, y la capa de servicio decide con
+`orElseThrow`.
 
 #### Problema resuelto 2.1
 Compara un buscador que devuelve `null` con uno que devuelve `Optional`, y cierra el resultado de cuatro formas.
@@ -874,35 +997,131 @@ Las fichas de Stream, operación intermedia y operación terminal están en el T
 
 #### ► CÓMO FUNCIONA
 
-Los gatherers extienden la Stream API con operaciones intermedias personalizadas cuando `map/filter/reduce` no alcanzan. `Stream.gather(Gatherer)` permite mantener estado local durante el procesamiento y emitir cero, uno o varios elementos por entrada. Java 24 incorpora gatherers integrados como `Gatherers.windowFixed`, `windowSliding`, `fold` y `scan`.
+##### 1. La idea en lenguaje sencillo
 
-En `ReporteVentas.ventanasDeTotales`, `windowFixed(2)` agrupa totales en ventanas de tamaño fijo. Es más claro que mantener índices manuales. El gatherer es intermedio y perezoso, igual que `map`:
+Piensa en un vigilante que cuenta autos en un peaje. Si solo mira el auto que tiene delante, puede decir «este es
+rojo». No puede decir «van tres rojos seguidos» sin una libreta donde anote los anteriores.
+
+Las operaciones del Tema 1 son vigilantes sin libreta. `filter` decide sobre un pedido a la vez y lo olvida. `map`
+transforma uno y pasa al siguiente. Ninguna de las dos recuerda lo que ya vio.
+
+Un **gatherer** es una estación con libreta. Guarda lo que necesita, decide cuándo soltar resultados y puede soltar
+varios, uno o ninguno por cada elemento que recibe. Incluso puede pedir que la cinta se detenga.
+
+En Tienda Aurora la alerta de «tres pedidos seguidos de más de 30» necesita esa libreta. Con un gatherer de ventana
+deslizante, el pipeline recibe grupos de tres totales consecutivos. Después, `anyMatch` y `allMatch` del Tema 1
+hacen el resto.
+
+##### 2. Definición formal y vocabulario
+
+La documentación define **Gatherer** como una operación intermedia que transforma un stream de elementos de entrada
+en un stream de elementos de salida. Puede aplicar una acción final cuando llega al fin de la entrada. La interfaz
+es `java.util.stream.Gatherer<T, A, R>`.
+
+Los tres parámetros de tipo tienen un papel fijo. `T` es el tipo de entrada. `A` es el tipo del **estado**, la
+libreta privada del gatherer. `R` es el tipo de salida. Un gatherer que no necesita estado declara `A` como `Void`.
+
+Un gatherer se compone de cuatro funciones. El **inicializador** crea el estado vacío. El **integrador** recibe el
+estado, el elemento y un **downstream**, que es la puerta hacia la siguiente etapa. El **combinador**, opcional,
+une estados en paralelo. El **finalizador**, opcional, emite lo pendiente al terminar.
+
+El método **gather** de `Stream` conecta un gatherer al pipeline. La clase `Gatherers`, con *s*, trae los
+integrados. **windowFixed** agrupa sin traslape y **windowSliding** con traslape. **fold** acumula y emite un valor
+al final. **scan** emite cada acumulado intermedio.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el gatherer propio del Problema resuelto 3.3, que quita repeticiones consecutivas:
 
 ```java
-public List<List<BigDecimal>> ventanasDeTotales(int tamano) {
-    return pedidos.stream()
-            .sorted(Comparator.comparing(Pedido::fecha).thenComparing(Pedido::id))
-            .map(Pedido::total)
-            .gather(Gatherers.windowFixed(tamano))
-            .toList();
-}
+return Gatherer.ofSequential(
+        Ultimo::new,
+        (estado, elemento, salida) -> {
+            if (estado.hayValor && Objects.equals(estado.valor, elemento)) {
+                return true;
+            }
+            estado.valor = elemento;
+            estado.hayValor = true;
+            return salida.push(elemento);
+        });
 ```
+
+1. `gather` añade una etapa intermedia perezosa, como `map`. No se ejecuta nada hasta la terminal `toList()`.
+2. Al empezar, la etapa llama al inicializador `Ultimo::new`. Cada ejecución del pipeline recibe su propio estado.
+3. Por cada lectura, la etapa llama al integrador con tres datos: el estado, el elemento y la puerta `salida`.
+4. Si el elemento repite el último, el integrador no emite nada y devuelve `true`. Ese `true` significa «sigue
+   mandándome elementos».
+5. Si es distinto, actualiza el estado y llama a `salida.push(elemento)`. `push` entrega el elemento a la siguiente
+   etapa.
+6. `push` devuelve `false` cuando las etapas siguientes ya no quieren más, por ejemplo tras un `limit`. El
+   integrador devuelve ese valor y el recorrido se corta.
+7. Al acabar la entrada se ejecuta el finalizador, si existe. Aquí no hace falta: no queda nada pendiente.
 
 ```mermaid
 flowchart LR
-  S["25, 40, 35, 50, 10, 60"] --> G["gather(windowSliding(3))<br/>estado: últimos 3"]
-  G --> W1["[25, 40, 35]"]
-  G --> W2["[40, 35, 50]"]
-  G --> W3["[35, 50, 10]"]
-  G --> W4["[50, 10, 60]"]
-  W2 --> A["anyMatch: todos > 30 → true"]
+  S["totales: 25, 40, 35, 50, 10, 60"] --> G["gather windowSliding 3, estado: últimos 3"]
+  G --> W1["25, 40, 35"]
+  G --> W2["40, 35, 50"]
+  G --> W3["35, 50, 10"]
+  G --> W4["50, 10, 60"]
+  W2 --> A["anyMatch: todos mayores que 30, true"]
 ```
 
-Sobre los números del 1 al 5, `windowSliding(3)` agrupa de a tres y avanza de uno en uno (Problema resuelto 3.1).
+Los integrados siguen el mismo esquema. `windowSliding(3)` guarda en su estado los últimos tres elementos. Cuando
+recibe el tercero, emite la primera ventana. Con cada elemento nuevo, descarta el más antiguo y emite otra. Por eso
+seis totales producen cuatro ventanas.
 
-La diferencia con `windowFixed(3)` es esencial: fijo daría `[[1, 2, 3], [4, 5]]`; deslizante produce `[[1, 2, 3], [2, 3, 4], [3, 4, 5]]`. Para una racha de tres pedidos caros consecutivos, la ventana deslizante es la que conserve el traslape.
+`fold` es un gatherer cuyo integrador nunca emite. Solo actualiza el acumulador. Su finalizador emite el valor
+final. `scan`, en cambio, emite el acumulador después de cada elemento y no tiene nada que emitir al final.
 
-`fold` y `scan` acumulan estado dentro del gatherer: `fold` emite solo el acumulador final y `scan` emite cada estado intermedio. `windowFixed` y `windowSliding` no son sustitutos de ellos; la familia cubre formas distintas de producir salida a partir del estado.
+En el diagrama, `anyMatch` se detiene en la ventana `[40, 35, 50]`. En ese momento `push` devuelve `false`, el
+gatherer deja de integrar y `[50, 10, 60]` nunca se evalúa.
+
+##### 4. Reglas, variantes y casos límite
+
+Los gatherers pasaron por dos vistas previas: Java 22 (JEP 461) y Java 23 (JEP 473). Son estándar desde Java 24
+(JEP 485). En Java 21, que es LTS, no existen: compilar da el `cannot find symbol` del recuadro de error de este
+tema.
+
+Hay dos fábricas para crear gatherers propios. `Gatherer.ofSequential` crea uno que siempre corre en secuencia,
+aunque el stream sea paralelo. `Gatherer.of` recibe además un combinador y permite evaluación paralela. Si el
+estado depende del orden, como «el último SKU», usa `ofSequential`.
+
+El integrador puede declararse **voraz** con `Gatherer.Integrator.ofGreedy`. Un integrador voraz promete no pedir
+nunca el corte por su cuenta. La librería usa esa promesa para optimizar. Solo es válido si tu integrador devuelve
+siempre lo que devuelve `push`.
+
+Casos límite verificados con OpenJDK 25.0.5.1:
+
+- `windowSliding(3)` sobre dos elementos emite una sola ventana con ambos: `[[1, 2]]`.
+- `fold(() -> 0, Integer::sum)` sobre un stream vacío emite el valor inicial: `[0]`.
+- `scan(() -> 0, Integer::sum)` sobre un stream vacío no emite nada: `[]`.
+- `windowFixed(0)` lanza `IllegalArgumentException`, como dice la ficha del glosario.
+
+Las ventanas son listas inmodificables. No intentes añadirles elementos dentro de un `map`.
+
+Puedes encadenar dos gatherers con `andThen`: `a.andThen(b)` produce un gatherer que aplica `a` y luego `b`.
+Equivale a llamar `gather` dos veces, pero lo guardas como una sola pieza reutilizable.
+
+`Gatherers` trae un quinto integrado, `mapConcurrent`. Aplica una función en paralelo usando hilos virtuales, con
+un límite de concurrencia. Lo entenderás mejor después del Módulo 5.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema extiende el modelo del Tema 1. Un gatherer es una operación intermedia más: perezosa, enlazada a las
+demás y disparada por la terminal. Lo nuevo es el estado y la posibilidad de emitir cero o varios elementos por
+entrada.
+
+Compara `fold` con `reduce`. Los dos acumulan, pero `reduce` es terminal y `fold` es intermedio. Tras `fold` el
+pipeline continúa, por eso el Problema resuelto 3.2 necesita `findFirst()`. Ese `findFirst()` devuelve el
+`Optional` del Tema 2, que se cierra con `orElseThrow()`.
+
+Compara también con `distinct()`, que tiene estado pero recuerda todo lo visto. El gatherer del Problema resuelto
+3.3 solo recuerda el último elemento. La diferencia se ve en la salida: `distinct` pierde la segunda lectura de
+`CAF-100`.
+
+El Tema 4 ejecuta pipelines en paralelo. Allí verás por qué un gatherer creado con `ofSequential` frena el
+paralelismo. El laboratorio integrador usa `windowFixed` en `ReporteVentas.ventanasDeTotales`.
 
 #### Problema resuelto 3.1
 Muestra la diferencia entre ventanas fijas y deslizantes sobre los números del 1 al 5.
@@ -1232,9 +1451,26 @@ La ficha de referencia a método y la de `reduce` están en el Tema 1.
 
 #### ► CÓMO FUNCIONA
 
-Una referencia a método (`Producto::nombre`, `String::toUpperCase`) es azúcar para una lambda que solo llama a un método existente. Mejora legibilidad cuando el nombre comunica bien la intención. No la fuerces si oscurece.
+##### 1. La idea en lenguaje sencillo
 
-Hay cuatro formas de referencia a método:
+Imagina que tienes que contar diez mil facturas. Puedes contarlas tú solo o repartirlas entre tres compañeros y
+sumar sus totales. Repartir sale bien si la pila es grande y cada conteo es independiente. Si la pila tiene veinte
+facturas, explicar el reparto tarda más que contarlas.
+
+Hay otra trampa. Si cada compañero anota en la misma hoja al mismo tiempo, los números se pisan. Y si la tarea
+fuera «restar» en lugar de «sumar», el orden en que juntas los parciales cambiaría el resultado.
+
+Un **stream paralelo** es ese reparto. Java divide la fuente en trozos, los procesa en varios hilos y combina los
+resultados. El reporte nocturno de Tienda Aurora es el candidato natural: millones de líneas, un cálculo por línea
+y una suma final.
+
+Las **referencias a método** comparten tema porque aparecen en casi todos los pipelines, paralelos o no. Son la
+forma corta de decir «aplica este método que ya existe», en lugar de escribir una lambda que solo lo llama.
+
+##### 2. Definición formal y vocabulario
+
+La Especificación del Lenguaje Java (JLS, sección 15.13) define cuatro formas de referencia a método. Cada una
+equivale a una lambda distinta:
 
 | Forma | Ejemplo | Lambda equivalente |
 |---|---|---|
@@ -1243,38 +1479,111 @@ Hay cuatro formas de referencia a método:
 | Método de cualquier objeto del tipo | `String::toUpperCase` | `s -> s.toUpperCase()` |
 | Constructor | `Producto::new` | `(sku, stock) -> new Producto(sku, stock)` |
 
-`parallelStream()` o `stream().parallel()` divide el trabajo entre hilos del ForkJoinPool común. Puede mejorar rendimiento en colecciones grandes, operaciones CPU-bound e independientes. También puede empeorar: overhead de partición, contención, boxing, orden, y fuente difícil de dividir. Nunca asumas; mide. Y nunca uses paralelo con estado mutable compartido.
+La cuarta fila es la **referencia a constructor**. La interfaz funcional de destino decide qué constructor se usa:
+un `Supplier` elige el que no tiene parámetros y una `BiFunction` uno de dos.
+
+Un **stream paralelo** es un stream cuyo pipeline se ejecuta en varios hilos. Lo obtienes con `parallelStream()`
+sobre una colección o con `.parallel()` sobre cualquier stream. Los hilos salen del **ForkJoinPool común**, un
+grupo de hilos compartido por toda la JVM.
+
+Dos condiciones hacen correcto un stream paralelo. La primera es usar una **operación asociativa** en las
+reducciones: agrupar los paréntesis de otra forma no cambia el resultado. La segunda es evitar el **efecto
+secundario**: las lambdas no deben modificar estado compartido, como una lista externa.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la suma paralela del Problema resuelto 4.2:
+
+```java
+long b = LongStream.rangeClosed(1, 10_000_000).parallel().sum();
+```
+
+1. `.parallel()` no crea hilos. Solo marca el pipeline como paralelo. Puedes ponerlo en cualquier punto antes de la
+   terminal.
+2. La terminal `sum()` crea una tarea raíz y la entrega al ForkJoinPool común.
+3. La tarea pide al **Spliterator** de la fuente que se parta en dos con `trySplit()`. Un rango de números se parte
+   exactamente por la mitad, sin recorrerlo.
+4. Cada mitad se vuelve a partir mientras el trozo sea grande. Las tareas pequeñas resultantes son las hojas del
+   árbol.
+5. Cada hilo procesa sus hojas en secuencia, con el mismo pipeline de etapas del Tema 1.
+6. Un hilo que se queda sin trabajo toma tareas pendientes de la cola de otro. A esto se le llama **robo de
+   trabajo** (*work stealing*).
+7. Los resultados parciales se combinan de abajo hacia arriba con la misma operación. Para `sum()`, esa operación
+   es la suma.
 
 ```mermaid
 flowchart TD
-  F["fuente: 1..10_000_000"] --> SP["dividir"]
-  SP --> P1["parte 1<br/>hilo del pool"]
-  SP --> P2["parte 2<br/>hilo que llama"]
-  P1 --> J["combinar con la operación<br/>(debe ser asociativa)"]
+  F["fuente: 1 a 10_000_000"] --> SP["trySplit: dividir en trozos"]
+  SP --> P1["trozo 1: hilo del pool común"]
+  SP --> P2["trozo 2: hilo que llama"]
+  P1 --> J["combinar parciales con la operación asociativa"]
   P2 --> J
-  J --> R["resultado"]
+  J --> R["resultado: 50000005000000"]
 ```
 
-En `auditoria()`, una suma de 10 millones de elementos compara las dos estrategias con el mismo tipo de dato primitivo (`LongStream`, sin boxing) y comprueba que el resultado sea idéntico:
+El hilo que llamó a la terminal no espera de brazos cruzados: también procesa trozos. Por eso, con 2 núcleos, el
+pool común muestra `paralelismo del pool común: 1` y aun así trabajan dos hilos.
+
+El paso 7 explica la resta. En secuencial, `reduce(0, (x, y) -> x - y)` calcula `0 - 1 - 2 - … - 10`, que da `-55`.
+En paralelo, cada trozo empieza desde la identidad `0` y resta su parte. Luego los parciales se restan entre sí, y
+aparece `15`.
+
+Las referencias a método también tienen mecánica propia. En la forma de objeto concreto, el objeto se evalúa al
+**crear** la referencia, no al usarla. Verificado con OpenJDK 25.0.5.1:
 
 ```java
-long inicioSecuencial = System.nanoTime();
-long sumaSecuencial = LongStream.rangeClosed(1, 10_000_000).sum();
-long msSecuencial = (System.nanoTime() - inicioSecuencial) / 1_000_000;
-long inicioParalelo = System.nanoTime();
-long sumaParalela = LongStream.rangeClosed(1, 10_000_000).parallel().sum();
-long msParalelo = (System.nanoTime() - inicioParalelo) / 1_000_000;
-System.out.println("Bench 10M suma=" + sumaSecuencial + " seq=" + msSecuencial
-        + "ms par=" + msParalelo + "ms same=" + (sumaSecuencial == sumaParalela));
+String prefijo = null;
+Function<String, String> f = prefijo::concat;
 ```
 
-Salida observada en esa corrida:
+La segunda línea lanza `NullPointerException` de inmediato, aunque nadie llame a `f.apply`. La lambda `s ->
+prefijo.concat(s)` no fallaría hasta usarse.
 
-```text
-Bench 10M suma=50000005000000 seq=12ms par=2ms same=true
-```
+##### 4. Reglas, variantes y casos límite
 
-El número relevante no es `2ms`: los tiempos dependen del equipo, la carga y la JVM. Lo verificable es `same=true` —la paralización no cambió el resultado— y que la medición se hizo sobre la misma operación. Si la fuente es pequeña, si hay boxing, si el orden importa o si los elementos no se pueden dividir, el paralelismo puede ser más lento. Mide siempre en tu datos y entorno.
+La documentación de `java.util.stream` fija las reglas de corrección en paralelo:
+
+- La función de `reduce` debe ser asociativa, sin estado y sin interferir con la fuente.
+- La identidad debe ser neutra para la función: `op(identidad, x)` debe dar `x`. Con la resta, `0` solo es neutro
+  por la derecha: `x - 0` da `x`, pero `0 - x` da `-x`.
+- `forEach` no respeta el orden de la fuente en paralelo. Si necesitas orden, usa `forEachOrdered`, que sacrifica
+  parte del paralelismo.
+- `findFirst` respeta el orden y `findAny` no. En paralelo, `findAny` suele ser más barato.
+
+El paralelismo por defecto del pool común es el número de núcleos menos uno. Puedes cambiarlo con la propiedad del
+sistema `java.util.concurrent.ForkJoinPool.common.parallelism`. Afecta a toda la JVM, no solo a tu stream.
+
+La facilidad de partir la fuente decide gran parte del rendimiento. Arreglos, `ArrayList` y rangos de `IntStream` o
+`LongStream` se parten en tiempo constante. `LinkedList` y `Stream.iterate` se parten mal, porque hay que recorrer
+para encontrar la mitad.
+
+El *boxing* también cuenta. `Stream<Long>` guarda cada número como objeto `Long`. `LongStream` trabaja con `long`
+primitivos, sin objetos. Por eso el Problema resuelto 4.2 mide con `LongStream`.
+
+Las referencias a método tienen dos casos límite frecuentes. Si un método está sobrecargado, la referencia puede
+ser ambigua. `Function<Integer, String> f = Integer::toString;` no compila: el mensaje dice `reference to toString
+is ambiguous` porque encajan `toString(int)` y `toString()`.
+
+La referencia a constructor de arreglo usa `Tipo[]::new`. La usas con `toArray(String[]::new)`, que crea un
+`String[]` del tamaño justo.
+
+Las referencias a método existen desde Java 8, igual que las lambdas. `parallelStream()` también es de Java 8.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 dejó dos reglas que aquí se vuelven críticas: la identidad y la asociatividad de `reduce`. En secuencial
+casi nunca se notan. En paralelo, la resta del Problema resuelto 4.2 muestra el resultado incorrecto sin ninguna
+excepción.
+
+El Tema 1 también presentó `Producto::sku`. Aquí ves que es una de cuatro formas y que la interfaz funcional de
+destino decide su significado. Las lambdas siguen siendo necesarias cuando hay lógica extra.
+
+El Tema 3 se relaciona por contraste. Un gatherer creado con `Gatherer.ofSequential` procesa en un solo hilo esa
+parte del pipeline, aunque el stream sea paralelo. Un gatherer creado con `Gatherer.of` y un combinador sí puede
+repartirse.
+
+El Módulo 5 retoma el ForkJoinPool común y los hilos. Allí verás `ExecutorService`, hilos virtuales y condiciones
+de carrera con más detalle. La lista que pierde elementos en este tema es tu primera condición de carrera en Java.
 
 #### Problema resuelto 4.1
 Escribe las cuatro formas de referencia a método y usa una dentro de un stream.

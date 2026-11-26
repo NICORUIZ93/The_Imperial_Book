@@ -770,16 +770,40 @@ publicar?
 
 #### ► CÓMO FUNCIONA
 
-El JDK agrupa el comportamiento más común en cuatro formas. La diferencia no es sintáctica; es el contrato:
-`Predicate<T>` devuelve booleano, `Function<T,R>` transforma, `Consumer<T>` recibe un valor y no devuelve nada, y
-`Supplier<T>` produce un valor sin entrada.
+##### 1. La idea en lenguaje sencillo
 
-En el proyecto, `ReglaEnvio` envuelve un `Predicate<Envio>` con un motivo legible, `ReglasEnvio.etiqueta()` es la
-`Function`, `ReglasEnvio.auditor(...)` devuelve el `Consumer` inyectado y `ReglasEnvio.generadorId(...)` es el
-`Supplier`. Salida verificada: `ID=TMP-99`, `A1@BOG`, `A4@CALI`, `REGLA=peso <= 10 Y no fallido`. `A2` se excluye
-por peso y `A3` por estado fallido.
+En una oficina de envíos, cada empleado tiene un oficio distinto. El revisor mira un paquete y dice «pasa» o «no
+pasa». El etiquetador recibe un paquete y entrega una etiqueta. El despachador recibe la etiqueta y la pega, sin
+devolver nada. El que reparte números de turno no recibe nada y entrega un número nuevo.
 
-Para elegir, haz dos preguntas: ¿recibe un dato? ¿devuelve algo? La respuesta te da la forma.
+Ninguno de esos oficios depende del paquete concreto. Lo que los distingue es la **forma** del trabajo: qué recibe
+cada uno y qué entrega. Si sabes la forma, sabes a quién llamar, aunque todavía no sepas cómo hace su tarea.
+
+Java convierte esa idea en cuatro tipos del JDK. Tienda Aurora los usa para separar cuatro preguntas que hoy viven
+mezcladas en un `for`: ¿este envío es válido?, ¿qué etiqueta le toca?, ¿dónde publico la etiqueta? y ¿qué
+identificador temporal genero? Cada pregunta pasa a ser un valor que puedes guardar, pasar y probar por separado.
+
+##### 2. Definición formal y vocabulario
+
+El paquete `java.util.function`, que llegó con Java 8, define interfaces funcionales de uso general. Una **interfaz
+funcional** es una interfaz con un único método abstracto; por eso una lambda puede implementarla. Las cuatro formas
+básicas son estas:
+
+- **Predicate**: `Predicate<T>` declara `boolean test(T t)`. Evalúa una condición sobre un valor.
+- **Function**: `Function<T,R>` declara `R apply(T t)`. Convierte un valor de tipo `T` en uno de tipo `R`.
+- **Consumer**: `Consumer<T>` declara `void accept(T t)`. Recibe un valor y actúa sobre él, sin resultado.
+- `Supplier<T>` declara `T get()`. Produce un valor sin recibir ninguno.
+
+Una **función de orden superior** es un método que recibe una de estas interfaces como parámetro o la devuelve.
+Dicho de forma sencilla: es un método con un hueco donde el que llama pone el comportamiento. `etiquetasValidas`
+del Problema resuelto 1.1 tiene dos huecos: la regla y la etiqueta.
+
+La anotación **`@FunctionalInterface`** declara la intención de que una interfaz sea funcional. No cambia cómo se
+ejecuta nada; solo pide al compilador que verifique la regla del método abstracto único y que falle si se rompe.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Para elegir la forma, haz dos preguntas: ¿recibe un dato? ¿devuelve algo? El diagrama recorre esas dos preguntas.
 
 ```mermaid
 flowchart TD
@@ -790,8 +814,69 @@ flowchart TD
   Q2 -->|"nada"| C["Consumer<br/>void accept(T)"]
 ```
 
-Una función de orden superior une las formas: recibe la regla y la etiqueta como parámetros. El método no sabe qué
-regla aplica; solo sabe en qué momento llamarla.
+Cuando escribes `Predicate<Envio> valido = e -> e.pesoKg() <= 10 && ...;`, ocurre esto:
+
+1. El compilador mira el lado izquierdo y encuentra el **tipo objetivo**: `Predicate<Envio>`. Una lambda sola no
+   tiene tipo; lo recibe del lugar donde aparece.
+2. Busca el único método abstracto de ese tipo, `test(Envio)`, y comprueba que la lambda encaja. El parámetro `e`
+   pasa a ser un `Envio` y el cuerpo debe producir un `boolean`.
+3. Si el cuerpo devuelve otra cosa, falla con `bad return type in lambda expression`, como muestra el recuadro de
+   error del tema.
+4. Al compilar, `javac` guarda el cuerpo en un método privado de la clase y deja en ese punto una instrucción
+   `invokedynamic`. La primera vez que se ejecuta, la JVM fabrica un objeto que implementa `Predicate`.
+5. Desde ese momento `valido` es un objeto como cualquier otro. Llamar a `valido.test(envio)` ejecuta el cuerpo de
+   la lambda.
+
+El mismo texto de lambda o de referencia a método sirve para formas distintas, porque manda el tipo objetivo:
+
+```java
+Predicate<String> vacio = String::isEmpty;
+Function<String, Boolean> vacioEnCaja = String::isEmpty;
+System.out.println(vacio.test("") + " " + vacioEnCaja.apply("A1"));
+```
+
+Imprime `true false`. La primera variable devuelve `boolean` primitivo; la segunda devuelve un `Boolean` envuelto en
+objeto. Por eso, para preguntas de sí o no, la forma correcta es `Predicate` y no `Function<T, Boolean>`.
+
+Dentro de `etiquetasValidas`, el método no sabe qué regla recibe. Solo sabe cuándo llamarla: llama a `regla.test(e)`
+para cada envío y a `etiqueta.apply(e)` solo si la regla respondió `true`. Esa es la mecánica de una función de
+orden superior.
+
+##### 4. Reglas, variantes y casos límite
+
+La Especificación del Lenguaje Java (JLS §9.8) cuenta los métodos abstractos con una excepción: no cuentan los que
+repiten un método público de `Object`, como `equals`. Por eso `Comparator` declara `equals` y sigue siendo funcional.
+
+Los métodos `default` y `static` tampoco cuentan. `Predicate` trae `and`, `or` y `negate`, y desde Java 11 el método
+estático `Predicate.not`, útil con referencias: `Predicate.not(String::isBlank)`. `Function` trae `andThen`,
+`compose` e `identity`. `Consumer` trae `andThen`, que ejecuta un consumidor y luego otro con el mismo valor.
+`Supplier` no trae ninguno.
+
+`@FunctionalInterface` es opcional. Una interfaz con un solo método abstracto ya acepta lambdas sin la anotación. Si
+la pones en una interfaz con dos métodos abstractos, como `ReglaEnvio`, obtienes `Unexpected @FunctionalInterface
+annotation`. Por eso el proyecto crea las reglas con la fábrica `ReglaEnvio.de`.
+
+Existen variantes para tipos primitivos, que evitan envolver números en objetos: `IntPredicate`, `ToIntFunction`,
+`IntConsumer`, `IntSupplier` y `BooleanSupplier`, entre otras. Son la elección habitual cuando procesas muchos
+números en un bucle intenso.
+
+Un caso límite frecuente: una lambda no puede modificar variables locales de fuera. Solo puede leer variables
+**final** o efectivamente finales, es decir, que nunca se reasignan. El Ejercicio verificable 3 rodea esa regla
+con un arreglo `int[]`, y ahí el `Supplier` deja de ser una función sin efectos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Ya escribiste lambdas y referencias a métodos en Java, Módulo 4, Tema 1, y usaste `Supplier` con `orElseGet` en
+Java, Módulo 4, Tema 2. Aquí cambia el enfoque: ya no usas la lambda como un atajo, sino que eliges la forma por el
+contrato de entrada y salida.
+
+Conviene distinguir estas interfaces de las que diseñas tú. `ReglaEnvio` parece un `Predicate`, pero agrega
+`motivo()`, así que tiene dos métodos abstractos. Eso le da un texto legible para auditar, a cambio de no aceptar
+una lambda directa.
+
+El Tema 2 amplía `Function` a dos entradas con `BiFunction`. El Tema 3 usa los métodos `default` que viste aquí
+para componer reglas sin anidar llamadas. El Tema 5 presenta `UnaryOperator` y `BinaryOperator`, casos particulares
+de `Function` y `BiFunction`. Los streams de los Temas 4, 8, 9 y 10 reciben estas cuatro formas en cada operación.
 
 #### Problema resuelto 1.1
 Selecciona los envíos válidos de Tienda Aurora, conviértelos en etiquetas y publícalas dos veces: en consola y en una
@@ -996,19 +1081,45 @@ todo el código. ¿Cómo modelas un cálculo de dos entradas y cómo fijas una d
 
 #### ► CÓMO FUNCIONA
 
-`Function<T,R>` recibe un valor y produce otro. `BiFunction<T,U,R>` recibe dos. El criterio es simple: si necesitas
-dos entradas independientes para calcular un resultado, `BiFunction` es natural; si esos dos valores empiezan a
-tener reglas propias, crea un objeto de dominio. `ReglasEnvio.tarifaConImpuesto()` devuelve la `BiFunction` que
-calcula base más impuesto.
+##### 1. La idea en lenguaje sencillo
 
-La salida de `tarifa.apply(100, 0.19)` es **`119.00`** tras normalizar; el test `biFunctionYOperadores` lo fija. En
-`App`, ese mismo valor se pasa por `ReglasEnvio.aplicarDescuento(0.10)` y por `normalizarYRedondear()`, por eso la
-salida final del programa es **`TOTAL=107.10`**. No son dos resultados contradictorios: son dos puntos distintos del
-pipeline. Si mañana el impuesto depende de país, zona o tipo de producto, el paso correcto no es agregar más
-parámetros a la `BiFunction`; es introducir un tipo de dominio.
+Una calculadora de propinas necesita dos datos: el valor de la cuenta y el porcentaje. Si siempre dejas el 10 %,
+es cómodo tener una calculadora con ese porcentaje ya puesto: solo le das la cuenta. La operación es la misma; lo
+que cambia es cuántos datos entregas en cada momento.
 
-Cuando uno de los dos argumentos casi nunca cambia, como el IVA, la currificación lo separa. Fijas el IVA una vez y
-obtienes una `Function` de una entrada. Esa función encaja directo en `map`.
+Tienda Aurora vive esa situación con la tarifa. El total depende de la base del envío y de la tasa de impuesto.
+Durante un reporte, la tasa es la misma para todas las bases; solo cambia la base. Aquí modelas el cálculo de
+dos entradas y fijas una de ellas una sola vez, sin repetir el IVA por todo el código.
+
+##### 2. Definición formal y vocabulario
+
+**BiFunction** es la interfaz `java.util.function.BiFunction<T,U,R>`. Declara un único método abstracto,
+`R apply(T t, U u)`: recibe un valor de tipo `T`, otro de tipo `U` y devuelve uno de tipo `R`. Los tres tipos
+pueden ser distintos o iguales.
+
+La **aridad** es el número de parámetros de una función. Dicho de forma sencilla: cuántas cosas debes darle para
+que trabaje. `Supplier` tiene aridad 0, `Function` aridad 1 y `BiFunction` aridad 2.
+
+La **currificación** convierte una función de dos argumentos en una función de un argumento que devuelve otra
+función de un argumento. En lenguaje sencillo: pides el primer dato y te entregan una máquina que espera el segundo.
+
+La **aplicación parcial** fija uno o más argumentos y deja una función que espera los restantes. Currificar y
+luego llamar con el primer argumento es una forma de aplicación parcial, pero no la única: también puedes envolver
+la llamada en una lambda nueva.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la llamada `tarifaConImpuesto.apply(base, iva)` del Problema resuelto 2.1:
+
+1. El compilador toma el tipo objetivo `BiFunction<BigDecimal, BigDecimal, BigDecimal>` y deduce que `b` e
+   `impuesto` son `BigDecimal`.
+2. En ejecución, `apply` recibe `100` y `0.19`. `b.multiply(impuesto)` da `19.00`: la escala del producto es la
+   suma de las escalas, 0 + 2.
+3. `b.add(...)` suma `100` y `19.00`. La escala de la suma es la mayor de las dos, así que obtienes `119.00`.
+4. Si encadenas `andThen(redondear)`, se crea una `BiFunction` nueva. Al llamarla, ejecuta la tarifa y pasa su
+   resultado a `redondear.apply(...)`. Por eso `99.99` termina en `118.99`.
+
+La versión currificada hace el trabajo en dos tiempos, como muestra el diagrama:
 
 ```mermaid
 flowchart LR
@@ -1016,6 +1127,61 @@ flowchart LR
   C -->|"apply(0.19)"| P["conIva<br/>base → total"]
   P -->|"map(conIva)"| R["[119.00, 297.50, 47.60]"]
 ```
+
+1. `conImpuesto.apply(iva)` ejecuta la lambda exterior `impuesto -> b -> ...`. Su cuerpo no calcula nada todavía:
+   devuelve la lambda interior.
+2. La lambda interior usa `impuesto`, una variable de la exterior. La JVM la **captura**: guarda una copia de la
+   referencia dentro del objeto que crea para `conIva`.
+3. Cada `conIva.apply(base)` posterior lee ese valor guardado. Por eso el stream da `[119.00, 297.50, 47.60]` sin
+   volver a mencionar el IVA.
+
+No necesitas currificar para aplicar parcialmente. Una lambda que llama a la `BiFunction` con un argumento fijo
+logra lo mismo:
+
+```java
+BiFunction<String, String, String> etiqueta = (id, destino) -> id + "@" + destino;
+Function<String, String> haciaBog = id -> etiqueta.apply(id, "BOG");
+System.out.println(haciaBog.apply("A1"));   // A1@BOG
+```
+
+`haciaBog` captura `etiqueta` y deja el destino fijo. El resultado es una `Function` normal, apta para `map`.
+
+##### 4. Reglas, variantes y casos límite
+
+`BiFunction` solo trae un método `default`: `andThen(Function<? super R, ? extends V>)`. No trae `compose`, porque
+no hay una forma única de preparar dos entradas a la vez. Si necesitas transformar las entradas, hazlo dentro de la
+lambda o antes de llamarla.
+
+El JDK no define `TriFunction`. Con tres entradas tienes dos caminos: declarar tu propia interfaz funcional o, mejor
+en la mayoría de los casos, agrupar los datos en un `record`. El recuadro de ingeniería del tema propone
+`ContextoTarifa` por esa razón.
+
+Las demás formas de dos entradas siguen el mismo patrón: `BiPredicate<T,U>` devuelve `boolean` y `BiConsumer<T,U>`
+no devuelve nada. Para resultados primitivos existen `ToIntBiFunction`, `ToLongBiFunction` y `ToDoubleBiFunction`.
+Cuando las dos entradas y la salida son del mismo tipo, el JDK ofrece `BinaryOperator<T>`, que verás en el Tema 5.
+
+Las variables que captura una lambda deben ser **final** o efectivamente finales: no puedes reasignarlas después.
+Si capturas un objeto mutable, como una lista, la función verá sus cambios posteriores. Con `BigDecimal`, que es
+inmutable, el IVA fijado no puede cambiar a escondidas.
+
+Un caso límite con `BigDecimal`: `equals` compara valor y escala, así que `119.00` no es igual a `119.0`. La línea
+`misma regla: true` funciona porque ambas versiones producen la misma escala.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Tema 1 viste `Function` como la forma «uno entra, uno sale». `BiFunction` es la misma idea con dos entradas,
+y `andThen` funciona igual en ambas: el resultado pasa a la siguiente función.
+
+La escala y el redondeo de `BigDecimal` vienen de Java, Módulo 12, Tema 2. Aquí los ves dentro de funciones: el
+redondeo pasa a ser una pieza reutilizable que conectas con `andThen`.
+
+Recuerda distinguir los dos resultados del módulo. `119.00` es la tarifa con impuesto que fija el test
+`biFunctionYOperadores`. `TOTAL=107.10` es la salida de `App` después de aplicar además el descuento del 10 % y el
+redondeo final. Son dos puntos distintos del mismo pipeline.
+
+El Tema 3 generaliza `andThen` y presenta `compose`, el orden inverso. El Tema 5 muestra `BinaryOperator`, la
+`BiFunction` cuyos tres tipos coinciden y que exige `reduce`. Los streams del Tema 8 usan funciones parcialmente
+aplicadas, como `conIva`, dentro de `map`.
 
 #### Problema resuelto 2.1
 Calcula la tarifa con impuesto de tres formas: con `BiFunction`, con `BiFunction` seguida de un redondeo, y con una
@@ -1206,15 +1372,44 @@ una corrección en la regla de peso no llega a todas. ¿Cómo armas reglas nueva
 
 #### ► CÓMO FUNCIONA
 
-La composición evita anidar llamadas como `f(g(h(x)))`. `andThen` lee en orden natural: primero esto, luego
-aquello. `compose` invierte el orden. En predicados, `and/or/negate` expresan lógica booleana. `ReglaEnvio.and`
-compone condición y motivo; `normalizarYRedondear()` compone dos `UnaryOperator` con `andThen`.
+##### 1. La idea en lenguaje sencillo
 
-Caso de borde: componer demasiado puede ocultar la intención. Si la cadena necesita un comentario para entenderse,
-extrae métodos con nombres de negocio o usa pasos explícitos.
+En una lavandería, la ropa pasa por la lavadora y luego por la secadora. Nadie construye una máquina nueva que lave
+y seque: conecta las dos que ya existen, en el orden correcto. Si cambias el orden, el resultado es otro.
 
-Cada método de composición no ejecuta nada: devuelve un objeto nuevo que guarda las dos piezas. El trabajo ocurre
-cuando llamas a `apply` o a `test`.
+Las reglas de Tienda Aurora funcionan igual. Ya tienes dos piezas probadas: «pesa 10 kg o menos» y «está
+fallido». Con ellas puedes armar «válido» y «revisar» sin escribir condiciones nuevas. **Componer** es eso:
+fabricar comportamiento nuevo uniendo piezas que ya existen, en vez de anidar llamadas como `f(g(h(x)))` o copiar
+condiciones de una lambda a otra.
+
+##### 2. Definición formal y vocabulario
+
+La **composición de funciones** une dos funciones `f` y `g` en una nueva, `h(x) = g(f(x))`. En términos sencillos:
+la salida de la primera entra como entrada a la segunda.
+
+`Function<T,R>` ofrece dos métodos `default` para componer:
+
+- **`andThen`**: `f.andThen(g)` devuelve una función que aplica `f` y después `g`. Se lee en el orden en que ocurre.
+- **`compose`**: `f.compose(g)` devuelve una función que aplica `g` y después `f`. Se lee al revés.
+
+`Predicate<T>` ofrece la lógica booleana como métodos **`and`, `or` y `negate`**, que devuelven un predicado nuevo.
+Además, **`Predicate.not`** es un método estático que niega un predicado recibido como argumento. Los cuatro equivalen
+a escribir `&&`, `||` y `!`, pero sobre preguntas guardadas como objetos, no sobre valores `boolean` ya calculados.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Ningún método de composición ejecuta nada al llamarlo. Cada uno devuelve un objeto nuevo que recuerda las dos
+piezas. El código del JDK para `compose` es casi literal: comprueba que el argumento no sea `null` y devuelve la
+lambda `v -> apply(before.apply(v))`.
+
+Sigue `sumarUno.andThen(duplicar).apply(5)` del Problema resuelto 3.1:
+
+1. `andThen(duplicar)` crea una función nueva que guarda `sumarUno` y `duplicar`. Todavía no se suma nada.
+2. `apply(5)` ejecuta primero `sumarUno.apply(5)` y obtiene `6`.
+3. Pasa ese `6` a `duplicar.apply(6)` y devuelve `12`.
+
+Con `sumarUno.compose(duplicar).apply(5)`, el orden se invierte: `duplicar` da `10` y `sumarUno` da `11`. El
+diagrama pone los dos recorridos lado a lado.
 
 ```mermaid
 flowchart LR
@@ -1223,6 +1418,59 @@ flowchart LR
   A2 -.- L1["sumarUno.andThen(duplicar)"]
   C2 -.- L2["sumarUno.compose(duplicar)"]
 ```
+
+Con predicados ocurre lo mismo. `pesoMaximo.and(fallido.negate())` crea dos objetos: primero la negación de
+`fallido` y luego la conjunción. Cuando el stream llama a `test(envio)`, la conjunción evalúa `pesoMaximo`. Si da
+`false`, no evalúa la segunda parte: eso es **cortocircuito**, igual que `&&`.
+
+```java
+Predicate<String> traza = s -> { System.out.println("evalúa " + s); return true; };
+Predicate<String> falso = s -> false;
+System.out.println(falso.and(traza).test("A1"));   // false, sin "evalúa A1"
+```
+
+La salida es solo `false`. El mensaje de `traza` nunca aparece porque la primera condición ya decidió.
+
+En el proyecto, `ReglaEnvio.and` imita esa mecánica a mano. Crea una clase anónima cuyo `test` llama a las dos reglas
+con `&&` y cuyo `motivo()` une los dos textos con « Y ». Así obtienes `REGLA=peso <= 10 Y no fallido`.
+
+##### 4. Reglas, variantes y casos límite
+
+Los tipos deben encajar. `f.andThen(g)` exige que `g` acepte la salida de `f`; la firma es
+`andThen(Function<? super R, ? extends V> after)`. Si no encajan, el error aparece al compilar, no en ejecución.
+
+Pasar `null` a cualquier método de composición lanza `NullPointerException` en el momento de componer, no al
+aplicar. El fallo aparece en la línea que armó la regla, que es donde está el defecto.
+
+Los métodos no están en todas las interfaces. `Function` tiene `andThen`, `compose` e `identity`. `BiFunction` solo
+tiene `andThen`. `Consumer.andThen` no pasa un resultado: ejecuta dos efectos con el mismo valor. `Predicate` no tiene
+`andThen` ni `compose`. `Predicate.not` existe desde Java 11; en Java 8 debías usar `negate()` sobre una variable.
+
+Una lambda no tiene métodos hasta que recibe un tipo. Según la especificación, solo puede aparecer en una asignación,
+como argumento de un método o en un *cast*. Por eso `(e -> ...).negate()` produce `lambda expression not expected
+here`. Funcionan tres arreglos: guardarla en una variable, envolverla en `Predicate.not(...)` o convertirla con un
+*cast*, como `((Predicate<Envio>) e -> e.pesoKg() <= 10).negate()`.
+
+Las leyes de De Morgan se cumplen con estos métodos. «No (peso y no fallido)» equivale a «no peso o fallido». Por
+eso `revisar` da `[A2, A3]`, exactamente los envíos que `valido` descarta.
+
+Un límite de diseño: una cadena muy larga oculta la intención. Si necesitas un comentario para entenderla, extrae
+partes a métodos con nombre de negocio.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los métodos `default` de Java, Módulo 1, Tema 3 son los que hacen posible este tema: `and`, `andThen` y `compose`
+son métodos con cuerpo dentro de una interfaz. Sin ellos, cada lambda tendría que reimplementarlos.
+
+En el Tema 1 elegiste la forma de cada pieza; aquí las conectas. En el Tema 2 ya usaste `andThen` sobre una
+`BiFunction` para redondear la tarifa.
+
+`ReglaEnvio.and` es la versión propia de `Predicate.and` con un dato extra, el motivo. El JDK no puede agregar ese
+dato porque `Predicate` solo conoce `test`.
+
+El Tema 5 muestra que `UnaryOperator.andThen` devuelve `Function`, no `UnaryOperator`, y cómo lo resuelve
+`normalizarYRedondear()`. El Tema 4 trata un stream como una composición de etapas, y el Tema 12 usa reglas
+compuestas como núcleo puro.
 
 #### Problema resuelto 3.1
 Compara `andThen` con `compose`, arma un normalizador de destinos y construye dos reglas de envíos a partir de dos
@@ -1400,14 +1648,48 @@ qué orden ejecuta realmente un stream sus pasos, y cuándo se salta alguno?
 
 #### ► CÓMO FUNCIONA
 
-Un stream no ejecuta sus pasos intermedios cuando los declaras. Solo ejecuta cuando llega una operación terminal.
-`ReporteEnvios.contarConTraza(Stream<Integer>, List<String>)` añade trazas dentro de `filter` y `map`; con
-`List.of(1, 2, 3, 4, 5)` la salida es `CUENTA=2` y `TRAZA=7`: solo los pares llegan a `map` y nada ocurre antes de
-`count()`. Otro borde crítico: un stream se consume una vez. El test `streamEsPerezosoYSeConsumeUnaVez` espera
-`IllegalStateException` al contar dos veces el mismo stream.
+##### 1. La idea en lenguaje sencillo
 
-Cuando la terminal arranca, empuja los elementos uno a uno a través de la cadena compuesta. Por eso el stream es una
-composición: `filter` y `map` se fusionan en una sola pasada.
+Piensa en una receta escrita en una tarjeta: «pela, corta, fríe». Escribirla no pela ninguna papa. El trabajo
+empieza cuando alguien la cocina, y lo hace papa por papa: pela una, la corta y la fríe; luego sigue con la otra.
+
+Un stream es esa tarjeta. Cuando escribes `filter(...).map(...)` solo describes los pasos. Nada se ejecuta hasta que
+una **operación terminal** pide el resultado. Por eso el analista de Tienda Aurora ve trazas intercaladas: cada envío
+recorre la receta completa antes de que entre el siguiente. Y por eso, a veces, un paso no deja traza: si el
+resultado no lo necesita, el stream puede saltárselo.
+
+##### 2. Definición formal y vocabulario
+
+La documentación del paquete `java.util.stream` describe un stream como una secuencia de elementos que admite
+operaciones agregadas. Un **pipeline** tiene tres partes: una fuente, cero o más operaciones intermedias y una
+operación terminal.
+
+Las operaciones intermedias son **perezosas**: devuelven un stream nuevo y no recorren nada. El recorrido empieza con
+la terminal y, al terminar, el pipeline queda consumido.
+
+El **procesamiento vertical** es la consecuencia: cada elemento atraviesa todas las etapas antes que el siguiente, en
+una sola pasada. En términos sencillos: una línea de ensamblaje, no varias rondas sobre toda la lista.
+
+La documentación separa las intermedias en dos grupos. Las **sin estado**, como `filter`, `map` y `peek`, procesan
+cada elemento sin mirar los demás. Las de la **operación con estado**, como `sorted`, `distinct`, `limit` y `skip`,
+necesitan recordar elementos anteriores o verlos todos.
+
+**`peek`** es una intermedia sin estado que ejecuta un `Consumer` sobre cada elemento y lo deja pasar igual. Su
+documentación dice que existe principalmente para depurar.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el pipeline del Problema resuelto 4.1 con la fuente `Stream.of(1, 2, 3, 4, 5)`:
+
+1. `filter(...)` y `map(...)` no tocan los datos. Cada llamada crea un objeto etapa que apunta a la anterior. Por eso
+   la traza sigue vacía: `antes de la terminal: []`.
+2. `count()` arranca. El JDK encadena las etapas en una cadena de receptores, uno por operación, de la última hacia
+   la primera.
+3. La fuente entrega el `1`. `filter` lo rechaza y la cadena pide el siguiente.
+4. Llega el `2`. `filter` lo acepta y lo pasa a `map`, que produce `20` y lo entrega a la terminal.
+5. El proceso se repite hasta agotar la fuente. Cinco `filter` y dos `map` dan `TRAZA=7`.
+
+El diagrama muestra ese vaivén entre la terminal y las etapas:
 
 ```mermaid
 sequenceDiagram
@@ -1421,11 +1703,53 @@ sequenceDiagram
   M-->>T: 20
   T->>F: 3
   F-->>T: descartado
-  Note over T,M: 4 sigue el camino de 2; 5 el de 3
+  Note over T,M: 4 sigue el camino de 2 y 5 el de 3
 ```
 
-Hay un borde menos conocido. Desde Java 9, si `count()` puede saber el tamaño sin recorrer los elementos, no los
-recorre. Un `map` no cambia cuántos elementos hay, así que su lambda puede no ejecutarse nunca.
+Una operación con estado rompe el vaivén. `sorted()` no puede emitir el menor hasta ver todos los elementos. Funciona
+como una **barrera**: acumula lo que llega y, cuando la fuente se agota, ordena y suelta hacia abajo. Por eso las
+cuatro trazas `antes:` aparecen antes de cualquier `después:`.
+
+`limit(2)` es de **cortocircuito**: cuando ya dejó pasar dos elementos, avisa a la cadena que no quiere más. En el
+caso 3, `4` y `5` nunca llegan a `después:`. Si `limit` estuviera antes de `sorted`, cortaría la fuente; después de
+`sorted`, solo corta la salida.
+
+El caso 4 muestra una optimización de la terminal. Sin `filter`, el tamaño de `List.of(1, 2, 3)` se conoce de
+antemano y `map` no cambia cuántos elementos hay. `count()` responde `3` sin recorrer: `efectos en map=[]`.
+
+##### 4. Reglas, variantes y casos límite
+
+Un stream se usa una sola vez. Una segunda terminal, o una segunda intermedia sobre la misma variable, lanza
+`IllegalStateException: stream has already been operated upon or closed`. El test `streamEsPerezosoYSeConsumeUnaVez`
+fija ese comportamiento.
+
+La optimización de `count()` existe desde Java 9. Su documentación dice que la implementación puede no ejecutar el
+pipeline si puede calcular el número desde la fuente. Con un `filter` antes, ya no puede, y el recorrido ocurre.
+
+La documentación de `peek` advierte algo parecido: en pipelines como ese, la acción puede no ejecutarse. Esa
+libertad del JDK es la razón para no poner efectos de negocio en `peek` ni en `map`.
+
+Los **efectos secundarios** dentro de las lambdas están desaconsejados en general. La documentación pide que las
+funciones de las operaciones sean **sin interferencia**: no deben modificar la fuente durante el recorrido. Una
+`ArrayList` modificada mientras se recorre suele lanzar `ConcurrentModificationException`.
+
+El orden de encuentro importa. Una fuente como `List` tiene orden y las operaciones lo respetan. Un `HashSet` no lo
+tiene, así que el orden de las trazas puede variar entre ejecuciones.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 1 usaste `filter`, `map` y `collect` como herramientas para obtener un resultado. Este tema
+abre la caja: muestra cuándo y en qué orden corre cada lambda, que es lo que decide si una traza aparece.
+
+En el Tema 3 viste que componer funciones no ejecuta nada hasta `apply`. Un pipeline es la misma idea a escala: una
+composición de etapas que espera a la terminal.
+
+Esto conecta con los efectos secundarios de Java, Módulo 4, Tema 4. Un efecto escondido en una lambda depende de
+decisiones internas del JDK; un efecto en la terminal o fuera del stream no.
+
+El Tema 8 recorre las intermedias una por una, con sus reglas de orden. El Tema 9 explica las terminales y el
+cortocircuito de `findFirst` y `anyMatch`. El Tema 11 muestra qué pasa con este mismo procesamiento cuando el stream
+se divide entre varios hilos.
 
 #### Problema resuelto 4.1
 Observa el orden real de ejecución de un pipeline en cuatro situaciones: antes de la terminal, con `count()`, con
@@ -1611,13 +1935,32 @@ comunica «mismo tipo de entrada y salida»?
 
 #### ► CÓMO FUNCIONA
 
-`UnaryOperator<T>` es `Function<T,T>`; `BinaryOperator<T>` es `BiFunction<T,T,T>`. Úsalos cuando el tipo se conserva:
-comunican mejor la intención que una función genérica. `aplicarDescuento` y `mayorCosto` trabajan con `BigDecimal` de
-principio a fin. La salida verificada en `App` es `TOTAL=107.10` y `MAYOR=25`; en el test,
-`aplicarDescuento(0.10).apply(100)` es `90.00`.
+##### 1. La idea en lenguaje sencillo
 
-Hay una trampa de tipos. `UnaryOperator` hereda `andThen` de `Function`, y ese método está declarado para devolver
-`Function`. Por eso `ReglasEnvio.normalizarYRedondear()` declara su retorno como `Function<BigDecimal, BigDecimal>`.
+Un sastre ajusta un pantalón: lo recorta, lo plancha y le cose el ruedo. En cada paso recibe un pantalón y entrega
+un pantalón. Nunca recibe un pantalón y entrega una camisa. Cuando dos clientes discuten qué pantalón llevar, el
+sastre elige uno de los dos, y lo que entrega sigue siendo un pantalón.
+
+Los precios de Tienda Aurora pasan por el mismo tipo de ajustes. Descontar, quitar negativos y redondear reciben un
+`BigDecimal` y devuelven un `BigDecimal`. Elegir el costo mayor recibe dos y devuelve uno. Java tiene formas propias
+para esos casos, y su nombre le dice al lector que el tipo se conserva.
+
+##### 2. Definición formal y vocabulario
+
+**UnaryOperator** es `java.util.function.UnaryOperator<T>`. Extiende `Function<T,T>` y no agrega métodos abstractos:
+su único método sigue siendo `apply`. Dicho de forma sencilla: una `Function` cuya entrada y salida son del mismo tipo.
+
+**BinaryOperator** es `java.util.function.BinaryOperator<T>`. Extiende `BiFunction<T,T,T>`: dos entradas y una
+salida, las tres del mismo tipo. Es la forma que exigen `reduce` y varios collectors para combinar valores.
+
+Ambas interfaces suman métodos estáticos. **`identity`** existe en `Function` y en `UnaryOperator`: devuelve una
+función que retorna su argumento sin cambios. **`minBy` y `maxBy`** son de `BinaryOperator`: reciben un `Comparator`
+y devuelven un operador que se queda con el menor o el mayor de dos valores.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La relación entre las cuatro interfaces es de herencia. El diagrama muestra quién extiende a quién y qué devuelve
+cada operación:
 
 ```mermaid
 flowchart TD
@@ -1626,6 +1969,76 @@ flowchart TD
   U -->|"andThen(...)"| R1["devuelve Function"]
   O -->|"reduce(identidad, op)"| R2["un solo T"]
 ```
+
+Sigue `descuento10.andThen(dosDecimales)` del Problema resuelto 5.1:
+
+1. `descuento10` es un `UnaryOperator<BigDecimal>`. Como extiende `Function<BigDecimal, BigDecimal>`, hereda
+   `andThen` tal como lo declara `Function`.
+2. Esa declaración devuelve `Function<T, V>`. El compilador infiere `V = BigDecimal`, pero el tipo sigue siendo
+   `Function`, no `UnaryOperator`.
+3. Si asignas el resultado a un `UnaryOperator`, el compilador no puede convertirlo y falla con `incompatible
+   types`. Por eso `precioFinal` y `normalizarYRedondear()` se declaran como `Function<BigDecimal, BigDecimal>`.
+4. Al ejecutar, `119.00 × 0.90` da `107.1000` y el redondeo deja `107.10`, el mismo `TOTAL=107.10` de `App`.
+
+Si necesitas de verdad un `UnaryOperator`, envuelve la composición en una lambda nueva. La lambda recibe su tipo del
+lado izquierdo:
+
+```java
+UnaryOperator<BigDecimal> precio = v -> descuento10.andThen(dosDecimales).apply(v);
+```
+
+Ahora sigue `costos.stream().reduce(BigDecimal.ZERO, sumar)`:
+
+1. El acumulador empieza en la identidad, `0`.
+2. Para cada costo, `reduce` llama a `sumar.apply(acumulado, costo)` y guarda el resultado.
+3. Al final devuelve el último acumulado: `55000`.
+
+Sin identidad, `reduce(mayorCosto)` toma el primer elemento como punto de partida. Si la lista está vacía no hay
+punto de partida, y por eso esa variante devuelve `Optional`.
+
+`identity()` también sirve como punto de partida al componer una lista de ajustes:
+
+```java
+List<Function<BigDecimal, BigDecimal>> ajustes = List.of(descuento10, dosDecimales);
+Function<BigDecimal, BigDecimal> todos = ajustes.stream()
+        .reduce(Function.identity(), Function::andThen);
+```
+
+`todos.apply(new BigDecimal("119.00"))` da `107.10`. Con la lista vacía, `todos` sería la identidad y no cambiaría
+nada, que es justo lo esperado.
+
+##### 4. Reglas, variantes y casos límite
+
+La documentación de `Stream.reduce` exige que el operador sea **asociativo**: `(a op b) op c` debe dar lo mismo que
+`a op (b op c)`. También exige que la identidad sea neutra: `op(identidad, x)` debe devolver `x`. La suma de
+`BigDecimal` cumple ambas condiciones; la resta no.
+
+`minBy` y `maxBy` resuelven los empates a favor del primer argumento. `maxBy` con `comparing(String::length)` entre
+`"BOG"` y `"MED"` devuelve `BOG`. Tu `mayorCosto` hace lo mismo porque usa `>= 0`.
+
+`reduce` tiene tres sobrecargas. Con un operador devuelve `Optional<T>`. Con identidad y operador devuelve `T`. La
+tercera recibe identidad, un `BiFunction` acumulador y un `BinaryOperator` combinador, y permite cambiar de tipo.
+
+Para primitivos existen `IntUnaryOperator`, `IntBinaryOperator` y sus versiones `Long` y `Double`. `IntStream` las
+usa en su propio `reduce`, sin envolver cada número en un objeto.
+
+`BinaryOperator` y `BiFunction<T,T,T>` no son intercambiables. Un `BiFunction` guardado en una variable no se puede
+pasar donde se pide `BinaryOperator`; sí puedes pasar una referencia como `biFuncion::apply`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Tema 1 elegiste la forma por lo que entra y sale. Aquí la pregunta se afina: ¿el tipo se conserva? Si la
+respuesta es sí, `UnaryOperator` o `BinaryOperator` lo dicen en la firma.
+
+En el Tema 3 compusiste con `andThen` sin preocuparte por el tipo resultante. Este tema explica por qué la
+composición de dos `UnaryOperator` vuelve a ser `Function`.
+
+`reduce` viene de Java, Módulo 4, Tema 1, y `Comparator` de Java, Módulo 2, Tema 5. Aquí los dos se unen:
+`minBy(Comparator.naturalOrder())` convierte un criterio de orden en una regla de combinación.
+
+El Tema 9 trata `reduce`, `max` y `min` como terminales y explica cuándo conviene cada una. El Tema 10 usa
+`Collectors.reducing`, que recibe el mismo `BinaryOperator`. El Tema 11 muestra por qué la asociatividad y la
+identidad neutra deciden si un `reduce` paralelo da el resultado correcto.
 
 #### Problema resuelto 5.1
 Aplica un descuento, redondea, obtén la identidad, elige el mayor de dos costos y reduce la lista de costos a suma,
@@ -1805,14 +2218,53 @@ primer cambio no alteró nada; el segundo hizo que todos los ids terminaran en u
 
 #### ► CÓMO FUNCIONA
 
-Una referencia a método es una forma compacta de una lambda existente. No agrega magia; solo nombra un comportamiento
-ya disponible. En el proyecto aparecen `Envio::destino`, `Envio::id`, `Envio::costo`, `Envio::estado`,
-`System.out::println` y `BigDecimal::add`. Salida verificada: `DESTINOS=[BOG, CALI, MED]`. La referencia a método no
-cambia el resultado de la lambda equivalente: cambia claridad.
+##### 1. La idea en lenguaje sencillo
 
-Hay una excepción a «no cambia el resultado»: el receptor ligado. En `expresion::metodo`, Java evalúa `expresion` en
-el momento de crear la referencia. `System.out::println` captura el `System.out` de ese instante. En la lambda,
-la expresión se evalúa dentro del cuerpo, en cada llamada.
+Si alguien te pregunta cómo llegar a la bodega, puedes describir el camino calle por calle. También puedes decir
+«sigue la ruta del mapa». La segunda respuesta es más corta y dice lo mismo, porque la ruta ya existe y tiene nombre.
+
+Una referencia a método es esa segunda respuesta. Cuando una lambda solo reenvía sus argumentos a un método que ya
+existe, como `e -> e.destino()`, puedes nombrar el método directamente: `Envio::destino`.
+
+Casi siempre el cambio es solo de estilo. El compañero de Tienda Aurora tropezó con la excepción: cuando delante de
+`::` hay una expresión, como `nuevaBitacora()`, esa expresión se calcula una sola vez. Este tema explica cuándo
+ocurre ese cálculo y por qué todos los ids terminaron en la misma bitácora.
+
+##### 2. Definición formal y vocabulario
+
+La Especificación del Lenguaje Java (JLS §15.13) define la **expresión de referencia a método**. Igual que una lambda,
+no tiene tipo propio: lo recibe de la interfaz funcional que espera el contexto. Hay cuatro formas:
+
+- `Tipo::metodoEstatico`, por ejemplo `Integer::parseInt`.
+- `Tipo::metodoDeInstancia`, el **receptor no ligado**. El objeto que recibe la llamada llega como primer argumento.
+  `Envio::destino` encaja en `Function<Envio, String>` porque el `Envio` es ese primer argumento.
+- `expresion::metodo`, el **receptor ligado**. El objeto queda fijado al crear la referencia. `System.out::println`
+  es el ejemplo más común.
+- `Tipo::new`, la referencia a constructor, como `ArrayList::new` o `TreeSet::new`.
+
+La palabra **receptor** nombra al objeto sobre el que se llama un método; en `a.add(b)`, el receptor es `a`. Una
+**referencia ambigua** es una que encaja con más de un método del tipo; el compilador la rechaza en lugar de elegir.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Cuando el compilador encuentra `Function<Envio, String> destino = Envio::destino;`, hace esto:
+
+1. Toma el tipo objetivo y su método abstracto, `String apply(Envio)`.
+2. Busca métodos llamados `destino` en `Envio`. Prueba dos lecturas: un estático que reciba un `Envio`, o uno de
+   instancia sin parámetros llamado sobre el `Envio` recibido.
+3. Encuentra solo la segunda: el accesor del `record`. La referencia queda resuelta como receptor no ligado.
+4. Genera una instrucción `invokedynamic`, igual que con una lambda. En ejecución, la JVM crea un objeto que
+   implementa `Function` y, en cada `apply(e)`, llama a `e.destino()`.
+
+Con un receptor ligado, el orden cambia. La JLS §15.13.3 dice que la expresión de la izquierda se evalúa cuando se
+evalúa la referencia, no cuando se llama al método:
+
+1. Java ejecuta `nuevaBitacora()` una vez y obtiene una lista concreta.
+2. Crea el objeto `Consumer` y guarda dentro esa lista.
+3. Cada `accept(id)` posterior llama a `add` sobre la lista guardada. Resultado: `bitácoras creadas: 1`.
+
+La lambda `id -> nuevaBitacora().add(id)` tiene la llamada dentro del cuerpo. Se ejecuta en cada `accept`, así que
+crea cuatro listas. El diagrama compara los dos recorridos:
 
 ```mermaid
 flowchart LR
@@ -1823,6 +2275,50 @@ flowchart LR
     C2["crear lambda"] --> A2["4 llamadas"] --> B2["nuevaBitacora() 4 veces"]
   end
 ```
+
+La evaluación temprana tiene otra consecuencia: si la expresión vale `null`, el error aparece al crear la referencia.
+
+```java
+List<String> bitacora = null;
+Consumer<String> c = bitacora::add;        // NullPointerException aquí
+Consumer<String> l = s -> bitacora.add(s); // aquí no; fallaría al llamar a accept
+```
+
+La lambda se crea sin problema y falla después, en el primer `accept`. La referencia falla antes de usarse.
+
+##### 4. Reglas, variantes y casos límite
+
+El número de parámetros decide la forma. `String::length` encaja en `Function<String, Integer>`: el texto es el
+receptor. `String::equalsIgnoreCase` encaja en `BiFunction<String, String, Boolean>`: el primer texto es el receptor
+y el segundo, el argumento. `BigDecimal::add` como `BinaryOperator` sigue la misma regla.
+
+Si las dos lecturas del paso 2 encajan, la referencia es ambigua. `Integer::toString` sobre un `Stream<Integer>`
+encaja con el estático `toString(int)` y con el de instancia `toString()`. El compilador responde `reference to
+toString is ambiguous`. Usa `Object::toString` o una lambda explícita.
+
+Las referencias también aceptan `this::metodo` y `super::metodo`, ambas con receptor ligado. Para arreglos existe
+`int[]::new`, que encaja en `IntFunction<int[]>`.
+
+Las referencias a constructor eligen la sobrecarga por el tipo objetivo. `Supplier<List<String>>` toma el constructor
+sin argumentos de `ArrayList`; una `Function<Integer, List<String>>` tomaría el que recibe la capacidad inicial.
+
+Una referencia no puede llevar argumentos fijos. Si necesitas fijar uno, como `etiqueta.apply(id, "BOG")`, escribe
+una lambda.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 1 viste las referencias a métodos como atajo, y en Java, Módulo 4, Tema 4 usaste referencias
+a constructor. Este tema agrega lo que no se ve en el texto: cuándo se evalúa el receptor.
+
+En el Tema 1 escribiste `System.out::println` como `Consumer<String>`. Es un receptor ligado: captura el
+`System.out` de ese instante. Si un programa redirige la salida con `System.setOut` después, esa referencia sigue
+escribiendo en el destino anterior.
+
+En el Tema 2 viste la captura de variables en lambdas. El receptor ligado es una captura: el objeto queda guardado en
+la referencia, igual que el IVA quedó guardado en `conIva`.
+
+El Tema 7 encadena `Optional` con `map(Envio::id)`. El Tema 10 usa `Envio::estado`, `LinkedHashMap::new` y
+`TreeSet::new` como argumentos de los collectors. El Tema 12 inyecta `System.out::println` como el efecto del borde.
 
 #### Problema resuelto 6.1
 Reescribe el pipeline de destinos, costo mayor y suma con referencias a métodos. Después compara una referencia con
@@ -2004,13 +2500,45 @@ anidados y `null` el código se llena de comprobaciones. ¿Cómo encadenas búsq
 
 #### ► CÓMO FUNCIONA
 
-`Optional` obliga a decidir qué hacer cuando un dato no está. `EnvioRepository.buscarPorId` devuelve
-`Optional<Envio>`; `obtenerObligatorio` convierte la ausencia en `IllegalArgumentException` con mensaje útil.
-Salidas verificadas: `OPT=A1`, `MISS=NA`. El caso obligatorio falla con `envío obligatorio no encontrado: ZZ`: un
-`NoSuchElementException` genérico no ayuda en producción.
+##### 1. La idea en lenguaje sencillo
 
-`map`, `flatMap` y `filter` hacen con un `Optional` lo mismo que con un stream de cero o un elemento. Cada paso solo
-se ejecuta si hay valor. La decisión sobre la ausencia se toma una vez, al final, con `orElse` u `orElseThrow`.
+Cuando pides un paquete en la ventanilla, el empleado puede volver con una caja o con las manos vacías. Lo peligroso
+es que vuelva con una caja que parece llena y está vacía: la abres en casa y te llevas la sorpresa. Mejor que te
+entregue una caja con una etiqueta que diga claramente «llena» o «vacía».
+
+`Optional` es esa caja etiquetada. `buscarPorId` no promete un envío: promete una respuesta que puede traerlo o no.
+El tipo obliga a quien llama a decidir qué hacer en los dos casos. En Tienda Aurora hay dos ausencias encadenadas:
+el envío puede no existir y, si existe, puede no tener conductor. Este tema muestra cómo recorrer esa cadena sin
+`if` anidados ni `null`.
+
+##### 2. Definición formal y vocabulario
+
+`java.util.Optional<T>` es, según su documentación, un objeto contenedor que puede o no contener un valor no nulo.
+`isPresent()` dice si lo contiene. La propia documentación aclara su propósito: es un tipo de retorno para métodos
+donde «no hay resultado» es un caso normal.
+
+Tres métodos permiten trabajar con el contenido sin sacarlo:
+
+- **`Optional.map`** aplica una `Function` al valor, si existe, y envuelve el resultado en un `Optional` nuevo.
+- **`Optional.flatMap`** aplica una función que ya devuelve `Optional` y entrega ese resultado sin envolverlo otra vez.
+- **`Optional.filter`** aplica un `Predicate`: conserva el valor si lo cumple y devuelve vacío si no.
+
+En los tres, si el `Optional` está vacío, la función no se llama y el resultado es `Optional.empty()`. Dicho de forma
+sencilla: la caja vacía atraviesa toda la cadena sin que nadie la abra.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+`Optional` guarda un solo campo con el valor o `null`. Cada método mira ese campo antes de hacer nada. Sigue
+`buscarPorId("A4").flatMap(BuscarEnvio::conductorDe).orElse("sin conductor")`:
+
+1. `buscarPorId("A4")` llama a `ENVIOS.get("A4")`, que devuelve el envío. `Optional.ofNullable` lo envuelve.
+2. `flatMap` ve que hay valor y llama a `conductorDe(envio)`. Esa función devuelve `Optional[Marta]`.
+3. `flatMap` devuelve ese `Optional` tal cual. No lo mete en otra caja.
+4. `orElse` ve que hay valor y devuelve `"Marta"`.
+
+Con `"ZZ"`, el paso 1 recibe `null` del mapa y produce `Optional.empty()`. El paso 2 no llama a `conductorDe`. El
+paso 4 devuelve el valor por defecto. Con `"A1"`, el envío existe, pero su conductor no: el vacío aparece en el paso
+2. El diagrama resume los dos caminos:
 
 ```mermaid
 flowchart LR
@@ -2020,6 +2548,57 @@ flowchart LR
   P --> O["orElse(...)"]
   V --> O
 ```
+
+¿Por qué `map` produce `Optional[Optional[Marta]]`? Porque `map` siempre envuelve lo que devuelve la función. Si la
+función ya devuelve un `Optional`, el resultado queda dentro de otro. `flatMap` existe para evitar esa doble caja.
+
+`map` tiene un detalle útil: si la función devuelve `null`, el resultado es vacío, no una caja con `null` dentro.
+
+```java
+System.out.println(Optional.of("A1").map(s -> (String) null));   // Optional.empty
+```
+
+##### 4. Reglas, variantes y casos límite
+
+`Optional.of(null)` lanza `NullPointerException`; usa `ofNullable` cuando el origen puede dar `null`, como `Map.get`.
+La documentación pide que una variable de tipo `Optional` nunca valga `null`: debe apuntar a un `Optional` real.
+
+`orElse(valor)` evalúa su argumento siempre, aunque haya valor. `orElseGet(supplier)` solo llama al `Supplier` si
+falta. La diferencia importa cuando el valor por defecto es costoso:
+
+```java
+Optional<String> id = Optional.of("A1");
+id.orElse(porDefecto());          // imprime "calculando por defecto" igual
+id.orElseGet(() -> porDefecto()); // no lo imprime
+```
+
+Por la misma razón, `orElseThrow(() -> new IllegalArgumentException(...))` recibe un `Supplier`: la excepción solo se
+crea si hace falta.
+
+La API creció después de Java 8. Java 9 añadió `or`, `ifPresentOrElse` y `stream()`. Java 10 añadió `orElseThrow()`
+sin argumentos, que lanza `NoSuchElementException` y equivale a `get()` con un nombre más claro. Java 11 añadió
+`isEmpty()`.
+
+`Optional` es una clase **basada en valor**: no debes compararla con `==` ni sincronizar sobre ella. Compárala con
+`equals`. Tampoco es serializable, una razón más para no usarla como campo.
+
+Existen versiones primitivas, `OptionalInt`, `OptionalLong` y `OptionalDouble`. Las devuelven terminales como
+`IntStream.max()`. No tienen `map`, `flatMap` ni `filter`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 2 aprendiste a crear y abrir un `Optional` con `orElse` y `orElseThrow`. Este tema trabaja
+el tramo intermedio: transformar, filtrar y encadenar sin abrir la caja hasta el final.
+
+`map`, `flatMap` y `filter` tienen los mismos nombres que en los streams, y no es casualidad. Un `Optional` se
+comporta como un stream de cero o un elemento. Las funciones que pasas son las `Function` y `Predicate` del Tema 1,
+y referencias como `Envio::id` del Tema 6.
+
+Diferencia clave con `null`: un `null` no aparece en la firma y el compilador no te obliga a tratarlo. `Optional<Envio>`
+sí aparece, y quien llama ve la ausencia antes de ejecutar.
+
+El Tema 9 muestra terminales que devuelven `Optional`, como `findFirst`, `max` y `reduce` sin identidad. El Tema 12
+usa la distinción entre consulta y obligación para separar el núcleo puro del borde que lanza errores.
 
 #### Problema resuelto 7.1
 Busca envíos por id, extrae su id, comprueba si están entregados, obtén su conductor y exige un envío obligatorio.
@@ -2210,14 +2789,32 @@ los pasos?
 
 #### ► CÓMO FUNCIONA
 
-Las operaciones intermedias devuelven otro stream: `filter`, `map`, `flatMap`, `distinct`, `sorted`.
-`ReporteEnvios.paradasNormalizadas` usa `flatMap` porque cada envío tiene una lista de paradas; sin aplanar
-terminarías con `Stream<List<String>>`. Salida verificada: `PARADAS=[BODEGA, BOG, CALI, MED]`.
-`destinosValidosNormalizados` muestra el orden correcto: recortar, pasar a mayúsculas y solo entonces filtrar; salida
-`NORMALIZADOS=[BOG, MED]`.
+##### 1. La idea en lenguaje sencillo
 
-El orden de los pasos sigue una regla: primero aplana, después limpia y normaliza, después descarta duplicados y al
-final ordena. Ordenar al final es más barato: `sorted` trabaja con menos elementos.
+Imagina que recibes cuatro sobres, y cada sobre trae varias tarjetas de paradas escritas a mano. Para armar el
+tablero, primero vacías todos los sobres en la mesa. Después borras espacios y pasas todo a mayúsculas. Luego retiras
+las tarjetas repetidas y, al final, las pones en fila.
+
+Si cambias el orden, el resultado cambia. Si retiras repetidas antes de pasar a mayúsculas, `MED` y `med` quedan las
+dos. Si comparas con la lista de destinos permitidos antes de limpiar, `" bog "` queda rechazado aunque es válido.
+Las operaciones intermedias de un stream son esos pasos, y este tema trata de su orden.
+
+##### 2. Definición formal y vocabulario
+
+Una operación intermedia recibe un stream y devuelve otro stream. Las cinco de este tema son:
+
+- `filter(Predicate)`: deja pasar los elementos que cumplen el predicado.
+- `map(Function)`: reemplaza cada elemento por el resultado de la función.
+- `flatMap(Function)`: la función devuelve un stream por elemento, y esos streams se vuelcan en uno solo.
+- **`distinct`**: deja pasar cada elemento la primera vez, comparando con `equals` y `hashCode`.
+- **`sorted`**: ordena por orden natural (`Comparable`) o por el `Comparator` que le pases.
+
+La **normalización** no es un método del JDK, sino una práctica. Consiste en llevar datos equivalentes a una forma
+única antes de compararlos. Dicho de forma sencilla: escribir todo igual para que lo igual se reconozca como igual.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el pipeline de `PARADAS` del Problema resuelto 8.1. El diagrama muestra cuántos elementos quedan en cada etapa:
 
 ```mermaid
 flowchart LR
@@ -2227,6 +2824,71 @@ flowchart LR
   D -->|"distinct"| E["4 únicas"]
   E -->|"sorted"| F["[BODEGA, BOG, CALI, MED]"]
 ```
+
+1. `toList()` arranca el recorrido. La fuente entrega el primer envío, `A1`.
+2. `flatMap` llama a `e.paradas().stream()` y empuja sus elementos, uno a uno, a la etapa siguiente. Cuando ese
+   stream interno se agota, lo cierra y pide el envío siguiente.
+3. Cada parada pasa por `trim`, por el `filter` de vacías y por `toUpperCase`, en procesamiento vertical.
+4. `distinct` guarda en un conjunto interno lo que ya vio. `"MED"` entra; el `"med"` siguiente llega como `"MED"` y
+   se descarta. De ocho paradas quedan cuatro.
+5. `sorted` acumula las cuatro. Cuando la fuente se agota, las ordena y las entrega a `toList()`.
+
+La diferencia entre `map` y `flatMap` se ve con el mismo dato:
+
+```java
+envios.stream().map(Envio::paradas).toList();                // [[Bodega, BOG], [BOG]]
+envios.stream().flatMap(e -> e.paradas().stream()).toList(); // [Bodega, BOG, BOG]
+```
+
+Con `map` obtienes una lista de listas, porque cada envío se reemplaza por su lista. Con `flatMap`, cada lista se
+vacía en el flujo principal.
+
+Para ordenar por dos criterios, `Comparator.comparing(String::length)` compara primero por largo. Si hay empate,
+`thenComparing(Comparator.reverseOrder())` desempata de Z a A. Por eso `MED` va antes que `BOG`.
+
+La validación de destinos muestra que el orden no es solo eficiencia. `filter(permitido)` antes de normalizar recibe
+`" bog "`, que no está en el conjunto, y lo descarta. Ya no hay paso posterior que lo rescate: el resultado es `[]`.
+
+##### 4. Reglas, variantes y casos límite
+
+La documentación de `Stream` fija varias garantías. En un stream con orden, `distinct` conserva la primera aparición
+de cada elemento. `sorted` es **estable** en streams con orden: dos elementos iguales según el criterio conservan su
+orden original. En streams sin orden, ninguna de las dos garantías aplica.
+
+`sorted()` sin argumentos exige que los elementos sean `Comparable`. El compilador no lo comprueba, porque la firma
+acepta cualquier `T`. Si no lo son, la `ClassCastException` aparece al ejecutar la terminal, como muestra el recuadro.
+
+`distinct` depende de `equals` y `hashCode`. Los `record` los generan a partir de sus componentes, así que dos envíos
+con los mismos datos cuentan como repetidos. Una clase sin esos métodos compara por identidad.
+
+Hubo cambios entre versiones. Java 9 añadió `takeWhile` y `dropWhile`, que cortan según una condición y no según una
+cantidad. Java 10 corrigió `flatMap` para que respete el cortocircuito; antes, un `findFirst` posterior podía
+recorrer entero el stream interno. Java 16 añadió `mapMulti` y la terminal `toList()`.
+
+`mapMulti` es una alternativa a `flatMap` que no crea un stream por elemento:
+
+```java
+List<String> paradas = envios.stream()
+        .<String>mapMulti((e, salida) -> e.paradas().forEach(salida))
+        .toList();
+```
+
+Da el mismo `[Bodega, BOG, BOG]`. Conviene cuando cada elemento produce pocos valores y crear un stream por cada uno
+resulta costoso.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Ya usaste `filter`, `map` y `flatMap` en Java, Módulo 4, Tema 1, y `Comparator.comparing` con `thenComparing` en
+Java, Módulo 2, Tema 5. Este tema los combina y pone el foco en el orden entre etapas.
+
+En el Tema 4 viste que `sorted` es una operación con estado que actúa como barrera. Aquí aparece su compañera,
+`distinct`, que también guarda memoria, pero deja pasar cada elemento en cuanto llega.
+
+La normalización conecta con el Tema 3. La función `normalizar = recortar.andThen(String::toUpperCase)` es
+exactamente la pareja de `map` de este pipeline; usar una sola función evita dos normalizaciones distintas.
+
+El Tema 9 cierra estos pipelines con terminales como `count`, `max` y `reduce`. El Tema 10 usa `collect` para
+producir mapas y conjuntos ordenados, como `TreeSet`, en lugar de ordenar con `sorted`.
 
 #### Problema resuelto 8.1
 Obtén las paradas únicas y ordenadas de los cuatro envíos, ordénalas por un segundo criterio y valida destinos crudos
@@ -2411,14 +3073,35 @@ Si usas `collect` o `forEach` para todo, el código no dice qué preguntas. ¿Qu
 
 #### ► CÓMO FUNCIONA
 
-La terminal cierra el pipeline: `count`, `max`, `reduce`, `collect`, `forEach`. Después de una terminal, el stream ya
-no sirve. `masCaro`, `totalEntregados` y `sumaCostos` devuelven `MAS_CARO=A2`, `ENTREGADOS=1` y `SUMA=55000`.
-`reduce` necesita identidad y operación asociativa; para objetos mutables, prefiere collectors o un acumulador
-explícito.
+##### 1. La idea en lenguaje sencillo
 
-Las terminales se dividen en dos grupos. Unas necesitan ver todos los elementos: `count`, `max`, `min`, `reduce`.
-Otras pueden parar antes: `anyMatch`, `allMatch`, `noneMatch` y `findFirst`. Las que pueden no tener resultado
-devuelven `Optional`.
+Al final de una jornada, el supervisor no quiere ver todos los envíos uno por uno. Quiere respuestas cortas: un
+número, un ganador, un total, un sí o un no. Cada pregunta pide una forma de cerrar el día distinta, y algunas se
+pueden contestar sin revisar todo. Si buscas «¿hay algún fallido?», dejas de mirar en cuanto encuentras uno.
+
+En un stream, la **operación terminal** es esa forma de cerrar. Las intermedias del Tema 8 preparan los datos; la
+terminal los convierte en una respuesta y termina el recorrido. Tienda Aurora tiene cinco preguntas, y para cada una
+hay una terminal cuyo nombre dice exactamente lo que se pregunta.
+
+##### 2. Definición formal y vocabulario
+
+Según la documentación de `java.util.stream`, una operación terminal recorre el stream para producir un resultado o
+un efecto. Después de ejecutarla, el pipeline se considera consumido y no puede volver a usarse.
+
+Las terminales de este tema son:
+
+- **`count`**: devuelve un `long` con la cantidad de elementos.
+- **`max` y `min`**: reciben un `Comparator` y devuelven `Optional<T>` con el mayor o el menor.
+- `reduce`: combina todos los elementos con un `BinaryOperator`, con o sin identidad.
+- **`anyMatch`, `allMatch` y `noneMatch`**: reciben un `Predicate` y devuelven `boolean`.
+- **`findFirst`**: devuelve `Optional<T>` con el primer elemento en el orden de encuentro.
+
+Las cuatro últimas son de **cortocircuito**: pueden terminar sin recorrer todos los elementos. Dicho de forma
+sencilla: dejan de trabajar en cuanto ya conocen la respuesta.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama te ayuda a elegir la terminal a partir de la pregunta:
 
 ```mermaid
 flowchart TD
@@ -2428,6 +3111,71 @@ flowchart TD
   Q -->|"¿hay alguno? ¿todos? ¿ninguno?"| B["anyMatch / allMatch / noneMatch → boolean"]
   Q -->|"¿cuál es el primero?"| F["findFirst → Optional"]
 ```
+
+Sigue `max(Comparator.comparing(Envio::costo))` sobre los cuatro envíos:
+
+1. La terminal arranca el recorrido y guarda el primer elemento, `A1`, como candidato.
+2. Llega `A2`. El comparador compara `25000` con `10000`; `A2` pasa a ser el candidato.
+3. Llegan `A3` y `A4`. Ninguno supera `25000`, así que el candidato no cambia.
+4. Se agota la fuente y `max` devuelve `Optional[A2]`. Internamente equivale a un `reduce` con
+   `BinaryOperator.maxBy`, el operador que viste en el Tema 5.
+
+Ahora sigue `anyMatch(e -> e.estado() == Estado.FALLIDO)`:
+
+1. `A1` no cumple y `A2` tampoco. La terminal sigue pidiendo elementos.
+2. `A3` cumple. La terminal ya sabe la respuesta y avisa a la fuente que no quiere más.
+3. Devuelve `true`. `A4` nunca se evalúa.
+
+`allMatch` hace lo contrario: corta en cuanto encuentra el primero que **no** cumple. `noneMatch` corta en cuanto
+encuentra uno que sí cumple. `findFirst` corta en cuanto el primer elemento atraviesa el `filter`.
+
+Puedes comprobar el corte con una traza, igual que en el Tema 4:
+
+```java
+List<String> vistos = new ArrayList<>();
+boolean hay = envios.stream()
+        .peek(e -> vistos.add(e.id()))
+        .anyMatch(e -> e.estado() == Estado.FALLIDO);
+```
+
+Con los envíos del problema resuelto, `vistos` termina con `[A1, A2, A3]`. El cuarto envío nunca entró al pipeline.
+
+##### 4. Reglas, variantes y casos límite
+
+Las listas vacías tienen reglas fijas, tomadas de la lógica. `anyMatch` devuelve `false` y no evalúa el predicado.
+`allMatch` y `noneMatch` devuelven `true`: «todos los elementos de un conjunto vacío cumplen» es verdadero por
+vacuidad. `max`, `min`, `findFirst` y `reduce` sin identidad devuelven `Optional.empty`.
+
+`max`, `min` y `findFirst` lanzan `NullPointerException` si el elemento elegido es `null`. La razón es que `Optional`
+no puede contener `null`.
+
+`findFirst` respeta el orden de encuentro. `findAny` puede devolver cualquier elemento que cumpla, y su resultado
+puede variar en un stream paralelo. En secuencial suelen coincidir, pero la documentación no lo garantiza.
+
+`count` devuelve `long`, no `int`. Desde Java 9 puede responder sin recorrer si la fuente conoce su tamaño, como
+viste en el Tema 4.
+
+Hay otras terminales que verás en otros temas. `forEach` ejecuta un `Consumer` por elemento; en paralelo no respeta
+el orden, y `forEachOrdered` sí. `toArray` produce un arreglo. `toList()`, desde Java 16, produce una lista que no
+se puede modificar. `collect` es la terminal general del Tema 10.
+
+Un stream, una terminal. Si necesitas dos respuestas sobre los mismos datos, crea un stream nuevo desde la lista para
+cada una, como hace el problema resuelto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 1 usaste `reduce` y `collect` como terminales. Este tema completa el catálogo y, sobre todo,
+une cada terminal con la pregunta que responde.
+
+`max` y `min` aplican el `Comparator` de Java, Módulo 2, Tema 5 en una sola pasada. Es más barato que `sorted` del
+Tema 8 seguido de `findFirst`, que necesita guardar y ordenar todo.
+
+Las terminales que devuelven `Optional` conectan con el Tema 7. Cierras su resultado con `map`, `orElse` u
+`orElseThrow`, igual que la búsqueda por id del repositorio.
+
+El cortocircuito es la versión terminal de `limit` del Tema 4. El Tema 10 presenta `collect` con collectors, para
+respuestas con forma de lista, mapa o texto. El Tema 11 muestra por qué `findAny` es más barato que `findFirst` en
+paralelo.
 
 #### Problema resuelto 9.1
 Responde las preguntas del supervisor sobre los cuatro envíos y comprueba qué devuelven las mismas terminales con
@@ -2618,16 +3366,36 @@ decide el orden de un mapa agrupado y cómo lo fijas?
 
 #### ► CÓMO FUNCIONA
 
-`collect` materializa el resultado y la elección del collector define el contrato de salida. `porEstado` agrupa por
-enum, `costoPorDestino` usa `LinkedHashMap` para conservar orden de inserción, `resumenIds` usa `joining` y
-`destinosOrdenados` usa `TreeSet`. Salidas verificadas: `POR_ESTADO=[ENTREGADO, EN_RUTA, PENDIENTE, FALLIDO]`,
-`COSTO_DESTINO={BOG=18000, MED=25000, CALI=12000}`, `IDS=[A1, A2, A3, A4]`, `DEST_SET=[BOG, CALI, MED]`.
+##### 1. La idea en lenguaje sencillo
 
-Cuidado con la primera salida. `porEstado` usa `groupingBy` sin fábrica, que devuelve un `HashMap`. El hash de una
-constante de enum es el de identidad del objeto, distinto en cada JVM. El mismo proyecto, ejecutado con OpenJDK
-25.0.5.1 en Linux, imprimió `POR_ESTADO=[FALLIDO, ENTREGADO, PENDIENTE, EN_RUTA]`. Si el orden importa, pasa la fábrica.
+En una oficina de correo, las cartas del día se reparten en casilleros. Para hacerlo bien decides tres cosas: qué
+dato de la carta elige el casillero, cómo está ordenado el mueble de casilleros y qué guardas en cada uno. Puedes
+guardar la carta entera, solo su número o el total del franqueo.
 
-`groupingBy` con tres argumentos tiene tres decisiones: qué clave, qué mapa y qué guardar por grupo.
+Un collector es esa decisión escrita como objeto. `collect` recibe uno y lo usa para reunir el resultado del stream
+en una lista, un conjunto, un texto o un mapa. Tienda Aurora descubrió que el mueble importa: con un `HashMap`, el
+orden de los estados en pantalla dependía de la máquina. Este tema explica qué decide ese orden y cómo lo fijas.
+
+##### 2. Definición formal y vocabulario
+
+`Stream.collect(Collector)` es una terminal de **reducción mutable**: acumula los elementos en un contenedor que se
+va modificando. La interfaz `Collector<T, A, R>` describe esa reducción con cuatro funciones: un `supplier` crea el
+contenedor, un `accumulator` agrega cada elemento, un `combiner` une dos contenedores parciales y un `finisher`
+produce el resultado final.
+
+La clase `Collectors` trae implementaciones listas:
+
+- **`groupingBy`** reparte los elementos en un `Map` según una función clasificadora.
+- Un **collector downstream** es el que `groupingBy` aplica dentro de cada grupo; por defecto, `toList()`.
+- **`mapping`** transforma cada elemento antes de entregarlo a otro collector.
+- **`toCollection`** reúne en la colección que crea el `Supplier` que le pasas.
+
+**`EnumMap`** es el mapa de `java.util` para claves de un `enum`. Guarda los valores en un arreglo indexado por el
+ordinal y, por eso, recorre siempre en el orden de declaración. Dicho de forma sencilla: una fila de casilleros fija.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+`groupingBy` con tres argumentos toma tres decisiones, que el diagrama muestra en orden:
 
 ```mermaid
 flowchart LR
@@ -2636,6 +3404,68 @@ flowchart LR
   M --> D["downstream<br/>mapping / counting / reducing"]
   D --> R["Map con orden fijado"]
 ```
+
+Sigue `idsPorEstado` del Problema resuelto 10.1:
+
+1. El `supplier` del collector llama a la fábrica `() -> new EnumMap<>(Estado.class)` y crea un mapa vacío.
+2. Llega `A1`. El clasificador devuelve `ENTREGADO`. Como esa clave no existe, el collector crea el contenedor del
+   downstream, una lista vacía, y lo guarda bajo esa clave.
+3. El downstream `mapping` aplica `Envio::id` y entrega `"A1"` a la lista de `ENTREGADO`.
+4. Lo mismo ocurre con `A2`, `A3` y `A4`, cada uno en su clave.
+5. Al final, el `finisher` de cada downstream convierte su contenedor en el valor definitivo. En `toList()` no hay
+   nada que convertir.
+6. Al imprimir, `EnumMap` recorre por ordinal: `PENDIENTE, EN_RUTA, ENTREGADO, FALLIDO`.
+
+Sin fábrica, el paso 1 crea un `HashMap`. Un `HashMap` ordena sus entradas por el hash de la clave. El hash de una
+constante de enum es el de identidad del objeto, que puede cambiar entre ejecuciones de la JVM. Por eso el mismo proyecto
+imprimió `POR_ESTADO=[ENTREGADO, EN_RUTA, PENDIENTE, FALLIDO]` en macOS y
+`POR_ESTADO=[FALLIDO, ENTREGADO, PENDIENTE, EN_RUTA]` con OpenJDK 25.0.5.1 en Linux.
+
+Con `LinkedHashMap::new`, el mapa recuerda el orden de inserción: `BOG, MED, CALI`, que es el orden en que esos
+destinos aparecen por primera vez. Con `reducing(BigDecimal.ZERO, Envio::costo, BigDecimal::add)`, cada grupo empieza
+en cero y suma: `BOG=18000`.
+
+##### 4. Reglas, variantes y casos límite
+
+La documentación de `groupingBy`, `toList` y `toSet` no garantiza el tipo, la mutabilidad ni el orden del resultado.
+Que hoy devuelvan `HashMap` o `ArrayList` es un detalle de implementación. Si necesitas un tipo concreto, pásalo con
+una fábrica o con `toCollection`.
+
+`toMap` se parece a `groupingBy`, pero no admite dos elementos con la misma clave. Si los hay, lanza
+`IllegalStateException`:
+
+```java
+envios.stream().collect(Collectors.toMap(Envio::destino, Envio::id));
+// Duplicate key BOG (attempted merging values A1 and A3)
+```
+
+Para resolverlo, pasa una función de mezcla como tercer argumento: `(x, y) -> x + "+" + y` produce `BOG=A1+A3`.
+
+`joining` solo acepta `CharSequence`. Sobre números falla al compilar, como muestra el recuadro de error.
+
+La biblioteca creció por versiones. Java 9 añadió `filtering` y `flatMapping` como downstream. Java 10 añadió
+`toUnmodifiableList`, `toUnmodifiableSet` y `toUnmodifiableMap`. Java 12 añadió `teeing`, que alimenta dos collectors
+con el mismo stream y combina sus resultados.
+
+`EnumMap::new` no sirve como fábrica: `EnumMap` no tiene constructor sin argumentos, porque necesita la clase del enum.
+Escribe la lambda `() -> new EnumMap<>(Estado.class)`.
+
+En paralelo, cada hilo llena su propio mapa y el `combiner` los une. Existe `groupingByConcurrent`, que usa un solo
+`ConcurrentMap` compartido, pero no conserva el orden de encuentro.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 1 usaste `collect` con `toList` y `joining`. Este tema abre el collector y muestra sus
+piezas: contenedor, acumulación, combinación y acabado.
+
+`HashMap`, `LinkedHashMap`, `TreeMap` y `TreeSet` vienen de Java, Módulo 2, Tema 1. Aquí su diferencia de orden deja
+de ser teoría: decide lo que ve el usuario en el tablero.
+
+`reducing` es el `reduce` del Tema 9 aplicado a cada grupo, con la misma regla de identidad neutra y operación
+asociativa del Tema 5. `mapping` es el `map` del Tema 8 metido dentro de un collector.
+
+El Tema 11 explica por qué el `combiner` existe: en un stream paralelo, cada parte llena su propio contenedor. El
+Tema 12 usa estos collectors como cálculos puros que devuelven datos sin imprimir nada.
 
 #### Problema resuelto 10.1
 Agrupa los envíos por estado con orden fijo, suma y cuenta por destino conservando el orden de llegada, une los ids
@@ -2820,15 +3650,41 @@ acumuló en un arreglo `caja[0] += v`. Las pruebas pasaron casi siempre; en prod
 
 #### ► CÓMO FUNCIONA
 
-`parallelStream()` reparte trabajo, pero no hace segura una operación con estado compartido.
-`ReporteEnvios.sumaParalelaInsegura` muestra el error con un `int[]` mutable; `sumaParalelaSegura` usa `reduce` sin
-estado compartido. Salida verificada de la versión segura: `PARALELA=55000`. No se ejecutó JMH: mide con datos y
-hardware reales antes de dejar `parallelStream()` en producción; la corrección de la carrera sí está verificada por el
-código y el test.
+##### 1. La idea en lenguaje sencillo
 
-Un stream paralelo divide la fuente en partes. Cada parte se reduce por separado, empezando desde la identidad, y
-después las partes se combinan. Por eso hay dos condiciones: la operación debe ser asociativa y la identidad, neutra.
-`caja[0] += v` no cumple nada de eso: es leer, sumar y escribir sobre la misma posición desde varios hilos.
+Para contar el dinero de cuatro cajas registradoras, puedes pedir a cuatro personas que cuenten una caja cada una y
+luego sumar sus totales. Funciona si cada persona anota en su propia hoja. Si las cuatro escriben a la vez en el
+mismo cuaderno, una borra lo que otra acaba de anotar y el total no cuadra.
+
+Un stream paralelo reparte el trabajo de esa forma. Gana velocidad solo si cada parte trabaja sola y las partes se
+pueden juntar en cualquier agrupación. El cierre de Tienda Aurora falló por compartir el cuaderno: varios hilos
+escribían en `caja[0]`. Y aunque el cálculo sea correcto, repartir tiene un costo: para cuatro números, organizar a
+cuatro personas tarda más que sumar.
+
+##### 2. Definición formal y vocabulario
+
+Un stream paralelo, según la documentación de `java.util.stream`, divide su fuente en partes que se procesan en
+varios hilos. Lo obtienes con `parallelStream()` sobre una colección o con `parallel()` sobre un stream. Por defecto
+usa el `ForkJoinPool` común de la JVM.
+
+`reduce(identidad, op)` exige dos propiedades. La operación debe ser **asociativa**: `(a op b) op c` igual a
+`a op (b op c)`. Y la identidad debe ser un **elemento identidad**: `op(identidad, x)` debe devolver `x` para todo
+`x`. En lenguaje sencillo: el valor que no cambia nada, como el cero en la suma.
+
+Un **microbenchmark** es una medición controlada de un fragmento pequeño de código. En Java se hace con JMH, que
+calienta el compilador JIT, repite muchas veces y entrega resultados con su margen de error.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue `costos.parallelStream().reduce(BigDecimal.ONE, BigDecimal::add)` del Problema resuelto 11.1:
+
+1. La terminal pide al **Spliterator** de la lista que se divida. Un *spliterator* es el iterador que sabe partirse
+   en dos con `trySplit()`. Una lista basada en arreglo se parte a la mitad sin recorrerse.
+2. Cada mitad se vuelve a partir hasta llegar a trozos pequeños. Con cuatro costos, aquí quedaron cuatro partes.
+3. Las partes se entregan como tareas al `ForkJoinPool` común. Cada hilo reduce su parte empezando desde la
+   identidad: `1 + 10000`, `1 + 25000`, y así con las demás.
+4. Los resultados parciales se combinan con la misma operación, en el orden de las partes.
+5. Con identidad `ONE`, el `1` entró una vez por parte: `55004`. Con `ZERO` también entró cuatro veces, pero sumar cero no cambia nada: `55000`.
 
 ```mermaid
 flowchart TD
@@ -2842,6 +3698,53 @@ flowchart TD
   P4 --> C
   C --> R["55004: la identidad 1 se sumó 4 veces"]
 ```
+
+`caja[0] += v` falla por otra razón. Esa línea son tres pasos: leer `caja[0]`, sumar `v` y escribir el resultado.
+
+1. El hilo A lee `caja[0]` y obtiene, por ejemplo, `100`.
+2. Antes de que A escriba, el hilo B también lee `100`.
+3. A escribe `100 + 7` y B escribe `100 + 9`. La suma de A se pierde.
+
+Eso es una **condición de carrera**. No produce excepción: produce un número equivocado a veces. En la corrida del
+tema, la versión insegura acertó tres de cinco veces.
+
+La versión segura evita el problema por diseño. `mapToLong(...).sum()` da a cada parte su propio acumulador y solo
+combina al final, que es exactamente el paso 4.
+
+##### 4. Reglas, variantes y casos límite
+
+El paralelismo del pool común es, por defecto, el número de procesadores menos uno. El hilo que llama a la terminal
+también trabaja. Puedes cambiarlo con la propiedad del sistema `java.util.concurrent.ForkJoinPool.common.parallelism`,
+pero afecta a toda la JVM.
+
+`parallel()` y `sequential()` no actúan por etapa. La última llamada decide el modo de todo el pipeline.
+
+Los streams paralelos conservan el orden de encuentro cuando la fuente lo tiene. `findFirst`, `forEachOrdered` y
+`collect` con `toList()` respetan ese orden, pero pagan coordinación. `forEach` y `findAny` no lo respetan, y por eso
+son más baratos. `unordered()` declara que el orden no importa.
+
+La fuente decide cuánto se gana. `ArrayList`, arreglos y `IntStream.range` se parten bien. `LinkedList`,
+`Stream.iterate` y fuentes de I/O se parten mal, y el paralelismo puede empeorar el tiempo.
+
+El pool común es compartido. Una tarea que se bloquea en red o en disco ocupa un hilo que otros streams paralelos de
+la misma JVM necesitan.
+
+En `reduce` de tres argumentos, la documentación exige además que el combinador sea compatible con el acumulador.
+Si no lo es, el resultado secuencial y el paralelo difieren, igual que con una identidad incorrecta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 4, Tema 4 conociste el stream paralelo, el pool común y la asociatividad. Este tema muestra el
+mecanismo que hace obligatorias esas reglas: dividir, reducir cada parte desde la identidad y combinar.
+
+La carrera es la misma que viste en Fundamentos, Módulo 5, Tema 2 y en Java, Módulo 5, Tema 4. La diferencia es que
+aquí los hilos no se ven: los crea el stream.
+
+La identidad neutra y la asociatividad vienen del `BinaryOperator` del Tema 5. El `combiner` de los collectors del
+Tema 10 existe por este mismo motivo: unir los contenedores parciales de cada parte.
+
+El Tema 12 da la solución de fondo. Un cálculo puro, que no toca estado externo, se puede paralelizar sin carreras.
+El Tema 13 presenta otra forma de repartir trabajo entre hilos, con eventos y demanda explícita.
 
 #### Problema resuelto 11.1
 Suma un millón de valores en paralelo con un acumulador compartido y con una suma sin estado. Después reduce los
@@ -3026,13 +3929,35 @@ un log y luego a una cola de mensajes. ¿Cómo separas lo que se calcula de lo q
 
 #### ► CÓMO FUNCIONA
 
-Una función pura depende solo de su entrada y no causa efectos observables. `ReporteEnvios` es puro: recibe listas,
-devuelve valores. El efecto se hace en el borde: `App` calcula `REPORTE:[A1, A2, A3, A4]` y se lo pasa al `Consumer`
-inyectado. Si mañana el reporte va a un logger, a Kafka o a HTTP, el cálculo no cambia.
+##### 1. La idea en lenguaje sencillo
 
-La prueba más simple de pureza es llamar dos veces con la misma entrada. Si el resultado cambia o algo se imprime,
-hay un efecto. La inmutabilidad ayuda: si `Envio` copia sus listas al construirse, nadie puede cambiarle los datos al
-núcleo mientras calcula.
+En un restaurante, la cocina prepara el plato y el mesero lo lleva a la mesa. La cocina no sale al comedor, y el
+mesero no cocina. Si mañana el plato se entrega a domicilio, cambia quién lo lleva, pero la receta sigue igual.
+
+El reporte de Tienda Aurora hace hoy las dos cosas en el mismo método: arma el texto y lo imprime. Además, numera
+cada reporte con un contador global, así que dos llamadas iguales dan textos distintos. Este tema separa la cocina
+del mesero. El cálculo queda en funciones que solo transforman datos. Imprimir, guardar o publicar queda fuera, en un
+`Consumer` que puedes cambiar sin tocar el cálculo.
+
+##### 2. Definición formal y vocabulario
+
+Una **función pura** cumple dos condiciones. Su resultado depende solo de sus argumentos, y no produce efectos
+observables fuera de ella. En lenguaje sencillo: con los mismos datos da siempre lo mismo, y no toca nada más.
+
+Un **efecto secundario** es cualquier cambio visible fuera de la función: escribir en consola, modificar un campo
+`static`, guardar en una base de datos, leer el reloj o la red. Crear objetos nuevos o usar variables locales no
+cuenta como efecto.
+
+La **transparencia referencial** es la consecuencia práctica de la pureza. Una expresión pura se puede reemplazar por
+su valor sin cambiar el programa. Si `reportePuro(envios)` vale `"REPORTE:[A1, A2]"`, escribir ese texto en su lugar
+da el mismo comportamiento.
+
+El patrón **núcleo funcional y borde imperativo** organiza un programa con esa idea. El núcleo son funciones puras con
+la lógica de negocio. El borde es una capa delgada que lee datos, llama al núcleo y ejecuta los efectos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra cómo `App.main` reparte las responsabilidades en el proyecto:
 
 ```mermaid
 flowchart LR
@@ -3045,6 +3970,66 @@ flowchart LR
   end
   D --> R --> T["REPORTE:[A1, A2, A3, A4]"] --> C
 ```
+
+1. El borde obtiene los datos con `datos()`. En un sistema real, ese paso leería una base de datos.
+2. El borde llama a `ReporteEnvios.resumenIds(envios)`. Esa función recorre la lista, extrae ids y devuelve texto.
+3. El borde arma `"REPORTE:" + ...` y lo entrega al `Consumer` inyectado. Ahí ocurre el único efecto: imprimir.
+4. En una prueba, el `Consumer` es `capturado::add`. El núcleo no nota la diferencia.
+
+¿Por qué `reporteImpuro` falla la prueba de dos llamadas? Sigue su ejecución:
+
+1. La primera llamada incrementa `reportesEmitidos` a `1`, arma `REPORTE#1:[A1, A2]` y lo imprime.
+2. La segunda llamada encuentra el contador en `1`, lo pasa a `2` y arma `REPORTE#2:[A1, A2]`.
+3. Los textos difieren aunque la entrada sea la misma. El resultado depende de un estado oculto, no solo del argumento.
+
+La pureza necesita datos que no cambien mientras se calcula. El constructor compacto del `record` hace una copia
+defensiva con `List.copyOf`. La copia es una lista nueva e inmodificable, sin relación con la original. Ojo: no es lo
+mismo que una vista de solo lectura.
+
+```java
+List<String> mutable = new ArrayList<>(List.of("BOG"));
+List<String> vista = Collections.unmodifiableList(mutable);
+List<String> copia = List.copyOf(mutable);
+mutable.add("CALI");   // vista=[BOG, CALI] copia=[BOG]
+```
+
+`Collections.unmodifiableList` solo impide escribir a través de la vista. Si alguien cambia la lista original, la
+vista refleja el cambio. `List.copyOf` copia los elementos y queda aislada.
+
+##### 4. Reglas, variantes y casos límite
+
+`List.copyOf` existe desde Java 10. Rechaza elementos `null` con `NullPointerException`. Si recibe una lista que ya es
+inmodificable, como la de `List.of`, puede devolver la misma sin copiar, porque nadie puede cambiarla.
+
+Los `record` llegaron como estándar en Java 16. Sus campos son `final`, pero eso solo impide reasignarlos. Si un
+campo apunta a una lista mutable, el `record` es inmutable solo en la superficie. Por eso `Envio` copia `paradas`.
+
+La copia es superficial: copia las referencias, no los objetos. Si los elementos fueran objetos mutables, el
+`record` seguiría expuesto a cambios en ellos. Con `String` y `BigDecimal`, que son inmutables, no hay ese riesgo.
+
+Intentar modificar la copia lanza `UnsupportedOperationException`, sin mensaje. La traza apunta a
+`ImmutableCollections.uoe`, el método interno que lanza la excepción.
+
+La pureza tiene grados en la práctica. Una función que crea un `ArrayList` local, lo llena y lo devuelve sigue siendo
+pura, porque nadie fuera ve la mutación. Una función que lee `LocalDate.now()` no lo es: su resultado cambia con el
+reloj. La solución es recibir la fecha o un `Clock` como parámetro desde el borde.
+
+Las excepciones son un caso fronterizo. Un núcleo que lanza `IllegalArgumentException` ante datos inválidos se suele
+aceptar como puro, porque el resultado sigue dependiendo solo de la entrada.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El efecto secundario de Java, Módulo 4, Tema 4 era un riesgo dentro de un stream. Aquí se convierte en un criterio de
+diseño: decidir en qué capa vive cada efecto.
+
+La copia defensiva viene de Java, Módulo 1, Tema 5, y las colecciones inmodificables de Java, Módulo 2, Tema 1. Este
+tema muestra por qué importan: sin datos estables, una función no puede ser pura.
+
+Inyectar un `Consumer` es aplicar el Tema 1: el efecto es una pieza intercambiable. El puerto de Java, Módulo 13,
+Tema 1 es la versión arquitectónica de esta misma idea.
+
+El Tema 11 mostró que el estado compartido rompe el paralelismo. Un núcleo puro no comparte estado, así que se puede
+paralelizar sin carreras. El Tema 13 lleva el efecto a otro borde: publicar eventos a un suscriptor.
 
 #### Problema resuelto 12.1
 Compara un reporte impuro con uno puro, publica el puro en dos destinos distintos y comprueba que un `record` con
@@ -3264,25 +4249,40 @@ cómo sabes que terminó?
 
 #### ► CÓMO FUNCIONA
 
-`java.util.concurrent.Flow` reproduce las interfaces de la especificación Reactive Streams: `Publisher`,
-`Subscriber`, `Subscription`, `Processor`. El punto clave es backpressure: el consumidor pide datos con `request(n)`.
+##### 1. La idea en lenguaje sencillo
 
-**Visual (animdiagram, animado con fallback estático; fuente `visuals/temas/java/modulo-20-flow.html`; regeneración: editar el HTML/SVG en esa ruta):** [Flow API: backpressure por demanda](/visuals/temas/java/modulo-20-flow.html)
+En una cafetería con barra, el barista no prepara cien cafés y los deja caer sobre el mostrador. Prepara los que el
+mesero puede llevar. Cuando el mesero vuelve y dice «dame dos más», el barista entrega dos más. Al cerrar, alguien
+avisa «no hay más pedidos», y el mesero sabe que su turno terminó.
 
-Lectura: el Subscriber controla la demanda con `request(n)`. El Publisher no debe inundarlo; con reduced motion el diagrama queda estático.
+Así trabaja la Flow API. El emisor de eventos de Tienda Aurora es el barista, y el auditor lento es el mesero. El
+auditor dice cuántos eventos puede recibir, y el emisor no le entrega más que eso. Cuando ya no hay eventos, llega un
+aviso explícito de cierre. La prueba no necesita adivinar cuánto esperar: espera ese aviso.
 
-`SuscriptorAuditor` pide dos eventos, vuelve a pedir dos cuando lleva dos, y completa un `CompletableFuture<Void>` en
-`onComplete()`/`onError()`. Salida verificada y repetible:
+##### 2. Definición formal y vocabulario
 
-```text
-NEXT:E1:creado
-NEXT:E2:validado
-NEXT:E3:enviado
-DONE
-```
+**Reactive Streams** es una especificación para procesar flujos asíncronos con demanda controlada por el
+consumidor. Java 9 la incorporó en la clase `java.util.concurrent.Flow`, que contiene cuatro interfaces anidadas:
 
-Flow es la base estándar. Para pipelines reactivos reales con operadores ricos, timeouts, retries y schedulers,
-normalmente se usa Reactor/Mutiny/RxJava. Flow te enseña el contrato.
+- **Publisher**: `Flow.Publisher<T>` produce elementos. Su único método es `subscribe(Subscriber)`.
+- **Subscriber**: `Flow.Subscriber<T>` los recibe mediante cuatro avisos: `onSubscribe`, `onNext`, `onError` y
+  `onComplete`.
+- **Subscription**: `Flow.Subscription` es el vínculo entre ambos. Tiene `request(long n)` y `cancel()`.
+- `Flow.Processor<T,R>` es a la vez suscriptor y publicador, para etapas intermedias.
+
+La **backpressure** es el mecanismo por el cual el consumidor limita al productor. En lenguaje sencillo: el que
+recibe dice cuánto puede tomar, y el que envía respeta esa cifra.
+
+**SubmissionPublisher** es la implementación de `Publisher` que trae el JDK. Entrega lo que recibe con `submit` de
+forma asíncrona, desde un ejecutor que por defecto es el `ForkJoinPool` común. Guarda un búfer por suscriptor y
+cierra el flujo con `close()`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+**Visual:** [Flow API: backpressure por demanda](/visuals/temas/java/modulo-20-flow.html). El diagrama animado muestra
+la demanda viajando del suscriptor al publicador; con movimiento reducido queda estático.
+
+El diagrama de secuencia recorre la ejecución con lote 2 del Problema resuelto 13.1:
 
 ```mermaid
 sequenceDiagram
@@ -3299,6 +4299,71 @@ sequenceDiagram
   P->>S: onComplete()
   S->>F: complete(null)
 ```
+
+1. `publisher.subscribe(auditor)` crea una `Subscription` y llama, en otro hilo, a `onSubscribe(subscription)`.
+2. El auditor guarda el vínculo y llama a `request(2)`. La demanda pendiente pasa a ser 2.
+3. El hilo principal ejecuta `submit` tres veces. Cada evento entra al búfer del suscriptor; `submit` no espera a
+   que se entregue.
+4. El ejecutor entrega `E1` y `E2` con `onNext`. La demanda baja a 0 y `E3` se queda en el búfer.
+5. Al recibir `E2`, el auditor completa su lote y pide `request(2)`. Ahora sí se entrega `E3`.
+6. El try-with-resources llama a `close()`. El publicador marca el cierre, termina de entregar lo pendiente y llama a
+   `onComplete()`.
+7. `onComplete` completa el `CompletableFuture`. El hilo principal, bloqueado en `get(2, TimeUnit.SECONDS)`, despierta.
+
+El paso 7 explica por qué el test es determinista. No espera un tiempo fijo: espera el evento que indica el final.
+Si el evento no llega en 2 segundos, falla con `TimeoutException` en lugar de seguir con datos incompletos.
+
+Cuando no necesitas controlar la demanda, `SubmissionPublisher` trae un atajo:
+
+```java
+CompletableFuture<Void> fin;
+try (SubmissionPublisher<String> publisher = new SubmissionPublisher<>()) {
+    fin = publisher.consume(e -> System.out.println("NEXT:" + e));
+    publisher.submit("E1");
+}
+fin.get(2, TimeUnit.SECONDS);
+```
+
+`consume` crea un suscriptor que pide sin límite, ejecuta el `Consumer` por cada elemento y devuelve un futuro que se
+completa al cierre.
+
+##### 4. Reglas, variantes y casos límite
+
+La especificación fija reglas que el JDK respeta. Un publicador nunca entrega más `onNext` que la suma de lo pedido.
+Los avisos a un mismo suscriptor llegan en serie, nunca dos a la vez. `onError` y `onComplete` son terminales: tras
+uno de ellos no llega nada más.
+
+Pedir `n <= 0` es una violación. La especificación exige responder con `onError` y una `IllegalArgumentException`.
+Por eso el lote 0 produce `non-positive subscription request` y no un `onNext`.
+
+La demanda se acumula: dos `request(2)` seguidos permiten cuatro entregas. Pedir `Long.MAX_VALUE` equivale a demanda
+ilimitada y anula la backpressure.
+
+El búfer por suscriptor tiene una capacidad máxima; por defecto es `Flow.defaultBufferSize()`, que vale 256. Si se
+llena, `submit` bloquea al emisor hasta que haya espacio. `offer` es la alternativa que, en vez de bloquear, permite
+descartar elementos con una política propia.
+
+`close()` no espera a que los suscriptores terminen; solo programa el cierre. Para cerrar con error existe
+`closeExceptionally(Throwable)`, que entrega `onError` a cada suscriptor.
+
+Flow solo define el contrato. No trae operadores como `map`, `filter` o `retry`. Para eso se usan bibliotecas como
+Reactor, Mutiny o RxJava, que implementan estas mismas interfaces o se adaptan a ellas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+`CompletableFuture` viene de Java, Módulo 5, Tema 2, y el timeout de Java, Módulo 5, Tema 7. Aquí los usas como
+señal de fin de un flujo, no como resultado de un cálculo.
+
+El try-with-resources de Java, Módulo 3 funciona porque `SubmissionPublisher` es `AutoCloseable`. Al salir del bloque,
+`close()` dispara el cierre ordenado.
+
+Compara con los streams de este módulo. Un `Stream` es de extracción: la terminal tira de los elementos cuando los
+necesita. Un `Publisher` es de empuje: el emisor entrega cuando hay datos. La demanda con `request(n)` es lo que
+evita que ese empuje desborde al consumidor.
+
+El auditor es un borde en el sentido del Tema 12: recibe eventos ya calculados y ejecuta el efecto de registrarlos.
+El `HttpClient` de Java, Módulo 18, Tema 1 se apoya en ellas sin mostrarlo: `HttpRequest.BodyPublisher` extiende
+`Flow.Publisher` y `HttpResponse.BodySubscriber` extiende `Flow.Subscriber`, para mover el cuerpo por partes.
 
 #### Problema resuelto 13.1
 Haz visible la demanda: registra cada `request` junto a los eventos. Ejecuta el flujo con lote 2 y con lote 0 y

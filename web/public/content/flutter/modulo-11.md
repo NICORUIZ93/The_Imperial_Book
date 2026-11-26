@@ -209,8 +209,7 @@ Al terminar este tema podrás:
 - compilar ofuscado con `--split-debug-info` y guardar los símbolos;
 - traducir una traza de error ofuscada a funciones y líneas.
 
-**Conceptos clave:** modo de compilación, AOT y JIT, versión y número de compilación, ofuscación, archivo de
-símbolos, traza ofuscada
+**Conceptos clave:** modo de compilación, AOT y JIT, versión y número de compilación, ofuscación, archivo de símbolos, traza ofuscada
 
 #### El problema
 La app de pruebas pesa 131 MB y en el teléfono de un cliente arranca lenta: alguien entregó la compilación de
@@ -265,20 +264,111 @@ Este tema usa **el modo profile** (Módulo 8, Tema 3), **las excepciones y las t
 - **Error típico:** pegar solo el mensaje en el reporte y perder las direcciones.
 
 #### ► CÓMO FUNCIONA
-`flutter build` compila el Dart según el modo y empaqueta el motor y los recursos. Con `--obfuscate` el binario
-pierde los nombres y los símbolos van a otra carpeta. Cuando la app falla en producción, se toman las direcciones
-`virt` de la traza y se buscan en el archivo de símbolos de esa misma compilación.
+
+##### 1. La idea en lenguaje sencillo
+Una obra de teatro pasa por tres etapas. En los ensayos, el director detiene la escena, cambia una frase y repite. En
+el ensayo general todo va como en el estreno, pero con alguien cronometrando. En el estreno no hay pausas ni notas:
+solo la función.
+
+Flutter compila tu app en tres modos con esa misma lógica. Debug es el ensayo: permite la recarga en caliente y
+comprueba todo, a costa de tamaño y velocidad. Profile es el ensayo general del Módulo 8. Release es el estreno, lo
+único que se entrega a los repartidores.
+
+El problema del tema mezcla dos errores. Alguien entregó el ensayo, de 131 MB. Y cuando llegó el estreno, nadie
+guardó el «libreto» para leer sus errores. Este tema enseña a elegir el modo, numerar cada entrega y conservar ese
+libreto.
+
+##### 2. Definición formal y vocabulario
+Un **modo de compilación** es la combinación de compilador, optimizaciones y herramientas con que se construye la
+app. Se elige con `--debug`, `--profile` o `--release`. El código lo consulta con las constantes `kDebugMode`,
+`kProfileMode` y `kReleaseMode`.
+
+La diferencia de fondo es **AOT y JIT**. JIT (*just in time*, «justo a tiempo») compila mientras la app corre. AOT
+(*ahead of time*, «por adelantado») compila a código de máquina antes de distribuir. En Linux ese código queda en
+`lib/libapp.so`.
+
+La **versión y número de compilación** se declaran en `pubspec.yaml` como `version: 1.0.0+1`. Lo anterior al `+` es
+la versión visible y lo posterior, un entero que debe crecer en cada subida a una tienda.
+
+La **ofuscación** cambia los nombres del código compilado por otros sin sentido. Se pide con `--obfuscate` junto con
+`--split-debug-info`, que guarda aparte el **archivo de símbolos**. Con ese archivo se lee una **traza ofuscada**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Al ejecutar `flutter build linux --release --obfuscate --split-debug-info=simbolos` ocurre esto:
+
+1. El compilador de Dart lee `lib/` y todos los paquetes, y produce una representación intermedia llamada *kernel*.
+2. Elimina el código que nunca se usa, el *tree shaking*. Como `kReleaseMode` es una constante, los bloques
+   `if (kDebugMode)` desaparecen por completo.
+3. `gen_snapshot`, el compilador AOT de Dart, traduce el *kernel* a código de máquina x64. Con `--obfuscate`, cambia
+   los nombres de clases y funciones.
+4. Con `--split-debug-info`, la información que relaciona direcciones con archivo y línea no entra al binario. Va a
+   `simbolos/app.linux-x64.symbols`, un archivo ELF con información DWARF.
+5. La herramienta escribe la versión de `--build-name` y `--build-number`, o la de `pubspec.yaml`, en la configuración
+   de cada plataforma.
+6. Empaqueta `libapp.so`, el motor de Flutter y los recursos en `build/linux/x64/release/bundle/`.
+
+En debug, el paso 3 no existe. El paquete lleva el *kernel* y la máquina virtual con su compilador JIT, que traduce
+el código al ejecutarlo. Por eso pesa 131,3 MB frente a 21,6 MB.
+
+Cuando la release ofuscada falla, la traza no trae nombres. Trae el `build_id` y, por cada marco, una dirección
+`virt`, relativa al inicio del código. Esa dirección se busca en el archivo de símbolos con el mismo `build_id`.
+
+```text
+0x2e35d6  PlanificadorRuta.calcularDistancia (lib/ruta.dart:4:25)
+```
+
+Esta línea de la salida real es el resultado. La dirección `2e35d6` del marco `#00` se tradujo a función, archivo,
+línea y columna. Coincide con la traza sin ofuscar: `ruta.dart:4`.
 
 ```mermaid
 flowchart LR
-    C["lib/*.dart"] -->|"--release"| R["libapp.so<br/>con nombres"]
-    C -->|"--release --obfuscate<br/>--split-debug-info=simbolos"| O["libapp.so<br/>sin nombres"]
-    C -.-> S["simbolos/app.linux-x64.symbols"]
-    O -->|falla en producción| T["traza: build_id + direcciones virt"]
-    T --> L["llvm-symbolizer + símbolos"]
+    C["lib/*.dart"] --> K["kernel y tree shaking"]
+    K -->|"--release"| R["libapp.so<br/>con nombres"]
+    K -->|"--release --obfuscate<br/>--split-debug-info=simbolos"| O["libapp.so<br/>sin nombres"]
+    K -.-> S["simbolos/app.linux-x64.symbols"]
+    O -->|"falla en producción"| T["traza: build_id y direcciones virt"]
+    T --> L["llvm-symbolizer con los símbolos"]
     S --> L
     L --> F["función, archivo y línea"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+La ofuscación solo funciona en release. La documentación de Flutter la admite para Android, iOS, Linux, macOS y
+Windows. La web no la admite: su compilador minimiza el JavaScript, con un efecto parecido.
+
+Ofuscar no es proteger. Solo renombra símbolos: no cifra recursos ni impide la ingeniería inversa. Los textos, como la
+URL del servidor, siguen legibles. El Tema 2 vuelve sobre esto con los secretos.
+
+El código que depende de nombres se rompe al ofuscar. `runtimeType.toString()` ya no devuelve `'PlanificadorRuta'`.
+La documentación aclara que los nombres de los `enum` no se ofuscan por ahora.
+
+Cada compilación tiene sus símbolos. Si cambias una línea y recompilas, las direcciones se mueven y el `build_id`
+cambia. Con los símbolos de otra compilación, la traducción da lugares equivocados, como mostrará el Paso 4.
+
+La herramienta oficial es `flutter symbolize`. Con este archivo de Linux falla en Flutter 3.50.1, como muestra la
+salida, y por eso el tema usa `llvm-symbolizer`. En Windows x64, `--split-debug-info` genera un PDB en su lugar.
+
+El número de compilación es un entero que solo crece. Google Play y App Store rechazan uno repetido, aunque cambie la
+versión visible. Android lo llama `versionCode`; iOS, `CFBundleVersion`.
+
+`--build-name` y `--build-number` reemplazan los valores de `pubspec.yaml` sin editarlo. Así el CI puede numerar cada
+compilación con un contador propio.
+
+En la web, el modo release usa otro compilador. `dart2js` genera `main.dart.js` y el motor de dibujo llega aparte, en
+`canvaskit`. Por eso la carpeta pesa 38,6 MB y tu código solo 0,8 MB.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El modo profile del Módulo 8, Tema 3 es el punto medio. Comparte el AOT con release y conserva la línea de tiempo.
+Medir en debug era engañoso por lo mismo que entregar en debug es un error.
+
+Las trazas del Módulo 0, Tema 3 tenían nombres y líneas. Una release sin ofuscar las conserva; una ofuscada las
+reemplaza por direcciones. El `Timer` del Módulo 0, Tema 8 aparece en ambas como el origen de la llamada.
+
+Compara con `--dart-define`, que verás en el Tema 2. Los dos se pasan al compilar, pero la versión configura la
+plataforma y `--dart-define` configura constantes dentro de tu código Dart.
+
+El Tema 4 automatiza todo: el CI compila en release, numera cada versión y guarda los símbolos como artefacto. El
+Módulo 13 los entrega a un servicio de reportes de errores.
 
 #### Problema resuelto 1.1
 Compila la app en debug y release para Linux y en release para web, y compara lo que pesa cada entrega. Después
@@ -550,15 +640,105 @@ Este tema usa **las constantes `const`** (Módulo 0, Tema 1), **el tema desde un
 - **Error típico:** poner un token privado en `config/prod.json`.
 
 #### ► CÓMO FUNCIONA
-Cada entorno es un archivo JSON. Al compilar, sus claves se vuelven constantes que `Config` lee. La app muestra una
-franja con el entorno si no es producción y, en release, se niega a arrancar si no recibió ninguno.
+
+##### 1. La idea en lenguaje sencillo
+Una imprenta produce el mismo folleto para dos ciudades. Cambia la dirección de la oficina y el color del encabezado,
+pero el diseño es uno. La dirección se imprime en la tirada: si quieres otra, haces otra tirada. Y nadie imprime en un
+folleto la combinación de la caja fuerte.
+
+Los entornos de la app funcionan igual. Desarrollo y producción son la misma app con otro servidor, otro nombre y
+otro color. Esos datos se fijan al compilar y quedan dentro del binario. Cambiar de entorno es compilar de nuevo.
+
+El tema resuelve los dos incidentes del problema. Una release sin entorno se niega a arrancar, así que nunca apunta en
+silencio al servidor de desarrollo. Y como todo lo que se imprime en el binario se puede leer, la configuración nunca
+lleva secretos.
+
+##### 2. Definición formal y vocabulario
+Un **entorno** es el conjunto de valores que cambian entre compilaciones de la misma app. Aquí son tres claves:
+`ENTORNO`, `API_URL` y `COLOR_SEMILLA`, guardadas en `config/dev.json` y `config/prod.json`.
+
+**`--dart-define-from-file`** es la opción de `flutter run` y `flutter build` que lee ese archivo. Cada clave se
+convierte en una declaración de entorno de compilación, igual que un `--dart-define=CLAVE=valor`.
+
+**`String.fromEnvironment`** es el constructor que lee esas declaraciones: recibe el nombre y un `defaultValue`.
+Tiene hermanos para `int` y `bool`, y `bool.hasEnvironment` responde si la clave se definió.
+
+Una **constante de compilación** es un valor que el compilador calcula y escribe dentro del binario. Un **secreto** es
+un dato que da acceso si alguien lo conoce: una clave privada, un token de servicio, una contraseña.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la compilación de producción, de la orden al binario:
+
+1. `flutter build linux --release --dart-define-from-file=config/prod.json` lee el JSON. Cada par clave-valor pasa al
+   compilador de Dart como declaración de entorno.
+2. El compilador evalúa las expresiones `const`. Al llegar a `String.fromEnvironment('API_URL', ...)` busca esa clave
+   entre las declaraciones y obtiene `https://api.envios.example.com`.
+3. El valor se guarda como una constante más, igual que un texto literal escrito en el código.
+4. Las expresiones que dependen de constantes también se calculan. `Config.fallar` vale `false`, así que la rama
+   `if (Config.fallar)` puede eliminarse.
+5. El compilador AOT escribe esas constantes en `libapp.so`. Por eso `strings` encuentra la URL y el texto `prod`.
+6. Al arrancar, `main` consulta `bool.hasEnvironment('ENTORNO')`, que también se resolvió al compilar. En esta
+   compilación vale `true` y la app sigue.
+
+```dart
+static const apiUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:8080');
+```
+
+La palabra clave de esta línea es `const`. Obliga a resolver el valor en el paso 2. Sin `const`, el compilador AOT no
+lo resuelve y, al ejecutar, el código ya no tiene acceso a las declaraciones. El programa `const_o_no.dart` lo
+demuestra: `const=prod final=defecto`.
+
+En `dart run` o en debug, una lectura sin `const` sí puede funcionar, porque la máquina virtual JIT conserva las
+declaraciones. Esa diferencia es la trampa: el error solo aparece en la release.
 
 ```mermaid
 flowchart LR
-    D["config/dev.json"] -->|"--dart-define-from-file"| B1["binario dev<br/>(franja DEV, servidor local)"]
-    P["config/prod.json"] -->|"--dart-define-from-file"| B2["binario prod<br/>(sin franja, servidor real)"]
-    N["sin archivo"] -->|"release"| X["StateError al arrancar"]
+    D["config/dev.json"] -->|"--dart-define-from-file"| C["compilador: evalúa los const"]
+    P["config/prod.json"] -->|"--dart-define-from-file"| C
+    C --> B1["binario dev<br/>franja DEV, servidor local"]
+    C --> B2["binario prod<br/>sin franja, servidor real"]
+    N["sin archivo"] -->|"release"| X["bool.hasEnvironment falso: StateError al arrancar"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+La documentación de Dart es explícita: `String.fromEnvironment` solo está garantizado como `const`. Sin `const` puede
+funcionar en plataformas que conservan las opciones del compilador al ejecutar, pero la mayoría de las compiladas AOT
+no las conservan.
+
+`defaultValue` decide qué pasa si falta la clave. En este curso, los valores por defecto son los de desarrollo: así
+`flutter run` y las pruebas funcionan sin opciones. El riesgo es la release, y por eso `main` exige el entorno.
+
+`bool.hasEnvironment` distingue «no se definió» de «se definió con el valor por defecto». Sin esa comprobación, una
+release olvidada arrancaría como `dev` contra `localhost`, que es justo el incidente del problema.
+
+Todo lo que entra por `--dart-define` es texto. La semilla llega como `'0xFF3F51B5'` y `Config` la convierte con
+`int.parse`. Si el archivo trae un valor mal escrito, el error aparece al ejecutar, no al compilar.
+
+Un valor de entorno queda legible en el binario. Una URL o el nombre de un entorno no son secretos. Una clave privada,
+sí, y nunca va en una app cliente: vive en el servidor, y la app recibe tokens de corta duración al iniciar sesión.
+
+Algunas «claves» son públicas por diseño, como la de un SDK de mapas restringida al identificador de la app. Su
+protección es esa restricción en el servicio, no el binario.
+
+Esta técnica cambia la configuración de Dart. Para instalar dos versiones a la vez, con distinto identificador, Android
+usa *flavors* e iOS usa *schemes*, que se pasan con `flutter build --flavor`.
+
+`--dart-define-from-file` también acepta archivos `.env`, además de JSON. Puedes combinarlo con `--dart-define`
+sueltos, como hizo el Tema 1 con `FALLAR=true`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Las constantes `const` del Módulo 0, Tema 1 explican el mecanismo: un valor `const` existe antes de que el programa
+arranque. Aquí ese valor llega desde fuera del código, en la orden de compilación.
+
+El color de la semilla alimenta `ColorScheme.fromSeed` (Módulo 10, Tema 1). Por eso la ventana de desarrollo es
+naranja y la de producción, índigo, sin tocar ninguna pantalla.
+
+Compara con la versión del Tema 1. `--build-name` y `--build-number` configuran la plataforma: `versionName`,
+`CFBundleVersion`. `--dart-define-from-file` configura constantes de tu código Dart. Los dos se pasan al compilar y
+los dos exigen recompilar para cambiar.
+
+El Tema 4 fija la orden de producción en un script de CI, para que nadie la escriba a mano. El Módulo 5 ya mostró el
+lugar de los secretos: un servidor que entrega tokens después de iniciar sesión.
 
 #### Problema resuelto 2.1
 Compila la misma app para desarrollo y producción, ejecuta las dos y compáralas. Después compila una release sin
@@ -780,8 +960,59 @@ Este tema usa **los paquetes de desarrollo** (`dev:`, Módulo 9), **el color de 
 - **Error típico:** hacer una «pantalla de inicio» en Flutter con un `Future.delayed` de tres segundos: alarga el arranque en lugar de cubrirlo.
 
 #### ► CÓMO FUNCIONA
-Dos archivos YAML describen la identidad; dos herramientas generan los archivos de cada plataforma. El nombre visible
-se edita a mano en cada plataforma, porque cada una lo guarda en su formato.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de envíos pinta su logotipo en camiones, cajas, sobres y uniformes. Es el mismo logotipo en tamaños y
+materiales distintos: en un sobre debe leerse con dos centímetros, y en un camión, con tres metros. Nadie lo redibuja
+para cada soporte: parte de un original y lo adapta.
+
+La app necesita esa identidad en cada plataforma. Un nombre, «Ruta», en lugar de «m11». Un ícono que se reconozca a 48
+píxeles en un Android barato y a 180 en un iPhone. Y una cortina del color de la marca mientras el motor arranca, en
+lugar del segundo de pantalla blanca.
+
+Cada sistema operativo guarda esos datos en su propio formato y en sus propias carpetas. Este tema parte de dos
+imágenes y dos archivos de configuración, y deja que las herramientas generen el resto.
+
+##### 2. Definición formal y vocabulario
+El **nombre visible** es el texto que el sistema muestra bajo el ícono o en la barra de la ventana. Cada plataforma
+lo lee de un archivo distinto: `AndroidManifest.xml`, `Info.plist`, `index.html` y `manifest.json`, y el código del
+*runner* de Linux.
+
+La **densidad de pantalla** es la cantidad de píxeles físicos por unidad lógica. Android la agrupa en categorías,
+de `mdpi` (1×) a `xxxhdpi` (4×), e iOS en `@1x`, `@2x` y `@3x`. Un ícono de 48 dp necesita un archivo por categoría.
+
+El **ícono adaptable** de Android, desde Android 8, tiene dos capas de 108 × 108 dp: fondo y primer plano. El sistema
+muestra los 72 × 72 dp centrales recortados con la máscara del fabricante. La **zona segura** es el círculo central de
+66 dp que ninguna máscara recorta.
+
+La **pantalla de inicio nativa** es la que dibuja el sistema operativo antes de que Flutter pinte su primer cuadro.
+No es un widget: es un recurso de cada plataforma.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue lo que hacen las dos herramientas cuando las ejecutas con `dart run`:
+
+1. `flutter_launcher_icons` lee su YAML y abre `icono.png`, de 1024 × 1024.
+2. Para Android, escala la imagen a cada densidad y la guarda en `mipmap-*/ic_launcher.png`: 48, 72, 96, 144 y 192
+   píxeles, como confirma el listado real.
+3. Para el ícono adaptable, guarda el primer plano en cada densidad y crea `colors.xml` con el color de fondo. Escribe
+   `mipmap-anydpi-v26/ic_launcher.xml`, que une las dos capas con un `android:inset` del 16 %.
+4. Para iOS, genera las 21 imágenes de `AppIcon.appiconset`. Con `remove_alpha_ios`, quita la transparencia que App
+   Store rechaza.
+5. Para la web, genera los íconos del manifiesto, incluido uno *maskable*, y el `favicon.png`.
+6. `flutter_native_splash` crea imágenes centradas y edita los recursos de arranque. En Android cambia
+   `launch_background.xml` y los estilos; en iOS, las imágenes y el `Info.plist`; en la web, `index.html` y su CSS.
+
+En ejecución, la pantalla de inicio funciona así en Android. La actividad arranca con un tema de lanzamiento,
+`LaunchTheme`, cuyo fondo es `launch_background.xml`. El sistema lo muestra mientras carga el proceso y el motor.
+Cuando Flutter dibuja su primer cuadro, lo reemplaza.
+
+```yaml
+adaptive_icon_background: "#3F51B5"
+adaptive_icon_foreground: assets/icono/primer_plano.png
+```
+
+Estas dos líneas activan el paso 3. El fondo es un color plano y el primer plano, una imagen con transparencia. Así el
+sistema puede recortar, mover o animar cada capa por separado.
 
 ```mermaid
 flowchart LR
@@ -793,7 +1024,54 @@ flowchart LR
     S --> SA["Android: launch_background,<br/>styles v31 (Android 12)"]
     S --> SI["iOS: imágenes + Info.plist"]
     S --> SW["web: splash/ + index.html"]
+    N["nombre «Ruta»: a mano"] --> NA["AndroidManifest.xml, Info.plist,<br/>index.html, manifest.json, my_application.cc"]
 ```
+
+El nombre visible es la única pieza que el diagrama deja a mano. Cada plataforma lo guarda en un formato distinto, y
+`nombres.sh` comprueba que las cinco ubicaciones dicen «Ruta».
+
+##### 4. Reglas, variantes y casos límite
+El nombre visible no es el `name` de `pubspec.yaml`. Ese `m11` es el nombre del paquete de Dart y aparece en cada
+`import 'package:m11/...'`. Si lo cambias para «renombrar» la app, rompes los imports.
+
+En iOS, `CFBundleDisplayName` es el nombre bajo el ícono. `CFBundleName` es un nombre corto interno que el sistema usa
+cuando no hay nombre visible.
+
+El margen del ícono adaptable importa. `flutter_launcher_icons` aplica un `inset` del 16 % por defecto, que en este
+dibujo deja el pin dentro de la zona segura. Con `adaptive_icon_foreground_inset: 0`, la máscara circular lo corta.
+
+Diseña para el tamaño menor. A 48 píxeles, un texto o una línea fina desaparecen. La simulación con varias máscaras
+y la revisión a 48 px detectan los problemas antes de publicar.
+
+Android 12 cambió las pantallas de inicio. Desde esa versión, el sistema muestra siempre su propia pantalla: el ícono
+de la app en el centro, sobre un color. Por eso `flutter_native_splash` tiene una sección `android_12` y crea los
+estilos de `values-v31`.
+
+En iOS, la pantalla de inicio es un *storyboard* estático, `LaunchScreen.storyboard`. No admite código ni animaciones.
+En la web es el HTML de `index.html`, visible mientras se descarga el motor.
+
+La pantalla de inicio cubre la carga, no la alarga. Si la app necesita terminar una inicialización antes de mostrarse,
+`flutter_native_splash` ofrece `FlutterNativeSplash.preserve` y `FlutterNativeSplash.remove` para mantenerla. Un
+`Future.delayed` de tres segundos solo retrasa a la persona.
+
+Desde Android 13, el ícono adaptable puede tener una capa monocromática para los íconos temáticos. En
+`flutter_launcher_icons` se declara con `adaptive_icon_monochrome`.
+
+Las herramientas no vigilan tus imágenes. Si cambias el ícono, vuelve a ejecutarlas. Guarda en el repositorio las
+fuentes, los dos YAML y los archivos generados, para que el CI compile sin regenerar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`flutter create` (Módulo 1) creó las carpetas `android/`, `ios/`, `web/` y `linux/` que este tema edita. Hasta ahora
+casi no las tocabas: todo tu trabajo estaba en `lib/`.
+
+Los paquetes de desarrollo (`dev:`) del Módulo 9 vuelven aquí. Las dos herramientas se ejecutan con `dart run` en tu
+equipo y no entran en el binario de la app.
+
+El color de fondo `#3F51B5` es la semilla índigo de producción. Es `Colors.indigo`, la semilla del Módulo 10, Tema 1,
+y el valor de `config/prod.json` en el Tema 2. La identidad visual del binario y la del tema coinciden.
+
+Compara con el tema de la app. `ThemeData` decide el aspecto cuando Flutter ya dibuja. La identidad de este tema se ve
+antes: en el lanzador, en la tienda y mientras el motor carga. El Tema 4 firma el binario que lleva esta identidad.
 
 #### Problema resuelto 3.1
 Dale identidad a la app: nombre «Ruta» en todas las plataformas, ícono de la marca y pantalla de inicio del color de
@@ -1091,20 +1369,122 @@ Este tema usa **el script de CI** (Módulo 9, Tema 5), **la versión y la ofusca
 - **Error típico:** imprimir el secreto en un paso de depuración (`echo $CLAVE_PASSWORD`).
 
 #### ► CÓMO FUNCIONA
-En el equipo, `ci.sh` repite lo que hará el servidor. En GitHub, cada pull request ejecuta el trabajo `calidad`; cada
-etiqueta `v*` ejecuta además los trabajos que compilan web y Android. El de Android reconstruye la clave y
-`key.properties` desde los secretos, en una carpeta temporal del servidor.
+
+##### 1. La idea en lenguaje sencillo
+Un notario pone su sello en cada documento. El sello demuestra que el documento viene de él y que nadie lo alteró
+después. Si alguien roba el sello, puede firmar en su nombre. Por eso el sello se guarda bajo llave y no se presta.
+
+La firma de una app de Android es ese sello. Google Play solo acepta una versión nueva si viene firmada por quien
+publicó la anterior. Firmar con la clave de depuración de un portátil es usar un sello de juguete. Subir la clave al
+repositorio es dejar el sello en la recepción.
+
+La otra mitad del tema es la línea de empaque. Ninguna persona debería compilar las versiones en su equipo, con su
+versión de Flutter y de memoria. Un servidor limpio revisa cada cambio y, cuando creas una versión, la compila y la
+firma siempre igual.
+
+##### 2. Definición formal y vocabulario
+La **clave de subida** es un par de claves criptográficas guardado en un almacén, aquí PKCS12. Con su parte privada
+firmas el `.aab`; Google Play verifica la firma con la parte pública, incluida en el certificado.
+
+Con la **firma de la app en Play**, Google guarda otra clave, la de firma de la app. Al recibir tu `.aab`, comprueba
+tu firma de subida y genera APK firmados con su clave. Si pierdes la de subida, puedes pedir que se reemplace.
+
+**`key.properties`** es el archivo que dice a Gradle dónde está el almacén, qué alias usar y cuáles son las
+contraseñas. Queda fuera del repositorio porque el `.gitignore` de Android que crea Flutter lo excluye.
+
+**CI** (integración continua) revisa cada cambio propuesto en un servidor limpio. **CD** (entrega continua) compila,
+firma y guarda cada versión aprobada. Un **secreto del CI** es un valor cifrado que el servidor entrega a los
+trabajos como variable de entorno, sin mostrarlo en los registros.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, la firma local. Al ejecutar `flutter build appbundle --release`:
+
+1. La herramienta de Flutter compila el Dart en AOT para cada arquitectura de Android y llama a Gradle.
+2. `build.gradle.kts` se evalúa. Su primer bloque carga `key.properties` en `propiedadesFirma`, si el archivo existe.
+3. La configuración `subida` toma de ahí la ruta del almacén, el alias y las contraseñas.
+4. Antes de empaquetar, la tarea `validateSigningRelease` comprueba que la firma esté completa. Sin el archivo, falla
+   con `Keystore file not set for signing config subida`.
+5. Gradle empaqueta el `.aab` y lo firma con la clave privada del alias `subida`.
+6. `keytool -printcert -jarfile` lee el certificado incluido en el `.aab`. Su huella, `9F:24:EC:…:B4:0D`, coincide
+   con la de `keytool -list -v`.
+
+```kotlin
+buildTypes {
+    release {
+        signingConfig = signingConfigs.getByName("subida")
+    }
+}
+```
+
+Este fragmento es el cambio clave frente a la plantilla de Flutter. La plantilla firma la release con la
+configuración `debug`, para que compile sin preparar nada. Aquí la release exige la clave de subida o falla.
+
+Ahora, el CD en GitHub Actions, cuando subes la etiqueta `v1.2.0`:
+
+1. GitHub lee `.github/workflows/ci.yml`. El evento `push` de una etiqueta `v*` coincide con el disparador.
+2. Arranca el trabajo `calidad` en una máquina virtual nueva, con la versión 3.50.1 de Flutter. Ejecuta formato,
+   análisis y pruebas.
+3. Si `calidad` termina bien, arrancan `web` y `android`, que declaran `needs: calidad`. Su condición `if` comprueba
+   que la referencia sea una etiqueta.
+4. El paso de la clave recibe los secretos como variables de entorno. Decodifica el almacén en `$RUNNER_TEMP`, una
+   carpeta temporal, y escribe `android/key.properties`.
+5. `flutter build appbundle` firma como en el equipo. `--build-name=${GITHUB_REF_NAME#v}` quita la `v` de la etiqueta y
+   deja `1.2.0`.
+6. `upload-artifact` guarda el `.aab` y los símbolos. Al terminar, la máquina virtual se destruye con la clave dentro.
 
 ```mermaid
 flowchart TB
     PR["pull request"] --> Q["calidad: formato, análisis, pruebas"]
     TAG["etiqueta v1.2.0"] --> Q
-    Q -->|etiqueta| W["web: build --build-name=1.2.0"]
-    Q -->|etiqueta| A["android: secretos → subida.jks + key.properties"]
-    A --> AAB["appbundle firmado + símbolos"]
+    Q -->|"etiqueta"| W["web: build con --build-name=1.2.0"]
+    Q -->|"etiqueta"| A["android: secretos a subida.jks y key.properties"]
+    A --> G["Gradle: validateSigningRelease y firma"]
+    G --> AAB["appbundle firmado y símbolos"]
     W --> ART["artefactos para descargar"]
     AAB --> ART
 ```
+
+##### 4. Reglas, variantes y casos límite
+Toda app de Android debe estar firmada, y cada actualización debe llevar la misma firma que la versión instalada. Por
+eso una app firmada con la clave de depuración no se actualiza después con la clave buena.
+
+Google Play exige el formato `.aab` y la firma de la app en Play para las apps nuevas desde agosto de 2021. Esa es la
+razón de que exista una clave de subida reemplazable.
+
+La documentación de Android recomienda que la clave sea válida al menos 25 años. La de este tema, con
+`-validity 10000`, vale hasta 2054. Una clave vencida no sirve para firmar actualizaciones.
+
+Hay dos huellas distintas. La de subida es la que muestra `keytool`. Algunos servicios identifican tu app por huella,
+como el inicio de sesión con Google. Necesitan además la de la clave de firma de Play, que aparece en Play Console.
+
+`set -euo pipefail` hace estricto a `ci.sh`. `-e` detiene el script en el primer error y `-u` trata como error una
+variable sin definir. `pipefail` propaga el fallo de cualquier orden de una tubería.
+
+Ordena los pasos del CI por costo. El formato tarda menos de un segundo; las compilaciones, minutos. Si el formato
+falla, no tiene sentido compilar, como mostró la ejecución con el espacio de más.
+
+GitHub no entrega secretos a los trabajos que vienen de un *fork*, por diseño. Además oculta en los registros
+cualquier valor de un secreto. Aun así, no lo imprimas: una transformación, como base64, ya no se reconoce.
+
+En iOS el modelo es otro. La firma usa certificados y perfiles de aprovisionamiento de Apple, y la compilación del
+`.ipa` necesita una Mac, como advierte la cabecera del módulo.
+
+Fija la versión de Flutter en el CI. `flutter-version: "3.50.1"` garantiza que el servidor compila con la misma
+versión que probaste en tu equipo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El script de CI del Módulo 9, Tema 5 era el punto de partida. `ci.sh` lo completa con formato y compilaciones, y el
+workflow lo lleva a un servidor que no depende del equipo de nadie.
+
+Este tema reúne todo el módulo. La versión sale de la etiqueta (Tema 1). Los símbolos de la ofuscación se guardan como
+artefacto (Tema 1). La orden de producción lleva siempre `config/prod.json` (Tema 2). El binario lleva la identidad
+del Tema 3.
+
+Compara los secretos del CI con la configuración del Tema 2. `config/prod.json` entra al binario y cualquiera puede
+leerlo. Los secretos del CI nunca entran: solo sirven para firmar, y desaparecen con la máquina virtual.
+
+El Proyecto 28 arma esta línea completa. El Módulo 13 añade el último eslabón: enviar los símbolos a un servicio de
+reportes de errores para leer las trazas de producción.
 
 #### Problema resuelto 4.1
 Crea la clave de subida, configura la firma en Gradle sin datos en el código, comprueba que la clave y los símbolos no
@@ -1388,9 +1768,28 @@ jobs:
             build/simbolos
 ```
 
-Comprobación de la estructura del YAML (trabajos, dependencias y condiciones), leída con PyYAML:
+Comprobación de la estructura del YAML (trabajos, dependencias y condiciones) con un programa de Dart que lo lee con
+el paquete `yaml` (agrégalo con `flutter pub add dev:yaml`):
+
+```dart
+// tool/revisar_workflow.dart — lee .github/workflows/ci.yml y muestra trabajos, dependencias, pasos y condiciones
+// ignore_for_file: avoid_print — es un programa de consola: imprimir es su salida
+import 'dart:io';
+
+import 'package:yaml/yaml.dart';
+
+void main() {
+  final flujo = loadYaml(File('.github/workflows/ci.yml').readAsStringSync()) as YamlMap;
+  for (final MapEntry(key: nombre, value: trabajo as YamlMap) in (flujo['jobs'] as YamlMap).entries) {
+    final needs = trabajo['needs'] ?? '-';
+    final pasos = (trabajo['steps'] as YamlList).length;
+    print('${'$nombre'.padRight(9)} ${'needs=$needs'.padRight(14)} pasos=$pasos si=${trabajo['if'] ?? 'siempre'}');
+  }
+}
+```
 
 ```text
+$ dart run tool/revisar_workflow.dart
 calidad   needs=-        pasos=6 si=siempre
 web       needs=calidad  pasos=4 si=startsWith(github.ref, 'refs/tags/v')
 android   needs=calidad  pasos=6 si=startsWith(github.ref, 'refs/tags/v')

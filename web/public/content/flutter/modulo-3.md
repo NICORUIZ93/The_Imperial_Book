@@ -103,8 +103,7 @@ Al terminar este tema podrás:
 - devolver un resultado al cerrar y esperarlo con `await`;
 - comprobar `mounted` antes de usar el `context` después de esperar.
 
-**Conceptos clave:** pila de navegación, ruta, `Navigator.push`, `Navigator.pop`, resultado de una ruta,
-`NavigatorObserver`
+**Conceptos clave:** pila de navegación, ruta, `Navigator.push`, `Navigator.pop`, resultado de una ruta, `NavigatorObserver`
 
 #### El problema
 El conductor toca una guía, ve el detalle y la marca como entregada. Al volver, la lista debe mostrar la marca y un
@@ -158,21 +157,101 @@ Este tema usa **`StatefulWidget`**, **`setState`** y **`mounted`** (Módulo 1, T
 - **Error típico:** usarlo para lógica de la app; sirve para analítica y diagnóstico.
 
 #### ► CÓMO FUNCIONA
-La lista llama a `push` y espera. El detalle aparece encima. Cuando el usuario toca el botón, `pop(true)` quita el
-detalle y completa la espera con `true`; la lista vuelve a ejecutarse después del `await`, comprueba `mounted`,
-actualiza su estado y muestra el aviso.
+
+##### 1. La idea en lenguaje sencillo
+En la ventanilla de una oficina de envíos, el empleado te pasa un formulario y espera. Tú lo llenas en otra mesa y
+lo devuelves firmado. O lo devuelves en blanco porque cambiaste de idea. El empleado sigue con su trabajo según lo
+que le entregues.
+
+Abrir una pantalla funciona igual. La lista de entregas abre el detalle de una guía y queda esperando. El conductor
+puede marcarla como entregada o volver con la flecha. Cuando el detalle se cierra, la lista recibe la respuesta y
+decide qué mostrar.
+
+Las pantallas abiertas se apilan como hojas. Ves la de arriba; al cerrarla, aparece la de abajo, tal como estaba.
+Esa pila es la idea central de la navegación en Flutter.
+
+##### 2. Definición formal y vocabulario
+Un `Navigator` es un widget que administra una **pila de navegación**: una lista ordenada de rutas. La última ruta es
+la visible. Una **ruta** es un objeto `Route` que define qué pantalla construir y cómo animar su entrada y su salida.
+`MaterialPageRoute` es la ruta de página de Material.
+
+**`Navigator.push`** agrega una ruta a la pila y devuelve un `Future`. **`Navigator.pop`** quita la ruta de arriba y
+completa ese `Future` con un valor. Ese valor es el **resultado de una ruta**, o `null` si se cerró sin valor.
+
+Un **`NavigatorObserver`** recibe un aviso de cada cambio de la pila, como `didPush` y `didPop`. Sirve para
+diagnóstico y analítica: observa, pero no decide.
+
+##### 3. Cómo funciona por dentro, paso a paso
+`MaterialApp` crea un `Navigator` en la raíz y pone `home` como primera ruta, con el nombre `/`. La bitácora de la
+prueba lo muestra: `push: /`. Sigue ahora el toque sobre `EN-4472`:
+
+1. `_abrir` llama a `Navigator.of(context)`. El contexto sube por el árbol hasta el `Navigator` más cercano, igual que
+   `Theme.of` en el Módulo 1.
+2. `push<bool>` recibe una `MaterialPageRoute`. El `Navigator` la agrega a la pila y la instala en su **overlay**: una
+   pila de capas donde cada ruta dibuja su pantalla.
+3. `push` devuelve un `Future<bool?>` pendiente. `_abrir` queda suspendida en el `await`, como en el Módulo 0, Tema 3.
+4. La ruta ejecuta su `builder`, construye `DetalleEntrega` y anima su entrada. La lista sigue en la pila, debajo.
+5. El conductor toca «Marcar entregada». `pop(true)` anima la salida, quita la ruta y completa el `Future` con `true`.
+6. `_abrir` continúa. Comprueba el resultado y `mounted`, llama a `setState` y muestra el `SnackBar`.
 
 ```mermaid
 sequenceDiagram
     participant L as ListaEntregas
     participant N as Navigator
     participant D as DetalleEntrega
-    L->>N: push<bool>(detalle) y espera
+    L->>N: push con resultado bool, y espera
     N->>D: lo muestra encima
     D->>N: pop(true)
     N-->>L: el Future se completa con true
     L->>L: mounted → setState + SnackBar
 ```
+
+El paso 4 tiene una consecuencia importante. La lista no se destruye al abrir el detalle. Su `State` sigue vivo, con
+el conjunto `_entregadas` intacto. Por eso, al volver, la lista conserva las marcas anteriores.
+
+El paso 6 es donde se decide todo, en dos líneas:
+
+```dart
+final entregada = await Navigator.of(context).push<bool>(
+  MaterialPageRoute(builder: (_) => DetalleEntrega(entrega)),
+);
+if (entregada != true || !mounted) return;
+```
+
+`entregada != true` cubre la flecha, el gesto de volver y el botón «atrás» del sistema. Todos llaman a `pop` sin
+valor, así que el resultado es `null`. `!mounted` cubre el caso en que la lista ya salió del árbol durante la espera.
+
+Los datos viajan en las dos direcciones por caminos distintos. Hacia el detalle, por el constructor:
+`DetalleEntrega(entrega)`. De regreso, por el valor de `pop`. El detalle no conoce a la lista ni su estado.
+
+##### 4. Reglas, variantes y casos límite
+El tipo de `push<T>` define el tipo del resultado. Si no lo indicas, el resultado es `Object?`. Si el detalle llama a
+`pop` con un valor de otro tipo, Flutter lanza un error en ejecución, como muestra el Checkpoint 1.1.
+
+Después de un `await`, el `context` puede haber quedado inválido. La regla de análisis
+`use_build_context_synchronously`, incluida en `flutter_lints`, avisa cuando lo usas sin comprobar `mounted`.
+
+La ruta construye su pantalla en el `builder`, no antes. Así la pantalla se crea en el contexto del `Navigator` y
+recibe el tema y el `MediaQuery` correctos.
+
+`MaterialPageRoute` adapta su animación a la plataforma: una en Android y el deslizamiento lateral en iOS. En iOS
+también habilita el gesto de deslizar desde el borde para volver.
+
+Para interceptar el botón «atrás» existe `PopScope`, que reemplazó al antiguo `WillPopScope` en Flutter 3.16. Con
+`canPop: false` impide cerrar la ruta, por ejemplo, si hay un formulario sin guardar.
+
+Un `Navigator` puede contener otro. `Navigator.of(context)` encuentra el más cercano; con `rootNavigator: true`
+encuentra el de la raíz. El Tema 3 usará varios `Navigator`, uno por pestaña.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `Future` y el `await` del Módulo 0, Tema 3 son el mecanismo de la espera: `push` es una operación asíncrona que
+termina cuando el usuario decide. `mounted` y `setState` vienen del Módulo 1, Tema 4.
+
+Este estilo se llama **navegación imperativa**: tu código da órdenes («abre», «cierra») en el momento. No hay
+direcciones: la pila solo existe en memoria. En la web, recargar la página no puede reconstruirla.
+
+El Tema 2 introduce `go_router`, donde cada pantalla tiene una dirección y la pila se deriva de ella. El Tema 6 usa
+este mismo mecanismo de resultado para hojas inferiores y diálogos, que también son rutas.
 
 #### Problema resuelto 1.1
 Abre el detalle de una guía, márcala como entregada y muestra el resultado en la lista. Comprueba que volver con la
@@ -421,8 +500,7 @@ Al terminar este tema podrás:
 - distinguir `go` (ir a una dirección) de `push` (apilar encima);
 - mostrar una pantalla de «no encontrada» útil para direcciones inválidas.
 
-**Conceptos clave:** enrutamiento declarativo, `GoRouter`, `GoRoute`, parámetro de ruta, `go` y `push`,
-`errorBuilder`
+**Conceptos clave:** enrutamiento declarativo, `GoRouter`, `GoRoute`, parámetro de ruta, `go` y `push`, `errorBuilder`
 
 #### El problema
 Con `Navigator.push`, una pantalla solo existe si alguien la abrió desde otra. Pero en la web el usuario escribe la
@@ -476,8 +554,45 @@ Este tema usa **pila de navegación** y **ruta** (Tema 1).
 - **Error típico:** una pantalla de error sin salida; debe tener al menos un botón para volver a un lugar conocido.
 
 #### ► CÓMO FUNCIONA
-Cada vez que cambia la dirección, `GoRouter` busca la ruta que coincide, recorre sus padres y construye una página por
-cada nivel. `go` recalcula toda la pila; `push` agrega una página encima de la actual.
+
+##### 1. La idea en lenguaje sencillo
+Para encontrar un paquete en una bodega grande no recorres pasillos al azar. Usas su ubicación: «zona B, estante 4,
+nivel 2». Con esa dirección cualquier empleado llega al mismo lugar, aunque nunca haya estado allí.
+
+Con `Navigator.push`, una pantalla solo existe si otra la abrió. No tiene dirección. Si el despachador recibe un
+enlace a una guía, o recarga el navegador, la app no sabe reconstruir el camino.
+
+`go_router` le da a cada pantalla una dirección, como `/entregas/EN-4472`. A partir de ella, la app arma la pila
+completa: la lista abajo y el detalle encima. Llegues como llegues, ves lo mismo y puedes volver igual.
+
+##### 2. Definición formal y vocabulario
+El **enrutamiento declarativo** calcula la pila de pantallas a partir de un estado, aquí la dirección actual. Es lo
+contrario de la navegación imperativa del Tema 1, donde la pila se arma con llamadas sucesivas.
+
+**`GoRouter`** es el objeto de configuración que traduce direcciones en pilas de páginas. Contiene una lista de
+**`GoRoute`**: cada una asocia un patrón de dirección con una pantalla, y puede tener rutas hijas.
+
+Un **parámetro de ruta** es un segmento variable del patrón, como `:guia`, que llega a la pantalla como texto. **`go`
+y `push`** son las dos formas de navegar: `go` cambia la dirección y recalcula la pila; `push` apila encima.
+**`errorBuilder`** construye la pantalla cuando ninguna ruta coincide.
+
+##### 3. Cómo funciona por dentro, paso a paso
+`go_router` se apoya en la **API Router** de Flutter, la base del enrutamiento declarativo. `MaterialApp.router`
+recibe el `GoRouter` en `routerConfig` y lo conecta con el sistema. Sigue lo que pasa con `go('/entregas/EN-4475')`:
+
+1. `GoRouter` recibe la nueva dirección como un `Uri`. En la web, también la recibe cuando el usuario escribe en la
+   barra o usa el botón «atrás» del navegador.
+2. Compara la dirección con el árbol de rutas, de la raíz hacia las hojas. `/entregas` coincide con la primera
+   `GoRoute`; el resto, `EN-4475`, coincide con la hija `:guia`.
+3. Con eso arma una **lista de coincidencias**: la ruta padre y la hija, en orden. Guarda `EN-4475` en
+   `pathParameters['guia']`.
+4. Recorre la lista y llama al `builder` de cada ruta. Cada resultado se envuelve en una página con el nombre del
+   patrón, `/entregas` y `:guia`.
+5. Entrega esa lista de páginas a un `Navigator` en modo declarativo. El `Navigator` compara con las páginas
+   anteriores, anima lo que cambió y conserva lo que no.
+
+La salida real lo muestra: `go → /entregas/EN-4475; páginas: /entregas > :guia`. Como el detalle es ruta hija, la
+lista queda debajo aunque nunca se haya abierto. Por eso aparece la flecha de volver.
 
 ```mermaid
 flowchart LR
@@ -487,6 +602,54 @@ flowchart LR
     X["push('/entregas/EN-4471')"] --> P3["página 3 encima: PantallaDetalle(EN-4471)"]
     E["go('/facturas')"] --> ER["ninguna ruta → errorBuilder"]
 ```
+
+El diagrama reúne los tres casos de la prueba. `push` no recalcula: agrega las páginas de la nueva dirección encima
+de las actuales. La salida lo confirma con tres páginas: `/entregas > :guia > :guia`. Al hacer `pop`, la dirección
+vuelve a `/entregas/EN-4475`.
+
+El `builder` del detalle resuelve el segundo tipo de error, el de una dirección válida con un dato inexistente:
+
+```dart
+builder: (context, state) {
+  final entrega = buscarEntrega(state.pathParameters['guia']!);
+  return entrega == null
+      ? PantallaNoEncontrada(state.uri.toString())
+      : PantallaDetalle(entrega);
+},
+```
+
+`/entregas/EN-9999` coincide con `:guia`, así que `errorBuilder` nunca se entera. El `builder` busca la guía, no la
+encuentra y muestra la misma pantalla de «no encontrada».
+
+##### 4. Reglas, variantes y casos límite
+Las rutas de primer nivel empiezan con `/`. Las hijas se escriben sin `/` inicial, relativas al padre: `:guia`, no
+`/entregas/:guia`. Si declaras el detalle como ruta hermana, la pila tendrá una sola página y no habrá lista debajo.
+
+Un parámetro de ruta siempre llega como `String`. Convertirlo a número o validarlo es tu trabajo. Los parámetros de
+consulta, como `?desde=...`, se leen en `state.uri.queryParameters` y tampoco se validan solos.
+
+El `GoRouter` se crea una sola vez, fuera de `build`. Si lo creas en `build`, cada reconstrucción de la app crea uno
+nuevo y la navegación vuelve a `initialLocation`.
+
+Además de `go` y `push`, existen `replace`, que cambia la página de arriba sin apilar, y versiones con nombre como
+`goNamed`, que usan el `name` de la ruta. `context.go` y `context.push` son extensiones sobre `BuildContext`.
+
+Mezclar `Navigator.push` con `go_router` para pantallas con dirección rompe la idea base. La pantalla aparece, pero
+la dirección no la refleja. Al recargar en la web, esa pantalla desaparece.
+
+En Flutter web, la dirección usa por defecto la forma con almohadilla, como `/#/entregas`. Para direcciones limpias se
+llama a `usePathUrlStrategy()` antes de `runApp`, y el servidor debe devolver la app para cualquier ruta.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 te dio la pila, las rutas y `pop`. Todo eso sigue existiendo: `go_router` usa un `Navigator` por debajo.
+Lo que cambia es quién decide la pila: antes tu código, paso a paso; ahora la dirección.
+
+La comparación de páginas del paso 5 recuerda la reconciliación del Módulo 1, Tema 6. El `Navigator` declarativo
+también conserva lo que coincide y reemplaza lo que cambió, solo que a nivel de pantallas.
+
+El Tema 3 agrega pestañas, cada una con su propia pila de direcciones. El Tema 4 usa `redirect` para decidir, antes
+de construir, si el usuario puede ver una dirección. El Tema 5 cambia el `builder` por un `pageBuilder` para diseñar
+la transición.
 
 #### Problema resuelto 2.1
 Declara las rutas de la lista y el detalle, navega con `go` y con `push`, y comprueba qué pila queda en cada caso.
@@ -760,7 +923,7 @@ Al terminar este tema podrás:
 - volver al inicio de una pestaña al tocarla de nuevo;
 - comprobar en una prueba que la pila de una pestaña sobrevive a la visita a otra.
 
-**Conceptos clave:** ruta contenedora (*shell*), `StatefulShellRoute`, rama, `goBranch`, `IndexedStack`
+**Conceptos clave:** ruta contenedora (shell), `StatefulShellRoute`, rama, `goBranch`, `IndexedStack`
 
 #### El problema
 El conductor abre el detalle de `EN-4472`, cambia al mapa para ver la calle y vuelve a «Entregas». Con un
@@ -771,7 +934,7 @@ Este tema usa **`NavigationBar`** (Módulo 2, Tema 4), **`go_router`** y **rutas
 
 #### Glosario del tema
 
-**ruta contenedora (*shell*)**
+**ruta contenedora (shell)**
 - **Definición técnica:** ruta de `go_router` que envuelve a otras con una interfaz común (una barra, un riel) y les da su propio `Navigator`.
 - **En palabras sencillas:** el marco fijo de la app, con las pantallas cambiando dentro.
 - **Dónde se rompe la comparación:** el marco también se puede reconstruir (por ejemplo, para marcar la pestaña activa); lo que no se pierde es el estado de las pantallas.
@@ -807,9 +970,44 @@ Este tema usa **`NavigationBar`** (Módulo 2, Tema 4), **`go_router`** y **rutas
 - **Error típico:** iniciar trabajo costoso (un temporizador, una descarga) en una pestaña oculta sin pausarlo.
 
 #### ► CÓMO FUNCIONA
-`StatefulShellRoute.indexedStack` crea un `Navigator` por rama y los pone en un `IndexedStack` dentro del marco. Al
-tocar una pestaña, `goBranch` cambia el índice visible y la dirección pasa a la última ubicación de esa rama; las
-otras ramas siguen con su pila intacta.
+
+##### 1. La idea en lenguaje sencillo
+Un despachador tiene tres carpetas sobre el escritorio: entregas, rutas y personal. Si está revisando la página 12
+de entregas y abre la carpeta de rutas, no espera que la primera vuelva a la página 1. Cada carpeta conserva la
+página donde quedó.
+
+Las pestañas de una app deben comportarse igual. El conductor abre el detalle de `EN-4472`, pasa al mapa y vuelve.
+Espera encontrar el detalle, no la lista desde el principio.
+
+En el Tema 2, cada dirección produce una sola pila. Para que cada pestaña recuerde su lugar, la app necesita varias
+pilas a la vez, una por pestaña, y un marco común con la barra de navegación que no cambia.
+
+##### 2. Definición formal y vocabulario
+Una **ruta contenedora** (*shell*) es una ruta de `go_router` que envuelve a otras con una interfaz común, como una
+barra inferior, y les da su propio `Navigator`. **`StatefulShellRoute`** es la variante con varias ramas, cuyas pilas
+se conservan al cambiar de una a otra.
+
+Una **rama** (`StatefulShellBranch`) es un grupo de rutas con su propio `Navigator`, y corresponde a una pestaña.
+**`goBranch`** activa una rama por su índice. Con `initialLocation: true`, la lleva a su ubicación inicial.
+
+**`IndexedStack`** es el widget que mantiene construidos a todos sus hijos y muestra solo uno, según un índice. La
+variante `StatefulShellRoute.indexedStack` lo usa por dentro para guardar las pilas de las ramas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cuando la app arranca en `/entregas`, `go_router` encuentra esa ruta dentro de la rama 0. Desde ahí, sigue la
+secuencia de la prueba:
+
+1. `go_router` construye el marco llamando al `builder` del `StatefulShellRoute`. Le pasa un
+   `StatefulNavigationShell`, que el marco pone como cuerpo del `Scaffold`.
+2. El shell crea un `Navigator` para la rama 0, con la pila `/entregas`, dentro de un `IndexedStack`.
+3. El toque en `EN-4472` hace `go('/entregas/EN-4472')`. La coincidencia cae en la rama 0, así que solo esa pila
+   cambia: ahora tiene la lista y el detalle.
+4. El toque en «Mapa» llama a `goBranch(1)`. El shell guarda la ubicación actual de la rama 0, cambia el índice del
+   `IndexedStack` y construye la rama 1 con `/mapa`. La dirección pasa a `/mapa`.
+5. El toque en «Entregas» llama a `goBranch(0)`. El shell restaura la ubicación guardada de la rama 0. Su
+   `Navigator` nunca se destruyó, así que el detalle reaparece tal como estaba.
+6. El segundo toque en «Entregas» llega con `initialLocation: true`, porque la rama ya estaba activa. La rama vuelve
+   a `/entregas`.
 
 ```mermaid
 flowchart TB
@@ -819,6 +1017,53 @@ flowchart TB
     IS --> R2["Rama 2: Navigator<br/>/perfil"]
     T["Toque en Mapa"] -->|"goBranch(1)"| IS
 ```
+
+El diagrama muestra la estructura en el paso 4. Las tres ramas cuelgan del mismo `IndexedStack`, cada una con su
+`Navigator` y su pila. El toque solo cambia cuál se ve.
+
+La salida real recorre los pasos 3 a 6: `/entregas/EN-4472`, `/mapa`, otra vez `/entregas/EN-4472` y por último
+`/entregas`. El marco implementa la regla del paso 6 con una sola expresión:
+
+```dart
+onDestinationSelected: (i) => navegacion.goBranch(
+  i,
+  initialLocation: i == navegacion.currentIndex,
+),
+```
+
+Si el índice tocado es el activo, la rama vuelve a su inicio. Si es otro, se restaura su última ubicación.
+
+El paso 5 funciona por lo que viste en el Módulo 1, Tema 6. El `Navigator` de la rama 0 sigue en el árbol, con el
+mismo elemento y el mismo `State`. Esconderlo no lo desmonta, así que sus pantallas conservan su estado.
+
+##### 4. Reglas, variantes y casos límite
+`ShellRoute`, sin *Stateful*, también comparte un marco, pero tiene un solo `Navigator` para todas sus rutas. Al
+cambiar de pestaña con él, la pila anterior se pierde. Para pestañas que recuerdan, necesitas `StatefulShellRoute`.
+
+Navegar entre pestañas con `context.go('/entregas')` también pierde la pila guardada: `go` va a esa dirección exacta.
+`goBranch` es el que restaura.
+
+Una ruta que debe tapar la barra, como una cámara a pantalla completa, se declara fuera del `StatefulShellRoute`. Si
+vive dentro de una rama, se puede mandar al `Navigator` raíz con `parentNavigatorKey`.
+
+Mantener todas las ramas vivas consume memoria. `go_router` construye cada rama la primera vez que se visita, y desde
+entonces la conserva; con `preload: true`, una rama se carga desde el inicio. Si una pestaña oculta tiene trabajo continuo, como un temporizador, debes pausarlo tú.
+
+Además de `indexedStack`, existe un constructor que te deja decidir cómo mostrar las ramas, por ejemplo con una
+animación al cambiar. La lógica de pilas es la misma.
+
+Material recomienda de 3 a 5 destinos en un `NavigationBar`. Cada pestaña debe ser un destino de primer nivel; los
+pasos de un flujo van como rutas hijas dentro de su rama.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te dio las direcciones y las rutas hijas. Aquí cada rama es un pequeño `go_router` con su propia pila, y la
+dirección del navegador muestra la de la rama activa. El `NavigationBar` viene del Módulo 2, Tema 4.
+
+`IndexedStack` se parece al `Stack` del Módulo 1, Tema 3: apila hijos. La diferencia es que solo pinta uno y no deja
+tocar los ocultos. Conserva el estado porque sus hijos nunca salen del árbol.
+
+El Tema 4 agrega guardias que deciden si el usuario puede entrar a una dirección, también dentro de las ramas. En el
+proyecto del módulo, el marco combina estas pestañas con la `NavigationRail` del Módulo 2.
 
 #### Problema resuelto 3.1
 Construye la app con tres pestañas, abre un detalle en «Entregas», cambia a «Mapa» y vuelve. Comprueba la dirección en
@@ -1046,8 +1291,7 @@ Al terminar este tema podrás:
 - reevaluar las rutas cuando cambia la sesión con `refreshListenable`;
 - diseñar una pantalla de login que se vea bien en teléfono y en computador.
 
-**Conceptos clave:** `redirect`, guardia de ruta, enlace directo (*deep link*), `refreshListenable`, parámetro de
-consulta
+**Conceptos clave:** `redirect`, guardia de ruta, enlace directo (deep link), `refreshListenable`, parámetro de consulta
 
 #### El problema
 Al despachador le llega por mensaje el enlace `/entregas/EN-4475`. Si no tiene sesión, no debe ver la guía; debe ver
@@ -1073,7 +1317,7 @@ Este tema usa **`go_router`** (Tema 2), **`ChangeNotifier`** (se presenta aquí 
 - **Ejemplo:** el `redirect` global de `crearRouterProtegido`.
 - **Error típico:** confiar en la guardia como seguridad: alguien puede llamar a la API sin pasar por la app.
 
-**enlace directo (*deep link*)**
+**enlace directo (deep link)**
 - **Definición técnica:** dirección que abre la app (o la web) directamente en una pantalla interna, desde fuera: un mensaje, un correo, una notificación.
 - **En palabras sencillas:** un atajo a una pantalla concreta.
 - **Dónde se rompe la comparación:** en Android e iOS necesita configuración de la plataforma (*App Links*, *Universal Links*); la parte de Flutter es la misma que aquí.
@@ -1095,9 +1339,45 @@ Este tema usa **`go_router`** (Tema 2), **`ChangeNotifier`** (se presenta aquí 
 - **Error típico:** armar la dirección con texto (`'/login?desde=$destino'`) y romperla con caracteres especiales; `Uri(...)` codifica por ti.
 
 #### ► CÓMO FUNCIONA
-Cada navegación pasa por `redirect`. Sin sesión, cualquier dirección distinta del login se convierte en
-`/login?desde=<la dirección pedida>`. Al ingresar, `Sesion` avisa; el router reevalúa `redirect` en `/login`, ve que
-ya hay sesión y devuelve la dirección guardada en `desde`.
+
+##### 1. La idea en lenguaje sencillo
+En la entrada de una bodega hay un portero. Si llegas sin credencial, te manda a recepción, pero anota a qué
+pasillo ibas. Cuando vuelves con tu credencial, te deja pasar directo a ese pasillo. Nadie dentro de la bodega
+tiene que pedirte la credencial otra vez.
+
+La app de entregas necesita ese portero. El despachador recibe un enlace a `/entregas/EN-4475`. Sin sesión, debe
+ver el login. Después de ingresar, debe llegar a la guía del enlace, no a la lista.
+
+Hay un caso más: la sesión vence mientras trabaja. El portero debe sacarlo de inmediato, sin que cada pantalla lo
+compruebe. En `go_router`, ese portero es una sola función que revisa cada navegación.
+
+##### 2. Definición formal y vocabulario
+**`redirect`** es una función de `GoRouter` que se ejecuta antes de mostrar una dirección. Devuelve otra dirección
+para redirigir, o `null` para seguir. Una **guardia de ruta** es una regla que decide si una ruta se puede mostrar;
+en `go_router` se escribe con `redirect`.
+
+Un **enlace directo** (*deep link*) abre la app en una pantalla interna desde fuera: un mensaje, un correo, una
+notificación. Para que la guía del enlace no se pierda, viaja en un **parámetro de consulta**: el par `desde=...`
+después del `?`.
+
+**`refreshListenable`** es un objeto `Listenable` que el router escucha. Cuando avisa un cambio, el router vuelve a
+ejecutar `redirect` sobre la ubicación actual. Aquí lo cumple `Sesion`, un `ChangeNotifier` mínimo: una clase que
+llama a `notifyListeners()` cuando cambia.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la prueba, que simula el enlace con `router.go('/entregas/EN-4475')`:
+
+1. El router busca la coincidencia de `/entregas/EN-4475`, como en el Tema 2. Antes de construir nada, ejecuta el
+   `redirect` global.
+2. No hay sesión y la ubicación no es `/login`. `redirect` arma la dirección del login con `Uri`, que codifica el
+   destino. El resultado es `/login?desde=%2Fentregas%2FEN-4475`.
+3. El router toma esa dirección nueva y vuelve a ejecutar `redirect` sobre ella. Ahora `enLogin` es verdadero y no
+   hay sesión: devuelve `null`. El login se construye.
+4. El toque en «Ingresar» llama a `sesion.entrar('ana')`, que llama a `notifyListeners()`.
+5. El router escucha a `sesion` por `refreshListenable`. Vuelve a ejecutar `redirect` sobre la ubicación actual,
+   `/login?desde=...`.
+6. Ahora hay sesión y está en el login. `redirect` devuelve el valor de `desde`: `/entregas/EN-4475`. El router
+   construye la lista y el detalle de Ana Ríos.
 
 ```mermaid
 sequenceDiagram
@@ -1111,6 +1391,57 @@ sequenceDiagram
     S->>R: refreshListenable: reevaluar
     R-->>E: con sesión y en login → /entregas/EN-4475
 ```
+
+La salida real recorre los tres momentos: `quedó en /login?desde=%2Fentregas%2FEN-4475`, después `/entregas/EN-4475`,
+y al cerrar sesión otra vez el login con `desde`. Ninguna pantalla llamó a `go`: todo lo decidió `redirect`.
+
+Toda la lógica cabe en tres casos:
+
+```dart
+redirect: (context, state) {
+  final enLogin = state.matchedLocation == '/login';
+  if (!sesion.activa && !enLogin) {
+    return Uri(path: '/login', queryParameters: {'desde': state.uri.toString()}).toString();
+  }
+  if (sesion.activa && enLogin) return state.uri.queryParameters['desde'] ?? '/entregas';
+  return null;
+},
+```
+
+`state.matchedLocation` es la parte de la dirección que coincidió con una ruta, sin la consulta. `state.uri` es la
+dirección completa. Por eso `enLogin` compara con `matchedLocation` y el destino se lee de `state.uri`.
+
+##### 4. Reglas, variantes y casos límite
+El paso 3 muestra por qué `redirect` debe reconocer su propio destino. Si redirigiera a `/login` también estando en
+`/login`, crearía un ciclo. `go_router` lo detecta y muestra un error de *redirect loop*. Además, por defecto admite
+como máximo 5 redirecciones encadenadas, según `redirectLimit`.
+
+Además del `redirect` global, cada `GoRoute` puede tener el suyo. El router ejecuta primero el global y después los
+de las rutas que coinciden. Si alguno cambia la dirección, el ciclo empieza otra vez desde el global.
+
+`redirect` puede devolver un `Future`, para consultar algo antes de decidir. Mientras esa consulta dura, la
+navegación espera, así que conviene que sea rápida, como leer un dato ya cargado.
+
+Un parámetro de consulta debe codificarse. La barra `/` viaja como `%2F`. Si armas la dirección con texto,
+`'/login?desde=$destino'`, un carácter especial puede romperla; `Uri(...)` codifica por ti.
+
+El valor de `desde` llega de fuera de la app y no es confiable. Antes de redirigir, comprueba que empiece con `/` y
+que corresponda a una ruta tuya.
+
+La guardia protege la interfaz, no los datos. Alguien puede llamar a la API sin pasar por la app. El servidor debe
+rechazar las peticiones sin permiso de todas formas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te dio el árbol de rutas y `state.uri`. Aquí agregas un paso antes de construir: la decisión de si se puede
+construir. `refreshListenable` usa el mismo patrón de aviso que el `Stream` del Módulo 0, Tema 5, pero con una
+interfaz más simple: avisar «algo cambió», sin valor.
+
+El `ConstrainedBox` del login viene del Módulo 2, Tema 1: limita el formulario a 400 de ancho. Por eso el botón mide
+`352.0` en una ventana de 1000, como muestra la salida.
+
+En el Módulo 4 verás `ChangeNotifier` a fondo y otras formas de compartir la sesión entre pantallas. Para que un
+enlace abra la app instalada, Android e iOS necesitan además su propia configuración (*App Links* y *Universal
+Links*); la parte de Flutter es la de este tema.
 
 #### Problema resuelto 4.1
 Protege las rutas de entregas, simula la llegada de un enlace sin sesión, ingresa y comprueba que llegas a la guía.
@@ -1421,9 +1752,50 @@ Este tema usa **`go_router`** y **rutas hijas** (Tema 2) y el **reloj de las pru
 - **Error típico:** usar `pumpAndSettle` con una animación que se repite para siempre: la prueba se queda esperando y falla.
 
 #### ► CÓMO FUNCIONA
-Al tocar la fila, `go_router` crea la página con `CustomTransitionPage`. Durante 300 ms la animación de la ruta va de
-0 a 1, y la curva la convierte en opacidad y desplazamiento. Al mismo tiempo, `Hero` encuentra la misma `tag` en las
-dos pantallas y dibuja el avatar volando de la fila al centro, mientras crece de 40 a 112 puntos.
+
+##### 1. La idea en lenguaje sencillo
+Cuando un empleado saca un paquete del estante y lo pone sobre el mostrador, ves el recorrido. Sabes que el paquete
+del mostrador es el mismo que estaba en el estante. Si apareciera de golpe, tendrías que comprobarlo.
+
+Las pantallas viven el mismo problema. Si el detalle aparece de golpe, el conductor tiene que confirmar que abrió la
+guía correcta. Si el ícono de la guía viaja desde la fila hasta el centro del detalle, la relación es evidente.
+
+Una transición con intención responde «¿de dónde salió esto?». No es decoración: orienta al usuario. Este tema te
+enseña a diseñarla y, sobre todo, a medirla cuadro a cuadro en una prueba.
+
+##### 2. Definición formal y vocabulario
+Una **transición de ruta** es la animación con la que una ruta muestra y oculta su pantalla. Toda ruta tiene una
+`animation` que va de 0 a 1 al entrar y de 1 a 0 al salir. La ruta de abajo recibe una `secondaryAnimation`.
+
+Una **curva de animación** transforma el avance lineal del tiempo en un avance con ritmo, como arrancar rápido y
+frenar al final. **`CustomTransitionPage`** es la página de `go_router` que te deja escribir esa transición.
+
+**`Hero`** es el widget que anima un elemento compartido: si dos pantallas tienen un `Hero` con la misma `tag`,
+Flutter dibuja su vuelo de una a otra. El **reloj de la prueba** es el tiempo simulado de las pruebas de widgets,
+que solo avanza cuando llamas a `pump`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Una animación en Flutter es un número que cambia en cada cuadro. Sigue lo que pasa desde el toque en `EN-4472`:
+
+1. `context.go` cambia la dirección. `go_router` llama al `pageBuilder` de `:guia`, que devuelve una
+   `CustomTransitionPage` con duración de 300 ms.
+2. El `Navigator` agrega la ruta. La ruta crea un `AnimationController` y lo pone a avanzar de 0 a 1.
+3. En cada cuadro, el motor avisa al controlador. Este calcula el avance según el tiempo transcurrido y notifica.
+4. `CurvedAnimation` convierte ese avance con `Curves.easeOutCubic`. A mitad del tiempo, el avance curvo ya pasó de
+   la mitad.
+5. `FadeTransition` usa el valor curvo como opacidad. `SlideTransition` lo usa para mover la pantalla desde un 8 %
+   más abajo hasta su lugar. Solo estos dos widgets se repintan; la pantalla de adentro no se reconstruye.
+
+En paralelo, el `Hero` hace su propio trabajo:
+
+1. `MaterialApp` instala un controlador de héroes que observa el `Navigator`, igual que el `NavigatorObserver` del
+   Tema 1.
+2. Al empezar la transición, busca en la pantalla de salida y en la de llegada los `Hero` con la misma `tag`:
+   `avatar-EN-4472`.
+3. Mide los dos rectángulos: el de la fila, de 40 puntos, y el del detalle, de 112. Oculta los dos originales.
+4. Dibuja una copia del avatar en el **overlay**, la capa del `Navigator` que está por encima de las pantallas.
+5. Interpola el rectángulo de la copia en cada cuadro, con su propia curva. Al terminar, quita la copia y muestra el
+   original del detalle.
 
 ```mermaid
 flowchart LR
@@ -1434,6 +1806,56 @@ flowchart LR
     T --> H["Hero 'avatar-EN-4472'"]
     H --> V["Vuelo con su curva fastOutSlowIn:<br/>de (16, 144) 40 pt a (139, 196) 112 pt"]
 ```
+
+El diagrama muestra los dos procesos que comparten el mismo reloj. La salida real los mide: a los 0 ms el avatar está
+en `(16, 144)` con 40 puntos; a los 150 ms, en `(116, 176)` con 106; a los 300 ms, en `(139, 196)` con 112.
+
+La transición se escribe en una sola función:
+
+```dart
+transitionsBuilder: (context, animacion, secundaria, hijo) {
+  final curva = CurvedAnimation(parent: animacion, curve: Curves.easeOutCubic);
+  return FadeTransition(
+    opacity: curva,
+    child: SlideTransition(
+      position: Tween(begin: const Offset(0, 0.08), end: Offset.zero).animate(curva),
+      child: hijo,
+    ),
+  );
+},
+```
+
+`Tween` traduce el valor de 0 a 1 en un desplazamiento. `Offset(0, 0.08)` está expresado como fracción del tamaño de
+la pantalla: 8 % de su alto.
+
+##### 4. Reglas, variantes y casos límite
+Una `CustomTransitionPage` necesita `key: state.pageKey`. El `Navigator` declarativo del Tema 2 compara páginas por
+su key; sin una estable, puede tratar la misma pantalla como nueva y repetir la transición.
+
+Al volver, la misma transición corre al revés, de 1 a 0, durante `reverseTransitionDuration`. Si quieres otra
+animación de salida, puedes usar `secundaria` o leer el estado de la animación.
+
+Dentro de una misma pantalla, cada `tag` de `Hero` debe ser única. Si se repite, Flutter lanza un error al iniciar el
+vuelo. Por eso la `tag` lleva la guía: `avatar-$guia`.
+
+El `Hero` vuela entre rutas de un mismo `Navigator`. Los diálogos y las hojas inferiores no activan vuelos por
+defecto. En el Tema 3, cada rama tiene su `Navigator`, así que un vuelo entre pestañas no ocurre.
+
+En las pruebas, el tiempo no avanza solo. `pump(Duration(milliseconds: 100))` avanza 100 ms y dibuja un cuadro.
+`pumpAndSettle` avanza hasta que no quedan animaciones; con una animación infinita, nunca termina y la prueba falla.
+
+La duración de 300 ms de este tema es corta a propósito: una transición de pantalla de más de 400 ms hace
+sentir lenta la app. Además, el usuario puede pedir menos movimiento: `MediaQuery.disableAnimationsOf(context)` lo indica.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te dio `builder`; aquí lo cambias por `pageBuilder` para controlar la página entera. El overlay donde vuela
+el `Hero` es la misma pila de capas del `Navigator` que viste en el Tema 1.
+
+`FadeTransition` y `SlideTransition` son widgets como cualquier otro, pero escuchan una animación y solo repintan.
+Recuerdan al `Stack` del Módulo 1, Tema 3: el vuelo del `Hero` es una capa encima de las demás.
+
+El Tema 6 usa rutas con animaciones propias: hojas inferiores que suben y diálogos que aparecen. El Módulo 8 estudia
+las animaciones a fondo, con controladores propios y medición de rendimiento cuadro a cuadro.
 
 #### Problema resuelto 5.1
 Diseña la transición del detalle y un `Hero` para el avatar de la guía. En la prueba, avanza el reloj y mide dónde está
@@ -1714,11 +2136,11 @@ Este tema usa **`Navigator.pop` con resultado** y **`mounted`** (Tema 1) y **`Sa
 - **Error típico:** botones «Sí» y «No»: el usuario tiene que releer la pregunta. El botón debe decir la acción.
 
 **`SnackBar`**
-- **Definición técnica:** mensaje breve que aparece en la parte inferior, mostrado con `ScaffoldMessenger`, que desaparece solo y puede tener una acción.
+- **Definición técnica:** mensaje breve que aparece en la parte inferior, mostrado con `ScaffoldMessenger`; sin acción desaparece solo a los 4 s, y con acción (`persist` vale `true` por defecto en `material_ui` 1.11.1) queda visible hasta que se toca la acción o se cierra.
 - **En palabras sencillas:** un aviso que no interrumpe.
 - **Dónde se rompe la comparación:** no es una ruta: no bloquea la pantalla ni devuelve un valor.
 - **Ejemplo:** «Novedad: Nadie en casa» con «Deshacer».
-- **Error típico:** poner en un `SnackBar` un error que el usuario debe resolver; desaparece antes de que lo lea.
+- **Error típico:** poner en un `SnackBar` sin acción un error que el usuario debe resolver; desaparece a los 4 s, antes de que lo lea.
 
 **acción de deshacer**
 - **Definición técnica:** acción (`SnackBarAction`) que revierte la operación recién hecha mientras el aviso está visible.
@@ -1735,20 +2157,102 @@ Este tema usa **`Navigator.pop` con resultado** y **`mounted`** (Tema 1) y **`Sa
 - **Error típico:** cerrar la hoja con `context.go(...)` de `go_router`: cambia la ubicación en lugar de solo cerrar la hoja.
 
 #### ► CÓMO FUNCIONA
-Las tres piezas se encadenan con `await`. La hoja devuelve el motivo o `null`; solo si el motivo es el que no se
-deshace fácil, se pide confirmación al diálogo; al final, el `SnackBar` informa y ofrece deshacer. Cada `await` va
-seguido de la comprobación de `mounted`.
+
+##### 1. La idea en lenguaje sencillo
+En el mostrador de una oficina de envíos ocurren tres tipos de conversación. «¿Qué tipo de envío quiere?» es una
+elección entre opciones. «Este envío no tiene devolución, ¿confirma?» es una advertencia antes de algo costoso.
+«Listo, su guía quedó registrada» es un aviso que no pide respuesta.
+
+Reportar una novedad tiene esos tres momentos. El conductor elige un motivo. Si el motivo devuelve el paquete a la
+bodega, confirma. Al final, la app le informa que quedó registrado y le permite corregir.
+
+Cada momento tiene su componente: la hoja inferior para elegir, el diálogo para confirmar y el `SnackBar` para
+informar. Usar el equivocado cansa al usuario o lo deja sin protección.
+
+##### 2. Definición formal y vocabulario
+Una **ruta modal** se pone encima de la pila sin reemplazar la pantalla de atrás y bloquea los toques fuera de ella.
+La **hoja inferior modal** (`showModalBottomSheet`) y el **diálogo de confirmación** (`showDialog` con un
+`AlertDialog`) son rutas modales.
+
+El **`SnackBar`** no es una ruta. Es un mensaje breve en la parte inferior, que se muestra con `ScaffoldMessenger` y
+no bloquea nada. Sin acción desaparece solo; con acción espera a que la toques. Puede llevar una **acción de deshacer** (`SnackBarAction`), que revierte la
+operación recién hecha.
+
+Como hoja y diálogo son rutas, se comportan como el detalle del Tema 1. Se cierran con `Navigator.pop` y pueden
+devolver un resultado, o `null` si se cierran sin elegir.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el camino más largo de la prueba: el motivo «Rechazado por el destinatario», cancelado en el diálogo.
+
+1. `showModalBottomSheet<String>` crea una ruta de hoja inferior y la empuja al `Navigator`. Devuelve un `Future`,
+   igual que `push`. `_reportar` queda esperando.
+2. La ruta agrega una **barrera** (*barrier*): una capa semitransparente que cubre la pantalla de atrás y captura los
+   toques. Encima, la hoja sube con su animación.
+3. El toque en el motivo llama a `pop(m)`. La hoja baja y el `Future` se completa con ese texto.
+4. Es el último motivo, así que `_reportar` llama a `showDialog<bool>`. Se repite el proceso con una ruta de diálogo:
+   barrera, animación y espera.
+5. «Cancelar» llama a `pop(false)`. La condición `devolver != true` corta el flujo y el subtítulo no cambia.
+
+En el camino de «Nadie en casa», el paso 4 no ocurre. El flujo llega a `setState` y al `SnackBar`:
+
+1. `ScaffoldMessenger.of(context)` sube por el árbol hasta el `ScaffoldMessenger` que crea `MaterialApp`.
+2. `showSnackBar` agrega el aviso a una cola. El messenger lo muestra en el `Scaffold` visible, sin crear una ruta.
+3. Si el usuario toca «Deshacer», la acción ejecuta su función y el aviso se cierra.
 
 ```mermaid
 flowchart TD
-    A["Reportar novedad"] --> H["showModalBottomSheet<String>"]
-    H -->|null: tocó fuera| X["no pasa nada"]
+    A["Reportar novedad"] --> H["showModalBottomSheet, resultado String"]
+    H -->|"null: tocó fuera"| X["no pasa nada"]
     H -->|"Nadie en casa"| OK["setState + SnackBar con Deshacer"]
-    H -->|"Rechazado"| D["showDialog<bool>: ¿Devolver al remitente?"]
-    D -->|Cancelar| X
-    D -->|Devolver| OK
-    OK -->|Deshacer| U["setState: sin novedad"]
+    H -->|"Rechazado"| D["showDialog, resultado bool: ¿Devolver al remitente?"]
+    D -->|"Cancelar"| X
+    D -->|"Devolver"| OK
+    OK -->|"Deshacer"| U["setState: sin novedad"]
 ```
+
+El diagrama recorre los cuatro caminos de la prueba, y la salida real confirma cada uno. Cancelar y cerrar sin elegir
+dejan `Carrera 15 # 93-20`. Elegir deja `Novedad: Nadie en casa`. Deshacer vuelve a la dirección.
+
+El patrón que encadena todo es el del Tema 1: esperar, comprobar y seguir.
+
+```dart
+if (motivo == null || !mounted) return;     // después de la hoja
+if (devolver != true || !mounted) return;   // después del diálogo
+```
+
+Cada `await` puede terminar con la pantalla ya cerrada. Por eso `mounted` se comprueba después de cada uno.
+
+##### 4. Reglas, variantes y casos límite
+Tocar la barrera cierra la ruta y devuelve `null`. En la hoja también la cierra deslizarla hacia abajo. En un diálogo,
+`barrierDismissible: false` impide cerrarlo tocando fuera; en una hoja, `isDismissible: false` y `enableDrag: false`
+cumplen el mismo papel.
+
+`showDialog` usa por defecto el `Navigator` raíz, así que el diálogo tapa también la barra de pestañas del Tema 3.
+`showModalBottomSheet`, en cambio, usa el `Navigator` más cercano salvo que pidas `useRootNavigator: true`.
+
+Una hoja ocupa como máximo una parte de la pantalla. Para una lista larga, `isScrollControlled: true` le permite
+crecer, y un `DraggableScrollableSheet` la hace desplazable.
+
+Un `SnackBar` sin acción se cierra solo a los 4 segundos, su `duration` por defecto. En la versión de `material_ui`
+de este módulo, uno **con** acción tiene `persist` en `true` por defecto: queda visible hasta que tocas la acción o lo
+cierras. Si quieres que se vaya solo, pasa `persist: false`.
+
+Cerrar una hoja con `context.go(...)` de `go_router` no solo la cierra: cambia la ubicación. Para cerrar una ruta
+modal se usa `Navigator.pop` o `context.pop`.
+
+Si un botón de un diálogo debe decir la acción, como «Devolver», el usuario no tiene que releer la pregunta. «Sí» y
+«No» lo obligan a volver al título.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Todo el tema descansa en el Tema 1: rutas, `pop` con resultado, `await` y `mounted`. La barrera es una capa más del
+overlay del `Navigator`, la misma donde volaba el `Hero` del Tema 5. `SafeArea` dentro de la hoja viene del Módulo 2,
+Tema 5.
+
+Compara la confirmación con deshacer. La confirmación agrega un paso a todos los casos para proteger el raro.
+Deshacer no agrega pasos y protege igual, siempre que la operación sea reversible. Por eso solo «Rechazado» confirma.
+
+El `SnackBar` con «Deshacer» es la pieza que faltaba en el deslizamiento del Módulo 1, Tema 7. En el Módulo 4, el
+estado de la novedad saldrá de la pantalla hacia un estado compartido, y deshacer será una operación sobre él.
 
 #### Problema resuelto 6.1
 Construye el flujo de reportar una novedad con hoja inferior, diálogo y `SnackBar`. En la prueba, recorre los cuatro

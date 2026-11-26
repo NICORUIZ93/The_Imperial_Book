@@ -145,10 +145,75 @@ capas** (Módulo 12, Tema 1).
 - **Error típico:** declarar en la tienda que la app «no usa el ID de publicidad» sin mirar el manifiesto fusionado.
 
 #### ► CÓMO FUNCIONA
-Al abrir la app, Android crea primero los *content providers* declarados en el manifiesto. Uno de ellos lo agrega el
-SDK (`MobileAdsInitProvider`) y lee el App ID: si falta o tiene mal formato, lanza `IllegalStateException` y el
-proceso se cierra antes del primer cuadro de Flutter. Después, ya en Dart, el orden es: consentimiento (Tema 4),
-configuración de la petición, `MobileAds.instance.initialize()` y precarga.
+
+##### 1. La idea en lenguaje sencillo
+
+Un centro comercial alquila vitrinas a anunciantes. El centro tiene un número de cliente ante la agencia de
+publicidad, y cada vitrina tiene su propio número. Antes de abrir, el centro monta vitrinas de muestra con maniquíes:
+se ven iguales, pero nadie paga por ellas. Si el dueño se pone a comprar en sus propias vitrinas para inflar las
+ventas, la agencia lo sanciona.
+
+La app de seguimiento de envíos tendrá una versión gratuita con anuncios. El número de cliente es el **App ID**; cada
+vitrina es una **unidad de anuncio**; los maniquíes son los anuncios de prueba. Alguien del equipo pegó «el ID» de la
+consola donde no iba y tocó sus propios anuncios reales. La cuenta recibió un aviso y la app se cerraba al abrirla.
+
+Este tema pone cada identificador en su lugar y usa los de prueba mientras desarrollas. También te enseña a leer en
+el APK lo que el SDK agregó sin preguntarte.
+
+##### 2. Definición formal y vocabulario
+
+**AdMob** es la red de anuncios de Google para apps. El plugin `google_mobile_ads` la integra en Flutter sobre el
+**SDK de Google Mobile Ads**. Ese SDK es la biblioteca nativa de Android e iOS que pide y muestra los anuncios.
+
+El **App ID** identifica la app en AdMob. Tiene la forma `ca-app-pub-<16 dígitos>~<10 dígitos>`, con `~`. En Android va
+en el `AndroidManifest.xml`, en la clave `com.google.android.gms.ads.APPLICATION_ID`. En iOS va en el `Info.plist`, como
+`GADApplicationIdentifier`.
+
+Una **unidad de anuncio** identifica un espacio concreto: un banner, un intersticial o un recompensado. Tiene la forma
+`ca-app-pub-<16 dígitos>/<10 dígitos>`, con `/`, y se pasa desde Dart en cada petición.
+
+Un **anuncio de prueba** es el que AdMob sirve para las unidades de prueba de Google. Sus impresiones y clics no
+cuentan en los informes ni generan ingresos. La **actividad no válida** son clics o impresiones sin interés real,
+como los del propio desarrollador o los toques accidentales. AdMob puede limitar o cerrar la cuenta que los acumula.
+
+El **manifiesto fusionado** es el `AndroidManifest.xml` final del APK. Gradle lo arma uniendo el de la app con el de
+cada biblioteca, y ahí aparecen los permisos y componentes que agregó el SDK.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa desde que tocas el ícono de la app hasta que el primer anuncio está listo.
+
+1. **Android crea los _content providers_.** Un *content provider* es un componente de Android que se crea al iniciar
+   el proceso, antes que cualquier pantalla. El SDK declara uno, `MobileAdsInitProvider`.
+2. **Lectura del App ID.** Ese componente lee `APPLICATION_ID` y lo compara con `^ca-app-pub-[0-9]{16}~[0-9]{10}$`. Si
+   falta o tiene mal formato, lanza `IllegalStateException` y el proceso termina.
+3. **Arranca Flutter.** Solo si el paso 2 pasa, se ejecuta `main()`.
+4. **Consentimiento.** `main` pregunta primero a UMP si puede pedir anuncios. El Tema 4 explica este paso.
+5. **Configuración.** `updateRequestConfiguration` fija la edad y la clasificación del contenido.
+6. **Inicialización.** `MobileAds.instance.initialize()` arranca el SDK.
+7. **Precarga.** El gestor pide un intersticial y un recompensado, para tenerlos listos antes de la primera pausa.
+
+```dart
+if (hayAnunciosNativos) {
+  final ump = await actualizarConsentimiento(); // 1. primero el consentimiento (UMP)
+  politica = decidirAnuncios(puedePedir: ump.puedePedir, estado: ump.estado, audiencia: Audiencia.adulta);
+  if (politica.pedir) {
+    await MobileAds.instance.updateRequestConfiguration(politica.configuracion); // 2. edad y clasificación
+    await MobileAds.instance.initialize(); // 3. recién ahora el SDK
+    proveedor = ProveedorAdMob(noPersonalizados: politica.noPersonalizados);
+  }
+}
+```
+
+Observa que cada paso depende del anterior. Sin consentimiento, el SDK ni siquiera se inicializa. `hayAnunciosNativos`
+es falso en escritorio y web, donde el plugin no funciona.
+
+```dart
+static String get banner => _banner.isEmpty || kDebugMode ? IdsPrueba.bannerAdaptativo : _banner;
+```
+
+Los IDs reales llegan con `--dart-define` y se leen con `String.fromEnvironment`. En modo debug, esta línea devuelve
+siempre el ID de prueba, aunque alguien pase el real. Así ningún desarrollador ve un anuncio real en su teléfono.
 
 ```mermaid
 flowchart TD
@@ -162,6 +227,44 @@ flowchart TD
     R --> I["3. MobileAds.instance.initialize()"]
     I --> PR["4. precargar intersticial y recompensado"]
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**Compilar no es funcionar.** Sin App ID, `flutter build apk` terminó con `✓ Built` y sin avisos. El error aparece al
+abrir, y la captura de errores del Módulo 13 no lo ve, porque `main()` todavía no corrió.
+
+**Dos errores distintos.** Si falta el App ID, el SDK dice «Missing application ID». Si pegas una unidad, con `/`, dice
+«Invalid application ID». Una unidad mal puesta en Dart solo falla al pedir un anuncio.
+
+**Un ID por formato y por plataforma.** Android e iOS tienen IDs distintos. En Android, los de prueba son
+`…/9214589741` para el banner adaptativo, `…/1033173712` para el intersticial y `…/5224354917` para el recompensado.
+Usa una unidad por lugar para saber cuál rinde.
+
+**La mediación no marca la prueba.** Los anuncios que llegan por otras redes no muestran la etiqueta de prueba. Cada
+red tiene su propio modo de prueba.
+
+**Permisos que nadie escribió.** Tu manifiesto no declara ninguno. En el APK aparecen `INTERNET`, `AD_ID`,
+`ACCESS_NETWORK_STATE` y otros, traídos por el plugin y el SDK. `RECEIVE_BOOT_COMPLETED` figura en el informe de
+fusión, pero `tools:node="remove"` lo quita: por eso se lee el APK.
+
+**Solo Android e iOS.** `google_mobile_ads` 9.2.0 no tiene implementación de escritorio ni web. El proveedor de
+escritorio falla de forma explícita, y la interfaz lo hace intercambiable.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 11, Temas 1 y 2, vienen la compilación de release y `--dart-define`. Aquí `--dart-define` lleva los IDs
+reales solo a la compilación de la tienda. Del Módulo 12, Tema 1, viene la interfaz entre capas: `ProveedorAnuncios`
+separa la lógica del SDK.
+
+Compara este módulo con el Módulo 18. Allí la persona pagaba y la tienda confirmaba. Aquí paga un anunciante, y la red
+mide impresiones y clics. Por eso la actividad no válida es un riesgo nuevo: inflar esos números perjudica al
+anunciante.
+
+El manifiesto fusionado ya apareció en el Módulo 18 con el permiso de facturación. Aquí la lección se repite con más
+fuerza: lo que el APK declara es lo que debes declarar en la ficha de la tienda.
+
+El Tema 2 coloca el banner sin que la pantalla salte. El Tema 3 controla cuándo aparecen los anuncios de pantalla
+completa. El Tema 4 completa el paso del consentimiento que aquí quedó pendiente.
 
 #### Problema resuelto 1.1
 Integra `google_mobile_ads` con los IDs de prueba, compila el APK de release sin App ID, averigua qué pasaría al
@@ -595,8 +698,7 @@ Al terminar este tema podrás:
 - pedir el tamaño adaptativo anclado y saber de dónde sale su alto;
 - mostrar un marcador del mismo tamaño en escritorio, web y pruebas, sin tocar el plugin.
 
-**Conceptos clave:** banner adaptativo anclado, salto de contenido, clic accidental, marcador de posición,
-`MissingPluginException`
+**Conceptos clave:** banner adaptativo anclado, salto de contenido, clic accidental, marcador de posición, `MissingPluginException`
 
 #### El problema
 La primera versión pone el banner con `if (cargado) banner` debajo del botón «Marcar entregada». El anuncio tarda en
@@ -645,9 +747,68 @@ errores** (Módulo 13, Tema 1).
 - **Error típico:** tocar `MobileAds.instance` en escritorio «solo para leer algo».
 
 #### ► CÓMO FUNCIONA
-El pie de la pantalla es una columna: primero el botón y, debajo, un `EspacioBanner` de alto fijo dentro de un
-`SafeArea`. Nada flota encima de nada, y lo que cambia (vacío → anuncio) cambia **dentro** de una caja que ya tenía
-su tamaño. En plataformas sin anuncios la caja es la misma, con un marcador.
+
+##### 1. La idea en lenguaje sencillo
+
+En un teatro, las sillas reservadas tienen un papel que dice «ocupado» desde antes de que llegue el invitado. Cuando
+llega, se sienta en su silla y nadie más se mueve. Si no llega, la silla queda vacía, pero la fila no se corre. Lo que
+ningún teatro hace es sentar al invitado en las piernas de otro espectador.
+
+El banner de la app de reparto necesita su silla reservada. La primera versión lo mostraba solo al cargar, debajo del
+botón «Marcar entregada». El anuncio tardaba, aparecía de golpe, el botón subía y el dedo del repartidor caía sobre el
+anuncio. Otra versión lo ponía encima del contenido y tapaba el botón.
+
+Este tema reserva el alto del banner desde el primer cuadro y lo coloca donde no estorba. Donde no hay anuncios
+(escritorio, web y pruebas), usa un marcador del mismo tamaño.
+
+##### 2. Definición formal y vocabulario
+
+Un **banner adaptativo anclado** ocupa todo el ancho de la pantalla y va fijo arriba o abajo. Su alto lo calcula el SDK
+para ese ancho y ese dispositivo, con `AdSize.getLargeAnchoredAdaptiveBannerAdSize(ancho)`. Según el código del
+plugin, nunca pasa del 15 % del alto de la pantalla ni baja de 50.
+
+Un **salto de contenido** es un cambio de posición de elementos ya dibujados porque otro aparece o cambia de tamaño
+después. En la web se mide como *Cumulative Layout Shift*; aquí se mide con `tester.getRect` antes y después.
+
+Un **clic accidental** es un toque sobre un anuncio que la persona no quería hacer. Las políticas de AdMob prohíben las
+ubicaciones que los provocan, y la red los trata como actividad no válida, la del Tema 1.
+
+Un **marcador de posición** es un widget del mismo tamaño que el anuncio. Se dibuja mientras el anuncio no llega, si no
+llega o en plataformas sin anuncios. Dice «Publicidad» y nada más: no imita a un anuncio.
+
+**`MissingPluginException`** es el error que lanza un `MethodChannel` cuando ninguna implementación nativa responde. Lo
+verás en pruebas, escritorio o web con un plugin que solo existe para Android e iOS.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que hace `BannerAdaptativo` desde que se inserta en el árbol.
+
+1. **Plataforma.** El widget consulta `hayAnunciosNativos`. Si es falso, devuelve un `EspacioBanner` de 50 de alto con
+   el marcador, y no toca el plugin.
+2. **Ancho.** En `didChangeDependencies` lee el ancho con `MediaQuery.sizeOf`. Si cambia, por ejemplo al girar, pide
+   otro banner.
+3. **Tamaño.** Pide el tamaño adaptativo al SDK. Es un cálculo local, sin red, así que llega antes que el anuncio.
+4. **Hueco.** Con el alto ya conocido, dibuja un `EspacioBanner` vacío de ese alto.
+5. **Carga.** Crea el `BannerAd` y llama a `load()`, que sí va a la red.
+6. **Llegada.** Con `onAdLoaded`, el `AdWidget` aparece **dentro** del mismo hueco. Con `onAdFailedToLoad`, el hueco se
+   queda vacío.
+
+```dart
+@override
+Widget build(BuildContext context) {
+  if (!hayAnunciosNativos) {
+    return const EspacioBanner(alto: BannerAdaptativo.altoMinimo, etiqueta: 'Publicidad · marcador de escritorio');
+  }
+  final alto = _tamano?.height.toDouble() ?? BannerAdaptativo.altoMinimo;
+  return EspacioBanner(
+    alto: alto,
+    anuncio: _cargado && _banner != null ? AdWidget(ad: _banner!) : null,
+  );
+}
+```
+
+Observa que todas las ramas devuelven un `EspacioBanner` con alto fijo. Lo único que cambia entre «cargando» y
+«cargado» es el hijo. Para el resto de la pantalla, la caja siempre midió lo mismo.
 
 ```mermaid
 flowchart TD
@@ -659,6 +820,48 @@ flowchart TD
     L -->|"onAdLoaded"| A["AdWidget dentro del mismo hueco"]
     L -->|"onAdFailedToLoad"| V["el hueco se queda vacío"]
 ```
+
+En la pantalla, el pie es una columna dentro de `SafeArea(top: false)`: primero el botón y, debajo, el banner. Nada
+flota encima de nada.
+
+##### 4. Reglas, variantes y casos límite
+
+**Sin reserva, la pantalla salta dos veces.** El botón pasó de `y=704` a `y=654` al llegar el anuncio: 50 puntos. El
+punto `(195, 728)`, centro del botón antes de cargar, quedó dentro del anuncio. Si el anuncio falla o se libera, salta
+de nuevo en sentido contrario.
+
+**Un `Stack` tapa.** En la versión tapada, el anuncio ocupó de `y=710` a `y=760` y el botón, de 704 a 752. El botón
+recibió 0 toques: la persona no podía marcar la entrega.
+
+**Tamaño fijo en tabletas.** El banner de 320 × 50 deja franjas vacías a los lados en pantallas anchas. El adaptativo
+usa el ancho real.
+
+**La plataforma se mira con `Platform`.** `hayAnunciosNativos` usa `Platform.isAndroid` e `isIOS`. En `flutter test`,
+`defaultTargetPlatform` vale `TargetPlatform.android` aunque no haya plugin, y habría llamado al canal.
+
+**Un error que no se captura.** Al crearse `MobileAds.instance`, el plugin llama a `_init` sin `await`. Ese
+`MissingPluginException` escapa del `try` y llega como error no atendido. Por eso nada del plugin se toca fuera de
+`if (hayAnunciosNativos)`.
+
+**El marcador no se quita.** Si el anuncio no llega, el hueco se queda. Un espacio vacío es mejor que un salto.
+
+**Lejos de los controles.** Pon el banner al pie, con margen respecto de la acción principal y encima de la barra de
+gestos. Nunca pegado a la navegación.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 2, Tema 5, viene `SafeArea`: lo que el sistema le quita a la pantalla. Aquí se usa con `top: false`, solo
+para respetar la barra de gestos del pie.
+
+Del Módulo 10 vienen los pantallazos en pruebas. Este tema los combina con medidas: `tester.getRect` da la posición del
+botón y `tester.tap` comprueba que el toque llega. La captura global de errores del Módulo 13, Tema 1, explica adónde
+iría el error de `_init` en la app real.
+
+Compara el banner con los anuncios de pantalla completa. El banner convive con el contenido, así que el problema es el
+espacio. Un intersticial interrumpe, así que el problema es el momento.
+
+El Tema 3 trata ese momento: cuándo mostrar intersticiales y recompensados, con reglas propias y un proveedor falso. El
+Tema 4 decide si se pueden pedir anuncios y de qué tipo, antes de que este banner cargue nada.
 
 #### Problema resuelto 2.1
 Diseña el pie de la pantalla de la ruta con un banner que no mueva ni tape el botón, y demuéstralo con pantallazos y
@@ -1204,7 +1407,7 @@ Este tema usa **la inyección del reloj** (Módulo 12, Tema 2), **las interfaces
 - **Ejemplo:** `tope de 3 por hora` en el minuto 15.
 - **Error típico:** contar por sesión y no por tiempo: quien abre y cierra la app reinicia el contador.
 
-**sin relleno (*no fill*)**
+**sin relleno (no fill)**
 - **Definición técnica:** la petición fue válida pero no había anuncio que servir; en Android es `ERROR_CODE_NO_FILL = 3` (y `9` si vino de la mediación) con dominio `com.google.android.gms.ads`; en iOS es `GADErrorNoFill = 1`.
 - **En palabras sencillas:** fuiste a la tienda y no había de lo que buscabas.
 - **Dónde se rompe la comparación:** no es un error del código; es normal con poco tráfico, en ciertos países o con IDs nuevos.
@@ -1219,9 +1422,74 @@ Este tema usa **la inyección del reloj** (Módulo 12, Tema 2), **las interfaces
 - **Error típico:** pedir el anuncio en el momento de mostrarlo y hacer esperar a la persona.
 
 #### ► CÓMO FUNCIONA
-La pantalla solo dice «estoy en una pausa» o «la persona quiere la recompensa». El gestor pregunta a las reglas, usa
-el anuncio precargado si hay, anota en la bitácora por qué hizo lo que hizo y deja cargado el siguiente. El
-proveedor es una interfaz: en el teléfono es AdMob; en las pruebas, un falso que puede devolver «sin relleno».
+
+##### 1. La idea en lenguaje sencillo
+
+En una emisora de radio, la publicidad va en las pausas, no a mitad de la canción. Hay un tope de cuñas por hora, y
+nadie pone dos seguidas. Si un oyente participa en un concurso, el premio se entrega cuando cumple la condición, no
+cuando marca el número. Y si un día no hay anunciantes, la emisora no lo trata como una avería.
+
+En la app de reparto, el equipo puso un intersticial en cada entrega marcada. Los repartidores veían un anuncio de
+pantalla completa en cada parada, y algunos lo cerraban sin terminar el escaneo. El recompensado daba el premio al
+abrirse, así que bastaba abrir y cerrar. Y cuando no salía ningún anuncio, nadie sabía si era un error.
+
+Este tema escribe reglas propias de frecuencia y entrega la recompensa solo con la confirmación de la red. También
+distingue «no había anuncio» de un error real. Todo se prueba con un proveedor falso y un reloj que avanzas a mano.
+
+##### 2. Definición formal y vocabulario
+
+Un **intersticial** (`InterstitialAd`) es un anuncio de pantalla completa que se carga con anticipación y se muestra
+con `show()`. La app queda detrás hasta que la persona lo cierra. Cada objeto cargado se muestra una sola vez.
+
+Un **recompensado** (`RewardedAd`) es un anuncio de pantalla completa que la persona elige ver a cambio de algo. La red
+avisa con `onUserEarnedReward` cuando la recompensa se ganó. Abrirlo no es ganarlo.
+
+Un **tope de frecuencia** limita cuántas veces se muestra un formato en un periodo, con un intervalo mínimo entre dos.
+Aquí son 2 minutos de gracia inicial, 4 minutos entre intersticiales y 3 por hora.
+
+**Sin relleno** (*no fill*) significa que la petición fue válida pero no había anuncio que servir. No es un error del
+código: es normal con poco tráfico, en ciertos países o con unidades nuevas.
+
+La **precarga** consiste en cargar el siguiente anuncio con anticipación: al arrancar y justo después de mostrar uno.
+Así está listo en la próxima pausa.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue lo que pasa cuando el repartidor marca una entrega y la pantalla avisa al gestor.
+
+1. **Aviso de pausa.** La pantalla llama a `pausaNatural("entrega marcada")`. No decide nada: solo informa.
+2. **Consulta a las reglas.** El gestor pregunta a `ReglasIntersticial` si hay un motivo para no mostrar. Las reglas
+   miran la tarea en curso, la gracia, el intervalo y el tope.
+3. **Decisión.** Si hay motivo, el gestor lo anota en la bitácora y devuelve `false`. Si no hay anuncio precargado,
+   también lo anota.
+4. **Muestra.** Si todo está en orden, llama a `mostrar()` del proveedor y espera el `Cierre`.
+5. **Registro y recarga.** Al cerrar, registra la hora del anuncio mostrado y pide el siguiente de inmediato.
+
+```dart
+String? motivoParaNoMostrar({required bool tareaEnCurso}) {
+  final ahora = _reloj();
+  if (tareaEnCurso) return 'hay una tarea en curso';
+  if (ahora.difference(_inicio) < gracia) return 'gracia inicial (${gracia.inMinutes} min)';
+  if (_mostrados.isNotEmpty) {
+    final desde = ahora.difference(_mostrados.last);
+    if (desde < intervaloMinimo) return 'intervalo mínimo: faltan ${(intervaloMinimo - desde).inSeconds} s';
+  }
+  final enLaHora = _mostrados.where((m) => ahora.difference(m) < const Duration(hours: 1)).length;
+  if (enLaHora >= maximoPorHora) return 'tope de $maximoPorHora por hora';
+  return null;
+}
+```
+
+Observa que la función devuelve un texto o `null`, no un `bool`. Ese texto es el motivo que va a la bitácora. El tope
+cuenta en una ventana móvil de una hora, por eso el minuto 64 volvió a permitir un anuncio.
+
+El recompensado sigue otro camino. `mostrar` recibe `alRecompensar`, y la implementación con AdMob lo conecta así:
+
+```dart
+_ad.show(onUserEarnedReward: (ad, premio) => alRecompensar?.call(premio.amount.toInt(), premio.type));
+```
+
+Solo la red llama a `onUserEarnedReward`. El gestor guarda una bandera para no otorgar dos veces el mismo premio.
 
 ```mermaid
 sequenceDiagram
@@ -1241,6 +1509,46 @@ sequenceDiagram
         G-->>P: true
     end
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**El mismo número no significa lo mismo.** En Android, «sin relleno» es el código 3, o el 9 si vino de la mediación,
+con dominio `com.google.android.gms.ads`. En iOS es el 1; allí el 3 es `GADErrorServerError`. Compara dominio y
+código.
+
+**Sin relleno no se reintenta en bucle.** El gestor anota el fallo y pide otro anuncio una vez, en la siguiente
+precarga. Un bucle inmediato gasta batería y datos.
+
+**La recompensa no se da al abrir ni al cerrar.** En la prueba, la red avisó dos veces y se otorgó una sola. Cuando la
+persona cerró antes, no se otorgó nada. Para premios con valor real, confirma en tu servidor con
+`ServerSideVerificationOptions`.
+
+**Precargar uno, no diez.** Cada carga es una petición a la red. Si nunca se muestra, baja la tasa de uso de tus
+solicitudes.
+
+**Las reglas de la app complementan las de AdMob.** La consola permite topes de frecuencia. Pero solo la app sabe si
+hay una tarea en curso, como un escaneo a medias.
+
+**Contar por tiempo, no por sesión.** Un contador por sesión se reinicia si la persona cierra y abre la app.
+
+**Sin anuncios no es sin relleno.** En escritorio y web, `ProveedorSinAnuncios` responde con `código -1 (app)`. Se
+registra como lo que es.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 12, Tema 2, viene la inyección del reloj: `ReglasIntersticial` recibe una función que da la hora. Gracias a
+eso, una hora de reglas se prueba en milisegundos. Del Módulo 12, Tema 1, viene la interfaz: `ProveedorAnuncios` no
+sabe nada de AdMob.
+
+`ResultadoCarga` es una clase `sealed` del Módulo 0. El `switch` sobre `Cargado` y `FalloCarga` obliga a tratar los
+dos casos, y el compilador avisa si falta uno.
+
+Compara el recompensado con la compra del Módulo 18. Allí el derecho lo daba el servidor tras consultar a la tienda.
+Aquí, para premios menores, basta la confirmación de la red; para premios valiosos, vuelve la misma regla: el servidor
+confirma.
+
+La analítica del Módulo 13 recibe `anuncio_sin_relleno` con el formato y el código, sin IDs. El Tema 4 decide antes de
+todo esto si se pueden pedir anuncios y si deben ser personalizados.
 
 #### Problema resuelto 3.1
 Escribe la interfaz del proveedor, la implementación con `google_mobile_ads`, las reglas de frecuencia y el gestor.
@@ -1855,9 +2163,81 @@ inyección del reloj** (Módulo 12, Tema 2).
 - **Error típico:** agregar redes «por si acaso» y no revisar el manifiesto fusionado ni el formulario de UMP.
 
 #### ► CÓMO FUNCIONA
-En cada arranque, UMP actualiza la información y muestra el formulario si hace falta. Con su resultado y lo que la
-app sabe de la audiencia, `decidirAnuncios` produce la configuración: pedir o no, personalizados o no, trato por
-edad. La analítica sigue su propio consentimiento (Módulo 13): los dos caminos no se cruzan.
+
+##### 1. La idea en lenguaje sencillo
+
+Antes de que un vendedor te llame para ofrecerte algo, la ley de muchos países exige tu permiso. Ese permiso es
+distinto del que das para que una tienda cuente cuántas personas entran. Y si contesta un niño, el vendedor no puede
+ofrecerle lo mismo que a un adulto ni usar lo que sabe de él.
+
+La app de reparto se publica también en Europa. La primera versión pedía anuncios antes de mostrar el formulario de
+consentimiento. Reutilizaba el aviso de analítica del Módulo 13 para todo. Y la versión para colegios, que se usa con
+estudiantes, trataba a todos como adultos.
+
+Este tema separa las tres decisiones. Si se pueden pedir anuncios, lo dice el formulario oficial de Google. Si deben
+ser personalizados y cómo tratar la edad, lo decide la app con reglas claras. La analítica sigue su propio camino.
+
+##### 2. Definición formal y vocabulario
+
+**UMP** (*User Messaging Platform*) es el SDK de Google para los mensajes de privacidad. Muestra los que configuras
+en la pestaña *Privacy & messaging* de AdMob y guarda la decisión. `google_mobile_ads` lo trae con
+`ConsentInformation` y `ConsentForm`. El texto del mensaje no está en tu código: se configura en la consola, por región.
+
+**`canRequestAds`** es el método de `ConsentInformation` que dice si ya se pueden pedir anuncios. Según la
+documentación, devuelve `false` hasta que llamas a `requestConsentInfoUpdate()`. No dice si serán personalizados.
+
+Los **anuncios no personalizados** se eligen por el contexto, no por el comportamiento previo de la persona. En el
+plugin se piden con `AdRequest(nonPersonalizedAds: true)`. Siguen necesitando consentimiento donde la ley lo exige.
+
+El **trato por edad** es una señal en `RequestConfiguration` que pide tratar las peticiones como de menores:
+`ageRestrictedTreatment: AgeRestrictedTreatment.child`. Se acompaña de un techo de contenido, `maxAdContentRating`.
+
+La **mediación** permite que una plataforma gestione varias fuentes de anuncios en una sola integración. Con
+**licitación** (*bidding*), las fuentes compiten en una subasta en tiempo real. Con **cascada** (*waterfall*), se
+llaman una a una según el eCPM que configuraste.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue el arranque de la app con el consentimiento en primer lugar.
+
+1. **Actualización.** `actualizarConsentimiento` llama a `requestConsentInfoUpdate`. UMP consulta si la persona está
+   en una región que exige consentimiento y si ya decidió.
+2. **Formulario.** `loadAndShowConsentFormIfRequired` muestra el formulario solo si hace falta. Si la persona ya
+   decidió o la región no lo exige, no muestra nada.
+3. **Resultado.** La función lee el estado, `canRequestAds()` y si hay que ofrecer opciones de privacidad en Ajustes.
+4. **Política.** `decidirAnuncios` combina el resultado de UMP con la audiencia de la app y la preferencia de Ajustes.
+   Produce un `ConfigAnuncios`: pedir o no, personalizados o no, edad y clasificación.
+5. **Aplicación.** Si se puede pedir, `main` aplica la configuración con `updateRequestConfiguration` y solo entonces
+   inicializa el SDK, como en el Tema 1.
+
+```dart
+final actualizado = Completer<String?>();
+info.requestConsentInfoUpdate(
+  parametros,
+  () => actualizado.complete(null),
+  (FormError e) => actualizado.complete('${e.errorCode}: ${e.message}'),
+);
+var error = await actualizado.future;
+```
+
+La API de UMP usa *callbacks*: una función para el éxito y otra para el error. El `Completer` las convierte en un
+`Future` que `main` puede esperar. Aunque algo falle, la función consulta igual `canRequestAds()`, que decide con lo
+que UMP tenga.
+
+```dart
+if (audiencia != Audiencia.adulta) {
+  return ConfigAnuncios(
+    pedir: true,
+    noPersonalizados: true,
+    edad: AgeRestrictedTreatment.child,
+    clasificacionMaxima: MaxAdContentRating.g,
+    motivo: 'audiencia ${audiencia.name}: trato infantil, contenido G, no personalizados',
+  );
+}
+```
+
+Esta rama trata igual a un menor y a quien tiene edad desconocida. Es la decisión conservadora de la app. El `motivo`
+queda en la bitácora para explicar después por qué un anuncio fue no personalizado.
 
 ```mermaid
 flowchart LR
@@ -1870,6 +2250,45 @@ flowchart LR
     M13["aviso de analítica<br/>(Módulo 13)"] --> AN["Analitica: pendiente,<br/>aceptado, rechazado"]
     G["GestorAnuncios"] -->|"eventos sin datos personales"| AN
 ```
+
+##### 4. Reglas, variantes y casos límite
+
+**Actualiza en cada arranque.** La documentación pide llamar a `requestConsentInfoUpdate` cada vez que la app abre, no
+solo la primera. La decisión o las reglas de la región pueden cambiar.
+
+**Nada en paralelo con el formulario.** Inicializar el SDK y cargar anuncios mientras el formulario está abierto
+equivale a pedir antes del permiso. En el EEE sin decisión, la tabla del tema muestra `pide: no`.
+
+**Opciones de privacidad cuando se exigen.** Si `getPrivacyOptionsRequirementStatus()` devuelve `required`, pon en
+Ajustes un botón que llame a `ConsentForm.showPrivacyOptionsForm`. Si no es requerido, no lo muestres.
+
+**Las señales viejas están obsoletas.** En `google_mobile_ads` 9.2.0, `tagForChildDirectedTreatment` y
+`tagForUnderAgeOfConsent` de `RequestConfiguration` están marcados `@Deprecated('Use ageRestrictedTreatment
+instead.')`. Muchos tutoriales usan todavía los viejos.
+
+**Pruebas del EEE.** `DebugGeography.debugGeographyEea` con `testIdentifiers` simula estar en Europa en un dispositivo
+de prueba. `ConsentInformation.instance.reset()` vuelve a empezar, y según la documentación es solo para pruebas.
+
+**La mediación multiplica el trabajo.** Cada red agrega su SDK, sus permisos, su modo de prueba y su consentimiento.
+Revisa el manifiesto fusionado del Tema 1 y el formulario de UMP con cada red nueva.
+
+**Un solo reloj por prueba.** En la primera versión, la `Analitica` usaba la hora real y el gestor, el reloj falso.
+Las fechas no coincidían. Inyecta el mismo reloj en los dos.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Del Módulo 13, Tema 3, viene la analítica con consentimiento. Este tema la mantiene aparte: rechazar la analítica
+vació su cola, pero los anuncios siguieron, porque los decide UMP. Aceptarla hizo salir los eventos del gestor, sin
+IDs.
+
+Del Módulo 11, Tema 2, vienen los entornos, que aquí separan la configuración de depuración del EEE de la de
+producción. Del Módulo 12, Tema 2, viene el reloj inyectado que hizo coincidir las fechas.
+
+Compara UMP con el aviso de analítica. El aviso de analítica lo escribiste tú, con tus textos. El mensaje de UMP lo
+configura la consola de AdMob, por región, con el texto que exige la ley para anuncios.
+
+Este es el último tema del curso. El Proyecto 36 cierra la app de seguimiento con todo lo anterior: anuncios que no
+saltan ni interrumpen, recompensas confirmadas y privacidad decidida antes del primer anuncio.
 
 #### Problema resuelto 4.1
 Escribe el flujo real de UMP, la política que decide cómo pedir anuncios y una prueba con seis casos. Conecta el

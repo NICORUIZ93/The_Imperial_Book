@@ -79,8 +79,7 @@ Al terminar este tema podrás:
 - diseñar una pantalla de ajustes con secciones, interruptores y un desplegable;
 - comprobar en una prueba que las preferencias sobreviven a reiniciar la app.
 
-**Conceptos clave:** preferencia, `SharedPreferencesWithCache`, lista de claves permitidas, valor por defecto,
-almacenamiento en memoria para pruebas
+**Conceptos clave:** preferencia, `SharedPreferencesWithCache`, lista de claves permitidas, valor por defecto, almacenamiento en memoria para pruebas
 
 #### El problema
 El conductor activa el modo oscuro y desactiva la vibración. Al día siguiente, la app vuelve al modo claro y vibra en
@@ -127,9 +126,60 @@ Este tema usa **`Notifier`** y **overrides** (Módulo 4, Temas 3 y 6) y **`theme
 - **Error típico:** olvidarlo y ver la prueba fallar porque no hay plataforma.
 
 #### ► CÓMO FUNCIONA
-`main` espera a que se carguen las preferencias y las entrega a la app con un override. El `Notifier` de ajustes lee
-los valores (o sus valores por defecto) al construirse. Cada cambio se guarda primero y después actualiza el estado,
-y `MaterialApp` cambia de tema al instante.
+
+##### 1. La idea en lenguaje sencillo
+Cuando te subes al carro de otra persona, ajustas el asiento y los espejos. Algunos carros recuerdan esos ajustes:
+al día siguiente, el asiento ya está donde lo dejaste. No guardan tu historial de viajes, solo unas pocas opciones
+pequeñas que hacen tu experiencia más cómoda.
+
+Las preferencias de una app son eso. El conductor elige modo oscuro, apaga la vibración y decide qué filtro ver al
+abrir. Son tres valores simples, que la app debe recordar entre un día y otro.
+
+Hay un detalle que separa una buena implementación de una mala. Las preferencias deben estar disponibles antes de
+dibujar la primera pantalla. Si llegan tarde, la app se dibuja un instante en modo claro y luego cambia a oscuro, y
+el conductor ve el destello.
+
+##### 2. Definición formal y vocabulario
+Una **preferencia** es un valor simple guardado en el almacenamiento clave-valor del sistema. El paquete
+`shared_preferences` admite cinco tipos: `int`, `double`, `bool`, `String` y `List<String>`.
+
+El paquete ofrece tres API. La antigua, `SharedPreferences`, se considera heredada. **`SharedPreferencesWithCache`**
+carga los valores una vez en memoria, los lee de forma sincrónica y escribe de forma asincrónica.
+`SharedPreferencesAsync` lee siempre del almacenamiento, sin copia en memoria.
+
+La **lista de claves permitidas** (`allowList`) se fija al crear la caché. Solo esas claves se cargan y se pueden
+escribir. Una clave fuera de la lista produce el `ArgumentError` que muestra la salida del tema.
+
+El **valor por defecto** es el que usa tu código cuando `getBool` devuelve `null` porque la clave nunca se guardó. No
+se escribe en el almacenamiento. El **almacenamiento en memoria para pruebas**, `InMemorySharedPreferencesAsync`,
+reemplaza al del sistema durante las pruebas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el arranque de la app y un toque en «Modo oscuro»:
+
+1. `main` llama a `WidgetsFlutterBinding.ensureInitialized()`. Sin esa línea, los plugins no pueden comunicarse con
+   la plataforma antes de `runApp`.
+2. `abrirPreferencias()` crea la caché. El plugin lee del sistema las tres claves de la lista y las deja en memoria.
+3. `main` espera esa carga y recién entonces llama a `runApp`, con un override que entrega la caché a
+   `preferenciasProvider`.
+4. `MaterialApp` observa `ajustesProvider`. Su `build` lee las tres claves de la caché, sin `await`, y aplica los
+   valores por defecto donde hay `null`.
+5. La primera pantalla se dibuja ya con el tema correcto. No hubo un cuadro intermedio.
+6. El toque llama a `modoOscuro(true)`. `setBool` actualiza la caché y envía la escritura al almacenamiento.
+7. Al terminar el `await`, el `Notifier` asigna el estado nuevo. `MaterialApp` se reconstruye en modo oscuro.
+
+```dart
+Future<void> modoOscuro(bool v) async {
+  await _p.setBool('modoOscuro', v);                              // primero guardar, después mostrar
+  state = Ajustes(modoOscuro: v, vibrar: state.vibrar, filtroInicial: state.filtroInicial);
+}
+```
+
+El orden del método es una decisión. Si la escritura lanza un error, el estado no cambia, y la pantalla nunca muestra
+una opción que no quedó guardada.
+
+El provider que lanza `UnimplementedError` también es una decisión. Obliga a que alguien lo reemplace, en `main` o en
+la prueba. Si lo olvidas, el error aparece en el primer arranque, no en manos del conductor.
 
 ```mermaid
 sequenceDiagram
@@ -145,6 +195,45 @@ sequenceDiagram
     N->>P: setBool('modoOscuro', true)
     N-->>A: state nuevo → themeMode oscuro
 ```
+
+##### 4. Reglas, variantes y casos límite
+Las dos API nuevas llegaron en `shared_preferences` 2.3.0. La documentación describe la antigua,
+`SharedPreferences.getInstance()`, como heredada y que será marcada obsoleta en el futuro. Para código nuevo recomienda
+`SharedPreferencesAsync` o `SharedPreferencesWithCache`.
+
+Cada plataforma guarda los valores en su propio lugar:
+
+- En iOS y macOS, en `NSUserDefaults`.
+- En Android, las API nuevas usan DataStore Preferences por defecto; pueden usar las `SharedPreferences` nativas si
+  necesitas leer valores escritos por otro código.
+- En Linux, en el directorio `XDG_DATA_HOME`; en Windows, en la carpeta AppData itinerante.
+- En web, en el `localStorage` del navegador.
+
+La documentación hace una advertencia que define el uso del paquete. Las escrituras pueden llegar al disco de forma
+asincrónica, sin garantía de que persistan al volver. Por eso dice que no debe usarse para datos críticos.
+
+Esa advertencia separa las preferencias de los temas siguientes. Una entrega marcada es un dato crítico: va a SQLite
+(Tema 2). Un token es un secreto: va al almacenamiento seguro (Módulo 5, Tema 5). Una opción de pantalla puede ir aquí.
+
+La caché tiene un límite. Si otro proceso cambia los valores, por ejemplo un widget de inicio del sistema, la copia en
+memoria no se entera. En ese caso conviene `SharedPreferencesAsync`, que lee siempre del almacenamiento.
+
+Los valores por defecto viven en el código. Así, si mañana cambias el filtro por defecto, cambia para todos los que
+nunca eligieron uno. Si guardaras el valor por defecto al arrancar, ya no podrías cambiarlo para nadie.
+
+En las pruebas, asigna `SharedPreferencesAsyncPlatform.instance` antes de crear la caché. Si no lo haces, el plugin
+busca la plataforma real, que no existe en `flutter test`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El patrón del provider que se reemplaza en `main` viene de los overrides del Módulo 4, Tema 6. Allí servían para
+probar; aquí también sirven para entregar a Riverpod algo que se carga antes de arrancar.
+
+`AjustesNotifier` es un `Notifier` del Módulo 4, Tema 3, con una diferencia: cada cambio tiene un efecto en el disco.
+`themeMode` y los temas claro y oscuro vienen del sistema de diseño del Módulo 2, Tema 6.
+
+Compáralo con lo que viene. Las preferencias guardan pocos valores sueltos, sin consultas ni relaciones. El Tema 2 usa
+SQLite para listas de entregas que se consultan y se actualizan. El Tema 4 guarda el estado de una pantalla a medio
+llenar, que es otra cosa: no es una opción del usuario, es su trabajo en curso.
 
 #### Problema resuelto 1.1
 Construye la pantalla de ajustes, cambia dos opciones, reinicia la app y comprueba que siguen como las dejó.
@@ -458,7 +547,7 @@ Este tema usa **SQL** (Fundamentos), **`Future`** (Módulo 0, Tema 3) y **la ide
 **lote**
 - **Definición técnica:** `Batch`: lista de operaciones que se envían a SQLite juntas con `commit`.
 - **En palabras sencillas:** llevar todas las cajas en un viaje.
-- **Dónde se rompe la comparación:** un lote no es una transacción por sí mismo; dentro de `transaction`, sí lo es.
+- **Dónde se rompe la comparación:** `db.batch()` se confirma en su propia transacción; `txn.batch()` se confirma dentro de la transacción que lo contiene.
 - **Ejemplo:** `txn.batch()` y `lote.commit(noResult: true)`.
 - **Error típico:** pedir los resultados de un lote de miles de inserciones cuando no se usan; `noResult: true` evita ese trabajo.
 
@@ -477,9 +566,60 @@ Este tema usa **SQL** (Fundamentos), **`Future`** (Módulo 0, Tema 3) y **la ide
 - **Error típico:** crear índices en todas las columnas «por si acaso».
 
 #### ► CÓMO FUNCIONA
-Al abrir, `sqflite` compara la versión guardada con la pedida: si no hay base, ejecuta `onCreate` con la versión
-nueva; si la guardada es menor, ejecuta `onUpgrade`. Después, las escrituras van en transacciones y las lecturas usan
-parámetros y el índice.
+
+##### 1. La idea en lenguaje sencillo
+Una bodega pequeña se organiza con una libreta. Una bodega con cientos de paquetes necesita estantes numerados, un
+índice por estado y un registro que no admita anotaciones a medias. Y cuando la empresa agrega un dato nuevo a cada
+paquete, nadie vacía la bodega: se agrega una columna al registro.
+
+SQLite es esa bodega organizada, dentro del teléfono. Es una base de datos completa en un solo archivo, sin servidor.
+La ruta del día vive en una tabla. El índice encuentra las pendientes sin revisar todas, y las transacciones impiden
+que una ruta quede guardada a medias.
+
+El reto que este tema agrega es el tiempo. La app se actualiza, pero la base del conductor ya tiene datos. La versión
+nueva debe transformar esa base sin borrar nada.
+
+##### 2. Definición formal y vocabulario
+`sqflite` es el plugin que da acceso a SQLite desde Flutter. `sqflite_common_ffi` ofrece la misma API en escritorio y
+consola, usando la biblioteca SQLite del sistema. En los dos casos trabajas con un objeto `Database`.
+
+La **versión del esquema** es un entero que la base guarda en su cabecera y que la app compara al abrir. Una
+**migración** es el código que transforma una base de una versión a otra, en `onUpgrade`.
+
+Una **transacción** agrupa operaciones que se confirman todas o ninguna. Un **lote** (`Batch`) agrupa operaciones
+para enviarlas a SQLite en una sola llamada, sin un viaje por cada una.
+
+Una **consulta con parámetros** pone `?` donde va cada valor y entrega los valores aparte, en `whereArgs`. Un
+**índice** es una estructura de árbol B que SQLite mantiene sobre una columna para encontrar filas sin recorrer la
+tabla.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el programa del tema cuando la app actualizada abre la base de la versión 1:
+
+1. `openDatabase` abre el archivo y lee la versión guardada: 1. La app pide la versión 2.
+2. Como 2 es mayor, `sqflite` llama a `onUpgrade(db, 1, 2)`. Lo hace dentro de una transacción, antes de guardar la
+   versión nueva.
+3. `onUpgrade` ejecuta solo lo que falta: `ALTER TABLE entregas ADD COLUMN recibio TEXT`. Las filas existentes reciben
+   `NULL` en la columna nueva.
+4. La transacción termina y la base queda en la versión 2. La salida lo confirma: `versión guardada: 2; filas
+   conservadas: 2`.
+5. `guardarRuta` abre una transacción y crea un lote con `txn.batch()`. Las inserciones se acumulan sin ejecutarse.
+6. `commit(noResult: true)` las envía juntas. Como el lote pertenece a la transacción, se confirma con ella.
+7. Si una inserción viola `NOT NULL`, SQLite lanza el error, la función de la transacción falla y `sqflite` deshace
+   todo. Por eso `EN-4480`, que era válida, no quedó.
+
+```dart
+onUpgrade: (db, de, a) async {                                 // base existente de una versión anterior
+  log('onUpgrade: de $de a $a');
+  if (de < 2) await db.execute('ALTER TABLE entregas ADD COLUMN recibio TEXT');
+},
+```
+
+La condición `de < 2` es la forma de escribir migraciones que se acumulan. Cuando exista la versión 3, agregarás
+`if (de < 3)` debajo. Quien actualice desde la 1 pasará por las dos; quien venga de la 2, solo por la segunda.
+
+En las lecturas, el parámetro `?` llega a SQLite como un valor ya separado del texto SQL. Por eso `x' OR '1'='1` se
+comparó como un estado más y devolvió 0 filas.
 
 ```mermaid
 flowchart TD
@@ -491,6 +631,45 @@ flowchart TD
     D --> F
     E --> F
 ```
+
+##### 4. Reglas, variantes y casos límite
+La documentación de `sqflite` fija el orden de apertura. Primero `onConfigure`, para ajustes como activar las claves
+foráneas. Después `onCreate`, `onUpgrade` u `onDowngrade`, dentro de una transacción. Luego se guarda la versión, y por
+último `onOpen`.
+
+Esos tres callbacks solo se ejecutan si indicas `version`. `onCreate` corre en una base nueva, `onUpgrade` si la
+versión pedida es mayor y `onDowngrade` si es menor. La documentación desaconseja `setVersion`: las migraciones van al
+abrir.
+
+Dentro de una transacción, toda operación usa `txn`. La documentación advierte que usar `db` ahí produce un bloqueo:
+la base espera a que termine la transacción, y la transacción espera a la base.
+
+Los lotes tienen dos formas. `db.batch()` se confirma en su propia transacción: si una operación falla, se deshace todo
+el lote y `commit()` lanza. `txn.batch()` se confirma junto con la transacción que lo contiene. Con
+`continueOnError: true`, el lote ejecuta todo y confirma lo que funcionó.
+
+`ALTER TABLE ... ADD COLUMN` tiene límites en SQLite. La columna nueva no puede ser `PRIMARY KEY` ni `UNIQUE`, y si es
+`NOT NULL` necesita un valor por defecto. Por eso `recibio` admite `NULL`.
+
+Los parámetros sirven para valores, no para nombres. `?` no puede reemplazar el nombre de una tabla o una columna. Si
+ese nombre depende del usuario, elígelo de una lista fija en el código.
+
+Un índice no es gratis. Acelera las búsquedas por `estado`, pero cada inserción y cada cambio de estado también
+actualiza el índice. Crea índices para las consultas que haces, y comprueba con `EXPLAIN QUERY PLAN` que se usan.
+
+En el teléfono, `sqflite` abre la base como instancia única por defecto: abrir el mismo archivo dos veces devuelve la
+misma base. Aun así, ábrela una vez al arrancar y compártela, por ejemplo con un provider.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El SQL de este tema, `CREATE TABLE`, `SELECT`, `UPDATE` e índices, viene de Fundamentos. Lo nuevo es cómo lo ejecuta
+una app: desde Dart, con `Future`, y con un esquema que cambia de versión mientras los datos siguen ahí.
+
+`EntregasLocales` cumple el papel de repositorio del Módulo 4, Tema 4, pero en el disco. Compáralo con las
+preferencias del Tema 1: allí había valores sueltos sin consultas; aquí hay filas que se filtran, se ordenan y se
+actualizan en grupo.
+
+El Tema 3 usa esta base para algo más exigente. Guarda cada cambio del conductor y su recado en la misma
+transacción. Después envía los recados al servidor del Módulo 5 cuando vuelve la red.
 
 #### Problema resuelto 2.1
 Crea la base en versión 1 con dos entregas, ábrela con la versión 2 y comprueba que la migración conserva los datos.
@@ -718,8 +897,7 @@ Al terminar este tema podrás:
 - mostrar al usuario qué está guardado solo en el teléfono, con un aviso que explica sin alarmar;
 - probar la sincronización con un servidor que se apaga y se enciende.
 
-**Conceptos clave:** primero el teléfono (*offline-first*), cola de cambios pendientes, sincronización en orden,
-confirmación, estado visible de sincronización
+**Conceptos clave:** primero el teléfono (offline-first), cola de cambios pendientes, sincronización en orden, confirmación, estado visible de sincronización
 
 #### El problema
 El conductor marca dos entregas en un sótano. Si la app espera al servidor para marcarlas, no puede trabajar; si las
@@ -731,7 +909,7 @@ alarma** (Módulo 5, Tema 4).
 
 #### Glosario del tema
 
-**primero el teléfono (*offline-first*)**
+**primero el teléfono (offline-first)**
 - **Definición técnica:** diseño en el que la app lee y escribe siempre en el almacenamiento local, y la red solo sincroniza ese almacenamiento con el servidor.
 - **En palabras sencillas:** la app trabaja con lo que tiene en el bolsillo; la red es un mensajero.
 - **Dónde se rompe la comparación:** algunos datos deben confirmarse con el servidor antes de mostrarse (un pago).
@@ -767,9 +945,57 @@ alarma** (Módulo 5, Tema 4).
 - **Error típico:** esconderlo: el conductor marca dos veces o llama a despacho para confirmar.
 
 #### ► CÓMO FUNCIONA
-Marcar sin red es una transacción con dos escrituras: el estado en `entregas` y el recado en `pendientes`. La
-sincronización lee la cola en orden, envía cada cambio, borra solo los confirmados y se detiene si uno falla. La
-pantalla lee las dos tablas y marca las filas que tienen recados.
+
+##### 1. La idea en lenguaje sencillo
+Un mensajero en una zona rural sin señal no deja de trabajar. Entrega los paquetes y anota cada entrega en su planilla.
+Al final del día, en la oficina, reporta todo en el orden en que pasó. La oficina le firma cada línea,
+y él solo tacha lo que quedó firmado.
+
+Una app que trabaja primero en el teléfono hace lo mismo. Cuando el conductor marca una entrega, la app la guarda en
+SQLite al instante, sin esperar a la red. Además, anota el cambio en una lista de recados pendientes. Cuando hay
+señal, envía los recados en orden y borra solo los que el servidor confirmó.
+
+La pantalla tiene un trabajo extra: decir la verdad sin asustar. El conductor debe saber que lo suyo está guardado y
+que se enviará solo, para que no marque dos veces ni llame a despacho.
+
+##### 2. Definición formal y vocabulario
+**Primero el teléfono** (*offline-first*) es un diseño en el que la app lee y escribe siempre en su almacenamiento
+local. La red no es el camino de cada acción: es el canal que sincroniza ese almacenamiento con el servidor. La
+documentación de Flutter lo describe entre sus patrones de arquitectura.
+
+La **cola de cambios pendientes** es una tabla, `pendientes`, con un `id` autoincremental que conserva el orden. Este
+diseño se conoce como patrón *outbox*, o bandeja de salida: el cambio y su recado se escriben en la misma transacción.
+
+La **sincronización en orden** envía los recados del más antiguo al más nuevo y se detiene en el primer fallo. La
+**confirmación** es la respuesta exitosa del servidor que autoriza a borrar un recado. El **estado visible de
+sincronización** es lo que la pantalla muestra de todo esto: un aviso y un ícono por fila.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el programa del tema, desde el sótano sin señal hasta que vuelve la red:
+
+1. `marcarSinRed` abre una transacción. Actualiza `EN-4471` en `entregas` e inserta su recado en `pendientes`.
+2. La transacción se confirma. Las dos escrituras existen juntas, o ninguna, si la app muriera a mitad de camino.
+3. Lo mismo ocurre con `EN-4475`. La salida muestra que el teléfono ya las tiene como entregadas.
+4. `sincronizar` lee la cola con `orderBy: 'id'`. El primer envío falla porque no hay servidor en el puerto 8086.
+5. El `catch` ejecuta `break`. No se borra nada y el segundo recado ni se intenta: `(enviados: 0, quedan: 2)`.
+6. El servidor se enciende. `sincronizar` vuelve a leer la cola y envía `EN-4471`. Llega la respuesta 200.
+7. Solo entonces borra ese recado, y pasa a `EN-4475`. Al final, `(enviados: 2, quedan: 0)`.
+8. Una tercera llamada encuentra la cola vacía y no envía nada.
+
+```dart
+try {
+  await enviador.enviar(p['guia']! as String, p['estado']! as String, p['recibio'] as String?);
+} catch (_) {
+  break;                                                          // sin red: se intenta en la próxima
+}
+await db.delete('pendientes', where: 'id = ?', whereArgs: [p['id']]);   // solo se borra lo confirmado
+```
+
+El orden de estas líneas es todo el algoritmo. Enviar primero y borrar después garantiza que ningún cambio se pierda.
+El `break` garantiza que ninguno se adelante a otro anterior.
+
+Observa también que la cola guarda cambios, no estados. Si el conductor marca y luego desmarca, son dos recados, y el
+servidor los recibe en ese orden.
 
 ```mermaid
 sequenceDiagram
@@ -780,13 +1006,51 @@ sequenceDiagram
     C->>DB: marcar EN-4471 (entregas + pendientes, una transacción)
     S->>DB: leer pendientes por id
     S->>SV: POST EN-4471 → sin conexión
-    S-->>S: detenerse; quedan 2
+    S-->>S: detenerse, quedan 2
     Note over SV: vuelve la red
     S->>SV: POST EN-4471 → 200
     S->>DB: borrar recado 1
     S->>SV: POST EN-4475 → 200
     S->>DB: borrar recado 2
 ```
+
+##### 4. Reglas, variantes y casos límite
+Enviar antes de borrar tiene una consecuencia. Si el servidor guardó el cambio pero la respuesta se perdió, el recado
+sigue en la cola y se enviará otra vez. El servidor debe aceptar el mismo cambio dos veces sin duplicarlo: debe ser
+**idempotente**.
+
+La especificación de HTTP, RFC 9110, define `PUT` y `DELETE` como idempotentes, y `POST` no. El servidor de práctica
+usa `POST`, así que la idempotencia depende de cómo lo implemente: «EN-4471 quedó entregada» debe guardarse una vez.
+
+Detenerse en el primer fallo tiene otro caso límite. Si el servidor rechaza un recado para siempre, por ejemplo con un
+400, bloquearía la cola. La solución habitual es apartarlo a una cola de errores y seguir con el resto.
+
+Saber que hay wifi no prueba que el servidor responda. Puede haber un portal cautivo o un servidor caído. La única
+prueba es una petición que llega y vuelve con éxito; por eso `sincronizar` intenta y se detiene si falla.
+
+Los conflictos son el límite de este diseño. Si despacho reasigna `EN-4475` mientras el conductor la marcaba sin red,
+alguien tiene que decidir quién gana. La regla más simple es «gana el último cambio»; otras exigen que el servidor
+rechace y la app avise.
+
+Cuándo sincronizar es una decisión aparte del algoritmo. Al marcar, al volver la red y cada cierto tiempo son momentos
+razonables. Sincronizar solo al abrir la app deja recados quietos durante horas.
+
+En las pruebas de widgets, el reloj es simulado. Las operaciones de archivo reales, como abrir SQLite, deben ir dentro
+de `tester.runAsync`, o la prueba se queda esperando.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+La transacción que une el cambio y el recado es la del Tema 2. Allí servía para no guardar una ruta a medias; aquí
+sirve para que ningún cambio local quede sin recado.
+
+`Enviador` es una interfaz, como el repositorio del Módulo 4, Tema 4. En la consola usa `HttpClient`; en la app usaría
+el `Dio` del Módulo 5, y sus fallos serían los `FalloRed` del Módulo 5, Tema 3.
+
+Compáralo con el Módulo 5. Allí, sin red, la pantalla mostraba «Sin conexión» con un botón «Reintentar». Aquí, sin red,
+la app sigue funcionando y solo informa. El aviso usa `secondaryContainer`, siguiendo la regla del Módulo 5, Tema 4:
+la falta de red no es un error del usuario.
+
+El Tema 4 resuelve otra pérdida: no la de la red, sino la de la memoria, cuando el sistema cierra la app con un
+formulario a medias.
 
 #### Problema resuelto 3.1
 Marca dos entregas con el servidor apagado, intenta sincronizar, enciende el servidor y sincroniza. Después, dibuja la
@@ -1124,8 +1388,7 @@ Al terminar este tema podrás:
 - activar la restauración con `restorationScopeId`;
 - comprobar la restauración en una prueba con `restartAndRestore`.
 
-**Conceptos clave:** cierre por el sistema, restauración de estado, `RestorationMixin`, `RestorableProperty`,
-`restorationId`
+**Conceptos clave:** cierre por el sistema, restauración de estado, `RestorationMixin`, `RestorableProperty`, `restorationId`
 
 #### El problema
 El conductor está escribiendo una novedad y abre la cámara para tomar una foto. La cámara usa mucha memoria y el
@@ -1172,9 +1435,63 @@ Este tema usa **`StatefulWidget`** y **`dispose`** (Módulo 1, Tema 4) y **`Segm
 - **Error típico:** generarlo con algo que cambia en cada ejecución.
 
 #### ► CÓMO FUNCIONA
-`restorationScopeId` crea el ámbito de la app. La pantalla registra sus propiedades; Flutter guarda sus valores en el
-bucket del sistema cada vez que cambian. Cuando el sistema relanza la app, Flutter reconstruye la pantalla y llama a
-`restoreState`, que devuelve los valores guardados a las propiedades.
+
+##### 1. La idea en lenguaje sencillo
+Imagina que estás llenando un formulario en una ventanilla y te piden que cedas el puesto un momento. Antes de
+levantarte, el funcionario fotocopia tu hoja a medio llenar. Cuando vuelves, la hoja original se perdió, pero te
+entregan la copia y sigues donde ibas.
+
+Android e iOS hacen eso con las apps que no están en primer plano. Si otra app necesita memoria, el sistema termina el
+proceso de la tuya. Cuando el conductor vuelve, el sistema la relanza y, si la app dejó una copia de su estado, se la
+entrega.
+
+El problema es que Flutter no fotocopia nada por su cuenta. Solo guarda lo que tú declaras como restaurable. Sin esa
+declaración, el formulario de novedad vuelve vacío y el conductor siente que la app borró su trabajo.
+
+##### 2. Definición formal y vocabulario
+El **cierre por el sistema** ocurre cuando el sistema operativo termina el proceso de una app en segundo plano para
+recuperar memoria. No es lo mismo que el usuario cierre la app: en ese caso no hay nada que restaurar.
+
+La **restauración de estado** es el mecanismo de Flutter para sobrevivir a ese cierre. Guarda valores pequeños en un
+árbol de `RestorationBucket`, los entrega al motor y el sistema los conserva. Al relanzar, los devuelve.
+
+**`RestorationMixin`** convierte un `State` en restaurable. Te pide un **`restorationId`**, el nombre de su cajón dentro
+del ámbito, y un método `restoreState` donde registras propiedades.
+
+Cada **`RestorableProperty`** es un valor que sabe guardarse y restaurarse: `RestorableInt`, `RestorableBool`,
+`RestorableString` o `RestorableTextEditingController`, entre otros. La documentación llama a este tipo de dato
+*estado de instancia*: efímero, como un formulario sin enviar o la pestaña elegida.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue la prueba del tema, en la versión restaurable:
+
+1. `MaterialApp` recibe `restorationScopeId: 'app'` e inserta un `RootRestorationScope`. Sin ese ámbito, el resto no
+   tiene dónde guardar.
+2. Al montarse, `_NovedadRestaurableState` pide al ámbito un cajón con el nombre `'novedad'`.
+3. Flutter llama a `restoreState`. `registerForRestoration` une `_observacion` con `'observacion'` y `_motivo` con
+   `'motivo'`.
+4. Es la primera vez y el cajón está vacío, así que las propiedades conservan sus valores iniciales: texto vacío y 0.
+5. El usuario elige «Rechazo» y escribe. Cada cambio marca su propiedad, y `RestorationManager` envía los datos al motor
+   mientras el estado cambia.
+6. `restartAndRestore()` destruye la app y la crea otra vez, entregándole los datos guardados, como haría el sistema.
+7. En el paso 3 de la nueva vida, el cajón ya tiene datos. Las propiedades toman `'El portero no recibe paquetes'` y 2.
+
+```dart
+@override
+String get restorationId => 'novedad';                            // nombre único dentro de su ámbito
+
+@override
+void restoreState(RestorationBucket? anterior, bool primeraVez) {
+  registerForRestoration(_observacion, 'observacion');
+  registerForRestoration(_motivo, 'motivo');
+}
+```
+
+El paso 5 explica una decisión de diseño de Flutter. El sistema avisa con muy poco tiempo antes de cerrar una app. Por
+eso Flutter no espera a ese aviso: envía el estado al motor cada vez que cambia, y la copia siempre está al día.
+
+Observa que `_observacion.value` es un `TextEditingController` normal. El widget `FormularioNovedad` no sabe nada de
+restauración: recibe el mismo tipo de controlador que la versión sin restaurar.
 
 ```mermaid
 sequenceDiagram
@@ -1188,6 +1505,44 @@ sequenceDiagram
     S->>A: relanza con los datos guardados
     A->>A: restoreState → texto y motivo de vuelta
 ```
+
+##### 4. Reglas, variantes y casos límite
+La documentación de Flutter fija un límite en Android: el estado de instancia no puede pasar de 1 MB. Si lo supera, la
+app se cierra con `TransactionTooLargeException` en el código nativo. Por eso aquí solo se guardan un texto y un
+número.
+
+Cada `restorationId` debe ser único dentro de su ámbito. Dos widgets con el mismo identificador en el mismo cajón se
+pisan los datos. Un `restorationScopeId`, en cambio, abre un ámbito nuevo para sus descendientes.
+
+Algunos widgets de Flutter ya saben restaurarse si les das un `restorationId`. La documentación menciona `TextField` y
+las vistas desplazables. Con eso, el texto o la posición de una lista vuelven sin código adicional.
+
+Las propiedades restaurables siguen el ciclo de vida de `State`. Se registran en `restoreState` y se liberan en
+`dispose`, como cualquier controlador.
+
+La navegación necesita su propia restauración. Con `Navigator`, se usan las versiones restaurables de sus métodos,
+como `restorablePush` en lugar de `push`. `go_router` documenta su propio soporte. Sin eso, el formulario se restaura
+pero la app abre en la pantalla inicial.
+
+La restauración no reemplaza a la persistencia. Si el usuario cierra la app a propósito o reinicia el teléfono, no hay
+nada que restaurar. Los datos de negocio, como la ruta, van a SQLite. Lo restaurable es el trabajo en curso.
+
+Este cierre no ocurre en el escritorio del desarrollador. En Android, la opción de desarrollador «No conservar
+actividades» lo provoca cada vez que sales de la app. La documentación de `RestorationManager` explica cómo probarlo en
+Android y en iOS.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`StatefulWidget`, `State` y `dispose` vienen del Módulo 1, Tema 4. La restauración es una capa encima de ese ciclo de
+vida: el `State` muere con el proceso, y el cajón le permite renacer con sus valores.
+
+El `SegmentedButton` del motivo es el componente del Módulo 4, Tema 3. Compáralo con el formulario del Módulo 4, Tema
+5: allí el estado vivía en controladores normales, que desaparecen con el proceso.
+
+Compáralo también con los Temas 1 y 2 de este módulo. Las preferencias y SQLite sobreviven a todo, incluso a un
+reinicio. La restauración solo sobrevive al cierre por el sistema, y a cambio no exige diseñar tablas ni claves.
+
+El Tema 5 cierra el módulo con archivos. En el Módulo 7, la app pide el permiso de la cámara y envía la foto de la
+entrega al servidor.
 
 #### Problema resuelto 4.1
 Haz restaurable el formulario de novedad y compáralo con la misma pantalla sin restauración, simulando en una prueba
@@ -1476,20 +1831,107 @@ Este tema usa **JSON** (Módulo 5, Tema 2) y **`Future`** (Módulo 0, Tema 3).
 - **Error típico:** confiar en que `writeString` ya dejó los datos en el disco.
 
 #### ► CÓMO FUNCIONA
-La escritura directa abre el archivo final (que se vacía al abrirlo) y lo llena en partes: si la app muere entre
-partes, queda a medias. La escritura atómica llena un temporal, hace `flush` y renombra: si muere antes del
-renombrado, el archivo final sigue siendo el viejo completo.
+
+##### 1. La idea en lenguaje sencillo
+Si pasas en limpio una planilla importante borrando la vieja mientras escribes la nueva, una interrupción te deja sin
+ninguna de las dos. La costumbre segura es otra: escribes la nueva en una hoja aparte y, cuando está completa, la
+pones en la carpeta en lugar de la vieja.
+
+Los archivos de la app tienen el mismo riesgo. La copia de la ruta del día se guarda en un JSON para abrir más rápido.
+Si el teléfono se apaga a mitad de la escritura, el archivo queda cortado, el JSON no se puede leer y la app no abre.
+
+Este tema enseña la hoja aparte: escribir en un archivo temporal y, al final, reemplazar el archivo real de un solo
+golpe. También enseña a elegir en qué carpeta guardar cada cosa.
+
+##### 2. Definición formal y vocabulario
+Cada app tiene sus **carpetas de la app**, que el paquete `path_provider` entrega. `getApplicationSupportDirectory`
+es para datos internos, `getApplicationDocumentsDirectory` para documentos del usuario y `getTemporaryDirectory` para
+caché que el sistema puede borrar.
+
+Una **escritura atómica** hace que el archivo final pase del contenido viejo al nuevo en un solo paso. Nadie ve nunca
+un estado intermedio. Se logra con dos piezas: un **archivo temporal** al lado del final, y un **renombrado atómico**
+que lo pone en su lugar.
+
+El renombrado es atómico gracias al sistema de archivos. En sistemas POSIX, como Linux, Android, iOS y macOS, `rename`
+dentro de un mismo sistema de archivos reemplaza la entrada del directorio de una vez.
+
+**`flush`** es el método de `RandomAccessFile` que pide pasar al disco los datos que el sistema aún tiene en memoria
+para ese archivo. Sin él, «escrito» puede significar solo «en la memoria del sistema».
+
+##### 3. Cómo funciona por dentro, paso a paso
+Primero, la escritura directa del programa, cuando falla a la mitad:
+
+1. `archivo.open(mode: FileMode.write)` abre `ruta_directo.json`. Ese modo vacía el archivo: la versión 1 ya no existe.
+2. Se escribe la primera mitad de la versión 2.
+3. La simulación lanza la excepción, como si la app muriera. El `finally` cierra el archivo.
+4. En el disco queda `{"version":2,"guias":["EN-4471"`. La lectura falla con `FormatException`.
+
+Ahora la escritura atómica, con la misma falla:
+
+1. `guardarAtomico` abre `ruta_atómico.json.tmp`. El archivo final no se toca.
+2. Se escribe la primera mitad en el temporal y la simulación falla. El temporal queda roto, pero nadie lo lee.
+3. El renombrado nunca ocurre. El archivo final sigue siendo la versión 1 completa.
+4. En el intento siguiente, sin falla, el temporal se escribe entero y recibe `flush`.
+5. `rename` reemplaza el archivo final por el temporal en un paso. El temporal roto anterior también desaparece,
+   porque el nuevo usó su mismo nombre.
+
+```dart
+Future<void> guardarAtomico(File archivo, String contenido, {bool fallarALaMitad = false}) async {
+  final temporal = File('${archivo.path}.tmp');
+  await _escribirEnPartes(temporal, contenido, fallarALaMitad: fallarALaMitad);
+  await temporal.rename(archivo.path);                              // en el mismo disco, rename es atómico
+}
+```
+
+El orden importa en el paso 4. `flush` va antes del renombrado. Si fuera al revés, el nombre podría apuntar a un
+archivo cuyos bytes todavía no llegaron al disco.
 
 ```mermaid
 flowchart LR
     subgraph D["Directa"]
-        D1["abrir ruta.json (se vacía)"] --> D2["escribir mitad"] --> D3["💥 muere"] --> D4["ruta.json roto"]
+        D1["abrir ruta.json, se vacía"] --> D2["escribir mitad"] --> D3["la app muere"] --> D4["ruta.json roto"]
     end
     subgraph A["Atómica"]
-        A1["abrir ruta.json.tmp"] --> A2["escribir mitad"] --> A3["💥 muere"] --> A4["ruta.json intacto (v1)"]
+        A1["abrir ruta.json.tmp"] --> A2["escribir mitad"] --> A3["la app muere"] --> A4["ruta.json intacto, v1"]
         A2 -.->|"sin falla: flush + rename"| A5["ruta.json = v2"]
     end
 ```
+
+##### 4. Reglas, variantes y casos límite
+El temporal debe estar en la misma carpeta que el final. La documentación de Dart advierte que, en algunas
+plataformas, `rename` no puede mover un archivo entre sistemas de archivos distintos. En ese caso hay que copiar, y la
+copia ya no es atómica.
+
+`File.writeAsString` es cómodo, pero abre con `FileMode.write` por defecto. Es exactamente la escritura directa del
+tema. Además, su parámetro `flush` vale `false` por defecto.
+
+Cada carpeta tiene su regla:
+
+- La temporal puede vaciarse cuando el sistema necesita espacio. Sirve para fotos antes de enviarlas, no para datos.
+- La de soporte es para archivos internos que el usuario no maneja, como esta copia de la ruta.
+- La de documentos es para archivos del usuario. En iOS, su contenido puede respaldarse en iCloud.
+
+`path_provider` no funciona en todas las plataformas igual. En web no hay sistema de archivos: allí los datos van a
+almacenamiento del navegador, como las preferencias del Tema 1.
+
+`flush` cuesta tiempo, porque espera al disco. Úsalo una vez al terminar de escribir, no después de cada línea.
+
+Una lectura que falla por formato no debe terminar en borrado. Renombra el archivo roto y regístralo: puede ayudar a
+entender el problema y quizás se recupere.
+
+Este patrón tiene un límite: protege un archivo a la vez. Si necesitas cambiar varios datos relacionados juntos, la
+herramienta correcta es la transacción de SQLite del Tema 2, que hace por ti este mismo trabajo.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El contenido del archivo es JSON, convertido con `jsonEncode` como en el Módulo 5, Tema 2. Las operaciones de archivo
+devuelven `Future`, del Módulo 0, Tema 3. El `finally` que cierra el archivo es el mismo de las excepciones de ese
+tema.
+
+Compáralo con el Tema 2. SQLite garantiza «todo o nada» con transacciones y un diario interno. Aquí construyes esa
+garantía a mano para un solo archivo. Las dos ideas responden a la misma pregunta: qué queda si la app muere a mitad.
+
+El Módulo 7, Tema 5, envía la foto de la entrega al servidor desde un archivo en disco. La lee mientras la envía,
+con progreso y con la posibilidad de cancelar.
 
 #### Problema resuelto 5.1
 Guarda la ruta en versión 1 de las dos formas y simula que la app muere a mitad de guardar la versión 2. Lee lo que

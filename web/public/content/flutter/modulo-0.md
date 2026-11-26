@@ -123,9 +123,43 @@ Módulo 1, Tema 1).
 - **Error típico:** usar `late` para datos que de verdad pueden no llegar; para eso existe `T?`.
 
 #### ► CÓMO FUNCIONA
-El compilador sigue cada valor `T?` y solo te deja usarlo como `T` si demostraste que no es `null`: con una
-comprobación (`if`), con un valor por defecto (`??`) o propagando la ausencia (`?.`). `!` y `late` son salidas de
-emergencia: le dicen al compilador que deje de revisar, y el error, si existe, aparece cuando el usuario usa la app.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en la planilla de un mensajero. Algunas casillas nunca quedan en blanco, como la dirección. Otras se llenan
+más tarde, como la firma de quien recibe. Si alguien lee la firma antes de la entrega, encuentra un hueco.
+
+En un programa, ese hueco es `null`: la ausencia de valor. Muchos lenguajes dejan que cualquier variable esté
+vacía, y el fallo aparece cuando la app ya está en el teléfono del usuario. Dart cambia el momento del aviso.
+
+En la app de entregas, la guía existe siempre, pero el conductor y la foto llegan después. Con null safety tú
+marcas cuáles casillas pueden quedar en blanco. A partir de ahí, el compilador revisa cada lectura y te obliga a
+decidir qué hacer cuando el dato falta, antes de ejecutar.
+
+##### 2. Definición formal y vocabulario
+La documentación de Dart llama a este sistema **sound null safety** (seguridad frente a nulos «sólida»). «Sólida»
+significa que el compilador garantiza la regla: si una expresión tiene tipo `String`, en ejecución nunca valdrá
+`null`. Esa garantía permite además que el compilador quite comprobaciones y genere código más pequeño.
+
+Todo tipo tiene dos versiones. `String` no admite `null`. El **tipo anulable** `String?` admite los valores de
+`String` más `null`. Un valor de `String` se puede guardar en una variable `String?`, pero no al revés sin una
+comprobación previa.
+
+Para trabajar con un `T?` tienes herramientas de distinta seguridad. El **acceso condicional** `?.` propaga la
+ausencia. El **valor por defecto** `??` la reemplaza, y `??=` asigna solo si falta. La **promoción de tipos**
+convierte `T?` en `T` después de comprobar. El **operador de aserción `!`** y el modificador **`late`** apagan la
+revisión del compilador y trasladan el riesgo a la ejecución.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El analizador de Dart recorre cada función como si fuera un mapa de caminos. Este análisis se llama **análisis de
+flujo** (*flow analysis*): sigue cada rama, cada `return` y cada asignación para saber qué es seguro en cada línea.
+
+1. Cuando declaras `String? conductor`, el compilador anota que esa variable puede contener `null`.
+2. Si escribes `conductor.length`, rechaza la línea: el receptor podría ser `null`. El mensaje es el que ves en
+   `campo_sin_promocion.dart`: `can't be unconditionally accessed because the receiver can be 'null'`.
+3. Si antes escribes `if (conductor == null) return ...;`, el análisis sabe que en el resto del camino no es `null`.
+   Desde esa línea trata la variable como `String`. Eso es la promoción.
+4. Si eliges `?.`, el compilador genera una comprobación en tiempo de ejecución y el resultado pasa a ser anulable.
+5. Si eliges `!`, el compilador inserta una comprobación que lanza un error cuando el valor es `null`.
 
 ```mermaid
 flowchart LR
@@ -135,6 +169,67 @@ flowchart LR
     C -->|"conductor?.length"| N["seguro: el resultado es int?"]
     C -->|"conductor!"| R["riesgo: falla en ejecución si es null"]
 ```
+
+El acceso condicional tiene una propiedad útil llamada **cortocircuito de nulos** (*null-shorting*). Si el primer
+`?.` encuentra `null`, Dart salta el resto de la cadena entera. Por eso no necesitas repetir `?.` en cada paso.
+
+```dart
+String? c;
+print(c?.toUpperCase().length);   // imprime null; .length no se evalúa
+```
+
+Aquí `toUpperCase()` devuelve `String`, no `String?`. Aun así, `.length` nunca se ejecuta sobre `null`: la cadena
+se detuvo en `c?.`. El tipo de toda la expresión es `int?`.
+
+La promoción también funciona con parámetros, como en `promocion.dart`:
+
+```dart
+int contar(String? guia) {
+  if (guia == null) return 0;
+  return guia.length;    // guia ya es String en esta línea
+}
+```
+
+El `return` temprano corta el camino donde `guia` es `null`. En la línea siguiente solo queda el camino donde tiene
+valor, y el compilador acepta `guia.length` sin `!`.
+
+##### 4. Reglas, variantes y casos límite
+La promoción tiene límites precisos. Funciona con variables locales y parámetros. Desde Dart 3.2 también funciona
+con campos **privados** y `final` de la misma biblioteca. Un campo público no se promueve: una subclase podría
+reemplazarlo por un *getter* (método de lectura) que devuelva algo distinto en la segunda lectura.
+
+Una variable local no anulable puede declararse sin valor inicial. El compilador exige entonces que se le asigne
+en todos los caminos antes de leerla. Esa regla se llama **asignación definitiva** (*definite assignment*).
+
+```dart
+String nombre;
+if (DateTime.now().year > 2000) { nombre = 'Ana'; } else { nombre = 'Luis'; }
+print(nombre);   // compila: ambos caminos asignan
+```
+
+Las variables globales y los campos estáticos no anulables necesitan un inicializador. `late` cubre los casos en
+que no puedes dárselo al declararlos. Tiene dos usos. Sin inicializador, promete una asignación posterior; si lees
+antes, aparece `LateInitializationError`, como en `tarde.dart`. Con inicializador (`late final x = calcular();`),
+el cálculo se aplaza hasta la primera lectura.
+
+El `!` sobre `null` termina el programa con `Null check operator used on a null value`, el mensaje de `signo.dart`.
+En las colecciones existen variantes: `...?lista` expande una lista solo si no es `null`. Desde Dart 3.8, el
+elemento `?valor` dentro de un literal lo incluye solo si no es `null`.
+
+En cuanto a versiones: la null safety llegó como opción en Dart 2.12. Desde Dart 3.0 es obligatoria y sólida en
+todo programa. Con Dart 3.14 ya no existe código sin ella; un paquete antiguo sin migrar no compila.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En Fundamentos (Módulo 1, Tema 2) viste que un tipo dice qué operaciones admite un valor. La null safety añade una
+pregunta más a cada tipo: «¿puede faltar?». La **excepción** de Fundamentos (Módulo 1, Tema 1) es justamente lo
+que `!` y `late` pueden provocar si los usas mal.
+
+Si vienes de Java, compara con `Optional`. `Optional` es una clase que envuelve el valor y que tú decides usar. En
+Dart, la anulabilidad forma parte del tipo y el compilador la revisa siempre, sin envoltorios.
+
+Lo que viene usa esta base sin pausa. En el Tema 2 los constructores reciben parámetros con nombre que pueden ser
+anulables u obligatorios con `required`. En el Tema 6, los patrones de `switch` también promueven tipos. En el
+Módulo 1, Tema 4, verás `late` en campos que se inicializan en `initState`.
 
 #### Problema resuelto 1.1
 Modela una entrega con guía obligatoria, conductor opcional y foto opcional, y muestra cada dato sin que el programa
@@ -456,10 +551,67 @@ Temas 6 y 7) y el **tipo anulable** (Tema 1).
 - **Error típico:** crear jerarquías profundas de herencia para compartir un método; un mixin lo comparte sin forzar un «es un».
 
 #### ► CÓMO FUNCIONA
-Una clase de Dart tiene un constructor principal y tantos constructores con nombre como formas de crearla. La
-validación de campos `final` ocurre en la lista de inicialización (antes del cuerpo) o en el cuerpo, si basta con lanzar
-una excepción. Para compartir comportamiento entre clases que no tienen una relación «es un», los mixins se aplican con
-`with` en el orden escrito.
+
+##### 1. La idea en lenguaje sencillo
+Una misma pieza se puede armar a partir de materiales distintos. Una caja de envío se arma desde un molde, desde
+las medidas que dicta el cliente o desde una caja usada que llega a la bodega. Cada forma necesita sus propios
+pasos, pero el resultado siempre es una caja válida.
+
+En la app pasa igual con una entrega. Unas veces la creas en el código, otras llega como JSON desde la API, y otras
+el operador escribe `"lat,lng"`. Dart te deja dar a cada forma de construir su propio nombre y sus propias reglas.
+
+La segunda idea es compartir habilidades. Motos y furgones se rastrean por GPS, pero solo los furgones enfrían la
+carga. En vez de forzar una jerarquía de herencia, Dart te deja «enchufar» esas habilidades donde hacen falta.
+
+##### 2. Definición formal y vocabulario
+Un **constructor generativo** crea una instancia nueva e inicializa sus campos. Dart no admite sobrecarga: no
+puede haber dos constructores con el mismo nombre y distintos parámetros. Por eso existen los **constructores con
+nombre** (`Coordenada.desdeTexto`) y los **parámetros con nombre**, que se pasan como `guia: 'EN-1'`.
+
+Un parámetro con nombre es opcional por defecto. Si su tipo no admite `null` y no tiene valor por defecto, debes
+marcarlo **`required`**. Ahí se conecta con el Tema 1: el compilador sabe que el campo nunca quedará vacío.
+
+La **lista de inicialización** es la sección que sigue a `:` en un constructor. Asigna campos `final`, evalúa
+**`assert`** y llama al constructor de la superclase. Un **constructor `const`** crea objetos inmutables en tiempo
+de compilación. Un **constructor de fábrica** (`factory`) ejecuta código libre y devuelve una instancia, que puede
+ser nueva, reutilizada o de una subclase.
+
+Un **mixin** es un conjunto de campos y métodos que una clase incorpora con `with`. La **restricción `on`** limita
+qué clases pueden usarlo y le da acceso a los miembros de ese tipo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cuando escribes `Entrega(guia: 'EN-1', destino: bodega)`, el runtime de Dart sigue un orden fijo:
+
+1. Reserva memoria para el objeto y ejecuta los inicializadores escritos junto a los campos.
+2. Asigna los **parámetros de inicialización** (`this.guia`, `this.destino`). Si falta un `pesoGramos`, usa `500`.
+3. Ejecuta la lista de inicialización de izquierda a derecha, incluidos los `assert` si las aserciones están activas.
+4. Llama al constructor de la superclase. Si no nombras ninguno, usa el constructor sin nombre y sin argumentos.
+5. Ejecuta el cuerpo `{ ... }`. Aquí ya existe `this`, y puedes validar y lanzar excepciones.
+
+Este orden explica una regla que parece caprichosa. Un campo `final` debe tener valor antes del cuerpo, porque
+en el paso 5 el objeto ya está completo. Por eso calculas en la lista de inicialización:
+
+```dart
+class Guia {
+  final String codigo;
+  Guia(String texto) : codigo = texto.trim().toUpperCase() {
+    print('cuerpo: $codigo');
+  }
+}
+```
+
+Con `Guia('  en-9 ')` el programa imprime `cuerpo: EN-9`. El campo ya estaba normalizado al llegar al cuerpo.
+
+Un `factory` se salta los pasos 1 a 5 para sí mismo. No tiene `this`; en su lugar llama a otro constructor y
+devuelve lo que obtiene. Eso hace `Entrega.desdeMapa`: convierte tipos con `as` y delega en el constructor normal.
+
+Con `const`, el trabajo ocurre antes de ejecutar. El compilador evalúa la expresión y guarda una sola instancia
+por combinación de argumentos. Este proceso se llama **canonicalización** (*canonicalization*): misma receta y
+mismos datos dan el mismo objeto. Por eso `identical(...)` devuelve `true` en `clases.dart`.
+
+Los mixins se resuelven al compilar mediante **linealización**. `class Furgon extends Vehiculo with Rastreable,
+Refrigerado` crea una cadena: `Vehiculo`, luego `Vehiculo` con `Rastreable`, luego ese resultado con
+`Refrigerado`. Cada mixin queda «encima» del anterior.
 
 ```mermaid
 classDiagram
@@ -484,6 +636,47 @@ classDiagram
     Rastreable <.. Furgon : with
     Refrigerado <.. Furgon : with
 ```
+
+Si dos mixins definen el mismo método, gana el último escrito, porque queda más arriba en la cadena:
+
+```dart
+mixin A { String nombre() => 'A'; }
+mixin B { String nombre() => 'B'; }
+class Furgon with A, B {}
+// Furgon().nombre() devuelve 'B'
+```
+
+Al ejecutarlo con `print(Furgon().nombre());` la salida es `B`. Cambiar el orden a `with B, A` cambia el resultado.
+
+##### 4. Reglas, variantes y casos límite
+Un constructor `const` exige que todos los campos de la clase sean `final`. Además, cada argumento debe ser una
+constante en el punto de uso. `const Coordenada(lat, lng)` con variables normales no compila.
+
+Las aserciones dependen de cómo ejecutes. `dart run` las deja apagadas, salvo con `--enable-asserts`. `flutter run`
+en modo *debug* y `flutter test` las encienden. En una compilación de publicación (*release*) desaparecen del código.
+Por eso `asserts.dart` muestra un `RangeError` sin la opción y un `Failed assertion` con ella.
+
+Un `factory` no puede usar `this.campo` ni lista de inicialización. A cambio, puede devolver un objeto guardado en
+caché o una subclase. Existe también el **constructor redirigido**, `Clase.otro() : this(...)`, que solo delega.
+
+Desde Dart 2.17 puedes escribir **parámetros de superclase** (`super.placa`). Pasan el argumento al constructor
+padre sin repetir su nombre. Desde Dart 3.0, una clase normal ya no puede usarse con `with`. Solo se mezclan las
+declaraciones `mixin` o `mixin class`; si no, el analizador responde `can't be used as a mixin because it's neither
+a mixin class nor a mixin`.
+
+Un mixin no tiene constructores generativos propios. Su estado se inicializa con valores junto a cada campo, como
+`double temperatura = 4;` en `Refrigerado`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En Fundamentos (Módulo 1, Temas 6 y 7) aprendiste clases, herencia y clases abstractas. `Vehiculo` es una clase
+abstracta que define *getters* sin implementar, y `Moto` los completa con `@override`.
+
+Si vienes de Java, el mixin se parece a una interfaz con métodos `default`. La diferencia es que el mixin también
+guarda estado, como la lista `_posiciones`. Una interfaz de Java no tiene campos de instancia.
+
+El constructor `const` es la base de todo Flutter. En el Módulo 1, Tema 1 escribirás `const Text(...)` y entenderás
+por qué Flutter reutiliza esos widgets sin reconstruirlos. Los parámetros con nombre y `required` aparecen en cada
+widget. En el Tema 7, un `factory` con constructor privado garantiza que no exista una `Guia` sin validar.
 
 #### Problema resuelto 2.1
 Escribe `Coordenada` y `Entrega` con cada tipo de constructor y valida el peso.
@@ -837,7 +1030,7 @@ Este tema usa **función** (Fundamentos, Módulo 1, Tema 4), **excepción** (Fun
 - **Ejemplo:** `first` sobre `where` evalúa solo hasta encontrar el primero: la salida muestra `EN-1`, `EN-2` y `EN-3`, y no `EN-4`.
 - **Error típico:** recorrer varias veces un `where` costoso; usa `.toList()` si lo necesitas más de una vez.
 
-**`where`, `map` y `fold`**
+**`where`/`map`/`fold`**
 - **Definición técnica:** `where` conserva los elementos que cumplen una condición; `map` transforma cada elemento; `fold` combina todos en un solo valor partiendo de un inicial.
 - **En palabras sencillas:** filtrar, convertir y sumar.
 - **Dónde se rompe la comparación:** `fold` necesita el tipo del acumulador cuando no se puede deducir: `fold<int>(0, ...)`.
@@ -852,9 +1045,66 @@ Este tema usa **función** (Fundamentos, Módulo 1, Tema 4), **excepción** (Fun
 - **Error típico:** construir la lista con `add` en un bucle aparte cuando una sola expresión lo dice.
 
 #### ► CÓMO FUNCIONA
-Una función `async` corre hasta su primer `await`; ahí devuelve un `Future` y libera el bucle de eventos. Cuando la
-espera termina, la función continúa donde se detuvo. Si lanzas dos esperas una detrás de otra, sus tiempos se suman;
-si creas los dos `Future` antes de esperar y los esperas juntos, se superponen.
+
+##### 1. La idea en lenguaje sencillo
+En una oficina de envíos, el empleado de ventanilla no se queda congelado mientras la bodega busca un paquete.
+Te entrega un turno, atiende al siguiente cliente y te llama cuando tu paquete aparece. Así nadie espera sin razón.
+
+La app del conductor funciona igual. Pedir una ruta al servidor tarda 300 ms. Si la app se detuviera a esperar,
+la pantalla dejaría de responder al dedo. Dart te entrega un «turno» por cada operación lenta y sigue atendiendo.
+
+El tema tiene una segunda mitad: las colecciones. Cuando llegan las entregas, hay que filtrarlas, convertirlas y
+sumarlas. Dart describe esas operaciones como recetas que se aplican a la lista, sin bucles con contadores.
+
+##### 2. Definición formal y vocabulario
+Un **Future** es un objeto que representa un valor o un error que estará disponible más adelante. Está pendiente
+mientras la operación corre y se completa una sola vez, con valor o con error. `Future<String>` promete un texto.
+
+**async/await** es la sintaxis para trabajar con esos objetos como si fueran código en línea recta. Una función
+marcada `async` siempre devuelve un `Future`. Dentro de ella, `await` suspende la función hasta que el `Future`
+esperado se complete, pero no bloquea el hilo.
+
+Quien reparte el trabajo es el **bucle de eventos** (*event loop*). Es el ciclo que ejecuta, de una en una, las
+tareas pendientes del programa. **`Future.wait`** combina varios `Future` en uno y **`timeout`** fija un plazo.
+
+En las colecciones, `where`, `map` y `fold` filtran, transforman y combinan. Las dos primeras devuelven un
+**iterable perezoso**. Los **elementos de colección `if` y `for`** construyen listas escribiendo las reglas dentro
+del propio literal.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cada programa de Dart corre dentro de un **isolate**: un espacio con su propia memoria y un solo hilo de ejecución.
+Ese hilo tiene dos colas. La **cola de microtareas** guarda trabajo urgente y pequeño. La **cola de eventos** guarda
+temporizadores, respuestas de red y toques en pantalla.
+
+1. El hilo ejecuta `main` completo, de forma síncrona, de principio a fin.
+2. Al llamar una función `async`, su cuerpo corre de inmediato hasta el primer `await`.
+3. En ese `await`, la función devuelve un `Future` pendiente a quien la llamó y queda suspendida.
+4. Cuando `main` termina, el bucle vacía primero toda la cola de microtareas.
+5. Después toma un evento de la cola de eventos, lo ejecuta y vuelve a vaciar las microtareas.
+6. Cuando el `Future` esperado se completa, la función suspendida continúa en la línea siguiente al `await`.
+
+Este programa deja ver ese orden. Las etiquetas numeradas siguen el orden real de la salida:
+
+```dart
+Future<void> avisar() async {
+  print('2. avisar empieza');
+  await Future.delayed(Duration.zero);
+  print('5. avisar continúa');
+}
+void main() {
+  print('1. main');
+  avisar();
+  scheduleMicrotask(() => print('4. microtarea'));
+  print('3. main termina');
+}
+```
+
+Con `import 'dart:async';` al inicio, la salida es `1`, `2`, `3`, `4` y `5`, en ese orden. `avisar` corre hasta su
+`await` y cede el turno. `main` termina, la microtarea pasa antes y el temporizador llega al final, como evento.
+
+Esto explica la diferencia entre serie y paralelo. En serie, el segundo `consultarRuta` ni siquiera se crea hasta
+que termina el primero. En paralelo, los dos `Future` se crean dentro de la lista, sus temporizadores corren a la
+vez y `Future.wait` espera a ambos.
 
 ```mermaid
 sequenceDiagram
@@ -870,6 +1120,50 @@ sequenceDiagram
     M->>S: consultarRuta(EN-4)
     S-->>M: las dos listas
 ```
+
+«Paralelo» aquí significa **concurrente**: las esperas se superponen, pero el código Dart sigue en un solo hilo.
+Funciona porque la espera ocurre fuera de Dart, en la red o en el reloj del sistema. Un cálculo pesado no se
+superpone: ocupa el hilo y congela todo lo demás.
+
+Con las colecciones ocurre algo parecido a una espera aplazada. `where` no filtra cuando lo llamas; guarda la
+condición. El trabajo se hace al recorrer, y solo hasta donde hace falta. Por eso `first` evalúa `EN-1`, `EN-2` y
+`EN-3` y se detiene, como muestra la salida de `colecciones.dart`.
+
+##### 4. Reglas, variantes y casos límite
+Un `throw` dentro de una función `async` no sale como excepción directa. Se convierte en un `Future` que se
+completa con error. El `try` que lo rodea solo lo captura si esperas ese `Future` con `await`.
+
+`Future.wait` tiene un detalle poco conocido. Por defecto espera a que terminen **todos** los `Future` y luego
+falla con el primer error. Si pasas `eagerError: true`, falla en cuanto aparece el error. Con una consulta de 300
+ms y otra que falla a los 100 ms, se observó esto:
+
+```dart
+await Future.wait([consultarRuta('EN-3', 300), consultarRuta('EN-ERR', 100)]);
+// error a los ~300 ms
+await Future.wait([consultarRuta('EN-3', 300), consultarRuta('EN-ERR', 100)], eagerError: true);
+// error a los ~100 ms
+```
+
+`timeout` no cancela la operación original: solo deja de esperarla. La consulta de 2 s sigue su curso aunque tu
+código ya recibió `TimeoutException`. En Dart no existe una cancelación general de `Future`.
+
+Desde Dart 3.0 también puedes esperar un record de `Future` de distinto tipo con `.wait`, como `(a, b).wait`. Esto
+conserva el tipo de cada resultado, cosa que la lista de `Future.wait` pierde si los tipos difieren.
+
+En `fold`, indica el tipo del acumulador cuando Dart no puede deducirlo: `fold<int>(0, ...)`. Un iterable
+perezoso se recalcula en cada recorrido; si lo usarás varias veces, conviértelo con `toList()`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+De Fundamentos (Módulo 1, Tema 4) ya sabes que una función recibe datos y devuelve un resultado. Una función
+`async` hace lo mismo, pero el resultado llega envuelto en un `Future`. La **excepción** (Módulo 1, Tema 1) sigue
+existiendo; solo viaja por otro camino.
+
+Si vienes de Java, `Future` se parece a `CompletableFuture`. La diferencia está en el modelo: Java usa varios
+hilos que comparten memoria, y Dart usa un hilo por isolate con un bucle de eventos.
+
+En el Tema 4, la regla `unawaited_futures` señala los `Future` que olvidaste esperar. En el Tema 5 verás el
+**Stream**, que es a varios valores lo que el `Future` es a uno solo. En el Módulo 5, `FutureBuilder` dibuja la
+pantalla según el estado de un `Future`.
 
 #### Problema resuelto 3.1
 Mide dos consultas en serie y en paralelo, captura un error y aplica un tiempo límite.
@@ -1052,8 +1346,9 @@ Respuesta esperada: `Instance of 'Future<String>'`. El texto llega después; hac
 Intermedio. Cambia `Future.wait([consultarRuta('EN-3', 300), consultarRuta('EN-ERR', 100)])` dentro de un `try`. ¿Qué
 recibes?
 
-Respuesta esperada: el `StateError` de `EN-ERR`, a los 100 ms; la lista de resultados no llega. `Future.wait` falla con
-el primer error.
+Respuesta esperada: el `StateError` de `EN-ERR`, pero a los ~300 ms, no a los 100: por defecto `Future.wait` espera a
+que terminen todos y luego falla con el primer error. La lista de resultados no llega. Con `eagerError: true` el error
+llega a los ~100 ms.
 
 #### Ejercicio verificable 3
 Reto. Escribe con `fold` un mapa `zona → kilos` en una sola expresión.
@@ -1135,9 +1430,40 @@ código** (Fundamentos, Módulo 4, Tema 4).
 - **Error típico:** aplicar `dart fix --apply` sin mirar el `diff`.
 
 #### ► CÓMO FUNCIONA
-El analizador lee `analysis_options.yaml`, carga el conjunto de reglas incluido y le suma las propias. Al analizar,
-cada diagnóstico sale con su severidad, su ubicación (`archivo:línea:columna`), su mensaje y su código. Para los que
-tienen arreglo automático, `dart fix` puede aplicarlo; los demás se corrigen a mano.
+
+##### 1. La idea en lenguaje sencillo
+Una empresa de envíos tiene un manual de despacho: toda caja lleva guía, peso y dirección. Un supervisor que revisa
+cada caja antes de cargarla ahorra devoluciones. Pero un supervisor humano se cansa y deja pasar cosas.
+
+En el código ocurre lo mismo. El equipo acuerda reglas: declarar tipos, usar `const`, no dejar `import` sin usar.
+Si dependen de la memoria de cada persona, se rompen. El analizador de Dart es un supervisor que nunca se cansa.
+
+Lo valioso no es solo el estilo. En este tema, un `Map` sin tipos dejó pasar `"2"` donde se esperaba `int`. El
+analizador, bien configurado, señala ese riesgo antes de ejecutar, y te obliga a decir qué tipo esperas.
+
+##### 2. Definición formal y vocabulario
+El **análisis estático** es la revisión del código sin ejecutarlo. Trabaja sobre la estructura del programa y su
+sistema de tipos. «Estático» significa «sin correr el programa», al contrario de una prueba, que sí lo ejecuta.
+
+Cada hallazgo se llama **diagnóstico** y tiene cuatro partes: **severidad**, ubicación, mensaje y código. Algunos
+diagnósticos vienen del lenguaje, como `invalid_assignment`. Otros son **lints**: reglas opcionales con nombre, como
+`prefer_final_locals`, que tú activas.
+
+La configuración vive en **`analysis_options.yaml`**. Allí incluyes un conjunto base, activas modos estrictos del
+lenguaje como **`strict-casts`**, agregas reglas y cambias severidades. **`dynamic`** es el tipo que apaga la
+revisión de tipos, y los modos estrictos existen para acorralarlo. **`dart fix`** aplica las correcciones
+automáticas que algunos diagnósticos traen.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cuando ejecutas `dart analyze` en la carpeta del proyecto, la herramienta sigue estos pasos:
+
+1. Busca `analysis_options.yaml` en la carpeta del archivo y, si no lo hay, sube por las carpetas padre.
+2. Resuelve el `include`. Aquí `package:lints/recommended.yaml` se encuentra gracias a `dart pub get`.
+3. Lee cada archivo `.dart` y construye su **árbol de sintaxis** (AST): la estructura del código en forma de árbol.
+4. Resuelve nombres y tipos: a qué clase se refiere `Tarifa` y qué tipo tiene `datos['peso']`.
+5. Comprueba las reglas del lenguaje, con los modos estrictos activados. Así nacen los errores de tipos.
+6. Recorre el árbol con cada lint activado y anota cada coincidencia.
+7. Aplica los cambios de severidad de `analyzer: errors:` y escribe la lista ordenada por severidad.
 
 ```mermaid
 flowchart LR
@@ -1147,6 +1473,58 @@ flowchart LR
     D --> F["dart fix --code=..."]
     D --> M["corrección a mano"]
 ```
+
+Observa cómo se lee una línea de la salida del Problema resuelto 4.1:
+`error - lib/reporte.dart:11:12 - A value of type 'dynamic' can't be assigned ... - invalid_assignment`. Primero
+la severidad, después `archivo:línea:columna`, luego el mensaje y al final el código, que buscas en dart.dev.
+
+El paso 4 explica el problema con `Map`. Un `Map` sin tipos es `Map<dynamic, dynamic>`, así que `datos['peso']`
+es `dynamic`. Sin modos estrictos, Dart convierte un `dynamic` a `int` en silencio y lo comprueba al ejecutar. Con
+`strict-casts`, el analizador exige que escribas la conversión:
+
+```dart
+int calcular(Map<String, Object?> datos) {
+  final kg = datos['peso'] as int;   // la conversión queda escrita y localizada
+  return 1500 * kg;
+}
+```
+
+`Object?` acepta cualquier valor, pero no deja usarlo sin convertirlo antes. Esa es la diferencia con `dynamic`.
+
+`dart fix` trabaja después del análisis. Cada diagnóstico con arreglo automático trae una edición de texto. La
+herramienta junta todas las ediciones y las aplica al archivo. Si dos reglas editan la misma posición, se pisan,
+como el `num num num...` del Problema resuelto 4.2.
+
+##### 4. Reglas, variantes y casos límite
+Hay tres severidades: `error`, `warning` e `info`. En `analyzer: errors:` puedes cambiar la de un código a
+`error`, `warning`, `info` o `ignore`. Subir una regla a `error` hace que el análisis falle por ella.
+
+El código de salida decide si el pipeline se detiene. Según lo observado con Dart 3.14, `dart analyze` termina en
+3 con errores y en 2 con advertencias. Con solo `info` termina en 0, y con `--fatal-infos` termina en 1.
+
+Existen tres modos estrictos en `analyzer: language:`. `strict-casts` prohíbe conversiones implícitas desde
+`dynamic`. `strict-raw-types` prohíbe tipos genéricos sin argumentos, como `Map`. `strict-inference` avisa cuando
+Dart no puede deducir un tipo y cae en `dynamic`.
+
+Para conjuntos base, el paquete `lints` ofrece `core.yaml` y `recommended.yaml`, que incluye al primero. En
+proyectos Flutter se usa `flutter_lints`, que agrega reglas propias de widgets. `flutter create` lo incluye por
+defecto.
+
+Puedes silenciar un diagnóstico en una línea con `// ignore: codigo` o en un archivo con
+`// ignore_for_file: codigo`. Con `dart fix`, la opción `--dry-run` muestra sin tocar, y `--code=` limita a una
+regla. Algunos diagnósticos no tienen arreglo automático: los de `dynamic` siempre los decides tú.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En Fundamentos (Módulo 0, Tema 4) viste que el código de salida le dice al sistema si un programa terminó bien. Aquí
+ese número convierte el análisis en una puerta del pipeline. La revisión de código de Fundamentos (Módulo 4, Tema 4)
+se descarga de discusiones de estilo, porque las revisa la máquina.
+
+Si vienes de Java, el analizador cumple el papel de herramientas externas como Checkstyle o SpotBugs. En Dart viene
+incluido en el SDK, usa el mismo motor que tu editor y se configura en un solo archivo.
+
+Este tema conecta con los anteriores. El Tema 1 explicó por qué el compilador rechaza un `String?`; ahora sabes
+dónde nace ese rechazo. La regla `unawaited_futures` vigila los `Future` del Tema 3. Desde el Módulo 1, cada
+proyecto Flutter se analiza con estas mismas herramientas.
 
 #### Problema resuelto 4.1
 Configura el proyecto con reglas estrictas y analiza un archivo que tiene los defectos típicos.
@@ -1466,7 +1844,7 @@ Al terminar este tema podrás:
 - publicar eventos a varios oyentes con un `StreamController.broadcast` y cancelar una suscripción;
 - explicar por qué un `Stream` simple admite un solo oyente.
 
-**Conceptos clave:** Stream, `async*` y `yield`, `await for`, suscripción, `StreamController`, stream de difusión, cancelación
+**Conceptos clave:** Stream, generador asíncrono y `yield`, `await for`, suscripción, `StreamController`, stream de difusión, cancelación
 
 #### El problema
 Mientras el conductor se acerca, el GPS envía la distancia restante cada segundo. La pantalla del cliente debe mostrar
@@ -1485,8 +1863,8 @@ Este tema usa **Future** y **async/await** (Tema 3) y el **bucle de eventos** (T
 - **Ejemplo:** `Stream<double> distanciaRestante(double inicioKm)`.
 - **Error típico:** convertir un `Stream` infinito en lista con `toList()`: espera para siempre.
 
-**`async*` y `yield`**
-- **Definición técnica:** una función `async*` devuelve un `Stream`; cada `yield valor` emite un evento y la función continúa cuando el oyente está listo.
+**generador asíncrono y `yield`**
+- **Definición técnica:** un generador asíncrono es una función marcada `async*`; una función `async*` devuelve un `Stream`; cada `yield valor` emite un evento y la función continúa cuando el oyente está listo.
 - **En palabras sencillas:** una función que «va soltando» resultados.
 - **Dónde se rompe la comparación:** la función no corre hasta que alguien escucha el `Stream`.
 - **Ejemplo:** `yield km;` cada 100 ms.
@@ -1513,7 +1891,7 @@ Este tema usa **Future** y **async/await** (Tema 3) y el **bucle de eventos** (T
 - **Ejemplo:** el controlador de estados de entrega.
 - **Error típico:** olvidar `close`: los oyentes con `await for` quedan esperando.
 
-**stream de difusión (*broadcast*)**
+**stream de difusión (broadcast)**
 - **Definición técnica:** `Stream` que admite varios oyentes a la vez; cada oyente recibe los eventos emitidos mientras está suscrito.
 - **En palabras sencillas:** una emisora de radio: todos los que sintonizan escuchan lo mismo.
 - **Dónde se rompe la comparación:** quien sintoniza tarde no escucha lo anterior.
@@ -1528,17 +1906,104 @@ Este tema usa **Future** y **async/await** (Tema 3) y el **bucle de eventos** (T
 - **Error típico:** cerrar el controlador para «apagar un oyente»: apaga a todos.
 
 #### ► CÓMO FUNCIONA
-Un `Stream` emite eventos en el tiempo. Se puede transformar sin consumirlo (con `where` y `map` se obtiene otro
-`Stream`) y se consume con `await for` o con `listen`. Un `StreamController.broadcast` reparte cada evento a todos los
-oyentes activos; cada uno puede cancelarse por separado.
+
+##### 1. La idea en lenguaje sencillo
+Una llamada telefónica para preguntar «¿ya llegó mi paquete?» da una sola respuesta. Un rastreo en vivo es distinto:
+el mapa recibe una posición, luego otra y otra, hasta que el paquete llega. No sabes cuántas vendrán ni cuándo.
+
+El `Future` del Tema 3 modela la llamada: un valor, una vez. Para el rastreo necesitas otra herramienta. En la app,
+el GPS envía la distancia restante cada segundo, y la pantalla debe reaccionar a cada valor mientras esté abierta.
+
+Ese flujo de valores en el tiempo es un `Stream`. Lo puedes filtrar, transformar, repartir entre varias pantallas
+y, cuando el cliente cierra el mapa, dejar de escuchar sin apagar a los demás.
+
+##### 2. Definición formal y vocabulario
+La documentación de Dart define un **Stream** como una fuente de eventos asíncronos. Hay tres clases de evento: un
+dato, un error y el cierre (*done*), que indica que no vendrán más. Un `Stream<double>` emite datos de tipo `double`.
+
+Para producir un `Stream` con código secuencial usas una función **`async*`**. Cada **`yield`** emite un dato. Para
+consumirlo usas **`await for`**, que recorre los datos hasta el cierre, o `listen`, que devuelve una
+**suscripción**: el objeto `StreamSubscription` con el que pausas, reanudas o haces la **cancelación**.
+
+Un **`StreamController`** es el productor manual: agregas datos con `add`, errores con `addError` y cierras con
+`close`. Un Stream puede ser de una sola suscripción o un **stream de difusión** (*broadcast*), que acepta varios
+oyentes a la vez.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Un `Stream` es perezoso, como los iterables del Tema 3. Crearlo no ejecuta nada. Todo empieza cuando alguien
+escucha. Este programa lo deja ver:
+
+```dart
+Stream<int> contar() async* {
+  try {
+    for (var i = 1; i <= 5; i++) {
+      print('  genera $i');
+      yield i;
+    }
+  } finally {
+    print('  generador cerrado');
+  }
+}
+```
+
+Si creas `contar()` y lo recorres con `await for`, cortando con `break` al recibir el `2`, ocurre esto:
+
+1. `contar()` devuelve un `Stream` y no imprime nada: el cuerpo todavía no corre.
+2. `await for` llama internamente a `listen`. Solo entonces arranca el cuerpo y se imprime `genera 1`.
+3. `yield 1` entrega el dato al oyente, que imprime `recibe 1`. El generador continúa con el `2`.
+4. El `break` sale del bucle y `await for` cancela la suscripción automáticamente.
+5. La cancelación detiene el generador en su `yield` y ejecuta el `finally`: se imprime `generador cerrado`.
+
+La salida real fue `genera 1`, `recibe 1`, `genera 2`, `recibe 2` y `generador cerrado`. Los valores 3, 4 y 5 nunca
+se calcularon. La cancelación no solo calla al oyente: también detiene al productor.
+
+Con un `StreamController` el recorrido es parecido, pero el productor eres tú. Por defecto, cada `add` no entrega
+el evento en el acto. Lo programa para un momento posterior del bucle de eventos. Por eso `posiciones.dart` espera
+`Duration.zero` antes de cancelar el mapa: así los dos primeros eventos alcanzan a llegar.
 
 ```mermaid
 flowchart LR
-    C["StreamController.broadcast"] -->|EN_RUTA EN-1| M["mapa"]
-    C -->|ENTREGADO EN-1| M
-    C -->|ENTREGADO EN-1| N["where ENTREGADO → notificación"]
-    C -.->|ENTREGADO EN-2<br/>(mapa ya canceló)| N
+    C["StreamController.broadcast"] -->|"EN_RUTA EN-1"| M["mapa"]
+    C -->|"ENTREGADO EN-1"| M
+    C -->|"ENTREGADO EN-1"| N["where ENTREGADO → notificación"]
+    C -.->|"ENTREGADO EN-2, el mapa ya canceló"| N
 ```
+
+En el diagrama, el controlador de difusión reparte cada evento a los oyentes activos en ese momento. La flecha
+punteada muestra el último evento: solo lo recibe la notificación, porque el mapa ya canceló su suscripción.
+
+Los métodos `where` y `map` no consumen el `Stream` original. Devuelven un `Stream` nuevo que, al ser escuchado,
+escucha al original y aplica la regla a cada evento. Es una cadena de cintas transportadoras conectadas.
+
+##### 4. Reglas, variantes y casos límite
+Un `Stream` de una sola suscripción admite un solo `listen` en toda su vida. El segundo intento lanza
+`StateError: Stream has already been listened to.`, como muestra la salida. Esta regla existe porque ese tipo de
+`Stream` entrega una secuencia completa y ordenada a un único consumidor.
+
+Hay una diferencia importante con los eventos tempranos. Un controlador simple **guarda** los eventos agregados antes
+de que llegue el oyente. En una prueba, dos `add` hechos antes del `listen` se entregaron después, en orden. Un
+controlador de difusión no guarda nada: quien llega tarde pierde lo anterior.
+
+Las reglas de cierre son estrictas. Después de `close`, un `add` lanza `StateError`. Si nunca llamas a `close`, un
+`await for` sobre ese `Stream` queda esperando para siempre. Un `return` dentro de `async*` termina el `Stream`; no
+emite un valor.
+
+Los errores también viajan. Si el productor emite un error, `await for` lo lanza dentro de la función, y lo capturas
+con `try`. Con `listen`, lo recibes en el parámetro `onError`. Con `cancelOnError: true`, el primer error termina la
+suscripción.
+
+Existen otras formas de crear un `Stream`. `Stream.fromIterable` emite los elementos de una lista. `Stream.periodic`
+emite cada cierto tiempo. Dentro de `async*`, `yield*` reenvía todos los eventos de otro `Stream`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 3 te dio el **Future** y el **bucle de eventos**. Un `Stream` es su pariente para muchos valores: cada evento
+llega por la misma cola de eventos, y `await for` es el `await` repetido hasta el cierre.
+
+Compara también con los iterables perezosos del Tema 3. Un `Iterable` te deja **pedir** el siguiente valor cuando
+quieras. Un `Stream` te **avisa** cuando llega el siguiente. En el primero mandas tú; en el segundo manda la fuente.
+
+En Flutter esta idea es constante. En el Módulo 1, Tema 4, `dispose()` cancela las suscripciones de una pantalla.
+En el Módulo 14, `StreamBuilder` redibuja la pantalla con cada evento.
 
 #### Problema resuelto 5.1
 Emite la distancia restante, consúmela, transfórmala, reparte estados a dos oyentes y muestra el límite de un
@@ -1700,7 +2165,7 @@ Al terminar este tema podrás:
 - escribir una expresión `switch` con patrones de objeto, de variable, de constante y relacionales;
 - modelar los estados de una entrega con una clase sellada y obtener un error de compilación si falta un caso.
 
-**Conceptos clave:** record, desestructuración, patrón, expresión `switch`, `sealed class`, exhaustividad
+**Conceptos clave:** record, desestructuración, patrón, expresión `switch`, clase sellada (`sealed class`), exhaustividad
 
 #### El problema
 Una entrega puede estar pendiente, en ruta (con conductor y distancia), entregada (con hora y, a veces, foto) o fallida
@@ -1756,9 +2221,47 @@ Este tema usa **clase abstracta** y **herencia** (Fundamentos, Módulo 1, Tema 7
 - **Error típico:** usar `if`/`else if` con `is` en lugar de `switch`: no hay comprobación de exhaustividad.
 
 #### ► CÓMO FUNCIONA
-Cada estado es una subclase con sus propios datos; ninguno tiene campos que no le corresponden. Como la clase es
-sellada, el compilador sabe que solo hay cuatro subtipos y exige que cada `switch` los cubra. Los patrones extraen los
-datos de cada caso en la misma línea en que se reconoce.
+
+##### 1. La idea en lenguaje sencillo
+En una bodega, cada paquete pasa por estaciones: recepción, despacho, entrega o devolución. En cada estación se
+anotan datos distintos. En despacho importa el conductor; en la entrega, la hora y la firma. Nadie anota la firma
+de un paquete que sigue en recepción.
+
+Si la app guarda todo en una sola clase con un `String estado` y campos opcionales, esa regla se pierde. Nada
+impide leer la distancia de una entrega ya entregada. Y cuando aparece un estado nuevo, nadie sabe dónde tocar.
+
+Este tema te da tres herramientas. Los **records** agrupan valores sueltos sin crear una clase. Los **patrones**
+reconocen la forma de un dato y extraen sus partes. Las **clases selladas** cierran la lista de estados, y el
+compilador revisa que trates todos.
+
+##### 2. Definición formal y vocabulario
+Un **record** es un valor inmutable y anónimo que agrupa campos. Puede tener campos posicionales, como
+`(String, double)`, o con nombre, como `({String guia, int prioridad})`. Su tipo es **estructural**: dos records
+con la misma forma tienen el mismo tipo, sin declarar nada.
+
+Un **patrón** es una forma que se compara con un valor. Si coincide, puede extraer partes del valor en variables.
+Usar un patrón para extraer campos se llama **desestructuración**. La **expresión `switch`** prueba un valor contra
+varios patrones y devuelve el resultado del primero que coincide.
+
+Una **clase sellada** (`sealed class`) es abstracta, y todos sus subtipos directos deben declararse en la misma
+biblioteca. Por eso el compilador conoce la lista completa. Con esa lista comprueba la **exhaustividad**: que un
+`switch` cubra todos los casos posibles.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cuando Dart evalúa `mensaje(EnRuta('Luis', 0.4))`, la expresión `switch` sigue este orden:
+
+1. Toma el valor y prueba el primer caso, `Pendiente()`. Es un **patrón de objeto**: comprueba el tipo. No coincide.
+2. Prueba `EnRuta(conductor: final c, km: < 1)`. El tipo coincide, así que revisa los campos.
+3. Lee el *getter* `conductor` y lo liga a la variable `c` con un **patrón de variable**.
+4. Lee `km` y lo compara con el **patrón relacional** `< 1`. Como `0.4 < 1`, el caso entero coincide.
+5. Evalúa `'$c está llegando'` y devuelve ese texto. Los casos siguientes ya no se prueban.
+
+Si en el paso 4 la comparación fallara, Dart descartaría las variables ligadas y seguiría con el siguiente caso.
+Por eso el orden importa: gana el primer caso que encaja, como confirma el Checkpoint 6.1.
+
+La exhaustividad ocurre antes, al compilar. El analizador construye el conjunto de valores posibles de `Estado`.
+Como es sellada, ese conjunto es exactamente `Pendiente`, `EnRuta`, `Entregado` y `Fallido`. Luego resta lo que
+cubre cada caso. Si sobra algo, informa el caso que falta, como `Devuelto()` en el Problema resuelto 6.2.
 
 ```mermaid
 classDiagram
@@ -1773,6 +2276,63 @@ classDiagram
     class Entregado { hora  foto? }
     class Fallido { motivo }
 ```
+
+El diagrama muestra la jerarquía cerrada. Cada subclase lleva solo sus propios campos, y `Estado` no tiene ninguno.
+
+Los patrones no viven solo en `switch`. También aparecen en declaraciones, en bucles `for` y en `if-case`:
+
+```dart
+final Estado e = EnRuta('Ana', 0.4);
+if (e case EnRuta(:final conductor)) print('conductor: $conductor');
+final r = ('EN-1', 4.5);
+print('${r.$1} ${r.$2}');
+final (guia, km) = r;
+```
+
+Este fragmento imprime `conductor: Ana` y luego `EN-1 4.5`. El `if-case` prueba un solo patrón y, si coincide,
+promueve el tipo dentro del bloque, igual que la promoción del Tema 1. Los campos posicionales de un record se leen
+como `$1` y `$2`.
+
+##### 4. Reglas, variantes y casos límite
+Records, patrones y modificadores de clase como `sealed` llegaron juntos en Dart 3.0. Antes no existían, y el código
+antiguo usaba clases con `==` escrito a mano o paquetes de generación de código.
+
+Los records tienen **igualdad por valor**: dos records son iguales si tienen la misma forma y los mismos valores.
+Las clases normales, en cambio, comparan identidad salvo que sobrescribas `==`. Un record no tiene métodos propios
+ni validación: si el dato tiene reglas, necesita una clase.
+
+Un caso puede añadir una **guarda** con `when`. La guarda es una condición booleana que se evalúa después de que el
+patrón coincide:
+
+```dart
+String prioridad(Estado e) => switch (e) {
+      EnRuta(:final km) when km < 1 => 'alta',
+      EnRuta() => 'media',
+      Pendiente() => 'baja',
+    };
+```
+
+Con `EnRuta('Ana', 0.4)` devuelve `alta`. Para un `Estado` con solo esos dos subtipos, el analizador lo acepta.
+
+El comodín `_` coincide con cualquier cosa. Es útil para descartar un campo, pero en el último caso de un `switch`
+anula la exhaustividad. La comprobación de exhaustividad funciona con tipos sellados, `enum`, `bool` y tipos
+anulables. Con una clase `abstract` normal no funciona, porque cualquiera podría crear un subtipo en otro archivo.
+
+Desde Dart 3.0, el `switch` como sentencia tampoco necesita `break`: un caso con cuerpo no «cae» al siguiente.
+Existen otros patrones que no usa este tema: de lista (`[a, b]`), de mapa, lógicos (`||`, `&&`) y de conversión
+(`as`).
+
+##### 5. Relación con lo que ya sabes y lo que viene
+De Fundamentos (Módulo 1, Tema 7) conoces la clase abstracta y la herencia. Una clase sellada es una clase abstracta
+con una regla más: su lista de hijos es cerrada. El patrón `foto: null` usa el **tipo anulable** del Tema 1, y las
+subclases usan los constructores del Tema 2.
+
+Compárala con un `enum`. Un `enum` también es una lista cerrada, pero todos sus valores tienen los mismos campos.
+La clase sellada permite que cada estado traiga datos distintos. Si vienes de Java, equivale a una interfaz `sealed`
+con `switch` por patrones.
+
+En el Tema 7 seguirás usando el sistema de tipos para evitar errores, ahora con *extension types*. En Flutter, los
+estados de carga, éxito y error de una pantalla se modelan así, y un `switch` exhaustivo decide qué dibujar.
 
 #### Problema resuelto 6.1
 Modela los estados con una clase sellada, genera un mensaje por estado y resume tramos con un record.
@@ -2024,9 +2584,48 @@ Este tema usa la **clase** y el **constructor de fábrica** (Tema 2) y la **exce
 - **Error típico:** usar `int` para todo y descubrir en producción que se cobró el peso.
 
 #### ► CÓMO FUNCIONA
-Una extensión agrega miembros a un tipo existente: el compilador reescribe `2300.comoKg` como una llamada a una función
-que recibe `2300`. Un *extension type* da un nombre nuevo a un valor existente, con sus propios métodos y constructores.
-Para el compilador `Gramos` y `Centavos` son tipos distintos; para la máquina los dos son `int`.
+
+##### 1. La idea en lenguaje sencillo
+Un mensajero no puede rediseñar la báscula del almacén, pero sí pegarle una tabla de conversión al lado. La báscula
+sigue igual; quien la usa gana una función nueva. Algo parecido haces cuando agregas métodos a `int` o a `String`.
+
+La segunda idea es la etiqueta. Una caja con 2300 gramos y un recibo de 2300 centavos llevan el mismo número. Si no
+tienen etiqueta, alguien termina cobrando el peso. En la app pasó justo eso: los dos valores eran `int`.
+
+Dart ofrece dos herramientas para estos casos. Las **extensiones** agregan comportamiento a tipos que no son tuyos.
+Los **extension types** ponen una etiqueta de tipo a un valor, que el compilador revisa y que no ocupa memoria.
+
+##### 2. Definición formal y vocabulario
+Un **método de extensión** es un miembro declarado en un bloque `extension Nombre on Tipo`. Se llama sobre los
+valores de ese tipo como si fuera propio. El compilador lo resuelve según el **tipo estático**: el tipo que el
+analizador conoce al leer el código, no el que tenga el valor al ejecutar.
+
+Un **extension type** es un tipo que envuelve un valor de otro tipo con una interfaz propia. Ese tipo envuelto es
+el **tipo representado**: `String` en `Guia`, `int` en `Gramos`. El envoltorio existe solo durante la compilación.
+
+De ahí sale el **costo cero**: en ejecución no se crea ningún objeto extra. Lo que sí obtienes es un **tipo de
+dominio**, un tipo con nombre del negocio que el compilador no deja mezclar con otro de igual representación.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Observa qué hace el compilador con `print(2300.comoKg)`:
+
+1. Busca `comoKg` entre los miembros propios de `int`. No lo encuentra.
+2. Busca en las extensiones visibles en el archivo, es decir, declaradas allí o importadas, cuyo tipo `on` acepte un
+   `int`. Encuentra `FormatoPeso`.
+3. Reescribe la llamada como una función normal que recibe `2300` como `this`.
+4. En ejecución no hay rastro de la extensión: solo una llamada a función. La salida es `2.3 kg`.
+
+El paso 1 tiene una consecuencia. Si el tipo ya tiene un miembro con ese nombre, el miembro propio gana siempre. Una
+extensión `Corta on String` con un getter `isEmpty` no cambia nada: `'EN'.isEmpty` sigue dando `false`.
+
+Con un *extension type*, el proceso tiene dos momentos distintos:
+
+1. Al compilar, `Guia` es un tipo como cualquier otro. El analizador revisa asignaciones, parámetros y métodos.
+2. `cobrar(peso)` con `peso` de tipo `Gramos` falla, porque `Gramos` no es `Centavos`. Es el error del Problema
+   resuelto 7.2.
+3. Al generar el código, el compilador **borra** el tipo: cada `Guia` pasa a ser su `String`.
+4. Los métodos de `Guia`, como `numero`, se convierten en funciones que reciben ese `String`.
+5. En ejecución, `g.runtimeType` devuelve `String`, como muestra la salida de `extensiones.dart`.
 
 ```mermaid
 flowchart LR
@@ -2034,6 +2633,49 @@ flowchart LR
     S["String 'EN-4471'"] -->|"factory Guia(...) valida"| G["Guia (solo en compilación)"]
     G -->|"en ejecución"| S2["String 'EN-4471'"]
 ```
+
+El diagrama resume los dos caminos. Arriba, la extensión transforma una llamada. Abajo, el *extension type* valida
+al crear y luego desaparece, dejando el `String` original.
+
+El borrado explica un comportamiento que sorprende. Como en ejecución solo hay un `String`, una comprobación de tipo
+no puede distinguir:
+
+```dart
+Object x = 'XX';
+print(x is Guia);   // true: en ejecución Guia es String
+```
+
+La salida real es `true`, aunque `'XX'` nunca pasó por la validación. La protección de `Guia` está en el compilador.
+
+##### 4. Reglas, variantes y casos límite
+Los métodos de extensión llegaron en Dart 2.7. Los *extension types* llegaron en Dart 3.3. Ambos se resuelven de
+forma estática, así que no funcionan sobre `dynamic`. Una llamada `d.comoKg` con `d` de tipo `dynamic` compila,
+pero en ejecución lanza `NoSuchMethodError`.
+
+Si dos extensiones visibles ofrecen el mismo miembro para el mismo tipo, la llamada es ambigua y no compila. Puedes
+elegir una de forma explícita: `FormatoPeso(2300).comoKg` también imprime `2.3 kg`. Otra salida es ocultar una con
+`hide` en el `import`. Una extensión sin nombre solo es visible en su propio archivo.
+
+Un *extension type* tiene un solo campo, el representado, y no puede tener otros campos de instancia. Sus
+constructores pueden ser `const`, con nombre o `factory`. El patrón de `Guia` combina un constructor privado `Guia._`
+y un `factory` público que valida.
+
+Por defecto, un *extension type* no expone los miembros de su tipo representado. Si declaras `implements int`, sí
+los expone, y `Gramos(1200) + 800` vale `2000`. Úsalo con cuidado: abre de nuevo la puerta a mezclar valores.
+
+Recuerda el límite de seguridad. Cualquier código puede escribir `x as Guia` y el programa no lo detendrá al
+ejecutar. Si necesitas una garantía también en ejecución, usa una clase normal, que sí crea un objeto.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 2 te dio el constructor `factory` y el constructor con nombre; aquí se combinan para que no exista una
+`Guia` sin validar. La `FormatException` es una **excepción** como las de Fundamentos (Módulo 1, Tema 1).
+
+Compara un *extension type* con un `typedef`. Un `typedef Gramos = int;` solo da un apodo: `Gramos` e `int` siguen
+siendo intercambiables. El *extension type* crea un tipo distinto que el compilador separa, con el mismo costo cero.
+
+Las extensiones aparecen a menudo en Flutter. En el Módulo 10 verás atajos sobre `BuildContext`, como
+`context.colors`. Los modelos de los módulos de datos usan tipos de dominio para identificadores que viajan entre
+pantallas.
 
 #### Problema resuelto 7.1
 Agrega formato de peso a `int` y validación de guías a `String`, y crea los tipos `Guia` y `Gramos`.

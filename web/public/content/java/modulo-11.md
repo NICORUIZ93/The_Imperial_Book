@@ -433,13 +433,32 @@ las respuestas se detienen unos milisegundos. ¿Quién libera esos objetos, cuá
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** Un objeto es alcanzable si existe una cadena de referencias desde una raíz GC: variables de stacks activos, campos estáticos, referencias JNI o hilos vivos. El recolector reclama objetos no alcanzables, pero decide cuándo hacerlo según sus heurísticas: salir de un scope no libera memoria de inmediato. La hipótesis generacional observa que la mayoría de los objetos muere joven; por eso el heap se divide en regiones jóvenes y viejas y los objetos que sobreviven varias colecciones pueden promoverse. G1 divide el heap en regiones y prioriza las que contienen más basura; ZGC realiza trabajo concurrente con pausas breves y barreras de lectura.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** La asignación y la liberación manuales son propensas a errores; el GC automatiza esa gestión. Los distintos recolectores existen porque no todos los workloads optimizan lo mismo: algunos prefieren throughput y otros latencia p99.
+En una bodega de envíos llegan cientos de cajas por hora. La mayoría sale el mismo día; unas pocas se quedan meses, como el inventario de temporada. Nadie revisa caja por caja si todavía sirve. Un equipo de aseo pasa de vez en cuando, retira lo que ya no tiene etiqueta de destino y deja libre el espacio.
 
-Sigue la vida de un `byte[]` creado en `allocaciones`. Nace en eden. En la siguiente recolección joven ya nadie lo
-apunta: no se copia y su región queda libre. Si siguiera apuntado, se copiaría a survivor y, tras varias
-recolecciones, a old.
+Un programa Java funciona igual. Cada `new` crea un objeto, y tú nunca lo liberas a mano. El servicio de pedidos de Tienda Aurora crea carritos y respuestas que dejan de usarse en milisegundos. Alguien tiene que detectar cuáles ya no sirven y recuperar su memoria.
+
+Ese alguien es el recolector de basura. Trabaja solo, decide cuándo pasar y, a veces, detiene la bodega un instante para limpiar con seguridad. Este tema explica cómo decide qué es basura y cuánto te cuesta su trabajo.
+
+##### 2. Definición formal y vocabulario
+
+El **heap** es la zona de memoria donde viven todos los objetos y arreglos. Cada hilo tiene además su **stack**, la **pila de llamadas**, con un marco por método en ejecución. El stack guarda primitivos y referencias; los objetos a los que apuntan esas referencias están en el heap.
+
+El **recolector de basura** (GC) recupera la memoria de los objetos no **alcanzables**. Un objeto es alcanzable si existe una cadena de referencias desde una **raíz GC**: variables locales de stacks activos, campos `static`, hilos vivos y referencias JNI.
+
+Los recolectores de HotSpot dividen el heap en **generaciones**: joven (eden y survivor) y vieja (old). Durante una **pausa**, el recolector detiene todos los hilos de la aplicación. **G1** es el recolector por defecto; **ZGC** es el recolector concurrente de baja latencia. **`-Xlog:gc`** muestra en la salida qué hacen.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la vida de un `byte[]` creado en `allocaciones` bajo G1:
+
+1. `new byte[1024]` reserva espacio en eden. Cada hilo tiene un búfer propio en eden, así que reservar es casi solo mover un puntero.
+2. Eden se llena. G1 inicia una **recolección joven** y detiene los hilos de la aplicación: empieza la pausa.
+3. G1 recorre el grafo de objetos desde las raíces. Todo lo que alcanza está vivo; lo demás no se visita.
+4. Copia los objetos vivos de eden a una región survivor. Si un objeto ya sobrevivió varias recolecciones, lo **promueve** a old.
+5. Las regiones de eden quedan vacías y se reutilizan completas. Los muertos nunca se tocaron: por eso limpiar mucha basura es barato.
+6. Los hilos continúan. La línea `18M->1M(32M) 0.310ms` del Problema resuelto 1.2 resume exactamente eso.
 
 ```mermaid
 flowchart LR
@@ -450,6 +469,59 @@ flowchart LR
   ROOTS["raíces GC:<br/>locales, static, hilos"] -. "cadena de referencias" .-> SURV
   ROOTS -. "cadena de referencias" .-> OLD
 ```
+
+El diseño se apoya en la **hipótesis generacional**: la mayoría de los objetos muere joven. Si eso se cumple, cada recolección joven copia poco y libera mucho.
+
+Cuando old crece, G1 marca de forma concurrente qué hay vivo allí, mientras la aplicación sigue. Después hace recolecciones **mixtas**, que limpian regiones jóvenes y también las viejas con más basura. De ahí su nombre: *Garbage-First*.
+
+ZGC sigue otro camino. Marca y mueve objetos mientras la aplicación corre, usando **barreras de carga**: un pequeño código que la JVM añade a cada lectura de referencia para corregirla si el objeto se movió. Sus pausas son muy cortas, a cambio de ese costo en cada lectura.
+
+Puedes preguntarle a la JVM qué recolector tiene y cuántas veces trabajó, con las interfaces de `java.lang.management`:
+
+```java
+long suma = 0;
+for (int i = 0; i < 200_000; i++) { byte[] b = new byte[1024]; suma += b.length; }
+for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
+    System.out.println(gc.getName() + ": recolecciones=" + gc.getCollectionCount());
+}
+```
+
+Dentro de un `main` ejecutado con `-Xms32m -Xmx32m -XX:+UseG1GC`, una corrida imprimió:
+
+```text
+G1 Young Generation: recolecciones=7
+G1 Concurrent GC: recolecciones=0
+G1 Old Generation: recolecciones=0
+bytes=204800000
+```
+
+Unos 195 MB asignados en un heap de 32 MB, con siete recolecciones jóvenes y ninguna de old. La siguiente corrida dio 6: la cantidad cambia entre ejecuciones. Con `-XX:+UseZGC`, los nombres pasan a ser `ZGC Minor Cycles`, `ZGC Minor Pauses`, `ZGC Major Cycles` y `ZGC Major Pauses`.
+
+##### 4. Reglas, variantes y casos límite
+
+G1 es el recolector por defecto desde JDK 9 (JEP 248). En máquinas con muy poca memoria o un solo procesador, la JVM puede elegir el recolector Serial. Escribe el recolector explícitamente si necesitas un comportamiento predecible.
+
+El objetivo de pausa de G1 es `-XX:MaxGCPauseMillis`, 200 ms por defecto. Es una meta, no una garantía.
+
+Un objeto que ocupa la mitad de una región o más es **humongous**: G1 lo ubica directamente en regiones propias. La línea `Humongous regions` del log los cuenta.
+
+ZGC llegó como experimental en JDK 11 (JEP 333) y quedó listo para producción en JDK 15 (JEP 377). JDK 21 añadió el modo generacional, JDK 23 lo hizo predeterminado y JDK 24 eliminó el modo no generacional. Por eso JDK 25 ignora `-XX:-ZGenerational`.
+
+HotSpot trae además Parallel GC, orientado a throughput, y Epsilon, que asigna sin recolectar nunca y sirve para medir.
+
+`System.gc()` es una sugerencia. La JVM puede ignorarla, y con `-XX:+DisableExplicitGC` la ignora siempre.
+
+`StackOverflowError` y `OutOfMemoryError` son subclases de `Error`, no de `Exception`. Indican que se agotó un recurso de la JVM, no un fallo de lógica que se pueda reintentar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En el Módulo 0 viste que la JVM ejecuta bytecode. Aquí ves su otra gran tarea: administrar la memoria de ese bytecode. Las colecciones del Módulo 2 viven todas en el heap, con sus elementos.
+
+No confundas «salir de un scope» con «liberar memoria». Al terminar un método, su marco del stack desaparece al instante. Los objetos del heap a los que apuntaba solo se vuelven recuperables; el GC decide cuándo recogerlos.
+
+En el Módulo 9, Tema 3, JaCoCo instrumentaba bytecode para contar. Aquí no cambias el código: observas a la JVM con opciones de arranque. Es una regla de todo este módulo: primero mides, después concluyes.
+
+El Tema 2 mide en qué gasta CPU un programa, con Java Flight Recorder. El Tema 3 muestra referencias que el GC trata distinto y qué pasa cuando los objetos nunca dejan de ser alcanzables.
 
 #### Problema resuelto 1.1
 Muestra en un solo programa la diferencia entre heap y stack: cuánto heap tienes y cuántas llamadas caben en el stack.
@@ -807,12 +879,40 @@ instalar un profiler externo y sin detener el servicio?
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** JFR es un sistema de eventos dentro de la JVM con bajo overhead. `-XX:StartFlightRecording=filename=...,dumponexit=true,settings=profile` inicia una grabación; `jfr summary` muestra duración, chunks y conteo por tipo de evento; `jfr print --events jdk.ExecutionSample --stack-depth 8` expone las pilas muestreadas. El JIT compila a código nativo los métodos calientes mientras la aplicación corre, por lo que las primeras iteraciones de un benchmark miden warmup.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** Necesitamos evidencia desde dentro del runtime sin montar un profiler externo pesado. Los eventos permiten correlacionar GC, asignaciones, clases, hilos y muestras de ejecución con lo que hace el programa.
+En una bodega lenta, cada jefe de turno culpa a un área distinta: el empaque, la báscula, la impresora de guías. Discutir no resuelve nada. Lo que resuelve es poner una cámara que tome una foto cada pocos segundos y contar en qué estación aparece más gente esperando.
 
-El flujo de diagnóstico tiene tres pasos: grabar, resumir y profundizar. El JIT trabaja en paralelo: decide qué
-compilar según contadores de invocaciones y de vueltas de bucle, los mismos métodos que JFR verá calientes.
+Java Flight Recorder es esa cámara, instalada dentro de la JVM. Mientras el programa corre, toma fotos periódicas de qué método está ejecutando cada hilo y anota eventos como recolecciones o cargas de clases. Al final cuentas: el método con más fotos es donde se va el tiempo.
+
+Hay un segundo personaje que cambia lo que la cámara ve. El compilador JIT observa qué métodos se repiten y los traduce a código máquina mientras el programa corre. Por eso el mismo método es lento al principio y rápido después, y por eso medir en frío engaña.
+
+##### 2. Definición formal y vocabulario
+
+**JFR** (Java Flight Recorder) es un sistema de grabación de eventos integrado en HotSpot. Un **evento JFR** es un registro con tipo, marca de tiempo, hilo y campos. La **muestra de ejecución**, `jdk.ExecutionSample`, guarda la pila de un hilo que ejecutaba código Java. El **método caliente** es el que acumula más muestras.
+
+**jcmd** envía comandos de diagnóstico a una JVM que ya corre, identificada por su pid. Con `JFR.start` inicia una grabación sin reiniciar el proceso.
+
+El **compilador JIT** de HotSpot traduce bytecode a código máquina durante la ejecución, por niveles. **OSR** compila un método mientras uno de sus bucles sigue corriendo. La **desoptimización** descarta código compilado cuando una suposición deja de valer. El **calentamiento** es la fase inicial en que todo eso todavía ocurre.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Una grabación JFR sigue estos pasos:
+
+1. Al arrancar con `-XX:StartFlightRecording` o al recibir `JFR.start`, la JVM activa los eventos que indica la configuración: `default` o `profile`.
+2. Cada hilo escribe sus eventos en un búfer propio en memoria, sin bloquear a los demás. Así se mantiene bajo el costo.
+3. Un hilo de muestreo interrumpe periódicamente a los hilos que ejecutan Java y registra su pila. Con `profile`, el intervalo es más corto.
+4. Los búferes se vuelcan a disco en bloques llamados **chunks**. `jfr summary` muestra cuántos hubo.
+5. Al terminar la duración, o al salir con `dumponexit=true`, la JVM cierra el archivo `.jfr`.
+6. `jfr summary`, `jfr print` y `jfr view` leen el archivo después, sin tocar el proceso original.
+
+Mientras tanto, el JIT trabaja con contadores:
+
+1. Cada método empieza **interpretado** (nivel 0). El intérprete cuenta invocaciones y vueltas de bucle.
+2. Si un contador supera su umbral, C1 compila el método en nivel 3: código rápido de generar que sigue contando.
+3. Con más perfil acumulado, C2 lo recompila en nivel 4, con optimizaciones agresivas basadas en lo observado.
+4. Si un bucle largo sigue dentro de un método interpretado, el JIT usa OSR y cambia el marco en mitad del bucle.
+5. Si una suposición falla, el código se marca `made not entrant` y la ejecución vuelve a un nivel inferior.
 
 ```mermaid
 flowchart LR
@@ -820,9 +920,58 @@ flowchart LR
   REC --> FILE["archivo .jfr"]
   FILE --> SUM["jfr summary<br/>¿qué eventos y cuántos?"]
   SUM --> HOT["jfr view hot-methods<br/>jfr print ExecutionSample"]
-  RUN --> JIT["JIT: interpretado → C1 (nivel 3) → C2 (nivel 4)"]
+  RUN --> JIT["JIT: interpretado, C1 nivel 3, C2 nivel 4"]
   JIT -. "suposición rota" .-> DEOPT["desoptimización<br/>made not entrant"]
+  DEOPT -. "recompila" .-> JIT
 ```
+
+El calentamiento se ve con un cronómetro simple. Este fragmento mide cinco rondas del mismo `carga(3_000_000)` de `TrabajoCpu`:
+
+```java
+for (int ronda = 0; ronda < 5; ronda++) {
+    long inicio = System.nanoTime();
+    long r = carga(3_000_000);
+    System.out.println("ronda=" + ronda + " us=" + (System.nanoTime() - inicio) / 1000 + " r=" + r);
+}
+```
+
+Una corrida con JDK 25 imprimió:
+
+```text
+ronda=0 us=5068 r=9000004500000500000
+ronda=1 us=3081 r=9000004500000500000
+ronda=2 us=3755 r=9000004500000500000
+ronda=3 us=1549 r=9000004500000500000
+ronda=4 us=1595 r=9000004500000500000
+```
+
+Las primeras rondas tardan más del triple que las últimas, con el mismo trabajo. Con `-Xint`, que desactiva el JIT, cada ronda tardó entre 40 y 59 ms en la misma máquina. Los números cambian en cada corrida; la forma de la curva se repite.
+
+##### 4. Reglas, variantes y casos límite
+
+JFR venía en el JDK de Oracle como función comercial. JDK 11 lo publicó en OpenJDK con la JEP 328. JDK 14 añadió el consumo de eventos en vivo (JEP 349), y JDK 21 trajo el comando `jfr view`.
+
+Las configuraciones `default` y `profile` viven en la carpeta `lib/jfr` del JDK. `profile` recoge más detalle y cuesta algo más: úsala para investigar, no como grabación permanente.
+
+Una muestra es una foto, no un cronómetro. Muestra la proporción de tiempo de cada método, no la duración de cada llamada. Con pocas muestras, el azar domina: la grabación de 0,26 s tuvo solo 19.
+
+El código compilado conserva tablas que relacionan instrucciones de máquina con líneas de Java, pero no para cada instrucción. Por eso las muestras de `carga` caen en la línea 10, la del bucle.
+
+`jcmd` usa la Attach API y solo funciona con JVMs del mismo usuario en la misma máquina o contenedor.
+
+Desde JDK 8, la compilación por niveles está activa por defecto. Puedes desactivarla para experimentar, pero no en producción.
+
+Para comparar dos versiones de un método, la herramienta correcta es JMH, del proyecto OpenJDK. Separa calentamiento y medición, repite en procesos nuevos y evita que el JIT elimine código cuyo resultado nadie usa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 usó `-Xlog:gc` para ver pausas. JFR también graba eventos de GC; la diferencia es que los guarda junto con muestras de CPU, hilos y clases en un mismo archivo.
+
+En el Módulo 0 viste que `javac` produce bytecode. Este tema muestra la segunda compilación: la del JIT, que ocurre mientras el programa corre y depende de cómo se usa.
+
+No confundas el JIT con la compilación anticipada. `javac` compila una vez, antes de ejecutar. El JIT compila en ejecución, con información que `javac` no tiene, como qué rama del `if` se toma más.
+
+En el Módulo 5 trabajaste con hilos: JFR muestrea cada hilo por separado, y `sampledThread` dice cuál fue. El Tema 3 usa `jcmd` para otra tarea: volcar el heap de un proceso vivo.
 
 #### Problema resuelto 2.1
 Encuentra el método que más CPU consume en `TrabajoCpu`, con evidencia de JFR.
@@ -1186,25 +1335,97 @@ haces una caché que no impida liberar memoria y cómo averiguas qué objeto la 
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** Una referencia fuerte impide la recolección. `WeakReference` permite recoger el objeto en cuanto no quedan referencias fuertes; `SoftReference` se conserva más tiempo y suele liberarse por presión de memoria; `PhantomReference.get()` siempre devuelve `null` y se usa con `ReferenceQueue` para detectar que el objeto ya fue marcado para limpieza posterior. Un heap dump es una fotografía del heap con objetos, tamaños y cadenas de retención, obtenible con `jcmd <pid> GC.heap_dump`, `jmap` o `-XX:+HeapDumpOnOutOfMemoryError`.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** Estas referencias modelan relaciones donde retener el objeto no debe ser obligatorio, como caches. El heap dump responde una pregunta que los logs no pueden responder: qué cadena de referencias mantiene vivo un objeto.
+En una bodega, una caja con etiqueta «retener» no se bota nunca. Otra con etiqueta «retener si hay espacio» se bota cuando la bodega se llena. Una tercera solo figura en una lista de direcciones: si nadie más la reclama, se va en la próxima limpieza.
 
-La fuerza de una referencia decide qué hace el GC. Ante una fuga, el diagnóstico va de lo general a lo concreto: el
-log o el `OutOfMemoryError` dicen *que* hay un problema, el histograma dice *qué tipo* ocupa el heap y el heap dump dice
-*quién* lo retiene.
+Hasta ahora, cada referencia de Java era del primer tipo: mientras exista, el objeto no se recolecta. Eso es justo lo que rompe la caché de imágenes de Tienda Aurora. La caché sujeta cada imagen para siempre, aunque nadie la vuelva a pedir, y el heap se llena.
+
+Este tema trae dos herramientas. Las referencias especiales de `java.lang.ref` te dejan apuntar a un objeto sin obligar al GC a conservarlo. El heap dump es la foto que responde la pregunta que los logs no responden: quién sujeta la memoria.
+
+##### 2. Definición formal y vocabulario
+
+La documentación de `java.lang.ref` define niveles de **alcanzabilidad**, de más fuerte a más débil. Un objeto es fuertemente alcanzable si alguna cadena de **referencias fuertes** llega a él desde una raíz. Si no, puede ser suavemente, débilmente o fantasmalmente alcanzable, según la referencia especial más fuerte que lo apunte.
+
+**`SoftReference`**, **`WeakReference`** y **`PhantomReference`** son las tres clases de referencia especial. Al registrarlas con una **`ReferenceQueue`**, el GC deposita en la cola cada referencia cuyo objeto cambió de nivel.
+
+Una **fuga de memoria** en Java es retener sin querer objetos alcanzables que ya no sirven. Cuando no queda espacio ni después de recolectar, la JVM lanza **`OutOfMemoryError`**. Para diagnosticarla usas el **histograma de clases**, que cuenta instancias por tipo, y el **heap dump**, que guarda todos los objetos y sus referencias.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+En cada ciclo, el recolector procesa las referencias especiales así:
+
+1. Marca todo lo alcanzable desde las raíces siguiendo solo referencias fuertes.
+2. Revisa los objetos `SoftReference` cuyo referente quedó sin marcar. Según su política y la memoria libre, decide si los limpia o los conserva como fuertes.
+3. Limpia los `WeakReference` cuyo referente no está marcado: desde ese momento, `get()` devuelve `null`.
+4. Encola en su `ReferenceQueue` las referencias limpiadas que tenían cola registrada.
+5. Si el objeto solo es alcanzable por `PhantomReference`, encola esa referencia. Recién entonces su memoria puede reutilizarse.
 
 ```mermaid
 flowchart TD
   OBJ["objeto en el heap"] --> F{"¿cómo es alcanzable?"}
   F -- "referencia fuerte" --> KEEP["se conserva"]
   F -- "solo SoftReference" --> SOFT["se conserva hasta<br/>que falte memoria"]
-  F -- "solo WeakReference" --> WEAK["se recolecta en el<br/>próximo ciclo"]
+  F -- "solo WeakReference" --> WEAK["se recolecta en el siguiente<br/>ciclo que lo revise"]
   F -- "solo PhantomReference" --> PH["se encola en<br/>ReferenceQueue"]
   KEEP -. "si crece sin límite" .-> OOM["OutOfMemoryError"]
   OOM --> HISTO["histograma: ¿qué tipo?"]
   HISTO --> DUMP["heap dump: ¿quién lo retiene?"]
 ```
+
+La colección `WeakHashMap` aplica esta mecánica a las claves de un mapa. Mira qué pasa con una entrada cuya clave nadie más sujeta:
+
+```java
+Map<String, byte[]> cache = new WeakHashMap<>();
+String clave = new String("CAF-100");
+cache.put(clave, new byte[32 * 1024]);
+System.out.println("antes: " + cache.size());
+clave = null;
+System.gc();
+Thread.sleep(50);
+System.out.println("después: " + cache.size());
+```
+
+Dentro de un `main`, cinco corridas seguidas imprimieron lo mismo:
+
+```text
+antes: 1
+después: 0
+```
+
+El mapa guarda la clave con una `WeakReference`. Al soltar `clave`, el GC la limpió y el mapa descartó la entrada en su siguiente operación. Se usa `new String(...)` a propósito: un literal como `"CAF-100"` queda sujeto por la JVM y nunca se recolectaría.
+
+Ante una fuga, el diagnóstico va de lo general a lo concreto. El log o el `OutOfMemoryError` dicen *que* hay un problema. El histograma dice *qué tipo* ocupa el heap. El heap dump dice *quién* lo retiene:
+
+1. Con `-XX:+HeapDumpOnOutOfMemoryError`, la JVM escribe un archivo `.hprof` justo antes de lanzar el error.
+2. Con `jcmd <pid> GC.class_histogram` obtienes, sin archivo, el inventario por clase de un proceso vivo.
+3. Un analizador de heap dumps, como Eclipse Memory Analyzer o VisualVM, reconstruye el grafo y muestra la cadena desde una raíz hasta el objeto grande.
+
+##### 4. Reglas, variantes y casos límite
+
+La especificación garantiza que todas las `SoftReference` hacia objetos suavemente alcanzables se limpian antes de lanzar `OutOfMemoryError`. Cuándo se limpian antes de eso lo decide cada JVM. HotSpot tiene en cuenta la memoria libre y el tiempo desde el último uso.
+
+Desde Java 9, el GC limpia automáticamente una `PhantomReference` al encolarla. Su `get()` devuelve `null` siempre, incluso antes.
+
+Para liberar recursos cuando un objeto muere, usa `java.lang.ref.Cleaner`, disponible desde Java 9. `finalize()` está desaprobado para eliminación desde Java 18 (JEP 421). Aun así, prefiere `try-with-resources`: libera en un momento que tú controlas.
+
+`jcmd <pid> GC.heap_dump` vuelca por defecto solo los objetos vivos, y para eso fuerza una recolección completa. La opción `-all` incluye también los inalcanzables.
+
+Un heap dump ocupa casi lo mismo que el heap usado y contiene los datos de tus clientes. Trátalo como información sensible.
+
+`OutOfMemoryError` no siempre significa heap. El texto indica el área: `Java heap space`, `Metaspace` o `Direct buffer memory`, entre otras. Cada una tiene su propio límite y su propia causa.
+
+En un analizador, distingue el **tamaño superficial** (lo que ocupa el objeto en sí) del **tamaño retenido** (lo que se liberaría si ese objeto desapareciera). Una `ArrayList` pequeña puede retener cientos de megabytes.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El Tema 1 definió raíz GC y alcanzabilidad. Este tema afina esa idea: no toda referencia sujeta igual, y la lista `retencion` del problema `leak` es una raíz que sujeta todo.
+
+En el Módulo 3 usaste `try-with-resources` para cerrar recursos. Sigue siendo la primera opción: las referencias especiales y `Cleaner` son la red de seguridad, no el mecanismo principal.
+
+El Tema 2 usó `jcmd` para grabar JFR. Aquí lo usas para inventariar y fotografiar el heap del mismo tipo de proceso vivo.
+
+El Tema 4 sale del heap: la memoria nativa de la Foreign Function & Memory API no la administra el GC, y por eso necesita un dueño explícito.
 
 #### Problema resuelto 3.1
 Compara las cuatro fuerzas de referencia con el mismo tamaño de objeto y las mismas recolecciones.
@@ -1521,12 +1742,33 @@ C desde Java puro y cómo garantizas que la memoria nativa se libere, y solo una
 
 #### ► CÓMO FUNCIONA
 
-**Mecanismo.** FFM permite llamar código nativo y gestionar memoria fuera del heap Java. `Linker` enlaza la función, `SymbolLookup` la localiza, `FunctionDescriptor` y `MethodHandle` describen la firma, `MemorySegment` representa la memoria y `Arena` define su ciclo de vida. `Arena.ofConfined()` asigna la memoria a un hilo y `try-with-resources` la cierra de forma determinista. Es una API restringida: requiere `--enable-native-access` para evitar advertencias y posibles bloqueos futuros.
+##### 1. La idea en lenguaje sencillo
 
-**Por qué existe.** JNI era propenso a errores de firma y de ciclo de vida. FFM hace explícito el dueño de la memoria nativa porque el GC del heap Java no conoce cuándo debe liberar un bloque externo.
+Cuando la bodega se llena, una empresa de envíos alquila un depósito externo. El aseo de la bodega no entra allí: alguien con nombre propio firma el contrato y entrega las llaves al terminar. Si nadie las entrega, el depósito sigue pagado y ocupado.
 
-Una llamada nativa sigue cinco pasos: buscar el símbolo, describir la firma, crear el handle, preparar los argumentos
-en memoria nativa e invocar. El `Arena` envuelve los pasos que usan memoria: al cerrarse, todo se libera.
+Hasta ahora, toda la memoria de este módulo vivía en el heap y la administraba el GC. Una librería escrita en C, como la que valida códigos de barras en Tienda Aurora, trabaja con memoria nativa, fuera del heap. El GC no sabe cuándo esa memoria deja de usarse.
+
+La Foreign Function & Memory API (FFM) resuelve las dos mitades del problema. Te deja llamar funciones de C desde Java puro, sin escribir código C de pegamento. Y obliga a que cada bloque de memoria nativa tenga un dueño que decide cuándo se libera.
+
+##### 2. Definición formal y vocabulario
+
+FFM vive en el paquete `java.lang.foreign` y es definitiva desde Java 22, con la JEP 454. La **memoria nativa** es memoria fuera del heap. Un **`MemorySegment`** es una vista acotada de una región de memoria, con dirección, tamaño y dueño. Ese dueño es un **`Arena`**, que controla cuándo se libera.
+
+Para llamar a C, **`Linker`** conoce la convención de llamadas de la plataforma. **`SymbolLookup`** encuentra la dirección de una función por su nombre. **`FunctionDescriptor`** describe su firma con objetos `ValueLayout`. Con esos datos, el linker crea un **downcall handle**: un `MethodHandle` que, al invocarse, ejecuta la función nativa.
+
+`downcallHandle` es un **método restringido**: puede romper el proceso si lo usas mal. Por eso exige **acceso nativo**, que concedes al arrancar con `--enable-native-access`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Una llamada a `strlen` desde `TiendaAuroraJvmApp` recorre estos pasos:
+
+1. `Linker.nativeLinker()` obtiene el linker de la plataforma, que sabe cómo pasar argumentos en registros y en el stack nativo.
+2. `linker.defaultLookup().find("strlen")` busca el símbolo en las librerías estándar del sistema y devuelve un `Optional` con su dirección.
+3. `FunctionDescriptor.of(JAVA_LONG, ADDRESS)` declara que `strlen` recibe una dirección y devuelve un entero de 64 bits.
+4. `downcallHandle` genera el código que adapta una llamada Java a esa firma nativa. Aquí la JVM comprueba el acceso nativo y, si falta, emite la advertencia.
+5. `arena.allocateFrom("Aurora")` reserva memoria nativa y copia el texto en UTF-8, con el byte cero final que C espera.
+6. `(long) strlen.invokeExact(segmento)` salta al código de C con la dirección del segmento. C cuenta bytes hasta el cero y devuelve `6`.
+7. Al salir del `try`, `arena.close()` libera toda la memoria que esa arena reservó, de una vez.
 
 ```mermaid
 flowchart LR
@@ -1539,6 +1781,57 @@ flowchart LR
   CALL --> OUT["strlen=6"]
   ARENA -- "close()" --> FREE["memoria nativa liberada"]
 ```
+
+Además de límites y vida, un `Arena` confinado protege contra otro hilo:
+
+```java
+try (Arena arena = Arena.ofConfined()) {
+    MemorySegment precio = arena.allocate(ValueLayout.JAVA_INT);
+    precio.set(ValueLayout.JAVA_INT, 0, 1490);
+    Thread otro = new Thread(() -> {
+        try { precio.get(ValueLayout.JAVA_INT, 0); }
+        catch (WrongThreadException e) { System.out.println("otroHilo=" + e.getMessage()); }
+    });
+    otro.start();
+    otro.join();
+    System.out.println("mismoHilo=" + precio.get(ValueLayout.JAVA_INT, 0));
+}
+```
+
+Dentro de un `main` que declara `throws InterruptedException`, imprime:
+
+```text
+otroHilo=Attempted access outside owning thread
+mismoHilo=1490
+```
+
+Cada acceso a un segmento hace tres comprobaciones: que esté dentro del tamaño, que su arena siga abierta y que el hilo tenga permiso. Un puntero de C no hace ninguna de las tres.
+
+##### 4. Reglas, variantes y casos límite
+
+Hay cuatro tipos de arena. `Arena.ofConfined()` permite acceso solo desde el hilo que la creó y se cierra con `close()`. `Arena.ofShared()` admite varios hilos y también se cierra explícitamente. `Arena.ofAuto()` deja la liberación al GC, sin momento fijo. `Arena.global()` nunca libera.
+
+`close()` sobre `ofAuto()` o `global()` lanza `UnsupportedOperationException`. Si necesitas liberar en un momento conocido, elige una arena confinada o compartida.
+
+`setAtIndex` cuenta en elementos; `set` cuenta en bytes. En un segmento de tres `JAVA_INT`, el índice 3 es el byte 12, justo fuera del límite que muestra el Problema resuelto 4.1.
+
+El `FunctionDescriptor` no se verifica contra la función de C. Si lo describes mal, nadie protesta: el resultado sale truncado o el proceso cae. Los tamaños de C también cambian por plataforma: `long` mide 8 bytes en Linux de 64 bits y 4 en Windows.
+
+`invokeExact` exige los tipos exactos, incluido el cast del retorno. Un cast a `int` donde el descriptor dice `JAVA_LONG` lanza `WrongMethodTypeException`.
+
+Sin `--enable-native-access`, JDK 25 solo advierte. Desde JDK 24, la JEP 472 añadió la opción `--illegal-native-access`, con valor `warn` por defecto, y anunció que una versión futura negará el acceso. Para un jar ejecutable, el atributo de manifiesto `Enable-Native-Access: ALL-UNNAMED` concede el permiso.
+
+FFM pasó por varias versiones de incubación y de vista previa entre JDK 14 y JDK 21 antes de quedar definitiva. Código escrito para esas etapas puede usar nombres viejos, como `allocateUtf8String`, que en Java 22 pasó a ser `allocateFrom`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El `try-with-resources` del Módulo 3 es la pieza central: garantiza que `close()` se ejecute aunque salte una excepción. Aquí libera memoria real del sistema operativo, no solo un archivo.
+
+El Tema 1 mostró que el GC administra el heap. Este tema muestra lo que queda fuera de su alcance: `-Xmx` no limita la memoria nativa, y un heap dump del Tema 3 no la incluye.
+
+En el Módulo 10, Tema 3, `opens` daba permiso a la reflexión. `--enable-native-access` sigue la misma filosofía: las operaciones que pueden romper las garantías de Java exigen un permiso explícito, por módulo. En código modular se nombra el módulo en lugar de `ALL-UNNAMED`.
+
+Los hilos del Módulo 5 explican por qué existe `ofConfined()`: sin confinamiento, un hilo podría cerrar la arena mientras otro lee. FFM convierte ese error de C en una excepción de Java.
 
 #### Problema resuelto 4.1
 Antes de llamar a C, reserva memoria nativa para tres precios, úsala y comprueba qué protege FFM.

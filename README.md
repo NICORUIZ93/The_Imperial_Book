@@ -8,7 +8,7 @@ Academia en español para aprender programación de cero a experto. Es una aplic
 lecciones escritas en Markdown, guarda el progreso en el navegador y trae laboratorios que se ejecutan en
 tu computador, incluida una **nube local con Floci** (AWS, Azure y GCP sin cuenta ni costo).
 
-**Estado:** 27 cursos, 306 módulos y 1695 temas indexados, más 5 rutas (DevOps, Backend Java, Backend Node, Frontend y Móvil).
+**Estado:** 27 cursos, 306 módulos y 1733 temas indexados, más 5 rutas (DevOps, Backend Java, Backend Node, Frontend y Móvil).
 
 ## Empezar
 

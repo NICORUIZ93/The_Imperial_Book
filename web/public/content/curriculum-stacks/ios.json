@@ -469,37 +469,59 @@
    "id": "7",
    "kind": "current",
    "title": null,
-   "topicCount": 3,
+   "topicCount": 5,
    "topics": [
     {
-     "title": "Publishers y Subscribers",
+     "title": "Publicadores, suscriptores y cancelables",
      "status": "actual",
      "current": {
       "module": "7",
       "order": 1,
-      "fragment": "tema-1-publishers-y-subscribers"
+      "fragment": "tema-1-publicadores-suscriptores-y-cancelables"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Operadores: debounce y combineLatest",
+     "title": "Operadores para un buscador: `debounce`, `removeDuplicates`, `combineLatest` y `switchToLatest`",
      "status": "actual",
      "current": {
       "module": "7",
       "order": 2,
-      "fragment": "tema-2-operadores-debounce-y-combinelatest"
+      "fragment": "tema-2-operadores-para-un-buscador-debounce-removeduplicates-combinelatest-y-switchtolatest"
      },
      "sources": [],
      "courseSources": []
     },
     {
-     "title": "Combine vs async/await",
+     "title": "Combine en SwiftUI y la memoria: `@Published`, `assign(to:)` y `[weak self]`",
      "status": "actual",
      "current": {
       "module": "7",
       "order": 3,
-      "fragment": "tema-3-combine-vs-async-await"
+      "fragment": "tema-3-combine-en-swiftui-y-la-memoria-published-assign-to-y-weak-self"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Combine frente a `async`/`await`: puentes y cuándo usar cada uno",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 4,
+      "fragment": "tema-4-combine-frente-a-async-await-puentes-y-cuando-usar-cada-uno"
+     },
+     "sources": [],
+     "courseSources": []
+    },
+    {
+     "title": "Proyecto 44: el buscador de envíos, en Combine y en `async`/`await`",
+     "status": "actual",
+     "current": {
+      "module": "7",
+      "order": 5,
+      "fragment": "proyecto-44-el-buscador-de-envios-en-combine-y-en-async-await"
      },
      "sources": [],
      "courseSources": []

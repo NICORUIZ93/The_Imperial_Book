@@ -33,7 +33,9 @@ Gradle. Guarda su ruta una vez por terminal y pásala con `-cp`:
 ```bash
 export H2="$(find ~/.gradle/caches -name 'h2-2.3.232.jar' | head -1)"
 java -cp "$H2" Inyeccion.java
-``` Las salidas del proyecto Gradle son las
+```
+
+Las salidas del proyecto Gradle son las
 capturadas en el Mac del entorno de referencia; no se cambiaron.
 
 ## Visual del módulo
@@ -280,11 +282,42 @@ Java de forma segura y ordenada?
 - **Error típico:** obtener conexiones sin try-with-resources: `pool agotado: 0 libres tras 200 ms`.
 
 #### ► CÓMO FUNCIONA
-JDBC es la API estándar de Java para hablar con bases de datos relacionales. El código Java usa interfaces como `Connection`, `PreparedStatement` y `ResultSet`; el driver JDBC traduce esas llamadas al protocolo de la BD concreta. Esto permite cambiar de H2 a PostgreSQL o MySQL sin reescribir la lógica, aunque SQL y detalles de tipos sí pueden variar.
 
-El problema que resuelve un DAO es separar persistencia de negocio. Si el servicio arma SQL, abre conexiones, mapea `ResultSet` y además aplica reglas, termina con una clase imposible de probar. El DAO encapsula el acceso a datos: recibe objetos o parámetros, ejecuta SQL y devuelve objetos.
+##### 1. La idea en lenguaje sencillo
 
-`PreparedStatement` es el punto de seguridad básico. Cuando concatenas input del usuario en SQL, el input puede convertirse en instrucciones. Con `PreparedStatement`, el SQL tiene placeholders (`?`) y los valores viajan como parámetros tipados.
+Piensa en los enchufes de un viaje. Tu cargador tiene una forma fija, y en cada país compras el adaptador local.
+El cargador no cambia; cambia la pieza que lo conecta con la pared. Así puedes cargar el mismo teléfono en
+cualquier lugar.
+
+JDBC es ese diseño aplicado a las bases de datos. Java define la forma del enchufe: unas interfaces fijas para
+conectarse, enviar SQL y leer filas. Cada base trae su adaptador, el driver. Tu código habla con las interfaces y no
+sabe qué motor hay detrás.
+
+En Tienda Aurora quieres registrar guías y buscarlas por destino. El destino lo escribe un usuario, así que debe
+viajar como dato, nunca como parte de la instrucción. Además, el servicio no debería ver conexiones ni columnas.
+Para eso existe el DAO: una clase que guarda todo el SQL de las guías en un solo lugar.
+
+##### 2. Definición formal y vocabulario
+
+**JDBC** es la API estándar de los paquetes `java.sql` y `javax.sql`. Casi todo en ella son interfaces; el
+**driver JDBC** de cada fabricante las implementa. Identificas la base con una **URL JDBC**, como
+`jdbc:h2:mem:aurora-m17`, cuyo segundo segmento elige el driver.
+
+Una conexión se obtiene de dos maneras. **`DriverManager`** abre una conexión física nueva por cada pedido. Un
+**`DataSource`** oculta de dónde sale la conexión, y suele respaldarse con un **pool de conexiones**. Ambos entregan
+una **`Connection`**: la sesión con la base.
+
+Desde la conexión creas sentencias. Un **`Statement`** envía texto SQL completo. Un **`PreparedStatement`** envía una
+plantilla con marcadores `?` y los valores por separado. Con **`executeQuery`** obtienes un **`ResultSet`**, un cursor
+sobre filas; con **`executeUpdate`** obtienes el número de filas afectadas. Los fallos llegan como
+**`SQLException`**, una excepción checked.
+
+Un **DAO** (*Data Access Object*) encapsula ese trabajo para una tabla. Su pieza central es el **mapeo de filas**:
+convertir la fila actual del cursor en un objeto `Guia`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue una llamada a `listarPorDestino` desde el servicio hasta la lista de guías:
 
 ```mermaid
 flowchart LR
@@ -297,15 +330,67 @@ flowchart LR
   RS -->|"map(rs)"| G["List&lt;Guia&gt;"]
 ```
 
-**Mecanismo.** `java.sql` solo trae interfaces. Al pedir una conexión, `DriverManager` o el `DataSource` usan un
-driver concreto. El `PreparedStatement` envía el SQL con `?` y, por separado, los valores. El `ResultSet` entrega
-las filas y el DAO las convierte en objetos.
+1. Al arrancar la JVM, `DriverManager` descubre los drivers del classpath. Cada JAR de driver declara su clase en
+   `META-INF/services/java.sql.Driver`, y el `ServiceLoader` la carga. Sin JAR, la lista queda vacía.
+2. `ds.getConnection()` entrega una `Connection`. Con el `JdbcDataSource` de H2 es una conexión nueva; con un pool
+   sería una prestada.
+3. `c.prepareStatement(sql)` envía la plantilla con `?`. El motor puede analizarla antes de conocer ningún valor.
+4. `ps.setString(1, destino)` guarda el valor en la posición 1. El driver lo envía aparte, con su tipo, y la base lo
+   trata siempre como dato.
+5. `ps.executeQuery()` ejecuta la consulta y devuelve un `ResultSet` situado antes de la primera fila.
+6. Cada `rs.next()` avanza una fila y devuelve `true` mientras queden filas. `map(rs)` lee las columnas por nombre.
+7. Al salir del bloque `try`, los recursos se cierran en orden inverso: `ResultSet`, `PreparedStatement` y
+   `Connection`.
 
-**Por qué existe.** El contrato común permite cambiar de H2 a PostgreSQL cambiando dependencia y URL. Los
-parámetros separados hacen que un dato nunca pueda convertirse en instrucción.
+El código del DAO sigue esos pasos casi literalmente:
 
-**Regla práctica.** Todo recurso JDBC va en try-with-resources; todo valor variable va en un `?`; todo SQL de una
-tabla vive en su DAO.
+```java
+String sql = "SELECT id, remitente, destino, peso_kg FROM guias WHERE destino = ? ORDER BY id";
+try (Connection c = ds.getConnection();
+     PreparedStatement ps = c.prepareStatement(sql)) {
+    ps.setString(1, destino);
+    try (ResultSet rs = ps.executeQuery()) {
+        List<Guia> out = new ArrayList<>();
+        while (rs.next()) out.add(map(rs));
+        return out;
+    }
+}
+```
+
+Observa por qué el paso 4 detiene la inyección. En `Inyeccion.java`, la entrada `CAL' OR '1'='1` concatenada cierra
+la comilla y agrega una condición. Como parámetro, la base busca un destino con ese texto exacto y no encuentra
+ninguno.
+
+##### 4. Reglas, variantes y casos límite
+
+- Los índices de parámetros y columnas empiezan en 1, no en 0. Un índice fuera de rango lanza `SQLException`.
+- Solo los valores pueden ir en un `?`. Nombres de tabla, de columna o la dirección de `ORDER BY` no se
+  parametrizan. Si dependen del usuario, elígelos de una lista blanca fija en tu código.
+- Para guardar un `NULL` usa `ps.setNull(indice, Types.VARCHAR)` o pasa `null` a `setObject`. Al leer, `getInt`
+  devuelve `0` para un `NULL`; `rs.wasNull()` te dice si era nulo de verdad.
+- Cerrar un `Statement` cierra su `ResultSet`. Cerrar la `Connection` debería cerrar sus sentencias, pero no
+  dependas de eso: el try-with-resources cierra cada recurso de forma explícita.
+- `executeUpdate` devuelve `0` sin error cuando nada coincide. Si esperabas una fila, compruébalo tú.
+- El **`SQLState`** tiene cinco caracteres; los dos primeros son la clase. `08` agrupa errores de conexión, `23`
+  violaciones de integridad y `42` errores de sintaxis o acceso. El mensaje cambia por motor; la clase es estable.
+- Para muchas inserciones iguales, `addBatch` y `executeBatch` envían el lote junto. Para recuperar una clave
+  generada, prepara la sentencia con `Statement.RETURN_GENERATED_KEYS` y lee `getGeneratedKeys()`.
+
+Un cambio de versión importante: desde JDBC 4.0 (Java 6) los drivers se registran solos con `ServiceLoader`. Antes
+era obligatorio `Class.forName("org.h2.Driver")`; hoy sobra. Java 25 incluye JDBC 4.3.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Ya usaste JDBC sin verlo en el Módulo 16: Hibernate lo usaba por debajo (Java, Módulo 16, Tema 1). La consulta
+parametrizada y la inyección SQL vienen de SQL (SQL, Módulo 0, Tema 2). El cierre automático es el
+try-with-resources de `AutoCloseable` (Java, Módulo 3, Tema 2), y `Optional` expresa la guía ausente.
+
+La diferencia con JPA está en quién escribe el SQL y quién mapea. Aquí ambas cosas son tuyas, visibles y
+predecibles. En JPA, Hibernate genera el SQL y llena las entidades. El Problema resuelto 1.5 mide los dos caminos
+sobre la misma tabla.
+
+El Tema 2 usa la misma `Connection` para agrupar varias escrituras en una transacción. Allí `setAutoCommit(false)`,
+`commit` y `rollback` cambian lo que ocurre entre los pasos 4 y 7.
 
 #### Problema resuelto 1.1
 Comprueba que JDBC es un contrato de interfaces y observa qué pasa cuando no hay driver en el classpath.
@@ -1065,14 +1150,37 @@ tanto, otro proceso puede estar leyendo ese saldo a medias. ¿Cómo agrupas las 
 - **Error típico:** bloquear las cuentas en orden distinto en dos transferencias (A→B y B→A): se produce un deadlock.
 
 #### ► CÓMO FUNCIONA
-Una transacción agrupa operaciones que deben comportarse como unidad. El caso clásico es una transferencia: debitar una cuenta y acreditar otra. Si el débito se confirma y el crédito falla, el dinero desaparece del sistema. Ese es el tipo de bug que ACID busca evitar.
 
-- **Atomicidad**: todo o nada. Commit confirma; rollback revierte.
-- **Consistencia**: la BD pasa de un estado válido a otro válido según constraints/reglas.
-- **Aislamiento**: transacciones concurrentes no deben verse de formas que rompan el contrato elegido.
-- **Durabilidad**: una vez confirmado, el cambio debe sobrevivir a fallas.
+##### 1. La idea en lenguaje sencillo
 
-`READ COMMITTED` evita leer cambios no confirmados (dirty reads); `REPEATABLE_READ` y `SERIALIZABLE` dan garantías más fuertes con mayor costo. La elección depende de la anomalía que el negocio no puede tolerar.
+Piensa en un traspaso de mercancía entre dos bodegas. El encargado saca diez cajas de la bodega norte y las anota
+en la sur. Si el camión se accidenta a mitad de camino, nadie aceptaría que las cajas salieran de una bodega sin
+llegar a la otra. O se completa el traspaso, o se anula entero.
+
+Una transferencia de saldo en Tienda Aurora tiene la misma forma: restar en una cuenta y sumar en otra. Son dos
+sentencias, pero para el negocio son una sola operación. Además, mientras haces el traspaso, otros procesos leen
+esos saldos. Debes decidir qué pueden ver.
+
+Este tema responde ambas cosas con JDBC. Agrupas las dos escrituras en una transacción y eliges cuánto se aíslan
+de las transacciones vecinas.
+
+##### 2. Definición formal y vocabulario
+
+Una transacción cumple las propiedades **ACID**. **Atomicidad**: todo o nada. **Consistencia**: la base pasa de un
+estado válido a otro, según sus restricciones. **Aislamiento**: las transacciones concurrentes no se ven de formas
+que rompan el contrato elegido. **Durabilidad**: lo confirmado sobrevive a una caída.
+
+En JDBC, una `Connection` nueva está en modo autocommit. **`setAutoCommit(false)`** lo desactiva: la transacción
+empieza sola con la siguiente sentencia. **`commit` y `rollback` en JDBC** la cierran, confirmando o descartando
+todo lo hecho con esa conexión.
+
+El **nivel de aislamiento** define qué ve una transacción de las otras. Se describe por las anomalías que evita:
+**lectura sucia**, **lectura no repetible** y **lectura fantasma**. Los niveles estándar son READ UNCOMMITTED,
+**READ COMMITTED**, **REPEATABLE READ y SERIALIZABLE**. Para reservar filas concretas usas **`SELECT FOR UPDATE`**.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue `TransferenciaService.transferir` con una sola conexión para todo el caso de uso:
 
 ```mermaid
 sequenceDiagram
@@ -1080,9 +1188,10 @@ sequenceDiagram
   participant C as Connection
   participant B as Base
   S->>C: setAutoCommit(false)
-  S->>B: SELECT saldo ... FOR UPDATE (cuenta 10)
-  S->>B: UPDATE saldo = saldo - 30 (cuenta 10)
-  S->>B: SELECT saldo ... FOR UPDATE (cuenta 20)
+  S->>B: SELECT saldo ... FOR UPDATE (cuenta origen)
+  S->>B: UPDATE saldo = saldo - monto (cuenta origen)
+  S->>B: SELECT saldo ... FOR UPDATE (cuenta destino)
+  S->>B: UPDATE saldo = saldo + monto (cuenta destino)
   alt todo bien
     S->>C: commit() — los dos cambios a la vez
   else excepción (saldo insuficiente, cuenta no existe)
@@ -1091,9 +1200,72 @@ sequenceDiagram
   S->>C: setAutoCommit(true) en finally
 ```
 
-**Mecanismo.** Con `autoCommit` en `false`, la base guarda los cambios de la conexión como pendientes. Otras
-conexiones, según su aislamiento, siguen viendo los datos confirmados. `commit` los publica todos; `rollback` los
-descarta todos.
+1. `setAutoCommit(false)` cambia el modo de la conexión. No envía ningún `BEGIN`: la base abre la transacción con la
+   primera sentencia.
+2. `saldoForUpdate` lee el saldo de origen y bloquea esa fila. Otra transacción que intente bloquearla o
+   modificarla espera hasta el final de esta.
+3. Si el saldo alcanza, el `UPDATE` resta el monto. El cambio queda pendiente: otras conexiones con READ COMMITTED
+   siguen viendo el valor confirmado.
+4. Se bloquea y actualiza la cuenta destino. Si no existe, `saldoForUpdate` lanza `SQLException`.
+5. Sin errores, `commit()` publica los dos cambios a la vez y libera los bloqueos.
+6. Con cualquier excepción, el `catch` llama a `rollback()`: la base descarta ambos cambios y libera los bloqueos.
+7. El `finally` devuelve la conexión a autocommit antes de cerrarla.
+
+El esqueleto que garantiza los pasos 5 a 7 es corto:
+
+```java
+c.setAutoCommit(false);
+try {
+    debitar(c, desde, monto);
+    acreditar(c, hacia, monto);
+    c.commit();
+} catch (Exception e) {
+    c.rollback();
+    throw e;
+} finally {
+    c.setAutoCommit(true);
+}
+```
+
+El `throw e` es importante: el `rollback` no esconde el fallo. Quien llamó a `transferir` se entera del motivo.
+`Transferencia.java` muestra la diferencia: en autocommit el total baja a 120; con transacción se mantiene en 150.
+
+##### 4. Reglas, variantes y casos límite
+
+La norma SQL define qué anomalías permite cada nivel:
+
+| Nivel | Lectura sucia | Lectura no repetible | Lectura fantasma |
+|---|---|---|---|
+| READ UNCOMMITTED | posible | posible | posible |
+| READ COMMITTED | no | posible | posible |
+| REPEATABLE READ | no | no | posible |
+| SERIALIZABLE | no | no | no |
+
+- Cada motor implementa los niveles a su manera. PostgreSQL trata READ UNCOMMITTED como READ COMMITTED, y su
+  REPEATABLE READ tampoco muestra fantasmas. Comprueba siempre en el motor real.
+- El nivel por defecto cambia por motor: READ COMMITTED en PostgreSQL y en H2 2.x; REPEATABLE READ en MySQL InnoDB.
+- Fija el nivel con `setTransactionIsolation` antes de empezar la transacción. Cambiarlo a mitad de una
+  transacción tiene un efecto que depende del driver.
+- Llamar a `commit()` en modo autocommit lanza `SQLException`. Llamar a `setAutoCommit(true)` con una transacción
+  abierta la confirma, según la especificación JDBC.
+- READ COMMITTED no evita la **actualización perdida** de «leer, calcular y escribir». `FOR UPDATE` la evita
+  porque reserva la fila desde la lectura.
+- Si dos transferencias bloquean las mismas cuentas en orden opuesto, se produce un **deadlock**. Bloquea siempre en
+  un orden fijo, por ejemplo por id ascendente.
+- Los **puntos de guardado** (`setSavepoint` y `rollback(savepoint)`) deshacen solo una parte de la transacción.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Las propiedades ACID y `BEGIN`, `COMMIT` y `ROLLBACK` vienen de SQL (SQL, Módulo 0, Tema 4). Aquí los manejas desde
+Java con la misma `Connection` del Tema 1. Un DAO que abre su propia conexión por método queda fuera de la
+transacción. Por eso el servicio pasa `c` a `debitar` y `acreditar`.
+
+Compara con el Módulo 16. Allí `EntityTransaction` envolvía lo mismo, y `@Version` detectaba choques sin bloquear
+(Java, Módulo 16, Tema 7). `FOR UPDATE` es el bloqueo pesimista de ese tema, escrito a mano. El deadlock es el mismo
+fenómeno que viste con hilos (Java, Módulo 5, Tema 4), ahora entre transacciones.
+
+En una aplicación Spring, `@Transactional` hace estos pasos por ti. Saber qué ocurre debajo te permite leer sus
+errores y elegir bien el aislamiento.
 
 #### Problema resuelto 2.1
 Ejecuta la misma transferencia fallida con confirmación automática y con transacción explícita.

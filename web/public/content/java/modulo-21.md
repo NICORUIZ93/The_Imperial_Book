@@ -498,13 +498,38 @@ tu repositorio. ¿Qué partes puedes cambiar sin avisar y cuáles ya pertenecen 
 - **Error típico:** volver `public` un método «solo para usarlo en otro paquete»; desde ese día es contrato.
 
 #### ► CÓMO FUNCIONA
-La superficie pública de una API es todo lo que un consumidor externo puede usar o observar y, por lo tanto, todo aquello que no puedes cambiar libremente sin evaluar impacto. No se limita a los nombres de clases públicas. Incluye firmas de métodos y constructores, tipos de parámetros y retornos, excepciones lanzadas o declaradas, constantes públicas, jerarquías de herencia, comportamiento observable, precondiciones/postcondiciones, reglas de nullabilidad, formato de datos expuestos y semántica documentada.
 
-Muchos equipos creen que “API pública” es solo `public class`. En realidad, un cambio en un mensaje de excepción parseado por consumidores, un orden de iteración documentado o una validación más estricta puede romper clientes. Por eso hay que distinguir entre detalle interno accidentalmente visible y contrato deliberado. Lo interno puede cambiar con libertad; lo público requiere estrategia de evolución.
+##### 1. La idea en lenguaje sencillo
 
-Para clasificar un elemento, haz tres preguntas en orden. ¿Otro paquete puede nombrarlo? ¿Su paquete está exportado
-por el módulo? ¿Su efecto se ve desde fuera? La primera la responde el compilador; la segunda, `module-info.java`; la
-tercera, solo tus pruebas y tu documentación.
+Una tienda tiene mostrador y cocina. El mostrador es lo que el cliente ve y puede pedir: el menú, los precios, la
+forma en que se entrega el pedido. La cocina es tuya: puedes cambiar ollas, recetas internas y el orden de trabajo
+sin pedir permiso. Pero si cambias el tamaño de la porción, el cliente lo nota aunque nunca haya visto la cocina.
+
+`aurora-api` tiene el mismo reparto. Lo que los equipos de checkout y logística pueden nombrar o notar es el
+mostrador: ya no es solo tuyo. Lo demás es cocina. Antes de limpiar `ServicioEnvio`, necesitas saber dónde está
+la línea entre los dos. Esos equipos no están en tu repositorio y su código no fallará frente a ti.
+
+##### 2. Definición formal y vocabulario
+
+La **superficie pública** de una librería es el conjunto de elementos que un consumidor externo puede nombrar u
+observar. Incluye tipos, métodos y constructores `public` o `protected`, campos públicos, jerarquías de herencia y el
+comportamiento documentado.
+
+El **contrato de API** son las promesas que esa superficie hace. Abarca firmas, tipos, precondiciones,
+postcondiciones, excepciones, reglas sobre `null` y formato de los datos. Dicho de forma sencilla: lo que la tienda
+promete por escrito.
+
+El **comportamiento observable** es todo efecto que un cliente detecta sin leer tu código: valores devueltos y su
+formato, orden de iteración, excepciones, mensajes y efectos secundarios. No aparece en ninguna firma, pero un
+cliente puede depender de él.
+
+Un **detalle de implementación** es lo que un consumidor no puede nombrar: miembros `private`, miembros de paquete y
+tipos de paquetes que el módulo no exporta. Es la cocina, y puedes cambiarla libremente mientras no se filtre al
+comportamiento.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Para clasificar un elemento de la librería, recorre las preguntas del diagrama en orden:
 
 ```mermaid
 flowchart TD
@@ -518,7 +543,68 @@ flowchart TD
   S --> C
 ```
 
-La superficie inicial de `api-v1` es `Repositorio<T>.porId(String)`, `ServicioEnvio.estado(String)`, `ServicioEnvio.ETIQUETA`, `InterfazEvolucion.etiqueta()` y `ImplEvolucion`. `javap -public` permite verla sin leer el fuente, como se hace en la verificación.
+1. **¿Otro paquete puede nombrarlo?** Lo responde el compilador con los modificadores de acceso. `formatear` es de
+   paquete: desde `com.aurora.cliente`, `javac` responde `is not public in ServicioEnvio`.
+2. **¿Su paquete está exportado?** Si la librería es un módulo, lo responde `module-info.java`. Un tipo `public` en
+   un paquete no exportado no es accesible desde otros módulos.
+3. **¿Su efecto se ve desde fuera?** Ni el compilador ni el módulo lo responden. Solo tus pruebas y tu documentación
+   pueden fijarlo.
+
+La superficie real la decide el `.class`, no el código fuente. Por eso el Problema resuelto 1.1 compila primero y
+lee el resultado con `javap`. `javap -public` muestra lo que otro paquete puede nombrar. `javap -p` muestra todo.
+
+La lista pública trae una sorpresa: `public com.aurora.api.ServicioEnvio();`. El fuente no declara ese constructor.
+La Especificación del Lenguaje Java (JLS §8.8.9) obliga al compilador a generar un **constructor por defecto** cuando
+la clase no declara ninguno. Ese constructor tiene el mismo acceso que la clase, así que en una clase `public` es
+`public`, y por lo tanto contrato.
+
+Ahora sigue el Problema resuelto 1.2. Las dos versiones tienen la misma firma, `String estado(String id)`:
+
+1. El compilador del cliente solo comprueba que `estado` exista y reciba un `String`. Las dos versiones pasan.
+2. En ejecución, la versión 2 devuelve `PENDIENTE/A1`.
+3. El cliente parte el texto por `:` y pide la posición 1. Solo hay una, y falla con
+   `ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1`.
+
+Ninguna herramienta de firmas habría avisado. El formato era parte del contrato, aunque nadie lo escribiera.
+
+##### 4. Reglas, variantes y casos límite
+
+`protected` es superficie para quien extiende la clase. Si la clase no es `final`, sus métodos `protected` y la
+posibilidad misma de heredar son promesas. Marcar `final` una clase no diseñada para herencia reduce la superficie.
+Desde Java 17, las clases `sealed` permiten limitar quién puede extender.
+
+Los tipos que aparecen en una firma pública también se vuelven superficie. Si `estado` devolviera un tipo de un
+paquete interno, ese tipo quedaría expuesto aunque nadie lo hubiera planeado.
+
+Las constantes `public static final` de tipos primitivos o `String` son un caso especial. El compilador del cliente
+copia su valor en el código cliente. El Tema 2 muestra qué pasa cuando cambian.
+
+Con módulos, la regla cambió por versiones. Java 9 introdujo el sistema de módulos y `exports`. Java 16 empezó a
+negar por defecto el acceso reflexivo a los paquetes internos del JDK, y Java 17 lo volvió definitivo. Sin módulos,
+en el *classpath*, todo tipo `public` es accesible desde cualquier paquete.
+
+Existe una observación conocida como **ley de Hyrum**: con suficientes usuarios, alguien dependerá de cualquier
+comportamiento observable, prometido o no. Por eso un mensaje de excepción o un orden «accidental» pueden volverse
+contrato de hecho.
+
+La forma serializada de una clase `Serializable` también es superficie. Cambiar sus campos puede impedir leer datos
+guardados por versiones anteriores.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 0, Tema 1 usaste `javap` para mirar bytecode. Aquí lo usas como herramienta de revisión: lo que
+muestra con `-public` es lo que prometes.
+
+Los modificadores de acceso de Java, Módulo 1, Tema 4 dejan de ser una cuestión de estilo. Cada `public` que escribes
+amplía lo que no podrás cambiar sin avisar. `exports`, de Java, Módulo 10, Tema 1, es la segunda barrera para
+mantener paquetes enteros fuera de la superficie.
+
+Diferencia clave: un detalle de implementación es libre en su forma, pero no en sus efectos. `normalizar` es
+`private`; si cambia de `toUpperCase` a `toLowerCase`, rompe el contrato de `estado` igual que un cambio de firma.
+
+El Tema 2 explica qué tipos de cambio rompen la compilación del cliente y cuáles rompen su ejecución. El Tema 3
+muestra cómo hacer crecer esta superficie sin romperla. El Tema 5 convierte la salida de `javap -public` en una
+comprobación automática del build.
 
 #### Problema resuelto 1.1
 Lista la superficie compilada de `ServicioEnvio` y compárala con todo lo que la clase contiene.
@@ -803,34 +889,125 @@ Tu proyecto compila y todos tus tests pasan. ¿Qué le pasa a logística el lune
 - **Error típico:** publicar la versión de la librería como `public static final String VERSION = "1.0"`: los clientes congelados la siguen viendo en `1.0`.
 
 #### ► CÓMO FUNCIONA
-Compatibilidad de fuente significa que el código cliente compila nuevamente contra la nueva versión. Compatibilidad binaria significa que artefactos ya compilados —JARs, clases— siguen enlazando y ejecutando sin recompilar. Pueden fallar de formas distintas.
 
-Agregar una sobrecarga puede ser compatible de fuente en muchos casos, pero hay casos donde afecta resolución de métodos. Quitar un método rompe ambas. Cambiar un tipo de retorno puede romper binario aunque el fuente se adapte. Renombrar un método rompe ambos. Agregar un `default` a una interfaz suele ser compatible binaria y de fuente para implementadores, pero convertir un `default` en abstracto rompe a quien no lo implementa.
+##### 1. La idea en lenguaje sencillo
 
-El origen de la diferencia está en el `.class` del cliente. Al compilar, javac resuelve cada llamada y graba el
-nombre, la clase y el **descriptor** exacto. Al ejecutar, la JVM busca ese descriptor en la clase que encuentre en el
-classpath. Si no está, lanza el error de enlace en la primera ejecución de esa línea.
+Imagina que anotas en tu agenda la dirección exacta de una bodega: calle, número y piso. Meses después la bodega se
+muda al piso de al lado. Si vuelves a consultar el directorio, encuentras la nueva dirección sin problema. Si vas con
+la dirección vieja anotada, llegas a una puerta cerrada.
+
+Los clientes de una librería Java viven las dos situaciones. Un cliente que **recompila** consulta el directorio otra
+vez: el compilador busca de nuevo el mejor método. Un cliente ya compilado lleva la dirección anotada en su bytecode
+y no la vuelve a buscar. Logística tiene la dirección vieja de `reservar(String, int)`. Por eso tu versión 1.1 compila
+en tu repositorio y, aun así, logística fallará el lunes.
+
+##### 2. Definición formal y vocabulario
+
+La **compatibilidad de fuente** se cumple cuando el código fuente de los clientes vuelve a compilar contra la versión
+nueva sin cambios. La **compatibilidad binaria** se cumple cuando los `.class` compilados contra la versión anterior
+siguen enlazando y ejecutándose sin recompilar. El capítulo 13 de la Especificación del Lenguaje Java (JLS) define
+cuáles cambios preservan la binaria.
+
+Un **cliente congelado** es un cliente compilado una sola vez contra la versión anterior y ejecutado contra la nueva.
+Es la única forma de medir la compatibilidad binaria.
+
+El **descriptor de método** es la cadena con la que la JVM identifica un método: tipos de parámetros y de retorno en
+notación interna. `(Ljava/lang/String;I)Ljava/lang/String;` significa «recibe un `String` y un `int`, devuelve un
+`String`».
+
+Un **error de enlace** es una subclase de `LinkageError`. La JVM lo lanza cuando el bytecode referencia un miembro
+que la clase cargada ya no tiene. `NoSuchMethodError` y `AbstractMethodError` son los dos de este módulo.
+
+Una **constante de compilación** es un campo `static final` de tipo primitivo o `String` inicializado con una
+expresión constante. El compilador copia su valor dentro de cada cliente.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama sigue al cliente de logística desde que se compila hasta que se ejecuta contra otra versión:
 
 ```mermaid
 sequenceDiagram
     participant F as Cliente.java
-    participant J as javac (contra v1)
+    participant J as javac contra v1
     participant C as Cliente.class
-    participant V as JVM + Inventario v2
-    F->>J: reservar("CAF-01", 2)
-    J->>C: graba reservar:(Ljava/lang/String;I)
-    Note over C: congelado: nadie lo recompila
-    C->>V: busca reservar(String, int)
+    participant V as JVM con Inventario v2
+    F->>J: reservar CAF-01 con 2
+    J->>C: graba el descriptor String, int
+    Note over C: congelado, nadie lo recompila
+    C->>V: busca reservar String, int
     alt v2 conserva el descriptor
-        V-->>C: ejecuta y devuelve "RESERVA CAF-01 x2"
-    else v2 lo cambió a (String, long)
+        V-->>C: ejecuta y devuelve RESERVA CAF-01 x2
+    else v2 lo cambió a String, long
         V-->>C: NoSuchMethodError
     end
 ```
 
-En ecosistemas con dependencias transitivas, no todos recompilan al mismo tiempo. `api-v2` mantiene `estado(String)` y agrega `estado(String, boolean)`: un cliente compilado contra v1 puede seguir ejecutando la firma vieja porque esa firma sigue existiendo en el bytecode de v2. `api-v2-rompe` la elimina y produce `NoSuchMethodError` en el cliente congelado; también convierte `etiqueta()` en abstracta y produce `AbstractMethodError`. Ambas fallas se observan en la verificación real.
+1. Al compilar, `javac` resuelve la llamada `reservar("CAF-01", 2)`. Elige el método aplicable más específico de
+   `Inventario` v1: `reservar(String, int)`.
+2. Graba en el `.class` del cliente una referencia simbólica: clase `com/aurora/api/Inventario`, nombre `reservar` y
+   descriptor `(Ljava/lang/String;I)Ljava/lang/String;`.
+3. Al ejecutar, la JVM carga la clase `Inventario` que encuentre en el classpath. Puede ser otra versión.
+4. La primera vez que se ejecuta esa línea, la JVM **resuelve** la referencia: busca ese nombre con ese descriptor
+   exacto. Según la especificación de la JVM (JVMS §5.4.3.3), si no lo encuentra, lanza `NoSuchMethodError`.
+5. La JVM no busca «algo parecido». No amplía `int` a `long`, porque esa conversión es una regla del compilador.
 
-**Regla práctica:** para saber si un cambio es seguro, pregunta primero si rompe binario (¿un JAR ya compilado sigue enlazando?) y luego si rompe fuente (¿el cliente recompila sin tocar código?); quitar o renombrar un método rompe ambos, pero cambiar un `default` a abstracto rompe binario sin que el fuente lo delate.
+En cambio, si recompilas el cliente contra la versión `largo`, el paso 1 se repite. El compilador encuentra
+`reservar(String, long)`, amplía `2` a `long` y graba el descriptor nuevo. Por eso `largo` es compatible de fuente y
+no binaria.
+
+Las constantes siguen otro camino. En el paso 2, `javac` no graba una referencia a `Catalogo.ETIQUETA`: graba el
+texto `"v1"`. La instrucción `ldc ... // String campo  = v1` del Problema resuelto 2.2 lo demuestra. La JVM nunca
+consulta `Catalogo` para ese valor, así que `v2` no llega.
+
+La dirección también importa en sentido contrario. Agregar una sobrecarga es compatible binaria, pero al recompilar
+puede cambiar qué método se elige:
+
+```java
+// Etiquetas v1: formato(Object). Etiquetas v2 agrega formato(String).
+System.out.println(Etiquetas.formato("A1"));
+```
+
+Compilado contra v1 y ejecutado con v2, imprime `objeto:A1`. Recompilado contra v2, imprime `texto:A1`. La fuente
+compila en ambos casos, pero el comportamiento cambió al recompilar.
+
+##### 4. Reglas, variantes y casos límite
+
+La JLS §13.4 enumera los casos. Quitar o renombrar un método público rompe las dos compatibilidades. Cambiar el tipo
+de un parámetro o del retorno equivale, para los binarios, a borrar el método y crear otro.
+
+Agregar o quitar excepciones en `throws` no rompe binarios: la JVM no comprueba `throws` al enlazar. Sí rompe la
+fuente cuando la excepción nueva es comprobada, como muestra la fila `excepcion` de la matriz.
+
+Para constantes, la JLS §13.4.9 lo dice de forma explícita. Cambiar el valor de una constante `static` no impide
+que los binarios viejos se ejecuten, pero no verán el valor nuevo hasta recompilar.
+
+Los errores de enlace son `Error`, no `Exception`. Un `catch (Exception e)` no los captura, y casi nunca conviene
+capturarlos: indican que el classpath mezcla versiones incompatibles.
+
+La resolución es perezosa. Un cliente roto puede arrancar y funcionar horas hasta que ejecuta la línea afectada. Por
+eso una prueba que no recorre esa línea no detecta el fallo.
+
+Convertir un método `default` en abstracto produce el otro error del módulo. La clase que implementa la interfaz,
+compilada contra la versión anterior, no tiene cuerpo para ese método. La JVM lanza `AbstractMethodError` al llamarlo.
+
+El proyecto reproduce los dos errores. `api-v2` conserva `estado(String)` y agrega `estado(String, boolean)`, así que
+`ClienteCongelado` sigue funcionando. `api-v2-rompe` borra la firma vieja y vuelve abstracto `etiqueta()`: la sección
+«Verificación real» muestra `NoSuchMethodError` y `AbstractMethodError`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 0, Tema 1 viste que `javac` produce bytecode y que la JVM lo ejecuta desde el classpath. Este tema
+muestra la consecuencia: entre compilar y ejecutar puede cambiar la clase que hay del otro lado.
+
+La sobrecarga de Java, Módulo 1, Tema 4 se resuelve en el compilador, no en la JVM. Eso explica tanto la fila `largo`
+como el cambio de `objeto:A1` a `texto:A1`.
+
+En el Tema 1 definiste la superficie. Aquí aprendes que cada elemento de esa superficie tiene dos promesas distintas:
+compilar y enlazar.
+
+El Tema 3 da las técnicas para cambiar sin romper ninguna de las dos: conservar el método viejo, agregar `default` y
+deprecar. El Tema 4 muestra un caso donde el compilador agrega métodos al bytecode para conservar la binaria. El Tema
+5 automatiza la prueba del cliente congelado.
 
 #### Problema resuelto 2.1
 Clasifica cuatro cambios de `Inventario` en la matriz fuente/binaria con un mismo cliente.
@@ -1188,9 +1365,41 @@ de otros equipos que no recompilarán este mes. ¿Cómo agregas y retiras sin ro
 - **Error típico:** agregar un `default` a una interfaz publicada sin buscar choques: rompe la fuente de quien implementaba otra interfaz con ese nombre.
 
 #### ► CÓMO FUNCIONA
-Evolucionar una API pública es gestionar el cambio en el tiempo. Un método `default` permite agregar comportamiento a una interfaz sin obligar a todas las implementaciones existentes a recompilarse y modificar su código. Antes de Java 8, agregar un método a una interfaz rompía la compilación de todos los implementadores. El default tiene que ser semánticamente correcto para implementaciones existentes y puede generar conflictos de herencia múltiple (`implements A, B` con el mismo default).
 
-`@Deprecated` marca un elemento como obsoleto. No lo elimina; avisa. La buena deprecación incluye desde qué versión (`since`), si está planeado para retiro (`forRemoval`) y qué alternativa usar en Javadoc. Deprecar sin camino de migración solo genera ruido. Retirar requiere un ciclo: deprecar, dar tiempo, comunicar, retirar en versión mayor.
+##### 1. La idea en lenguaje sencillo
+
+Cuando una ciudad reemplaza un puente viejo, no lo dinamita el mismo día en que abre el nuevo. Primero construye el
+nuevo, pone carteles en el viejo, avisa en las noticias y espera a que el tráfico se mude. Solo cuando casi nadie usa
+el viejo, lo cierra, y anuncia esa fecha con tiempo.
+
+Una API pública se reemplaza igual. `estado(String, boolean)` es el puente nuevo y `estado(String)` el viejo. Durante
+un tiempo conviven: el viejo sigue funcionando y lleva un cartel que dice cuál usar. `tipo()` es otro caso: un camino
+nuevo que debe aparecer sin obligar a nadie a reconstruir su casa. Este tema explica las herramientas del lenguaje
+para cada paso y la regla que dice cuándo se puede cerrar el puente viejo.
+
+##### 2. Definición formal y vocabulario
+
+Un método `default` es un método de interfaz con cuerpo. Las implementaciones que no lo sobrescriben heredan ese
+cuerpo. Existe desde Java 8 justamente para poder agregar métodos a interfaces publicadas.
+
+**`@Deprecated`** es una anotación de `java.lang` que marca un elemento como desaconsejado. Desde Java 9 tiene dos
+elementos: `since`, la versión en que se deprecó, y **`forRemoval`**, que anuncia que el elemento se borrará.
+
+La **etiqueta `@deprecated` de Javadoc**, en minúscula, explica el motivo y el reemplazo. La anotación la lee el
+compilador; la etiqueta, las personas.
+
+El **ciclo de retirada** es la secuencia para borrar un elemento público: agregar el reemplazo, deprecar, comunicar,
+esperar y borrar solo en una versión mayor.
+
+El **versionado semántico** (SemVer 2.0.0) codifica el riesgo en el número `MAYOR.MENOR.PARCHE`. El parche corrige
+sin tocar la API, la menor agrega de forma compatible y la mayor rompe.
+
+Un **conflicto de métodos default** ocurre cuando una clase hereda dos `default` con la misma firma de interfaces no
+relacionadas. La clase debe resolverlo.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El diagrama muestra el ciclo de retirada de `estado(id)`:
 
 ```mermaid
 flowchart LR
@@ -1201,7 +1410,72 @@ flowchart LR
   D -- no --> E["2.0.0<br/>borra estado(id)"]
 ```
 
-`api-v2` mantiene la firma antigua con `@Deprecated(since = "2.0", forRemoval = false)` y documenta `@link #estado(String, boolean)` como reemplazo. `Repositorio` agrega `default String tipo()`, que devuelve `"generico"` para implementadores antiguos. Salida verificada de `App`: `LEGACY=PENDIENTE:A1`, `NUEVO=PENDIENTE:A1:detalle`, `TIPO=generico`, `EVOLUCION=base`.
+Primero, qué hace `@Deprecated` en cada etapa:
+
+1. Al compilar la librería, `javac` guarda la marca en el `.class`. `javap -v` la muestra como `Deprecated: true` y
+   como `RuntimeVisibleAnnotations` con `since="2.0"` y `forRemoval=true`.
+2. Al compilar un cliente, `javac` lee esa marca. Con `forRemoval = false` emite un aviso de deprecación; por defecto
+   lo resume en una `Note` y lo detalla con `-Xlint:deprecation`.
+3. Con `forRemoval = true` emite el aviso `[removal]` siempre, sin opciones.
+4. En ejecución no pasa nada. La JVM no consulta la anotación: `PENDIENTE:A1` se imprime igual.
+
+Por eso un cliente congelado no se entera de la deprecación. Solo la ve quien recompila.
+
+Ahora sigue `repo.tipo()` del Problema resuelto 3.2, con `RepositorioTexto` compilado contra la versión 1:
+
+1. La llamada está grabada como `invokeinterface Repositorio.tipo:()Ljava/lang/String;`.
+2. La JVM busca `tipo()` en la clase real del objeto, `RepositorioTexto`. No lo encuentra, porque se compiló antes.
+3. Sube a sus interfaces y encuentra el `default` de la versión 2. Ejecuta ese cuerpo: `tipo=generico`.
+4. Con la versión 3, el paso 3 encuentra un método abstracto. No hay cuerpo que ejecutar y lanza
+   `AbstractMethodError`.
+
+El conflicto de dos `default` se resuelve con reglas fijas. Primero gana un método de la clase o de su superclase. Si
+no hay, gana la interfaz más específica, la que extiende a la otra. Si ninguna es más específica, hay conflicto y la
+clase debe sobrescribir el método. Dentro de ella, `Rastreable.super.etiqueta()` invoca el cuerpo de esa interfaz.
+
+```java
+@Override
+public String etiqueta() {
+    return Rastreable.super.etiqueta() + "+" + Asegurable.super.etiqueta();
+}
+```
+
+##### 4. Reglas, variantes y casos límite
+
+Según la JLS §9.6.4.6, el compilador no avisa cuando el uso está dentro de la misma clase más externa que el elemento
+deprecado. Tampoco avisa de una deprecación ordinaria si el código que la usa también está deprecado.
+`@SuppressWarnings("deprecation")` y `@SuppressWarnings("removal")` silencian cada tipo por separado.
+
+Desde Java 9 existe la herramienta `jdeprscan`, que revisa un JAR y lista los usos de APIs deprecadas del JDK. Sirve
+para medir cuánto depende tu código de algo marcado para retiro.
+
+Agregar un `default` es compatible binaria, pero no siempre de fuente. Si un implementador ya tenía un método
+`tipo()` con otro tipo de retorno, deja de compilar. Si implementaba otra interfaz con un `default` del mismo nombre,
+aparece el conflicto del Problema resuelto 3.3.
+
+Ese conflicto también existe en ejecución. Si una clase ya compilada hereda dos `default` que aparecieron después, la
+JVM no puede elegir. En una prueba con esta misma pareja de interfaces, la llamada terminó con
+`java.lang.IncompatibleClassChangeError: Conflicting default methods: Rastreable.etiqueta Asegurable.etiqueta`.
+
+Un `default` no puede sobrescribir `equals`, `hashCode` ni `toString` de `Object`: el compilador lo prohíbe. Y un
+`default` que lanza `UnsupportedOperationException` no evita la rotura: solo la mueve a tiempo de ejecución.
+
+En SemVer, la versión `0.y.z` es de desarrollo inicial y cualquier cosa puede cambiar. A partir de `1.0.0`, un cambio
+incompatible obliga a subir la mayor.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Los métodos `default` de Java, Módulo 1, Tema 3 aparecían como comodidad. Aquí cumplen su propósito original:
+evolucionar interfaces sin romper implementadores ya compilados.
+
+La deprecación y el ADR de Arquitectura, Módulo 0, Tema 4 describen el proceso humano. Este tema muestra lo que hace
+el compilador en cada paso y por qué el aviso no llega a los clientes congelados.
+
+En el Tema 2 viste `AbstractMethodError` como error de enlace. Aquí aparece su causa concreta: un `default` que dejó
+de tener cuerpo. También ves por qué borrar `estado(String)` produce `NoSuchMethodError` y exige versión mayor.
+
+El Tema 4 muestra otro mecanismo con el que el compilador conserva compatibilidad: los métodos puente de los
+genéricos. El Tema 5 automatiza la decisión de versión: compara superficies y detecta lo que exige subir la mayor.
 
 #### Problema resuelto 3.1
 Depreca `estado(String)` y observa qué ve cada cliente según `forRemoval`.
@@ -1634,7 +1908,49 @@ segundo, y qué otras sorpresas esconde el borrado de tipos en una API pública?
 - **Error típico:** «endurecer» un genérico en una versión menor: los clientes recompilan, pero los congelados reciben `NoSuchMethodError`.
 
 #### ► CÓMO FUNCIONA
-El compilador usa los tipos genéricos para verificar errores en tiempo de compilación, pero al generar bytecode aplica *type erasure*: borra los parámetros genéricos y los reemplaza por sus límites (normalmente `Object`) o por el tipo concreto indicado. El problema aparece cuando una subclase concreta sobrescribe un método genérico: la interfaz borrada expone `Object porId(String)`, mientras `RepositorioTexto` implementa `String porId(String)`. Para que el polimorfismo siga funcionando, el compilador genera un **método puente (bridge method)** sintético con la firma borrada que delega al método concreto.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en una empresa de mensajería. Cada caja lleva una etiqueta detallada: «solo textos», «solo repuestos». Pero
+el transportista no lee esas etiquetas; solo lee el código de barras, que dice «caja». Mientras alguien revise las
+etiquetas en la bodega de origen, todo funciona. Si una caja sale sin revisión, el error aparece en destino.
+
+Los genéricos de Java funcionan así. El compilador revisa las etiquetas detalladas, como `Validador<String>`. La
+JVM solo ve el código de barras, el tipo **borrado**. Cuando las dos vistas no coinciden, el compilador agrega por
+su cuenta un pequeño método adaptador. Ese adaptador es el segundo `valida` que encontró el framework de Tienda
+Aurora. Y como la JVM enlaza por el código de barras, cambiar una etiqueta puede cambiarlo y romper binarios.
+
+##### 2. Definición formal y vocabulario
+
+El **borrado de tipos** (*type erasure*, JLS §4.6) es la traducción que hace `javac` de los tipos genéricos al
+bytecode. Cada parámetro de tipo se reemplaza por su primer límite, u `Object` si no tiene límite. Los argumentos de
+tipo, como `<String>`, desaparecen.
+
+La **firma genérica** es la versión completa de una declaración, con sus parámetros de tipo. `javac` la guarda en el
+atributo `Signature` del `.class` para el compilador de los clientes y para la reflexión. La JVM no la usa para
+enlazar; enlaza con el descriptor borrado del Tema 2.
+
+El **límite de un parámetro de tipo** es la restricción `T extends X`. Además de validar, decide en qué se borra `T`.
+
+Un **método puente** es un método que `javac` agrega por su cuenta. Aparece cuando la firma borrada de un método
+heredado no coincide con la del método que lo sobrescribe. Recibe la firma borrada, convierte el argumento con `checkcast` y delega.
+
+Un **método sintético** es cualquier método generado por el compilador sin equivalente en el fuente. Todo puente es
+sintético, pero no al revés: las lambdas también producen sintéticos.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+Sigue la compilación de `ValidadorSku implements Validador<String>` del Problema resuelto 4.1:
+
+1. `javac` borra `Validador<T>`. Como `T` no tiene límite, `boolean valida(T)` queda con el descriptor
+   `(Ljava/lang/Object;)Z`.
+2. Compila `ValidadorSku.valida(String)` con el descriptor `(Ljava/lang/String;)Z`.
+3. Compara: en el lenguaje, el segundo sobrescribe al primero. En la JVM son métodos distintos, porque sus
+   descriptores difieren.
+4. Para que la sobrescritura funcione en la JVM, agrega `valida(Object)` con las marcas `ACC_BRIDGE` y
+   `ACC_SYNTHETIC`. Su cuerpo hace `checkcast String` y llama a `valida(String)`.
+
+El diagrama muestra lo que ocurre en ejecución:
 
 ```mermaid
 flowchart LR
@@ -1644,11 +1960,69 @@ flowchart LR
   K -- "no es String<br/>(tipo crudo)" --> X["ClassCastException"]
 ```
 
-El llamador solo conoce la interfaz, y la interfaz borrada solo tiene `valida(Object)`. Por eso la JVM entra siempre
-por el puente. El puente es también el lugar donde un tipo crudo se descubre: el `checkcast` es la verificación que el
-compilador no pudo hacer.
+1. El llamador solo conoce la interfaz, así que su bytecode invoca `valida:(Ljava/lang/Object;)Z`.
+2. La JVM busca ese descriptor en `ValidadorSku` y encuentra el puente.
+3. Con un `String`, el `checkcast` pasa y tu método se ejecuta: `CAF-01 -> true`.
+4. Con un `Integer` llegado por un tipo crudo, el `checkcast` falla y lanza `ClassCastException`. Es la verificación
+   que el compilador no pudo hacer porque el aviso se suprimió.
 
-Esto afecta reflexión, generación de proxies, frameworks que inspeccionan métodos declarados y verificadores de compatibilidad binaria. Cambiar tipos genéricos en una clase o interfaz pública puede agregar, quitar o alterar bridge methods aunque el código fuente “parezca” igual. El test `bridgeMethodExistePorErasure` comprueba su existencia con reflexión; `javap -c -p` muestra el método `public java.lang.Object porId(java.lang.String)` en la clase compilada.
+En el proyecto pasa lo mismo con `RepositorioTexto implements Repositorio<String>`. `javap -c -p` muestra el puente
+`public java.lang.Object porId(java.lang.String)`, y el test `bridgeMethodExistePorErasure` lo encuentra con
+`Method.isBridge()`.
+
+El límite cambia el borrado, y con él el descriptor. En el Problema resuelto 4.2, `<T> T primero(List<T>)` borra a
+`(Ljava/util/List;)Ljava/lang/Object;`. Con `<T extends CharSequence>`, borra a `(Ljava/util/List;)Ljava/lang/CharSequence;`.
+El cliente congelado busca el primero y recibe `NoSuchMethodError`.
+
+##### 4. Reglas, variantes y casos límite
+
+Si hay varios límites, como `<T extends A & B>`, `T` se borra al primero. El JDK usa esa regla a propósito. En el
+fuente, `Collections.max` declara `<T extends Object & Comparable<? super T>>`. Así su descriptor sigue siendo el
+mismo que antes de los genéricos. Este es el fragmento de `javap -s` para ese método:
+
+```text
+$ javap -s java.util.Collections
+  public static <T extends java.lang.Comparable<? super T>> T max(java.util.Collection<? extends T>);
+    descriptor: (Ljava/util/Collection;)Ljava/lang/Object;
+```
+
+Ese `Object &` existe solo para conservar la compatibilidad binaria con Java 1.4. `javap` lo omite en la firma, pero
+el descriptor lo delata.
+
+Dos métodos cuyas firmas borran al mismo descriptor no pueden convivir en una clase:
+
+```java
+static int total(List<String> skus) { return skus.size(); }
+static int total(List<Integer> cantidades) { return cantidades.size(); }
+```
+
+`javac` responde `name clash: total(List<Integer>) and total(List<String>) have the same erasure`.
+
+Los puentes también aparecen sin genéricos. Desde Java 5, un método puede sobrescribir a otro con un retorno más
+específico, como `String` en vez de `Object`. Ese **retorno covariante** también genera un puente.
+
+En la especificación de la JVM (JVMS §4.6), `ACC_BRIDGE` vale `0x0040`, el mismo bit que `ACC_VOLATILE` en campos. Por
+eso `Modifier.toString` imprime `volatile` sobre un puente. `ACC_SYNTHETIC` vale `0x1000`.
+
+La reflexión devuelve los puentes en `getDeclaredMethods()`. Herramientas que generan proxies, registran manejadores
+o comparan APIs deben filtrarlos con `isBridge()`. Si no, cuentan métodos duplicados.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+En Java, Módulo 2, Tema 4 aprendiste que los genéricos se borran y que los tipos crudos existen por compatibilidad.
+Aquí ves el precio en el bytecode: métodos que no escribiste y descriptores que dependen de los límites.
+
+Del Tema 2 traes el descriptor y el `NoSuchMethodError`. Cambiar un límite es el mismo caso que pasar de `int` a
+`long`: el fuente compila, el binario busca la dirección vieja.
+
+La reflexión de Java, Módulo 19, Tema 1 es la herramienta que hizo visible el puente. `isBridge()` e `isSynthetic()`
+son los filtros que te faltaban.
+
+Diferencia clave con el Tema 3: un `default` lo agregas tú para conservar la compatibilidad. Un puente lo agrega el
+compilador con el mismo fin, sin que lo pidas.
+
+El Tema 5 compara superficies con reflexión y `javap`. Allí necesitas saber que los puentes existen para no confundir
+un método sintético con un cambio real de la API.
 
 #### Problema resuelto 4.1
 Encuentra el segundo `valida` de `ValidadorSku` y comprueba qué hace.
@@ -1964,9 +2338,39 @@ porque se recompilan con la versión nueva. ¿Cómo haces que el build detecte l
 - **Error típico:** imprimir las rupturas y salir con `0`: el pipeline sigue verde y nadie lee el log.
 
 #### ► CÓMO FUNCIONA
-La compatibilidad no se “recuerda”, se verifica. El mínimo verificable es tener tests que ejerciten la firma antigua, la nueva y los casos de evolución. En equipos con librerías publicadas, se suman herramientas como japicmp o Revapi, que comparan dos versiones de JAR y reportan cambios binarios/fuente incompatibles. Aquí se usa `javax.tools.JavaCompiler` directamente para compilar un cliente de prueba contra `api-v2-1.0.0.jar` y contra `api-v2-rompe-1.0.0.jar`.
 
-La verificación completa tiene tres piezas, cada una para una columna distinta de la matriz del Tema 2:
+##### 1. La idea en lenguaje sencillo
+
+En un aeropuerto, nadie confía en que el piloto «recuerde» si revisó el combustible. Hay una lista de chequeo y un
+instrumento que marca el nivel. Si el instrumento dice que falta, el avión no despega, aunque el piloto tenga prisa
+y mucha experiencia.
+
+La compatibilidad de una API necesita lo mismo. Tienda Aurora dependía de la memoria de los revisores, y un cambio
+de `int` a `long` salió como parche. Los tests pasaron porque se recompilan con la versión nueva: miden la fuente,
+nunca la binaria. Este tema convierte las preguntas del Tema 2 en programas que el build ejecuta. Si la respuesta es
+«rompe», el build falla y el JAR no se publica.
+
+##### 2. Definición formal y vocabulario
+
+La **línea base** es la versión publicada de la API, su JAR o sus `.class`. Es la referencia contra la que se compara
+cada versión candidata. Debe ser el artefacto que usan los clientes, no el fuente de una rama.
+
+Un **verificador de compatibilidad** compara dos versiones compiladas y clasifica cada diferencia. Las herramientas
+más usadas en Java son japicmp y Revapi. `CompararApi` es una versión mínima escrita para entender cómo trabajan.
+
+**`javax.tools.JavaCompiler`** es la interfaz del módulo `java.compiler` que da acceso programático a `javac`. La
+especificación que la definió llegó con Java 6. `ToolProvider.getSystemJavaCompiler()` la devuelve, o `null` si el
+programa corre en un entorno sin compilador.
+
+Un **`Diagnostic`** representa un mensaje del compilador: tipo, texto, archivo y línea. `DiagnosticCollector` los
+acumula durante una compilación. Dicho de forma sencilla: cada línea roja de `javac`, como dato que tu programa lee.
+
+Una **puerta de compatibilidad** es un paso del build que termina con código de salida distinto de cero si la
+candidata rompe la línea base. El sistema de integración continua detiene el pipeline ante ese código.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La verificación completa tiene tres piezas, una por cada columna de la matriz del Tema 2:
 
 ```mermaid
 flowchart TD
@@ -1983,7 +2387,68 @@ flowchart TD
   D3 -- "ejecuta" --> OK
 ```
 
-`VerificadorApi` construye una fuente en memoria con `SimpleJavaFileObject`, recoge `Diagnostic`s y devuelve el primer error. El test `verificadorJavaxToolsAceptaV2YRechazaRuptura` exige que el JAR compatible compile y que el roto falle con `cannot find symbol`. Además, el cliente congelado se compila una sola vez contra `api-v1` y se ejecuta contra los dos JAR: esa es la prueba de compatibilidad binaria. La constante `public static final String ETIQUETA` es una constante de compilación: el bytecode del cliente contiene `ldc "ETIQUETA=v1"`, por lo que cambiarla a `"v2"` en la librería no llega hasta recompilar el cliente.
+Sigue `CompararApi` con la línea base `v1` y la candidata `largo`:
+
+1. Crea un `URLClassLoader` por versión, con el cargador de plataforma como padre. Las dos versiones tienen una clase
+   `com.aurora.api.Inventario`; con cargadores separados no se mezclan.
+2. Para cada clase pública, arma una clave por miembro público: nombre, tipos de parámetros y tipo de retorno. Es la
+   misma información del descriptor, escrita de forma legible.
+3. Descarta los métodos sintéticos, como los puentes del Tema 4, que no son decisiones de diseño.
+4. Busca cada clave de la base en la candidata. `reservar(String, int)` no está: imprime `ROMPE`.
+5. Termina con `System.exit(1)`. El código de salida es la puerta.
+
+Ahora sigue `VerificaFuente` con la candidata `excepcion`:
+
+1. `ToolProvider.getSystemJavaCompiler()` obtiene el compilador del JDK que ejecuta el programa.
+2. Un `SimpleJavaFileObject` presenta el texto `CLIENTE` como si fuera un archivo `ClientePrueba.java`.
+3. `getTask(...)` prepara una compilación con la candidata en el `-classpath`; `call()` la ejecuta y devuelve
+   `false` si hubo errores.
+4. El `DiagnosticCollector` recibió un `Diagnostic` de tipo `ERROR` en la línea 4: `unreported exception
+   java.io.IOException`. El programa lo imprime y sale con `1`.
+
+La tercera pieza es el cliente congelado del Tema 2. Ninguna comparación de firmas sustituye a ejecutar bytecode real
+contra la candidata, porque así aparecen los errores de enlace que la JVM lanza de verdad.
+
+En el proyecto, `VerificadorApi` aplica la segunda pieza a los JAR de `api-v2` y `api-v2-rompe`. El test
+`verificadorJavaxToolsAceptaV2YRechazaRuptura` exige que el primero compile y que el segundo falle con
+`cannot find symbol`. `ClienteCongelado` cumple la tercera.
+
+##### 4. Reglas, variantes y casos límite
+
+`getSystemJavaCompiler()` devuelve `null` en un runtime sin el módulo `java.compiler`, como una imagen creada con
+`jlink` sin ese módulo. Comprueba el `null` y falla con un mensaje claro, como hacen los dos programas del tema.
+
+El idioma del mensaje depende del `Locale` que pases a `getMessage`. Con `Locale.ROOT` sale en inglés, que es lo
+estable para comparar en pruebas. Filtra por `Diagnostic.Kind.ERROR`: los tipos `WARNING`, `MANDATORY_WARNING` y
+`NOTE` no impiden compilar.
+
+Una comparación de firmas tiene límites claros. No ve el comportamiento observable del Tema 1: cambiar `PENDIENTE:A1`
+por `PENDIENTE/A1` pasaría limpio. Tampoco ve cambios de jerarquía, de `final` o de visibilidad, ni convierte un
+`default` en abstracto. japicmp y Revapi clasifican esos casos y muchos más; `CompararApi` no.
+
+Las constantes merecen un trato aparte. Cambiar su valor no rompe el enlace, pero los clientes congelados conservan el
+valor viejo. Por eso `CompararApi` las reporta como `AVISO` y no como `ROMPE`.
+
+La puerta debe admitir rupturas aprobadas. Una ruptura es aceptable si la versión mayor sube, según el Tema 3. Una
+herramienta que falla siempre ante cualquier cambio termina desactivada por el equipo.
+
+La línea base debe estar disponible antes de comparar. Si falta, `CompararApi` lanza `NoSuchFileException` en lugar
+de producir un informe. El build debe descargarla o compilarla en un paso previo y fallar si no está.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+El código de salida de Java, Módulo 0, Tema 3 es lo que une estos programas con cualquier build o pipeline. Un `0`
+deja seguir; cualquier otro valor detiene.
+
+Los cargadores de clases y la reflexión de Java, Módulo 19, Temas 1 y 8 son la base de `CompararApi`. Aquí resuelven
+un problema práctico: cargar dos versiones de la misma clase en un solo proceso.
+
+Este tema cierra el módulo. El Tema 1 definió qué se compara. El Tema 2 explicó por qué hacen falta dos pruebas
+distintas, fuente y binaria. El Tema 3 dio la regla de versión que la puerta aplica. El Tema 4 explicó por qué hay que
+descartar los métodos sintéticos.
+
+En el Módulo 22, las clases de valor y los `enum` también forman parte de la superficie. Agregar una constante a un
+`enum` público, por ejemplo, obliga a revisar los `switch` exhaustivos de los clientes.
 
 #### Problema resuelto 5.1
 Escribe un comparador de superficies que falle cuando la candidata quita una firma pública.

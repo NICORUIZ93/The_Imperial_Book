@@ -27,7 +27,7 @@ capa de red pequeña que trata cada uno de esos casos de forma explícita, y la 
 Proyecto 42.
 
 **Qué necesitas saber antes:** del Módulo 4, **`async/await` y `Task`** (Tema 1), **la cancelación cooperativa**
-(Tema 4) y **`Sendable` y el aislamiento de Swift 6** (Tema 6); del Módulo 0, **los enums con valores asociados**
+(Tema 2) y **`Sendable` y el aislamiento de Swift 6** (Tema 4); del Módulo 0, **los enums con valores asociados**
 (Tema 3); del Módulo 2, **`@State`** (Tema 1); del Módulo 1, **`List` y `NavigationStack`**.
 
 **Qué no se repite:** cómo funcionan `async/await`, `Task` y los actores (Módulo 4), ni cómo se arma una lista en
@@ -107,8 +107,7 @@ Al terminar este tema podrás:
 - decodificar JSON con claves en *snake_case* y fechas ISO 8601 en tipos de Swift;
 - leer un `DecodingError` y saber qué campo falló.
 
-**Conceptos clave:** `URLSession`, `URLRequest`, `async/await`, `Codable`, `JSONDecoder`, estrategias de
-decodificación, `DecodingError`
+**Conceptos clave:** `URLSession`, `URLRequest`, `async/await`, `Codable`, `JSONDecoder`, estrategias de decodificación, `DecodingError`
 
 #### El problema
 La pantalla de la ruta necesita las entregas del día. El servidor las envía en JSON con sus propias convenciones
@@ -134,6 +133,13 @@ Este tema usa **`async/await`** (Módulo 4, Tema 1) y **los enums con valor brut
 - **Ejemplo:** `URLRequest(url: base.appending(path: "envios"), timeoutInterval: 10)`.
 - **Error típico:** armar la URL concatenando textos (`"\(base)/envios"`) y duplicar o perder barras.
 
+**`async/await`**
+- **Definición técnica:** `async` marca una función que puede suspenderse; `await` marca cada punto donde la llamada puede esperar sin bloquear el hilo (Módulo 4, Tema 1). `URLSession.data(for:)` es una de esas funciones.
+- **En palabras sencillas:** pedir los datos al servidor y seguir atendiendo la pantalla hasta que lleguen.
+- **Dónde se rompe la comparación:** `await` no hace la petición más rápida: solo libera el hilo mientras se espera.
+- **Ejemplo:** `let (datos, respuesta) = try await URLSession.shared.data(for: peticion)`.
+- **Error típico:** olvidar `await` en esa línea: el compilador responde `expression is 'async' but is not marked with 'await'`.
+
 **`Codable`**
 - **Definición técnica:** la unión de los protocolos `Encodable` y `Decodable`; el compilador genera la conversión desde y hacia JSON a partir de las propiedades del tipo.
 - **En palabras sencillas:** un molde: si el JSON encaja, sale el objeto; si no, sale un error que dice dónde no encajó.
@@ -141,8 +147,8 @@ Este tema usa **`async/await`** (Módulo 4, Tema 1) y **los enums con valor brut
 - **Ejemplo:** `struct Envio: Codable { let guia: String; let ventanaInicio: Date }`.
 - **Error típico:** declarar todo como opcional para «evitar errores»; los datos malos pasan y fallan más tarde.
 
-**estrategias del `JSONDecoder`**
-- **Definición técnica:** opciones que cambian cómo se leen claves y fechas: `keyDecodingStrategy = .convertFromSnakeCase` y `dateDecodingStrategy = .iso8601`.
+**`JSONDecoder` y estrategias de decodificación**
+- **Definición técnica:** `JSONDecoder` convierte los bytes de un JSON en un tipo `Decodable`; sus estrategias cambian cómo lee claves y fechas: `keyDecodingStrategy = .convertFromSnakeCase` y `dateDecodingStrategy = .iso8601`.
 - **En palabras sencillas:** el traductor de convenciones entre el servidor y Swift.
 - **Dónde se rompe la comparación:** solo traduce nombres de claves, no valores: `"en_ruta"` sigue necesitando su `case enRuta = "en_ruta"`.
 - **Ejemplo:** `ventana_inicio` → `ventanaInicio`.
@@ -156,10 +162,38 @@ Este tema usa **`async/await`** (Módulo 4, Tema 1) y **los enums con valor brut
 - **Error típico:** `try?` al decodificar: el motivo se pierde y la pantalla queda vacía.
 
 #### ► CÓMO FUNCIONA
-La prueba enciende el servidor en un puerto, crea un `ClienteEnvios` con esa dirección y llama a `pendientes()`. El
-cliente arma la `URLRequest`, la entrega a `URLSession` y espera con `await` sin bloquear el hilo. Con los bytes de
-la respuesta, `JSONDecoder` aplica las estrategias y el molde de `Envio`. Si algo no encaja, el `DecodingError` se
-resume con su ruta.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en pedir un domicilio por teléfono. Haces el pedido, cuelgas y sigues con tu día. Cuando llega el
+repartidor, abres la caja y revisas que traiga lo que pediste. No te quedas inmóvil junto a la puerta.
+
+Una petición de red funciona igual. La app pide las entregas del día a un servidor y sigue respondiendo a los toques
+de la persona. Cuando llegan los bytes, los revisa contra lo que esperaba. Esa revisión es la parte delicada: el
+servidor habla en JSON, con sus nombres (`ventana_inicio`) y sus textos (`"en_ruta"`), y la app habla en tipos de
+Swift.
+
+Este tema une dos piezas. Una trae los bytes sin congelar la pantalla: `URLSession` con `await`. La otra los
+convierte en valores de Swift o explica con precisión por qué no pudo: `Codable` con `JSONDecoder`.
+
+##### 2. Definición formal y vocabulario
+**`URLSession`** es la clase de Foundation que coordina tareas de transferencia de datos por HTTP. Su método
+`data(for:)` es asíncrono: recibe una **`URLRequest`** y devuelve una tupla `(Data, URLResponse)` cuando la
+respuesta completa llegó. Si la transferencia falla, lanza un `URLError`.
+
+Una **`URLRequest`** es un valor (una `struct`) que describe la petición: URL, método HTTP, cabeceras, cuerpo y
+tiempo de espera. Por ser valor, la copias y la modificas sin afectar a otras peticiones.
+
+**`Codable`** es un alias de tipo: `Encodable & Decodable`. Cuando un tipo lo adopta y todas sus propiedades son
+`Codable`, el compilador **sintetiza** el código de conversión. Sintetizar significa que lo escribe por ti a partir
+de los nombres y tipos de las propiedades.
+
+**`JSONDecoder`** lee bytes JSON y construye el tipo pedido. Sus **estrategias de decodificación** cambian dos
+cosas: cómo se emparejan las claves (`keyDecodingStrategy`) y cómo se leen las fechas (`dateDecodingStrategy`).
+Cuando el molde no encaja, lanza un **`DecodingError`** con un contexto que incluye `codingPath`, la ruta hasta el
+valor problemático.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue el camino de `pendientes()` en el diagrama, desde la prueba hasta el servidor y de vuelta.
 
 ```mermaid
 sequenceDiagram
@@ -175,6 +209,77 @@ sequenceDiagram
     C->>C: JSONDecoder.api.decode([Envio].self)
     C-->>P: [Envio] o ErrorRed.datosInvalidos
 ```
+
+1. **Armar la petición.** El cliente construye la URL con `appending(path:)`, que pone la barra justa entre la base
+   y `envios`. Luego crea la `URLRequest`; el método por defecto es `GET`.
+2. **Entregarla a la sesión.** `try await sesion.data(for: peticion)` suspende la función. **Suspender** significa
+   que la tarea cede su hilo y el sistema lo usa para otra cosa, como dibujar la pantalla.
+3. **Transferir.** La sesión abre la conexión TCP, escribe la línea `GET /envios HTTP/1.1` con sus cabeceras y lee
+   la respuesta. Todo eso ocurre fuera de tu código.
+4. **Reanudar.** Cuando llega el último byte, la tarea continúa en la línea siguiente al `await` con `datos` y
+   `respuesta` ya asignados.
+5. **Decodificar.** `JSONDecoder` primero analiza el texto como JSON. Después recorre el tipo pedido, `[Envio]`, y
+   por cada propiedad busca su clave en el objeto.
+
+El paso 5 depende de las estrategias. Observa el decodificador del curso:
+
+```swift
+let decodificador = JSONDecoder()
+decodificador.keyDecodingStrategy = .convertFromSnakeCase
+decodificador.dateDecodingStrategy = .iso8601
+```
+
+La primera línea de configuración transforma cada clave del JSON antes de compararla: `ventana_inicio` pasa a
+`ventanaInicio`. La segunda indica que las fechas llegan como texto ISO 8601, por ejemplo `"2026-11-25T14:00:00Z"`.
+Sin ellas, el decodificador busca la clave literal `ventanaInicio` y lanza `keyNotFound`, como muestra la salida del
+problema resuelto.
+
+Para los enums con valor bruto, el código sintetizado lee un `String` y llama a `EstadoEnvio(rawValue:)`. Si el
+resultado es `nil`, lanza `dataCorrupted`:
+
+```swift
+public enum EstadoEnvio: String, Codable, Sendable {
+    case pendiente
+    case enRuta = "en_ruta"
+    case entregado
+}
+```
+
+Por eso `"devuelto"` produce el resumen `[1].estado: Cannot initialize EstadoEnvio from invalid String value
+devuelto`. El `[1]` viene de `codingPath`: el segundo elemento del arreglo, propiedad `estado`.
+
+##### 4. Reglas, variantes y casos límite
+- **Claves que sobran.** El código sintetizado ignora las claves del JSON que el tipo no declara. Un campo nuevo
+  del servidor no rompe la app publicada.
+- **Claves que faltan.** Si la propiedad no es opcional, falta la clave y obtienes `keyNotFound`. Si es opcional,
+  el código sintetizado usa `decodeIfPresent` y deja `nil`.
+- **`null` explícito.** Un `null` en una propiedad no opcional produce `valueNotFound`, distinto de una clave
+  ausente.
+- **Siglas.** `.convertFromSnakeCase` solo pone en mayúscula la letra que sigue a cada guion bajo. Así, `id_url` se
+  vuelve `idUrl`: una propiedad llamada `idURL` nunca recibe el valor.
+- **Estrategia solo de claves.** La estrategia traduce nombres de claves, no valores. El texto `"en_ruta"` necesita
+  su valor bruto explícito en el enum.
+- **`Data` y `URLResponse`.** `data(for:)` no lanza por un código 404 o 500. Una respuesta de error del servidor
+  llega como datos normales; distinguirla es trabajo del Tema 2.
+
+Algunas fechas importan. `Codable` llegó con Swift 4. Los métodos `async` de `URLSession`, como `data(for:)`, existen
+desde iOS 15 y macOS 12. `appending(path:)` existe desde iOS 16. La firma `throws(ErrorRed)`, llamada **throws
+tipado**, es de Swift 6.0.
+
+En Linux, `URLSession` no está en Foundation sino en el módulo **FoundationNetworking**. Por eso el cliente lo
+importa dentro de `#if canImport(FoundationNetworking)`: el mismo archivo compila en ambos sistemas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El `await` de este tema es el mismo del Módulo 4, Tema 1. La diferencia es que antes esperabas un `Task.sleep` y
+ahora esperas a otra máquina, que puede tardar, fallar o no contestar. `EstadoEnvio` aplica los enums con valor bruto
+del Módulo 0, Tema 3; `Codable` añade solo la conversión desde texto.
+
+Compara `Codable` con leer el JSON a mano con `JSONSerialization`, como hace el servidor de desarrollo. A mano
+obtienes diccionarios `[String: Any]` y conviertes cada campo con `as?`; cualquier error se vuelve un `nil`
+silencioso. Con `Codable`, el tipo es el contrato y el error dice dónde se rompió.
+
+El Tema 2 de este módulo toma la respuesta que aquí diste por buena y revisa su código HTTP. El Tema 3 le pone un
+límite de tiempo y la cancela. En el Módulo 6, las entregas se guardan en el dispositivo con SwiftData.
 
 #### Problema resuelto 1.1
 Escribe un servidor de desarrollo que entregue los envíos del día en JSON, los modelos `Codable` y el método
@@ -896,8 +1001,7 @@ Al terminar este tema podrás:
 - leer el mensaje de error que envía el servidor;
 - enviar un `POST` con cuerpo JSON y tratar sus respuestas 200, 404 y 422.
 
-**Conceptos clave:** código de estado HTTP, `HTTPURLResponse`, `URLError`, error tipado (`throws(ErrorRed)`), error
-transitorio, mensaje para la persona usuaria
+**Conceptos clave:** código de estado HTTP, `HTTPURLResponse`, `URLError`, error tipado (`throws(ErrorRed)`), error transitorio, mensaje para la persona usuaria
 
 #### El problema
 Con el servidor apagado, la app muestra un texto técnico con `NSURLErrorDomain` y el número −1004. Con el
@@ -909,8 +1013,8 @@ Este tema usa **los enums con valores asociados** (Módulo 0, Tema 3) y **el man
 
 #### Glosario del tema
 
-**código de estado HTTP**
-- **Definición técnica:** el número de tres cifras de la primera línea de la respuesta: 2xx éxito, 4xx error del cliente (la petición está mal), 5xx error del servidor.
+**código de estado HTTP y `HTTPURLResponse`**
+- **Definición técnica:** el número de tres cifras de la primera línea de la respuesta: 2xx éxito, 4xx error del cliente (la petición está mal), 5xx error del servidor; en Swift se lee en `statusCode` tras convertir la `URLResponse` en `HTTPURLResponse`.
 - **En palabras sencillas:** el sello de la respuesta: «recibido», «está mal tu carta» o «aquí tuvimos un problema».
 - **Dónde se rompe la comparación:** el cuerpo puede traer un JSON igual de bien formado con un 200 o con un 500; el sello es lo que decide.
 - **Ejemplo:** `422 Unprocessable Content` cuando el PIN no tiene 6 dígitos.
@@ -945,9 +1049,39 @@ Este tema usa **los enums con valores asociados** (Módulo 0, Tema 3) y **el man
 - **Error típico:** «The operation couldn't be completed.».
 
 #### ► CÓMO FUNCIONA
-`enviar(_:)` es el único lugar donde se llama a `URLSession`. Tiene dos salidas de error: si `data(for:)` lanza,
-el `URLError` se traduce por su código; si hay respuesta, el código HTTP decide. Solo con 2xx sigue la
-decodificación. Todo sale como `ErrorRed`, y la interfaz solo conoce ese tipo.
+
+##### 1. La idea en lenguaje sencillo
+Cuando envías una carta certificada, pueden pasar dos cosas malas muy distintas. La primera: el correo nunca llega,
+porque la dirección no existe o la oficina está cerrada. La segunda: llega y te devuelven una nota que dice «falta
+un documento». En el primer caso no hubo conversación; en el segundo sí, y la respuesta fue un «no».
+
+La app de reparto vive esa misma diferencia. Si el teléfono no tiene señal, no hay respuesta. Si el servidor dice
+que el PIN tiene dos dígitos, hubo respuesta y trae una instrucción concreta. Tratar los dos casos igual deja al
+repartidor sin saber si debe buscar señal, esperar o corregir lo que escribió.
+
+Este tema reúne todos esos fallos en un solo tipo, `ErrorRed`. Cada caso sabe si vale la pena reintentar y qué
+texto verá la persona.
+
+##### 2. Definición formal y vocabulario
+El **código de estado HTTP** es el número de tres cifras de la primera línea de la respuesta. La especificación
+HTTP (RFC 9110) lo agrupa por su primera cifra: 1xx informativo, 2xx éxito, 3xx redirección, 4xx error del
+cliente y 5xx error del servidor.
+
+En Foundation, la respuesta llega como `URLResponse`. Cuando el protocolo es HTTP, el objeto real es una
+subclase, **`HTTPURLResponse`**, que expone `statusCode` y las cabeceras. Por eso el cliente hace `respuesta as?
+HTTPURLResponse` antes de leer el código.
+
+**`URLError`** es el error que lanza `URLSession` cuando la transferencia no termina con una respuesta. Su
+propiedad `code` es un `URLError.Code` con un valor numérico negativo: `.timedOut` es −1001 y
+`.cannotConnectToHost` es −1004.
+
+Un **error tipado** se declara con `throws(ErrorRed)`. La firma promete que de la función solo sale ese tipo. Un
+**error transitorio** es el que puede desaparecer sin cambiar la petición. El **mensaje para la persona usuaria**
+es el texto que la interfaz muestra para cada caso.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Todo pasa por `enviar(_:)`, el único método que habla con `URLSession`. El diagrama muestra sus dos salidas de
+error.
 
 ```mermaid
 flowchart TB
@@ -961,6 +1095,61 @@ flowchart TB
     H -->|"no"| HT["http(codigo, mensaje del servidor)"]
     H -->|"sí"| DE["decodificar → modelo o datosInvalidos"]
 ```
+
+1. **La llamada a la sesión.** `enviar` ejecuta `try await sesion.data(for: peticion)` dentro de un `do`. Esa
+   función de Foundation declara `throws` sin tipo, así que puede lanzar cualquier `Error`.
+2. **Primera salida: no hubo respuesta.** Si lanza un `URLError`, el `catch` lo pasa a `ErrorRed(error)`. Ese
+   inicializador agrupa varios códigos en `sinConexion` y conserva el número de los demás en `.otro`.
+3. **Comprobar el tipo de respuesta.** Si no lanzó, el cliente convierte `URLResponse` en `HTTPURLResponse`. Si
+   la conversión falla, no se trata de HTTP y sale `.otro`.
+4. **Segunda salida: hubo respuesta, pero no es 2xx.** El cliente intenta leer `{"mensaje": …}` del cuerpo con
+   `try?`. Si no puede, el mensaje queda en `nil`. Después lanza `.http(codigo:mensaje:)`.
+5. **Camino feliz.** Solo con 2xx devuelve los bytes, y la operación los decodifica como en el Tema 1.
+
+La comprobación del paso 4 es una sola línea, y es la que más se olvida:
+
+```swift
+guard (200..<300).contains(http.statusCode) else {
+    let mensaje = try? JSONDecoder.api.decode(CuerpoError.self, from: datos).mensaje
+    throw .http(codigo: http.statusCode, mensaje: mensaje)
+}
+```
+
+Observa `throw .http(…)` sin escribir `ErrorRed`. Como la función declara `throws(ErrorRed)`, el compilador conoce
+el tipo y acepta el miembro implícito. El `try?` es intencional: un cuerpo de error ilegible no debe ocultar el
+código HTTP.
+
+El `POST` sigue el mismo camino. Solo cambia la preparación: método `POST`, cabecera `Content-Type:
+application/json` y un cuerpo que produce `JSONEncoder` a partir de `CuerpoConfirmacion`.
+
+##### 4. Reglas, variantes y casos límite
+- **`URLSession` no juzga el código.** Un 404 o un 500 completan la petición sin lanzar. La prueba
+  `sinRevisarElCodigo` lo demuestra: el fallo aparece después, como `typeMismatch` al decodificar.
+- **Redirecciones.** Por defecto, `URLSession` sigue las respuestas 3xx por su cuenta. Por eso tu código casi nunca
+  recibe un 301 o un 302.
+- **Exhaustividad.** Con `throws(ErrorRed)`, el `error` de un `catch` ya es `ErrorRed`. Un `switch` sobre él puede
+  cubrir todos los casos sin `default`, y el compilador avisa si agregas un caso nuevo.
+- **Traducción obligatoria.** Dentro de una función `throws(ErrorRed)`, un error de otro tipo no puede escapar. Por
+  eso `enviar` termina con un `catch` general que produce `.otro(codigo:)`.
+- **Equivalencias.** `throws` a secas equivale a `throws(any Error)`, y `throws(Never)` equivale a no lanzar.
+- **Qué es transitorio.** El curso decide que lo son `sinConexion`, `tiempoAgotado`, 429, 502, 503 y 504. Un 500 se
+  deja fuera a propósito; la regla es una decisión del equipo, no de HTTP.
+- **Nombres que cambian.** El RFC 9110 (2022) renombró el 422 a «Unprocessable Content». Antes se llamaba
+  «Unprocessable Entity», y aún lo verás así en muchos servidores.
+
+Los errores tipados llegaron con Swift 6.0, en la propuesta SE-0413. Con Swift 5, `ErrorRed` existiría igual, pero
+la firma solo diría `throws` y el `catch` recibiría `any Error`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`ErrorRed` es un enum con valores asociados, como los del Módulo 0, Tema 3. `.http(codigo:mensaje:)` guarda dos
+datos y `.datosInvalidos` guarda el resumen que construiste en el Tema 1 con `codingPath`.
+
+Compara este enfoque con propagar el `URLError` tal cual. Con el `URLError`, la pantalla tendría que conocer códigos
+como −1004. Con `ErrorRed`, la pantalla conoce seis casos con nombre y un texto listo para mostrar.
+
+`esTransitorio` todavía no se usa en este tema. El Tema 3 la convierte en la regla que decide cuándo reintentar. El
+Tema 4 usa `mensajeParaPersona` en la pantalla de error. En el Módulo 13, Tema 4, la misma idea separa lo que se
+reintenta de lo que se descarta en una cola de salida.
 
 #### Problema resuelto 2.1
 Escribe `ErrorRed` con la traducción de `URLError`, la regla de lo transitorio y los mensajes; completa
@@ -1255,20 +1444,19 @@ Al terminar este tema podrás:
 - cancelar una petición en curso, y también una espera entre reintentos;
 - medir cada caso con un reloj, en lugar de suponer cuánto tarda.
 
-**Conceptos clave:** `timeoutIntervalForRequest`, `timeoutInterval`, reintento con espera exponencial,
-idempotencia, cancelación cooperativa, `Task.sleep`
+**Conceptos clave:** `timeoutIntervalForRequest`, `timeoutInterval`, reintento con espera exponencial, idempotencia, cancelación cooperativa, `Task.sleep(for:)`
 
 #### El problema
 En una zona con mala señal, la pantalla se queda en «Cargando…» un minuto entero. Cuando el servidor se reinicia,
 un solo 503 deja la pantalla en error aunque dos segundos después funcionaría. Y cuando el repartidor sale de la
 pantalla, la petición sigue y, al llegar tarde, la app intenta mostrar una lista que ya nadie ve.
 
-Este tema usa **la cancelación cooperativa** (Módulo 4, Tema 4) y **`Sendable` y los closures `@Sendable`** (Módulo
-4, Tema 6).
+Este tema usa **la cancelación cooperativa** (Módulo 4, Tema 2) y **`Sendable` y los closures `@Sendable`** (Módulo
+4, Tema 4).
 
 #### Glosario del tema
 
-**tiempo de espera**
+**`timeoutInterval` y `timeoutIntervalForRequest`**
 - **Definición técnica:** en `URLSessionConfiguration`, `timeoutIntervalForRequest` es el máximo que una petición puede pasar sin recibir datos (se reinicia cada vez que llegan bytes); `timeoutIntervalForResource` es el máximo total. `URLRequest.timeoutInterval` fija el primero para una sola petición en las plataformas de Apple.
 - **En palabras sencillas:** cuánto aguantas en la línea sin que nadie diga nada antes de colgar.
 - **Dónde se rompe la comparación:** una descarga lenta pero constante no se corta: siempre está llegando algo.
@@ -1304,9 +1492,36 @@ Este tema usa **la cancelación cooperativa** (Módulo 4, Tema 4) y **`Sendable`
 - **Error típico:** `try? await Task.sleep(...)`: se traga la cancelación y el bucle sigue reintentando.
 
 #### ► CÓMO FUNCIONA
-`conReintentos` ejecuta la operación. Si falla con un error transitorio y quedan intentos, espera según la política y
-vuelve a empezar; si el error no es transitorio o se acabaron los intentos, lo lanza. La espera es un
-`Task.sleep`, así que una cancelación en ese momento también corta el ciclo.
+
+##### 1. La idea en lenguaje sencillo
+Llamas a una oficina y suena ocupado. No marcas cien veces seguidas: esperas un momento, vuelves a intentar y,
+si sigue ocupado, esperas un poco más. Tras unos intentos te rindes. Y si mientras tanto alguien te dice «ya no
+hace falta», cuelgas aunque estés en plena espera.
+
+Este tema le enseña esas tres costumbres a la capa de red. Primero, no aguantar en silencio para siempre: un
+**tiempo de espera** corta la petición. Segundo, insistir solo cuando tiene sentido, con pausas crecientes. Tercero,
+dejarlo todo en cuanto el repartidor sale de la pantalla.
+
+Las tres se miden con un reloj real contra el servidor de desarrollo. Así no supones cuánto tarda cada caso: lo
+compruebas.
+
+##### 2. Definición formal y vocabulario
+Una `URLSessionConfiguration` define dos límites. `timeoutIntervalForRequest` es el máximo **sin recibir datos**;
+el contador vuelve a cero cada vez que llegan bytes. `timeoutIntervalForResource` es el máximo total de la
+transferencia. Los valores por defecto son 60 segundos y 7 días.
+
+`URLRequest.timeoutInterval` fija el primer límite para una sola petición. Cuando se agota cualquiera de los dos,
+`URLSession` lanza `URLError(.timedOut)`, código −1001.
+
+Un **reintento con espera exponencial** repite la operación tras pausas que se multiplican por un **factor**. Con
+200 ms y factor 2 obtienes 200, 400 y 800 ms. La **idempotencia** dice si repetir es seguro: una operación
+idempotente deja el mismo resultado si la haces una o varias veces.
+
+La **cancelación cooperativa** es el modelo de Swift: `Task.cancel()` solo enciende una marca. El código que corre
+en la tarea decide cuándo mirarla. **`Task.sleep(for:)`** suspende la tarea durante una `Duration` y la mira por ti.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama sigue un ciclo de `conReintentos`. Fíjate en las dos salidas hacia «lanza».
 
 ```mermaid
 flowchart TB
@@ -1318,6 +1533,70 @@ flowchart TB
     S -->|"cancelada"| C["lanza .cancelado"]
     S -->|"terminó"| I
 ```
+
+1. **Intento.** `conReintentos` llama a `operacion()` con `await`. Si devuelve un valor, el ciclo termina ahí.
+2. **Registro del fallo.** Si lanza, llama a `alFallar(intento, error)`. Gracias a `throws(ErrorRed)`, `error` ya
+   es `ErrorRed` y tiene `esTransitorio`.
+3. **Decisión.** El `guard` exige dos cosas: que el error sea transitorio y que queden intentos. Si falla una, el
+   error sale tal cual, sin envolver.
+4. **Espera.** Calcula la pausa con `politica.espera(antesDelIntento:)` y suspende la tarea con `Task.sleep`. El
+   hilo queda libre durante la pausa.
+5. **Cancelación durante la espera.** Si alguien cancela la tarea, `Task.sleep` lanza `CancellationError` al
+   instante. El `catch` lo traduce a `.cancelado` y el ciclo termina.
+6. **Cancelación durante la petición.** Si la marca se enciende mientras `URLSession` espera bytes, la sesión
+   cierra la conexión y lanza `URLError(.cancelled)`, código −999. `ErrorRed` lo traduce también a `.cancelado`.
+
+El cálculo de la pausa es un bucle corto sobre `Duration`:
+
+```swift
+public func espera(antesDelIntento n: Int) -> Duration {
+    var espera = esperaInicial
+    for _ in 0..<max(0, n - 2) { espera *= factor }
+    return espera
+}
+```
+
+Antes del intento 2 no multiplica; antes del 3 multiplica una vez. Por eso la salida real muestra 0,2, 0,4, 0,8 y
+1,6 segundos antes de los intentos 2 a 5.
+
+El límite de tiempo, en cambio, no está en el ciclo. Vive en la sesión del cliente, que lo recibe al crearse:
+
+```swift
+let configuracion = URLSessionConfiguration.ephemeral
+configuracion.timeoutIntervalForRequest = tiempoEspera
+```
+
+Así cada intento tiene su propio límite. Tres intentos con 10 s de límite pueden sumar unos 30 s más las pausas;
+ese es el peor caso que debe tolerar la pantalla.
+
+##### 4. Reglas, variantes y casos límite
+- **Plataformas distintas.** En Linux, FoundationNetworking ignoró el `timeoutInterval` de la `URLRequest`: la
+  prueba recibió 497 bytes a los 3,0 s. En iOS sí cortó a 1,0 s. Por eso el valor va en la configuración.
+- **Descargas lentas.** `timeoutIntervalForRequest` no corta una respuesta que llega despacio pero sin pausas,
+  porque cada byte reinicia el contador. Para un tope total existe `timeoutIntervalForResource`.
+- **Qué métodos son idempotentes.** El RFC 9110 define como idempotentes `GET`, `HEAD`, `OPTIONS`, `TRACE`, `PUT`
+  y `DELETE`. `POST` y `PATCH` no lo son. Reintentar un `POST` exige que el servidor lo tolere.
+- **`try?` sobre `Task.sleep`.** Se traga el `CancellationError` y el bucle sigue. La salida del error provocado lo
+  muestra: 3 llamadas y `sinConexion` en lugar de 1 llamada y `cancelado`.
+- **Closures `@Sendable`.** `alFallar` y `operacion` pueden ejecutarse en otro dominio de concurrencia. Por eso no
+  pueden modificar una `var` capturada; el compilador de Swift 6 lo rechaza, y un `Mutex` lo resuelve.
+- **`Mutex` y `Duration`.** `Mutex` está en el módulo Synchronization desde Swift 6.0, con iOS 18 y macOS 15.
+  `Duration` y `Task.sleep(for:)` existen desde Swift 5.7, con iOS 16.
+- **`Retry-After`.** El modo `/caido` envía esa cabecera con el valor 1. Esta política la ignora. Una política más
+  completa la respetaría y sumaría un azar pequeño (*jitter*) a cada pausa.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+En el Módulo 4, Tema 2, viste la cancelación cooperativa y los límites de tiempo con grupos de tareas. Aquí la
+cancelación cruza la frontera de Swift: `URLSession` la convierte en una conexión cerrada de verdad.
+
+La decisión de reintentar no es nueva: usa `esTransitorio`, la regla escrita en el Tema 2. Si agregas un caso a
+`ErrorRed`, el `switch` exhaustivo te obliga a decidir si se reintenta.
+
+Compara el tiempo de espera con la cancelación. El primero lo decide la sesión por falta de bytes y produce
+`tiempoAgotado`. La segunda la decide tu código y produce `cancelado`, que la interfaz no debe mostrar como error.
+
+El Tema 4 usa todo esto desde la pantalla: el modificador `.task` cancela la carga al salir. El Módulo 13, Tema 4,
+retoma los reintentos con retroceso e idempotencia para una cola que sobrevive a cierres de la app.
 
 #### Problema resuelto 3.1
 Haz que el tiempo de espera se cumpla, escribe `conReintentos` y mide: un servidor que tarda 3 s con una espera
@@ -1761,7 +2040,7 @@ La pantalla tiene un `@State var envios: [Envio] = []` y un `@State var cargando
 vacía y un error se ven igual (nada en la pantalla), y es posible estar «cargando» con una lista vieja y un error a
 la vez. Además, la red solo se probó en Linux: falta saber si iOS se comporta igual.
 
-Este tema usa **`@State`** (Módulo 2, Tema 1), **`List` y `NavigationStack`** (Módulo 1) y **`.task`** (Módulo 4).
+Este tema usa **`@State`** (Módulo 2, Tema 1), **`List` y `NavigationStack`** (Módulo 1) y **`.task` y su cancelación** (Módulo 4, Tema 2).
 
 #### Glosario del tema
 
@@ -1801,9 +2080,36 @@ Este tema usa **`@State`** (Módulo 2, Tema 1), **`List` y `NavigationStack`** (
 - **Error típico:** desactivar ATS para toda la app (`NSAllowsArbitraryLoads`) para que funcione un servidor de pruebas.
 
 #### ► CÓMO FUNCIONA
-La app recibe un `ClienteEnvios` y lo pasa a la pantalla. `.task` llama a `cargar()`, que pone `cargando`, llama a
-`pendientes()` dentro de `conReintentos` y termina en `lista`, `vacia` o `error`. Si la tarea se cancela, no cambia
-nada. Las capturas construyen la pantalla con un estado fijo y sin cliente; la app real usa el servidor de la Mac.
+
+##### 1. La idea en lenguaje sencillo
+Un semáforo nunca está en verde y en rojo a la vez. Tiene pocos estados, uno activo en cada momento, y cada uno
+le dice al conductor qué hacer. Nadie tiene que adivinar.
+
+La pantalla de la ruta necesita esa misma claridad. Mientras llega la respuesta, muestra una rueda. Si llegan
+entregas, la lista. Si llega una lista vacía, un cartel que dice que hoy no hay envíos. Si falla, el motivo y un
+botón para reintentar. Con dos booleanos sueltos, en cambio, puedes acabar con «cargando» y «error» encendidos
+juntos.
+
+Este tema traduce esa idea a un enum y conecta la pantalla con la capa de red de los temas anteriores. Después la
+lleva al simulador, donde corre la Foundation de Apple y donde vive App Transport Security.
+
+##### 2. Definición formal y vocabulario
+Un **estado de pantalla** es un tipo suma: un enum cuyos casos son excluyentes. `EstadoPantalla` tiene cuatro
+(`cargando`, `lista([Envio])`, `vacia` y `error(ErrorRed)`), y cada uno lleva solo los datos que su dibujo
+necesita.
+
+**`.task`** es un modificador de vista de SwiftUI. Inicia una tarea asíncrona antes de que la vista aparezca y la
+cancela cuando la vista desaparece. **`.refreshable`** marca una acción asíncrona de actualización: la `List` la
+ejecuta con el gesto de deslizar y muestra el indicador hasta que termina.
+
+**`ContentUnavailableView`** es una vista del sistema para contenidos ausentes. Recibe un título, un símbolo, una
+descripción y, si quieres, botones de acción.
+
+**App Transport Security (ATS)** es la política de iOS que obliga a `URLSession` a usar HTTPS con TLS moderno.
+Las excepciones se declaran en el `Info.plist`, bajo la clave `NSAppTransportSecurity`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+El diagrama separa lo que corre en la Mac de lo que corre dentro del simulador.
 
 ```mermaid
 flowchart LR
@@ -1818,6 +2124,68 @@ flowchart LR
       K["Pruebas: CapturasTests"] --> P2["PantallaEnvios(estado fijo)"]
     end
 ```
+
+1. **La app crea un solo cliente.** `RedApp` construye un `ClienteEnvios`, y con él una sola `URLSession`, a partir
+   del argumento `-escena`. Ese cliente se pasa a `PantallaEnvios`.
+2. **SwiftUI crea el estado.** `@State` guarda `estado` fuera de la estructura de la vista. El valor inicial
+   `.cargando` solo se usa la primera vez que esa vista existe.
+3. **`.task` arranca la carga.** SwiftUI inicia la tarea y ejecuta `cargar()`. Como `View` está aislado al actor
+   principal, `cargar()` también lo está y puede asignar `estado` sin saltos.
+4. **La red trabaja.** `conReintentos` llama a `pendientes()`. Durante cada `await`, el hilo principal queda libre y
+   la rueda sigue girando.
+5. **El resultado elige un caso.** Una lista con elementos da `.lista`; una vacía, `.vacia`; un `ErrorRed`, `.error`.
+   La asignación dispara un nuevo `body`, y el `switch` dibuja el caso.
+6. **Salir de la pantalla cancela.** SwiftUI cancela la tarea, `URLSession` corta la conexión y `cargar()` recibe
+   `.cancelado`. Ese caso sale con `return`, sin tocar el estado.
+
+El corazón del paso 5 es este fragmento de `cargar()`:
+
+```swift
+do {
+    let envios = try await conReintentos { () async throws(ErrorRed) in try await cliente.pendientes() }
+    estado = envios.isEmpty ? .vacia : .lista(envios)
+} catch {
+    if error == .cancelado { return }
+    estado = .error(error)
+}
+```
+
+Observa que `error` ya es `ErrorRed` y se compara con `==`. Eso funciona porque `conReintentos` declara
+`throws(ErrorRed)` y `ErrorRed` es `Equatable`.
+
+Las capturas usan otro camino. Construyen `PantallaEnvios(cliente: nil, estado:)`, y `cargar()` sale en la primera
+línea por el `guard let cliente`. Así cada estado se fotografía sin red y siempre igual.
+
+##### 4. Reglas, variantes y casos límite
+- **`.task` y `onAppear`.** Una `Task { }` creada dentro de `onAppear` no queda ligada a la vista: sigue viva al
+  salir. La de `.task` sí se cancela.
+- **`.task(id:)`.** La variante con `id` cancela la tarea y la reinicia cada vez que el valor cambia. Sirve, por
+  ejemplo, para recargar al cambiar de fecha.
+- **`.refreshable` espera.** El indicador se queda mientras la función `async` no termine. Si dentro creas otra
+  `Task`, la función vuelve enseguida y el indicador desaparece antes de tiempo.
+- **El botón «Reintentar».** Un `Button` no recibe una acción asíncrona; por eso crea `Task { await cargar() }`.
+  Esa tarea no se cancela al salir, a diferencia de la de `.task`.
+- **Versiones.** `.task` y `.refreshable` existen desde iOS 15. `ContentUnavailableView` exige iOS 17. ATS apareció
+  en iOS 9.
+- **ATS y direcciones IP.** La documentación de Apple indica que, desde iOS 17, ATS ya no permite por defecto
+  conexiones a direcciones IP. Recomienda declarar excepciones en `NSExceptionDomains` o usar
+  `NSAllowsLocalNetworking`.
+- **Lo que se observó.** En la prueba, `127.0.0.1` cargó sin ninguna clave en el `Info.plist`, y `http://example.com`
+  dio −1022. No extiendas esa observación a otras IP de tu red local: declara la excepción.
+
+Una diferencia entre Foundations quedó medida. En iOS y macOS, `timeoutInterval` en la `URLRequest` cortó a 1,0 s;
+en Linux se ignoró. La configuración de la sesión funcionó en los tres sistemas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+`@State` es el del Módulo 2, Tema 1: un valor que pertenece a la vista. Lo nuevo es su forma, un enum en lugar de
+varias variables. `List` y `NavigationStack` vienen del Módulo 1 y del Módulo 3, Tema 1, sin cambios.
+
+La cancelación que dispara `.task` es la del Módulo 4, Tema 2. Aquí ves su efecto completo: llega hasta la conexión
+TCP y la capa de red la convierte en `.cancelado`, el caso que el Tema 3 preparó.
+
+Compara esta pantalla con la del Módulo 8. Aquí la vista llama a la red y decide el estado. En el Módulo 8, Tema 1,
+esa lógica pasa a un view model que se prueba sin vista. El Módulo 13, Tema 2, vuelve a ATS para fijar
+certificados en conexiones HTTPS.
 
 #### Problema resuelto 4.1
 Escribe la pantalla con sus estados y la app. En la Mac: enciende el servidor, ejecuta las 18 pruebas del paquete

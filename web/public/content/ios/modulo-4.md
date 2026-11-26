@@ -151,9 +151,50 @@ Este tema usa **los errores con `throws`** (Módulo 0, Tema 1) y **los `struct` 
 - **Error típico:** comparar tiempos exactos en una prueba (`== .milliseconds(300)`).
 
 #### ► CÓMO FUNCIONA
-Con `await` en serie, cada consulta empieza cuando termina la anterior: los tiempos se suman. Con `async let`, las tres
-empiezan juntas y el `await` final espera a la más lenta: los tiempos se superponen. Mientras esperan, ninguna ocupa
-un hilo.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una persona que despacha pedidos por teléfono. Si llama a un proveedor y se queda con el auricular en la
+oreja hasta que le respondan, no atiende a nadie más. Si deja el encargo y pide «llámame cuando esté listo», puede
+seguir trabajando. Cuando suena el teléfono, retoma el pedido donde lo dejó.
+
+Una función síncrona que espera a la red es la primera persona: ocupa el hilo mientras espera. Una función `async`
+es la segunda. Cuando llega a un `await` que debe esperar, se **suspende**: deja el hilo libre y se reanuda cuando
+llega el resultado.
+
+En la pantalla de la ruta, eso cambia dos cosas. La espera ya no congela a nadie. Y como esperar no ocupa un hilo,
+puedes encargar las tres consultas a la vez con `async let`. El resultado llega en 0,3 s en lugar de 0,9 s.
+
+##### 2. Definición formal y vocabulario
+Una **función `async`** es una función que puede suspenderse en medio de su ejecución y reanudarse después. Solo se
+puede llamar desde un contexto que también sea asíncrono, y la llamada lleva `await`.
+
+**`await` y punto de suspensión** van juntos. `await` marca cada lugar donde la función puede suspenderse. Ese lugar
+se llama punto de suspensión. Mientras la función está suspendida, el hilo atiende otro trabajo.
+
+**`async let`** crea una **tarea hija**: una unidad de trabajo que empieza de inmediato y en paralelo, ligada a la
+función que la creó. El valor se recoge con `await` al usarlo. Si la función termina sin esperarla, la tarea se
+cancela.
+
+Una **`Task`** es una unidad de trabajo asíncrono que empieza al crearse y no es hija de nadie. Sirve para entrar al
+mundo asíncrono desde código síncrono, como la acción de un botón. **`ContinuousClock`** es un reloj monotónico, es
+decir, que nunca retrocede aunque cambie la hora del sistema.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue una llamada a `detalle("EN-4471")` desde `detallesEnSerie`:
+
+1. El compilador dividió `detalle` en tramos, separados por cada `await`. Las variables que deben sobrevivir a la
+   espera se guardan en un marco en memoria, no en la pila del hilo.
+2. La función corre su primer tramo y llega a `try await Task.sleep(for: latencia)`. El reloj registra que debe
+   despertarla en 300 ms.
+3. La función se suspende. El hilo vuelve al **grupo de hilos cooperativo** de Swift, un conjunto pequeño de hilos,
+   del tamaño del número de núcleos. Ese hilo ejecuta otro trabajo pendiente.
+4. A los 300 ms, el reloj marca la función como lista. Algún hilo del grupo, no necesariamente el mismo, retoma el
+   segundo tramo con las variables del marco.
+5. La función devuelve el `Detalle`, y `detallesEnSerie` se reanuda en la línea siguiente a su propio `await`. Recién
+   entonces pide la segunda guía.
+
+Con `async let` cambia el paso 2. Cada `async let` crea una tarea hija que empieza su propia espera de inmediato. Las
+tres duermen al mismo tiempo, y el `await` final espera a la más lenta.
 
 ```mermaid
 sequenceDiagram
@@ -176,6 +217,71 @@ sequenceDiagram
     end
     S-->>F: los tres resultados
 ```
+
+La regla de «declarar todas y esperar al final» importa. Observa este programa, que espera la primera antes de
+declarar la segunda:
+
+```swift
+func consulta(_ guia: String) async throws -> String {
+    try await Task.sleep(for: .milliseconds(300))
+    return guia
+}
+
+let reloj = ContinuousClock()
+let inicio = reloj.now
+async let a = consulta("EN-4471")
+let x = try await a                 // se espera antes de declarar la segunda
+async let b = consulta("EN-4472")
+let y = try await b
+print(x, y, reloj.now - inicio)
+```
+
+```text
+EN-4471 EN-4472 0.601348128 seconds
+```
+
+Tarda unos 0,6 s, como en serie. La segunda tarea empieza cuando la primera ya terminó. Los decimales cambian en cada
+ejecución; lo estable es que se suman las dos esperas.
+
+La `Task` del problema resuelto sigue otro camino. `Task { … }` agenda el trabajo y devuelve de inmediato un valor que
+lo representa. Por eso se imprime «la tarea ya empezó» antes del resultado. Más tarde, `await tarea.value` suspende a
+quien la espera hasta que termine.
+
+##### 4. Reglas, variantes y casos límite
+`async`/`await` llegó con Swift 5.5 (SE-0296), junto con `async let` (SE-0317) y `Task` (SE-0304). En las plataformas
+de Apple, usarlo exige iOS 13 o posterior. `Duration` y `ContinuousClock` llegaron con Swift 5.7 (SE-0329).
+
+`await` marca un punto de suspensión posible, no seguro. Si el resultado ya está listo, la función sigue sin
+suspenderse. Lo que sí garantiza el lenguaje es que no hay suspensión sin `await` escrito.
+
+`try` y `await` se combinan en ese orden: `try await`. Una función `async throws` puede fallar y suspenderse. Un
+error lanzado después de una espera llega por el mismo camino que en código síncrono, como `sinConexion`.
+
+Desde una función síncrona no puedes escribir `await`. El compilador lo rechaza con `'async' call in a function that
+does not support concurrency`. La salida es crear una `Task`, que es lo que hace la acción de un botón.
+
+`Task { … }` hereda la prioridad, los valores locales de la tarea y el aislamiento del lugar donde se crea. Si la
+creas en código del actor principal, su cuerpo también corre ahí, salvo en los `await`. `Task.detached` no hereda
+nada; úsala solo cuando de verdad necesites romper esa herencia.
+
+Una `Task` no es hija. Si quien la creó desaparece, la tarea sigue corriendo hasta terminar o hasta que alguien la
+cancele. Su error se pierde si nadie lee `value` o `result`. Dentro de una función que ya es `async`, llama con
+`await` en lugar de crear tareas.
+
+Nunca bloquees un hilo del grupo cooperativo con esperas síncronas, como un semáforo. El grupo es pequeño, y un hilo
+bloqueado deja de atender al resto de tareas.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Del Módulo 0, Tema 1 viene `throws`: una función asíncrona falla igual que una síncrona. Del Tema 2 de ese módulo
+viene `ServicioEnvios` como `struct`, un tipo valor que se puede usar desde varias tareas sin riesgo porque no cambia.
+
+Comparado con los closures del Módulo 0, Tema 4, `async`/`await` reemplaza el estilo de «pásame una función y te
+llamo cuando termine». El código se lee de arriba abajo, y los errores viajan con `throw` en lugar de un parámetro
+de error en cada closure.
+
+El Tema 2 lleva `async let` a cantidades variables con grupos de tareas, y explica la cancelación que hace lanzar a
+`Task.sleep`. El Tema 3 muestra qué puede pasar en un actor durante un punto de suspensión. El Tema 4 explica el
+aislamiento que hereda una `Task`, y el Módulo 5 reemplaza la espera simulada por la red real.
 
 #### Problema resuelto 1.1
 Escribe un servicio que tarda 300 ms por consulta y pide tres detalles en serie y con `async let`; mide los dos.
@@ -526,8 +632,7 @@ Al terminar este tema podrás:
 - poner un tiempo límite a cualquier operación con una carrera entre dos tareas hijas;
 - escribir código de CPU que revisa la cancelación, y medir qué pasa si no lo hace.
 
-**Conceptos clave:** concurrencia estructurada, grupo de tareas, cancelación cooperativa, `CancellationError`, tiempo
-límite
+**Conceptos clave:** concurrencia estructurada, grupo de tareas, cancelación cooperativa, `CancellationError`, tiempo límite
 
 #### El problema
 La ruta tiene entre 5 y 40 guías: no se puede escribir un `async let` por cada una. Cuando el repartidor sale de la
@@ -574,9 +679,48 @@ Este tema usa **`async let` y `Task`** (Tema 1) y **los `switch` sobre errores**
 - **Error típico:** un límite con `Task.sleep` en serie después de la operación, que no corta nada.
 
 #### ► CÓMO FUNCIONA
-El grupo crea una tarea hija por guía. Las hijas terminan en cualquier orden y el grupo las recoge. Si una lanza un
-error y el cuerpo del grupo lo deja salir, el grupo cancela a las demás antes de devolver. La cancelación baja por el
-árbol de tareas: cancelar a la madre cancela a todas sus hijas.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en un jefe de bodega que reparte cuarenta encargos entre ayudantes. No se va a casa hasta que todos vuelven,
+con el paquete o con una explicación. Si el cliente cancela el pedido, el jefe avisa a todos «ya no hace falta». Cada
+ayudante suelta la herramienta en el siguiente momento razonable, no en mitad de un corte.
+
+Eso es la **concurrencia estructurada**. Las tareas hijas viven dentro del trabajo que las creó, como los ayudantes
+dentro de la jornada del jefe. Nada queda corriendo sin dueño. Si el trabajo se cancela o falla, la cancelación baja a
+todas las hijas.
+
+En la ruta, eso resuelve los tres problemas del tema. Un grupo pide las 40 guías sin escribir 40 `async let`. Salir
+de la pantalla cancela las consultas pendientes. Y un tiempo límite corta al servidor colgado en lugar de esperar
+para siempre.
+
+##### 2. Definición formal y vocabulario
+La **concurrencia estructurada** es un modelo donde cada tarea hija pertenece a un alcance. Ese alcance no termina
+hasta que todas sus hijas terminan. Las hijas forman un árbol con la tarea madre en la raíz.
+
+Un **grupo de tareas** es el alcance que crean `withTaskGroup` y `withThrowingTaskGroup`. Dentro, `addTask` agrega
+hijas en número variable. Los resultados se leen con `for try await` o con `next()`, en el orden en que las hijas
+**terminan**, no en el que se agregaron.
+
+La **cancelación cooperativa** significa que cancelar solo marca la tarea. `tarea.cancel()` no detiene nada a la
+fuerza. El código revisa la marca con `Task.isCancelled` o con `try Task.checkCancellation()`, y decide cuándo
+parar.
+
+**`CancellationError`** es el error que lanzan `checkCancellation`, `Task.sleep` y otras funciones al detectar la
+marca. Significa «ya nadie quiere el resultado», no «algo se rompió». Un **tiempo límite** es una carrera entre la
+operación y una tarea que duerme y luego lanza `tiempoAgotado`.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue `detallesDeRuta` con la guía inválida `EN-9999` en medio:
+
+1. `withThrowingTaskGroup` crea el alcance. El tipo `(Int, Detalle)` dice qué devuelve cada hija.
+2. El ciclo llama a `addTask` tres veces. Cada hija empieza de inmediato y queda ligada al grupo y a la tarea madre.
+3. Las tres duermen 300 ms en paralelo. Al despertar, `EN-9999` lanza `guiaDesconocida`. Las otras dos devuelven su
+   detalle, en cualquier orden.
+4. El `for try await` recibe resultados a medida que llegan. Cuando le toca el de `EN-9999`, el `try` relanza el
+   error y el cuerpo del grupo sale con él.
+5. Antes de devolver, el grupo cancela a las hijas que sigan vivas y **espera** a que terminen. Ninguna hija
+   sobrevive al grupo.
+6. El error sale de `detallesDeRuta`. La salida real lo muestra: `guiaDesconocida("EN-9999")`.
 
 ```mermaid
 flowchart TB
@@ -588,6 +732,80 @@ flowchart TB
     M -. "cancela" .-> H2
     M --> R["el error sale del grupo<br/>cuando todas terminaron"]
 ```
+
+El caso sin errores explica por qué las hijas devuelven su posición. Llegan en el orden en que terminan, que cambia en
+cada ejecución. El diccionario `porPosicion` reconstruye el orden de la ruta al final.
+
+`conLimite` usa el mismo grupo como carrera. Agrega dos hijas: la operación y un reloj. `grupo.next()` devuelve lo
+primero que termine. Si es el reloj, `next()` relanza `tiempoAgotado`; si es la operación, `cancelAll()` cancela al
+reloj. En los dos casos, el grupo espera a la perdedora antes de salir.
+
+Esa espera es la razón de la advertencia del glosario. Si la operación no revisa la cancelación, el grupo la espera
+igual. El límite solo corta lo que coopera.
+
+La cancelación de la tarea en serie funciona así. `tarea.cancel()` marca la tarea a los 750 ms. La tercera consulta
+estaba dentro de `Task.sleep`, que revisa la marca, se despierta y lanza `CancellationError`. `mensaje(para:)` lo
+reconoce y devuelve `nil`.
+
+Cuando el trabajo no revisa nada, puedes reaccionar al instante con `withTaskCancellationHandler`. Su segundo closure
+corre en cuanto alguien cancela:
+
+```swift
+let tarea = Task {
+    try await withTaskCancellationHandler {
+        try await Task.sleep(for: .seconds(2))
+    } onCancel: {
+        print("onCancel: se avisa al instante")
+    }
+}
+try? await Task.sleep(for: .milliseconds(100))
+tarea.cancel()
+print(await tarea.result)
+```
+
+```text
+onCancel: se avisa al instante
+failure(Swift.CancellationError())
+```
+
+`onCancel` es el lugar para cerrar una conexión o detener un temporizador. Puede correr en otro hilo, al mismo tiempo
+que la operación, así que lo que toque debe ser seguro entre hilos.
+
+##### 4. Reglas, variantes y casos límite
+Los grupos llegaron con Swift 5.5 (SE-0304), junto con la cancelación. Un grupo no puede salir de su closure: no lo
+guardes en una propiedad ni lo pases a otra tarea. Por eso es «estructurado».
+
+Si el cuerpo del grupo termina sin leer todos los resultados, el grupo espera igual a las hijas pendientes. Con un
+`withThrowingTaskGroup`, el error de una hija que nadie leyó se descarta. Lee los resultados si te importan sus
+errores.
+
+`addTaskUnlessCancelled` no agrega la hija si el grupo ya está cancelado. Sirve en ciclos largos que agregan muchas
+tareas. `withDiscardingTaskGroup`, de Swift 5.9 (SE-0381), sirve cuando las hijas no devuelven nada y no quieres
+acumular resultados.
+
+La cancelación baja por el árbol, nunca sube. Cancelar a la madre cancela a todas las hijas. Cancelar una hija no
+cancela a la madre ni a sus hermanas. `Task { }` y `Task.detached { }` no forman parte del árbol: cancelarlas es
+responsabilidad tuya.
+
+Un `catch` general que convierte todo en otro error puede disfrazar la cancelación. Revisa `is CancellationError`
+antes, como hace `mensaje(para:)`. Swift no obliga a que la cancelación llegue como ese tipo: un `URLSession` cancelado
+lanza su propio error, como verás en el Módulo 5.
+
+Revisar la cancelación tiene un costo pequeño. Por eso `contarCombinaciones` mira cada 1000 vueltas. Sin revisar,
+terminó todo su trabajo 1,7 s después de cancelado; revisando, se detuvo casi al instante.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 1 presentó `async let`, que también crea tareas hijas estructuradas, en número fijo. El grupo es la versión
+para un número que depende de los datos. Las dos herramientas cancelan y esperan a sus hijas de la misma forma.
+
+Del Módulo 0, Tema 3 viene el `switch` sobre errores con patrones, que `mensaje(para:)` usa para separar la
+cancelación de las fallas reales. Del Tema 4 de ese módulo vienen los closures `@escaping`, como la operación que
+recibe `conLimite`.
+
+El Tema 3 muestra qué pasa cuando varias tareas tocan el mismo estado, y por qué hace falta un actor. El Tema 4
+explica por qué `conLimite` exige un closure `@Sendable` y un `Valor: Sendable`. En SwiftUI, el modificador `.task`
+crea una tarea que se cancela sola al desaparecer la vista. Es la herramienta natural para el problema de salir de la
+pantalla.
 
 #### Problema resuelto 2.1
 Pide los cinco detalles de la ruta en paralelo, en el orden de la ruta. Cancela una consulta en serie a mitad de
@@ -877,9 +1095,48 @@ Este tema usa **los grupos de tareas** (Tema 2) y **las clases y su identidad** 
 - **Error típico:** «comprobar, esperar, actuar» con un `await` en medio.
 
 #### ► CÓMO FUNCIONA
-El actor ejecuta un trabajo a la vez, pero un `await` dentro de un método parte ese método en dos trabajos. Entre uno
-y otro, otras llamadas pasan. Cinco asignaciones a la vez comprueban la capacidad (0 de 3) antes de que la primera
-agregue nada.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una planilla de conteo pegada en la pared de la bodega. Ocho personas escanean paquetes y cada una actualiza
+el total: lee el número, le suma uno y escribe el resultado. Si dos leen el mismo número al mismo tiempo, las dos
+escriben el mismo resultado y se pierde un paquete. Al cierre, la cuenta no coincide, y no siempre por lo mismo.
+
+La solución de oficina es una ventanilla con una sola persona que lleva la planilla. Los demás le dictan y hacen
+fila. Un **actor** es esa ventanilla: el estado vive adentro y solo una tarea lo toca a la vez.
+
+La ventanilla tiene una particularidad. Si quien atiende tiene que llamar a alguien y esperar, atiende al siguiente de
+la fila mientras tanto. Por eso la moto recibió 5 paquetes con capacidad para 3. Cada trámite revisó el cupo y se
+quedó esperando al servidor. Al volver, agregó su paquete sin revisar otra vez.
+
+##### 2. Definición formal y vocabulario
+Una **carrera de datos** ocurre cuando dos hilos acceden a la misma memoria sin sincronización y al menos uno escribe.
+El resultado no está definido: puede salir bien, mal o distinto en cada ejecución. `valor += 1` son tres pasos, leer,
+sumar y escribir, y otro hilo puede meterse entre ellos.
+
+**ThreadSanitizer** es una herramienta del compilador que vigila cada acceso a memoria mientras el programa corre.
+Cuando ve una carrera, la informa con el archivo y la línea. Solo ve las que ocurren en esa ejecución.
+
+Un **actor** es un tipo referencia que protege su estado mutable. Solo una tarea a la vez ejecuta código del actor.
+Desde afuera, sus métodos y propiedades se usan con `await`, porque puede haber que esperar turno.
+
+El **aislamiento** es la regla del compilador que dice desde dónde se puede tocar cada declaración. Dentro del actor,
+sin `await`; desde afuera, con `await`. La **reentrancia** es la propiedad de que, durante un `await` dentro de un
+método del actor, el actor atiende otras llamadas.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Cada actor tiene un **ejecutor serial**, una fila que ejecuta un trabajo a la vez. Sigue cinco llamadas a
+`asignarConError` sobre una moto de capacidad 3:
+
+1. Las cinco tareas hijas del grupo llaman a `moto.asignarConError` casi al mismo tiempo. Cada llamada es un trabajo
+   que entra en la fila del actor.
+2. El ejecutor toma la primera. Corre hasta el primer `await`: comprueba `asignadas.count < capacidad`, 0 menor que
+   3, y llama al servicio.
+3. El `await` suspende el método. El trabajo se parte en dos, y el actor queda libre. El resto del método volverá a la
+   fila cuando el servicio responda.
+4. El ejecutor toma la segunda llamada. Comprueba el cupo: sigue en 0, porque nadie ha agregado nada. Se suspende
+   igual. Lo mismo pasa con la tercera, la cuarta y la quinta.
+5. A los 100 ms, las respuestas vuelven y cada continuación agrega su guía. Ninguna revisa el cupo de nuevo. El
+   resultado es la salida real: `aceptadas 5, en la moto 5 (capacidad 3)`.
 
 ```mermaid
 sequenceDiagram
@@ -893,6 +1150,73 @@ sequenceDiagram
     B->>M: append → 2, 3, 4, 5
     Note over M: 5 paquetes en una moto de 3
 ```
+
+`asignar` arregla el paso 2. Comprueba y agrega en el mismo trabajo, sin `await` entre las dos cosas. Ningún otro
+trabajo puede meterse ahí, porque el actor solo suelta el turno en un `await`. La cuarta llamada ve el cupo lleno y
+devuelve `false`.
+
+El contador inseguro falla por otra razón. Sus ocho tareas corren en hilos distintos del grupo cooperativo, de verdad
+al mismo tiempo. Nada ordena sus lecturas y escrituras, y algunas sumas se pisan. ThreadSanitizer señala la línea
+exacta: `Bodega.swift:24:36`, que es `inseguro.valor += 1`.
+
+El actor protege con el compilador, no solo al ejecutar. Leer su estado desde afuera sin `await` no compila:
+
+```swift
+actor Bodega {
+    var escaneados = 0
+    func escanear() { escaneados += 1 }
+}
+
+func cierre(_ bodega: Bodega) async {
+    await bodega.escanear()
+    print(bodega.escaneados)
+}
+```
+
+```text
+error: actor-isolated property 'escaneados' cannot be accessed from outside of the actor
+```
+
+La corrección es `print(await bodega.escaneados)`. El `await` reconoce que la lectura puede tener que esperar turno.
+
+##### 4. Reglas, variantes y casos límite
+Los actores llegaron con Swift 5.5 (SE-0306). Son tipos referencia, como las clases, pero sin herencia. Swift los
+considera `Sendable` siempre: compartir una referencia a un actor entre tareas es seguro, porque su estado está
+protegido.
+
+La reentrancia es una decisión de diseño. Un actor que no atendiera a nadie durante un `await` podría quedar trabado
+esperando a otro actor que lo espera a él. Swift prefiere la reentrancia y te pide revisar el estado después de cada
+`await`.
+
+Una constante `let` de un tipo `Sendable` es segura de leer desde cualquier lugar, porque nunca cambia. Dentro del
+mismo módulo se lee sin `await`. Desde otro módulo hace falta `nonisolated`, como `capacidad` en `Moto`; si no, sale el
+error que muestra el tema.
+
+`nonisolated` también se aplica a métodos que no tocan el estado del actor. Se pueden llamar sin `await` y no esperan
+turno. A la inversa, un parámetro marcado `isolated` permite que una función corra dentro del actor que recibe.
+
+`@unchecked Sendable` desactiva la comprobación del compilador para un tipo. Es una promesa tuya, y el contador
+inseguro muestra lo que pasa cuando la promesa es falsa. Úsalo solo cuando proteges el estado tú mismo, por ejemplo
+con un `Mutex`.
+
+`Mutex`, del módulo `Synchronization`, llegó con Swift 6.0 (SE-0433). En las plataformas de Apple exige macOS 15 o iOS
+18, como recuerda el `Package.swift` del módulo. Es una alternativa al actor cuando la sección protegida es corta y no
+espera nada.
+
+En Swift 5 la clase compartida compila sin errores, y la carrera solo aparece al ejecutar. En modo Swift 6 el
+compilador la rechaza con `passing closure as a 'sending' parameter risks causing data races`. Esa comprobación es el
+aislamiento por regiones (SE-0414), parte de Swift 6.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Del Módulo 0, Tema 2 viene la diferencia entre compartir y copiar. Una clase se comparte, y por eso puede tener
+carreras. Un `struct` se copia, y cada tarea tiene el suyo. El actor es la tercera opción: se comparte, pero protegido.
+
+Del Tema 2 de este módulo viene el grupo que lanza las ocho tareas y las cinco asignaciones. Del Tema 1 viene la
+suspensión: cada `await` libera el hilo, y en un actor también libera el turno.
+
+El Tema 4 generaliza el aislamiento. `@MainActor` es un actor global que protege la interfaz, y `Sendable` es la
+regla que dice qué puede cruzar de un aislamiento a otro. El error del contador sin protección vuelve allí con su
+nombre completo.
 
 #### Problema resuelto 3.1
 Suma desde 8 tareas a la vez en una clase sin protección y en un actor; ejecuta tres veces y una vez con
@@ -1193,8 +1517,7 @@ Al terminar este tema podrás:
 - explicar qué cambia la función `NonisolatedNonsendingByDefault` (la «concurrencia accesible» de Swift 6.2 en
   adelante) en dónde corre una función `async`.
 
-**Conceptos clave:** `Sendable`, región de aislamiento y `sending`, `@MainActor`, `@concurrent`,
-`NonisolatedNonsendingByDefault`
+**Conceptos clave:** `Sendable`, región de aislamiento y `sending`, `@MainActor`, `@concurrent`, `NonisolatedNonsendingByDefault`
 
 #### El problema
 La pantalla «Ruta óptima» calcula el mejor orden para 9 paradas. En el simulador, al tocar el botón, la lista no se
@@ -1243,9 +1566,52 @@ Este tema usa **los actores y el aislamiento** (Tema 3), **las tareas** (Tema 1)
 - **Error típico:** confiar en que «es `async`, así que no bloquea» sin saber qué modo tiene el proyecto.
 
 #### ► CÓMO FUNCIONA
-Mientras el actor principal ejecuta algo, no ejecuta nada más: ni el dibujo de la interfaz ni las tareas que laten
-cada 20 ms. Una función síncrona llamada desde él lo ocupa entera. Una función `@concurrent` se ejecuta en otro hilo,
-y el `await` libera al actor principal hasta que el resultado vuelve.
+
+##### 1. La idea en lenguaje sencillo
+Piensa otra vez en la ventanilla del Tema 3, ahora en la entrada de la bodega. Es la única que atiende al público: si
+la persona que atiende se pone a hacer un cálculo de una hora, la fila no avanza. Lo sensato es mandar el cálculo a la
+oficina de atrás y seguir atendiendo. Cuando llega el resultado, se entrega en la ventanilla.
+
+En una app, esa ventanilla es el **actor principal**. Es el único lugar donde se dibuja la interfaz y se responde a
+los toques. Si un cálculo de 0,7 s corre ahí, la lista no se mueve y el indicador de carga se detiene. El tema lo mide
+contando latidos: 0 mientras el cálculo ocupa el actor principal.
+
+La segunda idea es qué se puede pasar entre la ventanilla y la oficina. Un dato que no cambia, como una lista de
+paradas, se puede compartir sin riesgo. Un borrador que alguien sigue escribiendo no: o se entrega y se suelta, o se
+protege. Swift 6 comprueba esas reglas al compilar.
+
+##### 2. Definición formal y vocabulario
+**`Sendable`** es un protocolo marcador: no exige métodos. Solo afirma que los valores del tipo se pueden compartir
+entre dominios de aislamiento sin carreras de datos. Un **dominio de aislamiento** es un lugar protegido: un actor, el
+actor principal o el código sin aislamiento.
+
+Son `Sendable` los tipos valor cuyas propiedades lo son, los actores y las clases `final` con solo constantes
+`Sendable`. Una función `@Sendable` solo captura valores `Sendable`.
+
+La **región de aislamiento y `sending`** amplían la regla. El compilador agrupa los valores no `Sendable` en regiones.
+Un valor se puede entregar con `sending` a otro dominio si quien lo entrega no lo vuelve a usar.
+
+**`@MainActor`** es un **actor global**, un actor único para todo el programa, que representa el hilo principal.
+**`@concurrent`** marca una función `async` que siempre corre en el grupo concurrente, fuera del actor que la llama.
+**`NonisolatedNonsendingByDefault`** es una función futura del lenguaje que cambia dónde corre una función `async` sin
+aislamiento.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Sigue `medirCalculo(enSegundoPlano: true)`, llamada desde el actor principal:
+
+1. `medirCalculo` es `@MainActor`, así que su cuerpo corre en el ejecutor del actor principal. Arranca el `Latido`,
+   cuya `Task` hereda ese aislamiento y late en el mismo actor cada 20 ms.
+2. Llega a `await rutaMasCortaEnSegundoPlano(paradas)`. Antes de llamar, el compilador comprobó que `[Parada]` es
+   `Sendable`, porque cruza de dominio.
+3. La función es `@concurrent`. La llamada salta al grupo de hilos concurrente, y `medirCalculo` se suspende. El actor
+   principal queda libre.
+4. Mientras un hilo del grupo prueba los 362 880 órdenes, el actor principal atiende los latidos. La salida real cuenta
+   35 en Linux.
+5. Al terminar, la función devuelve una `RutaOptima`, que también es `Sendable`. `medirCalculo` se reanuda en el actor
+   principal y deja de contar.
+
+Con `enSegundoPlano: false`, el paso 3 no existe. `rutaMasCorta` es síncrona y corre dentro del actor principal sin
+soltarlo. Ningún latido entra en la fila hasta que termina: 0 latidos.
 
 ```mermaid
 sequenceDiagram
@@ -1261,6 +1627,85 @@ sequenceDiagram
     L->>P: late
     C-->>P: RutaOptima (40 876 m)
 ```
+
+La forma mínima del patrón cabe en pocas líneas. El trabajo pesado va en una función `@concurrent`, y quien actualiza
+la interfaz espera su resultado desde el actor principal:
+
+```swift
+@concurrent
+func pesado(_ n: Int) async -> Int { (1...n).reduce(0, +) }
+
+@MainActor
+func boton() async -> String {
+    let total = await pesado(1_000_000)
+    return "total \(total)"
+}
+```
+
+El `Int` que entra y el que sale son `Sendable`. Si `pesado` recibiera una clase con estado mutable, el compilador
+pediría `Sendable` o una entrega con `sending`.
+
+Esas comprobaciones ocurren al compilar. Para un tipo, el compilador revisa cada propiedad. Observa un `struct` que
+promete ser `Sendable` y guarda una clase mutable:
+
+```swift
+final class Borrador {
+    var guias: [String] = []
+}
+
+struct Lote: Sendable {
+    let numero: Int
+    let borrador: Borrador
+}
+```
+
+```text
+error: stored property 'borrador' of 'Sendable'-conforming struct 'Lote' has non-Sendable type 'Borrador'
+note: class 'Borrador' does not conform to the 'Sendable' protocol
+```
+
+La regla del Módulo 0, Tema 2 aparece aquí con consecuencias. Copiar el `struct` copia la referencia, y dos tareas
+podrían cambiar el mismo `Borrador`.
+
+Para las regiones, el análisis se hace al generar el código, como el verificador de propiedad del Módulo 0, Tema 5. Por
+eso el error de `t4_sendable.swift` necesita `-emit-sil`. El compilador sigue a `borrador` y ve que se usa después de
+entregarlo a la bodega.
+
+##### 4. Reglas, variantes y casos límite
+`Sendable` viene de SE-0302, que el registro oficial marca como implementada en Swift 5.7.
+Un `struct` o `enum` no público con propiedades `Sendable` lo es sin declararlo. Uno público debe declararlo, porque la conformidad forma parte de su contrato con otros módulos.
+
+En modo de lenguaje Swift 6, las violaciones de aislamiento son errores. En modo Swift 5 son advertencias, si activas
+la comprobación completa. Por eso la clase compartida del Tema 3 compila en Swift 5 y no en Swift 6.
+
+Las regiones (SE-0414) y `sending` (SE-0430) llegaron con Swift 6.0. Antes, entregar un objeto no `Sendable` a un
+actor era un error, aunque no se volviera a usar. Ahora basta con soltarlo, como comprueba el Ejercicio 3.
+
+`@concurrent` y `nonisolated(nonsending)` llegaron con Swift 6.2 (SE-0461). En el modo por defecto, una función
+`async` sin aislamiento salta al grupo concurrente. Con `NonisolatedNonsendingByDefault` activado, corre en el actor
+de quien la llama, salvo que lleve `@concurrent`. El Ejercicio 2 mide los dos modos.
+
+Swift 6.2 también permite que todo un módulo sea `@MainActor` por defecto (SE-0466). Es útil en apps donde casi todo
+el código toca la interfaz, y deja `@concurrent` para lo que debe salir de ahí.
+
+`Task.detached` no hereda el aislamiento. Desde ahí, tocar un modelo `@MainActor` es un error. El cierre de
+`DispatchQueue.global().async` solo da advertencias, porque Dispatch se importa con concesiones para código antiguo. No
+confíes en esas advertencias: trátalas como errores.
+
+`MainActor.assumeIsolated` afirma que el código ya está en el actor principal, sin `await`. Si la afirmación es falsa,
+el programa se detiene. Úsalo solo en puntos de entrada donde lo sabes con certeza, como el `main` de las
+demostraciones.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+El Tema 3 presentó los actores y el aislamiento. `@MainActor` es un actor más, con una sola instancia y una
+responsabilidad: la interfaz. El Tema 1 explicó que una `Task` hereda el aislamiento, y el `Latido` lo aprovecha para
+contar en el actor principal.
+
+Del Módulo 2, Tema 3 viene el modelo `@Observable @MainActor` y el error de escribirlo desde `Task.detached`. Del Módulo
+0, Tema 5 viene la idea de entregar y no volver a usar, que `sending` aplica a la concurrencia.
+
+El Tema 5 usa estas reglas con secuencias asíncronas: los valores que produce un `AsyncStream` cruzan de dominio y
+deben ser `Sendable`. El Módulo 5 aplica el patrón a la red, y el Módulo 10 mide la interfaz congelada con Instruments.
 
 #### Problema resuelto 4.1
 Mide en Linux cuántas veces late el actor principal mientras se calcula la ruta óptima dentro de él y con
@@ -2084,9 +2529,75 @@ Este tema usa **las tareas y la cancelación** (Temas 1 y 2), **`conLimite`** (T
 - **Error típico:** usar `.unbounded` para posiciones de GPS y mostrar la moto donde estaba hace rato.
 
 #### ► CÓMO FUNCIONA
-El productor y el lector no se conocen: entre ellos está el búfer del flujo. El productor entrega con `yield`; el
-lector espera con `for await`. Si el lector deja de leer (sale del ciclo, se cancela su tarea), `onTermination` avisa
-al productor para que se detenga.
+
+##### 1. La idea en lenguaje sencillo
+Piensa en una cinta transportadora entre la zona de carga y la de despacho. Alguien pone paquetes en la cinta cuando
+llegan, sin saber quién los toma. Al otro lado, alguien los recoge uno por uno. Si la cinta se llena, hay que decidir
+qué hacer: detenerse, botar los viejos o no aceptar los nuevos. Y cuando nadie recoge, lo sensato es apagar la cinta.
+
+Las posiciones del GPS son esa cinta. Llegan cada pocos segundos, sin que la pantalla las pida. Una **secuencia
+asíncrona** es una lista cuyos elementos llegan con el tiempo, y `for await` es la persona que los recoge.
+
+`AsyncStream` es la cinta que puedes construir tú. Del lado del GPS pones posiciones con `yield`. Del lado de la
+pantalla las lees con `for await`. Cuando la pantalla se cierra, el flujo avisa al productor y el GPS se apaga.
+
+##### 2. Definición formal y vocabulario
+**`AsyncSequence`** es el protocolo de las secuencias cuyos elementos llegan de forma asíncrona. Se recorren con
+`for await`, o con `for try await` si pueden fallar. Admiten operadores como `map`, `filter` y `prefix`, que devuelven
+otra secuencia asíncrona.
+
+Cada `AsyncSequence` fabrica un **iterador asíncrono**, un objeto con un método `next()` que se espera con `await`.
+`next()` devuelve el siguiente elemento, o `nil` cuando la secuencia terminó.
+
+**`AsyncStream` y su continuación** son una implementación lista para usar. `AsyncStream.makeStream(of:)` devuelve dos
+piezas: el flujo, que se lee, y la **continuación**, que se escribe. La continuación tiene `yield(_:)` para entregar
+un valor y **`finish()`** para terminar.
+
+**`onTermination`** es un closure de la continuación que corre una sola vez cuando el flujo termina. La **política de
+búfer** decide qué pasa con los valores que el lector todavía no tomó.
+
+##### 3. Cómo funciona por dentro, paso a paso
+Un `for await` es una forma corta de pedir valores al iterador. Este programa hace a mano lo mismo que el ciclo, con
+un búfer de dos valores:
+
+```swift
+func demostrar() async {
+    let (flujo, continuacion) = AsyncStream.makeStream(of: Int.self, bufferingPolicy: .bufferingNewest(2))
+    for numero in 1...3 { print(numero, continuacion.yield(numero)) }
+    continuacion.finish()
+
+    var iterador = flujo.makeAsyncIterator()  // lo que hace «for await» por dentro
+    while let numero = await iterador.next() { print("recibido", numero) }
+    print("fin del flujo")
+}
+
+await demostrar()
+```
+
+```text
+1 enqueued(remaining: 1)
+2 enqueued(remaining: 0)
+3 dropped(1)
+recibido 2
+recibido 3
+fin del flujo
+```
+
+Cada `yield` devuelve qué pasó con el valor. Los dos primeros entran al búfer. El tercero no cabe, y la política
+`.bufferingNewest(2)` descarta el más viejo, el 1. Después de `finish()`, el lector toma lo que quedó y `next()`
+devuelve `nil`.
+
+Ahora sigue el caso `prefix(4)` de la demostración, con productor y lector en tareas distintas:
+
+1. `posicionesDeLaMoto` crea el flujo y la continuación, asigna `onTermination` y arranca una `Task` productora.
+   Devuelve el flujo sin esperar a nadie.
+2. El `for await` pide el primer valor. El búfer está vacío, así que el lector se suspende en `next()`.
+3. El productor llama a `yield(Posicion(numero: 1, …))`. Como hay un lector esperando, el valor se le entrega
+   directamente y el lector se reanuda.
+4. Esto se repite cada 50 ms. Tras la cuarta posición, `prefix(4)` termina el ciclo y el lector suelta el flujo.
+5. Sin nadie que lea, el flujo termina con motivo `.cancelled`. `onTermination` anota `fuente detenida: cancelled`.
+6. El productor, al entregar la posición 5, recibe `.terminated` de `yield` y se detiene. Es la última línea de la
+   bitácora real.
 
 ```mermaid
 flowchart LR
@@ -2096,6 +2607,49 @@ flowchart LR
     L -. "deja de leer:<br/>prefix, cancelación" .-> T["onTermination(.cancelled)"]
     L -. "yield devuelve .terminated" .-> P
 ```
+
+El lector lento explica la elección de política. El productor entrega cada 10 ms y el lector tarda 60 ms. Con
+`.unbounded`, el búfer crece y el lector lee las 30 posiciones, cada vez más viejas. Con `.bufferingNewest(1)`, el
+búfer guarda solo la última, y el lector lee 6, siempre la más reciente.
+
+El fallo de la primera ronda en el simulador viene del paso 5. `finish()` despierta al lector, pero `onTermination`
+corre en el hilo de quien terminó el flujo. El lector, en el actor principal, leyó la bitácora antes de que se
+escribiera. Por eso ahora el modelo espera la línea con `esperarLineas`.
+
+##### 4. Reglas, variantes y casos límite
+`AsyncSequence` y `AsyncStream` llegaron con Swift 5.5 (SE-0298 y SE-0314). `makeStream(of:)` llegó con Swift 5.9
+(SE-0388); antes, la continuación solo se obtenía dentro de un closure del inicializador. Swift 6.0 agregó a
+`AsyncSequence` un tipo `Failure` para errores tipados (SE-0421).
+
+Un `AsyncStream` tiene un solo lector. Si dos `for await` leen el mismo flujo, se reparten los valores, no reciben
+cada uno todos. Para varios lectores necesitas un flujo por lector.
+
+La continuación es `Sendable`: puedes llamar a `yield` desde cualquier hilo, por ejemplo desde el callback de un GPS.
+Por la misma razón, los valores que entrega deben ser `Sendable`, como `Posicion`. El flujo, en cambio, es para una
+sola tarea lectora.
+
+Asigna `onTermination` antes de arrancar el productor. Si el flujo terminara antes de la asignación, el aviso nunca se
+ejecutaría. El closure es `@Sendable` y corre en cualquier hilo: no toques la interfaz desde ahí.
+
+Si el productor puede fallar, usa `AsyncThrowingStream`. Su continuación tiene `finish(throwing:)`, y el lector
+recibe el error con `for try await`.
+
+Un flujo sin `finish()` y sin cancelación no termina nunca. El lector no da error: simplemente espera. La demostración
+lo corta con `conLimite` del Tema 2. En una vista, `.task` hace lo mismo al desaparecer, porque cancela su tarea.
+
+Para operadores de tiempo, como `debounce` o `merge`, existe el paquete Swift Async Algorithms de Apple. No forma parte
+de la biblioteca estándar.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+Ya usaste una `AsyncSequence` sin nombrarla: el grupo de tareas del Tema 2 se recorre con `for try await`. El
+`Task.isCancelled` del productor y el corte con `conLimite` vienen del mismo tema. La regla de que lo entregado sea
+`Sendable` viene del Tema 4.
+
+Del Módulo 0, Tema 4 viene `map` y `filter` sobre colecciones. Aquí funcionan igual, pero sobre valores que todavía no
+existen. Del Módulo 2 viene `.task` y el modelo `@Observable @MainActor` que recibe las posiciones.
+
+Si vienes de los callbacks, la diferencia es el control del final. Un callback no sabe cuándo nadie escucha; un flujo
+sí, con `onTermination`. El Módulo 7 compara este enfoque con Combine, la otra forma de recibir valores en el tiempo.
 
 #### Problema resuelto 5.1
 Escribe la fuente de posiciones de la moto con `AsyncStream`. Lee las primeras 4 y comprueba que la fuente se

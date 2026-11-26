@@ -58,7 +58,7 @@ Al terminar este tema podrás:
 - medir en el simulador con `measure` de XCTest y marcar intervalos con signposts;
 - explicar por qué se mide en *release* y con datos de tamaño real.
 
-**Conceptos clave:** reloj monotónico, mediana, compilación *release*, `measure` y línea base, signpost
+**Conceptos clave:** reloj monotónico, mediana, compilación `release`, `measure` y línea base, signpost
 
 #### El problema
 El resumen de la semana agrupa por barrio las entregas y muestra cuánto falta por cobrar. Con las 3 entregas de
@@ -84,7 +84,7 @@ Este tema usa **las colecciones y los cierres** (Módulo 0) y **las pruebas aloj
 - **Ejemplo:** `mediana 867.2 ms` frente a `mediana 22.4 ms`.
 - **Error típico:** medir una sola vez y sacar conclusiones de diferencias del 10 %.
 
-**compilación *release***
+**compilación `release`**
 - **Definición técnica:** compilar con optimizaciones (`swift run -c release`, o el esquema en *Release*); *debug* desactiva la optimización para poder depurar.
 - **En palabras sencillas:** medir el coche con el motor de verdad, no con el de prácticas.
 - **Dónde se rompe la comparación:** *debug* no frena todo igual: tu código se frena mucho, las bibliotecas del sistema ya vienen optimizadas.
@@ -106,9 +106,49 @@ Este tema usa **las colecciones y los cierres** (Módulo 0) y **las pruebas aloj
 - **Error típico:** usar `print` con tiempos: no aparece en Instruments y se queda en el código de producción.
 
 #### ► CÓMO FUNCIONA
-Primero se mide la lógica pura con el reloj, en *release*, separando las decisiones del algoritmo. Después, en la
-app, `measure` da números en el simulador y los signposts marcan los intervalos en la línea de tiempo de la app real,
-donde también aparecen el dibujo, la red y el disco.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un trancón diario camino al trabajo. Puedes culpar al semáforo de la esquina, pero si cronometras cada
+tramo una semana descubres que el retraso está en el puente. Sin el cronómetro habrías «arreglado» el semáforo y
+seguirías llegando tarde.
+
+Con el código pasa lo mismo. Cuando una pantalla tarda, la intuición señala lo que parece caro a la vista, como un
+`filter` dentro de un `map`. Pero el procesador no lee el código como tú: el costo real puede estar en una línea
+inocente. **Medir antes de optimizar** significa cronometrar primero y cambiar código después, solo donde los
+números lo piden.
+
+En el resumen de la semana, la sospecha del equipo era la agrupación por barrio. La medición del problema resuelto
+muestra otra cosa: crear un `NumberFormatter` por entrega se lleva casi todo el tiempo. Este tema te da tres
+herramientas para llegar ahí con datos. El reloj mide la lógica pura, `measure` mide en las pruebas y los
+signposts marcan la app real.
+
+##### 2. Definición formal y vocabulario
+
+Una **medición** es un conjunto de muestras de duración de un mismo bloque de código, tomadas en condiciones
+controladas y resumidas con un estadístico. Cada parte de esa definición tiene su ficha en el glosario.
+
+El **reloj monotónico** es la fuente de las muestras. En Swift es `ContinuousClock`, un reloj que solo avanza: no
+lo mueven los cambios de hora del sistema ni la zona horaria. Su método `measure(_:)` ejecuta un cierre y devuelve
+un `Duration`, el tipo de la biblioteca estándar para intervalos de tiempo.
+
+La **mediana** es el estadístico que resume las muestras. Ordenas las duraciones y tomas la del medio. Una muestra
+atípica, como la primera con las cachés frías, no la desplaza; al promedio sí.
+
+La **compilación *release*** es la condición controlada. Compilas con optimizaciones (`swift run -c release`), que
+es como se compila la app que publicas. La compilación *debug* desactiva esas optimizaciones para que el depurador
+pueda detenerse en cada línea.
+
+**`measure` y línea base** son la versión de XCTest de todo lo anterior. `measure(metrics:)` repite el bloque con
+varias métricas y reporta promedio y desviación estándar relativa. La línea base es el valor de referencia que
+Xcode guarda; si el rendimiento empeora, la prueba falla.
+
+El **signpost** es una marca con nombre en la línea de tiempo del sistema. Lo emites con `OSSignposter` y lo ves en
+Instruments o con `log show --signpost`, junto al dibujo, la red y el disco de la app.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El flujo completo del tema va de la sospecha a una medición que protege el resultado:
 
 ```mermaid
 flowchart LR
@@ -119,6 +159,76 @@ flowchart LR
     F --> SP["signposts en la app:<br/>log stream / xctrace"]
     M2 --> B["línea base: falla si empeora"]
 ```
+
+1. **Separas las decisiones.** El resumen recibe `Agrupacion` y `Formateo` como parámetros. Así mides cada
+   combinación sin copiar el algoritmo, y cualquier diferencia se debe solo a esa decisión.
+2. **Compilas en *release*.** El compilador aplica el nivel `-O`: integra funciones pequeñas, elimina copias y
+   comprobaciones redundantes. Tu código cambia mucho; Foundation ya venía compilada así y casi no cambia.
+3. **Tomas varias muestras con el reloj.** Cada `measure` lee el reloj antes y después del cierre.
+
+```swift
+let reloj = ContinuousClock()
+let muestras = (0..<5).map { _ in reloj.measure { _ = ResumenSemana.rapido(semana) } }
+let mediana = muestras.sorted()[muestras.count / 2]
+```
+
+   La primera línea crea el reloj; la segunda toma cinco `Duration`; la tercera ordena y toma la del medio.
+   `Duration` es comparable, por eso `sorted()` funciona sin más.
+4. **Compruebas que el resultado no cambió.** Una optimización que cambia la salida no es una optimización. Por eso
+   la prueba `mismoResultado` compara la versión lenta con la rápida para varios tamaños.
+5. **Mides en el simulador con XCTest.** `measure(metrics:)` ejecuta el bloque varias veces dentro de la app
+   alojada. `XCTClockMetric` toma tiempo de reloj; `XCTCPUMetric`, ciclos, tiempo de CPU e instrucciones;
+   `XCTMemoryMetric`, memoria física.
+6. **Marcas intervalos en la app.** El signposter emite un inicio y un fin con el mismo identificador.
+
+```swift
+let senales = OSSignposter(subsystem: "com.academia.ios10", category: "Rendimiento")
+let filas = senales.withIntervalSignpost("resumen rápido") { ResumenSemana.rapido(semana) }
+```
+
+   `withIntervalSignpost` devuelve lo que devuelve el cierre, así que no cambias la forma del código. El sistema
+   guarda los dos eventos en su registro unificado, y Instruments los empareja en una barra con duración.
+
+##### 4. Reglas, variantes y casos límite
+
+**Qué reloj usar.** Swift 5.7 (SE-0329) trajo `ContinuousClock` y `SuspendingClock`. El primero sigue contando
+mientras el dispositivo duerme; el segundo se detiene. Para medir un cálculo corto da igual; para medir esperas
+largas, elige a conciencia. Lo que nunca debes usar es la resta de dos `Date()`, porque la hora del sistema puede
+saltar.
+
+**Cuántas muestras.** Cinco muestras quitan el ruido grueso, no el fino. Dos ejecuciones del mismo programa dan
+números distintos; compara órdenes de magnitud y desconfía de diferencias del 10 %.
+
+**Qué métrica fijar como línea base.** Las instrucciones de CPU retiradas son las más estables, porque no dependen
+de cuánto esperó el proceso. El tiempo de reloj incluye interrupciones del sistema. La línea base se guarda por
+dispositivo: la de tu simulador no sirve en otra máquina.
+
+**Qué no se compara.** Nunca compares tiempos entre máquinas, ni entre Linux y el simulador. Compara versiones del
+código en la misma máquina, con los mismos datos y la misma configuración.
+
+**Límites de `measure`.** Existe solo en XCTest; Swift Testing no la ofrece. Por eso
+el núcleo se mide con un ejecutable propio y las pruebas de rendimiento de la app siguen en `XCTestCase`.
+
+**Costo de los signposts.** `OSSignposter` existe desde iOS 15; antes se usaba la función `os_signpost`, de iOS 12.
+Si ninguna herramienta está grabando, emitir un signpost cuesta muy poco, así que puedes dejarlos en producción. Un
+`print` con tiempos, en cambio, no aparece en Instruments y ensucia la salida.
+
+**Tamaño de los datos.** Mide con datos de tamaño real. Con 3 entregas todo es instantáneo y ninguna decisión se
+nota.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema usa las colecciones y los cierres del Módulo 0, Tema 4: `map`, `filter`, `Dictionary(grouping:by:)` y el
+cierre que recibe `measure`. También usa las pruebas alojadas del Módulo 9. `RendimientoTests` se ejecuta como
+cualquier prueba de XCTest, pero reporta números en lugar de un sí o un no.
+
+Distingue bien medir de probar. Una prueba de Swift Testing responde «¿el resultado es correcto?»; una medición
+responde «¿cuánto cuesta obtenerlo?». Las dos van juntas: la prueba `mismoResultado` impide que la optimización
+rompa el resumen.
+
+Los signposts y el `Logger` usan el mismo subsistema. En el Módulo 13, Tema 3, vuelves a `os.Logger` con más
+detalle, junto con MetricKit, que recoge métricas de rendimiento de los usuarios reales. Y el Proyecto 47 de este
+módulo te pide repetir este ciclo con el cálculo más pesado de tu propia pantalla.
 
 #### Problema resuelto 1.1
 Mide las cuatro combinaciones del resumen (filtrar o diccionario; un formateador por entrega o uno compartido) con
@@ -553,8 +663,7 @@ Al terminar este tema podrás:
 - comprobar en una prueba de interfaz lo que VoiceOver va a leer;
 - ejecutar la auditoría automática de accesibilidad y leer sus hallazgos.
 
-**Conceptos clave:** etiqueta de accesibilidad, elemento combinado, rasgos, acción de accesibilidad, auditoría de
-accesibilidad
+**Conceptos clave:** etiqueta de accesibilidad, elemento combinado, rasgos, acción de accesibilidad, auditoría de accesibilidad
 
 #### El problema
 Una repartidora con baja visión usa VoiceOver. En la tarjeta «mala», VoiceOver recorre cinco elementos sueltos: un
@@ -580,7 +689,7 @@ Este tema usa **las vistas y modificadores** (Módulo 1) y **XCUITest** (Módulo
 - **Ejemplo:** la parte de texto de `TarjetaBuena`, con `.ignore` y `etiquetaAccesible`.
 - **Error típico:** combinar también el botón: deja de poder activarse por separado.
 
-**rasgos (*traits*)**
+**rasgos (traits)**
 - **Definición técnica:** propiedades que dicen qué es y cómo se comporta un elemento (`.isButton`, `.isHeader`, `.isSelected`…); VoiceOver las anuncia y los rotores las usan para navegar.
 - **En palabras sencillas:** la clase de cosa que es.
 - **Dónde se rompe la comparación:** `Button` y `Toggle` ya traen los suyos; un `Text` con `onTapGesture` no es un botón para VoiceOver.
@@ -602,10 +711,45 @@ Este tema usa **las vistas y modificadores** (Módulo 1) y **XCUITest** (Módulo
 - **Error típico:** devolver `true` en el manejador para todo y nunca mirar la lista.
 
 #### ► CÓMO FUNCIONA
-La frase de la tarjeta se arma en el núcleo, donde se prueba en Linux. La vista la usa como etiqueta de un elemento
-que ignora a sus hijos, y el botón queda aparte con nombre propio. En el simulador, XCUITest lee el árbol de
-accesibilidad (lo mismo que recorre VoiceOver), compara las etiquetas y ejecuta la auditoría en la pantalla mala y
-en la buena.
+
+##### 1. La idea en lenguaje sencillo
+
+Imagina que alguien te describe por teléfono una factura que tú no puedes ver. Si lee cada mancha del papel por
+separado («un círculo», «un número», «un dibujo de teléfono»), terminas sin saber qué debes. Si te dice «factura de
+agua, pendiente, 52.000 pesos», lo entiendes a la primera.
+
+**VoiceOver** es el lector de pantalla de iOS. Recorre la interfaz elemento por elemento y lee en voz alta lo que
+cada uno dice de sí mismo. La persona desliza un dedo para pasar al siguiente y toca dos veces para activarlo. Lo
+que VoiceOver dice no sale de la pantalla dibujada: sale de la información de accesibilidad que tu código entrega.
+
+En la tarjeta mala, esa información es pobre: un círculo sin nombre, un monto con símbolo y un botón que solo se
+llama «Llamar». En la buena, la tarjeta es una sola frase con guía, destinatario, barrio, estado y
+cobro. El botón dice a quién llama. Este tema te enseña a construir esa frase y a comprobarla con pruebas.
+
+##### 2. Definición formal y vocabulario
+
+SwiftUI construye, junto al árbol de vistas, un **árbol de accesibilidad**. Cada nodo es un elemento con nombre,
+valor, rasgos y acciones. VoiceOver, Control por botón y XCUITest leen ese mismo árbol; ninguno mira los píxeles.
+
+La **etiqueta de accesibilidad** (`accessibilityLabel`) es el nombre que VoiceOver lee del elemento. Si no la
+defines, SwiftUI usa el texto visible o el nombre del símbolo de una imagen. Es distinta del identificador
+(`accessibilityIdentifier`), que no se lee en voz alta y existe para las pruebas.
+
+Un **elemento combinado** resulta de `.accessibilityElement(children:)`. Con `.combine` SwiftUI une las etiquetas
+de los hijos. Con `.ignore` los oculta y usa solo tu etiqueta; con `.contain` los agrupa sin unirlos.
+
+Los **rasgos** (*traits*) dicen qué clase de elemento es: botón, encabezado, seleccionado, imagen. VoiceOver los
+anuncia después de la etiqueta («Llamar a Ana Ruiz, botón»), y el rotor los usa para saltar entre encabezados.
+
+Una **acción de accesibilidad** es una operación que VoiceOver ofrece en un menú, aunque no haya un botón visible
+para ella. La persona la elige deslizando hacia arriba o hacia abajo.
+
+La **auditoría de accesibilidad** es `performAccessibilityAudit`, de XCUITest. Revisa la pantalla abierta y
+devuelve una lista de problemas, cada uno con su tipo y, cuando lo hay, el elemento que lo causa.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+La frase nace en el núcleo, la vista la publica en el árbol y tres lectores la consumen:
 
 ```mermaid
 flowchart LR
@@ -616,6 +760,69 @@ flowchart LR
     A --> X["XCUITest: label, frame"]
     A --> AU["performAccessibilityAudit:<br/>contraste, área, Dynamic Type…"]
 ```
+
+1. **El núcleo arma la frase.** `etiquetaAccesible` es una propiedad calculada de `Entrega`, sin SwiftUI. Por eso
+   la pruebas en Linux en milisegundos, con un `#expect` sobre el texto exacto.
+2. **La vista reemplaza a los hijos por la frase.** En `TarjetaBuena`, la fila del icono y los textos
+   lleva estos modificadores.
+
+```swift
+HStack(alignment: .firstTextBaseline, spacing: 12) { /* icono y columna de cuatro textos */ }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(entrega.etiquetaAccesible)
+    .accessibilityIdentifier("tarjeta-\(entrega.guia)")
+```
+
+   `.ignore` borra del árbol el icono y los cuatro `Text`, y deja un solo nodo. La etiqueta le da la frase. El identificador
+   permite que la prueba encuentre ese nodo sin depender del texto.
+3. **El monto visible se oculta.** `.accessibilityHidden(true)` lo quita del árbol, porque la frase ya lo dice en
+   palabras. Sin eso, VoiceOver leería el cobro dos veces.
+4. **El botón queda aparte, con nombre propio.** Un `Button` ya trae el rasgo de botón y la acción de activar. Solo
+   le falta la etiqueta: `.accessibilityLabel("Llamar a \(entrega.destinatario)")`.
+5. **XCUITest consulta el árbol.** `app.descendants(matching: .any)["tarjeta-EN-4471"].label` devuelve la frase, y `frame` del
+   botón devuelve su área en puntos. Es la misma información que usa VoiceOver.
+6. **La auditoría recorre la pantalla.** Para cada problema llama a tu manejador. Si el manejador devuelve `true`,
+   el problema cuenta como atendido; si devuelve `false`, la prueba registra un fallo.
+
+##### 4. Reglas, variantes y casos límite
+
+**Cómo se escribe una etiqueta.** Apple recomienda etiquetas cortas, sin el tipo del control: VoiceOver ya dice
+«botón». Empieza por lo que distingue al elemento y escribe las cantidades como se dicen. «$52000» no es legible; la
+auditoría lo marcó como «Label not human-readable».
+
+**Elegir entre `.combine` e `.ignore`.** Con `.combine` no escribes nada, pero SwiftUI decide el orden y la
+puntuación. Con `.ignore` decides la frase entera, y debes mantenerla al día cuando cambie la tarjeta. Nunca
+combines un botón dentro de la tarjeta: deja de activarse por separado.
+
+**Gestos y rasgos.** Un `Text` con `onTapGesture` responde al dedo, pero en el árbol no tiene el rasgo de botón.
+VoiceOver no lo anuncia como algo que se pueda activar. Usa `Button`, o agrega el rasgo con
+`.accessibilityAddTraits(.isButton)` si no tienes otra opción.
+
+**Acciones para lo que no se ve.** Si una acción solo existe como gesto de deslizar en una fila, agrégala también
+con `.accessibilityAction(named:)`. Quien usa VoiceOver no hace ese gesto con facilidad.
+
+**Versiones.** La auditoría automática existe desde iOS 17 y Xcode 15. Los modificadores de la forma
+`.accessibilityLabel(_:)` reemplazaron a la forma antigua `.accessibility(label:)`, que quedó obsoleta.
+
+**Qué no revisa la auditoría.** Detecta contraste, área táctil, descripciones ilegibles, Dynamic Type, texto
+cortado y rasgos. No sabe si tu frase tiene sentido ni si el orden de lectura es el lógico. Por eso, antes de
+publicar, recorres la pantalla una vez con VoiceOver real.
+
+**Elementos sin nombre en el informe.** Algunos problemas llegan «sin elemento» asociado, como los de contraste de
+la salida real. La prueba debe registrar el tipo y la descripción para que puedas ubicarlos en la captura.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema se apoya en los modificadores del Módulo 1, Tema 2. Los de accesibilidad siguen la misma regla de orden.
+Envuelven a la vista que tienen debajo: por eso van sobre la fila de textos y no sobre la tarjeta entera.
+
+También usa XCUITest del Módulo 9, Tema 4. Allí buscabas elementos por identificador para tocarlos; aquí lees sus
+etiquetas y su tamaño, que es lo que recibe una persona con VoiceOver. El identificador y la etiqueta conviven en el
+mismo nodo, pero sirven a públicos distintos.
+
+Lo que sigue amplía la auditoría. El Tema 3 explica sus hallazgos de Dynamic Type y texto cortado, y el Tema 4
+explica los de contraste y área táctil con números. Al final del módulo, el Proyecto 47 exige cero problemas en la
+pantalla corregida.
 
 #### Problema resuelto 2.1
 Escribe la frase que VoiceOver debe leer de cada entrega, aplícala a la tarjeta buena, da nombre al botón de llamar y
@@ -1135,8 +1342,7 @@ Al terminar este tema podrás:
 - cambiar el diseño de horizontal a vertical con los tamaños de accesibilidad, con `AnyLayout`;
 - fotografiar una pantalla con varios tamaños de texto, en una prueba y en la app real.
 
-**Conceptos clave:** Dynamic Type, estilo de texto, `@ScaledMetric`, tamaños de accesibilidad y `AnyLayout`, rasgos
-de la ventana
+**Conceptos clave:** Dynamic Type, estilo de texto, `@ScaledMetric`, tamaños de accesibilidad y `AnyLayout`, rasgos de la ventana
 
 #### El problema
 Muchas personas usan el texto más grande del sistema. En la tarjeta mala, la guía y el nombre tienen 15 puntos fijos:
@@ -1184,10 +1390,45 @@ Este tema usa **los stacks y `@Environment`** (Módulos 1 y 2), y **las capturas
 - **Error típico:** sacar conclusiones de una captura donde el título no creció porque solo se cambió el entorno.
 
 #### ► CÓMO FUNCIONA
-La categoría de tamaño llega desde los rasgos de la ventana al entorno de SwiftUI. Las fuentes con estilo de texto y
-las `@ScaledMetric` se recalculan; la tarjeta lee `dynamicTypeSize` y, si es de accesibilidad, cambia su `Layout`. Las
-capturas fijan la categoría en los rasgos del controlador anfitrión; la app real la recibe por argumento de
-lanzamiento.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un periódico impreso en letra grande para personas mayores. No basta con agrandar las letras: si
+mantienes cuatro columnas, cada palabra queda partida. El editor cambia la diagramación a dos columnas o a una, y
+el contenido sigue completo.
+
+**Dynamic Type** es ese ajuste en iOS. La persona elige en *Ajustes* el tamaño de texto que necesita, y cada app
+que lo respeta agranda su texto en consecuencia. Muchas personas usan tamaños mayores que el de fábrica, no solo
+quienes tienen baja visión: también quien lee con prisa, en movimiento o sin gafas.
+
+Una pantalla que respeta Dynamic Type hace dos cosas. Primero, su texto crece, porque declara qué papel cumple cada
+texto y no cuántos puntos mide. Segundo, su diseño se reorganiza cuando ya no cabe. En la tarjeta de entrega, con
+el tamaño máximo, la fila horizontal pasa a columna y nada se corta.
+
+##### 2. Definición formal y vocabulario
+
+**Dynamic Type** es el sistema de categorías de tamaño de contenido de iOS. Hay siete categorías estándar, de
+`xSmall` a `xxxLarge`, con `large` por defecto, y cinco de accesibilidad, de `accessibilityMedium` a
+`accessibilityExtraExtraExtraLarge`. En UIKit la categoría es un `UIContentSizeCategory`; en SwiftUI, un
+`DynamicTypeSize`.
+
+Un **estilo de texto** (`Font.TextStyle`) es un papel tipográfico: `.largeTitle`, `.headline`, `.body`,
+`.subheadline`, `.caption` y otros. El sistema asigna a cada estilo un tamaño y un peso para cada categoría. Cuando
+escribes `.font(.headline)`, no fijas un tamaño: pides «el tamaño de titular que corresponda ahora».
+
+**`@ScaledMetric`** es un envoltorio de propiedad que aplica esa misma escala a un número que no es texto. Lo usas
+para iconos, márgenes o alturas que deben crecer al ritmo de un estilo concreto.
+
+Los **tamaños de accesibilidad** son las cinco categorías mayores; `dynamicTypeSize.isAccessibilitySize` es
+verdadero en ellas. **`AnyLayout`** envuelve un tipo que cumple el protocolo `Layout`, como `HStackLayout` o
+`VStackLayout`, para cambiar de uno a otro sin cambiar las vistas hijas.
+
+Los **rasgos de la ventana** son la `UITraitCollection`: tamaño de texto, modo claro u oscuro, contraste y más.
+UIKit los propaga de la ventana a cada controlador, y SwiftUI los copia en su entorno.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El tamaño viaja desde los ajustes hasta cada fuente y cada `Layout`:
 
 ```mermaid
 flowchart LR
@@ -1200,6 +1441,73 @@ flowchart LR
     L -->|"no"| H["HStackLayout"]
     L -->|"sí"| V["VStackLayout"]
 ```
+
+1. **La persona elige un tamaño.** iOS lo guarda como `preferredContentSizeCategory` en los rasgos de cada
+   ventana. En una prueba, `traitOverrides` lo cambia; al abrir la app, lo cambia un argumento de lanzamiento.
+2. **SwiftUI lo copia al entorno.** La clave `\.dynamicTypeSize` refleja la categoría. Toda vista que la lee, o que
+   usa una fuente con estilo, depende de ella y se vuelve a evaluar cuando cambia.
+3. **Las fuentes se resuelven.** Cada estilo de texto se traduce a un tamaño concreto para la categoría actual. Una
+   fuente `.system(size: 15)` no participa: mide 15 en cualquier categoría.
+4. **Las métricas escaladas se recalculan.** `@ScaledMetric` pide a `UIFontMetrics` el valor escalado para su
+   estilo de referencia.
+
+```swift
+@Environment(\.dynamicTypeSize) private var tamanoTexto
+@ScaledMetric(relativeTo: .body) private var tamanoIcono = 22.0
+```
+
+   La primera línea lee la categoría; la segunda declara un icono de 22 puntos con el tamaño por defecto. En la
+   salida real del tema, ese icono mide 40,0 pt con `ax1` y 62,0 pt con `ax5`.
+5. **La tarjeta elige su `Layout`.** Con un tamaño de accesibilidad devuelve `VStackLayout`; si no,
+   `HStackLayout`.
+
+```swift
+let diseno = tamanoTexto.isAccessibilitySize
+    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+    : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+```
+
+   Las hijas que pasas a `diseno { … }` son siempre las mismas. Solo cambia la regla que las coloca.
+6. **El sistema mide y coloca de nuevo.** Con la columna, cada texto recibe todo el ancho y puede ocupar varias
+   líneas. La tarjeta crece en alto y la lista se desplaza.
+
+##### 4. Reglas, variantes y casos límite
+
+**Qué escala y qué no.** Escala el texto con estilo de texto y lo que declares con `@ScaledMetric`. No escalan los
+tamaños fijos, las imágenes de mapa de bits ni los `frame` con números. La escala no es proporcional ni igual para
+todos los estilos: la decide la tabla de `UIFontMetrics`.
+
+**`AnyLayout` frente a un `if`.** Con `if … { VStack } else { HStack }`, SwiftUI ve dos ramas con identidades
+distintas. Al cambiar de tamaño destruye las vistas de una rama y crea las de la otra. Se pierde su estado y la
+transición no se anima. Con `AnyLayout`, la identidad se conserva.
+
+**Alternativa con `ViewThatFits`.** Desde iOS 16 puedes ofrecer varias versiones y dejar que SwiftUI elija la
+primera que cabe. Decide por espacio disponible, no por categoría; úsalo cuando el criterio sea «¿cabe?».
+
+**Limitar el rango.** `.dynamicTypeSize(...DynamicTypeSize.xxxLarge)` pone un tope a una vista concreta. Úsalo solo
+en elementos que no pueden crecer, como una barra muy densa, y nunca en el contenido principal.
+
+**No cortes la información.** `.lineLimit(1)` y `.minimumScaleFactor` hacen que la fila «quepa» a costa de cortar o
+encoger justo el texto que la persona agrandó. Prefiere varias líneas y un cambio de diseño.
+
+**Versiones.** `@ScaledMetric` existe desde iOS 14. `DynamicTypeSize` llegó en iOS 15 y reemplazó a la clave
+`\.sizeCategory`. `AnyLayout`, `HStackLayout` y `VStackLayout` llegaron en iOS 16, y `traitOverrides`, en iOS 17.
+
+**Probar en todos los tamaños.** El simulador arranca con `large`, así que el error no se ve si no lo provocas.
+Para la prueba, cambia los rasgos del controlador y no solo el entorno: así crecen también el título y la lista de
+UIKit.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema continúa el Módulo 1, Tema 3. Allí las pilas, `Spacer` y `frame` evitaban que una fila se rompiera con
+textos largos. Aquí el texto largo lo produce la persona al agrandar la letra. También usa `@Environment` del
+Módulo 2, Tema 4: `dynamicTypeSize` es un valor más del entorno que provoca redibujo cuando cambia.
+
+Las capturas con una ventana de la app vienen del Módulo 9, Tema 4. La diferencia es que aquí la función
+`capturarConRasgos` cambia los rasgos de la ventana, no solo el entorno de SwiftUI.
+
+`AnyLayout` es la puerta al protocolo `Layout`. En el Módulo 14, Tema 2, escribes un `Layout` propio que reparte
+etiquetas en filas. El Tema 4 de este módulo reutiliza las mismas capturas para revisar el modo oscuro.
 
 #### Problema resuelto 3.1
 Fotografía la pantalla con la tarjeta mala y con la buena en tres tamaños (por defecto, `accessibilityLarge` y el
@@ -1474,9 +1782,42 @@ Este tema usa **las capturas del Tema 3** y **la auditoría del Tema 2**.
 - **Error típico:** `.frame(width: 24, height: 24)` en el botón.
 
 #### ► CÓMO FUNCIONA
-El contraste se calcula en el núcleo, con la fórmula de WCAG, y una prueba revisa la paleta de la app en los dos
-modos. En la vista, los textos usan colores semánticos y los iconos colores dinámicos con versiones comprobadas. Las
-capturas en modo oscuro y la auditoría (que incluye contraste y área táctil) confirman el resultado en el simulador.
+
+##### 1. La idea en lenguaje sencillo
+
+Piensa en un aviso escrito con tiza gris sobre un tablero gris. De cerca y bajo techo quizá lo lees; a pleno sol,
+desde la acera, no. El problema no es el tamaño de la letra: es que la letra y el fondo reflejan casi la misma luz.
+
+Una pantalla tiene el mismo límite. La persona que reparte mira el teléfono al sol, con el brillo bajo para ahorrar
+batería, o de noche con el modo oscuro. Si el texto y el fondo se parecen demasiado en luminosidad, el texto
+desaparece aunque el diseño se viera bien en tu monitor.
+
+Este tema convierte esa intuición en un número que puedes probar: la razón de contraste. Después la aplica a los
+dos modos de la app. Al final suma una medida física de las guías de Apple: el área mínima que necesita un dedo.
+
+##### 2. Definición formal y vocabulario
+
+La **luminancia relativa** de un color es la luz que percibe el ojo, de 0 (negro) a 1 (blanco). Se calcula
+pasando cada canal sRGB a valor lineal y ponderándolos: 0,2126 el rojo, 0,7152 el verde y 0,0722 el azul. El verde
+pesa diez veces más que el azul porque el ojo es más sensible a él.
+
+La **razón de contraste** compara dos luminancias: (L1 + 0,05) / (L2 + 0,05), con L1 la mayor. Va de 1:1 (colores
+iguales) a 21:1 (negro sobre blanco). El 0,05 representa el reflejo de la luz ambiente en la pantalla.
+
+Las Pautas de Accesibilidad para el Contenido Web (WCAG 2) fijan los mínimos del nivel AA. El texto normal necesita
+4,5:1; el texto grande, 3:1; los iconos y otros elementos que no son texto, 3:1. Texto grande significa 18 pt, o
+14 pt en negrita.
+
+Un **color semántico** se nombra por su función: `.primary`, `.secondary`, `Color(.systemBackground)`. El sistema
+lo resuelve según el modo, el contraste aumentado y la plataforma. Un **color dinámico** es tu versión de lo mismo:
+un color con un valor distinto según los rasgos de la ventana.
+
+El **área táctil mínima** sale de las guías de interfaz humana de Apple (HIG). Pide 44 × 44 puntos para cada
+control, aunque su dibujo sea menor.
+
+##### 3. Cómo funciona por dentro, paso a paso
+
+El cálculo va del color a la prueba, y de la prueba a la pantalla:
 
 ```mermaid
 flowchart LR
@@ -1489,6 +1830,73 @@ flowchart LR
     V --> C["capturas en oscuro"]
     V --> AU["auditoría: contraste y área táctil"]
 ```
+
+1. **Linealizas cada canal.** El valor de 0 a 255 se divide entre 255. Si queda en 0,04045 o menos, se divide
+   entre 12,92; si no, se aplica la curva `((v + 0,055) / 1,055)^2,4`. Así deshaces la corrección gamma de sRGB.
+2. **Ponderas los canales.** La suma ponderada da la luminancia relativa. Por eso el azul #007AFF «se ve oscuro»
+   pero solo da 4,02:1 sobre blanco: tiene poco verde.
+3. **Calculas la razón.** Tomas la mayor y la menor de las dos luminancias, sin importar cuál es el texto.
+
+```swift
+let blanco = ColorRGB(hex: 0xFFFFFF)
+let gris = ColorRGB(hex: 0x8E8E93)
+let razon = Contraste.razon(gris, blanco)  // 3,26 según la prueba del tema
+let pasa = Contraste.cumpleAA(gris, sobre: blanco, textoGrande: true)
+```
+
+   `razon` es simétrica, y la prueba «el orden de los colores no importa» lo comprueba. `cumpleAA` elige el umbral
+   de 4,5 o de 3 según el tamaño del texto.
+4. **Defines un color por modo.** El inicializador `Color(claro:oscuro:)` del tema envuelve un `UIColor` con
+   proveedor. UIKit llama al proveedor cada vez que resuelve el color con unos rasgos concretos:
+
+```swift
+Color(uiColor: UIColor { rasgos in UIColor(rasgos.userInterfaceStyle == .dark ? oscuro : claro) })
+```
+
+   No guardas dos colores en la vista: guardas una regla. Cuando la persona cambia de modo, el sistema vuelve a
+   resolverla y la vista se redibuja.
+5. **Compruebas en el simulador.** Las capturas en modo oscuro revelan colores fijos, como `.black`. La auditoría
+   del Tema 2 vuelve a medir el contraste con los píxeles ya dibujados.
+
+##### 4. Reglas, variantes y casos límite
+
+**Niveles de WCAG.** El criterio 1.4.3 (nivel AA) pide 4,5:1 y 3:1. El criterio 1.4.6 (nivel AAA) sube a 7:1 y
+4,5:1. El contraste para elementos que no son texto, criterio 1.4.11, llegó con WCAG 2.1 en 2018. WCAG 2.2, de
+2023, mantiene los tres.
+
+**Un detalle de la fórmula.** Hasta mayo de 2021, WCAG usaba 0,03928 como umbral de linealización.
+Hoy usa 0,04045, el del estándar sRGB. Con colores de 8 bits ningún canal cae entre los dos valores, así que
+el resultado no cambia.
+
+**Transparencia.** Un color con opacidad no tiene contraste propio. Primero lo mezclas con su fondo y después
+mides. Por eso la prueba usa #8A8A8E: es el gris secundario del sistema en claro ya mezclado con blanco.
+
+**Los colores del sistema no garantizan AA.** Se adaptan al modo y al contraste aumentado. Aun así, el azul y el gris
+secundario no llegan a 4,5:1 sobre blanco. Úsalos en iconos, que piden 3:1, y escribe el texto en `.primary` o en
+un gris medido.
+
+**Cada versión contra su fondo.** Un color dinámico tiene dos contrastes, no uno. La prueba mide la versión clara
+sobre blanco y la oscura sobre negro. En modo oscuro, las hojas y menús usan fondos elevados grises: si tu texto
+vive ahí, mide contra ese gris.
+
+**Contraste aumentado.** Desde iOS 13, el rasgo `accessibilityContrast` vale `.high` cuando la persona activa
+*Aumentar contraste*. Tu proveedor puede devolver una tercera versión, como pide el Paso 5.
+
+**El área táctil no es el dibujo.** Un `.frame` fuera del botón agranda el hueco en la fila, no lo que se puede
+tocar. Pon el marco dentro de la etiqueta del botón y define la forma con `.contentShape(Rectangle())`.
+
+##### 5. Relación con lo que ya sabes y lo que viene
+
+Este tema cierra el ciclo que abrió el Tema 2. La auditoría marcó «Contrast nearly passed» en la pantalla buena;
+aquí calculas por qué: el gris secundario del sistema da 3,44:1. El arreglo, `Color.textoSecundario`, sale de esta
+medición.
+
+También usa las capturas del Tema 3, ahora cambiando `userInterfaceStyle` en lugar del tamaño de texto. Y se apoya
+en `@Environment` del Módulo 2, Tema 4: el esquema de color es otro valor del entorno que provoca redibujo.
+
+No confundas el contraste con Dynamic Type. El tamaño ayuda a leer, pero no compensa un mal contraste. El gris
+#8E8E93 no pasa para texto normal; solo pasa el umbral de texto grande. Las dos cosas se piden a
+la vez en el Proyecto 47. En el Módulo 11, la revisión de App Store vuelve a mirar que la app respete estos ajustes.
 
 #### Problema resuelto 4.1
 Calcula el contraste de los colores que usa la app, elige versiones de los iconos de estado que lleguen a 3:1 en los
@@ -1742,7 +2150,8 @@ Reto. ¿Qué tamaño tiene el botón de llamar en la pantalla mala según XCUITe
 
 Respuesta esperada: 13,7 × 13 pt. El `.frame(width: 24, height: 24)` está aplicado **fuera** del botón: agranda el
 espacio que ocupa en la fila, pero el área que se puede tocar (y la que ve la accesibilidad) sigue siendo la del
-icono de 12 puntos.
+ícono dibujado. Ese ícono usa una fuente de 12 pt (`.font(.system(size: 12))`), y el símbolo `phone.fill` a ese
+tamaño ocupa 13,7 × 13 pt: esa es el área medida.
 
 #### En el trabajo
 Los sistemas de diseño de las empresas definen la paleta con su contraste medido en los dos modos, y las auditorías
